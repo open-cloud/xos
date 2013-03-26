@@ -17,7 +17,9 @@ class Call:
 
 class API():
     def __init__(self):
-        self.auth = {}
+        self.auth = {'AuthMethod': 'password',
+                     'Username': None,
+                     'AuthString': None}
         self.server = xmlrpclib.ServerProxy("URL", allow_none=True)
 
     def __getattr__(self, name):         
