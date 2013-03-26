@@ -43,6 +43,14 @@ class Site(PlCoreBase):
             os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
         super(Site, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwds):
+        # delete keystone tenant
+        os_shell = OpenStackShell()
+        tenant = os_shell.keystone.tenants.find(id=self.tenant_id)
+        os_shell.keystone.tenants.delete(tenant)
+
+        super(Site, self).delete(*args, **kwargs)
+
 class Slice(PlCoreBase):
     tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(help_text="The Name of the Slice", max_length=80)
@@ -56,6 +64,7 @@ class Slice(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
+        # sync keystone tenant
         os_shell = OpenStackShell()
         tenant_fields = {'name': self.name,
                          'enabled': self.enabled,
@@ -72,6 +81,14 @@ class Slice(PlCoreBase):
             # update record
             os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
         super(Site, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwds):
+        # delete keystone tenant
+        os_shell = OpenStackShell()
+        tenant = os_shell.keystone.tenants.find(id=self.tenant_id)
+        os_shell.keystone.tenants.delete(tenant)
+
+        super(Slice, self).delete(*args, **kwargs)
 
 class DeploymentNetwork(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment Network")
@@ -126,6 +143,13 @@ class Network(PlCoreBase):
             self.quantum_id = network.id
         super(Network, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        # delete quantum network
+        os_shell = OpenStackShell()
+        os_shell.quantum.delete_network(self.quantum_id)
+
+        super(Network, self).delete(*args, **kwargs)
+        
 class SubNet(PlCoreBase):
     network = models.ForeignKey(Network, related_name='network')
     name = models.CharField(max_length=200, unique=True)
@@ -154,6 +178,14 @@ class SubNet(PlCoreBase):
                 subnet = subnets[0]
             self.quantum_id = subnet.id
         super(SubNet, self).save(*args, **kwargs)
+
+
+    def delete(self, *args, **kwargs):
+        # delete quantum network
+        os_shell = OpenStackShell()
+        os_shell.quantum.delete_subnet(self.quantum_id)
+
+        super(SubNet, self).delete(*args, **kwargs)
                                                                           
                           
         
