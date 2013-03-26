@@ -1,4 +1,5 @@
 from django.db import models
+from plstackapi.openstack.shell import OpenStackShell
 
 # Create your models here.
 
@@ -11,6 +12,7 @@ class PlCoreBase(models.Model):
         abstract = True
 
 class Site(PlCoreBase):
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, unique=True, help_text="Name for this Site")
     site_url = models.URLField(help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
@@ -22,7 +24,27 @@ class Site(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    def save(self, *args, **kwargs):
+        os_shell = OpenStackShell()
+        tenant_fields = {'name': self.login_base,
+                         'enabled': self.enabled,
+                         'description': self.name}
+        
+        if not self.id:
+            # check if keystone tenant record exists
+            tenants = os_shell.keystone.tenants.findall(name=self.login_base)
+            if not tenants:
+                tenant = os_shell.keystone.tenants.create(**tenant_fields)
+            else:
+                tenant = tenants[0]
+            self.tenant_id = tenants.id
+        else:
+            # update record
+            os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
+        super(Site, self).save(*args, **kwargs)
+
 class Slice(PlCoreBase):
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(help_text="The Name of the Slice", max_length=80)
     SLICE_CHOICES = (('plc', 'PLC'), ('delegated', 'Delegated'), ('controller','Controller'), ('none','None'))
     instantiation = models.CharField(help_text="The instantiation type of the slice", max_length=80, choices=SLICE_CHOICES)
@@ -32,6 +54,24 @@ class Slice(PlCoreBase):
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    def save(self, *args, **kwds):
+        os_shell = OpenStackShell()
+        tenant_fields = {'name': self.name,
+                         'enabled': self.enabled,
+                         'description': self.description}
+        if not self.id:
+            # check if keystone tenant record exists
+            tenants = os_shell.keystone.tenants.findall(name=self.name)
+            if not tenants:
+                tenant = os_shell.keystone.tenants.create(**tenant_fields)
+            else:
+                tenant = tenants[0]
+            self.tenant_id = tenants.id
+        else:
+            # update record
+            os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
+        super(Site, self).save(*args, **kwargs)
 
 class DeploymentNetwork(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment Network")
@@ -51,6 +91,7 @@ class SiteDeploymentNetwork(PlCoreBase):
 
 
 class Sliver(PlCoreBase):
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, unique=True)
     slice = models.ForeignKey(Slice)
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
@@ -63,3 +104,56 @@ class Node(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+class Network(PlCoreBase):
+    slice = models.ForeignKey(Slice, related_name='slice')
+    name = models.CharField(max_length=200, unique=True)
+    quantum_id = models.CharField(max_length=200, unique=True)
+    
+    def __unicode__(self):  return u'%s' % (self.name)
+
+    def save(self, *args, **kwargs):
+        os_shell = OpenStackShell()
+        network_fields = {'name': self.name}
+        
+        if not self.id:
+            # check if quantum network record exists
+            networks = os_shell.quantum.list_networks(name=self.name)
+            if not networks:
+                network = os_shell.quantum.create_network(name=self.name,
+                                                          admin_state_up=False)
+            else:
+                network = networks[0]
+            self.quantum_id = network.id
+        super(Network, self).save(*args, **kwargs)
+
+class SubNet(PlCoreBase):
+    network = models.ForeignKey(Network, related_name='network')
+    name = models.CharField(max_length=200, unique=True)
+    quantum_id = models.CharField(max_length=200, unique=True)
+    cidr = models.CharField(max_length=20)
+    ip_version = models.IntegerField()
+    start = models.IPAddressField()
+    end = models.IPAddressField()
+
+    def __unicode__(self):  return u'%s' % (self.name)
+
+    def save(self, *args, **kwargs):
+        os_shell = OpenStackShell()
+        subnet_fields = {'network_id': self.network.quantum_id,
+                         'name' : self.name,
+                         'ip_version': self.ip_version,
+                         'cidr': self.cidr,
+                         'allocation_pools': ['start': self.start,
+                                              'end': self.end]
+                        }
+        if not self.id:
+            subnets = os_shell.quantum.list_subnets(name=self.name)
+            if not subnets:
+                subnet = os_shell.quantum.create_subnet(**subnet_fields)
+            else:
+                subnet = subnets[0]
+            self.quantum_id = subnet.id
+        super(SubNet, self).save(*args, **kwargs)
+                                                                          
+                          
+        
