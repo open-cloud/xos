@@ -6,7 +6,7 @@ import ConfigParser
 import tempfile
 import codecs
 from StringIO import StringIO
-from PLC.Xml import Xml
+from plstackapi.util.xml import Xml
 
 default_config = \
 """
