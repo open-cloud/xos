@@ -7,5 +7,5 @@ setup(name='plstackapi',
       packages=['plstackapi', 'plstackapi/core', 'plstackapi/planetstack'],
       scripts=['plstackapi/plstackapi-debug-server.py'],
       data_files=[
-        ('config/default_config', '/etc/planetstack/plstackapi_config'),
+        ('config/default_config', ['plstackapi_config']),
         ])
