@@ -167,8 +167,8 @@ class SubNet(PlCoreBase):
                          'name' : self.name,
                          'ip_version': self.ip_version,
                          'cidr': self.cidr,
-                         'allocation_pools': ['start': self.start,
-                                              'end': self.end]
+                         'allocation_pools': {'start': self.start,
+                                              'end': self.end}
                         }
         if not self.id:
             subnets = os_shell.quantum.list_subnets(name=self.name)
