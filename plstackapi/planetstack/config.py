@@ -20,7 +20,7 @@ def str2bool(v):
 
 class Config:
 
-    def __init__(self, config_file='/etc/planetlab/plcapi_config'):
+    def __init__(self, config_file='/etc/planetstack/plstackapi_config'):
         self._files = []
         self.config_path = os.path.dirname(config_file)
         self.config = ConfigParser.ConfigParser()
