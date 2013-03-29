@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from models import *
+from plstackapi.core.models import *
 
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
