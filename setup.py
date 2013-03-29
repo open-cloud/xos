@@ -5,5 +5,7 @@ setup(name='plstackapi',
       version='0.1',
       description='PlanetStack API',
       packages=['plstackapi', 'plstackapi/core', 'plstackapi/planetstack'],
-      scripts=[],
-      data_files=[])
+      scripts=['plstackapi/plstackapi-debug.py'],
+      data_files=[
+        ('config/default_config', '/etc/planetstack/plstackapi_config'),
+        ])
