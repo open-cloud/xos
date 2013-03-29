@@ -1,7 +1,7 @@
 from plstackapi.planetstack.config import Config
 from plstackapi.openstack.shell import OpenStackShell
 
-class Manager:
+class OpenStackDriver:
 
     def __init__(self, config = None): 
         if config:
