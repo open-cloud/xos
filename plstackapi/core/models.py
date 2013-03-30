@@ -1,5 +1,5 @@
 from django.db import models
-from plstackapi.openstack.shell import OpenStackShell
+from plstackapi.openstack.driver import OpenStackDriver
 
 # Create your models here.
 
@@ -25,30 +25,22 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwargs):
-        os_shell = OpenStackShell()
-        tenant_fields = {'name': self.login_base,
-                         'enabled': self.enabled,
-                         'description': self.name}
-        
+        driver  = OpenStackDriver()
         if not self.id:
-            # check if keystone tenant record exists
-            tenants = os_shell.keystone.tenants.findall(name=self.login_base)
-            if not tenants:
-                tenant = os_shell.keystone.tenants.create(**tenant_fields)
-            else:
-                tenant = tenants[0]
+            tenant = driver.create_tenant(name=self.login_base, 
+                                          description=self.name, 
+                                          enabled=self.enabled)
             self.tenant_id = tenants.id
         else:
             # update record
-            os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
+            self.driver.update_tenant(self.tenant_id, name=self.login_base,
+                                      description=self.name, enabled=self.enabled)
         super(Site, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwds):
         # delete keystone tenant
-        os_shell = OpenStackShell()
-        tenant = os_shell.keystone.tenants.find(id=self.tenant_id)
-        os_shell.keystone.tenants.delete(tenant)
-
+        driver  = OpenStackDriver()
+        driver.delete_tenant(self.tenant_id)
         super(Site, self).delete(*args, **kwargs)
 
 class Slice(PlCoreBase):
@@ -65,29 +57,26 @@ class Slice(PlCoreBase):
 
     def save(self, *args, **kwds):
         # sync keystone tenant
-        os_shell = OpenStackShell()
+        driver  = OpenStackDriver()
+
         tenant_fields = {'name': self.name,
                          'enabled': self.enabled,
                          'description': self.description}
         if not self.id:
-            # check if keystone tenant record exists
-            tenants = os_shell.keystone.tenants.findall(name=self.name)
-            if not tenants:
-                tenant = os_shell.keystone.tenants.create(**tenant_fields)
-            else:
-                tenant = tenants[0]
+            tenant = driver.create_tenant(name=self.name,
+                                          description=self.description,
+                                          enabled=self.enabled)
             self.tenant_id = tenants.id
         else:
             # update record
-            os_shell.keystone.tenants.update(self.tenant_id, **tenant_fields)
-        super(Site, self).save(*args, **kwargs)
+            self.driver.update_tenant(self.tenant_id, name=self.name,
+                                      description=self.description, enabled=self.enabled)
+        super(Slice, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwds):
         # delete keystone tenant
-        os_shell = OpenStackShell()
-        tenant = os_shell.keystone.tenants.find(id=self.tenant_id)
-        os_shell.keystone.tenants.delete(tenant)
-
+        driver  = OpenStackDriver()
+        driver.delete_tenant(self.tenant_id)
         super(Slice, self).delete(*args, **kwargs)
 
 class DeploymentNetwork(PlCoreBase):
@@ -108,12 +97,32 @@ class SiteDeploymentNetwork(PlCoreBase):
 
 
 class Sliver(PlCoreBase):
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
-    name = models.CharField(max_length=200, unique=True)
-    slice = models.ForeignKey(Slice)
+    tenant_id = models.CharField(help_text="Keystone tenant id")
+    instance_id = models.CharField()    
+    name = models.CharField()
+    flavor = models.CharField()
+    image = modesl.CharField()    
+    slice = models.ForeignKey(Slice, related_name='slice')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
+    node = models.ForeignKey(Node, related_name='node')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.siteDeploymentNetwork)
+
+    def save(self, *args, **kwds):
+        driver  = OpenStackDriver()
+        instance = driver.spawn_instances(name=self.name,
+                                          keyname=self.name,
+                                          hostnames=self.node.name,
+                                          flavor=self.flavor,
+                                          image=self.image)
+        self.instance_id = instance.id
+        super(Sliver, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver  = OpenStackDriver()
+        driver.destroy_instance(name=self.name, id=self.instance_id)
+        super(Sliver, self).delete(*args, **kwds)
+        
 
 class Node(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Node")
