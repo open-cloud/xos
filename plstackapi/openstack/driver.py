@@ -11,7 +11,7 @@ class OpenStackDriver:
         self.shell = OpenStackShell()
 
     def create_tenant(self, **kwds):
-       """Create keystone tenant. Suggested fields: name, description, enabled"""  
+        """Create keystone tenant. Suggested fields: name, description, enabled"""  
         required_fields = ['name', 'enabled', 'description']
         for field in required_fields:
             if field not in **kwds:
