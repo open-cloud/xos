@@ -14,7 +14,7 @@ class OpenStackDriver:
         """Create keystone tenant. Suggested fields: name, description, enabled"""  
         required_fields = ['name', 'enabled', 'description']
         for field in required_fields:
-            if field not in **kwds:
+            if field not in kwds:
                 raise Exception, "Must specify %s" % field
 
         tenants = self.shell.keystone.tenants.findall(name=kwds['name'])
@@ -68,5 +68,5 @@ class OpenStackDriver:
         servers = self.shell.nova.servers.findall(**args)
         for server in servers:
             if name == server.name:
-                if not id or id = server.id:
+                if not id or id == server.id:
                     self.shell.nova.servers.delete(server)
