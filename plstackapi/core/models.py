@@ -101,9 +101,9 @@ class SiteDeploymentNetwork(PlCoreBase):
 class Sliver(PlCoreBase):
     tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
-    name = models.CharField(max_length=200, "Sliver name")
-    flavor = models.CharField(max_length=200, "OS Flavor")
-    image = models.CharField(max_length=200, "Image Name")    
+    name = models.CharField(max_length=200, help_text="Sliver name")
+    flavor = models.CharField(max_length=200, help_text="OS Flavor")
+    image = models.CharField(max_length=200, help_text="Image Name")    
     slice = models.ForeignKey(Slice, related_name='slices')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
     #node = models.ForeignKey(Node, related_name='node')
