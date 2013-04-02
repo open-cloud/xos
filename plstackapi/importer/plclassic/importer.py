@@ -1,5 +1,4 @@
 import xmlrpclib
-from plstackapi.importer.plclassic.role_importer import RoleImporter
 from plstackapi.importer.plclassic.site_importer import SiteImporter
 from plstackapi.importer.plclassic.user_importer import UserImporter
 from plstackapi.importer.plclassic.slice_importer import SliceImporter
@@ -29,7 +28,6 @@ class Importer:
 
     def __init__(self):
         api = API()
-        self.roles = RoleImporter(api)
         self.sites = SiteImporter(api)
         self.slices = SliceImporter(api, remote_sites=self.sites.remote_sites, local_sites=self.sites.local_sites)
         self.users = UserImporter(api)
