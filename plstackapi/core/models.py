@@ -31,7 +31,7 @@ class Site(PlCoreBase):
             tenant = driver.create_tenant(tenant_name=self.login_base, 
                                           description=self.name, 
                                           enabled=self.enabled)
-            self.tenant_id = tenants.id
+            self.tenant_id = tenant.id
         else:
             # update record
             self.driver.update_tenant(self.tenant_id, name=self.login_base,
@@ -64,7 +64,7 @@ class Slice(PlCoreBase):
             tenant = driver.create_tenant(tenant_name=self.name,
                                           description=self.description,
                                           enabled=self.enabled)
-            self.tenant_id = tenants.id
+            self.tenant_id = tenant.id
         else:
             # update record
             self.driver.update_tenant(self.tenant_id, name=self.name,

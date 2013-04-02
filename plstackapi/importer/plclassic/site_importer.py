@@ -20,6 +20,7 @@ class SiteImporter:
             self.remote_sites[site['site_id']] = site 
             if site['login_base'] not in self.local_sites:
                 new_site = Site(name=site['name'],
+                                login_base=site['login_base'],
                                 site_url=site['url'],
                                 enabled=site['enabled'],
                                 longitude=site['longitude'],
