@@ -26,7 +26,7 @@ class SliceImporter:
         print "%s local slices" % len(db_slices)
 
         slices = self.api.GetSlices()
-        print "%s remote sites" % len(slices)
+        print "%s remote slices" % len(slices)
         count = 0 
         for slice in slices:
             self.remote_slices[slice['slice_id']] = slice
