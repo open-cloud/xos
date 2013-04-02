@@ -16,7 +16,7 @@ class Call:
         self.auth = auth
 
     def __call__(self, *args, **kwds):
-        a = [auth] + args
+        a = [self.auth] + list(args)
         return self.callable(*a)
 
 class API():
@@ -34,15 +34,15 @@ class Importer:
     def __init__(self, username, password, url):
         api = API(username, password, url)
         self.sites = SiteImporter(api)
-        self.slices = SliceImporter(api, remote_sites=self.sites.remote_sites, local_sites=self.sites.local_sites)
+        self.slices = SliceImporter(api)
         self.users = UserImporter(api)
         self.slivers = SliverImporter(api)
 
     def run(self):
-        self.roles.run()
         self.sites.run()
         self.users.run()
-        self.slices.run()
+        self.slices.run(remote_sites=self.sites.remote_sites, 
+                        local_sites=self.sites.local_sites)
         self.slivers.run()           
 
 
@@ -67,5 +67,4 @@ if __name__ == '__main__':
         print
         sys.exit(0)
 
-    
     Importer(config.username, password, config.url).run()

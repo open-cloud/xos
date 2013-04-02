@@ -11,8 +11,10 @@ class SiteImporter:
         db_sites = Site.objects.all()
         for db_site in db_sites:
             self.local_sites[db_site.login_base] = db_site
+        print "%s local sites" % len(db_sites)
 
         sites = self.api.GetSites()
+        print "%s remote sites" %s len(sites))
         count = 0
         for site in sites:
             self.remote_sites[site['site_id']] = site 

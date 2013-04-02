@@ -12,6 +12,7 @@ class SliceImporter:
             sites = self.api.GetSites()
             for site in sites:
                 remote_sites[site['site_id']] = site
+        
 
         if not local_sites:
             from models import Site
@@ -22,8 +23,10 @@ class SliceImporter:
         db_slices = Slice.objects.all()
         for db_slice in db_slices:
             self.local_slices[db_slice.name] = db_slice
+        print "%s local slices" % len(db_slices)
 
         slices = api.GetSlices()
+        print "%s remote sites" %s len(slices)
         count = 0 
         for slice in slices:
             self.remote_slice[slice['slice_id']] = slice
