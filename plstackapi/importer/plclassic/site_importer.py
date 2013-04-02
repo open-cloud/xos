@@ -13,7 +13,7 @@ class SiteImporter:
             self.local_sites[db_site.login_base] = db_site
         print "%s local sites" % len(db_sites)
 
-        sites = self.api.GetSites()
+        sites = self.api.GetSites({'peer_id': None})
         print "%s remote sites" % len(sites)
         count = 0
         for site in sites:

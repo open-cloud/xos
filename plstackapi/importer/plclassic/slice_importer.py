@@ -9,7 +9,7 @@ class SliceImporter:
 
     def run(self, remote_sites={}, local_sites={}):
         if not remote_sites:
-            sites = self.api.GetSites()
+            sites = self.api.GetSites({'peer_id': None})
             for site in sites:
                 remote_sites[site['site_id']] = site
         
