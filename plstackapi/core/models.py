@@ -103,7 +103,7 @@ class Sliver(PlCoreBase):
     instance_id = models.CharField()    
     name = models.CharField()
     flavor = models.CharField()
-    image = modesl.CharField()    
+    image = models.CharField()    
     slice = models.ForeignKey(Slice, related_name='slice')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
     node = models.ForeignKey(Node, related_name='node')
