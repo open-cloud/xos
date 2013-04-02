@@ -28,7 +28,7 @@ class Site(PlCoreBase):
     def save(self, *args, **kwargs):
         driver  = OpenStackDriver()
         if not self.id:
-            tenant = driver.create_tenant(name=self.login_base, 
+            tenant = driver.create_tenant(tenant_name=self.login_base, 
                                           description=self.name, 
                                           enabled=self.enabled)
             self.tenant_id = tenants.id
@@ -60,11 +60,8 @@ class Slice(PlCoreBase):
         # sync keystone tenant
         driver  = OpenStackDriver()
 
-        tenant_fields = {'name': self.name,
-                         'enabled': self.enabled,
-                         'description': self.description}
         if not self.id:
-            tenant = driver.create_tenant(name=self.name,
+            tenant = driver.create_tenant(tenant_name=self.name,
                                           description=self.description,
                                           enabled=self.enabled)
             self.tenant_id = tenants.id
