@@ -1,3 +1,4 @@
+import os
 import xmlrpclib
 from plstackapi.importer.plclassic.site_importer import SiteImporter
 from plstackapi.importer.plclassic.user_importer import UserImporter
@@ -41,3 +42,7 @@ class Importer:
         self.slivers.run()           
 
 
+
+if __name__ == '__main__':
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
+    Importer().run()
