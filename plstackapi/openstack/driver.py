@@ -17,7 +17,7 @@ class OpenStackDriver:
             if field not in kwds:
                 raise Exception, "Must specify %s" % field
 
-        tenants = self.shell.keystone.tenants.findall(name=kwds['name'])
+        tenants = self.shell.keystone.tenants.findall(name=kwds['tenant_name'])
         if not tenants:
             tenant = self.shell.keystone.tenants.create(**kwds)
         else:
