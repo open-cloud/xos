@@ -1,9 +1,9 @@
 import xmlrpclib
-from importer.planetstack.role_importer import RoleImporter
-from importer.planetstack.site_importer import SiteImporter
-from importer.planetstack.user_importer import UserImporter
-from importer.planetstack.slice_importer import SliceImporter
-from importer.planetstack.sliver_importer import SliverImporter
+from plstackapi.importer.plclassic.role_importer import RoleImporter
+from plstackapi.importer.plclassic.site_importer import SiteImporter
+from plstackapi.importer.plclassic.user_importer import UserImporter
+from plstackapi.importer.plclassic.slice_importer import SliceImporter
+from plstackapi.importer.plclassic.sliver_importer import SliverImporter
 
 
 class Call:
@@ -28,12 +28,12 @@ class API():
 class Importer: 
 
     def __init__(self):
-        self.api = API()
-        self.roles = RoleImporter(self)
-        self.sites = SiteImporter(self)
-        self.users = UserImporter(self)
-        self.slices = SliceImporter(self)
-        self.slivers = SliverImporter(self)
+        api = API()
+        self.roles = RoleImporter(api)
+        self.sites = SiteImporter(api)
+        self.slices = SliceImporter(api, remote_sites=self.sites.remote_sites, local_sites=self.sites.local_sites)
+        self.users = UserImporter(api)
+        self.slivers = SliverImporter(api)
 
     def run(self):
         self.roles.run()

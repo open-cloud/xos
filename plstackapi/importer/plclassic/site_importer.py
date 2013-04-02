@@ -1,18 +1,21 @@
-from PLC.Sites import Sites
-from models import Site
+from plstackapi.core.models import Site
 
 class SiteImporter:
 
-    def __init__(self, importer):
-        self.importer = importer
-        self.sites = {}
+    def __init__(self, api):
+        self.api = api
+        self.remote_sites = {}
+        self.local_sites = {}
 
     def run(self):
-        sites = Sites(self.importer.api)
         db_sites = Site.objects.all()
-        db_site_names = [s['login_base'] for s in db_sites]         
+        for db_site in db_sites:
+            self.local_sites[db_site.login_base] = db_site
+
+        sites = self.api.GetSites()
         for site in sites:
-            if site['login_base'] not in db_site_names:
+            self.remote_sites[site['site_id']] = site 
+            if site['login_base'] not in self.local_sites:
                 new_site = Site(name=site['name'],
                                 site_url=site['url'],
                                 enabled=site['enabled'],
@@ -21,7 +24,4 @@ class SiteImporter:
                                 is_public=site['is_public'],
                                 abbreviated_name=site['abbreviated_name'])
                 new_site.save()
-            self.sites[site['site_id']] = site
-
-          
-
+                self.local_sites[new_site.login_base] = new_site
