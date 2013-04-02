@@ -70,13 +70,13 @@ class Slice(PlCoreBase):
             # update record
             self.driver.update_tenant(self.tenant_id, name=self.name,
                                       description=self.description, enabled=self.enabled)
-        super(Slice, self).save(*args, **kwargs)
+        super(Slice, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         # delete keystone tenant
         driver  = OpenStackDriver()
         driver.delete_tenant(self.tenant_id)
-        super(Slice, self).delete(*args, **kwargs)
+        super(Slice, self).delete(*args, **kwds)
 
 class DeploymentNetwork(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment Network")
