@@ -15,7 +15,7 @@ class PlCoreBase(models.Model):
 class Site(PlCoreBase):
     tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, help_text="Name for this Site")
-    site_url = models.URLField(null=True, blank=True, help_text="Site's Home URL Page")
+    site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
@@ -52,7 +52,7 @@ class Slice(PlCoreBase):
     instantiation = models.CharField(help_text="The instantiation type of the slice", max_length=80, choices=SLICE_CHOICES)
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
-    slice_url = models.URLField(blank=True)
+    slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
 
     def __unicode__(self):  return u'%s' % (self.name)
