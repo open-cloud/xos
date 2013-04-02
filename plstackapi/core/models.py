@@ -104,7 +104,7 @@ class Sliver(PlCoreBase):
     name = models.CharField(max_length=200, help_text="Sliver name")
     flavor = models.CharField(max_length=200, help_text="OS Flavor")
     image = models.CharField(max_length=200, help_text="Image Name")    
-    slice = models.ForeignKey(Slice, related_name='slices')
+    slice = models.ForeignKey(Slice, related_name='sliver_slice')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
     #node = models.ForeignKey(Node, related_name='node')
 
@@ -133,7 +133,7 @@ class Node(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class Network(PlCoreBase):
-    slice = models.ForeignKey(Slice, related_name='slices')
+    slice = models.ForeignKey(Slice, related_name='network_slice')
     name = models.CharField(max_length=200, unique=True)
     quantum_id = models.CharField(max_length=200, unique=True)
     
