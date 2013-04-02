@@ -13,6 +13,7 @@ class SiteImporter:
             self.local_sites[db_site.login_base] = db_site
 
         sites = self.api.GetSites()
+        count = 0
         for site in sites:
             self.remote_sites[site['site_id']] = site 
             if site['login_base'] not in self.local_sites:
@@ -24,4 +25,6 @@ class SiteImporter:
                                 is_public=site['is_public'],
                                 abbreviated_name=site['abbreviated_name'])
                 new_site.save()
+                count += 1
                 self.local_sites[new_site.login_base] = new_site
+        print "imported %s sites" % count

@@ -24,6 +24,7 @@ class SliceImporter:
             self.local_slices[db_slice.name] = db_slice
 
         slices = api.GetSlices()
+        count = 0 
         for slice in slices:
             self.remote_slice[slice['slice_id']] = slice
             if slice['name'] not in self.local_slices:
@@ -35,7 +36,9 @@ class SliceImporter:
                                    slice_url = slice['url'],
                                    site = site)
                 new_slice.save()
+                count += 1
                 self.local_slices[new_slice.name] = new_slice
+        print "Imported %s slices" % count
 
           
 
