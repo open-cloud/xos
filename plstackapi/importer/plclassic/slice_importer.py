@@ -25,14 +25,14 @@ class SliceImporter:
             self.local_slices[db_slice.name] = db_slice
         print "%s local slices" % len(db_slices)
 
-        slices = api.GetSlices()
+        slices = self.api.GetSlices()
         print "%s remote sites" % len(slices)
         count = 0 
         for slice in slices:
-            self.remote_slice[slice['slice_id']] = slice
+            self.remote_slices[slice['slice_id']] = slice
             if slice['name'] not in self.local_slices:
                 site = local_sites[remote_sites[slice['site_id']]['login_base']]
-                new_slices = Slice(name=slice['name'],
+                new_slice = Slice(name=slice['name'],
                                    instantiation=slice['instantiation'],
                                    omf_friendly = False,
                                    description = slice['description'],
