@@ -12,7 +12,7 @@ class OpenStackDriver:
 
     def create_tenant(self, **kwds):
         """Create keystone tenant. Suggested fields: name, description, enabled"""  
-        required_fields = ['name', 'enabled', 'description']
+        required_fields = ['tenant_name', 'enabled', 'description']
         for field in required_fields:
             if field not in kwds:
                 raise Exception, "Must specify %s" % field
