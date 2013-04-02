@@ -99,12 +99,12 @@ class SiteDeploymentNetwork(PlCoreBase):
 
 
 class Sliver(PlCoreBase):
-    tenant_id = models.CharField(help_text="Keystone tenant id")
-    instance_id = models.CharField()    
-    name = models.CharField()
-    flavor = models.CharField()
-    image = models.CharField()    
-    slice = models.ForeignKey(Slice, related_name='slice')
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
+    name = models.CharField(max_length=200, "Sliver name")
+    flavor = models.CharField(max_length=200, "OS Flavor")
+    image = models.CharField(max_length=200, "Image Name")    
+    slice = models.ForeignKey(Slice, related_name='slices')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
     #node = models.ForeignKey(Node, related_name='node')
 
@@ -133,7 +133,7 @@ class Node(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class Network(PlCoreBase):
-    slice = models.ForeignKey(Slice, related_name='slice')
+    slice = models.ForeignKey(Slice, related_name='slices')
     name = models.CharField(max_length=200, unique=True)
     quantum_id = models.CharField(max_length=200, unique=True)
     
