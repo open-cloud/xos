@@ -44,5 +44,4 @@ class Importer:
 
 
 if __name__ == '__main__':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
     Importer().run()
