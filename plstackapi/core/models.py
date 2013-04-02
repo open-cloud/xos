@@ -2,7 +2,6 @@ import os
 from django.db import models
 from plstackapi.openstack.driver import OpenStackDriver
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
 # Create your models here.
 
 class PlCoreBase(models.Model):

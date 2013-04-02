@@ -1,4 +1,5 @@
 import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
 import xmlrpclib
 from plstackapi.importer.plclassic.site_importer import SiteImporter
 from plstackapi.importer.plclassic.user_importer import UserImporter
@@ -16,19 +17,19 @@ class Call:
         return self.callable(*a)
 
 class API():
-    def __init__(self):
+    def __init__(self, username, password, url):
         self.auth = {'AuthMethod': 'password',
-                     'Username': None,
-                     'AuthString': None}
-        self.server = xmlrpclib.ServerProxy("URL", allow_none=True)
+                     'Username': username,
+                     'AuthString': password}
+        self.server = xmlrpclib.ServerProxy(url, allow_none=True)
 
     def __getattr__(self, name):         
         return Call(getattr(self.server, name), self.auth) 
 
 class Importer: 
 
-    def __init__(self):
-        api = API()
+    def __init__(self, username, password, url):
+        api = API(username, password, url)
         self.sites = SiteImporter(api)
         self.slices = SliceImporter(api, remote_sites=self.sites.remote_sites, local_sites=self.sites.local_sites)
         self.users = UserImporter(api)
