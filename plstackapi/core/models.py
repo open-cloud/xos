@@ -106,7 +106,7 @@ class Sliver(PlCoreBase):
     image = models.CharField()    
     slice = models.ForeignKey(Slice, related_name='slice')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
-    node = models.ForeignKey(Node, related_name='node')
+    #node = models.ForeignKey(Node, related_name='node')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.siteDeploymentNetwork)
 
