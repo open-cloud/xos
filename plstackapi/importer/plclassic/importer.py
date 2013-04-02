@@ -1,5 +1,8 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
+import sys
+from optparse import OptionParser
+from getpass import getpass
 import xmlrpclib
 from plstackapi.importer.plclassic.site_importer import SiteImporter
 from plstackapi.importer.plclassic.user_importer import UserImporter
@@ -45,4 +48,24 @@ class Importer:
 
 
 if __name__ == '__main__':
-    Importer().run()
+    parser = OptionParser()
+        
+    parser.add_option("-u", "--username", dest="username",
+                        help="PLC username with which to authenticate")
+    parser.add_option("", "--url", dest="url",
+                        help="PLC url to contact")
+
+    (config, args) = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
+    password = None
+    try:
+        password = getpass()
+    except (EOFError, KeyboardInterrupt):
+        print
+        sys.exit(0)
+
+    
+    Importer(config.username, password, config.url).run()
