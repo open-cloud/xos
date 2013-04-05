@@ -30,7 +30,59 @@ class OpenStackDriver:
     def delete_tenant(self, id):
         tenant = self.shell.keystone.tenants.find(id=id)
         return self.shell.keystone.tenants.delete(tenant)
-         
+
+    def create_router(self, name):
+        router = self.shell.quantum.create_router(name=name)
+        # TODO: add router to external network
+        return router
+
+    def delete_router(self, name):
+        return self.shell.quantum.delete_router(name=name)
+    
+    def create_network(self, name):
+        return self.shell.quantum.create_network(name=name, admin_state_up=True)
+    
+    def delete_network(self, name):
+        nets = self.shell.quantum.list_networks(name=name)
+        for net in nets:
+            # delete all subnets:
+            #subnets = self.api.client_shell.quantum.list_subnets(network_id=net['network_id'])['subnets']
+            for subnet_id in net['subnets']:
+                self.delete_subnet(subnet_id)
+            self.shell.quantum.delete_network(net['id'])
+    
+    def create_subnet(self, network_name, cidr_ip, ip_version, start, end):
+        nets = self.shell.quantum.list_networks(name=network_name)
+        if not nets:
+            raise Exception, "No such network: %s" % network_name   
+        nets = nets[0]
+
+        subnets = self.shell.quantum.list_subnets(name=self.name)
+        allocation_pools = [{'start': start, 'end': end}]
+        subnet = self.shell.quantum.create_subnet(network_id=net['id'],
+                                                ip_version=ip_version,
+                                                cidr=cidr_ip,
+                                                dns_nameservers=['8.8.8.8'],         
+                                                allocation_pools=allocation_pools)
+
+        # TODO: Add route to external network
+        # e.g. #  route add -net 10.0.3.0/24 dev br-ex gw 10.100.0.5 
+        return subnet
+
+    def delete_subnet(self, id):
+        return self.client.quantum.delete_subnet(id=id)
+     
+    
+    def create_keypair(self, name, key):
+        keys = self.client.nova.keypairs.findall(name=name)
+        if keys:
+            raise Exception, "Key name already exists: %s" % name
+        return self.client.nova.keypairs.create(name=name, public_key=key)
+
+    def delete_keypair(self, name):
+        keys = self.client.nova.keypairs.findall(name=name)
+        for key in keys:
+            self.client.nova.keypairs.delete(key) 
 
     def spawn_instance(self, name, key_name=None, hostname=None, flavor=None, image=None, security_group=None, pubkeys=[]):
         if not flavor:
