@@ -57,14 +57,49 @@ class OpenStackDriver:
         user = self.shell.keystone.users.find(id=id)
         return self.shell.keystone.users.delete(user)  
 
-    def create_router(self, name):
+    def create_router(self, name, set_gateway=True):
         router = self.shell.quantum.create_router(name=name)
-        # TODO: add router to external network
+        if set_gateway:
+            nets = self.shell.quantum.list_networks()
+            for net in nets:
+                if net['router:external'] == True: 
+                    self.shell.quantum.add_gateway_router(router, net)
+        
         return router
 
     def delete_router(self, name):
         return self.shell.quantum.delete_router(name=name)
-    
+
+    def add_router_interface(self, router_id, subnet_id):
+        router = None
+        subnet = None
+        for r in self.shell.quantum.list_routers():
+            if r['id'] == router_id:
+                router = r
+                break
+        for s in self.shell.quantum.list_subnets():
+            if s['id'] == subnet_id:
+                subnet = s
+                break
+
+        if router and subnet:
+            self.shell.quantum.router_add_interface(router, subnet)
+
+    def delete_router_interface(self, router_id, subnet_id):
+        router = None
+        subnet = None
+        for r in self.shell.quantum.list_routers():
+            if r['id'] == router_id:
+                router = r
+                break
+        for s in self.shell.quantum.list_subnets():
+            if s['id'] == subnet_id:
+                subnet = s
+                break
+
+        if router and subnet:
+            self.shell.quantum.router_remove_interface(router, subnet)            
+ 
     def create_network(self, name):
         return self.shell.quantum.create_network(name=name, admin_state_up=True)
     
@@ -88,7 +123,7 @@ class OpenStackDriver:
         subnet = self.shell.quantum.create_subnet(network_id=net['id'],
                                                 ip_version=ip_version,
                                                 cidr=cidr_ip,
-                                                dns_nameservers=['8.8.8.8'],         
+                                                dns_nameservers=['8.8.8.8', '8.8.8.4'],         
                                                 allocation_pools=allocation_pools)
 
         # TODO: Add route to external network
