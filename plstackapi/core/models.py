@@ -141,6 +141,8 @@ class Slice(PlCoreBase):
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='site_slice', help_text="The Site this Node belongs too")
+    network_id = models.CharField(max_length=256, help_text="Quantum network")
+    router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -154,11 +156,12 @@ class Slice(PlCoreBase):
                                           enabled=self.enabled)
             self.tenant_id = tenant.id
             
-            # create router
-            driver.create_router(name=self.name)
-            
             # create a network  
-            driver.create_network(name=self.name)
+            network = driver.create_network(name=self.name)
+            self.network_id = network['id']        
+            # create router
+            router = driver.create_router(name=self.name)
+            self.router_id = router['id']     
 
         else:
             # update record
@@ -214,6 +217,9 @@ class SubNet(PlCoreBase):
 
             self.subnet_id = subnet.id
 
+        # add subnet as interface to slice router
+        driver.add_router_interface(self.slice.router_id, subnet.id)
+
         super(SubNet, self).save(*args, **kwargs)
 
 
@@ -221,6 +227,7 @@ class SubNet(PlCoreBase):
         # delete quantum network
         driver  = OpenStackDriver()
         driver.delete_subnet(self.subnet_id)
+        driver.delete_router_interface(self.slice.router_id, self.subnet.id)
         super(SubNet, self).delete(*args, **kwargs)
 
 class Node(PlCoreBase):
