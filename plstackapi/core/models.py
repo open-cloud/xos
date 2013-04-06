@@ -12,6 +12,12 @@ class PlCoreBase(models.Model):
     class Meta:
         abstract = True
 
+    def save(self):
+        if not self.id:
+            self.created = datetime.date.today()
+        self.updated = datetime.datetime.today()
+        super(PlCoreBase, self).save()
+
 class Role(PlCoreBase):
 
     ROLE_CHOICES = (('admin', 'Admin'), ('pi', 'Principle Investigator'), ('user','User'))
@@ -62,17 +68,28 @@ class User(PlCoreBase):
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
     email = models.EmailField(help_text="e-mail address")
-    phone = models.CharField(help_text="phone number contact", max_length=100)
-    user_url = models.URLField()
+    phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
+    user_url = models.URLField(null=True, blank=True)
+    is_admin = models.BooleanField(default=False)
     site = models.ForeignKey(Site, related_name='site_user', verbose_name="Site this user will be homed too")
 
     def __unicode__(self):  return u'%s' % (self.email)
 
-    def save(self):
+    def save(self, *args, **kwds):
+        driver  = OpenStackDriver()
+        name = self.email[:self.email.find('@')]
+        fields = {'name': name, 'email': self.email, 'password': self.password,
+                  'enabled': self.enabled}
         if not self.id:
-            self.created = datetime.date.today()
-        self.updated = datetime.datetime.today()
-        super(User, self).save()
+            user = driver.create_user(**fields) 
+        else:
+            driver.update_user(self.user_id, **fields)
+        super(User, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver = OpenStackDriver()
+        driver.delete_user(self.user_id)
+        super(User, self).delete(*args, **kwds)
 
 class SitePrivilege(PlCoreBase):
 
@@ -82,11 +99,37 @@ class SitePrivilege(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
-    def save(self):
-        if not self.id:
-            self.created = datetime.date.today()
-        self.updated = datetime.datetime.today()
-        super(SitePrivilege, self).save()
+    def save(self, *args, **kwds):
+        driver  = OpenStackDriver()
+        driver.add_user_role(user_id=user.user_id, 
+                             tenant_id=site.tenant_id, 
+                             role_name=role.name)
+        super(SitePrivilege, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver = OpenStackDriver()
+        driver.delete_user_role(user_id=user.user_id,
+                                tenant_id=site.tenant_id,
+                                role_name=role.name)
+        super(SitePrivilege, self).delete(*args, **kwds)
+         
+
+class DeploymentNetwork(PlCoreBase):
+    name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment Network")
+
+    def __unicode__(self):  return u'%s' % (self.name)
+
+class SiteDeploymentNetwork(PlCoreBase):
+    class Meta:
+        unique_together = ['site', 'deploymentNetwork']
+
+    site = models.ForeignKey(Site, related_name='deploymentNetworks')
+    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sites')
+    name = models.CharField(default="Blah", max_length=100)
+
+
+    def __unicode__(self):  return u'%s::%s' % (self.site, self.deploymentNetwork)
+
 
 class Slice(PlCoreBase):
     tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
@@ -136,11 +179,19 @@ class SliceMembership(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 
-    def save(self):
-        if not self.id:
-            self.created = datetime.date.today()
-        self.updated = datetime.datetime.today()
-        super(SliceMembership, self).save()
+    def save(self, *args, **kwds):
+        driver  = OpenStackDriver()
+        driver.add_user_role(user_id=user.user_id,
+                             tenant_id=slice.tenant_id,
+                             role_name=role.name)
+        super(SliceMembership, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver = OpenStackDriver()
+        driver.delete_user_role(user_id=user.user_id,
+                                tenant_id=slice.tenant_id,
+                                role_name=role.name)
+        super(SliceMembership, self).delete(*args, **kwds)
 
 class SubNet(PlCoreBase):
     subnet_id = models.CharField(max_length=256, unique=True)
@@ -171,25 +222,6 @@ class SubNet(PlCoreBase):
         driver  = OpenStackDriver()
         driver.delete_subnet(self.subnet_id)
         super(SubNet, self).delete(*args, **kwargs)
-
-
-
-class DeploymentNetwork(PlCoreBase):
-    name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment Network")
-
-    def __unicode__(self):  return u'%s' % (self.name)
-
-class SiteDeploymentNetwork(PlCoreBase):
-    class Meta:
-        unique_together = ['site', 'deploymentNetwork']
-
-    site = models.ForeignKey(Site, related_name='deploymentNetworks')
-    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sites')
-    name = models.CharField(default="Blah", max_length=100)
-    
-
-    def __unicode__(self):  return u'%s::%s' % (self.site, self.deploymentNetwork)
-
 
 class Node(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Node")

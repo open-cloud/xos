@@ -10,26 +10,52 @@ class OpenStackDriver:
             self.config = Config() 
         self.shell = OpenStackShell()
 
-    def create_tenant(self, **kwds):
+    def create_tenant(self, tenant_name, enabled, description):
         """Create keystone tenant. Suggested fields: name, description, enabled"""  
-        required_fields = ['tenant_name', 'enabled', 'description']
-        for field in required_fields:
-            if field not in kwds:
-                raise Exception, "Must specify %s" % field
-
-        tenants = self.shell.keystone.tenants.findall(name=kwds['tenant_name'])
+        tenants = self.shell.keystone.tenants.findall(name=tenant_name)
         if not tenants:
-            tenant = self.shell.keystone.tenants.create(**kwds)
+            fields = {'tenant_name': tenant_name, 'enabled': enabled, 
+                      'description', description}  
+            tenant = self.shell.keystone.tenants.create(**fields)
         else:
             tenant = tenants[0]
         return tenant
 
     def update_tenant(self, id, **kwds):
-        return self.shell.keystone.tenants.update(self.id, **kwds)
+        return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
         tenant = self.shell.keystone.tenants.find(id=id)
         return self.shell.keystone.tenants.delete(tenant)
+
+    def create_user(self, name, email, password, enabled):
+        users = self.shell.keystone.users.findall(email=email)
+        if not users:
+            fields = {'name': name, 'email': email, 'password': password,
+                      'enabled': enabled}
+            user = self.shell.keystone.create(**fields)
+        else: 
+            user = users[0]
+        return user
+
+    def add_user_role(self, user_id, tenant_id, role_name):
+        user = self.shell.keystone.users.find(id=user_id)
+        tenant = self.shell.keystone.tenants.find(id=tenant_id)
+        role = self.shell.keystone.roles.find(role_name)
+        return tenant.add_user(user, role)
+
+    def delete_user_role(self, user_id, tenant_id, role_name):
+        user = self.shell.keystone.users.find(id=user_id)
+        tenant = self.shell.keystone.tenants.find(id=tenant_id)
+        role = self.shell.keystone.roles.find(role_name)
+        return tenant.delete_user(user, role)
+
+    def update_user(self, id, **kwds):
+        return self.shell.keystone.users.update(id, **kwds)
+
+    def delete_user(self, id):
+        user = self.shell.keystone.users.find(id=id)
+        return self.shell.keystone.users.delete(user)  
 
     def create_router(self, name):
         router = self.shell.quantum.create_router(name=name)
