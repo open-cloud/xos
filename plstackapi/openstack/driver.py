@@ -1,14 +1,18 @@
 from plstackapi.planetstack.config import Config
-from plstackapi.openstack.shell import OpenStackShell
+from plstackapi.openstack.client import OpenStackClient
 
 class OpenStackDriver:
 
-    def __init__(self, config = None): 
+    def __init__(self, config = None, client=None): 
         if config:
             self.config = Config(config)
         else:
             self.config = Config() 
-        self.shell = OpenStackShell()
+
+        if client:
+            self.shell = client
+        else:
+            self.shell = OpenStackClient()
 
     def create_tenant(self, tenant_name, enabled, description):
         """Create keystone tenant. Suggested fields: name, description, enabled"""  
