@@ -12,7 +12,7 @@ class Manager:
 
     def refresh_nodes(self):
         # collect local nodes
-        from plstackapi.core.models import Node
+        from plstackapi.planetstack.models import Node
         nodes = Node.objects.all()
         nodes_dict = {}
         for node in nodes:
@@ -36,7 +36,7 @@ class Manager:
 
     def refresh_flavors(self):
         # collect local flavors
-        from plstackapi.core.models import Flavor
+        from plstackapi.planetstack.models import Flavor
         flavors = Flavor.objects.all()
         flavors_dict = {}
         for flavor in flavors:
@@ -65,7 +65,7 @@ class Manager:
             
     def refresh_images(self):
         # collect local images
-        from plstackapi.core.models import Image
+        from plstackapi.planetstack.models import Image
         images = Image.objects.all()
         images_dict = {}    
         for image in images:

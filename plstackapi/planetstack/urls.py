@@ -2,9 +2,9 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from plstackapi.core import views
-from plstackapi.core.views import api_root
-from plstackapi.core.models import Site
+from plstackapi.planetstack import views
+from plstackapi.planetstack.views import api_root
+from plstackapi.planetstack.models import Site
 from rest_framework import generics
 
 admin.autodiscover()

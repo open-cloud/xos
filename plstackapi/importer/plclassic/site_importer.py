@@ -1,4 +1,4 @@
-from plstackapi.core.models import Site
+from plstackapi.planetstack.models import Site
 
 class SiteImporter:
 

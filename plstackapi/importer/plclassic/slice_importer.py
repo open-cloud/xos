@@ -1,4 +1,4 @@
-from plstackapi.core.models import Slice
+from plstackapi.planetstack.models import Slice
 
 class SliceImporter:
 

@@ -128,7 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'rest_framework',
     'django_extensions',
-    'plstackapi.core',
+    'plstackapi.planetstack',
     'django_evolution',
 )
 

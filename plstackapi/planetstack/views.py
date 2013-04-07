@@ -1,6 +1,6 @@
 # Create your views here.
 
-from plstackapi.core.models import Site
+from plstackapi.planetstack.models import Site
 from serializers import *
 from rest_framework import generics
 from rest_framework.decorators import api_view
