@@ -14,7 +14,7 @@ class RoleListCreate(APIView):
 
     def post(self, request, format = None):
         
-        if 'auth' not in request.DATA
+        if 'auth' not in request.DATA:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
         else if 'name' in request.DATA:
             role = add_role(request.DATA['auth'], request.DATA['name'])
