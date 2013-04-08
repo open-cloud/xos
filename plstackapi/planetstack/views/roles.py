@@ -17,8 +17,8 @@ class RoleListCreate(APIView):
         data = parse_request(request.DATA)  
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'name' in data:
-            role = add_role(data['auth'], data['name'])
+        elif 'role' in data:
+            role = add_role(data['auth'], data['role']['name'])
             serializer = RoleSerializer(data=role)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
