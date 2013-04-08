@@ -5,7 +5,7 @@ from rest_framework import status
 
 from plstackapi.planetstack.api.roles import add_role, delete_role, get_roles
 from plstackapi.planetstack.serializers import RoleSerializer
-from plstackapi.util.jsonhelper import parse_request
+from plstackapi.util.request import parse_request
 
 
 class RoleListCreate(APIView):
