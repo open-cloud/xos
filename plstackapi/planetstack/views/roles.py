@@ -5,6 +5,7 @@ from rest_framework import status
 
 from plstackapi.planetstack.api.roles import add_role, delete_role, get_roles
 from plstackapi.planetstack.serializers import RoleSerializer
+from plstackapi.util.json import parse_request
 
 
 class RoleListCreate(APIView):
@@ -13,15 +14,15 @@ class RoleListCreate(APIView):
     """
 
     def post(self, request, format = None):
-        
-        if 'auth' not in request.DATA:
+        data = parse_request(request.DATA)  
+        if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'name' in request.DATA:
-            role = add_role(request.DATA['auth'], request.DATA['name'])
+        elif 'name' in data:
+            role = add_role(data['auth'], data['name'])
             serializer = RoleSerializer(data=role)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            roles = get_roles(request.DATA['auth'])
+            roles = get_roles(data['auth'])
             serializer = RoleSerializer(roles, many=True)
             return Response(Serializer.data)
         
