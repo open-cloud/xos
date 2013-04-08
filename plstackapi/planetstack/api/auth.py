@@ -1,7 +1,7 @@
-from plstackapi.openstack.driver import OpenStackDriver
+from plstackapi.openstack.client import OpenStackClient
 
 def auth_check(auth):
-    client = OpenStackDriver(username=auth['Username'],
+    client = OpenStackClient(username=auth['Username'],
                              password=auth['AuthString'],
                              tenant=auth['LoginBase'])
     client.authenticate()
