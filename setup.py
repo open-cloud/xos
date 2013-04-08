@@ -1,5 +1,5 @@
 from distutils.core import setup
-from glob import glob
+from plstackapi.util.glob import recursive_glob
 
 setup(name='plstackapi',
       version='0.1',
@@ -8,5 +8,5 @@ setup(name='plstackapi',
       scripts=['plstackapi/plstackapi-debug-server.py'],
       data_files=[
         ('/etc/planetstack/', ['config/plstackapi_config']),
-        ('/opt/planetstack/', glob('plstackapi/planetstack/*')),
+        ('/opt/planetstack/', recursive_glob('plstackapi/planetstack/*')),
         ])
