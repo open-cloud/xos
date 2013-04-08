@@ -24,7 +24,7 @@ class RoleListCreate(APIView):
         else:
             roles = get_roles(data['auth'])
             serializer = RoleSerializer(roles, many=True)
-            return Response(Serializer.data)
+            return Response(serializer.data)
         
             
         
