@@ -14,6 +14,20 @@ class OpenStackDriver:
         else:
             self.shell = OpenStackClient()
 
+    def create_role(self, name): 
+        roles = self.shell.keystone.roles.findall(name=name)
+        if not roles:
+            role = self.shell.keystone.roles.create(name)
+        else:
+            role = roles[0] 
+        return role
+
+    def delete_role(self, name):
+        roles = self.shell.keystone.roles.findall(name=name)
+        for role in roles:
+            self.shell.keystone.roles.delete(role)
+        return 1
+
     def create_tenant(self, tenant_name, enabled, description):
         """Create keystone tenant. Suggested fields: name, description, enabled"""  
         tenants = self.shell.keystone.tenants.findall(name=tenant_name)

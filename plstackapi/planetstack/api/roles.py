@@ -5,16 +5,16 @@ from plstackapi.planetstack.models import *
  
 
 def add_role(auth, name):
-    client = auth_check(auth)
-    keystone_role = client.keystone.roles.create(name)
+    driver = OpenStackDriver(client = auth_check(auth))    
+    keystone_role = driver.create_role(name=name)
     role = Role(role_type=name, role_id=keystone_role.id)
     role.save()
     return role
 
 def delete_role(auth, name):
-    client = auth_check(auth)
+    driver = OpenStackDriver(client = auth_check(auth))   
     role = Role.objects.filter(role_type=name)
-    client.keystone.roles.delete(role.role_id)
+    driver.delete_role(name) 
     role.delete()
     return 1
 
