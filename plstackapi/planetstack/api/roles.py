@@ -25,7 +25,7 @@ def delete_role(auth, name):
     role.delete()
     return 1
 
-def get_roles(auth, filter):
+def get_roles(auth, filter={}):
     client = auth_check(auth)
     roles = Role.objects.filter(**filter)
     return roles             
