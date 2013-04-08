@@ -1,15 +1,8 @@
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.planetstack.models import * 
-
-
-def auth_check(auth):
-    client = OpenStackDriver(username=auth['Username'],
-                             password=auth['AuthMethod'],
-                             tenant=auth['LoginBase'])
-    client.authenticate()
-    return client
-
+from plstackapi.planetstack.api.auth import auth_check
+from plstackapi.planetstack.models import *
+ 
 
 def add_role(auth, name):
     client = auth_check(auth)
