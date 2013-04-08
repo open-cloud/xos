@@ -8,4 +8,7 @@ def parse_request(request):
     elif isinstance(request, QueryDict):
         for (k,v) in request.items():
             d[k] = ast.literal_eval(v)
+    elif isinstance(request, dict):
+        d = request    
+
     return d
