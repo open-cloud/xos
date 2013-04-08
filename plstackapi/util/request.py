@@ -1,7 +1,7 @@
-import json
+import ast
 
 def parse_request(request):
     d = {}
     for (k,v) in request.items():
-        d[k] = json.loads(v) 
+        d[k] = ast.literal_eval(v) 
 
