@@ -19,7 +19,7 @@ class OpenStackDriver:
         tenants = self.shell.keystone.tenants.findall(name=tenant_name)
         if not tenants:
             fields = {'tenant_name': tenant_name, 'enabled': enabled, 
-                      'description', description}  
+                      'description': description}  
             tenant = self.shell.keystone.tenants.create(**fields)
         else:
             tenant = tenants[0]

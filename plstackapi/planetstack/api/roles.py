@@ -5,7 +5,7 @@ from plstackapi.planetstack.models import *
 
 def auth_check(auth):
     client = OpenStackShell(username=auth['Username'],
-                            password=auth['AuthMethod]',
+                            password=auth['AuthMethod'],
                             tenant=auth['LoginBase'])
     client.authenticate()
     return client
