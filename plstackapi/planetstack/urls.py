@@ -2,8 +2,8 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from plstackapi.planetstack import views
-from plstackapi.planetstack.views import api_root
+from plstackapi.planetstack.views.roles import RoleListCreate
+from plstackapi.planetstack.views.api_root import api_root
 from plstackapi.planetstack.models import Site
 from rest_framework import generics
 
@@ -21,23 +21,26 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^plstackapi/$', api_root),
-    url(r'^plstackapi/sites/$', views.SiteList.as_view(), name='site-list'),
-    url(r'^plstackapi/sites/(?P<pk>[0-9]+)/$', views.SiteDetail.as_view(), name='site-detail'),
+    
+    url(r'^plstackapi/roles/$', views.RoleListCreate.as_view(), name='role-list'),
 
-    url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
-    url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),
+    #url(r'^plstackapi/sites/$', views.SiteList.as_view(), name='site-list'),
+    #url(r'^plstackapi/sites/(?P<pk>[0-9]+)/$', views.SiteDetail.as_view(), name='site-detail'),
 
-    url(r'^plstackapi/slivers/$', views.SliverList.as_view()),
-    url(r'^plstackapi/slivers/(?P<pk>[0-9]+)/$', views.SliverDetail.as_view()),
+    #url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
+    #url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),
 
-    url(r'^plstackapi/nodes/$', views.NodeList.as_view(), name='node-list'),
-    url(r'^plstackapi/nodes/(?P<pk>[0-9]+)/$', views.NodeDetail.as_view(), name='node-detail'),
+    #url(r'^plstackapi/slivers/$', views.SliverList.as_view()),
+    #url(r'^plstackapi/slivers/(?P<pk>[0-9]+)/$', views.SliverDetail.as_view()),
 
-    url(r'^plstackapi/deploymentnetworks/$', views.DeploymentNetworkList.as_view(), name='deploymentnetwork-list'),
-    url(r'^plstackapi/deploymentnetworks/(?P<pk>[0-9]+)/$', views.DeploymentNetworkDetail.as_view(), name='deploymentnetwork-detail'),
+    #url(r'^plstackapi/nodes/$', views.NodeList.as_view(), name='node-list'),
+    #url(r'^plstackapi/nodes/(?P<pk>[0-9]+)/$', views.NodeDetail.as_view(), name='node-detail'),
 
-    url(r'^plstackapi/sitedeploymentnetworks/$', views.SiteDeploymentNetworkList.as_view(), name='sitedeploymentnetwork-list'),
-    url(r'^plstackapi/sitedeploymentnetworks/(?P<pk>[0-9]+)/$', views.SiteDeploymentNetworkDetail.as_view(), name='sitedeploymentnetwork-detail'),
+    #url(r'^plstackapi/deploymentnetworks/$', views.DeploymentNetworkList.as_view(), name='deploymentnetwork-list'),
+    #url(r'^plstackapi/deploymentnetworks/(?P<pk>[0-9]+)/$', views.DeploymentNetworkDetail.as_view(), name='deploymentnetwork-detail'),
+
+    #url(r'^plstackapi/sitedeploymentnetworks/$', views.SiteDeploymentNetworkList.as_view(), name='sitedeploymentnetwork-list'),
+    #url(r'^plstackapi/sitedeploymentnetworks/(?P<pk>[0-9]+)/$', views.SiteDeploymentNetworkDetail.as_view(), name='sitedeploymentnetwork-detail'),
 
 
     #Adding in rest_framework urls
