@@ -8,5 +8,5 @@ setup(name='plstackapi',
       scripts=['plstackapi/plstackapi-debug-server.py'],
       data_files=[
         ('/etc/planetstack/', ['config/plstackapi_config']),
-        ('/opt/planetstack/', recursive_glob('plstackapi/planetstack/*')),
+        ('/opt/planetstack/', recursive_glob('plstackapi/planetstack/', '*')),
         ])
