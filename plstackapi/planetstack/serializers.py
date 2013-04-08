@@ -3,6 +3,13 @@ from rest_framework import serializers
 from plstackapi.planetstack.models import *
 
 
+class RoleSerializer(serializers.HyperlinkedModelSerializer):
+    
+    class Meta:
+        model = Role
+        fields = ('role_id',
+                  'role_type')
+
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
 
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
@@ -83,7 +90,9 @@ class NodeSerializer(serializers.ModelSerializer):
                  'name')
 
 
-serializerLookUp = { Site: SiteSerializer,
+serializerLookUp = { 
+                 Role: RoleSerializer,
+                 Site: SiteSerializer,
                  Slice: SliceSerializer,
                  Node: NodeSerializer,
                  Sliver: SliverSerializer,
