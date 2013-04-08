@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
+admin.site.register(Role)
 admin.site.register(Site)
 admin.site.register(Slice)
 admin.site.register(Node)
