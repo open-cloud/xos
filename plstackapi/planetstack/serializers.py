@@ -39,7 +39,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
         model = Site
         fields = ('url',
                   'name',
-                  'deploymentNetworks',
+                  'deployment_networks',
                   'slices',
                   'site_url',
                   'enabled',
