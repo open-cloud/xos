@@ -108,7 +108,7 @@ class SiteDeploymentNetwork(PlCoreBase):
         unique_together = ['site', 'deploymentNetwork']
 
     site = models.ForeignKey(Site, related_name='deployment_networks')
-    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name('sites'))
+    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sites')
     name = models.CharField(default="Blah", max_length=100)
 
 
