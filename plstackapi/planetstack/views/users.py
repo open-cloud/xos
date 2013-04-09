@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.user import add_user, delete_user, get_users, update_user
+from plstackapi.planetstack.api.users import add_user, delete_user, get_users, update_user
 from plstackapi.planetstack.serializers import UserSerializer
 from plstackapi.util.request import parse_request
 
