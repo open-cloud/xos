@@ -40,7 +40,7 @@ class RoleRetrieveUpdateDestroy(APIView):
         roles = get_roles(data['auth'], {'role_id': pk})
         if not roles:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = RoleSerializer(data=roles[0])
+        serializer = RoleSerializer(roles[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
