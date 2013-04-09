@@ -244,7 +244,6 @@ class Key(PlCoreBase):
         super(Key, self).delete(*args, **kwds)
 
 
-
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")

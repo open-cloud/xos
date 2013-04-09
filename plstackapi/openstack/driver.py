@@ -155,8 +155,10 @@ class OpenStackDriver:
     def create_keypair(self, name, key):
         keys = self.client.nova.keypairs.findall(name=name)
         if keys:
-            raise Exception, "Key name already exists: %s" % name
-        return self.client.nova.keypairs.create(name=name, public_key=key)
+            key = keys[0]
+        else:
+            key = self.client.nova.keypairs.create(name=name, public_key=key)
+        return key
 
     def delete_keypair(self, name):
         keys = self.client.nova.keypairs.findall(name=name)
