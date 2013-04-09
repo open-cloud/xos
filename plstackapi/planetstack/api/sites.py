@@ -8,7 +8,7 @@ def add_site(auth, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
     site = Site(**fields)
     nova_fields = {'tenant_name': fields['login_base'],
-                   'description': fields['name',
+                   'description': fields['name'],
                    'enabled': fields['enabled']}    
     tenant = driver.create_tenant(**nova_fields)
     site.tenant_id=tenant.id
