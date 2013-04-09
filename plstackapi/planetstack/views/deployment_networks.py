@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.roles import add_deployment_network, delete_deployment_network, get_deployment_networks
+from plstackapi.planetstack.api.deployment_networks import add_deployment_network, delete_deployment_network, get_deployment_networks
 from plstackapi.planetstack.serializers import DeploymentNetworkSerializer
 from plstackapi.util.request import parse_request
 
