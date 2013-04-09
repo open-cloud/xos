@@ -28,7 +28,7 @@ def add_key(auth, fields):
 def update_key(auth, id, **fields):
     return  
 
-def delete_user(auth, filter={}):
+def delete_key(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     keys = Key.objects.filter(**filter)
     for key in keys:
