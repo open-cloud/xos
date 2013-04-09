@@ -129,7 +129,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'django_evolution',
-    'plstackapi.planetstack',
+    #'plstackapi.planetstack',
     'plstackapi.core',
 )
 
