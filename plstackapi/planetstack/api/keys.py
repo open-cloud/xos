@@ -32,7 +32,7 @@ def delete_key(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     keys = Key.objects.filter(**filter)
     for key in keys:
-        driver.delete_key(name=key.name) 
+        driver.delete_keypair(name=key.name) 
         key.delete()
     return 1
 
