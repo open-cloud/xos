@@ -51,7 +51,7 @@ class OpenStackDriver:
         if not users:
             fields = {'name': name, 'email': email, 'password': password,
                       'enabled': enabled}
-            user = self.shell.keystone.create(**fields)
+            user = self.shell.keystone.users.create(**fields)
         else: 
             user = users[0]
         return user
