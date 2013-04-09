@@ -13,11 +13,11 @@ def add_site(auth, **fields):
     tenant = driver.create_tenant(**nova_fields)
     site.tenant_id=tenant.id
     site.save()
-    return role
+    return site
 
-def update_site(auth, tenant_id, **fields):
+def update_site(auth, login_base, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    sites = Site.objects.filter(tenant_id=tenant_id)
+    sites = Site.objects.filter(login_base=login_base)
     if not sites:
         return
 
@@ -27,8 +27,8 @@ def update_site(auth, tenant_id, **fields):
         nova_fields['description'] = fields['name']
     if 'enabled' in fields:
         nova_fields['enabled'] = fields['enabled']
-
-    site.updtae(**fields)
+    driver.update_tenant(site.tenant_id, **nova_fields)
+    site.update(**fields)
     return site 
 
 def delete_site(auth, filter={}):

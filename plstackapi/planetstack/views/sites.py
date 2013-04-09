@@ -3,14 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.roles import add_site, delete_site, get_sites
+from plstackapi.planetstack.api.sites import add_site, delete_site, get_sites
 from plstackapi.planetstack.serializers import SiteSerializer
 from plstackapi.util.request import parse_request
 
 
 class SiteListCreate(APIView):
     """ 
-    List all roles or create a new site.
+    List all sites or create a new site.
     """
 
     def post(self, request, format = None):
@@ -37,14 +37,14 @@ class SiteRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        sites = get_sites(data['auth'], {'tenant_id': pk})
+        sites = get_sites(data['auth'], {'login_base': pk})
         if not sites:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SiteSerializer(sites[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
-        """update a role""" 
+        """update a site""" 
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -59,7 +59,7 @@ class SiteRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_site(data['auth'], {'tenant_id': pk})
+        delete_site(data['auth'], {'login_base': pk})
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             
