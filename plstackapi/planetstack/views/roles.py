@@ -27,7 +27,31 @@ class RoleListCreate(APIView):
             return Response(serializer.data)
         
             
-        
+class RoleRetrieveUpdateDestroy(APIView):
+    """
+    Retrieve, update or delete a role 
+    """
+
+    def post(self, request, pk, format):
+        """Retrieve a role"""
+        data = parse_request(request.DATA)
+        if 'auth' not in data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        roles = get_roles(data['auth'], {'role_id': pk})
+        if not roles:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = RoleSerializer(data=role)
+        return Response(serializer.data)                  
+
+    def put(self, request, pk, format=None):
+        """role update not implemnted""" 
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+
+    def delete(self, request, pk, format=None):
+        if 'auth' not in data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        delete_role(data['auth'], {'role_id': pk})
+        return Response(status=status.HTTP_204_NO_CONTENT) 
             
             
         
