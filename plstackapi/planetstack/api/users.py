@@ -19,7 +19,7 @@ def add_user(auth, fields):
     site = lookup_site(fields) 
     if site: fields['site'] = site     
     user = User(**fields)
-    nova_fields = {'name': user.email[:site.email.find('@')],
+    nova_fields = {'name': user.email[:user.email.find('@')],
                    'email': user.email, 
                    'password': user.password,
                    'enabled': user.enabled}    
