@@ -9,7 +9,7 @@ def lookup_user(fields):
         if isinstance(fields['user'], int):
             users = User.objects.filter(id=fields['user'])
         else:
-            users = Site.objects.filter(email=fields['user'])
+            users = User.objects.filter(email=fields['user'])
         if users:
             user = users[0]
     return user 
