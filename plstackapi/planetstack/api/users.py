@@ -23,9 +23,9 @@ def add_user(auth, fields):
                    'email': user.email, 
                    'password': fields.get('password'),
                    'enabled': user.enabled}    
-    user = driver.create_user(**nova_fields)
+    nova_user = driver.create_user(**nova_fields)
     #driver.add_user_role(user.id, user.site.tenant_id, 'user')
-    user.user_id=user.id
+    user.user_id=nova_user.id
     user.save()
     return user
 
