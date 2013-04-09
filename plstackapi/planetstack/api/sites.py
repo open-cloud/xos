@@ -35,7 +35,7 @@ def delete_site(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     sites = Site.objects.filter(**filter)
     for site in sites:
-        driver.delete_tenant({'id': site.tenant_id}) 
+        driver.delete_tenant(id=site.tenant_id) 
         site.delete()
     return 1
 
