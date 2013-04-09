@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 admin.site.register(Role)
 admin.site.register(Site)
-admin.site.register(User)
+#admin.site.register(User)
 admin.site.register(Key)
 admin.site.register(Slice)
 admin.site.register(Node)
