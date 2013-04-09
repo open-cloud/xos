@@ -1,4 +1,4 @@
-from plstackapi.planetstack.models import Slice
+from plstackapi.core.models import Slice
 
 class SliceImporter:
 
@@ -15,7 +15,7 @@ class SliceImporter:
         
 
         if not local_sites:
-            from models import Site
+            from plstackapi.core.models import Site
             sites = Site.objects.all()
             for site in sites:
                 local_sites[site.login_base] = site            

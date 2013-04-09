@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.roles import add_role, delete_role, get_roles
-from plstackapi.planetstack.serializers import RoleSerializer
+from plstackapi.core.api.roles import add_role, delete_role, get_roles
+from plstackapi.core.serializers import RoleSerializer
 from plstackapi.util.request import parse_request
 
 

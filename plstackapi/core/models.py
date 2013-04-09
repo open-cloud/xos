@@ -171,7 +171,7 @@ class SubNet(PlCoreBase):
     ip_version = models.IntegerField()
     start = models.IPAddressField()
     end = models.IPAddressField()
-    slice = models.ForeignKey(Slice )
+    slice = models.ForeignKey(Slice, related_name='subnets')
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -231,18 +231,6 @@ class Key(PlCoreBase):
     user = models.ForeignKey(User, related_name='keys')
 
     def __unicode__(self):  return u'%s' % (self.name)
-
-    def save(self, *args, **kwds):
-        driver  = OpenStackDriver()
-        if not self.id:
-            keypair = driver.create_keypair(name=self.name, key=self.key)
-        super(Key, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        driver  = OpenStackDriver()
-        driver.delete_keypair(self.name)
-        super(Key, self).delete(*args, **kwds)
-
 
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    

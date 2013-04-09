@@ -1,7 +1,7 @@
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.planetstack.api.auth import auth_check
-from plstackapi.planetstack.models import DeploymentNetwork
+from plstackapi.core.api.auth import auth_check
+from plstackapi.core.models import DeploymentNetwork
  
 
 def add_deployment_network(auth, name):

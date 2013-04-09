@@ -3,51 +3,51 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.flavors import add_flavor, delete_flavor, get_flavors
-from plstackapi.planetstack.serializers import FlavorSerializer
+from plstackapi.core.api.images import add_image, delete_image, get_images
+from plstackapi.core.serializers import ImageSerializer
 from plstackapi.util.request import parse_request
 
 
-class FlavorListCreate(APIView):
+class ImageListCreate(APIView):
     """ 
-    List all flavors or create a new flavor.
+    List all images or create a new image.
     """
 
     def post(self, request, format = None):
         data = parse_request(request.DATA)  
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'flavor' in data:
+        elif 'image' in data:
             """Not Implemented"""
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            flavors = get_flavors(data['auth'])
-            serializer = FlavorSerializer(flavors, many=True)
+            images = get_images(data['auth'])
+            serializer = ImageSerializer(images, many=True)
             return Response(serializer.data)
         
             
-class FlavorRetrieveUpdateDestroy(APIView):
+class ImageRetrieveUpdateDestroy(APIView):
     """
-    Retrieve, update or delete an flavor  
+    Retrieve, update or delete an image  
     """
 
     def post(self, request, pk, format=None):
-        """Retrieve an flavor """
+        """Retrieve an image """
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        flavors = get_flavors(data['auth'], {'id': pk})
-        if not flavors:
+        images = get_images(data['auth'], {'id': pk})
+        if not images:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = FlavorSerializer(flavors[0])
+        serializer = ImageSerializer(images[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
-        """update flavor not implemnted""" 
+        """update image not implemnted""" 
         return Response(status=status.HTTP_404_NOT_FOUND) 
 
     def delete(self, request, pk, format=None):
-        """delete flavor not implemnted""" 
+        """delete image not implemnted""" 
         return Response(status=status.HTTP_404_NOT_FOUND) 
 
             

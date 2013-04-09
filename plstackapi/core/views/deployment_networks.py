@@ -3,63 +3,55 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.planetstack.api.keys import add_key, delete_key, get_keys, update_key
-from plstackapi.planetstack.serializers import KeySerializer
+from plstackapi.core.api.deployment_networks import add_deployment_network, delete_deployment_network, get_deployment_networks
+from plstackapi.core.serializers import DeploymentNetworkSerializer
 from plstackapi.util.request import parse_request
 
 
-class KeyListCreate(APIView):
+class DeploymentNetworkListCreate(APIView):
     """ 
-    List all users or create a new key.
+    List all deployment networks or create a new role.
     """
 
     def post(self, request, format = None):
         data = parse_request(request.DATA)  
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'key' in data:
-            key = add_key(data['auth'], data['key'])
-            serializer = KeySerializer(key)
+        elif 'deployment_network' in data:
+            deployment = add_deployment_network(data['auth'], data['deployment_network'].get('name'))
+            serializer = DeploymentNetworkSerializer(deployment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            keys = get_keys(data['auth'])
-            serializer = KeySerializer(keys, many=True)
+            deployment_networks = get_deployment_networks(data['auth'])
+            serializer = DeploymentNetworkSerializer(deployment_networks, many=True)
             return Response(serializer.data)
         
             
-class KeyRetrieveUpdateDestroy(APIView):
+class DeploymentNetworkRetrieveUpdateDestroy(APIView):
     """
-    Retrieve, update or delete a key 
+    Retrieve, update or delete a deployment network 
     """
 
     def post(self, request, pk, format=None):
-        """Retrieve a key"""
+        """Retrieve a deployment network"""
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        keys = get_keys(data['auth'], {'id': pk})
-        if not keys:
+        deployment_networks = get_deployment_networks(data['auth'], {'name': pk})
+        if not deployment_networks:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = KeySerializer(keys[0])
+        serializer = DeploymentNetworkSerializer(deployment_networks[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
-        """update a key""" 
-        data = parse_request(request.DATA)
-        if 'auth' not in data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        elif 'key' not in data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        key = update_key(pk, data['key'])
-        serializer = KeySerializer(key)
-        return Response(serializer.data) 
+        """deployment network update not implemnted""" 
+        return Response(status=status.HTTP_404_NOT_FOUND) 
 
     def delete(self, request, pk, format=None):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_key(data['auth'], {'id': pk})
+        delete_deployment_network(data['auth'], {'name': pk})
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

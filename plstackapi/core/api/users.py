@@ -1,7 +1,7 @@
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.planetstack.api.auth import auth_check
-from plstackapi.planetstack.models import User, Site
+from plstackapi.core.api.auth import auth_check
+from plstackapi.core.models import User, Site
  
 def lookup_site(fields):
     site = None

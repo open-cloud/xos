@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from plstackapi.planetstack.models import *
+from plstackapi.core.models import *
 
 
 class RoleSerializer(serializers.HyperlinkedModelSerializer):

@@ -2,15 +2,15 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
-from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
-from plstackapi.planetstack.views.users import UserListCreate, UserRetrieveUpdateDestroy
-from plstackapi.planetstack.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
-from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
-from plstackapi.planetstack.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
-from plstackapi.planetstack.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
-from plstackapi.planetstack.views.api_root import api_root
-from plstackapi.planetstack.models import Site
+from plstackapi.core.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
+from plstackapi.core.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
+from plstackapi.core.views.users import UserListCreate, UserRetrieveUpdateDestroy
+from plstackapi.core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
+from plstackapi.core.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
+from plstackapi.core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
+from plstackapi.core.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
+from plstackapi.core.models import Site
+from plstackapi.planetstack.api_root import api_root
 from rest_framework import generics
 
 admin.autodiscover()
