@@ -128,8 +128,9 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'rest_framework',
     'django_extensions',
-    'plstackapi.planetstack',
     'django_evolution',
+    'plstackapi.planetstack',
+    'plstackapi.core',
 )
 
 # A sample logging configuration. The only tangible logging
