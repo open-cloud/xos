@@ -52,7 +52,7 @@ def update_user(auth, id, **fields):
 
 def delete_user(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
-    users = Users.objects.filter(**filter)
+    users = User.objects.filter(**filter)
     for user in users:
         driver.delete_user(id=user.user_id) 
         user.delete()
