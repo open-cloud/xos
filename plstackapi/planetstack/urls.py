@@ -22,7 +22,7 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/$', api_root),
     
-    url(r'^plstackapi/roles$', RoleListCreate.as_view(), name='role-list'),
+    url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
 
     #url(r'^plstackapi/sites/$', views.SiteList.as_view(), name='site-list'),
