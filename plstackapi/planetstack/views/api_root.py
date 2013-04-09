@@ -10,4 +10,5 @@ def api_root(request, format=None):
         'sites': reverse('site-list', request=request, format=format),
         'deploymentNetworks': reverse('deploymentnetwork-list', request=request, format=format),
         #'slices': reverse('slice-list', request=request, format=format)
+        'images': reverse('image-list', request=request, format=format),
     })

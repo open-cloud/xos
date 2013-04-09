@@ -5,6 +5,7 @@ from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
 from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
+from plstackapi.planetstack.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from plstackapi.planetstack.views.api_root import api_root
 from plstackapi.planetstack.models import Site
 from rest_framework import generics
@@ -39,12 +40,15 @@ urlpatterns = patterns('',
     #url(r'^plstackapi/nodes/$', views.NodeList.as_view(), name='node-list'),
     #url(r'^plstackapi/nodes/(?P<pk>[0-9]+)/$', views.NodeDetail.as_view(), name='node-detail'),
 
+    
     url(r'^plstackapi/deploymentnetworks/$', DeploymentNetworkListCreate.as_view(), name='deploymentnetwork-list'),
     url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9]+)/$', DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
 
     #url(r'^plstackapi/sitedeploymentnetworks/$', views.SiteDeploymentNetworkList.as_view(), name='sitedeploymentnetwork-list'),
     #url(r'^plstackapi/sitedeploymentnetworks/(?P<pk>[0-9]+)/$', views.SiteDeploymentNetworkDetail.as_view(), name='sitedeploymentnetwork-detail'),
 
+    url(r'^plstackapi/images/$', ImageListCreate.as_view(), name='image-list'),
+    url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
 
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),

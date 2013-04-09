@@ -80,7 +80,7 @@ class SliverSerializer(serializers.ModelSerializer):
         model = Sliver
         fields = ('id',
                   'slice',
-                 'name')
+                  'name')
 
 class NodeSerializer(serializers.ModelSerializer):
 
@@ -89,6 +89,24 @@ class NodeSerializer(serializers.ModelSerializer):
         fields = ('id',
                  'name')
 
+class ImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Image
+        fields = ('image_id',
+                  'name',
+                  'disk_format',
+                  'container_format')
+
+class FlavorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Flavor
+        fields = ('flavor_id',
+                  'name',
+                  'memory_mb',
+                  'disk_gb',
+                  'vcpus')
 
 serializerLookUp = { 
                  Role: RoleSerializer,
@@ -98,5 +116,8 @@ serializerLookUp = {
                  Sliver: SliverSerializer,
                  DeploymentNetwork: DeploymentNetworkSerializer,
                  SiteDeploymentNetwork: SiteDeploymentNetworkSerializer,
+                 Image: ImageSerializer,
+                 Flavor: FlavorSerializer, 
                  None: None,
                 }
+
