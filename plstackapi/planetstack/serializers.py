@@ -7,7 +7,8 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Role
-        fields = ('role_id',
+        fields = ('id', 
+                  'role_id',
                   'role_type')
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,7 +17,8 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Slice
-        fields = ('url',
+        fields = ('id',
+                  'url',
                   'name',
                   'instantiation',
                   'omf_friendly',
@@ -37,7 +39,8 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Site
-        fields = ('url',
+        fields = ('id',
+                  'url',
                   'name',
                   'deployment_networks',
                   'slices',
@@ -57,7 +60,8 @@ class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
     sites = serializers.HyperlinkedRelatedField(view_name='sitedeploymentnetwork-detail')
     class Meta:
         model = DeploymentNetwork
-        fields = ('name',
+        fields = ('id',
+                  'name',
                   'sites'
                  )
 
@@ -93,7 +97,8 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ('image_id',
+        fields = ('id',
+                  'image_id',
                   'name',
                   'disk_format',
                   'container_format')
@@ -102,7 +107,8 @@ class FlavorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flavor
-        fields = ('flavor_id',
+        fields = ('id',
+                  'flavor_id',
                   'name',
                   'memory_mb',
                   'disk_gb',

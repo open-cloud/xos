@@ -36,7 +36,7 @@ class ImageRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        images = get_images(data['auth'], {'name': pk})
+        images = get_images(data['auth'], {'id': pk})
         if not images:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = ImageSerializer(images[0])
