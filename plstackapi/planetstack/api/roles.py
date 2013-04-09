@@ -1,7 +1,7 @@
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.planetstack.api.auth import auth_check
-from plstackapi.planetstack.models import *
+from plstackapi.planetstack.models import Role
  
 
 def add_role(auth, name):

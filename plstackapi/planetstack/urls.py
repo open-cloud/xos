@@ -3,6 +3,7 @@ from django.conf.urls import patterns, include, url
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
+from plstackapi.planetstack.views.roles import SiteListCreate, SiteRetrieveUpdateDestroy
 from plstackapi.planetstack.views.api_root import api_root
 from plstackapi.planetstack.models import Site
 from rest_framework import generics
@@ -25,8 +26,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
 
-    #url(r'^plstackapi/sites/$', views.SiteList.as_view(), name='site-list'),
-    #url(r'^plstackapi/sites/(?P<pk>[0-9]+)/$', views.SiteDetail.as_view(), name='site-detail'),
+    url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
+    url(r'^plstackapi/sites/(?P<pk>[0-9]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
 
     #url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
     #url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),

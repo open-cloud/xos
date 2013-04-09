@@ -46,6 +46,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
                   'longitude',
                   'latitude',
                   'login_base',
+                  'tenant_id',
                   'is_public',
                   'abbreviated_name',
                   'updated',
