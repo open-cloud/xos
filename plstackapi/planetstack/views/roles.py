@@ -48,6 +48,7 @@ class RoleRetrieveUpdateDestroy(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND) 
 
     def delete(self, request, pk, format=None):
+        data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         delete_role(data['auth'], {'role_id': pk})
