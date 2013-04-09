@@ -57,8 +57,7 @@ class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
     sites = serializers.HyperlinkedRelatedField(view_name='sitedeploymentnetwork-detail')
     class Meta:
         model = DeploymentNetwork
-        fields = ('url',
-                  'name',
+        fields = ('name',
                   'sites'
                  )
 

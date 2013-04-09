@@ -38,8 +38,8 @@ urlpatterns = patterns('',
     #url(r'^plstackapi/nodes/$', views.NodeList.as_view(), name='node-list'),
     #url(r'^plstackapi/nodes/(?P<pk>[0-9]+)/$', views.NodeDetail.as_view(), name='node-detail'),
 
-    #url(r'^plstackapi/deploymentnetworks/$', views.DeploymentNetworkList.as_view(), name='deploymentnetwork-list'),
-    #url(r'^plstackapi/deploymentnetworks/(?P<pk>[0-9]+)/$', views.DeploymentNetworkDetail.as_view(), name='deploymentnetwork-detail'),
+    url(r'^plstackapi/deploymentnetworks/$', DeploymentNetworkListCreate, name='deploymentnetwork-list'),
+    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9]+)/$', views.DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
 
     #url(r'^plstackapi/sitedeploymentnetworks/$', views.SiteDeploymentNetworkList.as_view(), name='sitedeploymentnetwork-list'),
     #url(r'^plstackapi/sitedeploymentnetworks/(?P<pk>[0-9]+)/$', views.SiteDeploymentNetworkDetail.as_view(), name='sitedeploymentnetwork-detail'),
