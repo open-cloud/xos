@@ -21,7 +21,7 @@ def add_user(auth, fields):
     user = User(**fields)
     nova_fields = {'name': user.email[:user.email.find('@')],
                    'email': user.email, 
-                   'password': user.password,
+                   'password': fields.get('password'),
                    'enabled': user.enabled}    
     user = driver.create_user(**nova_fields)
     #driver.add_user_role(user.id, user.site.tenant_id, 'user')
