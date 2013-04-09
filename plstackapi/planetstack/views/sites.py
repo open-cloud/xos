@@ -19,7 +19,7 @@ class SiteListCreate(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)        
         elif 'site' in data:
             site = add_site(data['auth'], data['site'])
-            serializer = SiteSerializer(data=site)
+            serializer = SiteSerializer(site)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             sites = get_sites(data['auth'])
