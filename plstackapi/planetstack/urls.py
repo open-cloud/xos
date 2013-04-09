@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
-from plstackapi.planetstack.views.deployment_network import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
+from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.planetstack.views.api_root import api_root
 from plstackapi.planetstack.models import Site
 from rest_framework import generics
