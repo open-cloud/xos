@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^plstackapi/$', api_root),
+    #url(r'^plstackapi/$', api_root),
     
     url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
@@ -63,6 +63,6 @@ urlpatterns = patterns('',
     url(r'^plstackapi/flavors/$', FlavorListCreate.as_view(), name='flavor-list'),
     url(r'^plstackapi/flavors/(?P<pk>[a-zA-Z0-9_]+)/$', FlavorRetrieveUpdateDestroy.as_view(), name='flavor-detail'),
     #Adding in rest_framework urls
-    url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
+    #url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
     
 )
