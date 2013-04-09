@@ -4,6 +4,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
+from plstackapi.planetstack.views.users import UserListCreate, UserRetrieveUpdateDestroy
 from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.planetstack.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from plstackapi.planetstack.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
@@ -28,6 +29,9 @@ urlpatterns = patterns('',
     
     url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
+
+    url(r'^plstackapi/users/$', UserListCreate.as_view(), name='user-list'),
+    url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
 
     url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),

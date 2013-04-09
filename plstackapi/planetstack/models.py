@@ -59,25 +59,9 @@ class User(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.email)
 
-    def save(self, *args, **kwds):
-        driver  = OpenStackDriver()
-        name = self.email[:self.email.find('@')]
-        fields = {'name': name, 'email': self.email, 'password': self.password,
-                  'enabled': self.enabled}
-        if not self.id:
-            user = driver.create_user(**fields) 
-        else:
-            driver.update_user(self.user_id, **fields)
-        super(User, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        driver = OpenStackDriver()
-        driver.delete_user(self.user_id)
-        super(User, self).delete(*args, **kwds)
-
 class SitePrivilege(PlCoreBase):
 
-    user = models.ForeignKey('User')
+    user = models.ForeignKey('User', related_name='site_privileges')
     site = models.ForeignKey('Site', related_name='site_privileges')
     role = models.ForeignKey('Role')
 
@@ -160,8 +144,8 @@ class Slice(PlCoreBase):
         super(Slice, self).delete(*args, **kwds)
 
 class SliceMembership(PlCoreBase):
-    user = models.ForeignKey('User')
-    slice = models.ForeignKey('Slice')
+    user = models.ForeignKey('User', related_name='slice_memberships')
+    slice = models.ForeignKey('Slice', related_name='slice_memberships')
     role = models.ForeignKey('Role')
 
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
@@ -243,7 +227,7 @@ class Key(PlCoreBase):
     key = models.CharField(max_length=512)
     type = models.CharField(max_length=256)
     blacklisted = models.BooleanField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='keys')
 
     def __unicode__(self):  return u'%s' % (self.name)
 

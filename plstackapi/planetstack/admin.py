@@ -11,4 +11,6 @@ admin.site.register(Node)
 admin.site.register(DeploymentNetwork)
 admin.site.register(SiteDeploymentNetwork)
 admin.site.register(Sliver)
+admin.site.register(Image)
+admin.site.register(Flavor)
 

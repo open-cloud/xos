@@ -11,6 +11,27 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
                   'role_id',
                   'role_type')
 
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    site = serializers.HyperlinkedRelatedField(view_name='site-detail')
+    slice_memberships = serializers.HyperlinkedRelatedField(view_name='slice-membership-detail')
+    site_privileges = serializers.HyperlinkedRelatedField(view_name='site-privilege-detail')
+    class Meta:
+        model = User
+        fields = ('id',
+                  'user_id', 
+                  'firstname', 
+                  'lastname',
+                  'email', 
+                  'phone', 
+                  'user_url',
+                  'is_admin',
+                  'site',
+                  'slice_memberships',
+                  'site_privileges')
+                    
+ 
+
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
 
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
