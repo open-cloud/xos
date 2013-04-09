@@ -33,7 +33,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
     #slices = serializers.RelatedField(many=True, read_only=True)
     #slices = SliceSerializer(many=True)
     slices = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='slice-detail')
-    deploymentNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='sitedeploymentnetwork-detail')
+    deployment_networks = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='sitedeploymentnetwork-detail')
 
     class Meta:
         model = Site

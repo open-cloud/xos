@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
 
     url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
-    url(r'^plstackapi/sites/(?P<pk>[0-9]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
+    url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
 
     #url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
     #url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),
