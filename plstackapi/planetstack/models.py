@@ -46,24 +46,6 @@ class Site(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    def save(self, *args, **kwargs):
-        driver  = OpenStackDriver()
-        if not self.id:
-            tenant = driver.create_tenant(tenant_name=self.login_base, 
-                                          description=self.name, 
-                                          enabled=self.enabled)
-            self.tenant_id = tenant.id
-        else:
-            # update record
-            self.driver.update_tenant(self.tenant_id, name=self.login_base,
-                                      description=self.name, enabled=self.enabled)
-        super(Site, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwds):
-        # delete keystone tenant
-        driver  = OpenStackDriver()
-        driver.delete_tenant(self.tenant_id)
-        super(Site, self).delete(*args, **kwargs)
 
 class User(PlCoreBase):
     user_id = models.CharField(max_length=256, unique=True)
@@ -125,7 +107,7 @@ class SiteDeploymentNetwork(PlCoreBase):
     class Meta:
         unique_together = ['site', 'deploymentNetwork']
 
-    site = models.ForeignKey(Site, related_name='deploymentNetworks')
+    site = models.ForeignKey(Site, related_name='deployment_networks')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sites')
     name = models.CharField(default="Blah", max_length=100)
 
@@ -142,7 +124,7 @@ class Slice(PlCoreBase):
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
-    site = models.ForeignKey(Site, related_name='site_slice', help_text="The Site this Node belongs too")
+    site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
     network_id = models.CharField(max_length=256, help_text="Quantum network")
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
