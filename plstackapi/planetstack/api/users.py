@@ -3,22 +3,28 @@ from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.planetstack.api.auth import auth_check
 from plstackapi.planetstack.models import User, Site
  
-
-def add_user(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
-    user = User(**fields)
+def lookup_site(fields):
+    site = None
     if 'site' in fields:
         if isinstance(fields['site'], int):
             sites = Site.objects.filter(id=fields['site'])
         else:
             sites = Site.objects.filter(login_base=fields['site'])
         if sites:
-            user.site = sites[0]      
+            site = sites[0]
+    return site 
+
+def add_user(auth, fields):
+    driver = OpenStackDriver(client = auth_check(auth))
+    site = lookup_site(fields) 
+    if site: fields['site'] = site     
+    user = User(**fields)
     nova_fields = {'name': user.email[:self.email.find('@')],
                    'email': user.email, 
                    'password': user.name,
                    'enabled': user.enabled}    
     user = driver.create_user(**nova_fields)
+    #driver.add_user_role(user.id, user.site.tenant_id, 'user')
     user.user_id=user.id
     user.save()
     return user
@@ -39,6 +45,8 @@ def update_user(auth, id, **fields):
     if 'enabled' in fields:
         nova_fields['enabled'] = fields['enabled']
     driver.update_user(user.user_id, **nova_fields)
+    site = lookup_site(fields)
+    if site: fields['site'] = site
     user.update(**fields)
     return user 
 
