@@ -22,8 +22,8 @@ class OpenStackDriver:
             role = roles[0] 
         return role
 
-    def delete_role(self, name):
-        roles = self.shell.keystone.roles.findall(name=name)
+    def delete_role(self, filter):
+        roles = self.shell.keystone.roles.findall(**filter)
         for role in roles:
             self.shell.keystone.roles.delete(role)
         return 1
