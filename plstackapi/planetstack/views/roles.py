@@ -32,7 +32,7 @@ class RoleRetrieveUpdateDestroy(APIView):
     Retrieve, update or delete a role 
     """
 
-    def post(self, request, pk, format):
+    def post(self, request, pk, format=None):
         """Retrieve a role"""
         data = parse_request(request.DATA)
         if 'auth' not in data:
