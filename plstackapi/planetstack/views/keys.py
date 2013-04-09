@@ -10,7 +10,7 @@ from plstackapi.util.request import parse_request
 
 class KeyListCreate(APIView):
     """ 
-    List all users or create a new user.
+    List all users or create a new key.
     """
 
     def post(self, request, format = None):
@@ -18,18 +18,18 @@ class KeyListCreate(APIView):
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
         elif 'key' in data:
-            key = add_user(data['auth'], data['key'])
-            serializer = UserSerializer(key)
+            key = add_key(data['auth'], data['key'])
+            serializer = KeySerializer(key)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             keys = get_keys(data['auth'])
-            serializer = UserSerializer(keys, many=True)
+            serializer = KeySerializer(keys, many=True)
             return Response(serializer.data)
         
             
 class KeyRetrieveUpdateDestroy(APIView):
     """
-    Retrieve, update or delete a user 
+    Retrieve, update or delete a key 
     """
 
     def post(self, request, pk, format=None):
@@ -40,7 +40,7 @@ class KeyRetrieveUpdateDestroy(APIView):
         keys = get_keys(data['auth'], {'id': pk})
         if not keys:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(keys[0])
+        serializer = KeySerializer(keys[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
@@ -52,7 +52,7 @@ class KeyRetrieveUpdateDestroy(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         key = update_key(pk, data['key'])
-        serializer = UserSerializer(key)
+        serializer = KeySerializer(key)
         return Response(serializer.data) 
 
     def delete(self, request, pk, format=None):
