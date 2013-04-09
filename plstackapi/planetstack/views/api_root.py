@@ -7,6 +7,7 @@ def api_root(request, format=None):
     return Response({
         'roles': reverse('role-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
+        'keys': reverse('key-list', request=request, format=format),
         #'nodes': reverse('node-list', request=request, format=format),
         'sites': reverse('site-list', request=request, format=format),
         'deploymentNetworks': reverse('deploymentnetwork-list', request=request, format=format),

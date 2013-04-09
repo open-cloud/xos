@@ -5,6 +5,7 @@ from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
 from plstackapi.planetstack.views.users import UserListCreate, UserRetrieveUpdateDestroy
+from plstackapi.planetstack.views.users import KeyListCreate, KeyRetrieveUpdateDestroy
 from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.planetstack.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from plstackapi.planetstack.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
@@ -33,8 +34,12 @@ urlpatterns = patterns('',
     url(r'^plstackapi/users/$', UserListCreate.as_view(), name='user-list'),
     url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
 
+    url(r'^plstackapi/keys/$', KeyListCreate.as_view(), name='key-list'),
+    url(r'^plstackapi/keys/(?P<pk>[a-zA-Z0-9]+)/$', KeyRetrieveUpdateDestroy.as_view(), name='key-detail'),
+
     url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
+
 
     #url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
     #url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),
