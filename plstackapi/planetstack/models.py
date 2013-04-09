@@ -40,7 +40,7 @@ class Site(PlCoreBase):
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
-    login_base = models.CharField(max_length=50, help_text="Prefix for Slices associated with this Site")
+    login_base = models.CharField(max_length=50, unique=True, help_text="Prefix for Slices associated with this Site")
     is_public = models.BooleanField(default=True, help_text="Indicates the visibility of this site to other members")
     abbreviated_name = models.CharField(max_length=80)
 
@@ -55,7 +55,7 @@ class User(PlCoreBase):
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     is_admin = models.BooleanField(default=False)
-    site = models.ForeignKey(Site, verbose_name="Site this user will be homed too")
+    site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too")
 
     def __unicode__(self):  return u'%s' % (self.email)
 
@@ -78,7 +78,7 @@ class User(PlCoreBase):
 class SitePrivilege(PlCoreBase):
 
     user = models.ForeignKey('User')
-    site = models.ForeignKey('Site')
+    site = models.ForeignKey('Site', related_name='site_privileges')
     role = models.ForeignKey('Role')
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
@@ -107,7 +107,7 @@ class SiteDeploymentNetwork(PlCoreBase):
     class Meta:
         unique_together = ['site', 'deploymentNetwork']
 
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey(Site, related_name='deployment_networks')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork)
     name = models.CharField(default="Blah", max_length=100)
 
@@ -124,7 +124,7 @@ class Slice(PlCoreBase):
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
-    site = models.ForeignKey(Site, help_text="The Site this Node belongs too")
+    site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
     network_id = models.CharField(max_length=256, help_text="Quantum network")
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
