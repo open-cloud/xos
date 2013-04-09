@@ -4,7 +4,7 @@ from plstackapi.planetstack.api.auth import auth_check
 from plstackapi.planetstack.models import Site
  
 
-def add_site(auth, **fields):
+def add_site(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
     site = Site(**fields)
     nova_fields = {'tenant_name': fields['login_base'],
