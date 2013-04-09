@@ -55,7 +55,7 @@ class User(PlCoreBase):
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     is_admin = models.BooleanField(default=False)
-    site = models.ForeignKey(Site, related_name='site_user', verbose_name="Site this user will be homed too")
+    site = models.ForeignKey(Site, verbose_name="Site this user will be homed too")
 
     def __unicode__(self):  return u'%s' % (self.email)
 
@@ -107,8 +107,8 @@ class SiteDeploymentNetwork(PlCoreBase):
     class Meta:
         unique_together = ['site', 'deploymentNetwork']
 
-    site = models.ForeignKey(Site, related_name='deployment_networks')
-    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sites')
+    site = models.ForeignKey(Site)
+    deploymentNetwork = models.ForeignKey(DeploymentNetwork)
     name = models.CharField(default="Blah", max_length=100)
 
 
@@ -124,7 +124,7 @@ class Slice(PlCoreBase):
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
-    site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
+    site = models.ForeignKey(Site, help_text="The Site this Node belongs too")
     network_id = models.CharField(max_length=256, help_text="Quantum network")
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
@@ -186,7 +186,7 @@ class SubNet(PlCoreBase):
     ip_version = models.IntegerField()
     start = models.IPAddressField()
     end = models.IPAddressField()
-    slice = models.ForeignKey(Slice, related_name='slice_subnet')
+    slice = models.ForeignKey(Slice )
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -263,12 +263,12 @@ class Key(PlCoreBase):
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")
-    flavor = models.ForeignKey(Flavor, related_name='sliver_flavor')
-    image = models.ForeignKey(Image, related_name='sliver_image') 
-    key = models.ForeignKey(Key, related_name='sliver_key')        
-    slice = models.ForeignKey(Slice, related_name='sliver_slice')
-    siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork, related_name='sliver_deployment')
-    node = models.ForeignKey(Node, related_name='sliver_node')
+    flavor = models.ForeignKey(Flavor)
+    image = models.ForeignKey(Image) 
+    key = models.ForeignKey(Key)        
+    slice = models.ForeignKey(Slice)
+    siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
+    node = models.ForeignKey(Node)
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.siteDeploymentNetwork)
 
