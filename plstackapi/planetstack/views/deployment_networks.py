@@ -18,7 +18,7 @@ class DeploymentNetworkListCreate(APIView):
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
         elif 'deployment_network' in data:
-            deployment = add_deployment_network(data['auth'], data['deployment_network'])
+            deployment = add_deployment_network(data['auth'], data['deployment_network'].get('name'))
             serializer = DeploymentNetworkSerializer(deployment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
