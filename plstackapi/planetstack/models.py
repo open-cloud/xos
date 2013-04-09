@@ -55,6 +55,7 @@ class User(PlCoreBase):
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     is_admin = models.BooleanField(default=False)
+    enabled = models.BooleanField(default=True, help_text="Status for this User")
     site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too")
 
     def __unicode__(self):  return u'%s' % (self.email)
