@@ -7,9 +7,9 @@ from plstackapi.planetstack.models import Site
 def add_site(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
     site = Site(**fields)
-    nova_fields = {'tenant_name': fields['login_base'],
-                   'description': fields['name'],
-                   'enabled': fields['enabled']}    
+    nova_fields = {'tenant_name': site.login_base,
+                   'description': site.name,
+                   'enabled': site.enabled}    
     tenant = driver.create_tenant(**nova_fields)
     site.tenant_id=tenant.id
     site.save()
