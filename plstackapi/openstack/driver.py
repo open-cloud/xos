@@ -149,21 +149,21 @@ class OpenStackDriver:
         return subnet
 
     def delete_subnet(self, id):
-        return self.client.quantum.delete_subnet(id=id)
+        return self.shell.quantum.delete_subnet(id=id)
      
     
     def create_keypair(self, name, key):
-        keys = self.client.nova.keypairs.findall(name=name)
+        keys = self.shell.nova.keypairs.findall(name=name)
         if keys:
             key = keys[0]
         else:
-            key = self.client.nova.keypairs.create(name=name, public_key=key)
+            key = self.shell.nova.keypairs.create(name=name, public_key=key)
         return key
 
     def delete_keypair(self, name):
-        keys = self.client.nova.keypairs.findall(name=name)
+        keys = self.shell.nova.keypairs.findall(name=name)
         for key in keys:
-            self.client.nova.keypairs.delete(key) 
+            self.shell.nova.keypairs.delete(key) 
 
     def spawn_instance(self, name, key_name=None, hostname=None, flavor=None, image=None, security_group=None, pubkeys=[]):
         if not flavor:
