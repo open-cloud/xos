@@ -37,7 +37,7 @@ class SiteRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        sites = get_sites(data['auth'], {'login_base': pk})
+        sites = get_sites(data['auth'], {'id': pk})
         if not sites:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SiteSerializer(sites[0])
@@ -59,7 +59,7 @@ class SiteRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_site(data['auth'], {'login_base': pk})
+        delete_site(data['auth'], {'id': pk})
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

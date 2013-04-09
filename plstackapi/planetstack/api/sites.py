@@ -15,9 +15,9 @@ def add_site(auth, fields):
     site.save()
     return site
 
-def update_site(auth, login_base, **fields):
+def update_site(auth, id, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    sites = Site.objects.filter(login_base=login_base)
+    sites = Site.objects.filter(id=id)
     if not sites:
         return
 
