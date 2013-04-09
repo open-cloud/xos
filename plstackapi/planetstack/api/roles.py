@@ -13,7 +13,7 @@ def add_role(auth, name):
 
 def delete_role(auth, role_id):
     driver = OpenStackDriver(client = auth_check(auth))   
-    role = Role.objects.filter(role__id=role_id)
+    role = Role.objects.filter(role_id=role_id)
     driver.delete_role(name) 
     role.delete()
     return 1
