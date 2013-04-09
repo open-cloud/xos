@@ -5,7 +5,7 @@ from django.contrib import admin
 from plstackapi.planetstack.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.planetstack.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
 from plstackapi.planetstack.views.users import UserListCreate, UserRetrieveUpdateDestroy
-from plstackapi.planetstack.views.users import KeyListCreate, KeyRetrieveUpdateDestroy
+from plstackapi.planetstack.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
 from plstackapi.planetstack.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.planetstack.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from plstackapi.planetstack.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
