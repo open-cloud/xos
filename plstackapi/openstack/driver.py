@@ -119,8 +119,13 @@ class OpenStackDriver:
             self.shell.quantum.router_remove_interface(router, subnet)            
  
     def create_network(self, name):
-        return self.shell.quantum.create_network(name=name, admin_state_up=True)
-    
+        nets = self.shell.quantum.list_networks(name=name)
+        if not nets:
+            net = self.shell.quantum.create_network(name, admin_state_up=True)
+        else:
+            net = nets[0]
+        return net
+ 
     def delete_network(self, name):
         nets = self.shell.quantum.list_networks(name=name)
         for net in nets:

@@ -48,11 +48,11 @@ def add_slice(auth, fields):
     slice.tenant_id=tenant.id
     
     # create network
-    network = driver.create_network(name=slice.name)
+    network = driver.create_network(slice.name)
     slice.network_id = network['id']
 
     # create router
-    router = driver.create_router(name=slice.name)
+    router = driver.create_router(slice.name)
     slice.router_id = router['id']    
 
     slice.save()
