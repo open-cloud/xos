@@ -106,7 +106,7 @@ class Slice(PlCoreBase):
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     SLICE_CHOICES = (('plc', 'PLC'), ('delegated', 'Delegated'), ('controller','Controller'), ('none','None'))
     instantiation = models.CharField(help_text="The instantiation type of the slice", max_length=80, choices=SLICE_CHOICES)
-    omf_friendly = models.BooleanField()
+    omf_friendly = models.BooleanField(default=False)
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
@@ -115,34 +115,6 @@ class Slice(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    def save(self, *args, **kwds):
-        # sync keystone tenant
-        driver  = OpenStackDriver()
-
-        if not self.id:
-            tenant = driver.create_tenant(tenant_name=self.name,
-                                          description=self.description,
-                                          enabled=self.enabled)
-            self.tenant_id = tenant.id
-            
-            # create a network  
-            network = driver.create_network(name=self.name)
-            self.network_id = network['id']        
-            # create router
-            router = driver.create_router(name=self.name)
-            self.router_id = router['id']     
-
-        else:
-            # update record
-            self.driver.update_tenant(self.tenant_id, name=self.name,
-                                      description=self.description, enabled=self.enabled)
-        super(Slice, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        # delete keystone tenant
-        driver  = OpenStackDriver()
-        driver.delete_tenant(self.tenant_id)
-        super(Slice, self).delete(*args, **kwds)
 
 class SliceMembership(PlCoreBase):
     user = models.ForeignKey('User', related_name='slice_memberships')
