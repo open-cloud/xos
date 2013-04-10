@@ -12,6 +12,8 @@ def lookup_site(fields):
             sites = Site.objects.filter(login_base=fields['site'])
         if sites:
             site = sites[0]
+    if not site:
+        raise Exception, "No such site", fields['site']
     return site 
 
 def add_user(auth, fields):
