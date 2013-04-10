@@ -22,7 +22,7 @@ def lookup_site(fields):
     site = None
     if 'name' in fields:
         validate_name(fields['name'])
-        login_base = fields['name'][:fields['name'].find('@')]        
+        login_base = fields['name'][:fields['name'].find('_')]        
         sites = Site.objects.filter(login_base=login_base)
         if sites:
             site = sites[0]
@@ -48,12 +48,12 @@ def add_slice(auth, fields):
     slice.tenant_id=tenant.id
     
     # create network
-    network = driver.create_network(name=self.name)
-    self.network_id = network['id']
+    network = driver.create_network(name=slice.name)
+    slice.network_id = network['id']
 
     # create router
-    router = driver.create_router(name=self.name)
-    self.router_id = router['id']    
+    router = driver.create_router(name=slice.name)
+    slice.router_id = router['id']    
 
     slice.save()
     return slice
@@ -92,7 +92,8 @@ def delete_slice(auth, filter={}):
 
 def get_slices(auth, filter={}):
     client = auth_check(auth)
-    site = lookup_site(filter)
+    if 'site' in filter:
+         site = lookup_site(filter)
     if site: filter['site'] = site
     slices = Slice.objects.filter(**filter)
     return slices             
