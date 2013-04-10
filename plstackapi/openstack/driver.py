@@ -76,7 +76,11 @@ class OpenStackDriver:
         return self.shell.keystone.users.delete(user)  
 
     def create_router(self, name, set_gateway=True):
-        router = self.shell.quantum.create_router(name=name)
+        routers = self.shell.quantum.list_routers(name=name)['routers']
+        if routers:
+            router = routers[0]
+        else:
+            router = self.shell.quantum.create_router({'router': {'name': name}})
         if set_gateway:
             nets = self.shell.quantum.list_networks()
             for net in nets:
@@ -86,7 +90,9 @@ class OpenStackDriver:
         return router
 
     def delete_router(self, name):
-        return self.shell.quantum.delete_router(name=name)
+        routers = self.shell.quantum.list_routers(name=name)['routers']
+        for router in routers:
+            self.shell.quantum.delete_router(router['id'])
 
     def add_router_interface(self, router_id, subnet_id):
         router = None
@@ -119,15 +125,15 @@ class OpenStackDriver:
             self.shell.quantum.router_remove_interface(router, subnet)            
  
     def create_network(self, name):
-        nets = self.shell.quantum.list_networks(name=name)
-        if len(nets) > 0: 
+        nets = self.shell.quantum.list_networks(name=name)['networks']
+        if nets: 
             net = nets[0]
         else:
-            net = self.shell.quantum.create_network(name, admin_state_up=True)
+            net = self.shell.quantum.create_network({'network': {'name': name}})
         return net
  
     def delete_network(self, name):
-        nets = self.shell.quantum.list_networks(name=name)
+        nets = self.shell.quantum.list_networks(name=name)['networks']
         for net in nets:
             # delete all subnets:
             #subnets = self.api.client_shell.quantum.list_subnets(network_id=net['network_id'])['subnets']
