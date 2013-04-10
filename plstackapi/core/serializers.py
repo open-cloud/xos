@@ -52,6 +52,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
     slivers = serializers.HyperlinkedRelatedField(view_name='sliver-detail')
+    subnets = serializers.HyperlinkedRelatedField(view_name='subnet-detail')
     class Meta:
         model = Slice
         fields = ('id',
