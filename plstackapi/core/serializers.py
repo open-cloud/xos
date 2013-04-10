@@ -51,17 +51,23 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
-
+    slivers = serializers.HyperlinkedRelatedField(view_name='sliver-detail')
     class Meta:
         model = Slice
         fields = ('id',
-                  'url',
+                  'tenant_id',
+                  'enabled',
                   'name',
+                  'url',
                   'instantiation',
                   'omf_friendly',
                   'description',
                   'slice_url',
+                  'network_id',
+                  'router_id',
                   'site',
+                  'slivers',
+                  'subnets',
                   'updated',
                   'created')
 

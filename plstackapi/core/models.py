@@ -238,7 +238,7 @@ class Sliver(PlCoreBase):
     flavor = models.ForeignKey(Flavor)
     image = models.ForeignKey(Image) 
     key = models.ForeignKey(Key)        
-    slice = models.ForeignKey(Slice)
+    slice = models.ForeignKey(Slice, related_name='slivers')
     siteDeploymentNetwork = models.ForeignKey(SiteDeploymentNetwork)
     node = models.ForeignKey(Node)
 

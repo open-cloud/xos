@@ -5,6 +5,7 @@ from django.contrib import admin
 from plstackapi.core.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
 from plstackapi.core.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
 from plstackapi.core.views.users import UserListCreate, UserRetrieveUpdateDestroy
+from plstackapi.core.views.slices import SliceListCreate, SliceRetrieveUpdateDestroy
 from plstackapi.core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
 from plstackapi.core.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
@@ -41,8 +42,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
 
 
-    #url(r'^plstackapi/slices/$', views.SliceList.as_view(), name='slice-list'),
-    #url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', views.SliceDetail.as_view(), name='slice-detail'),
+    url(r'^plstackapi/slices/$', SliceListCreate.as_view(), name='slice-list'),
+    url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', SliceRetrieveUpdateDestroy.as_view(), name='slice-detail'),
 
     #url(r'^plstackapi/slivers/$', views.SliverList.as_view()),
     #url(r'^plstackapi/slivers/(?P<pk>[0-9]+)/$', views.SliverDetail.as_view()),
