@@ -26,6 +26,13 @@ def lookup_site(fields):
         sites = Site.objects.filter(login_base=login_base)
         if sites:
             site = sites[0]
+    elif 'site' in fields:
+        if isinstance(fields['site'], int):
+            sites = Site.objects.filter(id=fields['site'])
+        else:
+            sites = Site.objects.filter(login_base=fields['site'])
+        if sites:
+            site = sites[0]     
     if not site:
         raise Exception, "No such site: %s" % login_base
     return site 
@@ -87,8 +94,8 @@ def delete_slice(auth, filter={}):
 
 def get_slices(auth, filter={}):
     client = auth_check(auth)
-    site = lookup_site(fields)
-    if site: fields['site'] = site
+    site = lookup_site(filter)
+    if site: filter['site'] = site
     slices = Slice.objects.filter(**filter)
     return slices             
         
