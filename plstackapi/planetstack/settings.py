@@ -104,7 +104,7 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'plstackapi.planetstack.urls'
+ROOT_URLCONF = 'plstackapi.core.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'plstackapi.planetstack.wsgi.application'

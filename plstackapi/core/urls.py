@@ -10,7 +10,7 @@ from plstackapi.core.views.deployment_networks import DeploymentNetworkListCreat
 from plstackapi.core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from plstackapi.core.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
 from plstackapi.core.models import Site
-from plstackapi.planetstack.api_root import api_root
+from plstackapi.core.api_root import api_root
 from rest_framework import generics
 
 admin.autodiscover()
@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
-    #url(r'^plstackapi/$', api_root),
+    url(r'^plstackapi/$', api_root),
     
     url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),

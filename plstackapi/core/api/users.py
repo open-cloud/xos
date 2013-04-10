@@ -13,7 +13,7 @@ def lookup_site(fields):
         if sites:
             site = sites[0]
     if not site:
-        raise Exception, "No such site", fields['site']
+        raise Exception, "No such site: %s" % fields['site']
     return site 
 
 def add_user(auth, fields):
