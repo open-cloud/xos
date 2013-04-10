@@ -12,6 +12,8 @@ def lookup_user(fields):
             users = User.objects.filter(email=fields['user'])
         if users:
             user = users[0]
+    if not user:
+        raise Exception, "No such user: %s" % fields['user']
     return user 
 
 def add_key(auth, fields):
