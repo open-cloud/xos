@@ -1,19 +1,33 @@
+import re
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Site
  
+def validate_name(name):
+    # N.B.: Responsibility of the caller to ensure that login_base
+        # portion of the slice name corresponds to a valid site, if
+        # desired.
+
+        # 1. Lowercase.
+        # 2. Begins with login_base (letters or numbers).
+        # 3. Then single underscore after login_base.
+        # 4. Then letters, numbers, or underscores.
+        good_name = r'^[a-z0-9]+_[a-zA-Z0-9_]+$'
+        if not name or \
+           not re.match(good_name, name):
+            raise Exception, "Invalid slice name: %s" % name
+
 def lookup_site(fields):
     site = None
-    if 'site' in fields:
-        if isinstance(fields['site'], int):
-            sites = Site.objects.filter(id=fields['site'])
-        else:
-            sites = Site.objects.filter(login_base=fields['site'])
+    if 'name' in fields:
+        validate_name(fields['name'])
+        login_base = fields['name'][:fields['name'].find('@')]        
+        sites = Site.objects.filter(login_base=login_base)
         if sites:
             site = sites[0]
     if not site:
-        raise Exception, "No such site: %s" % fields['site']
+        raise Exception, "No such site: %s" % login_base
     return site 
 
 def add_slice(auth, fields):
