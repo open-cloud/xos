@@ -2,7 +2,7 @@ import re
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
-from plstackapi.core.models import Site
+from plstackapi.core.models import Slice
  
 def validate_name(name):
     # N.B.: Responsibility of the caller to ensure that login_base
@@ -33,8 +33,6 @@ def lookup_site(fields):
             sites = Site.objects.filter(login_base=fields['site'])
         if sites:
             site = sites[0]     
-    if not site:
-        raise Exception, "No such site: %s" % fields
     return site 
 
 def add_slice(auth, fields):
