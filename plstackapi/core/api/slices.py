@@ -34,7 +34,7 @@ def lookup_site(fields):
         if sites:
             site = sites[0]     
     if not site:
-        raise Exception, "No such site: %s" % login_base
+        raise Exception, "No such site: %s" % fields
     return site 
 
 def add_slice(auth, fields):
