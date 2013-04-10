@@ -85,7 +85,8 @@ class OpenStackDriver:
             nets = self.shell.quantum.list_networks()['networks']
             for net in nets:
                 if net['router:external'] == True: 
-                    self.shell.quantum.add_gateway_router(router, net)
+                    self.shell.quantum.add_gateway_router(router['id'],
+                                                          {'network_id': net['id']})
         
         return router
 
