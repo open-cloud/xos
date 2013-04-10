@@ -120,10 +120,10 @@ class OpenStackDriver:
  
     def create_network(self, name):
         nets = self.shell.quantum.list_networks(name=name)
-        if not nets:
-            net = self.shell.quantum.create_network(name, admin_state_up=True)
-        else:
+        if len(nets) > 0: 
             net = nets[0]
+        else:
+            net = self.shell.quantum.create_network(name, admin_state_up=True)
         return net
  
     def delete_network(self, name):
