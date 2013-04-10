@@ -2,7 +2,7 @@ import re
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
-from plstackapi.core.models import Slice
+from plstackapi.core.models import Slice, Site
  
 def validate_name(name):
     # N.B.: Responsibility of the caller to ensure that login_base
