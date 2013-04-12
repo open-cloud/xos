@@ -3,6 +3,16 @@ from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Flavor
  
+def _get_flavors(filter):
+    if isinstance(filter, int):
+        flavors = Flavor.objects.filter(id=filter)
+    elif isinstance(filter, StringTypes):
+        flavors = Flavor.objects.filter(name=filter)
+    elif isinstance(filer, dict):
+        flavors = Flavor.objects.filter(**filter)
+    else:
+        flavors = []
+    return flavors
 
 def add_flavor(auth, fields={}):
     """not implemented"""
@@ -14,7 +24,7 @@ def delete_flavor(auth, filter={}):
 
 def get_flavors(auth, filter={}):
     auth_check(auth)   
-    flavors = Flavor.objects.filter(**filter)
+    flavors = _get_flavors(filter)
     return flavors             
         
 

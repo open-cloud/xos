@@ -37,7 +37,7 @@ class RoleRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        roles = get_roles(data['auth'], {'role_id': pk})
+        roles = get_roles(data['auth'], pk)
         if not roles:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = RoleSerializer(roles[0])
@@ -51,7 +51,7 @@ class RoleRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_role(data['auth'], {'role_id': pk})
+        delete_role(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

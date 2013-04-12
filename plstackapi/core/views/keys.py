@@ -37,7 +37,7 @@ class KeyRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        keys = get_keys(data['auth'], {'id': pk})
+        keys = get_keys(data['auth'], pk)
         if not keys:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = KeySerializer(keys[0])
@@ -59,7 +59,7 @@ class KeyRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_key(data['auth'], {'id': pk})
+        delete_key(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

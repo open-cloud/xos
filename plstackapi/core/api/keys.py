@@ -2,24 +2,24 @@ from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Key, User
- 
-def lookup_user(fields):
-    user = None
-    if 'user' in fields:
-        if isinstance(fields['user'], int):
-            users = User.objects.filter(id=fields['user'])
-        else:
-            users = User.objects.filter(email=fields['user'])
-        if users:
-            user = users[0]
-    if not user:
-        raise Exception, "No such user: %s" % fields['user']
-    return user 
+from plstackapi.core.api.users import _get_users
+
+
+def _get_keys(filter):
+    if isinstance(filter, int):
+        keys = Key.objects.filter(id=filter)
+    elif isinstance(filter, StringTypes):
+        keys = Key.objects.filter(name=filter)
+    elif isinstance(filer, dict):
+        keys = Key.objects.filter(**filter)
+    else:
+        keys = []
+    return keys 
 
 def add_key(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    user = lookup_user(fields) 
-    if user: fields['user'] = user     
+    users = _get_users(fields.get('user')) 
+    if users: fields['user'] = users[0]    
     key = Key(**fields)
     nova_fields = {'name': key.name,
                    'key': key.key} 
@@ -32,7 +32,7 @@ def update_key(auth, id, **fields):
 
 def delete_key(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
-    keys = Key.objects.filter(**filter)
+    keys = _get_keys(filter)
     for key in keys:
         driver.delete_keypair(name=key.name) 
         key.delete()
@@ -40,7 +40,7 @@ def delete_key(auth, filter={}):
 
 def get_keys(auth, filter={}):
     client = auth_check(auth)
-    keys = Key.objects.filter(**filter)
+    keys = _get_keys(filter)
     return keys             
         
 

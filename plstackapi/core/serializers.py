@@ -72,6 +72,31 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'updated',
                   'created')
 
+class SliceMembershipSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail')
+    role = serializers.HyperlinkedRelatedField(view_name='role-detail')
+    class Meta:
+        model = SitePrivilege
+        fields = ('id',
+                  'user',
+                  'slice',
+                  'role')
+
+class SubnetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
+    class Meta:
+        model = Subnet
+        fields = ('id',
+                  'subnet_id',
+                  'cidr',
+                  'ip_version',
+                  'start',
+                  'end',
+                  'slice')  
+
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
 
     #Experimenting with whether to use ids, hyperlinks, or nested includes
@@ -81,7 +106,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     slices = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='slice-detail')
-    deployment_networks = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='sitedeploymentnetwork-detail')
+    deployment_networks = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='deploymentnetwork-detail')
 
     class Meta:
         model = Site
@@ -101,11 +126,23 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
                   'updated',
                   'created')
 
+class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    site = serializers.HyperlinkedRelatedField(view_name='site-detail')
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail')
+    role = serializers.HyperlinkedRelatedField(view_name='role-detail')
+    class Meta:
+        model = SitePrivilege
+        fields = ('id',
+                  'user',
+                  'site',
+                  'role')
+
 class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
 
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
-    sites = serializers.HyperlinkedRelatedField(view_name='sitedeploymentnetwork-detail')
+    sites = serializers.HyperlinkedRelatedField(view_name='deploymentnetwork-detail')
     class Meta:
         model = DeploymentNetwork
         fields = ('id',
@@ -113,30 +150,30 @@ class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
                   'sites'
                  )
 
-class SiteDeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
-    # HyperlinkedModelSerializer doesn't include the id by default
-    id = serializers.Field()
-    site = serializers.HyperlinkedRelatedField(view_name='site-detail')
-    deploymentNetwork = serializers.HyperlinkedRelatedField(view_name='deploymentnetwork-detail')
-
-    class Meta:
-        model = SiteDeploymentNetwork
-        fields = ('id',
-                 'url',
-                 'site',
-                 'deploymentNetwork')
-
 class SliverSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
-    slice = serializers.RelatedField(read_only=True)
+    flavor = serializers.HyperlinkedRelatedField(view_name='flavor-detail')
+    image = serializers.HyperlinkedRelatedField(view_name='image-detail')
+    key = serializers.HyperlinkedRelatedField(view_name='key-detail')
+    slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
+    deployment_network = serializers.HyperlinkedRelatedField(view_name='deployment_network-detail')
+    node = serializers.HyperlinkedRelatedField(view_name='node-detail')
+    
+    
     #slice = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Sliver
         fields = ('id',
+                  'instance_id',
+                  'name'
+                  'flavor',
+                  'image',
+                  'key'
                   'slice',
-                  'name')
+                  'deployment_network',
+                  'noode')
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
@@ -174,11 +211,13 @@ serializerLookUp = {
                  User: UserSerializer,
                  Key: KeySerializer,
                  Site: SiteSerializer,
+                 SitePrivilege: SitePrivilegeSerializer,
                  Slice: SliceSerializer,
+                 SliceMembership: SliceMembershipSerializer,
+                 Subnet: SubnetSerializer,
                  Node: NodeSerializer,
                  Sliver: SliverSerializer,
                  DeploymentNetwork: DeploymentNetworkSerializer,
-                 SiteDeploymentNetwork: SiteDeploymentNetworkSerializer,
                  Image: ImageSerializer,
                  Flavor: FlavorSerializer, 
                  None: None,

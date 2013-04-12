@@ -2,7 +2,18 @@ from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Site
- 
+
+
+def _get_sites(filter):
+    if isinstance(filter, int):
+        sites = Site.objects.filter(id=filter)
+    elif isinstance(filter, StringTypes):
+        sites = Site.objects.filter(name=filter)
+    elif isinstance(filer, dict):
+        sites = Site.objects.filter(**filter)
+    else:
+        sites = []
+    return sites 
 
 def add_site(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
@@ -17,7 +28,7 @@ def add_site(auth, fields):
 
 def update_site(auth, id, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    sites = Site.objects.filter(id=id)
+    sites = _get_sites(id)
     if not sites:
         return
 
@@ -33,7 +44,7 @@ def update_site(auth, id, **fields):
 
 def delete_site(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
-    sites = Site.objects.filter(**filter)
+    sites = _get_sites(id)
     for site in sites:
         driver.delete_tenant(id=site.tenant_id) 
         site.delete()
@@ -41,7 +52,7 @@ def delete_site(auth, filter={}):
 
 def get_sites(auth, filter={}):
     client = auth_check(auth)
-    sites = Site.objects.filter(**filter)
+    sites = _get_sites(id)
     return sites             
         
 

@@ -3,63 +3,63 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.core.api.slices import add_slice, delete_slice, get_slices, update_slice
-from plstackapi.core.serializers import SliceSerializer
+from plstackapi.core.api.site_privileges import add_site_privilege, delete_site_privilege, get_site_privileges, update_site_privilege
+from plstackapi.core.serializers import SitePrivilegeSerializer
 from plstackapi.util.request import parse_request
 
 
-class SliceListCreate(APIView):
+class SitePrivilegeListCreate(APIView):
     """ 
-    List all slices or create a new slice.
+    List all site_privileges or create a new site_privilege.
     """
 
     def post(self, request, format = None):
         data = parse_request(request.DATA)  
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'slice' in data:
-            slice = add_slice(data['auth'], data['slice'])
-            serializer = SliceSerializer(slice)
+        elif 'site_privilege' in data:
+            site_privilege = add_site_privilege(data['auth'], data['site_privilege'])
+            serializer = SitePrivilegeSerializer(site_privilege)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            slices = get_slices(data['auth'])
-            serializer = SliceSerializer(slices, many=True)
+            site_privileges = get_site_privileges(data['auth'])
+            serializer = SitePrivilegeSerializer(site_privileges, many=True)
             return Response(serializer.data)
         
             
-class SliceRetrieveUpdateDestroy(APIView):
+class SitePrivilegeRetrieveUpdateDestroy(APIView):
     """
-    Retrieve, update or delete a slice 
+    Retrieve, update or delete a site_privilege 
     """
 
     def post(self, request, pk, format=None):
-        """Retrieve a slice"""
+        """Retrieve a site_privilege"""
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        slices = get_slices(data['auth'], {'id': pk})
-        if not slices:
+        site_privileges = get_site_privileges(data['auth'], pk)
+        if not site_privileges:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SliceSerializer(slices[0])
+        serializer = SitePrivilegeSerializer(site_privileges[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
-        """update a slice""" 
+        """update a site_privilege""" 
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        elif 'slice' not in data:
+        elif 'site_privilege' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        slice = update_slice(pk, data['slice'])
-        serializer = SliceSerializer(slice)
+        site_privilege = update_site_privilege(pk, data['site_privilege'])
+        serializer = SitePrivilegeSerializer(site_privilege)
         return Response(serializer.data) 
 
     def delete(self, request, pk, format=None):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_slice(data['auth'], {'id': pk})
+        delete_site_privilege(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

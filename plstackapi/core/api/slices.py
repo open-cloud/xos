@@ -2,43 +2,26 @@ import re
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
-from plstackapi.core.models import Slice, Site
+from plstackapi.core.models import Slice
+from plstackapi.core.api.sites import _get_sites
+
+
+def _get_slices(filter):
+    if isinstance(filter, int):
+        slices = Slice.objects.filter(id=filter)
+    elif isinstance(filter, StringTypes):
+        slices = Slice.objects.filter(name=filter)
+    elif isinstance(filer, dict):
+        slices = Slice.objects.filter(**filter)
+    else:
+        slices = []
+    return slices
+    
  
-def validate_name(name):
-    # N.B.: Responsibility of the caller to ensure that login_base
-        # portion of the slice name corresponds to a valid site, if
-        # desired.
-
-        # 1. Lowercase.
-        # 2. Begins with login_base (letters or numbers).
-        # 3. Then single underscore after login_base.
-        # 4. Then letters, numbers, or underscores.
-        good_name = r'^[a-z0-9]+_[a-zA-Z0-9_]+$'
-        if not name or \
-           not re.match(good_name, name):
-            raise Exception, "Invalid slice name: %s" % name
-
-def lookup_site(fields):
-    site = None
-    if 'name' in fields:
-        validate_name(fields['name'])
-        login_base = fields['name'][:fields['name'].find('_')]        
-        sites = Site.objects.filter(login_base=login_base)
-        if sites:
-            site = sites[0]
-    elif 'site' in fields:
-        if isinstance(fields['site'], int):
-            sites = Site.objects.filter(id=fields['site'])
-        else:
-            sites = Site.objects.filter(login_base=fields['site'])
-        if sites:
-            site = sites[0]     
-    return site 
-
 def add_slice(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    site = lookup_site(fields) 
-    if site: fields['site'] = site     
+    sites = _get_sites(fields.get('site')) 
+    if sites: fields['site'] = sites[0]     
     slice = Slice(**fields)
     # create tenant
     nova_fields = {'tenant_name': slice.name,
@@ -60,7 +43,7 @@ def add_slice(auth, fields):
 
 def update_slice(auth, id, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    slices = Slice.objects.filter(id=id)
+    slices = _get_slices(id)
     if not slices:
         return
 
@@ -76,15 +59,15 @@ def update_slice(auth, id, **fields):
     driver.update_tenant(slice.tenant_id, **nova_fields)
 
     # update db record 
-    site = lookup_site(fields)
-    if site: fields['site'] = site
+    sites = _get_sites(fields.get('site'))
+    if sites: fields['site'] = sites[0]
     slice.update(**fields)
 
     return slice 
 
 def delete_slice(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
-    slices = Slice.objects.filter(**filter)
+    slices = _get_slices(id)
     for slice in slices:
         driver.delete_slice(id=slice.tenant_id) 
         slice.delete()
@@ -93,9 +76,9 @@ def delete_slice(auth, filter={}):
 def get_slices(auth, filter={}):
     client = auth_check(auth)
     if 'site' in filter:
-         site = lookup_site(filter)
-    if site: filter['site'] = site
-    slices = Slice.objects.filter(**filter)
+        sites = _get_sites(filter.get('site'))
+        if sites: filter['site'] = sites[0]
+    slices = _get_slices(filter)
     return slices             
         
 

@@ -2,31 +2,30 @@ from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import User, Site
- 
-def lookup_site(fields):
-    site = None
-    if 'site' in fields:
-        if isinstance(fields['site'], int):
-            sites = Site.objects.filter(id=fields['site'])
-        else:
-            sites = Site.objects.filter(login_base=fields['site'])
-        if sites:
-            site = sites[0]
-    if not site:
-        raise Exception, "No such site: %s" % fields['site']
-    return site 
+from plstackapi.core.api.sites import _get_sites
+
+def _get_users(filter):
+    if isinstance(filter, int):
+        users = User.objects.filter(id=filter)
+    elif isinstance(filter, StringTypes):
+        users = User.objects.filter(role_type=filter)
+    elif isinstance(filer, dict):
+        users = User.objects.filter(**filter)
+    else:
+        users = []
+    return users 
 
 def add_user(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    site = lookup_site(fields) 
-    if site: fields['site'] = site     
+    sites = _get_sites(fields.get('site')) 
+    if sites: fields['site'] = sites[0]     
     user = User(**fields)
     nova_fields = {'name': user.email[:user.email.find('@')],
                    'email': user.email, 
                    'password': fields.get('password'),
                    'enabled': user.enabled}    
     nova_user = driver.create_user(**nova_fields)
-    #driver.add_user_role(user.id, user.site.tenant_id, 'user')
+    #driver.add_user_user(user.id, user.site.tenant_id, 'user')
     user.user_id=nova_user.id
     user.save()
     return user
@@ -47,14 +46,14 @@ def update_user(auth, id, **fields):
     if 'enabled' in fields:
         nova_fields['enabled'] = fields['enabled']
     driver.update_user(user.user_id, **nova_fields)
-    site = lookup_site(fields)
-    if site: fields['site'] = site
+    sites = _get_sites(fields.get('site'))
+    if sites: fields['site'] = sites[0]
     user.update(**fields)
     return user 
 
 def delete_user(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
-    users = User.objects.filter(**filter)
+    users = _get_users(filter)
     for user in users:
         driver.delete_user(id=user.user_id) 
         user.delete()
@@ -62,7 +61,7 @@ def delete_user(auth, filter={}):
 
 def get_users(auth, filter={}):
     client = auth_check(auth)
-    users = User.objects.filter(**filter)
+    users = _get_users(filter)
     return users             
         
 

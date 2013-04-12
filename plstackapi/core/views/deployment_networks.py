@@ -37,7 +37,7 @@ class DeploymentNetworkRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        deployment_networks = get_deployment_networks(data['auth'], {'name': pk})
+        deployment_networks = get_deployment_networks(data['auth'], pk)
         if not deployment_networks:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = DeploymentNetworkSerializer(deployment_networks[0])
@@ -51,7 +51,7 @@ class DeploymentNetworkRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_deployment_network(data['auth'], {'name': pk})
+        delete_deployment_network(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

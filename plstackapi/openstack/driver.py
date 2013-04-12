@@ -195,7 +195,8 @@ class OpenStackDriver:
         image_id = images[0]['id']
         hints = {}
         if hostname:
-            hints['force_hosts']= hostname
+            #hints['force_hosts']= hostname
+            hints['availability-zone'] = 'nova:%s' % hostname
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,

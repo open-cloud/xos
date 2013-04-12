@@ -13,8 +13,3 @@ class Role(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.role_type)
 
-    def save(self):
-        if not self.id:
-            self.created = datetime.date.today()
-        self.updated = datetime.datetime.today()
-        super(Role, self).save()

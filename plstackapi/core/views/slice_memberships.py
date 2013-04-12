@@ -3,63 +3,63 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from plstackapi.core.api.slices import add_slice, delete_slice, get_slices, update_slice
-from plstackapi.core.serializers import SliceSerializer
+from plstackapi.core.api.slice_memberships import add_slice_membership, delete_slice_membership, get_slice_memberships, update_slice_membership
+from plstackapi.core.serializers import SliceMembershipSerializer
 from plstackapi.util.request import parse_request
 
 
-class SliceListCreate(APIView):
+class SliceMembershipListCreate(APIView):
     """ 
-    List all slices or create a new slice.
+    List all slice_memberships or create a new slice_membership.
     """
 
     def post(self, request, format = None):
         data = parse_request(request.DATA)  
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
-        elif 'slice' in data:
-            slice = add_slice(data['auth'], data['slice'])
-            serializer = SliceSerializer(slice)
+        elif 'slice_membership' in data:
+            slice_membership = add_slice_membership(data['auth'], data['slice_membership'])
+            serializer = SliceMembershipSerializer(slice_membership)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            slices = get_slices(data['auth'])
-            serializer = SliceSerializer(slices, many=True)
+            slice_memberships = get_slice_memberships(data['auth'])
+            serializer = SliceMembershipSerializer(slice_memberships, many=True)
             return Response(serializer.data)
         
             
-class SliceRetrieveUpdateDestroy(APIView):
+class SliceMembershipRetrieveUpdateDestroy(APIView):
     """
-    Retrieve, update or delete a slice 
+    Retrieve, update or delete a slice_membership 
     """
 
     def post(self, request, pk, format=None):
-        """Retrieve a slice"""
+        """Retrieve a slice_membership"""
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        slices = get_slices(data['auth'], {'id': pk})
-        if not slices:
+        slice_memberships = get_slice_memberships(data['auth'], pk)
+        if not slice_memberships:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = SliceSerializer(slices[0])
+        serializer = SliceMembershipSerializer(slice_memberships[0])
         return Response(serializer.data)                  
 
     def put(self, request, pk, format=None):
-        """update a slice""" 
+        """update a slice_membership""" 
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        elif 'slice' not in data:
+        elif 'slice_membership' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        slice = update_slice(pk, data['slice'])
-        serializer = SliceSerializer(slice)
+        slice_membership = update_slice_membership(pk, data['slice_membership'])
+        serializer = SliceMembershipSerializer(slice_membership)
         return Response(serializer.data) 
 
     def delete(self, request, pk, format=None):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_slice(data['auth'], {'id': pk})
+        delete_slice_membership(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

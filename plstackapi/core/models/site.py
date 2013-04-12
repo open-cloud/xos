@@ -32,18 +32,4 @@ class SitePrivilege(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
-    def save(self, *args, **kwds):
-        driver  = OpenStackDriver()
-        driver.add_user_role(user_id=user.user_id,
-                             tenant_id=site.tenant_id,
-                             role_name=role.name)
-        super(SitePrivilege, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        driver = OpenStackDriver()
-        driver.delete_user_role(user_id=user.user_id,
-                                tenant_id=site.tenant_id,
-                                role_name=role.name)
-        super(SitePrivilege, self).delete(*args, **kwds)
-
 
