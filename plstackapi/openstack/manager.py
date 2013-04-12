@@ -45,7 +45,6 @@ class Manager:
 
         node_chunks = chunks(compute_nodes, nodes_per_site)
         for name in new_node_names:
-            for 
             node = Node(name=compute_nodes_dict[name].hypervisor_hostname)
             node.save()
 

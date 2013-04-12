@@ -165,13 +165,13 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
         model = Sliver
         fields = ('id',
                   'instance_id',
-                  'name'
+                  'name',
                   'flavor',
                   'image',
-                  'key'
+                  'key',
                   'slice',
-                  'deployment_network',
-                  'noode')
+                  'deploymentNetwork',
+                  'node')
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default

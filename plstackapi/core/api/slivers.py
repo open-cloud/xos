@@ -7,6 +7,7 @@ from plstackapi.core.api.flavors import _get_flavors
 from plstackapi.core.api.images import _get_images
 from plstackapi.core.api.keys import _get_keys
 from plstackapi.core.api.slices import _get_slices
+from plstackapi.core.api.slices import _get_sites
 from plstackapi.core.api.deployment_networks import _get_deployment_networks
 from plstackapi.core.api.nodes import _get_nodes
  
@@ -31,14 +32,16 @@ def add_sliver(auth, fields):
     if flavors: fields['flavor'] = flavors[0]     
     images = _get_images(fields.get('image'))
     if images: fields['image'] = images[0]     
-    keys = _get_keys(fields.get('get'))
+    keys = _get_keys(fields.get('key'))
     if keys: fields['key'] = keys[0]     
     slices = _get_slices(fields.get('slice'))
-    if slices: fields['slice'] = slices[0]     
+    if slices: 
+        fields['slice'] = slices[0]     
+        fields['site'] = slices[0].site
     deployment_networks = _get_deployment_networks(fields.get('deploymentNetwork'))
     if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     nodes = _get_nodes(fields.get('node'))
-    if nodes: fields['node'] = nodess[0]     
+    if nodes: fields['node'] = nodes[0]     
     
     sliver = Sliver(**fields)
     # create quantum sliver
