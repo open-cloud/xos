@@ -11,7 +11,7 @@ def _get_users(filter):
     if isinstance(filter, int):
         users = User.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
-        users = User.objects.filter(role_type=filter)
+        users = User.objects.filter(email=filter)
     elif isinstance(filter, dict):
         users = User.objects.filter(**filter)
     else:

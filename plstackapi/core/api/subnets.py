@@ -11,7 +11,11 @@ def _get_subnets(filter):
     if isinstance(filter, int):
         subnets = Subnet.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
-        subnets = Subnet.objects.filter(name=filter)
+        # the name is the subnet's slice's name
+        slices = _get_slices(filter)
+        slice = None
+        if slices: slice=slices[0]
+        subnets = Subnet.objects.filter(slice=slice)
     elif isinstance(filter, dict):
         subnets = Subnet.objects.filter(**filter)
     else:
@@ -20,11 +24,11 @@ def _get_subnets(filter):
 
 def add_subnet(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    slices = _get_slice(fields.get('slice')) 
+    slices = _get_slices(fields.get('slice')) 
     if slices: fields['slice'] = slices[0]     
     subnet = Subnet(**fields)
     # create quantum subnet
-    subnet = driver.create_subnet(network_name=subnet.name,
+    subnet = driver.create_subnet(network_name=subnet.slice.name,
                                   cidr_ip = subnet.cidr,
                                   ip_version=subnet.ip_version,
                                   start = subnet.start,

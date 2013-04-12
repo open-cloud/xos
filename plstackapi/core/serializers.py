@@ -52,7 +52,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
     slivers = serializers.HyperlinkedRelatedField(view_name='sliver-detail')
-    subnets = serializers.HyperlinkedRelatedField(view_name='subnet-detail')
+    subnet= serializers.HyperlinkedRelatedField(view_name='subnet-detail')
     class Meta:
         model = Slice
         fields = ('id',
@@ -68,7 +68,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'router_id',
                   'site',
                   'slivers',
-                  'subnets',
+                  'subnet',
                   'updated',
                   'created')
 
@@ -106,14 +106,12 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     slices = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='slice-detail')
-    deployment_networks = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='deploymentnetwork-detail')
 
     class Meta:
         model = Site
         fields = ('id',
                   'url',
                   'name',
-                  'deployment_networks',
                   'slices',
                   'site_url',
                   'enabled',

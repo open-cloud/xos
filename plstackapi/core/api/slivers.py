@@ -27,7 +27,7 @@ def _get_slivers(filter):
 def add_sliver(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
     
-    flavors = _get_flavor(fields.get('flavor'))
+    flavors = _get_flavors(fields.get('flavor'))
     if flavors: fields['flavor'] = flavors[0]     
     images = _get_images(fields.get('image'))
     if images: fields['image'] = images[0]     
@@ -35,8 +35,8 @@ def add_sliver(auth, fields):
     if keys: fields['key'] = keys[0]     
     slices = _get_slices(fields.get('slice'))
     if slices: fields['slice'] = slices[0]     
-    deployment_networks = _get_deployment_networks(field.get('deployment_network'))
-    if deployment_networks: fields['deployment_network'] = deployment_networks[0]     
+    deployment_networks = _get_deployment_networks(fields.get('deploymentNetwork'))
+    if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     nodes = _get_nodes(fields.get('node'))
     if nodes: fields['node'] = nodess[0]     
     

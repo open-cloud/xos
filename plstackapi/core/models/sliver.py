@@ -14,12 +14,12 @@ from plstackapi.openstack.driver import OpenStackDriver
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")
-    flavor = models.ForeignKey(Flavor, related_name='sliver_flavor')
-    image = models.ForeignKey(Image, related_name='sliver_image')
-    key = models.ForeignKey(Key, related_name='sliver_key')
-    slice = models.ForeignKey(Slice, related_name='sliver_slice')
-    node = models.ForeignKey(Node, related_name='sliver_node')
-    site = models.ForeignKey(Site, related_name='sliver_site')
+    flavor = models.ForeignKey(Flavor, related_name='slivers')
+    image = models.ForeignKey(Image, related_name='slivers')
+    key = models.ForeignKey(Key, related_name='slivers')
+    slice = models.ForeignKey(Slice, related_name='slivers')
+    node = models.ForeignKey(Node, related_name='slivers')
+    site = models.ForeignKey(Site, related_name='slivers')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sliver_deploymentNetwork')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)

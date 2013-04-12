@@ -8,11 +8,11 @@ def _get_images(filter):
     if isinstance(filter, StringTypes) and filter.isdigit():
         filter = int(filter)
     if isinstance(filter, int):
-        images = image.objects.filter(id=filter)
+        images = Image.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
-        images = image.objects.filter(name=filter)
+        images = Image.objects.filter(name=filter)
     elif isinstance(filter, dict):
-        images = image.objects.filter(**filter)
+        images = Image.objects.filter(**filter)
     else:
         images = []
     return images

@@ -1,3 +1,4 @@
+import re
 from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
@@ -5,6 +6,19 @@ from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Slice
 from plstackapi.core.api.sites import _get_sites
 
+def validate_name(name):
+    # N.B.: Responsibility of the caller to ensure that login_base
+        # portion of the slice name corresponds to a valid site, if
+        # desired.
+
+        # 1. Lowercase.
+        # 2. Begins with login_base (letters or numbers).
+        # 3. Then single underscore after login_base.
+        # 4. Then letters, numbers, or underscores.
+        good_name = r'^[a-z0-9]+_[a-zA-Z0-9_]+$'
+        if not name or \
+           not re.match(good_name, name):
+            raise Exception, "Invalid slice name: %s" % name
 
 def _get_slices(filter):
     if isinstance(filter, StringTypes) and filter.isdigit():
@@ -22,9 +36,12 @@ def _get_slices(filter):
  
 def add_slice(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    sites = _get_sites(fields.get('site')) 
+    validate_name(fields.get('name'))
+    login_base = fields['name'][:fields['name'].find('_')]
+    sites = _get_sites(login_base) 
     if sites: fields['site'] = sites[0]     
     slice = Slice(**fields)
+   
     # create tenant
     nova_fields = {'tenant_name': slice.name,
                    'description': slice.description,

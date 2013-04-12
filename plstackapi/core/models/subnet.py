@@ -12,7 +12,7 @@ class Subnet(PlCoreBase):
     ip_version = models.IntegerField()
     start = models.IPAddressField()
     end = models.IPAddressField()
-    slice = models.ForeignKey(Slice, related_name='slice_subnet')
+    slice = models.ForeignKey(Slice, related_name='subnet')
 
     def __unicode__(self):  return u'%s' % (self.name)
 

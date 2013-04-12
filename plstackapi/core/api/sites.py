@@ -11,7 +11,7 @@ def _get_sites(filter):
     if isinstance(filter, int):
         sites = Site.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
-        sites = Site.objects.filter(name=filter)
+        sites = Site.objects.filter(login_base=filter)
     elif isinstance(filter, dict):
         sites = Site.objects.filter(**filter)
     else:
@@ -55,7 +55,7 @@ def delete_site(auth, filter={}):
 
 def get_sites(auth, filter={}):
     client = auth_check(auth)
-    sites = _get_sites(id)
+    sites = _get_sites(filter)
     return sites             
         
 
