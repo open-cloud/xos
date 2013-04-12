@@ -1,4 +1,4 @@
-import re
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -7,11 +7,13 @@ from plstackapi.core.api.sites import _get_sites
 
 
 def _get_slices(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         slices = Slice.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         slices = Slice.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         slices = Slice.objects.filter(**filter)
     else:
         slices = []

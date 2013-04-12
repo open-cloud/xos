@@ -1,3 +1,4 @@
+from types import StringTypes
 import re
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
@@ -9,11 +10,13 @@ from plstackapi.core.api.roles import _get_roles
 
 
 def _get_site_privileges(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         site_privileges = SitePrivilege.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         site_privileges = SitePrivilege.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         site_privileges = SitePrivilege.objects.filter(**filter)
     else:
         site_privileges = []

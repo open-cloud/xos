@@ -1,4 +1,4 @@
-import re
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -8,11 +8,13 @@ from plstackapi.core.api.slices import _get_slices
 from plstackapi.core.api.roles import _get_roles
 
 def _get_slice_memberships(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         slice_memberships = SitePrivilege.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         slice_memberships = SitePrivilege.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         slice_memberships = SitePrivilege.objects.filter(**filter)
     else:
         slice_memberships = []

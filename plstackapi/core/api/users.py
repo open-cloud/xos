@@ -1,3 +1,4 @@
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -5,11 +6,13 @@ from plstackapi.core.models import User, Site
 from plstackapi.core.api.sites import _get_sites
 
 def _get_users(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         users = User.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         users = User.objects.filter(role_type=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         users = User.objects.filter(**filter)
     else:
         users = []

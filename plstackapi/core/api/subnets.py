@@ -1,4 +1,4 @@
-import re
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -6,11 +6,13 @@ from plstackapi.core.models import Subnet
 from plstackapi.core.api.slices import _get_slices
 
 def _get_subnets(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         subnets = Subnet.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         subnets = Subnet.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         subnets = Subnet.objects.filter(**filter)
     else:
         subnets = []

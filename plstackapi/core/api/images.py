@@ -1,14 +1,17 @@
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Image
  
 def _get_images(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         images = image.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         images = image.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         images = image.objects.filter(**filter)
     else:
         images = []

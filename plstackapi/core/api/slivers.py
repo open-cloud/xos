@@ -1,4 +1,4 @@
-import re
+from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -12,11 +12,13 @@ from plstackapi.core.api.nodes import _get_nodes
  
 
 def _get_slivers(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         slivers = Sliver.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
         slivers = Sliver.objects.filter(name=filter)
-    elif isinstance(filer, dict):
+    elif isinstance(filter, dict):
         slivers = Sliver.objects.filter(**filter)
     else:
         slivers = []

@@ -6,6 +6,8 @@ from plstackapi.core.models import Role
  
 
 def _get_roles(filter):
+    if isinstance(filter, StringTypes) and filter.isdigit():
+        filter = int(filter)
     if isinstance(filter, int):
         roles = Role.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
