@@ -28,14 +28,15 @@ def add_subnet(auth, fields):
     if slices: fields['slice'] = slices[0]     
     subnet = Subnet(**fields)
     # create quantum subnet
-    subnet = driver.create_subnet(network_name=subnet.slice.name,
-                                  cidr_ip = subnet.cidr,
-                                  ip_version=subnet.ip_version,
-                                  start = subnet.start,
-                                  end = subnet.end,
-                                  dns_nameservers = ['8.8.8.8', '8.8.4.4'])
-
-    subnet.subnet_id=subnet.id
+    quantum_subnet = driver.create_subnet(name= subnet.slice.name,
+                                          network_id=subnet.slice.network_id,
+                                          cidr_ip = subnet.cidr,
+                                          ip_version=subnet.ip_version,
+                                          start = subnet.start,
+                                          end = subnet.end)
+    subnet.subnet_id=quantum_subnet['id']
+    ## set dns servers
+    #driver.update_subnet(subnet.id, {'dns_nameservers': ['8.8.8.8', '8.8.4.4']})
 
     # add subnet as interface to slice's router
     driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)     

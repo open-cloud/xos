@@ -96,34 +96,16 @@ class OpenStackDriver:
             self.shell.quantum.delete_router(router['id'])
 
     def add_router_interface(self, router_id, subnet_id):
-        router = None
-        subnet = None
-        for r in self.shell.quantum.list_routers():
-            if r['id'] == router_id:
-                router = r
-                break
-        for s in self.shell.quantum.list_subnets():
-            if s['id'] == subnet_id:
-                subnet = s
-                break
-
+        router = self.shell.quantum.show_router(router_id)['router']
+        subnet = self.shell.quantum.show_subnet(subnet_id)['subnet']
         if router and subnet:
-            self.shell.quantum.router_add_interface(router, subnet)
+            self.shell.quantum.add_interface_router(router_id, {'subnet_id': subnet_id})
 
     def delete_router_interface(self, router_id, subnet_id):
-        router = None
-        subnet = None
-        for r in self.shell.quantum.list_routers():
-            if r['id'] == router_id:
-                router = r
-                break
-        for s in self.shell.quantum.list_subnets():
-            if s['id'] == subnet_id:
-                subnet = s
-                break
-
+        router = self.shell.quantum.show_router(router_id)
+        subnet = self.shell.quantum.show_subnet(subnet_id)
         if router and subnet:
-            self.shell.quantum.router_remove_interface(router, subnet)            
+            self.shell.quantum.remove_interface_router(router_id, {'subnet_id': subnet_id})
  
     def create_network(self, name):
         nets = self.shell.quantum.list_networks(name=name)['networks']
@@ -142,23 +124,34 @@ class OpenStackDriver:
                 self.delete_subnet(subnet_id)
             self.shell.quantum.delete_network(net['id'])
     
-    def create_subnet(self, network_name, cidr_ip, ip_version, start, end):
-        nets = self.shell.quantum.list_networks(name=network_name)
-        if not nets:
-            raise Exception, "No such network: %s" % network_name   
-        nets = nets[0]
+    def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
+        #nets = self.shell.quantum.list_networks(name=network_name)['networks']
+        #if not nets:
+        #    raise Exception, "No such network: %s" % network_name   
+        #net = nets[0]
 
-        subnets = self.shell.quantum.list_subnets(name=self.name)
-        allocation_pools = [{'start': start, 'end': end}]
-        subnet = self.shell.quantum.create_subnet(network_id=net['id'],
-                                                ip_version=ip_version,
-                                                cidr=cidr_ip,
-                                                dns_nameservers=['8.8.8.8', '8.8.8.4'],         
-                                                allocation_pools=allocation_pools)
+        subnet = None 
+        subnets = self.shell.quantum.list_subnets()['subnets']
+        for snet in subnets:
+            if snet['cidr'] == cidr_ip and snet['network_id'] == network_id:
+                subnet = snet
+ 
+        if not subnet:
+            allocation_pools = [{'start': start, 'end': end}]
+            subnet = {'subnet': {'name': name,
+                                 'network_id': network_id,
+                                 'ip_version': ip_version,
+                                 'cidr': cidr_ip,
+                                 'dns_nameservers': ['8.8.8.8', '8.8.8.4'],
+                                 'allocation_pools': allocation_pools}}          
+            subnet = self.shell.quantum.create_subnet(subnet)['subnet']
 
         # TODO: Add route to external network
         # e.g. #  route add -net 10.0.3.0/24 dev br-ex gw 10.100.0.5 
         return subnet
+
+    def update_subnet(self, id, fields):
+        return self.shell.quantum.update_subnet(id, fields)
 
     def delete_subnet(self, id):
         return self.shell.quantum.delete_subnet(id=id)
