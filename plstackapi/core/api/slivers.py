@@ -42,16 +42,15 @@ def add_sliver(auth, fields):
     if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     nodes = _get_nodes(fields.get('node'))
     if nodes: fields['node'] = nodes[0]     
-    
     sliver = Sliver(**fields)
     # create quantum sliver
-    sliver = driver.spawn_instance(name=sliver.name,
+    instance = driver.spawn_instance(name=sliver.name,
                                    key_name = sliver.key.name,
-                                   flavor=sliver.flavor.name,
-                                   image = sliver.image.name,
-                                   hostname = sliver.node.hostname )
+                                   flavor_id = sliver.flavor.flavor_id,
+                                   image_id = sliver.image.image_id,
+                                   hostname = sliver.node.name )
 
-    sliver.instance_id=sliver.id
+    sliver.instance_id=instance.id
 
     sliver.save()
     return sliver
