@@ -21,14 +21,9 @@ class Manager:
             if 'viccidev10' not in node.name:
                 nodes_dict[node.name] = node 
         
-        deployment = DeploymentNetwork.objects.filter(name='VICCI')
+        deployment = DeploymentNetwork.objects.filter(name='VICCI')[0]
         login_bases = ['princeton', 'stanford', 'gt', 'uw', 'mpisws']
         sites = Site.objects.filter(login_base__in=login_bases)
-        nodes_per_site = len(nodes)/len(sites)
-        
-        def chunks(l, n):
-            return [l[i:i+n] for i in range(0, len(l), n)]
-
         # collect nova nodes:
         compute_nodes = self.client.nova.hypervisors.list()
 
@@ -37,16 +32,18 @@ class Manager:
             compute_nodes_dict[compute_node.hypervisor_hostname] = compute_node
 
         # add new nodes:
-        counter = 1
         new_node_names = set(compute_nodes_dict.keys()).difference(nodes_dict.keys())
-
-        def chunks(l, n):
-            return [l[i:i+n] for i in range(0, len(l), n)]
-
-        node_chunks = chunks(compute_nodes, nodes_per_site)
+        i = 0
+        max = len(sites)
         for name in new_node_names:
-            node = Node(name=compute_nodes_dict[name].hypervisor_hostname)
+            if i == max:
+                i = 0
+            site = sites[i]
+            node = Node(name=compute_nodes_dict[name].hypervisor_hostname,
+                        site=site,
+                        deploymentNetwork=deployment)
             node.save()
+            i+=1
 
         # remove old nodes
         old_node_names = set(nodes_dict.keys()).difference(compute_nodes_dict.keys())
