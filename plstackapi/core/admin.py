@@ -98,20 +98,10 @@ class NodeAdmin(admin.ModelAdmin):
     list_filter = ('deploymentNetwork',)
 
 
-
-class IgnoredField(forms.Field):
-    def validate(self, value):
-        return
-    
-
-
-class RoleForm(forms.ModelForm):
-    role_id = IgnoredField()
-    role_type = forms.CharField()     
-
-
 class RoleAdmin(admin.ModelAdmin):
-    form = RoleForm    
+    fieldsets = [
+        ('Role', {'fields': ['role_type']})
+    ]
     list_display = ('role_type',)
 
 admin.site.register(Site, SiteAdmin)
