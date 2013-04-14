@@ -6,7 +6,6 @@ from plstackapi.core.models import *
 class RoleSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
- 
     class Meta:
         model = Role
         fields = ('id', 

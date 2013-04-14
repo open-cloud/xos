@@ -43,8 +43,10 @@ class OpenStackDriver:
         return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
-        tenant = self.shell.keystone.tenants.find(id=id)
-        return self.shell.keystone.tenants.delete(tenant)
+        tenants = self.shell.keystone.tenants.findall(id=id)
+        for tenant in tenants:
+            self.shell.keystone.tenants.delete(tenant)
+        return 1
 
     def create_user(self, name, email, password, enabled):
         users = self.shell.keystone.users.findall(email=email)
@@ -55,6 +57,12 @@ class OpenStackDriver:
         else: 
             user = users[0]
         return user
+
+    def delete_user(self, id):
+        users = self.shell.keystone.users.findall(id=id)
+        for user in users:
+            self.shell.keystone.users.delete(user)
+        return 1 
 
     def add_user_role(self, user_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=user_id)
@@ -70,10 +78,6 @@ class OpenStackDriver:
 
     def update_user(self, id, **kwds):
         return self.shell.keystone.users.update(id, **kwds)
-
-    def delete_user(self, id):
-        user = self.shell.keystone.users.find(id=id)
-        return self.shell.keystone.users.delete(user)  
 
     def create_router(self, name, set_gateway=True):
         routers = self.shell.quantum.list_routers(name=name)['routers']
@@ -123,6 +127,7 @@ class OpenStackDriver:
             for subnet_id in net['subnets']:
                 self.delete_subnet(subnet_id)
             self.shell.quantum.delete_network(net['id'])
+        return 1
     
     def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
         #nets = self.shell.quantum.list_networks(name=network_name)['networks']
@@ -154,7 +159,13 @@ class OpenStackDriver:
         return self.shell.quantum.update_subnet(id, fields)
 
     def delete_subnet(self, id):
-        return self.shell.quantum.delete_subnet(id=id)
+        #return self.shell.quantum.delete_subnet(id=id)
+        # inefficient but fault tolerant
+        subnets = self.shell.quantum.list_subnets()['subnets']
+        for subnet in subnets:
+            if subnet['id'] == id:
+                self.shell.quantum.delete_subnet(id=id)
+        return
      
     
     def create_keypair(self, name, key):
@@ -169,6 +180,7 @@ class OpenStackDriver:
         keys = self.shell.nova.keypairs.findall(name=name)
         for key in keys:
             self.shell.nova.keypairs.delete(key) 
+        return 1 
 
     def spawn_instance(self, name, key_name=None, hostname=None, flavor_id=None, image_id=None, security_group=None, pubkeys=[]):
         #if not flavor_id:

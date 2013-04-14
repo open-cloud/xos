@@ -97,6 +97,23 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deploymentNetwork')
     list_filter = ('deploymentNetwork',)
 
+
+
+class IgnoredField(forms.Field):
+    def validate(self, value):
+        return
+    
+
+
+class RoleForm(forms.ModelForm):
+    role_id = IgnoredField()
+    role_type = forms.CharField()     
+
+
+class RoleAdmin(admin.ModelAdmin):
+    form = RoleForm    
+    list_display = ('role_type',)
+
 admin.site.register(Site, SiteAdmin)
 admin.site.register(SitePrivilege)
 admin.site.register(Slice, SliceAdmin)
@@ -107,7 +124,7 @@ admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver)
 admin.site.register(Flavor)
 admin.site.register(Key)
-admin.site.register(Role)
+admin.site.register(Role, RoleAdmin)
 admin.site.register(User)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
 
