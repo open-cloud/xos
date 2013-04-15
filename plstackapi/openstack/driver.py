@@ -84,7 +84,7 @@ class OpenStackDriver:
         if routers:
             router = routers[0]
         else:
-            router = self.shell.quantum.create_router({'router': {'name': name}})
+            router = self.shell.quantum.create_router({'router': {'name': name}})['router']
         if set_gateway:
             nets = self.shell.quantum.list_networks()['networks']
             for net in nets:
@@ -94,8 +94,8 @@ class OpenStackDriver:
         
         return router
 
-    def delete_router(self, name):
-        routers = self.shell.quantum.list_routers(name=name)['routers']
+    def delete_router(self, id):
+        routers = self.shell.quantum.list_routers(id=id)['routers']
         for router in routers:
             self.shell.quantum.delete_router(router['id'])
 
@@ -116,17 +116,17 @@ class OpenStackDriver:
         if nets: 
             net = nets[0]
         else:
-            net = self.shell.quantum.create_network({'network': {'name': name}})
+            net = self.shell.quantum.create_network({'network': {'name': name}})['network']
         return net
  
-    def delete_network(self, name):
-        nets = self.shell.quantum.list_networks(name=name)['networks']
+    def delete_network(self, id):
+        nets = self.shell.quantum.list_networks()['networks']
         for net in nets:
-            # delete all subnets:
-            #subnets = self.api.client_shell.quantum.list_subnets(network_id=net['network_id'])['subnets']
-            for subnet_id in net['subnets']:
-                self.delete_subnet(subnet_id)
-            self.shell.quantum.delete_network(net['id'])
+            if net['id'] == id:
+                # delete all subnets:
+                for subnet_id in net['subnets']:
+                    self.delete_subnet(subnet_id)
+                self.shell.quantum.delete_network(net['id'])
         return 1
     
     def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
@@ -178,7 +178,6 @@ class OpenStackDriver:
 
     def delete_keypair(self, id):
         keys = self.shell.nova.keypairs.findall(id=id)
-        print keys
         for key in keys:
             self.shell.nova.keypairs.delete(key) 
         return 1 

@@ -6,20 +6,6 @@ from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Slice
 from plstackapi.core.api.sites import _get_sites
 
-def validate_name(name):
-    # N.B.: Responsibility of the caller to ensure that login_base
-        # portion of the slice name corresponds to a valid site, if
-        # desired.
-
-        # 1. Lowercase.
-        # 2. Begins with login_base (letters or numbers).
-        # 3. Then single underscore after login_base.
-        # 4. Then letters, numbers, or underscores.
-        good_name = r'^[a-z0-9]+_[a-zA-Z0-9_]+$'
-        if not name or \
-           not re.match(good_name, name):
-            raise Exception, "Invalid slice name: %s" % name
-
 def _get_slices(filter):
     if isinstance(filter, StringTypes) and filter.isdigit():
         filter = int(filter)
@@ -36,7 +22,6 @@ def _get_slices(filter):
  
 def add_slice(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    validate_name(fields.get('name'))
     login_base = fields['name'][:fields['name'].find('_')]
     sites = _get_sites(login_base) 
     if sites: fields['site'] = sites[0]     
@@ -88,6 +73,8 @@ def delete_slice(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     slices = _get_slices(id)
     for slice in slices:
+        driver.delete_network(slice.network_id)
+        driver.delete_router(slice.router_id)
         driver.delete_slice(id=slice.tenant_id) 
         slice.delete()
     return 1

@@ -10,7 +10,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 # Create your models here.
 
 class Slice(PlCoreBase):
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id", blank=True)
     name = models.CharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     SLICE_CHOICES = (('plc', 'PLC'), ('delegated', 'Delegated'), ('controller','Controller'), ('none','None'))
@@ -23,6 +23,35 @@ class Slice(PlCoreBase):
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    def save(self, *args, **kwds):
+
+        driver = OpenStackDriver()
+        if not self.tenant_id:
+            nova_fields = {'tenant_name': self.name,
+                   'description': self.description,
+                   'enabled': self.enabled}
+            tenant = driver.create_tenant(**nova_fields)
+            self.tenant_id = tenant.id
+
+            # create network
+            network = driver.create_network(self.name)
+            self.network_id = network['id']
+
+            # create router
+            router = driver.create_router(self.name)
+            self.router_id = router['id']
+
+        super(Slice, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver = OpenStackDriver()
+        if self.tenant_id:
+            driver.delete_router(self.router_id)
+            driver.delete_network(self.network_id)
+            driver.delete_tenant(self.tenant_id)
+
+        super(Slice, self).delete(*args, **kwds)    
 
 class SliceMembership(PlCoreBase):
     user = models.ForeignKey('User', related_name='slice_memberships')
