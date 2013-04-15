@@ -1,9 +1,11 @@
+import commands
 from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Subnet
 from plstackapi.core.api.slices import _get_slices
+
 
 def _get_subnets(filter):
     if isinstance(filter, StringTypes) and filter.isdigit():

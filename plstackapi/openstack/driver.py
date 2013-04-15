@@ -164,7 +164,7 @@ class OpenStackDriver:
         subnets = self.shell.quantum.list_subnets()['subnets']
         for subnet in subnets:
             if subnet['id'] == id:
-                self.shell.quantum.delete_subnet(id=id)
+                self.shell.quantum.delete_subnet(id)
         return
      
     
