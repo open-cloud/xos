@@ -7,7 +7,6 @@ from plstackapi.core.api.flavors import _get_flavors
 from plstackapi.core.api.images import _get_images
 from plstackapi.core.api.keys import _get_keys
 from plstackapi.core.api.slices import _get_slices
-from plstackapi.core.api.slices import _get_sites
 from plstackapi.core.api.deployment_networks import _get_deployment_networks
 from plstackapi.core.api.nodes import _get_nodes
  
@@ -37,7 +36,6 @@ def add_sliver(auth, fields):
     slices = _get_slices(fields.get('slice'))
     if slices: 
         fields['slice'] = slices[0]     
-        fields['site'] = slices[0].site
     deployment_networks = _get_deployment_networks(fields.get('deploymentNetwork'))
     if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     nodes = _get_nodes(fields.get('node'))
