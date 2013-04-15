@@ -9,7 +9,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 # Create your models here.
 
 class User(PlCoreBase):
-    user_id = models.CharField(max_length=256, unique=True, blank=True)
+    user_id = models.CharField(max_length=256, unique=True)
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
     email = models.EmailField(help_text="e-mail address", null=True)

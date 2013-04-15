@@ -19,8 +19,26 @@ class Sliver(PlCoreBase):
     key = models.ForeignKey(Key, related_name='slivers')
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    site = models.ForeignKey(Site, related_name='slivers')
+    #site = models.ForeignKey(Site, related_name='slivers')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sliver_deploymentNetwork')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
 
+    def save(self, *args, **kwds):
+        driver = OpenStackDriver()
+        if not self.instance_id:
+            instance = driver.spawn_instance(name=self.name,
+                                   key_name = self.key.name,
+                                   flavor_id = self.flavor.flavor_id,
+                                   image_id = self.image.image_id,
+                                   hostname = self.node.name )
+            self.instance_id = instance.id
+
+        super(Sliver, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        driver = OpenStackDriver()
+        if self.instance_id:
+            driver.destroy_instance(self.instance_id)
+
+        super(Sliver, self).delete(*args, **kwds)

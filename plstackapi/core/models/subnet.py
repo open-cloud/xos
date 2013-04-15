@@ -8,7 +8,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 # Create your models here.
 
 class Subnet(PlCoreBase):
-    subnet_id = models.CharField(max_length=256, unique=True, blank=True)
+    subnet_id = models.CharField(max_length=256, unique=True)
     cidr = models.CharField(max_length=20)
     ip_version = models.IntegerField()
     start = models.IPAddressField()

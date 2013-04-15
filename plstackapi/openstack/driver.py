@@ -208,12 +208,7 @@ class OpenStackDriver:
                                             scheduler_hints=hints)
         return server
           
-    def destroy_instance(self, name, id=None):
-        args = {'name': name}
-        if id:
-            args['id'] = id
-        servers = self.shell.nova.servers.findall(**args)
+    def destroy_instance(self, id):
+        servers = self.shell.nova.servers.findall(id=id)
         for server in servers:
-            if name == server.name:
-                if not id or id == server.id:
-                    self.shell.nova.servers.delete(server)
+            self.shell.nova.servers.delete(server)

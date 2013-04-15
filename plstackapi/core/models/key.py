@@ -8,7 +8,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 
 class Key(PlCoreBase):
     name = models.CharField(max_length=256, unique=True)
-    key_id = models.CharField(max_length=256, unique=True, blank=True)
+    key_id = models.CharField(max_length=256, unique=True)
     key = models.CharField(max_length=512)
     type = models.CharField(max_length=256)
     blacklisted = models.BooleanField(default=False)

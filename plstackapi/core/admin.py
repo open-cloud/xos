@@ -125,6 +125,12 @@ class RoleAdmin(admin.ModelAdmin):
     ]
     list_display = ('role_type',)
 
+class SliverAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('Sliver', {'fields': ['name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
+    ]
+    list_display = ['name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+
 admin.site.register(Site, SiteAdmin)
 admin.site.register(SitePrivilege)
 admin.site.register(Slice, SliceAdmin)
@@ -132,7 +138,7 @@ admin.site.register(SliceMembership)
 admin.site.register(Subnet, SubnetAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Node, NodeAdmin)
-admin.site.register(Sliver)
+admin.site.register(Sliver, SliverAdmin)
 admin.site.register(Flavor)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)

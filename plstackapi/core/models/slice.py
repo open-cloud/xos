@@ -10,7 +10,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 # Create your models here.
 
 class Slice(PlCoreBase):
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id", blank=True)
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     SLICE_CHOICES = (('plc', 'PLC'), ('delegated', 'Delegated'), ('controller','Controller'), ('none','None'))
