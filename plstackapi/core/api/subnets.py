@@ -41,7 +41,8 @@ def add_subnet(auth, fields):
     #driver.update_subnet(subnet.id, {'dns_nameservers': ['8.8.8.8', '8.8.4.4']})
 
     # add subnet as interface to slice's router
-    driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)     
+    try: driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)
+    except: pass         
     add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
     commands.getstatusoutput(add_route)    
     subnet.save()
@@ -54,10 +55,11 @@ def delete_subnet(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     subnets = Subnet.objects.filter(**filter)
     for subnet in subnets:
-        driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
+        try: driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
+        except: pass
         driver.delete_subnet(subnet.subnet_id) 
         subnet.delete()
-    del_route = 'route del -net %s' % self.cidr
+        del_route = 'route del -net %s' % subnet.cidr
     commands.getstatusoutput(del_route)
     return 1
 
