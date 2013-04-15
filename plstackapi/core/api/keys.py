@@ -27,6 +27,7 @@ def add_key(auth, fields):
     nova_fields = {'name': key.name,
                    'key': key.key} 
     nova_key = driver.create_keypair(**nova_fields)
+    key.key_id = nova_key.id
     key.save()
     return key
 
@@ -37,7 +38,7 @@ def delete_key(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     keys = _get_keys(filter)
     for key in keys:
-        driver.delete_keypair(name=key.name) 
+        driver.delete_keypair(id=key.key_id) 
         key.delete()
     return 1
 

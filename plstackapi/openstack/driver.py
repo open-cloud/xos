@@ -176,8 +176,9 @@ class OpenStackDriver:
             key = self.shell.nova.keypairs.create(name=name, public_key=key)
         return key
 
-    def delete_keypair(self, name):
-        keys = self.shell.nova.keypairs.findall(name=name)
+    def delete_keypair(self, id):
+        keys = self.shell.nova.keypairs.findall(id=id)
+        print keys
         for key in keys:
             self.shell.nova.keypairs.delete(key) 
         return 1 

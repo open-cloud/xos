@@ -89,13 +89,20 @@ class UserForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),
         }
+
 class UserAdmin(admin.ModelAdmin):
     form = UserForm
     fieldsets = [
         ('User', {'fields': ['firstname', 'lastname', 'email', 'password', 'phone', 'user_url', 'is_admin', 'site']})
     ]
     list_display = ['firstname', 'lastname', 'email', 'password', 'phone', 'user_url', 'is_admin', 'site']
-    search_fields = ['email']             
+    search_fields = ['email'] 
+
+class KeyAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('Key', {'fields': ['name', 'key', 'type', 'blacklisted', 'user']})
+    ]
+    list_display = ['name', 'key', 'type', 'blacklisted', 'user']
 
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
@@ -112,7 +119,6 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deploymentNetwork')
     list_filter = ('deploymentNetwork',)
 
-
 class RoleAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
@@ -128,7 +134,7 @@ admin.site.register(Image, ImageAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver)
 admin.site.register(Flavor)
-admin.site.register(Key)
+admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
