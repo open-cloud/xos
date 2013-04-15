@@ -5,7 +5,6 @@ from plstackapi.core.models import Site
 from plstackapi.core.models import User
 from plstackapi.core.models import Role
 from plstackapi.core.models import DeploymentNetwork
-
 from plstackapi.openstack.driver import OpenStackDriver
 
 # Create your models here.

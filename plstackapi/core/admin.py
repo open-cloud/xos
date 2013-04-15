@@ -82,6 +82,21 @@ class SiteAdmin(admin.ModelAdmin):
     inlines = [NodeInline,]
     search_fields = ['name']
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        password = forms.CharField(widget=forms.PasswordInput)
+        model = User
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+class UserAdmin(admin.ModelAdmin):
+    form = UserForm
+    fieldsets = [
+        ('User', {'fields': ['firstname', 'lastname', 'email', 'password', 'phone', 'user_url', 'is_admin', 'site']})
+    ]
+    list_display = ['firstname', 'lastname', 'email', 'password', 'phone', 'user_url', 'is_admin', 'site']
+    search_fields = ['email']             
+
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
     list_display = ('name', 'site','slice_url', 'instantiation')
@@ -115,6 +130,6 @@ admin.site.register(Sliver)
 admin.site.register(Flavor)
 admin.site.register(Key)
 admin.site.register(Role, RoleAdmin)
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
 

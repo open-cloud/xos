@@ -26,6 +26,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                   'firstname', 
                   'lastname',
                   'email', 
+                  'password', 
                   'phone', 
                   'user_url',
                   'is_admin',
