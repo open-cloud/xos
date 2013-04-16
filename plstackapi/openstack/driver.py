@@ -194,10 +194,9 @@ class OpenStackDriver:
         files = {'/root/.ssh/authorized_keys': authorized_keys}
        
         hints = {}
+        availability_zone = None
         if hostname:
-            #hints['force_hosts']= hostname
-            #hints['availability-zone'] = 'nova:%s' % hostname
-            pass
+            availability_zone = 'nova:%s' % hostname
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
@@ -205,7 +204,8 @@ class OpenStackDriver:
                                             image=image_id,
                                             security_group = security_group,
                                             files=files,
-                                            scheduler_hints=hints)
+                                            scheduler_hints=hints,
+                                            availability_zone=availability_zone)
         return server
           
     def destroy_instance(self, id):
