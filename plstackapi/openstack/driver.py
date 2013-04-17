@@ -123,12 +123,33 @@ class OpenStackDriver:
         nets = self.shell.quantum.list_networks()['networks']
         for net in nets:
             if net['id'] == id:
+                # delete_all ports
+                self.delete_network_ports(net['id'])
                 # delete all subnets:
                 for subnet_id in net['subnets']:
                     self.delete_subnet(subnet_id)
                 self.shell.quantum.delete_network(net['id'])
         return 1
-    
+
+    def delete_network_ports(self, network_id):
+        ports = self.shell.quantum.list_ports()['ports']
+        for port in ports:
+            if port['network_id'] == 'network_id':
+                self.shell.quantum.delete_port(port['id'])
+        return 1         
+
+    def delete_subnet_ports(self, subnet_id):
+        ports = self.shell.quantum.list_ports()['ports']
+        for port in ports:
+            delete = False
+            for fixed_ip in port['fixed_ips']:
+                if fixed_ip['subnet_id'] == subnet_id:
+                    delete=True
+                    break
+            if delete:
+                self.shell.quantum.delete_port(port['id'])
+        return 1
+ 
     def create_subnet(self, name, network_id, cidr_ip, ip_version, start, end):
         #nets = self.shell.quantum.list_networks(name=network_name)['networks']
         #if not nets:
@@ -164,9 +185,9 @@ class OpenStackDriver:
         subnets = self.shell.quantum.list_subnets()['subnets']
         for subnet in subnets:
             if subnet['id'] == id:
+                self.delete_subnet_ports(subnet['id'])
                 self.shell.quantum.delete_subnet(id)
         return
-     
     
     def create_keypair(self, name, key):
         keys = self.shell.nova.keypairs.findall(name=name)
