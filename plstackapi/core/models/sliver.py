@@ -25,7 +25,7 @@ class Sliver(PlCoreBase):
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
 
     def save(self, *args, **kwds):
-        if not self.slice.subnet:
+        if not self.slice.subnet.exists():
             raise exceptions.ValidationError, "Slice %s has no subnet" % self.slice.name
 
         if not self.instance_id:
