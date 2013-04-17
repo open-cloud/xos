@@ -25,6 +25,7 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
+    fields = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
     extra = 0
 
 class SiteInline(admin.TabularInline):
