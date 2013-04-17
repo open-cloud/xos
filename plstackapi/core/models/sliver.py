@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from django.core import exceptions
 from plstackapi.core.models import PlCoreBase
 from plstackapi.core.models import Flavor
 from plstackapi.core.models import Image
@@ -19,14 +20,16 @@ class Sliver(PlCoreBase):
     key = models.ForeignKey(Key, related_name='slivers')
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    #site = models.ForeignKey(Site, related_name='slivers')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sliver_deploymentNetwork')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
 
     def save(self, *args, **kwds):
-        driver = OpenStackDriver()
+        if not self.slice.subnet:
+            raise exceptions.ValidationError, "Slice %s has no subnet" % self.slice.name
+
         if not self.instance_id:
+            driver = OpenStackDriver()
             instance = driver.spawn_instance(name=self.name,
                                    key_name = self.key.name,
                                    flavor_id = self.flavor.flavor_id,
