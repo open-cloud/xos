@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import os
 import sys
+import thread
 
 from plstackapi.planetstack.config import Config 
+from plstackapi.openstack.sliveragent import SliverAgent
 
 if __name__ == '__main__':
 
@@ -12,4 +14,7 @@ if __name__ == '__main__':
     url = "%s:%s" % (config.api_host, config.api_port)
     args = [__file__, 'runserver', url] 
     server = ManagementUtility(args)
-    server.execute()
+    sliver_agent = SliverAgent()
+    thread.start_new_thread(server.execute, ())
+    thread.start_new_thread(sliver_agent.run, ())
+    #server.execute()
