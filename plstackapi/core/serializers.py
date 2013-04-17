@@ -166,6 +166,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id',
                   'instance_id',
                   'name',
+                  'ip',
                   'flavor',
                   'image',
                   'key',

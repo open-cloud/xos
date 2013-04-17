@@ -2,7 +2,7 @@ from plstackapi.core.models import Site
 from plstackapi.core.models import *
 from django.contrib import admin
 from django import forms
-
+from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
@@ -125,11 +125,24 @@ class RoleAdmin(admin.ModelAdmin):
     ]
     list_display = ('role_type',)
 
+class PlainTextWidget(forms.Widget):
+    def render(self, _name, value, attrs):
+        return mark_safe(value) if value is not None else ''
+
+class SliverForm(forms.ModelForm):
+    class Meta:
+        ip = forms.CharField(widget=PlainTextWidget)
+        model = Sliver
+        widgets = {
+            'ip': PlainTextWidget(),
+        } 
+
 class SliverAdmin(admin.ModelAdmin):
+    form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
 
 admin.site.register(Site, SiteAdmin)
 admin.site.register(SitePrivilege)
