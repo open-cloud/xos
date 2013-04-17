@@ -15,6 +15,7 @@ from plstackapi.openstack.driver import OpenStackDriver
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")
+    ip = models.IPAddressField(help_text="Sliver ip address", blank=True, null=True)
     flavor = models.ForeignKey(Flavor, related_name='slivers')
     image = models.ForeignKey(Image, related_name='slivers')
     key = models.ForeignKey(Key, related_name='slivers')

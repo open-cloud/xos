@@ -29,8 +29,7 @@ class Subnet(PlCoreBase):
                                           end = self.end)
             self.subnet_id = quantum_subnet['id']
             # add subnet as interface to slice's router
-            try: driver.add_router_interface(self.slice.router_id, self.subnet_id)
-            except: pass
+            driver.add_router_interface(self.slice.router_id, self.subnet_id)
             add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
             commands.getstatusoutput(add_route)
 
@@ -39,8 +38,7 @@ class Subnet(PlCoreBase):
     def delete(self, *args, **kwds):
         driver = OpenStackDriver()
         if self.subnet_id:
-            try: driver.delete_router_interface(self.slice.router_id, self.subnet_id) 
-            except: pass
+            driver.delete_router_interface(self.slice.router_id, self.subnet_id) 
             driver.delete_subnet(self.subnet_id)
             del_route = 'route del -net %s' % self.cidr 
         commands.getstatusoutput(del_route)

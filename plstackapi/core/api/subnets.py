@@ -55,8 +55,7 @@ def delete_subnet(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     subnets = Subnet.objects.filter(**filter)
     for subnet in subnets:
-        try: driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
-        except: pass
+        driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
         driver.delete_subnet(subnet.subnet_id) 
         subnet.delete()
         del_route = 'route del -net %s' % subnet.cidr
