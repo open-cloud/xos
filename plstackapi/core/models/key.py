@@ -22,7 +22,6 @@ class Key(PlCoreBase):
             key_fields = {'name': self.name,
                           'key': self.key}
             nova_key = driver.create_keypair(**key_fields)
-            print nova_key.id
             self.key_id = nova_key.id
         super(Key, self).save(*args, **kwds)
 

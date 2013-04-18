@@ -43,7 +43,7 @@ def add_subnet(auth, fields):
     # add subnet as interface to slice's router
     try: driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)
     except: pass         
-    add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
+    #add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
     commands.getstatusoutput(add_route)    
     subnet.save()
     return subnet
@@ -58,7 +58,7 @@ def delete_subnet(auth, filter={}):
         driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
         driver.delete_subnet(subnet.subnet_id) 
         subnet.delete()
-        del_route = 'route del -net %s' % subnet.cidr
+        #del_route = 'route del -net %s' % subnet.cidr
     commands.getstatusoutput(del_route)
     return 1
 
