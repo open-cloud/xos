@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from plstackapi.core.models import PlCoreBase
-from plstackapi.core.models import User
+from plstackapi.core.models import PLUser
 from plstackapi.openstack.driver import OpenStackDriver
 
 # Create your models here.
@@ -12,7 +12,7 @@ class Key(PlCoreBase):
     key = models.CharField(max_length=512)
     type = models.CharField(max_length=256)
     blacklisted = models.BooleanField(default=False)
-    user = models.ForeignKey(User, related_name='keys')
+    user = models.ForeignKey(PLUser, related_name='keys')
 
     def __unicode__(self):  return u'%s' % (self.name)
 

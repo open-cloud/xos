@@ -49,7 +49,7 @@ class Site(PlCoreBase):
 
 class SitePrivilege(PlCoreBase):
 
-    user = models.ForeignKey('User', related_name='site_privileges')
+    user = models.ForeignKey('PLUser', related_name='site_privileges')
     site = models.ForeignKey('Site', related_name='site_privileges')
     role = models.ForeignKey('Role')
 

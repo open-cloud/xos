@@ -1,1 +1,167 @@
-[{"pk": 1, "model": "core.deploymentnetwork", "fields": {"updated": "2013-04-03T22:57:09.331Z", "name": "VICCI", "created": "2013-04-03T22:57:09.331Z"}}, {"pk": 2, "model": "core.deploymentnetwork", "fields": {"updated": "2013-04-03T22:57:15.013Z", "name": "VINI", "created": "2013-04-03T22:57:15.013Z"}}, {"pk": 3, "model": "core.deploymentnetwork", "fields": {"updated": "2013-04-03T22:57:23.015Z", "name": "PlanetLab Classic", "created": "2013-04-03T22:57:23.015Z"}}, {"pk": 4, "model": "core.deploymentnetwork", "fields": {"updated": "2013-04-03T22:57:29.569Z", "name": "GENI", "created": "2013-04-03T22:57:29.569Z"}}, {"pk": 1, "model": "core.site", "fields": {"updated": "2013-04-05T15:21:04.135Z", "name": "Princeton University", "created": "2013-04-03T23:00:10.085Z", "tenant_id": "", "enabled": true, "longitude": -74.6524, "site_url": "http://princeton.edu/", "login_base": "princeton", "latitude": 40.3502, "is_public": true, "deployments": [3, 4], "abbreviated_name": ""}}, {"pk": 2, "model": "core.site", "fields": {"updated": "2013-04-05T15:42:36.517Z", "name": "Stanford University", "created": "2013-04-03T23:03:51.742Z", "tenant_id": "", "enabled": true, "longitude": -122.172, "site_url": "http://www.stanford.edu/", "login_base": "stanford", "latitude": 37.4294, "is_public": true, "deployments": [], "abbreviated_name": ""}}, {"pk": 3, "model": "core.site", "fields": {"updated": "2013-04-05T15:42:17.263Z", "name": "Georgia Institute of Technology", "created": "2013-04-03T23:05:51.984Z", "tenant_id": "", "enabled": true, "longitude": -84.3976, "site_url": "http://www.gatech.edu/", "login_base": "gt", "latitude": 33.7772, "is_public": true, "deployments": [], "abbreviated_name": ""}}, {"pk": 4, "model": "core.site", "fields": {"updated": "2013-04-05T15:39:27.501Z", "name": "University of Washington", "created": "2013-04-03T23:09:52.337Z", "tenant_id": "", "enabled": true, "longitude": -122.313, "site_url": "https://www.washington.edu/", "login_base": "uw", "latitude": 47.6531, "is_public": true, "deployments": [], "abbreviated_name": ""}}, {"pk": 5, "model": "core.site", "fields": {"updated": "2013-04-05T15:38:56.889Z", "name": "ETH Zuerich - Computer Science", "created": "2013-04-03T23:14:11.072Z", "tenant_id": "", "enabled": true, "longitude": 8.54513, "site_url": "http://www.inf.ethz.ch/", "login_base": "ethzcs", "latitude": 47.3794, "is_public": true, "deployments": [], "abbreviated_name": ""}}, {"pk": 6, "model": "core.site", "fields": {"updated": "2013-04-05T15:38:15.960Z", "name": "Max Planck Institute for Software Systems", "created": "2013-04-03T23:19:38.789Z", "tenant_id": "", "enabled": true, "longitude": 6.589, "site_url": "http://www.mpi-sws.mpg.de/", "login_base": "mpisws", "latitude": 49.14, "is_public": true, "deployments": [], "abbreviated_name": ""}}, {"pk": 7, "model": "core.site", "fields": {"updated": "2013-04-05T15:37:32.185Z", "name": "University of Tokyo", "created": "2013-04-03T23:20:49.815Z", "tenant_id": "", "enabled": true, "longitude": 139.5, "site_url": "http://www.planet-lab-jp.org/", "login_base": "utokyo", "latitude": 35.75, "is_public": true, "deployments": [], "abbreviated_name": ""}}]
+[
+{
+    "pk": 1, 
+    "model": "core.deploymentnetwork", 
+    "fields": {
+        "updated": "2013-04-03T22:57:09.331Z", 
+        "name": "VICCI", 
+        "created": "2013-04-03T22:57:09.331Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.deploymentnetwork", 
+    "fields": {
+        "updated": "2013-04-03T22:57:15.013Z", 
+        "name": "VINI", 
+        "created": "2013-04-03T22:57:15.013Z"
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.deploymentnetwork", 
+    "fields": {
+        "updated": "2013-04-03T22:57:23.015Z", 
+        "name": "PlanetLab Classic", 
+        "created": "2013-04-03T22:57:23.015Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.deploymentnetwork", 
+    "fields": {
+        "updated": "2013-04-03T22:57:29.569Z", 
+        "name": "GENI", 
+        "created": "2013-04-03T22:57:29.569Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:21:04.135Z", 
+        "name": "Princeton University", 
+        "created": "2013-04-03T23:00:10.085Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": -74.6524, 
+        "site_url": "http://princeton.edu/", 
+        "login_base": "princeton", 
+        "latitude": 40.3502, 
+        "is_public": true, 
+        "deployments": [
+            3, 
+            4
+        ], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:42:36.517Z", 
+        "name": "Stanford University", 
+        "created": "2013-04-03T23:03:51.742Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": -122.172, 
+        "site_url": "http://www.stanford.edu/", 
+        "login_base": "stanford", 
+        "latitude": 37.4294, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:42:17.263Z", 
+        "name": "Georgia Institute of Technology", 
+        "created": "2013-04-03T23:05:51.984Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": -84.3976, 
+        "site_url": "http://www.gatech.edu/", 
+        "login_base": "gt", 
+        "latitude": 33.7772, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:39:27.501Z", 
+        "name": "University of Washington", 
+        "created": "2013-04-03T23:09:52.337Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": -122.313, 
+        "site_url": "https://www.washington.edu/", 
+        "login_base": "uw", 
+        "latitude": 47.6531, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:38:56.889Z", 
+        "name": "ETH Zuerich - Computer Science", 
+        "created": "2013-04-03T23:14:11.072Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": 8.54513, 
+        "site_url": "http://www.inf.ethz.ch/", 
+        "login_base": "ethzcs", 
+        "latitude": 47.3794, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:38:15.960Z", 
+        "name": "Max Planck Institute for Software Systems", 
+        "created": "2013-04-03T23:19:38.789Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": 6.589, 
+        "site_url": "http://www.mpi-sws.mpg.de/", 
+        "login_base": "mpisws", 
+        "latitude": 49.14, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-04-05T15:37:32.185Z", 
+        "name": "University of Tokyo", 
+        "created": "2013-04-03T23:20:49.815Z", 
+        "tenant_id": "", 
+        "enabled": true, 
+        "longitude": 139.5, 
+        "site_url": "http://www.planet-lab-jp.org/", 
+        "login_base": "utokyo", 
+        "latitude": 35.75, 
+        "is_public": true, 
+        "deployments": [], 
+        "abbreviated_name": ""
+    }
+}
+]

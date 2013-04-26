@@ -2,7 +2,7 @@ import os
 from django.db import models
 from plstackapi.core.models import PlCoreBase
 from plstackapi.core.models import Site
-from plstackapi.core.models import User
+from plstackapi.core.models import PLUser
 from plstackapi.core.models import Role
 from plstackapi.core.models import DeploymentNetwork
 from plstackapi.openstack.driver import OpenStackDriver
@@ -54,7 +54,7 @@ class Slice(PlCoreBase):
         super(Slice, self).delete(*args, **kwds)    
 
 class SliceMembership(PlCoreBase):
-    user = models.ForeignKey('User', related_name='slice_memberships')
+    user = models.ForeignKey('PLUser', related_name='slice_memberships')
     slice = models.ForeignKey('Slice', related_name='slice_memberships')
     role = models.ForeignKey('Role')
 

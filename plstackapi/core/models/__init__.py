@@ -4,7 +4,7 @@ from .site import Site
 from .site import SitePrivilege
 from .flavor import Flavor
 from .image import Image
-from .user import User
+from .user import PLUser
 from .role import Role
 from .key import Key
 from .node import Node

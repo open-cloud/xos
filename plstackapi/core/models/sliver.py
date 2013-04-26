@@ -21,7 +21,7 @@ class Sliver(PlCoreBase):
     key = models.ForeignKey(Key, related_name='slivers')
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    deploymentNetwork = models.ForeignKey(DeploymentNetwork, related_name='sliver_deploymentNetwork')
+    deploymentNetwork = models.ForeignKey(DeploymentNetwork, verbose_name='deployment', related_name='sliver_deploymentNetwork')
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
 

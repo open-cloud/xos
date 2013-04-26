@@ -9,6 +9,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+AUTH_USER_MODEL = 'core.PLUser'
+
 from plstackapi.planetstack.config import Config
 config = Config()
 DATABASES = {
