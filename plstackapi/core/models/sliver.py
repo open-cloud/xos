@@ -9,7 +9,6 @@ from plstackapi.core.models import Slice
 from plstackapi.core.models import Node
 from plstackapi.core.models import Site
 from plstackapi.core.models import DeploymentNetwork
-from plstackapi.openstack.driver import OpenStackDriver
 
 # Create your models here.
 class Sliver(PlCoreBase):
@@ -30,8 +29,7 @@ class Sliver(PlCoreBase):
             raise exceptions.ValidationError, "Slice %s has no subnet" % self.slice.name
 
         if not self.instance_id:
-            driver = OpenStackDriver()
-            instance = driver.spawn_instance(name=self.name,
+            instance = self.driver.spawn_instance(name=self.name,
                                    key_name = self.key.name,
                                    flavor_id = self.flavor.flavor_id,
                                    image_id = self.image.image_id,
@@ -41,8 +39,7 @@ class Sliver(PlCoreBase):
         super(Sliver, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        driver = OpenStackDriver()
         if self.instance_id:
-            driver.destroy_instance(self.instance_id)
+            self.driver.destroy_instance(self.instance_id)
 
         super(Sliver, self).delete(*args, **kwds)

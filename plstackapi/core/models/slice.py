@@ -5,7 +5,6 @@ from plstackapi.core.models import Site
 from plstackapi.core.models import PLUser
 from plstackapi.core.models import Role
 from plstackapi.core.models import DeploymentNetwork
-from plstackapi.openstack.driver import OpenStackDriver
 
 # Create your models here.
 
@@ -25,31 +24,28 @@ class Slice(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-
-        driver = OpenStackDriver()
         if not self.tenant_id:
             nova_fields = {'tenant_name': self.name,
                    'description': self.description,
                    'enabled': self.enabled}
-            tenant = driver.create_tenant(**nova_fields)
+            tenant = self.driver.create_tenant(**nova_fields)
             self.tenant_id = tenant.id
 
             # create network
-            network = driver.create_network(self.name)
+            network = self.driver.create_network(self.name)
             self.network_id = network['id']
 
             # create router
-            router = driver.create_router(self.name)
+            router = self.driver.create_router(self.name)
             self.router_id = router['id']
 
         super(Slice, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        driver = OpenStackDriver()
         if self.tenant_id:
-            driver.delete_router(self.router_id)
-            driver.delete_network(self.network_id)
-            driver.delete_tenant(self.tenant_id)
+            self.driver.delete_router(self.router_id)
+            self.driver.delete_network(self.network_id)
+            self.driver.delete_tenant(self.tenant_id)
 
         super(Slice, self).delete(*args, **kwds)    
 

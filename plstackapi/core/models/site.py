@@ -2,9 +2,6 @@ import os
 from django.db import models
 from plstackapi.core.models import PlCoreBase
 from plstackapi.core.models import DeploymentNetwork
-from plstackapi.openstack.driver import OpenStackDriver
-
-# Create your models here.
 
 
 class Site(PlCoreBase):
@@ -24,26 +21,24 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-        driver  = OpenStackDriver()
         if not self.tenant_id:
-            tenant = driver.create_tenant(tenant_name=self.login_base, 
-                                          description=self.name, 
-                                          enabled=self.enabled)
+            tenant = self.driver.create_tenant(tenant_name=self.login_base, 
+                                               description=self.name, 
+                                               enabled=self.enabled)
             self.tenant_id = tenant.id
         # update the record
         if self.id:
-            driver.update_tenant(self.tenant_id, 
-                                 name=self.login_base,
-                                 description=self.name,
-                                 enabled=self.enabled)
+            self.driver.update_tenant(self.tenant_id, 
+                                      name=self.login_base,
+                                      description=self.name,
+                                      enabled=self.enabled)
 
         super(Site, self).save(*args, **kwds)               
 
 
     def delete(self, *args, **kwds):
-        driver = OpenStackDriver()
         if self.tenant_id:
-            driver.delete_tenant(self.tenant_id)
+            self.driver.delete_tenant(self.tenant_id)
         super(Site, self).delete(*args, **kwds)         
         
 

@@ -45,6 +45,19 @@ class NodeInline(admin.TabularInline):
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
 
+class OSModelAdmin(PlanetStackBaseAdmin):
+    """Attach client connection to openstack on delete() and save()""" 
+    def save_model(self, request, obj, form, change):
+        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.save()
+
+    def delete_model(self, request, obj):
+        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.delete()
+    
+
 class DeploymentNetworkAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
         queryset=Site.objects.all(),
@@ -77,7 +90,7 @@ class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
     form = DeploymentNetworkAdminForm
     inlines = [NodeInline,]
 
-class SiteAdmin(admin.ModelAdmin):
+class SiteAdmin(OSModelAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base']}),
         ('Location', {'fields': ['latitude', 'longitude']}),
@@ -88,40 +101,36 @@ class SiteAdmin(admin.ModelAdmin):
     inlines = [NodeInline,]
     search_fields = ['name']
 
-class KeyAdmin(admin.ModelAdmin):
+class KeyAdmin(OSModelAdmin):
     fieldsets = [
         ('Key', {'fields': ['name', 'key', 'type', 'blacklisted', 'user']})
     ]
     list_display = ['name', 'key', 'type', 'blacklisted', 'user']
 
-    def save_model(self, request, obj, form, change):
-        # attach the caller's openstack clien connection to the object 
-        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.save()
-
-    def delete_model(self, request, obj):
-        # attach the caller's openstack clien connection to the object 
-        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.delete()
-    
     def get_queryset(self, request):
         # get keys user is allowed to see
         qs = super(KeyAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
+        # users can only see their own keys
         return qs.filter(user=request.user)  
         
 
-class SliceAdmin(PlanetStackBaseAdmin):
+class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
     list_display = ('name', 'site','slice_url', 'instantiation')
     inlines = [SliverInline]
 
-class SubnetAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        qs = super(SliceAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        # users can only see slices at their site
+        return qs.filter(site=request.user.site) 
+
+class SubnetAdmin(OSModelAdmin):
     fields = ['cidr', 'ip_version', 'start', 'end', 'slice']
-    list_display = ('slice','cidr', 'start', 'end', 'ip_version' )
+    list_display = ('slice','cidr', 'start', 'end', 'ip_version')
 
 class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
@@ -130,7 +139,7 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deploymentNetwork')
     list_filter = ('deploymentNetwork',)
 
-class RoleAdmin(admin.ModelAdmin):
+class RoleAdmin(OSModelAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
@@ -148,12 +157,13 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
         }
 
-class SliverAdmin(admin.ModelAdmin):
+class SliverAdmin(OSModelAdmin):
     form = SliverForm
     fieldsets = [
         ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+     
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
