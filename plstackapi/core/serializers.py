@@ -20,7 +20,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     slice_memberships = serializers.HyperlinkedRelatedField(view_name='slice-membership-detail')
     site_privileges = serializers.HyperlinkedRelatedField(view_name='site-privilege-detail')
     class Meta:
-        model = User
+        model = PLUser
         fields = ('id',
                   'user_id', 
                   'firstname', 
@@ -207,7 +207,7 @@ class FlavorSerializer(serializers.HyperlinkedModelSerializer):
 
 serializerLookUp = { 
                  Role: RoleSerializer,
-                 User: UserSerializer,
+                 PLUser: UserSerializer,
                  Key: KeySerializer,
                  Site: SiteSerializer,
                  SitePrivilege: SitePrivilegeSerializer,

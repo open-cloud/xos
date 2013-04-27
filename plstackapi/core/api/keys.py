@@ -2,7 +2,7 @@ from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
-from plstackapi.core.models import Key, User
+from plstackapi.core.models import Key
 from plstackapi.core.api.users import _get_users
 
 

@@ -1,8 +1,8 @@
 import os
 import datetime
 from django.db import models
-from core.models import PlCoreBase
-from core.models import Site
+from plstackapi.core.models import PlCoreBase
+from plstackapi.core.models import Site
 from django.contrib.auth.models import User, AbstractBaseUser, UserManager, BaseUserManager
 
 # Create your models here.

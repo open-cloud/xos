@@ -2,18 +2,18 @@ from types import StringTypes
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
-from plstackapi.core.models import User, Site
+from plstackapi.core.models import PLUser, Site
 from plstackapi.core.api.sites import _get_sites
 
 def _get_users(filter):
     if isinstance(filter, StringTypes) and filter.isdigit():
         filter = int(filter)
     if isinstance(filter, int):
-        users = User.objects.filter(id=filter)
+        users = PLUser.objects.filter(id=filter)
     elif isinstance(filter, StringTypes):
-        users = User.objects.filter(email=filter)
+        users = PLUser.objects.filter(email=filter)
     elif isinstance(filter, dict):
-        users = User.objects.filter(**filter)
+        users = PLUser.objects.filter(**filter)
     else:
         users = []
     return users 
@@ -22,7 +22,7 @@ def add_user(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
     sites = _get_sites(fields.get('site')) 
     if sites: fields['site'] = sites[0]     
-    user = User(**fields)
+    user = PLUser(**fields)
     nova_fields = {'name': user.email[:user.email.find('@')],
                    'email': user.email, 
                    'password': fields.get('password'),
@@ -35,7 +35,7 @@ def add_user(auth, fields):
 
 def update_user(auth, id, **fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    users = User.objects.filter(id=id)
+    users = PLUser.objects.filter(id=id)
     if not users:
         return
 
