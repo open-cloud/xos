@@ -8,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.signals import user_logged_in 
 
 
 class ReadonlyTabularInline(admin.TabularInline):
@@ -133,7 +134,6 @@ class SliverAdmin(admin.ModelAdmin):
     ]
     list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
 
-
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
@@ -205,6 +205,13 @@ class PLUserAdmin(UserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+
+# register a signal that caches the user's credentials when they log in
+def cache_credentials(sender, user, request, **kwds):
+    auth = {'username': request.POST['username'],
+            'password': request.POST['password']}
+    request.session['auth'] = auth
+user_logged_in.connect(cache_credentials)
 
 # Now register the new UserAdmin...
 admin.site.register(PLUser, PLUserAdmin)
