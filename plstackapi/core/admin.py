@@ -101,9 +101,18 @@ class KeyAdmin(admin.ModelAdmin):
         obj.save()
 
     def delete_model(self, request, obj):
+        # attach the caller's openstack clien connection to the object 
         client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
         obj.delete()
+    
+    def get_queryset(self, request):
+        # get keys user is allowed to see
+        qs = super(KeyAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)  
+        
 
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
