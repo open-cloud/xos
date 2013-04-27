@@ -1,8 +1,10 @@
 from plstackapi.core.models import Site
 from plstackapi.core.models import *
+from plstackapi.openstack.driver import OpenStackDriver
+from plstackapi.openstack.client import OpenStackClient
+
 from django.contrib import admin
 from django.contrib.auth.models import Group
-
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
@@ -62,7 +64,6 @@ class DeploymentNetworkAdminForm(forms.ModelForm):
 
     def save(self, commit=True):
         deploymentNetwork = super(DeploymentNetworkAdminForm, self).save(commit=False)
-
         if commit:
             deploymentNetwork.save()
 
@@ -92,6 +93,17 @@ class KeyAdmin(admin.ModelAdmin):
         ('Key', {'fields': ['name', 'key', 'type', 'blacklisted', 'user']})
     ]
     list_display = ['name', 'key', 'type', 'blacklisted', 'user']
+
+    def save_model(self, request, obj, form, change):
+        # attach the caller's openstack clien connection to the object 
+        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.save()
+
+    def delete_model(self, request, obj):
+        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.delete()
 
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
