@@ -163,6 +163,16 @@ class SliverAdmin(OSModelAdmin):
         ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+
+    def save_model(self, request, obj, form, change):
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.save()
+
+    def delete_model(self, request, obj):
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.delete()
      
 
 class UserCreationForm(forms.ModelForm):
@@ -209,7 +219,7 @@ class UserChangeForm(forms.ModelForm):
         return self.initial["password"]
 
 
-class PLUserAdmin(UserAdmin):
+class PLUserAdmin(UserAdmin, OSModelAdmin):
     class Meta:
         app_label = "core"
 
