@@ -29,7 +29,6 @@ class Site(PlCoreBase):
         # update the record
         if self.id:
             self.driver.update_tenant(self.tenant_id, 
-                                      name=self.login_base,
                                       description=self.name,
                                       enabled=self.enabled)
 

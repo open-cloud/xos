@@ -39,6 +39,11 @@ class Slice(PlCoreBase):
             router = self.driver.create_router(self.name)
             self.router_id = router['id']
 
+        if self.id:
+            self.driver.update_tenant(self.tenant_id,
+                                      description=self.description,
+                                      enabled=self.enabled)
+
         super(Slice, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):

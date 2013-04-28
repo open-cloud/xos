@@ -67,14 +67,32 @@ class OpenStackDriver:
     def add_user_role(self, user_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=user_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(role_name)
-        return tenant.add_user(user, role)
+        role = self.shell.keystone.roles.find(name=role_name)
+
+        role_found = False
+        user_roles = user.list_roles(tenant.id)
+        for user_role in user_roles:
+            if user_role.name == role.name:
+                role_found = True
+        if not role_found:
+            tenant.add_user(user, role)
+
+        return 1
 
     def delete_user_role(self, user_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=user_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(role_name)
-        return tenant.delete_user(user, role)
+        role = self.shell.keystone.roles.find(name=role_name)
+
+        role_found = False
+        user_roles = user.list_roles(tenant.id)
+        for user_role in user_roles:
+            if user_role.name == role.name:
+                role_found = True
+        if role_found:
+            tenant.remove_user(user, role)
+
+        return 1 
 
     def update_user(self, id, **kwds):
         return self.shell.keystone.users.update(id, **kwds)
