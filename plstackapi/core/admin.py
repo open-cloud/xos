@@ -38,6 +38,18 @@ class SiteInline(admin.TabularInline):
     model = Site
     extra = 0
 
+class SliceInline(admin.TabularInline):
+    model = Slice
+    extra = 0
+
+class UserInline(admin.TabularInline):
+    model = PLUser
+    extra = 0
+
+class RoleInline(admin.TabularInline):
+    model = Role
+    extra = 0 
+
 class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
@@ -101,6 +113,12 @@ class SiteAdmin(OSModelAdmin):
     inlines = [NodeInline,]
     search_fields = ['name']
 
+class SitePrivilegeAdmin(OSModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['user', 'site', 'role']})
+    ]
+    list_display = ('user', 'site', 'role')
+
 class KeyAdmin(OSModelAdmin):
     fieldsets = [
         ('Key', {'fields': ['name', 'key', 'type', 'blacklisted', 'user']})
@@ -127,6 +145,13 @@ class SliceAdmin(OSModelAdmin):
             return qs
         # users can only see slices at their site
         return qs.filter(site=request.user.site) 
+
+class SliceMembershipAdmin(OSModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['user', 'slice', 'role']})
+    ]
+    list_display = ('user', 'slice', 'role')
+    inlines = [UserInline, SliceInline, RoleInline]
 
 class SubnetAdmin(OSModelAdmin):
     fields = ['cidr', 'ip_version', 'start', 'end', 'slice']
@@ -261,9 +286,9 @@ admin.site.register(PLUser, PLUserAdmin)
 admin.site.unregister(Group)
 
 admin.site.register(Site, SiteAdmin)
-admin.site.register(SitePrivilege)
+admin.site.register(SitePrivilege, SitePrivilegeAdmin)
 admin.site.register(Slice, SliceAdmin)
-admin.site.register(SliceMembership)
+admin.site.register(SliceMembership, SliceMembershipAdmin)
 admin.site.register(Subnet, SubnetAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Node, NodeAdmin)
