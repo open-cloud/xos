@@ -34,6 +34,11 @@ class Slice(PlCoreBase):
             # give caller an admin role at the tenant they've created
             self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
 
+            # refresh credentials using this tenant
+            self.driver.shell.connect(username=self.driver.shell.keystone.username,
+                                      password=self.driver.shell.keystone.password, 
+                                      tenant=tenant.name) 
+
             # create network
             network = self.driver.create_network(self.name)
             self.network_id = network['id']
