@@ -117,13 +117,11 @@ class OpenStackDriver:
         routers = self.shell.quantum.list_routers(id=id)['routers']
         for router in routers:
             self.shell.quantum.delete_router(router['id'])
-            
             # remove router form external network
-            nets = self.shell.quantum.list_networks()['networks']
-            for net in nets:
-                if net['router:external'] == True:
-                    self.shell.quantum.add_gateway_router(router['id'],
-                                                          {'network_id': net['id']})
+            #nets = self.shell.quantum.list_networks()['networks']
+            #for net in nets:
+            #    if net['router:external'] == True:
+            #        self.shell.quantum.remove_gateway_router(router['id'])
 
     def add_router_interface(self, router_id, subnet_id):
         router = self.shell.quantum.show_router(router_id)['router']
