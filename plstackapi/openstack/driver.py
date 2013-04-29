@@ -9,6 +9,9 @@ class OpenStackDriver:
         else:
             self.config = Config() 
 
+        self.admin_client = OpenStackClient()
+        self.admin_user = self.admin_client.keystone.users.find(name=self.admin_client.keystone.username)
+
         if client:
             self.shell = client
         else:
@@ -37,6 +40,10 @@ class OpenStackDriver:
             tenant = self.shell.keystone.tenants.create(**fields)
         else:
             tenant = tenants[0]
+
+        # always give the admin user the admin role to any tenant created 
+        # by the driver. 
+        self.add_user_role(self.admin_user.id, tenant.id, 'admin')
         return tenant
 
     def update_tenant(self, id, **kwds):
