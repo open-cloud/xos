@@ -54,6 +54,10 @@ class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
 
+class PlainTextWidget(forms.Widget):
+    def render(self, _name, value, attrs):
+        return mark_safe(value) if value is not None else ''
+
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
 
@@ -62,13 +66,20 @@ class OSModelAdmin(PlanetStackBaseAdmin):
     def save_model(self, request, obj, form, change):
         client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
         obj.save()
 
     def delete_model(self, request, obj):
         client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
         obj.delete()
-    
+
+class RoleAdmin(OSModelAdmin):
+    fieldsets = [
+        ('Role', {'fields': ['role_type']})
+    ]
+    list_display = ('role_type',)
 
 class DeploymentNetworkAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
@@ -113,11 +124,25 @@ class SiteAdmin(OSModelAdmin):
     inlines = [NodeInline,]
     search_fields = ['name']
 
-class SitePrivilegeAdmin(OSModelAdmin):
+class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['user', 'site', 'role']})
     ]
     list_display = ('user', 'site', 'role')
+
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this site/tenant   
+        client = OpenStackClient(tenant=obj.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.save()
+
+    def delete_model(self, request, obj):
+        # update openstack connection to use this site/tenant   
+        client = OpenStackClient(tenant=obj.site.login_base, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.delete()
 
 class KeyAdmin(OSModelAdmin):
     fieldsets = [
@@ -146,16 +171,43 @@ class SliceAdmin(OSModelAdmin):
         # users can only see slices at their site
         return qs.filter(site=request.user.site) 
 
-class SliceMembershipAdmin(OSModelAdmin):
+class SliceMembershipAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['user', 'slice', 'role']})
     ]
     list_display = ('user', 'slice', 'role')
-    inlines = [UserInline, SliceInline, RoleInline]
 
-class SubnetAdmin(OSModelAdmin):
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this slice/tenant
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.save()
+
+    def delete_model(self, request, obj):
+        # update openstack connection to use this slice/tenant
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.delete()
+
+class SubnetAdmin(PlanetStackBaseAdmin):
     fields = ['cidr', 'ip_version', 'start', 'end', 'slice']
     list_display = ('slice','cidr', 'start', 'end', 'ip_version')
+
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this subnet's slice/tenant
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.save()
+
+    def delete_model(self, request, obj):
+        # update openstack connection to use this subnet's slice/tenant
+        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
+        obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
+        obj.delete()
 
 class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
@@ -164,15 +216,6 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deploymentNetwork')
     list_filter = ('deploymentNetwork',)
 
-class RoleAdmin(OSModelAdmin):
-    fieldsets = [
-        ('Role', {'fields': ['role_type']})
-    ]
-    list_display = ('role_type',)
-
-class PlainTextWidget(forms.Widget):
-    def render(self, _name, value, attrs):
-        return mark_safe(value) if value is not None else ''
 
 class SliverForm(forms.ModelForm):
     class Meta:
@@ -182,7 +225,7 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
         }
 
-class SliverAdmin(OSModelAdmin):
+class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
         ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
@@ -190,13 +233,17 @@ class SliverAdmin(OSModelAdmin):
     list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
+        # update openstack connection to use this sliver's slice/tenant
         client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
         obj.save()
 
     def delete_model(self, request, obj):
+        # update openstack connection to use this sliver's slice/tenant
         client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
+        obj.caller = request.user
         obj.delete()
      
 

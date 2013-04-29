@@ -31,6 +31,9 @@ class Slice(PlCoreBase):
             tenant = self.driver.create_tenant(**nova_fields)
             self.tenant_id = tenant.id
 
+            # give caller an admin role at the tenant they've created
+            self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
+
             # create network
             network = self.driver.create_network(self.name)
             self.network_id = network['id']
