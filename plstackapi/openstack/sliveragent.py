@@ -12,6 +12,10 @@ class SliverAgent:
             # fill in null ip addresses 
             slivers = Sliver.objects.filter(ip=None)
             for sliver in slivers:
+                # update connection
+                client.connect(username=client.keystone.username,
+                               password=client.keystone.password,
+                               tenant=sliver.slice.name)  
                 servers = client.nova.servers.findall(id=sliver.instance_id)
                 if not servers:
                     continue
