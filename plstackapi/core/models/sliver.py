@@ -14,8 +14,8 @@ from plstackapi.core.models import DeploymentNetwork
 class Sliver(PlCoreBase):
     instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")
+    instance_name = models.CharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
-    flavor = models.ForeignKey(Flavor, related_name='slivers')
     image = models.ForeignKey(Image, related_name='slivers')
     key = models.ForeignKey(Key, related_name='slivers')
     slice = models.ForeignKey(Slice, related_name='slivers')
@@ -31,10 +31,10 @@ class Sliver(PlCoreBase):
         if not self.instance_id:
             instance = self.driver.spawn_instance(name=self.name,
                                    key_name = self.key.name,
-                                   flavor_id = self.flavor.flavor_id,
                                    image_id = self.image.image_id,
                                    hostname = self.node.name )
             self.instance_id = instance.id
+            self.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
         super(Sliver, self).save(*args, **kwds)
 
