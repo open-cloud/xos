@@ -234,9 +234,9 @@ class OpenStackDriver:
             self.shell.nova.keypairs.delete(key) 
         return 1 
 
-    def spawn_instance(self, name, key_name=None, hostname=None, flavor_id=None, image_id=None, security_group=None, pubkeys=[]):
-        #if not flavor_id:
-        #    flavor = self.config.nova_default_flavor
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[]):
+        flavor_name = self.config.nova_default_flavor
+        flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
         #    image = self.config.nova_default_imave
         if not security_group:
@@ -252,7 +252,7 @@ class OpenStackDriver:
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
-                                            flavor=flavor_id,
+                                            flavor=flavor.id,
                                             image=image_id,
                                             security_group = security_group,
                                             files=files,
