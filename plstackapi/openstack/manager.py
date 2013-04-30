@@ -49,35 +49,6 @@ class Manager:
         old_node_names = set(nodes_dict.keys()).difference(compute_nodes_dict.keys())
         Node.objects.filter(name__in=old_node_names).delete()
 
-    def refresh_flavors(self):
-        # collect local flavors
-        from plstackapi.core.models import Flavor
-        flavors = Flavor.objects.all()
-        flavors_dict = {}
-        for flavor in flavors:
-            flavors_dict[flavor.name] = flavor
-
-        # collect nova falvors
-        nova_flavors = self.client.nova.flavors.list()
-        nova_flavors_dict = {}
-        for nova_flavor in nova_flavors:
-            nova_flavors_dict[nova_flavor.name] = nova_flavor
-
-        # add new flavors 
-        new_flavor_names = set(nova_flavors_dict.keys()).difference(flavors_dict.keys())
-        for name in new_flavor_names:
-             
-            flavor = Flavor(flavor_id=nova_flavors_dict[name].id,
-                            name=nova_flavors_dict[name].name,
-                            memory_mb=nova_flavors_dict[name].ram,
-                            disk_gb=nova_flavors_dict[name].disk,   
-                            vcpus=nova_flavors_dict[name].vcpus)
-            flavor.save()
-
-        # remove old flavors
-        old_flavor_names = set(flavors_dict.keys()).difference(nova_flavors_dict.keys())
-        Flavor.objects.filter(name__in=old_flavor_names).delete()
-            
     def refresh_images(self):
         # collect local images
         from plstackapi.core.models import Image

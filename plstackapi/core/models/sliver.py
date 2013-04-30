@@ -2,7 +2,6 @@ import os
 from django.db import models
 from django.core import exceptions
 from plstackapi.core.models import PlCoreBase
-from plstackapi.core.models import Flavor
 from plstackapi.core.models import Image
 from plstackapi.core.models import Key
 from plstackapi.core.models import Slice

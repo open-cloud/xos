@@ -3,7 +3,6 @@ from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Sliver, Slice
-from plstackapi.core.api.flavors import _get_flavors
 from plstackapi.core.api.images import _get_images
 from plstackapi.core.api.keys import _get_keys
 from plstackapi.core.api.slices import _get_slices
@@ -27,8 +26,6 @@ def _get_slivers(filter):
 def add_sliver(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
     
-    flavors = _get_flavors(fields.get('flavor'))
-    if flavors: fields['flavor'] = flavors[0]     
     images = _get_images(fields.get('image'))
     if images: fields['image'] = images[0]     
     keys = _get_keys(fields.get('key'))
@@ -44,7 +41,6 @@ def add_sliver(auth, fields):
     # create quantum sliver
     instance = driver.spawn_instance(name=sliver.name,
                                    key_name = sliver.key.name,
-                                   flavor_id = sliver.flavor.flavor_id,
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name )
 

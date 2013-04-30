@@ -13,7 +13,6 @@ from plstackapi.core.views.slivers import SliverListCreate, SliverRetrieveUpdate
 from plstackapi.core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
 from plstackapi.core.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
 from plstackapi.core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
-from plstackapi.core.views.flavors import FlavorListCreate, FlavorRetrieveUpdateDestroy
 from plstackapi.core.views.nodes import NodeListCreate, NodeRetrieveUpdateDestroy
 from plstackapi.core.models import Site
 from plstackapi.core.api_root import api_root
@@ -70,8 +69,6 @@ urlpatterns = patterns('',
     url(r'^plstackapi/images/$', ImageListCreate.as_view(), name='image-list'),
     url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
 
-    url(r'^plstackapi/flavors/$', FlavorListCreate.as_view(), name='flavor-list'),
-    url(r'^plstackapi/flavors/(?P<pk>[a-zA-Z0-9_]+)/$', FlavorRetrieveUpdateDestroy.as_view(), name='flavor-detail'),
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
     

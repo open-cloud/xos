@@ -31,7 +31,7 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
-    fields = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+    fields = ['ip', 'name', 'slice', 'image', 'key', 'node', 'deploymentNetwork']
     extra = 0
 
 class SiteInline(admin.TabularInline):
@@ -228,9 +228,9 @@ class SliverForm(forms.ModelForm):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'name', 'slice', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'name', 'slice', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this sliver's slice/tenant
@@ -340,7 +340,6 @@ admin.site.register(Subnet, SubnetAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver, SliverAdmin)
-admin.site.register(Flavor)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
