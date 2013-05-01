@@ -63,6 +63,7 @@ class PlanetStackBaseAdmin(admin.ModelAdmin):
 
 class OSModelAdmin(PlanetStackBaseAdmin):
     """Attach client connection to openstack on delete() and save()""" 
+
     def save_model(self, request, obj, form, change):
         client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
@@ -163,6 +164,17 @@ class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
     list_display = ('name', 'site','slice_url', 'instantiation')
     inlines = [SliverInline]
+
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=obj.name, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
     def get_queryset(self, request):
         qs = super(SliceAdmin, self).get_queryset(request)

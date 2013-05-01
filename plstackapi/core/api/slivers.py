@@ -1,4 +1,5 @@
 from types import StringTypes
+from django.contrib.auth import authenticate
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -25,7 +26,7 @@ def _get_slivers(filter):
  
 def add_sliver(auth, fields):
     driver = OpenStackDriver(client = auth_check(auth))
-    
+        
     images = _get_images(fields.get('image'))
     if images: fields['image'] = images[0]     
     keys = _get_keys(fields.get('key'))
@@ -38,14 +39,7 @@ def add_sliver(auth, fields):
     nodes = _get_nodes(fields.get('node'))
     if nodes: fields['node'] = nodes[0]     
     sliver = Sliver(**fields)
-    # create quantum sliver
-    instance = driver.spawn_instance(name=sliver.name,
-                                   key_name = sliver.key.name,
-                                   image_id = sliver.image.image_id,
-                                   hostname = sliver.node.name )
-
-    sliver.instance_id=instance.id
-
+    sliver.driver = driver    
     sliver.save()
     return sliver
 
@@ -56,12 +50,13 @@ def delete_sliver(auth, filter={}):
     driver = OpenStackDriver(client = auth_check(auth))   
     slivers = _get_slivers(filter)
     for sliver in slivers:
-        driver.destroy_instance(sliver.sliver_id) 
+        sliver.driver = driver
         sliver.delete()
     return 1
 
 def get_slivers(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     if 'slice' in filter:
         slices = _get_slices(filter.get('slice'))
         if slices: filter['slice'] = slices[0]

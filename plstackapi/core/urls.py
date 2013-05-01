@@ -55,13 +55,13 @@ urlpatterns = patterns('',
     url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SliceMembershipRetrieveUpdateDestroy.as_view(), name='slice_membership-detail'),
     
     url(r'^plstackapi/subnets/$', SubnetListCreate.as_view(), name='subnet-list'),
-    url(r'^plstackapi/subnets/(?P<pk>[0-9]+)/$', SubnetRetrieveUpdateDestroy.as_view(), name='subnet-detail'),
+    url(r'^plstackapi/subnets/(?P<pk>[a-zA-Z0-9_]+)/$', SubnetRetrieveUpdateDestroy.as_view(), name='subnet-detail'),
 
     url(r'^plstackapi/slivers/$', SliverListCreate.as_view(), name='sliver-list'),
-    url(r'^plstackapi/slivers/(?P<pk>[0-9]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
+    url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
 
     url(r'^plstackapi/nodes/$', NodeListCreate.as_view(), name='node-list'),
-    url(r'^plstackapi/nodes/(?P<pk>[0-9]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
+    url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
     
     url(r'^plstackapi/deploymentnetworks/$', DeploymentNetworkListCreate.as_view(), name='deploymentnetwork-list'),
     url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9]+)/$', DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
