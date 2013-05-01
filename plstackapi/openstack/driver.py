@@ -264,3 +264,17 @@ class OpenStackDriver:
         servers = self.shell.nova.servers.findall(id=id)
         for server in servers:
             self.shell.nova.servers.delete(server)
+
+    def update_instance_metadata(self, id, metadata):
+        servers = self.shell.nova.servers.findall(id=id)
+        for server in servers:
+            self.shell.nova.servers.set_meta(server, metadata)
+            # note: set_meta() returns a broken Server() object. Don't try to
+            # print it in the shell or it will fail in __repr__.
+
+    def delete_instance_metadata(self, id, metadata):
+        # note: metadata is a dict. Only the keys matter, not the values.
+        servers = self.shell.nova.servers.findall(id=id)
+        for server in servers:
+            self.shell.nova.servers.delete_meta(server, metadata)
+
