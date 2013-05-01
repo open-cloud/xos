@@ -242,8 +242,9 @@ class OpenStackDriver:
         if not security_group:
             security_group = self.config.nova_default_security_group 
 
-        authorized_keys = "\n".join(pubkeys)
-        files = {'/root/.ssh/authorized_keys': authorized_keys}
+        #authorized_keys = "\n".join(pubkeys)
+        #files = {'/root/.ssh/authorized_keys': authorized_keys}
+        files = {}
        
         hints = {}
         availability_zone = None
