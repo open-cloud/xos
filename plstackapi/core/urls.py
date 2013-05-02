@@ -37,37 +37,37 @@ urlpatterns = patterns('',
     url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
 
     url(r'^plstackapi/users/$', UserListCreate.as_view(), name='user-list'),
-    url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
+    url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
 
     url(r'^plstackapi/keys/$', KeyListCreate.as_view(), name='key-list'),
-    url(r'^plstackapi/keys/(?P<pk>[a-zA-Z0-9]+)/$', KeyRetrieveUpdateDestroy.as_view(), name='key-detail'),
+    url(r'^plstackapi/keys/(?P<pk>[a-zA-Z0-9_\-]+)/$', KeyRetrieveUpdateDestroy.as_view(), name='key-detail'),
 
     url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
-    url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
+    url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
 
     url(r'^plstackapi/site_privileges/$', SitePrivilegeListCreate.as_view(), name='siteprivilege-list'),
     url(r'^plstackapi/site_privileges/(?P<pk>[a-zA-Z0-9_]+)/$', SitePrivilegeRetrieveUpdateDestroy.as_view(), name='siteprivilege-detail'),
 
     url(r'^plstackapi/slices/$', SliceListCreate.as_view(), name='slice-list'),
-    url(r'^plstackapi/slices/(?P<pk>[0-9]+)/$', SliceRetrieveUpdateDestroy.as_view(), name='slice-detail'),
+    url(r'^plstackapi/slices/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceRetrieveUpdateDestroy.as_view(), name='slice-detail'),
 
     url(r'^plstackapi/slice_memberships/$', SliceMembershipListCreate.as_view(), name='slice_membership-list'),
     url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SliceMembershipRetrieveUpdateDestroy.as_view(), name='slice_membership-detail'),
     
     url(r'^plstackapi/subnets/$', SubnetListCreate.as_view(), name='subnet-list'),
-    url(r'^plstackapi/subnets/(?P<pk>[a-zA-Z0-9_]+)/$', SubnetRetrieveUpdateDestroy.as_view(), name='subnet-detail'),
+    url(r'^plstackapi/subnets/(?P<pk>[a-zA-Z0-9_\-]+)/$', SubnetRetrieveUpdateDestroy.as_view(), name='subnet-detail'),
 
     url(r'^plstackapi/slivers/$', SliverListCreate.as_view(), name='sliver-list'),
-    url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
+    url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
 
     url(r'^plstackapi/nodes/$', NodeListCreate.as_view(), name='node-list'),
-    url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
+    url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
     
     url(r'^plstackapi/deploymentnetworks/$', DeploymentNetworkListCreate.as_view(), name='deploymentnetwork-list'),
-    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9]+)/$', DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
+    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
 
     url(r'^plstackapi/images/$', ImageListCreate.as_view(), name='image-list'),
-    url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
+    url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
 
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
