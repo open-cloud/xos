@@ -233,17 +233,17 @@ class SubnetAdmin(PlanetStackBaseAdmin):
     list_display = ('slice','cidr', 'start', 'end', 'ip_version')
 
     def save_model(self, request, obj, form, change):
-        # update openstack connection to use this subnet's slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        # update openstack connection to use this subnet's slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
 class ImageAdmin(admin.ModelAdmin):
@@ -272,19 +272,18 @@ class SliverAdmin(PlanetStackBaseAdmin):
     list_display = ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
-        # update openstack connection to use this sliver's slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        # update openstack connection to use this sliver's slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
-     
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required

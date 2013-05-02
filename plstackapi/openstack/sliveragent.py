@@ -1,22 +1,28 @@
 import os
+import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
 import time
 from plstackapi.core.models.sliver import Sliver
-from plstackapi.openstack.client import OpenStackClient    
+from plstackapi.openstack.manager import OpenStackManager
 
 class SliverAgent:
 
     def run(self):
-        client = OpenStackClient()
-        while True:
+        manager = OpenStackManager()
+        # exit if openstack is disable or unavailable
+        if not manager.enabled or not manager.has_openstack:
+            sys.exit()
+
+        while True :
             # fill in null ip addresses 
             slivers = Sliver.objects.filter(ip=None)
             for sliver in slivers:
                 # update connection
-                client.connect(username=client.keystone.username,
-                               password=client.keystone.password,
+                manager.client.connect(username=manager.client.keystone.username,
+                               password=manager.client.keystone.password,
                                tenant=sliver.slice.name)  
-                servers = client.nova.servers.findall(id=sliver.instance_id)
+                sliver.os_manager = manager
+                servers = manager.client.nova.servers.findall(id=sliver.instance_id)
                 if not servers:
                     continue
                 server = servers[0]

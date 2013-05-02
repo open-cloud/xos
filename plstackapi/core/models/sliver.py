@@ -29,18 +29,9 @@ class Sliver(PlCoreBase):
         if not self.slice.subnet.exists():
             raise exceptions.ValidationError, "Slice %s has no subnet" % self.slice.name
 
-        if not self.instance_id:
-            instance = self.driver.spawn_instance(name=self.name,
-                                   key_name = self.key.name,
-                                   image_id = self.image.image_id,
-                                   hostname = self.node.name )
-            self.instance_id = instance.id
-            self.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
-
+        self.os_manager.save_sliver(self)
         super(Sliver, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        if self.instance_id:
-            self.driver.destroy_instance(self.instance_id)
-
+        self.os_manager.delete_sliver(self)
         super(Sliver, self).delete(*args, **kwds)

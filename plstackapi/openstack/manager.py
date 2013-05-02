@@ -8,12 +8,13 @@ try:
     from plstackapi.core.models import * 
     has_openstack = True
 except:
-    has_openstack = False
+    has_openpstack = False
+
+manager_enabled = Config().api_nova_enabled
 
 def require_enabled(callable):
-    enabled = Config().api_nova_enabled
     def wrapper(*args, **kwds):
-        if enabled and has_openstack:
+        if manager_enabled and has_openstack:
             return callable(*args, **kwds)
         else:
             return None
@@ -23,10 +24,12 @@ def require_enabled(callable):
 class OpenStackManager:
 
     def __init__(self, auth={}, caller=None):
-        self.client = None
         if auth:
             self.client = OpenStackClient(**auth)
-        
+        else:
+            self.client = OpenStackClient()   
+        self.has_openstack = has_openstack       
+        self.enabled = manager_enabled 
         self.driver = OpenStackDriver(client=self.client) 
         self.caller=caller
 
@@ -129,6 +132,46 @@ class OpenStackManager:
             self.driver.delete_router(slice.router_id)
             self.driver.delete_network(slice.network_id)
             self.driver.delete_tenant(slice.tenant_id)
+
+    @require_enabled
+    def save_subnet(self, subnet):    
+        if not subnet.subnet_id:
+            quantum_subnet = self.driver.create_subnet(name= subnet.slice.name,
+                                          network_id=subnet.slice.network_id,
+                                          cidr_ip = subnet.cidr,
+                                          ip_version=subnet.ip_version,
+                                          start = subnet.start,
+                                          end = subnet.end)
+            subnet.subnet_id = quantum_subnet['id']
+            # add subnet as interface to slice's router
+            self.driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)
+            #add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
+            #commands.getstatusoutput(add_route)
+
+    
+    @require_enabled
+    def delete_subnet(self, subnet):
+        if subnet.subnet_id:
+            self.driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
+            self.driver.delete_subnet(subnet.subnet_id)
+            #del_route = 'route del -net %s' % self.cidr
+            #commands.getstatusoutput(del_route)
+    
+    @require_enabled
+    def save_sliver(self, sliver):
+        if not sliver.instance_id:
+            instance = self.driver.spawn_instance(name=sliver.name,
+                                   key_name = sliver.key.name,
+                                   image_id = sliver.image.image_id,
+                                   hostname = sliver.node.name )
+            sliver.instance_id = instance.id
+            sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
+
+    @require_enabled
+    def delete_sliver(self, sliver):
+        if sliver.instance_id:
+            self.driver.destroy_instance(sliver.instance_id) 
+    
 
     def refresh_nodes(self):
         # collect local nodes

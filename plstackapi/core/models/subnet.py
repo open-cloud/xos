@@ -17,25 +17,9 @@ class Subnet(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.slice.name)
 
     def save(self, *args, **kwds):
-        if not self.subnet_id:
-            quantum_subnet = self.driver.create_subnet(name= self.slice.name,
-                                          network_id=self.slice.network_id,
-                                          cidr_ip = self.cidr,
-                                          ip_version=self.ip_version,
-                                          start = self.start,
-                                          end = self.end)
-            self.subnet_id = quantum_subnet['id']
-            # add subnet as interface to slice's router
-            self.driver.add_router_interface(self.slice.router_id, self.subnet_id)
-            #add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
-            #commands.getstatusoutput(add_route)
-
+        self.os_manager.save_subnet(self)
         super(Subnet, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        if self.subnet_id:
-            self.driver.delete_router_interface(self.slice.router_id, self.subnet_id) 
-            self.driver.delete_subnet(self.subnet_id)
-            #del_route = 'route del -net %s' % self.cidr 
-            #commands.getstatusoutput(del_route)
+        self.os_manager.delete_subnet(self)
         super(Subnet, self).delete(*args, **kwds)
