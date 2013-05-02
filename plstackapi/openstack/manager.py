@@ -2,19 +2,43 @@ from plstackapi.planetstack import settings
 from django.core import management
 management.setup_environ(settings)
 from plstackapi.openstack.client import OpenStackClient
+from plstackapi.openstack.driver import OpenStackDriver
+from plstackapi.planetstack.config import Config
+from plstackapi.core.models import * 
+
+def require_enabled(callable):
+    enabled = Config().api_nova_enabled
+    def wrapper(*args, **kwds):
+        if enabled:
+            return callable(*args, **kwds)
+        else:
+            return None
+    return wrapper
 
 
-class Manager:
+class OpenStackManager:
 
-    def __init__(self):
+    def __init__(self, auth={}, caller=None):
+        self.client = None
+        if auth:
+            self.client = OpenStackClient(**auth)
         
-        self.client = OpenStackClient()
+        self.driver = OpenStackDriver(client=self.client) 
+        self.caller=None
 
+    @require_enabled
+    def save_role(self, role):
+        if not role.role_id:
+            keystone_role = self.driver.create_role(role.role_type)
+            role.role_id = keystone_role.id
+
+    @require_enabled
+    def delete_role(self, role):
+        if role.role_id:
+            self.driver.delete_role({'id': role.role_id})        
+                  
     def refresh_nodes(self):
         # collect local nodes
-        from plstackapi.core.models import Node
-        from plstackapi.core.models import DeploymentNetwork
-        from plstackapi.core.models import Site
         nodes = Node.objects.all()
         nodes_dict = {}
         for node in nodes:
@@ -51,7 +75,6 @@ class Manager:
 
     def refresh_images(self):
         # collect local images
-        from plstackapi.core.models import Image
         images = Image.objects.all()
         images_dict = {}    
         for image in images:
@@ -75,3 +98,5 @@ class Manager:
         # remove old images
         old_image_names = set(images_dict.keys()).difference(glance_images_dict.keys())
         Image.objects.filter(name__in=old_image_names).delete()
+
+

@@ -1,5 +1,6 @@
 from plstackapi.core.models import Site
 from plstackapi.core.models import *
+from plstackapi.openstack.manager import OpenStackManager
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.openstack.client import OpenStackClient
 
@@ -76,11 +77,23 @@ class OSModelAdmin(PlanetStackBaseAdmin):
         obj.caller = request.user
         obj.delete()
 
-class RoleAdmin(OSModelAdmin):
+class RoleAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
     list_display = ('role_type',)
+
+    def save_model(self, request, obj, form, change):
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.save()
+
+    def delete_model(self, request, obj):
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.delete()
 
 class DeploymentNetworkAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(

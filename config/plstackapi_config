@@ -17,6 +17,7 @@ ca_ssl_cert=None
 ratelimit_enabled=0
 omf_enabled=0
 mail_support_address=support@localhost
+nova_enabled=True
 
 [nova]
 admin_user=admin@domain.com
