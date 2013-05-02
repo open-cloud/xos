@@ -28,7 +28,7 @@ class OpenStackManager:
             self.client = OpenStackClient(**auth)
         
         self.driver = OpenStackDriver(client=self.client) 
-        self.caller=None
+        self.caller=caller
 
     @require_enabled
     def save_role(self, role):
@@ -70,6 +70,28 @@ class OpenStackManager:
         if user.user_id:
             self.driver.delete_user(user.user_id)        
     
+
+    
+    @require_enabled
+    def save_site(self, site):
+        if not site.tenant_id:
+            tenant = self.driver.create_tenant(tenant_name=site.login_base,
+                                               description=site.name,
+                                               enabled=site.enabled)
+            site.tenant_id = tenant.id
+            # give caller an admin role at the tenant they've created
+            self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
+
+        # update the record
+        if site.id and site.tenant_id:
+            self.driver.update_tenant(site.tenant_id,
+                                      description=site.name,
+                                      enabled=site.enabled)
+
+    @require_enabled
+    def delete_site(self, site):
+        if site.tenant_id:
+            self.driver.delete_tenant(site.tenant_id)
                
     def refresh_nodes(self):
         # collect local nodes

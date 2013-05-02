@@ -21,26 +21,12 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-        if not self.tenant_id:
-            tenant = self.driver.create_tenant(tenant_name=self.login_base, 
-                                               description=self.name, 
-                                               enabled=self.enabled)
-            self.tenant_id = tenant.id
-            # give caller an admin role at the tenant they've created
-            self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
-             
-        # update the record
-        if self.id:
-            self.driver.update_tenant(self.tenant_id, 
-                                      description=self.name,
-                                      enabled=self.enabled)
-
+        self.os_manager.save_site(self)
         super(Site, self).save(*args, **kwds)               
 
 
     def delete(self, *args, **kwds):
-        if self.tenant_id:
-            self.driver.delete_tenant(self.tenant_id)
+        self.os_manager.delete_site(self)
         super(Site, self).delete(*args, **kwds)         
         
 

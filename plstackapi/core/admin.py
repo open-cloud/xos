@@ -144,9 +144,9 @@ class SiteAdmin(OSModelAdmin):
             if obj is None:
                 continue
             # give inline object access to driver and caller
-            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-            inline.model.driver = OpenStackDriver(client=client)
-            inline.model.caller = request.user
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
