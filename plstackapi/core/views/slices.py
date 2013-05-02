@@ -37,7 +37,7 @@ class SliceRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        slices = get_slices(data['auth'], {'id': pk})
+        slices = get_slices(data['auth'],  pk)
         if not slices:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SliceSerializer(slices[0])
@@ -59,7 +59,7 @@ class SliceRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_slice(data['auth'], {'id': pk})
+        delete_slice(data['auth'],  pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             
