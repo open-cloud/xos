@@ -63,37 +63,26 @@ class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
 
 class OSModelAdmin(PlanetStackBaseAdmin):
-    """Attach client connection to openstack on delete() and save()""" 
+    """Attach client connection to openstack on delete() and save()"""
 
     def save_model(self, request, obj, form, change):
-        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
-        obj.delete()
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.delete() 
 
-class RoleAdmin(PlanetStackBaseAdmin):
+class RoleAdmin(OSModelAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
     list_display = ('role_type',)
 
-    def save_model(self, request, obj, form, change):
-        auth = request.session.get('auth', {})
-        auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.save()
-
-    def delete_model(self, request, obj):
-        auth = request.session.get('auth', {})
-        auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.delete()
 
 class DeploymentNetworkAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(

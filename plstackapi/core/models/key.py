@@ -16,15 +16,10 @@ class Key(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-        if not self.key_id:
-            key_fields = {'name': self.name,
-                          'key': self.key}
-            nova_key = self.driver.create_keypair(**key_fields)
-            self.key_id = nova_key.id
+        self.os_manager.save_key(self)
         super(Key, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        if self.key_id:
-            self.driver.delete_keypair(self.key_id)
+        self.os_manager.delete_key(self)
         super(Key, self).delete(*args, **kwds) 
     

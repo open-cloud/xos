@@ -3,7 +3,7 @@ import datetime
 from django.db import models
 from plstackapi.core.models import PlCoreBase
 from plstackapi.core.models import Site
-from plstackapi.openstack.driver import OpenStackDriver
+from plstackapi.openstack.manager import OpenStackManager
 from django.contrib.auth.models import User, AbstractBaseUser, UserManager, BaseUserManager
 
 # Create your models here.
@@ -101,22 +101,16 @@ class PLUser(AbstractBaseUser):
 
 
     def save(self, *args, **kwds):
-        if not self.user_id:
-            if not self.driver:
-                setattr(self, 'driver', OpenStackDriver())
-            name = self.email[:self.email.find('@')]
-            user_fields = {'name': name,
-                           'email': self.email,
-                           'password': self.password,
-                           'enabled': True}
-            keystone_user = self.driver.create_user(**user_fields)
-            self.user_id = keystone_user.id
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+
+        self.os_manager.save_user(self)
         self.set_password(self.password)    
         super(PLUser, self).save(*args, **kwds)   
 
     def delete(self, *args, **kwds):
-        if self.user_id:
-            if not getattr(self, 'driver'):
-                setattr(self, 'driver', OpenStackDriver())
-            self.driver.delete_user(self.user_id)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+
+        self.os_manager.delete_user(self)
         super(PLUser, self).delete(*args, **kwds)    

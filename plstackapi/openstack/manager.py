@@ -1,15 +1,19 @@
 from plstackapi.planetstack import settings
 from django.core import management
 management.setup_environ(settings)
-from plstackapi.openstack.client import OpenStackClient
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.planetstack.config import Config
-from plstackapi.core.models import * 
+try:
+    from plstackapi.openstack.client import OpenStackClient
+    from plstackapi.openstack.driver import OpenStackDriver
+    from plstackapi.planetstack.config import Config
+    from plstackapi.core.models import * 
+    has_openstack = True
+except:
+    has_openstack = False
 
 def require_enabled(callable):
     enabled = Config().api_nova_enabled
     def wrapper(*args, **kwds):
-        if enabled:
+        if enabled and has_openstack:
             return callable(*args, **kwds)
         else:
             return None
@@ -35,8 +39,38 @@ class OpenStackManager:
     @require_enabled
     def delete_role(self, role):
         if role.role_id:
-            self.driver.delete_role({'id': role.role_id})        
-                  
+            self.driver.delete_role({'id': role.role_id})
+
+    @require_enabled
+    def save_key(self, key):
+        if not key.key_id:
+            key_fields = {'name': key.name,
+                          'key': key.key}
+            nova_key = self.driver.create_keypair(**key_fields)
+            key.key_id = nova_key.id        
+
+    @require_enabled
+    def delete_key(self, key):
+        if key.key_id:
+            self.driver.delete_keypair(key.key_id)
+
+    @require_enabled
+    def save_user(self, user):
+        if not user.user_id:
+            name = user.email[:user.email.find('@')]
+            user_fields = {'name': name,
+                           'email': user.email,
+                           'password': user.password,
+                           'enabled': True}
+            keystone_user = self.driver.create_user(**user_fields)
+            user.user_id = keystone_user.id
+    
+    @require_enabled
+    def delete_user(self, user):
+        if user.user_id:
+            self.driver.delete_user(user.user_id)        
+    
+               
     def refresh_nodes(self):
         # collect local nodes
         nodes = Node.objects.all()
