@@ -114,6 +114,17 @@ class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
     form = DeploymentNetworkAdminForm
     inlines = [NodeInline,]
 
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
+
 class SiteAdmin(OSModelAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base']}),
@@ -124,6 +135,17 @@ class SiteAdmin(OSModelAdmin):
     filter_horizontal = ('deployments',)
     inlines = [NodeInline,]
     search_fields = ['name']
+
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
