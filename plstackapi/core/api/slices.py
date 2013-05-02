@@ -1,5 +1,6 @@
 import re
 from types import StringTypes
+from django.contrib.auth import authenticate
 from plstackapi.openstack.client import OpenStackClient
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.core.api.auth import auth_check
@@ -80,7 +81,8 @@ def delete_slice(auth, filter={}):
     return 1
 
 def get_slices(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     if 'site' in filter:
         sites = _get_sites(filter.get('site'))
         if sites: filter['site'] = sites[0]
