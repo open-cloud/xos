@@ -21,6 +21,8 @@ class Sliver(PlCoreBase):
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
     deploymentNetwork = models.ForeignKey(DeploymentNetwork, verbose_name='deployment', related_name='sliver_deploymentNetwork')
+    numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=2)
+
 
     def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
 

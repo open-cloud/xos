@@ -228,7 +228,7 @@ class SliverForm(forms.ModelForm):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'name', 'slice', 'numberCores', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
 

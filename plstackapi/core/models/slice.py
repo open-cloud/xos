@@ -21,6 +21,10 @@ class Slice(PlCoreBase):
     network_id = models.CharField(max_length=256, help_text="Quantum network")
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
 
+    SVC_CLASS_CHOICES = (('besteffort', 'Best Effort'), ('silver', 'Silver'), ('gold','Gold'))
+    serviceClass = models.CharField(verbose_name="Service Class",default="besteffort",help_text="The Service Class of this slice", max_length=30, choices=SVC_CLASS_CHOICES)
+
+
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
