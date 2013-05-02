@@ -160,8 +160,8 @@ class KeyAdmin(OSModelAdmin):
         
 
 class SliceAdmin(OSModelAdmin):
-    fields = ['name', 'site', 'instantiation', 'description', 'slice_url']
-    list_display = ('name', 'site','slice_url', 'instantiation')
+    fields = ['name', 'site', 'serviceClass', 'instantiation', 'description', 'slice_url']
+    list_display = ('name', 'site','serviceClass', 'slice_url', 'instantiation')
     inlines = [SliverInline]
 
     def get_queryset(self, request):
