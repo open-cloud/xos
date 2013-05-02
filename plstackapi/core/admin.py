@@ -257,17 +257,19 @@ class NodeAdmin(admin.ModelAdmin):
 class SliverForm(forms.ModelForm):
     class Meta:
         ip = forms.CharField(widget=PlainTextWidget)
+        instance_name = forms.CharField(widget=PlainTextWidget)
         model = Sliver
         widgets = {
             'ip': PlainTextWidget(),
+            'instance_name': PlainTextWidget(),
         }
 
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this sliver's slice/tenant
