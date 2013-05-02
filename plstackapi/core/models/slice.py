@@ -28,42 +28,11 @@ class Slice(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-        if not self.tenant_id:
-            nova_fields = {'tenant_name': self.name,
-                   'description': self.description,
-                   'enabled': self.enabled}
-            tenant = self.driver.create_tenant(**nova_fields)
-            self.tenant_id = tenant.id
-
-            # give caller an admin role at the tenant they've created
-            self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
-
-            # refresh credentials using this tenant
-            self.driver.shell.connect(username=self.driver.shell.keystone.username,
-                                      password=self.driver.shell.keystone.password, 
-                                      tenant=tenant.name) 
-
-            # create network
-            network = self.driver.create_network(self.name)
-            self.network_id = network['id']
-
-            # create router
-            router = self.driver.create_router(self.name)
-            self.router_id = router['id']
-
-        if self.id:
-            self.driver.update_tenant(self.tenant_id,
-                                      description=self.description,
-                                      enabled=self.enabled)
-
+        self.os_manager.save_slice(self)
         super(Slice, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        if self.tenant_id:
-            self.driver.delete_router(self.router_id)
-            self.driver.delete_network(self.network_id)
-            self.driver.delete_tenant(self.tenant_id)
-
+        self.os_manager.delete_slice(self)
         super(Slice, self).delete(*args, **kwds)    
 
 class SliceMembership(PlCoreBase):
@@ -74,9 +43,9 @@ class SliceMembership(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 
     def save(self, *args, **kwds):
-        self.driver.add_user_role(self.user.user_id, self.slice.tenant_id, self.role.role_type)
+        self.os_manager.driver.add_user_role(self.user.user_id, self.slice.tenant_id, self.role.role_type)
         super(SliceMembership, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        self.driver.delete_user_role(self.user.user_id, self.slice.tenant_id, self.role.role_type)
+        self.os_manager.driver.delete_user_role(self.user.user_id, self.slice.tenant_id, self.role.role_type)
         super(SliceMembership, self).delete(*args, **kwds)

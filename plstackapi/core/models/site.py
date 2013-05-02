@@ -39,11 +39,11 @@ class SitePrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
     def save(self, *args, **kwds):
-        self.driver.add_user_role(self.user.user_id, self.site.tenant_id, self.role.role_type)
+        self.os_manager.driver.add_user_role(self.user.user_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        self.driver.delete_user_role(self.user.user_id, self.site.tenant_id, self.role.role_type)
+        self.os_manager.driver.delete_user_role(self.user.user_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).delete(*args, **kwds)
 
 

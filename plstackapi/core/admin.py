@@ -157,16 +157,16 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant   
-        client = OpenStackClient(tenant=obj.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
         # update openstack connection to use this site/tenant   
-        client = OpenStackClient(tenant=obj.site.login_base, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
 class KeyAdmin(OSModelAdmin):
@@ -195,9 +195,9 @@ class SliceAdmin(OSModelAdmin):
             if obj is None:
                 continue
             # give inline object access to driver and caller
-            client = OpenStackClient(tenant=obj.name, **request.session.get('auth', {}))
-            inline.model.driver = OpenStackDriver(client=client)
-            inline.model.caller = request.user
+            auth = request.session.get('auth', {})
+            auth['tenant'] = obj.name       # meed to connect using slice's tenant
+            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
     def get_queryset(self, request):
@@ -214,18 +214,19 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
     list_display = ('user', 'slice', 'role')
 
     def save_model(self, request, obj, form, change):
-        # update openstack connection to use this slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        # update openstack connection to use this slice/tenant
-        client = OpenStackClient(tenant=obj.slice.name, **request.session.get('auth', {}))
-        obj.driver = OpenStackDriver(client=client)
-        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        auth = request.session.get('auth', {})
+        auth['tenant'] = obj.slice.name
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
+
 
 class SubnetAdmin(PlanetStackBaseAdmin):
     fields = ['cidr', 'ip_version', 'start', 'end', 'slice']

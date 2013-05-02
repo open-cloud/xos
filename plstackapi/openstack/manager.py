@@ -93,6 +93,43 @@ class OpenStackManager:
         if site.tenant_id:
             self.driver.delete_tenant(site.tenant_id)
                
+    @require_enabled
+    def save_slice(self, slice):
+        if not slice.tenant_id:
+            nova_fields = {'tenant_name': slice.name,
+                   'description': slice.description,
+                   'enabled': slice.enabled}
+            tenant = self.driver.create_tenant(**nova_fields)
+            slice.tenant_id = tenant.id
+
+            # give caller an admin role at the tenant they've created
+            self.driver.add_user_role(self.caller.user_id, tenant.id, 'admin')
+
+            # refresh credentials using this tenant
+            self.driver.shell.connect(username=self.driver.shell.keystone.username,
+                                      password=self.driver.shell.keystone.password,
+                                      tenant=tenant.name)
+
+            # create network
+            network = self.driver.create_network(slice.name)
+            slice.network_id = network['id']
+
+            # create router
+            router = self.driver.create_router(slice.name)
+            slice.router_id = router['id']
+
+        if slice.id and slice.tenant_id:
+            self.driver.update_tenant(slice.tenant_id,
+                                      description=slice.description,
+                                      enabled=slice.enabled)    
+
+    @require_enabled
+    def delete_slice(self, slice):
+        if slice.tenant_id:
+            self.driver.delete_router(slice.router_id)
+            self.driver.delete_network(slice.network_id)
+            self.driver.delete_tenant(slice.tenant_id)
+
     def refresh_nodes(self):
         # collect local nodes
         nodes = Node.objects.all()
