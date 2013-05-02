@@ -1,5 +1,6 @@
 from plstackapi.core.models import Site
 from plstackapi.core.models import *
+from plstackapi.openstack.manager import OpenStackManager
 from plstackapi.openstack.driver import OpenStackDriver
 from plstackapi.openstack.client import OpenStackClient
 
@@ -31,7 +32,7 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
-    fields = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+    fields = ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
     extra = 0
 
 class SiteInline(admin.TabularInline):
@@ -63,6 +64,7 @@ class PlanetStackBaseAdmin(admin.ModelAdmin):
 
 class OSModelAdmin(PlanetStackBaseAdmin):
     """Attach client connection to openstack on delete() and save()""" 
+
     def save_model(self, request, obj, form, change):
         client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
         obj.driver = OpenStackDriver(client=client)
@@ -75,11 +77,23 @@ class OSModelAdmin(PlanetStackBaseAdmin):
         obj.caller = request.user
         obj.delete()
 
-class RoleAdmin(OSModelAdmin):
+class RoleAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
     list_display = ('role_type',)
+
+    def save_model(self, request, obj, form, change):
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.save()
+
+    def delete_model(self, request, obj):
+        auth = request.session.get('auth', {})
+        auth['tenant'] = request.user.site.login_base
+        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.delete()
 
 class DeploymentNetworkAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
@@ -113,6 +127,17 @@ class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
     form = DeploymentNetworkAdminForm
     inlines = [NodeInline,]
 
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
+
 class SiteAdmin(OSModelAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base']}),
@@ -123,6 +148,17 @@ class SiteAdmin(OSModelAdmin):
     filter_horizontal = ('deployments',)
     inlines = [NodeInline,]
     search_fields = ['name']
+
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
@@ -163,6 +199,17 @@ class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'instantiation', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url', 'instantiation')
     inlines = [SliverInline]
+
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            client = OpenStackClient(tenant=obj.name, **request.session.get('auth', {}))
+            inline.model.driver = OpenStackDriver(client=client)
+            inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
     def get_queryset(self, request):
         qs = super(SliceAdmin, self).get_queryset(request)
@@ -228,9 +275,9 @@ class SliverForm(forms.ModelForm):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'name', 'slice', 'numberCores', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'name', 'slice', 'flavor', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this sliver's slice/tenant
@@ -268,7 +315,8 @@ class UserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password1"])
+        user.password = self.cleaned_data["password1"]
+        #user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user
@@ -340,7 +388,6 @@ admin.site.register(Subnet, SubnetAdmin)
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver, SliverAdmin)
-admin.site.register(Flavor)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)

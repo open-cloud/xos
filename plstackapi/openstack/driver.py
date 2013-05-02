@@ -234,16 +234,17 @@ class OpenStackDriver:
             self.shell.nova.keypairs.delete(key) 
         return 1 
 
-    def spawn_instance(self, name, key_name=None, hostname=None, flavor_id=None, image_id=None, security_group=None, pubkeys=[]):
-        #if not flavor_id:
-        #    flavor = self.config.nova_default_flavor
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[]):
+        flavor_name = self.config.nova_default_flavor
+        flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
         #    image = self.config.nova_default_imave
         if not security_group:
             security_group = self.config.nova_default_security_group 
 
-        authorized_keys = "\n".join(pubkeys)
-        files = {'/root/.ssh/authorized_keys': authorized_keys}
+        #authorized_keys = "\n".join(pubkeys)
+        #files = {'/root/.ssh/authorized_keys': authorized_keys}
+        files = {}
        
         hints = {}
         availability_zone = None
@@ -252,7 +253,7 @@ class OpenStackDriver:
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
-                                            flavor=flavor_id,
+                                            flavor=flavor.id,
                                             image=image_id,
                                             security_group = security_group,
                                             files=files,
@@ -264,3 +265,17 @@ class OpenStackDriver:
         servers = self.shell.nova.servers.findall(id=id)
         for server in servers:
             self.shell.nova.servers.delete(server)
+
+    def update_instance_metadata(self, id, metadata):
+        servers = self.shell.nova.servers.findall(id=id)
+        for server in servers:
+            self.shell.nova.servers.set_meta(server, metadata)
+            # note: set_meta() returns a broken Server() object. Don't try to
+            # print it in the shell or it will fail in __repr__.
+
+    def delete_instance_metadata(self, id, metadata):
+        # note: metadata is a dict. Only the keys matter, not the values.
+        servers = self.shell.nova.servers.findall(id=id)
+        for server in servers:
+            self.shell.nova.servers.delete_meta(server, metadata)
+

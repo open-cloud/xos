@@ -13,13 +13,10 @@ class Role(PlCoreBase):
 
 
     def save(self, *args, **kwds):
-        if not self.role_id:
-            keystone_role = self.driver.create_role(name=self.role_type)
-            self.role_id = keystone_role.id
+        self.os_manager.save_role(self)
         super(Role, self).save(*args, **kwds)
     
     def delete(self, *args, **kwds):
-        if self.role_id:
-            self.driver.delete_role({'id': self.role_id})   
+        self.os_manager.delete_role(self)   
         super(Role, self).delete(*args, **kwds)
             

@@ -102,15 +102,16 @@ class PLUser(AbstractBaseUser):
 
     def save(self, *args, **kwds):
         if not self.user_id:
-            if not hasattr(self, 'driver'):
+            if not self.driver:
                 setattr(self, 'driver', OpenStackDriver())
             name = self.email[:self.email.find('@')]
             user_fields = {'name': name,
                            'email': self.email,
                            'password': self.password,
-                           'enabled': self.is_active}
-            user = self.driver.create_user(**user_fields)
-            self.user_id = user.id
+                           'enabled': True}
+            keystone_user = self.driver.create_user(**user_fields)
+            self.user_id = keystone_user.id
+        self.set_password(self.password)    
         super(PLUser, self).save(*args, **kwds)   
 
     def delete(self, *args, **kwds):

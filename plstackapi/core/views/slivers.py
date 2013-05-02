@@ -37,7 +37,7 @@ class SliverRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA)
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        slivers = get_slivers(data['auth'], {'id': pk})
+        slivers = get_slivers(data['auth'], pk)
         if not slivers:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = SliverSerializer(slivers[0])
@@ -59,7 +59,7 @@ class SliverRetrieveUpdateDestroy(APIView):
         data = parse_request(request.DATA) 
         if 'auth' not in data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        delete_sliver(data['auth'], {'id': pk})
+        delete_sliver(data['auth'], pk)
         return Response(status=status.HTTP_204_NO_CONTENT) 
             
             

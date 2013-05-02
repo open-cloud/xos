@@ -15,5 +15,4 @@ def api_root(request, format=None):
         'subnets': reverse('subnet-list', request=request, format=format),
         'slivers': reverse('sliver-list', request=request, format=format),
         'images': reverse('image-list', request=request, format=format),
-        'flavors': reverse('flavor-list', request=request, format=format),
     })

@@ -151,7 +151,6 @@ class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
 class SliverSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
-    flavor = serializers.HyperlinkedRelatedField(view_name='flavor-detail')
     image = serializers.HyperlinkedRelatedField(view_name='image-detail')
     key = serializers.HyperlinkedRelatedField(view_name='key-detail')
     slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
@@ -166,8 +165,8 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id',
                   'instance_id',
                   'name',
+                  'instance_name',
                   'ip',
-                  'flavor',
                   'image',
                   'key',
                   'slice',
@@ -193,18 +192,6 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
                   'disk_format',
                   'container_format')
 
-class FlavorSerializer(serializers.HyperlinkedModelSerializer):
-    # HyperlinkedModelSerializer doesn't include the id by default
-    id = serializers.Field()
-    class Meta:
-        model = Flavor
-        fields = ('id',
-                  'flavor_id',
-                  'name',
-                  'memory_mb',
-                  'disk_gb',
-                  'vcpus')
-
 serializerLookUp = { 
                  Role: RoleSerializer,
                  PLUser: UserSerializer,
@@ -218,7 +205,6 @@ serializerLookUp = {
                  Sliver: SliverSerializer,
                  DeploymentNetwork: DeploymentNetworkSerializer,
                  Image: ImageSerializer,
-                 Flavor: FlavorSerializer, 
                  None: None,
                 }
 
