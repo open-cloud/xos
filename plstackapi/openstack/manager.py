@@ -32,6 +32,9 @@ class OpenStackManager:
         self.enabled = manager_enabled 
         self.driver = OpenStackDriver(client=self.client) 
         self.caller=caller
+        if not self.caller:
+            self.caller = self.driver.admin_user
+            self.caller.user_id = self.caller.id 
 
     @require_enabled
     def save_role(self, role):
@@ -76,7 +79,7 @@ class OpenStackManager:
 
     
     @require_enabled
-    def save_site(self, site):
+    def save_site(self, site, add_role=True):
         if not site.tenant_id:
             tenant = self.driver.create_tenant(tenant_name=site.login_base,
                                                description=site.name,

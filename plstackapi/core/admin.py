@@ -1,8 +1,6 @@
 from plstackapi.core.models import Site
 from plstackapi.core.models import *
 from plstackapi.openstack.manager import OpenStackManager
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.openstack.client import OpenStackClient
 
 from django.contrib import admin
 from django.contrib.auth.models import Group
@@ -122,9 +120,9 @@ class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
             if obj is None:
                 continue
             # give inline object access to driver and caller
-            client = OpenStackClient(tenant=request.user.site.login_base, **request.session.get('auth', {}))
-            inline.model.driver = OpenStackDriver(client=client)
-            inline.model.caller = request.user
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
 class SiteAdmin(OSModelAdmin):

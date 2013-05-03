@@ -1,20 +1,21 @@
 import os
+import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "plstackapi.planetstack.settings")
 import time
 from plstackapi.core.models.site import Site
-from plstackapi.openstack.driver import OpenStackDriver    
+from plstackapi.openstack.manager import OpenStackManager    
 
 class SiteAgent:
     def run(self):
-        driver = OpenStackDriver()
-        # fill in null tenant ids 
-        sites = Site.objects.filter(tenant_id__in=[None, ''])
-        for site in sites:
-            # calling save() on the model should force the tenant_id to be set
-            site.driver = driver
-            site.caller = driver.admin_user
-            site.caller.user_id = site.caller.id
-            site.save() 
+        manager = OpenStackManager()
+        # exit if openstack is disable or unavailable
+        if manager.enabled and manager.has_openstack:
+            # fill in null tenant ids 
+            sites = Site.objects.filter(tenant_id__in=[None, ''])
+            for site in sites:
+                # calling save() on the model should force the tenant_id to be set
+                site.os_manager = manager
+                site.save() 
                                         
 if __name__ == '__main__':
     SiteAgent().run()
