@@ -24,17 +24,24 @@ def require_enabled(callable):
 class OpenStackManager:
 
     def __init__(self, auth={}, caller=None):
-        if auth:
-            self.client = OpenStackClient(**auth)
-        else:
-            self.client = OpenStackClient()   
+        self.client = None
+        self.driver = None
+        self.caller = None
         self.has_openstack = has_openstack       
-        self.enabled = manager_enabled 
-        self.driver = OpenStackDriver(client=self.client) 
-        self.caller=caller
-        if not self.caller:
-            self.caller = self.driver.admin_user
-            self.caller.user_id = self.caller.id 
+        self.enabled = manager_enabled
+
+        if has_openstack and manager_enabled:
+            if auth:
+                self.client = OpenStackClient(**auth)
+            else:
+                self.client = OpenStackClient()
+            self.driver = OpenStackDriver(client=self.client) 
+            
+            if caller:
+                self.caller = caller:
+            else:
+                self.caller = self.driver.admin_user
+                self.caller.user_id = self.caller.id 
 
     @require_enabled
     def save_role(self, role):
