@@ -38,7 +38,7 @@ class OpenStackManager:
             self.driver = OpenStackDriver(client=self.client) 
             
             if caller:
-                self.caller = caller:
+                self.caller = caller
             else:
                 self.caller = self.driver.admin_user
                 self.caller.user_id = self.caller.id 
