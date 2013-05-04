@@ -53,9 +53,13 @@ class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
 
-class PlainTextWidget(forms.Widget):
-    def render(self, _name, value, attrs):
-        return mark_safe(value) if value is not None else ''
+class PlainTextWidget(forms.HiddenInput):
+    input_type = 'hidden'
+
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        return mark_safe(value + super(PlainTextWidget, self).render(name, value, attrs))
 
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
