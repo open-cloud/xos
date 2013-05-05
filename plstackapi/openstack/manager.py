@@ -172,7 +172,7 @@ class OpenStackManager:
             self.driver.delete_subnet(subnet.subnet_id)
             #del_route = 'route del -net %s' % self.cidr
             #commands.getstatusoutput(del_route)
-    
+
     @require_enabled
     def save_sliver(self, sliver):
         if not sliver.instance_id:
@@ -182,6 +182,9 @@ class OpenStackManager:
                                    hostname = sliver.node.name )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
+
+        if sliver.instance_id:
+            self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
 
     @require_enabled
     def delete_sliver(self, sliver):
