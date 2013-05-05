@@ -20,10 +20,10 @@ class PLUserManager(BaseUserManager):
         user = self.model(
             email=PLUserManager.normalize_email(email),
             firstname=firstname,
-            lastname=lastname
+            lastname=lastname,
+            password=password
         )
-
-        user.set_password(password)
+        #user.set_password(password)
         user.is_admin = True
         user.save(using=self._db)
         return user
@@ -105,7 +105,8 @@ class PLUser(AbstractBaseUser):
             setattr(self, 'os_manager', OpenStackManager())
 
         self.os_manager.save_user(self)
-        self.set_password(self.password)    
+        if not self.id:
+            self.set_password(self.password)    
         super(PLUser, self).save(*args, **kwds)   
 
     def delete(self, *args, **kwds):
