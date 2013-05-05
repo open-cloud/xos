@@ -68,15 +68,17 @@ class OSModelAdmin(PlanetStackBaseAdmin):
     """Attach client connection to openstack on delete() and save()"""
 
     def save_model(self, request, obj, form, change):
-        auth = request.session.get('auth', {})
-        auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        if request.user.site:
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        auth = request.session.get('auth', {})
-        auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        if request.user.site:
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete() 
 
 class RoleAdmin(OSModelAdmin):
