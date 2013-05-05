@@ -77,7 +77,13 @@ class OpenStackManager:
                            'enabled': True}
             keystone_user = self.driver.create_user(**user_fields)
             user.user_id = keystone_user.id
-    
+        if user.site:
+            if user.is_admin:
+                role = 'admin'
+            else:
+                role = 'user'       
+            self.driver.add_user_role(user.user_id, user.site.tenant_id, role)
+  
     @require_enabled
     def delete_user(self, user):
         if user.user_id:
