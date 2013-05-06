@@ -189,8 +189,8 @@ class KeyAdmin(OSModelAdmin):
         
 
 class SliceAdmin(OSModelAdmin):
-    fields = ['name', 'site', 'serviceClass', 'instantiation', 'description', 'slice_url']
-    list_display = ('name', 'site','serviceClass', 'slice_url', 'instantiation')
+    fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
+    list_display = ('name', 'site','serviceClass', 'slice_url')
     inlines = [SliverInline]
 
     def get_formsets(self, request, obj=None):

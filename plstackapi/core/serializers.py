@@ -60,7 +60,6 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'enabled',
                   'name',
                   'url',
-                  'instantiation',
                   'omf_friendly',
                   'description',
                   'slice_url',
