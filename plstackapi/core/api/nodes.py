@@ -1,7 +1,5 @@
 from types import StringTypes
-from plstackapi.openstack.client import OpenStackClient
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.core.api.auth import auth_check
+from django.contrib.auth import authenticate
 from plstackapi.core.models import Node
  
 def _get_nodes(filter):
@@ -29,7 +27,8 @@ def update_node(auth, id, fields={}):
     return 
 
 def get_nodes(auth, filter={}):
-    auth_check(auth)   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     nodes = _get_nodes(filter)
     return nodes             
         

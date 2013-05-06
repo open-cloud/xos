@@ -1,8 +1,6 @@
 from types import StringTypes
 from django.contrib.auth import authenticate
-from plstackapi.openstack.client import OpenStackClient
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.core.api.auth import auth_check
+from plstackapi.openstack.manager import OpenStackManager
 from plstackapi.core.models import Sliver, Slice
 from plstackapi.core.api.images import _get_images
 from plstackapi.core.api.keys import _get_keys
@@ -25,21 +23,23 @@ def _get_slivers(filter):
     return slivers
  
 def add_sliver(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
-        
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    
     images = _get_images(fields.get('image'))
-    if images: fields['image'] = images[0]     
     keys = _get_keys(fields.get('key'))
-    if keys: fields['key'] = keys[0]     
     slices = _get_slices(fields.get('slice'))
-    if slices: 
-        fields['slice'] = slices[0]     
     deployment_networks = _get_deployment_networks(fields.get('deploymentNetwork'))
-    if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     nodes = _get_nodes(fields.get('node'))
+    if images: fields['image'] = images[0]     
+    if keys: fields['key'] = keys[0]     
+    if slices: fields['slice'] = slices[0]     
+    if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     if nodes: fields['node'] = nodes[0]     
+
     sliver = Sliver(**fields)
-    sliver.driver = driver    
+    auth['tenant'] = sliver.slice.name
+    sliver.os_manager = OpenStackManager(auth=auth, caller = user)    
     sliver.save()
     return sliver
 
@@ -47,10 +47,12 @@ def update_sliver(auth, sliver, **fields):
     return  
 
 def delete_sliver(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     slivers = _get_slivers(filter)
     for sliver in slivers:
-        sliver.driver = driver
+        auth['tenant'] = sliver.slice.name 
+        slice.os_manager = OpenStackManager(auth=auth, caller = user)
         sliver.delete()
     return 1
 

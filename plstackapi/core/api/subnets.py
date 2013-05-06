@@ -1,8 +1,7 @@
 import commands
 from types import StringTypes
-from plstackapi.openstack.client import OpenStackClient
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.core.api.auth import auth_check
+from django.contrib.auth import authenticate
+from plstackapi.openstack.manager import OpenStackManager
 from plstackapi.core.models import Subnet
 from plstackapi.core.api.slices import _get_slices
 
@@ -25,26 +24,14 @@ def _get_subnets(filter):
     return subnets
 
 def add_subnet(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    
     slices = _get_slices(fields.get('slice')) 
     if slices: fields['slice'] = slices[0]     
     subnet = Subnet(**fields)
-    # create quantum subnet
-    quantum_subnet = driver.create_subnet(name= subnet.slice.name,
-                                          network_id=subnet.slice.network_id,
-                                          cidr_ip = subnet.cidr,
-                                          ip_version=subnet.ip_version,
-                                          start = subnet.start,
-                                          end = subnet.end)
-    subnet.subnet_id=quantum_subnet['id']
-    ## set dns servers
-    #driver.update_subnet(subnet.id, {'dns_nameservers': ['8.8.8.8', '8.8.4.4']})
-
-    # add subnet as interface to slice's router
-    try: driver.add_router_interface(subnet.slice.router_id, subnet.subnet_id)
-    except: pass         
-    #add_route = 'route add -net %s dev br-ex gw 10.100.0.5' % self.cidr
-    commands.getstatusoutput(add_route)    
+    auth['tenant'] = subnet.slice.name
+    subnet.os_manager = OpenStackManager(auth=auth, caller = user)
     subnet.save()
     return subnet
 
@@ -52,18 +39,18 @@ def update_subnet(auth, subnet, **fields):
     return  
 
 def delete_subnet(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     subnets = Subnet.objects.filter(**filter)
     for subnet in subnets:
-        driver.delete_router_interface(subnet.slice.router_id, subnet.subnet_id)
-        driver.delete_subnet(subnet.subnet_id) 
+        auth['tenant'] = subnet.slice.name
+        subnet.os_manager = OpenStackManager(auth=auth, caller = user)
         subnet.delete()
-        #del_route = 'route del -net %s' % subnet.cidr
-    commands.getstatusoutput(del_route)
     return 1
 
 def get_subnets(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     if 'slice' in filter:
         slice = _get_slice(filter.get('slice'))
         if slice: filter['slice'] = slice

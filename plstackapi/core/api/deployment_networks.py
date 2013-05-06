@@ -1,7 +1,5 @@
 from types import StringTypes
-from plstackapi.openstack.client import OpenStackClient
-from plstackapi.openstack.driver import OpenStackDriver
-from plstackapi.core.api.auth import auth_check
+from django.contrib.auth import authenticate
 from plstackapi.core.models import DeploymentNetwork
 
 def _get_deployment_networks(filter):
@@ -18,20 +16,23 @@ def _get_deployment_networks(filter):
     return deployment_networks 
 
 def add_deployment_network(auth, name):
-    auth_check(auth)    
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     deployment = DeploymentNetwork(name=name)
     deployment.save()
     return deployment
 
 def delete_deployment_network(auth, filter={}):
-    auth_check(auth)   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     deployments = _get_deployment_networks(filter)
     for deployment in deployments:
         deployment.delete()
     return 1
 
 def get_deployment_networks(auth, filter={}):
-    auth_check(auth)   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     deployments = _get_deployment_networks(filter)
     return deployments             
         
