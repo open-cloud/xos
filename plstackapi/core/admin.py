@@ -271,9 +271,9 @@ class SliverForm(forms.ModelForm):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant

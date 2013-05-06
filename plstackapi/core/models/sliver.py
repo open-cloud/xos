@@ -30,6 +30,8 @@ class Sliver(PlCoreBase):
             raise exceptions.ValidationError, "Slice %s has no subnet" % self.slice.name
 
         self.os_manager.save_sliver(self)
+        if not self.name:
+            self.name = self.slice.name
         super(Sliver, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
