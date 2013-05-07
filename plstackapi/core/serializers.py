@@ -185,7 +185,6 @@ serializerLookUp = {
                  SitePrivilege: SitePrivilegeSerializer,
                  Slice: SliceSerializer,
                  SliceMembership: SliceMembershipSerializer,
-                 Subnet: SubnetSerializer,
                  Node: NodeSerializer,
                  Sliver: SliverSerializer,
                  DeploymentNetwork: DeploymentNetworkSerializer,
