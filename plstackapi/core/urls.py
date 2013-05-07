@@ -8,7 +8,6 @@ from plstackapi.core.views.site_privileges import SitePrivilegeListCreate, SiteP
 from plstackapi.core.views.users import UserListCreate, UserRetrieveUpdateDestroy
 from plstackapi.core.views.slices import SliceListCreate, SliceRetrieveUpdateDestroy
 from plstackapi.core.views.slice_memberships import SliceMembershipListCreate, SliceMembershipRetrieveUpdateDestroy
-from plstackapi.core.views.subnets import SubnetListCreate, SubnetRetrieveUpdateDestroy
 from plstackapi.core.views.slivers import SliverListCreate, SliverRetrieveUpdateDestroy
 from plstackapi.core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
 from plstackapi.core.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
@@ -54,9 +53,6 @@ urlpatterns = patterns('',
     url(r'^plstackapi/slice_memberships/$', SliceMembershipListCreate.as_view(), name='slice_membership-list'),
     url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SliceMembershipRetrieveUpdateDestroy.as_view(), name='slice_membership-detail'),
     
-    url(r'^plstackapi/subnets/$', SubnetListCreate.as_view(), name='subnet-list'),
-    url(r'^plstackapi/subnets/(?P<pk>[a-zA-Z0-9_\-]+)/$', SubnetRetrieveUpdateDestroy.as_view(), name='subnet-detail'),
-
     url(r'^plstackapi/slivers/$', SliverListCreate.as_view(), name='sliver-list'),
     url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
 
