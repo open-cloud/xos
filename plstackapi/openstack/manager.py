@@ -2,10 +2,10 @@ from netaddr import IPAddress, IPNetwork
 from plstackapi.planetstack import settings
 from django.core import management
 management.setup_environ(settings)
+from plstackapi.planetstack.config import Config
 try:
     from plstackapi.openstack.client import OpenStackClient
     from plstackapi.openstack.driver import OpenStackDriver
-    from plstackapi.planetstack.config import Config
     from plstackapi.core.models import * 
     has_openstack = True
 except:
