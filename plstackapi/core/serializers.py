@@ -65,6 +65,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'slice_url',
                   'network_id',
                   'router_id',
+                  'subnet_id',
                   'site',
                   'slivers',
                   'updated',
