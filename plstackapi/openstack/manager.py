@@ -9,7 +9,7 @@ try:
     from plstackapi.core.models import * 
     has_openstack = True
 except:
-    has_openpstack = False
+    has_openstack = False
 
 manager_enabled = Config().api_nova_enabled
 
