@@ -10,5 +10,4 @@ from plstackapi.core.models.node import Node
 from plstackapi.core.models.slice import Slice
 from plstackapi.core.models.slice import SliceMembership
 from plstackapi.core.models.sliver import Sliver
-from plstackapi.core.models.subnet import Subnet
 
