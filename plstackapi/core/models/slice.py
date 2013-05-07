@@ -5,7 +5,6 @@ from plstackapi.core.models import Site
 from plstackapi.core.models import PLUser
 from plstackapi.core.models import Role
 from plstackapi.core.models import DeploymentNetwork
-
 # Create your models here.
 
 class Slice(PlCoreBase):
@@ -18,12 +17,15 @@ class Slice(PlCoreBase):
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
     network_id = models.CharField(max_length=256, help_text="Quantum network")
     router_id = models.CharField(max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(max_length=256, help_text="Quantum subnet id")
 
     SVC_CLASS_CHOICES = (('besteffort', 'Best Effort'), ('silver', 'Silver'), ('gold','Gold'))
     serviceClass = models.CharField(verbose_name="Service Class",default="besteffort",help_text="The Service Class of this slice", max_length=30, choices=SVC_CLASS_CHOICES)
 
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    
 
     def save(self, *args, **kwds):
         self.os_manager.save_slice(self)
