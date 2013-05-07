@@ -59,7 +59,7 @@ class PlainTextWidget(forms.HiddenInput):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
-        return mark_safe(value + super(PlainTextWidget, self).render(name, value, attrs))
+        return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
 
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
@@ -187,7 +187,6 @@ class KeyAdmin(OSModelAdmin):
         # users can only see their own keys
         return qs.filter(user=request.user)  
         
-
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
@@ -242,9 +241,9 @@ class NodeAdmin(admin.ModelAdmin):
 
 class SliverForm(forms.ModelForm):
     class Meta:
+        model = Sliver
         ip = forms.CharField(widget=PlainTextWidget)
         instance_name = forms.CharField(widget=PlainTextWidget)
-        model = Sliver
         widgets = {
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
@@ -256,6 +255,24 @@ class SliverAdmin(PlanetStackBaseAdmin):
         ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+
+    def get_formsets(self, request, obj=None):
+        # make some fields read only if we are updating an existing record
+        if obj == None:
+            #self.readonly_fields = ('ip', 'instance_name') 
+            self.readonly_fields = () 
+        else:
+            self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key') 
+
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            auth = request.session.get('auth', {})
+            auth['tenant'] = obj.name       # meed to connect using slice's tenant
+            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
+            yield inline.get_formset(request, obj)
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
