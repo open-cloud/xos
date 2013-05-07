@@ -25,8 +25,6 @@ class Slice(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    
-
     def save(self, *args, **kwds):
         self.os_manager.save_slice(self)
         super(Slice, self).save(*args, **kwds)

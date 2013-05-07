@@ -90,8 +90,6 @@ class OpenStackManager:
         if user.user_id:
             self.driver.delete_user(user.user_id)        
     
-
-    
     @require_enabled
     def save_site(self, site, add_role=True):
         if not site.tenant_id:
