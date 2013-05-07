@@ -1,3 +1,4 @@
+from netaddr import IPAddress, IPNetwork
 from plstackapi.planetstack import settings
 from django.core import management
 management.setup_environ(settings)
@@ -137,6 +138,23 @@ class OpenStackManager:
             router = self.driver.create_router(slice.name)
             slice.router_id = router['id']
 
+            # create subnet
+            next_subnet = self.get_next_subnet()
+            cidr = str(next_subnet.cidr)
+            ip_version = next_subnet.version
+            start = str(next_subnet[2])
+            end = str(next_subnet[-2]) 
+            subnet = self.driver.create_subnet(name=slice.name,
+                                               network_id = network['id'],
+                                               cidr_ip = cidr,
+                                               ip_version = ip_version,
+                                               start = start,
+                                               end = end)
+            slice.subnet_id = subnet['id']
+            # add subnet as interface to slice's router
+            self.driver.add_router_interface(router['id'], subnet['id'])
+ 
+
         if slice.id and slice.tenant_id:
             self.driver.update_tenant(slice.tenant_id,
                                       description=slice.description,
@@ -145,9 +163,25 @@ class OpenStackManager:
     @require_enabled
     def delete_slice(self, slice):
         if slice.tenant_id:
+            self.driver.delete_router_interface(slice.router_id, slice.subnet_id)
+            self.driver.delete_subnet(slice.subnet_id)
             self.driver.delete_router(slice.router_id)
             self.driver.delete_network(slice.network_id)
             self.driver.delete_tenant(slice.tenant_id)
+
+    
+
+    def get_next_subnet(self):
+        # limit ourself to 10.0.x.x for now
+        valid_subnet = lambda net: net.startswith('10.0')  
+        subnets = self.driver.shell.quantum.list_subnets()['subnets']
+        ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
+                if valid_subnet(subnet['cidr'])] 
+        ints.sort()
+        last_ip = IPAddress(ints[-1])
+        last_network = IPNetwork(str(last_ip) + "/24")
+        next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
+        return next_network
 
     @require_enabled
     def save_subnet(self, subnet):    
