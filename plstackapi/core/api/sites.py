@@ -1,7 +1,6 @@
 from types import StringTypes
 from django.contrib.auth import authenticate
 from plstackapi.openstack.manager import OpenStackManager    
-from plstackapi.core.api.auth import auth_check
 from plstackapi.core.models import Site
 
 
