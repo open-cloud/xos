@@ -23,7 +23,7 @@ class Sliver(PlCoreBase):
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
 
 
-    def __unicode__(self):  return u'%s::%s' % (self.slice, self.deploymentNetwork)
+    def __unicode__(self):  return u'%s::%s::%s' % (self.deploymentNetwork, self.slice, self.node.name)
 
     def save(self, *args, **kwds):
         if not self.name:
