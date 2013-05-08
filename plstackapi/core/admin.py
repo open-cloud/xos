@@ -30,8 +30,10 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
-    fields = ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
     extra = 0
+    #readonly_fields = ['ip', 'instance_name', 'image']
+    readonly_fields = ['ip', 'instance_name']
 
 class SiteInline(admin.TabularInline):
     model = Site
