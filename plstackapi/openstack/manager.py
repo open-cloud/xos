@@ -215,7 +215,7 @@ class OpenStackManager:
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
-        if sliver.instance_id:
+        if sliver.instance_id and ("numberCores" in sliver.changed_fields):
             self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
 
     @require_enabled
