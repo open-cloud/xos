@@ -58,7 +58,7 @@ class OpenStackManager:
     @require_enabled
     def save_key(self, key):
         if not key.key_id:
-            key_fields = {'name': key.name,
+            key_fields = {'name': key.user.email[:key.user.email.find('@')],
                           'key': key.key}
             nova_key = self.driver.create_keypair(**key_fields)
             key.key_id = nova_key.id        
@@ -80,10 +80,11 @@ class OpenStackManager:
             user.user_id = keystone_user.id
         if user.site:
             if user.is_admin:
-                role = 'admin'
+                self.driver.add_user_role(user.user_id, user.site.tenant_id, 'admin')
             else:
-                role = 'user'       
-            self.driver.add_user_role(user.user_id, user.site.tenant_id, role)
+                # may have admin role so attempt to remove it
+                self.driver.remove_user_role(user.user_id, user.site.tenant_id, 'admin')
+                self.driver.add_user_role(user.user_id, user.site.tenant_id, 'user')
   
     @require_enabled
     def delete_user(self, user):

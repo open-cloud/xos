@@ -15,9 +15,9 @@ class Slice(PlCoreBase):
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
-    network_id = models.CharField(max_length=256, help_text="Quantum network")
-    router_id = models.CharField(max_length=256, help_text="Quantum router id")
-    subnet_id = models.CharField(max_length=256, help_text="Quantum subnet id")
+    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
     SVC_CLASS_CHOICES = (('besteffort', 'Best Effort'), ('silver', 'Silver'), ('gold','Gold'))
     serviceClass = models.CharField(verbose_name="Service Class",default="besteffort",help_text="The Service Class of this slice", max_length=30, choices=SVC_CLASS_CHOICES)

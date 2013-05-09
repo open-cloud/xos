@@ -55,7 +55,7 @@ class PLUser(AbstractBaseUser):
         db_index=True,
     )
 
-    user_id = models.CharField(help_text="keystone user id", max_length=200) 
+    user_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
 
@@ -64,7 +64,7 @@ class PLUser(AbstractBaseUser):
     site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too", null=True)
 
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
 
     objects = PLUserManager()
@@ -92,13 +92,6 @@ class PLUser(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
-
-    @property
-    def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
-
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):

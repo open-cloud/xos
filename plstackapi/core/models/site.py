@@ -6,7 +6,7 @@ from plstackapi.core.models import DeploymentNetwork
 
 class Site(PlCoreBase):
 
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")

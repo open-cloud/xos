@@ -6,8 +6,7 @@ from plstackapi.core.models import PLUser
 # Create your models here.
 
 class Key(PlCoreBase):
-    name = models.CharField(max_length=256, unique=True)
-    key_id = models.CharField(max_length=256, unique=True)
+    key_id = models.CharField(null=True, blank=True, max_length=256, unique=True)
     key = models.CharField(max_length=512)
     type = models.CharField(max_length=256)
     blacklisted = models.BooleanField(default=False)

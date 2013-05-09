@@ -11,7 +11,7 @@ from plstackapi.core.models import DeploymentNetwork
 
 # Create your models here.
 class Sliver(PlCoreBase):
-    instance_id = models.CharField(max_length=200, help_text="Nova instance id")    
+    instance_id = models.CharField(null=True, blank=True, max_length=200, help_text="Nova instance id")    
     name = models.CharField(max_length=200, help_text="Sliver name")
     instance_name = models.CharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
