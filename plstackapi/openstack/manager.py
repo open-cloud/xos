@@ -33,16 +33,31 @@ class OpenStackManager:
 
         if has_openstack and manager_enabled:
             if auth:
-                self.client = OpenStackClient(**auth)
+                try:
+                    self.init_user(auth, caller)
+                except:
+                    # if this fails then it meanse the caller doesn't have a
+                    # role at the slice's tenant. if the caller is an admin
+                    # just use the admin client/manager.
+                    if caller and caller.is_admin: 
+                        self.init_admin()
+                    else: raise
             else:
-                self.client = OpenStackClient()
-            self.driver = OpenStackDriver(client=self.client) 
-            
-            if caller:
-                self.caller = caller
-            else:
-                self.caller = self.driver.admin_user
-                self.caller.user_id = self.caller.id 
+                self.init_admin()
+
+    @require_enabled 
+    def init_user(self, auth, caller):
+        self.client = OpenStackClient(**auth)
+        self.driver = OpenStackDriver(client=self.client)
+        self.caller = caller                 
+    
+    @require_enabled
+    def init_admin(self):
+        # use the admin credentials 
+        self.client = OpenStackClient()
+        self.driver = OpenStackDriver(client=self.client)
+        self.caller = self.driver.admin_user
+        self.caller.user_id = self.caller.id 
 
     @require_enabled
     def save_role(self, role):
