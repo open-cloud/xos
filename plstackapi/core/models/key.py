@@ -12,7 +12,7 @@ class Key(PlCoreBase):
     blacklisted = models.BooleanField(default=False)
     user = models.ForeignKey(PLUser, related_name='keys')
 
-    def __unicode__(self):  return u'%s' % (self.name)
+    def __unicode__(self):  return u'%s' % (self.user.email[:self.user.email.find('@')])
 
     def save(self, *args, **kwds):
         self.os_manager.save_key(self)
