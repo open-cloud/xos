@@ -177,9 +177,9 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 
 class KeyAdmin(OSModelAdmin):
     fieldsets = [
-        ('Key', {'fields': ['name', 'key', 'type', 'blacklisted', 'user']})
+        ('Key', {'fields': ['key', 'type', 'blacklisted', 'user']})
     ]
-    list_display = ['name', 'key', 'type', 'blacklisted', 'user']
+    list_display = ['key', 'type', 'blacklisted', 'user']
 
     def get_queryset(self, request):
         # get keys user is allowed to see
@@ -346,17 +346,17 @@ class PLUserAdmin(UserAdmin, OSModelAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'site', 'firstname', 'lastname', 'last_login')
+    list_display = ('email', 'site', 'firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('firstname','lastname','phone','site')}),
+        ('Personal info', {'fields': ('firstname','lastname','phone', 'is_admin', 'site')}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'password1', 'password2')}
+            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'is_admin', 'password1', 'password2')}
         ),
     )
     search_fields = ('email',)
