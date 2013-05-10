@@ -1,12 +1,25 @@
+import os
+import shutil 
 from distutils.core import setup
-from plstackapi.util.glob import recursive_glob
 
-setup(name='plstackapi',
+def copytree(src, dst, symlinks=False, ignore=None):
+    if not os.path.exists(dst):
+        os.makedirs(dst)
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            copytree(s, d, symlinks, ignore)
+        else:
+            if not os.path.exists(d) or os.stat(src).st_mtime - os.stat(dst).st_mtime > 1:
+                shutil.copy2(s, d)
+
+setup(name='planetstack',
       version='0.1',
-      description='PlanetStack API',
-      packages=['plstackapi', 'plstackapi/planetstack', 'plstackapi/core','plstackapi/core/models' , 'plstackapi/core/views', 'plstackapi/core/api', 'plstackapi/core/fixtures', 'plstackapi/openstack' ,'plstackapi/util', 'plstackapi/importer', 'plstackapi/importer/plclassic'],
-      scripts=['plstackapi/plstackapi-debug-server.py'],
+      description='PlanetStack',
+      scripts=['planetstack/plstackapi-debug-server.py'],
       data_files=[
-        ('/etc/planetstack/', ['config/plstackapi_config']),
-        ('/opt/planetstack/', recursive_glob('plstackapi/planetstack/', '*')),
+        ('/etc/planetstack/', ['planetstack/plstackapi_config']),
         ])
+
+copytree('planetstack/', '/opt/planetstack')
