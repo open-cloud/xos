@@ -61,14 +61,14 @@ class OpenStackManager:
 
     @require_enabled
     def save_role(self, role):
-        if not role.role_id:
+        if not role.role:
             keystone_role = self.driver.create_role(role.role_type)
-            role.role_id = keystone_role.id
+            role.role = keystone_role.id
 
     @require_enabled
     def delete_role(self, role):
-        if role.role_id:
-            self.driver.delete_role({'id': role.role_id})
+        if role.role:
+            self.driver.delete_role({'id': role.role})
 
     @require_enabled
     def save_key(self, key):

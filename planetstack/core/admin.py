@@ -41,14 +41,11 @@ class SiteInline(admin.TabularInline):
 
 class UserInline(admin.TabularInline):
     model = User
+    fields = ['email', 'firstname', 'lastname']
     extra = 0
 
 class SliceInline(admin.TabularInline):
     model = Slice
-    extra = 0
-
-class UserInline(admin.TabularInline):
-    model = User
     extra = 0
 
 class RoleInline(admin.TabularInline):
@@ -230,7 +227,7 @@ class KeyAdmin(OSModelAdmin):
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline]
+    inlines = [SliverInline, SliceMembershipInline]
 
     def queryset(self, request):
         # admins can see all keys. Users can only see slices they belong to.

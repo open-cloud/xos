@@ -10,6 +10,7 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
         model = Role
         fields = ('id', 
                   'role_id',
+                  'role',
                   'role_type')
 
 
