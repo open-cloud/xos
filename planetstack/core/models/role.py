@@ -2,6 +2,7 @@ import os
 import datetime
 from django.db import models
 from core.models import PlCoreBase
+from openstack.manager import OpenStackManager
 
 class Role(PlCoreBase):
 
@@ -13,10 +14,14 @@ class Role(PlCoreBase):
 
 
     def save(self, *args, **kwds):
-        self.os_manager.save_role(self)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.save_role(self)
         super(Role, self).save(*args, **kwds)
     
     def delete(self, *args, **kwds):
-        self.os_manager.delete_role(self)   
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.delete_role(self)   
         super(Role, self).delete(*args, **kwds)
             

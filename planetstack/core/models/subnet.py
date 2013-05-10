@@ -3,6 +3,7 @@ import commands
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Slice
+from openstack.manager import OpenStackManager
 
 # Create your models here.
 
@@ -17,9 +18,13 @@ class Subnet(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.slice.name)
 
     def save(self, *args, **kwds):
-        self.os_manager.save_subnet(self)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.save_subnet(self)
         super(Subnet, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        self.os_manager.delete_subnet(self)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.delete_subnet(self)
         super(Subnet, self).delete(*args, **kwds)

@@ -53,7 +53,6 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
     slivers = serializers.HyperlinkedRelatedField(view_name='sliver-detail')
-    subnet= serializers.HyperlinkedRelatedField(view_name='subnet-detail')
     class Meta:
         model = Slice
         fields = ('id',
@@ -61,12 +60,12 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'enabled',
                   'name',
                   'url',
-                  'instantiation',
                   'omf_friendly',
                   'description',
                   'slice_url',
                   'network_id',
                   'router_id',
+                  'subnet_id',
                   'site',
                   'slivers',
                   'updated',
@@ -83,19 +82,6 @@ class SliceMembershipSerializer(serializers.HyperlinkedModelSerializer):
                   'user',
                   'slice',
                   'role')
-
-class SubnetSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
-    class Meta:
-        model = Subnet
-        fields = ('id',
-                  'subnet_id',
-                  'cidr',
-                  'ip_version',
-                  'start',
-                  'end',
-                  'slice')  
 
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -200,7 +186,6 @@ serializerLookUp = {
                  SitePrivilege: SitePrivilegeSerializer,
                  Slice: SliceSerializer,
                  SliceMembership: SliceMembershipSerializer,
-                 Subnet: SubnetSerializer,
                  Node: NodeSerializer,
                  Sliver: SliverSerializer,
                  DeploymentNetwork: DeploymentNetworkSerializer,

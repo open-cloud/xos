@@ -1,7 +1,6 @@
 from types import StringTypes
-from openstack.client import OpenStackClient
-from openstack.driver import OpenStackDriver
-from core.api.auth import auth_check
+from django.contrib.auth import authenticate
+from openstack.manager import OpenStackManager    
 from core.models import User, Site
 from core.api.sites import _get_sites
 
@@ -19,22 +18,22 @@ def _get_users(filter):
     return users 
 
 def add_user(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
     sites = _get_sites(fields.get('site')) 
     if sites: fields['site'] = sites[0]     
     user = User(**fields)
-    nova_fields = {'name': user.email[:user.email.find('@')],
-                   'email': user.email, 
-                   'password': fields.get('password'),
-                   'enabled': user.enabled}    
-    nova_user = driver.create_user(**nova_fields)
-    #driver.add_user_user(user.id, user.site.tenant_id, 'user')
-    user.kuser_id=nova_user.id
+    user.os_manager = OpenStackManager(auth=auth, caller = user)
     user.save()
     return user
 
 def update_user(auth, id, **fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
     users = User.objects.filter(id=id)
     if not users:
         return
@@ -48,22 +47,27 @@ def update_user(auth, id, **fields):
         nova_fields['password'] = fields['password']
     if 'enabled' in fields:
         nova_fields['enabled'] = fields['enabled']
-    driver.update_user(user.kuser_id, **nova_fields)
     sites = _get_sites(fields.get('site'))
     if sites: fields['site'] = sites[0]
-    user.update(**fields)
+    user.os_manager = OpenStackManager(auth=auth, caller = user)
+    for (k,v) in fields.items():
+        setattr(user, k, v)    
+    user.save()
     return user 
 
 def delete_user(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
     users = _get_users(filter)
     for user in users:
-        driver.delete_user(id=user.kuser_id) 
+        user.os_manager = OpenStackManager(auth=auth, caller = user) 
         user.delete()
     return 1
 
 def get_users(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     users = _get_users(filter)
     return users             
         

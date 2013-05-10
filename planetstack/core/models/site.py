@@ -2,11 +2,11 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import DeploymentNetwork
-
+from openstack.manager import OpenStackManager
 
 class Site(PlCoreBase):
 
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
@@ -21,12 +21,16 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
-        self.os_manager.save_site(self)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.save_site(self)
         super(Site, self).save(*args, **kwds)               
 
 
     def delete(self, *args, **kwds):
-        self.os_manager.delete_site(self)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.delete_site(self)
         super(Site, self).delete(*args, **kwds)         
         
 
@@ -39,11 +43,15 @@ class SitePrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
     def save(self, *args, **kwds):
-        self.os_manager.driver.add_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.driver.add_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
-        self.os_manager.driver.delete_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
+            self.os_manager.driver.delete_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).delete(*args, **kwds)
 
 

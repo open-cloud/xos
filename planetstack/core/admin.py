@@ -30,8 +30,10 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
-    fields = ['ip', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
     extra = 0
+    #readonly_fields = ['ip', 'instance_name', 'image']
+    readonly_fields = ['ip', 'instance_name']
 
 class SiteInline(admin.TabularInline):
     model = Site
@@ -57,9 +59,13 @@ class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
 
-class PlainTextWidget(forms.Widget):
-    def render(self, _name, value, attrs):
-        return mark_safe(value) if value is not None else ''
+class PlainTextWidget(forms.HiddenInput):
+    input_type = 'hidden'
+
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
 
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
@@ -68,15 +74,17 @@ class OSModelAdmin(PlanetStackBaseAdmin):
     """Attach client connection to openstack on delete() and save()"""
 
     def save_model(self, request, obj, form, change):
-        auth = request.session.get('auth', {})
-        #auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        if request.user.site:
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
-        auth = request.session.get('auth', {})
-        #auth['tenant'] = request.user.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        if request.user.site:
+            auth = request.session.get('auth', {})
+            auth['tenant'] = request.user.site.login_base
+            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete() 
 
 class RoleAdmin(OSModelAdmin):
@@ -125,7 +133,8 @@ class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
                 continue
             # give inline object access to driver and caller
             auth = request.session.get('auth', {})
-            auth['tenant'] = request.user.site.login_base
+            if request.user.site:
+                auth['tenant'] = request.user.site.login_base
             inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
@@ -139,6 +148,17 @@ class SiteAdmin(OSModelAdmin):
     filter_horizontal = ('deployments',)
     inlines = [NodeInline, UserInline]
     search_fields = ['name']
+
+    def queryset(self, request):
+        # admins can see all keys. Users can only see sites they belong to.
+        qs = super(SiteAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            valid_sites = [request.user.site.login_base]
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                valid_sites.extend(tenant_list)
+            qs = qs.filter(login_base__in=valid_sites)
+        return qs
 
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -157,6 +177,20 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     ]
     list_display = ('user', 'site', 'role')
 
+    def queryset(self, request):
+        # admins can see all privileges. Users can only see privileges at sites
+        # where they have the admin role.
+        qs = super(SitePrivilegeAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            roles = request.user.get_roles()
+            tenants = []
+            for (role, tenant_list) in roles:
+                if role == 'admin':
+                    tenants.extend(tenant_list)
+            valid_sites = Sites.objects.filter(login_base__in=tenants)    
+            qs = qs.filter(site__in=valid_sites)
+        return qs
+
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant   
         auth = request.session.get('auth', {})
@@ -173,23 +207,33 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 
 class KeyAdmin(OSModelAdmin):
     fieldsets = [
-        ('Key', {'fields': ['name', 'key', 'type', 'blacklisted']})
+        ('Key', {'fields': ['key', 'type', 'blacklisted']})
     ]
-    list_display = ['name', 'key', 'type', 'blacklisted']
+    list_display = ['key', 'type', 'blacklisted']
 
-    def get_queryset(self, request):
-        # get keys user is allowed to see
-        qs = super(KeyAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        # users can only see their own keys
-        return qs.filter(user=request.user)  
+    #def queryset(self, request):
+        # admins can see all keys. Users can only see their own key.
+        #if request.user.is_admin:
+        #    qs = super(KeyAdmin, self).queryset(request) 
+        #else:
+        #    qs = Key.objects.filter(user=request.user)
+        #return qs 
         
-
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
     inlines = [SliverInline]
+
+    def queryset(self, request):
+        # admins can see all keys. Users can only see slices they belong to.
+        qs = super(SliceAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            valid_slices = []
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                valid_slices.extend(tenant_list)
+            qs = qs.filter(name__in=valid_slices)
+        return qs
 
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -215,24 +259,19 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
     ]
     list_display = ('user', 'slice', 'role')
 
-    def save_model(self, request, obj, form, change):
-        # update openstack connection to use this site/tenant
-        auth = request.session.get('auth', {})
-        auth['tenant'] = obj.slice.name
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.save()
-
-    def delete_model(self, request, obj):
-        # update openstack connection to use this site/tenant
-        auth = request.session.get('auth', {})
-        auth['tenant'] = obj.slice.name
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.delete()
-
-
-class SubnetAdmin(PlanetStackBaseAdmin):
-    fields = ['cidr', 'ip_version', 'start', 'end', 'slice']
-    list_display = ('slice','cidr', 'start', 'end', 'ip_version')
+    def queryset(self, request):
+        # admins can see all memberships. Users can only see memberships of
+        # slices where they have the admin role.
+        qs = super(SliceMembershipAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            roles = request.user.get_roles()
+            tenants = []
+            for (role, tenant_list) in roles:
+                if role == 'admin':
+                    tenants.extend(tenant_list)
+            valid_slices = Slice.objects.filter(name__in=tenants)
+            qs = qs.filter(slice__in=valid_slices)
+        return qs
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
@@ -247,6 +286,7 @@ class SubnetAdmin(PlanetStackBaseAdmin):
         auth['tenant'] = obj.slice.name
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
+
 
 class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
@@ -258,9 +298,9 @@ class NodeAdmin(admin.ModelAdmin):
 
 class SliverForm(forms.ModelForm):
     class Meta:
+        model = Sliver
         ip = forms.CharField(widget=PlainTextWidget)
         instance_name = forms.CharField(widget=PlainTextWidget)
-        model = Sliver
         widgets = {
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
@@ -269,9 +309,40 @@ class SliverForm(forms.ModelForm):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'instance_name', 'name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+
+    def queryset(self, request):
+        # admins can see all slivers. Users can only see slivers of 
+        # the slices they belong to.
+        qs = super(SliverAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            tenants = []
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                tenants.extend(tenant_list)
+            valid_slices = Slice.objects.filter(name__in=tenants)
+            qs = qs.filter(slice__in=valid_slices)
+        return qs
+
+    def get_formsets(self, request, obj=None):
+        # make some fields read only if we are updating an existing record
+        if obj == None:
+            #self.readonly_fields = ('ip', 'instance_name') 
+            self.readonly_fields = () 
+        else:
+            self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key') 
+
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            # give inline object access to driver and caller
+            auth = request.session.get('auth', {})
+            auth['tenant'] = obj.name       # meed to connect using slice's tenant
+            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
+            yield inline.get_formset(request, obj)
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
@@ -343,17 +414,17 @@ class UserAdmin(UserAdmin, OSModelAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'site', 'firstname', 'lastname', 'last_login')
+    list_display = ('email', 'site', 'firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('firstname','lastname','phone','site', 'key')}),
+        ('Personal info', {'fields': ('firstname','lastname','phone', 'is_admin', 'site', 'key')}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'password1', 'password2', 'key')}
+            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'is_admin', 'key','password1', 'password2')}
         ),
     )
     search_fields = ('email',)
@@ -377,8 +448,8 @@ admin.site.register(Site, SiteAdmin)
 #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
 admin.site.register(Slice, SliceAdmin)
 #admin.site.register(SliceMembership, SliceMembershipAdmin)
-admin.site.register(Subnet, SubnetAdmin)
-#admin.site.register(Image, ImageAdmin)
+#admin.site.register(Subnet, SubnetAdmin)
+admin.site.register(Image, ImageAdmin)
 #admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver, SliverAdmin)
 admin.site.register(Key, KeyAdmin)

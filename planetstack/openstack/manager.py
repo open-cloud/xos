@@ -1,13 +1,10 @@
+from netaddr import IPAddress, IPNetwork
 from planetstack import settings
-#from django.core import management
-#management.setup_environ(settings)
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
-
+from django.core import management
+from planetstack.config import Config
 try:
     from openstack.client import OpenStackClient
     from openstack.driver import OpenStackDriver
-    from planetstack.config import Config
     from core.models import * 
     has_openstack = True
 except:
@@ -28,17 +25,39 @@ def require_enabled(callable):
 class OpenStackManager:
 
     def __init__(self, auth={}, caller=None):
-        if auth:
-            self.client = OpenStackClient(**auth)
-        else:
-            self.client = OpenStackClient()   
+        self.client = None
+        self.driver = None
+        self.caller = None
         self.has_openstack = has_openstack       
-        self.enabled = manager_enabled 
-        self.driver = OpenStackDriver(client=self.client) 
-        self.caller=caller
-        if not self.caller:
-            self.caller = self.driver.admin_user
-            self.caller.kuser_id = self.caller.id 
+        self.enabled = manager_enabled
+
+        if has_openstack and manager_enabled:
+            if auth:
+                try:
+                    self.init_user(auth, caller)
+                except:
+                    # if this fails then it meanse the caller doesn't have a
+                    # role at the slice's tenant. if the caller is an admin
+                    # just use the admin client/manager.
+                    if caller and caller.is_admin: 
+                        self.init_admin()
+                    else: raise
+            else:
+                self.init_admin()
+
+    @require_enabled 
+    def init_user(self, auth, caller):
+        self.client = OpenStackClient(**auth)
+        self.driver = OpenStackDriver(client=self.client)
+        self.caller = caller                 
+    
+    @require_enabled
+    def init_admin(self):
+        # use the admin credentials 
+        self.client = OpenStackClient()
+        self.driver = OpenStackDriver(client=self.client)
+        self.caller = self.driver.admin_user
+        self.caller.kuser_id = self.caller.id 
 
     @require_enabled
     def save_role(self, role):
@@ -54,7 +73,7 @@ class OpenStackManager:
     @require_enabled
     def save_key(self, key):
         if not key.key_id:
-            key_fields = {'name': key.name,
+            key_fields = {'name': key.user.email[:key.user.email.find('@')],
                           'key': key.key}
             nova_key = self.driver.create_keypair(**key_fields)
             key.key_id = nova_key.id        
@@ -74,13 +93,18 @@ class OpenStackManager:
                            'enabled': True}
             keystone_user = self.driver.create_user(**user_fields)
             user.kuser_id = keystone_user.id
-    
+        if user.site:
+            self.driver.add_user_role(user.kuser_id, user.site.tenant_id, 'user')
+            if user.is_admin:
+                self.driver.add_user_role(user.kuser_id, user.site.tenant_id, 'admin')
+            else:
+                # may have admin role so attempt to remove it
+                self.driver.delete_user_role(user.kuser_id, user.site.tenant_id, 'admin')
+  
     @require_enabled
     def delete_user(self, user):
         if user.kuser_id:
             self.driver.delete_user(user.kuser_id)        
-    
-
     
     @require_enabled
     def save_site(self, site, add_role=True):
@@ -128,6 +152,23 @@ class OpenStackManager:
             router = self.driver.create_router(slice.name)
             slice.router_id = router['id']
 
+            # create subnet
+            next_subnet = self.get_next_subnet()
+            cidr = str(next_subnet.cidr)
+            ip_version = next_subnet.version
+            start = str(next_subnet[2])
+            end = str(next_subnet[-2]) 
+            subnet = self.driver.create_subnet(name=slice.name,
+                                               network_id = network['id'],
+                                               cidr_ip = cidr,
+                                               ip_version = ip_version,
+                                               start = start,
+                                               end = end)
+            slice.subnet_id = subnet['id']
+            # add subnet as interface to slice's router
+            self.driver.add_router_interface(router['id'], subnet['id'])
+ 
+
         if slice.id and slice.tenant_id:
             self.driver.update_tenant(slice.tenant_id,
                                       description=slice.description,
@@ -136,9 +177,25 @@ class OpenStackManager:
     @require_enabled
     def delete_slice(self, slice):
         if slice.tenant_id:
+            self.driver.delete_router_interface(slice.router_id, slice.subnet_id)
+            self.driver.delete_subnet(slice.subnet_id)
             self.driver.delete_router(slice.router_id)
             self.driver.delete_network(slice.network_id)
             self.driver.delete_tenant(slice.tenant_id)
+
+    
+
+    def get_next_subnet(self):
+        # limit ourself to 10.0.x.x for now
+        valid_subnet = lambda net: net.startswith('10.0')  
+        subnets = self.driver.shell.quantum.list_subnets()['subnets']
+        ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
+                if valid_subnet(subnet['cidr'])] 
+        ints.sort()
+        last_ip = IPAddress(ints[-1])
+        last_network = IPNetwork(str(last_ip) + "/24")
+        next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
+        return next_network
 
     @require_enabled
     def save_subnet(self, subnet):    
@@ -163,7 +220,7 @@ class OpenStackManager:
             self.driver.delete_subnet(subnet.subnet_id)
             #del_route = 'route del -net %s' % self.cidr
             #commands.getstatusoutput(del_route)
-    
+
     @require_enabled
     def save_sliver(self, sliver):
         if not sliver.instance_id:
@@ -173,6 +230,9 @@ class OpenStackManager:
                                    hostname = sliver.node.name )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
+
+        if sliver.instance_id and ("numberCores" in sliver.changed_fields):
+            self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
 
     @require_enabled
     def delete_sliver(self, sliver):

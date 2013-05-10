@@ -1,7 +1,6 @@
 from types import StringTypes
-from openstack.client import OpenStackClient
-from openstack.driver import OpenStackDriver
-from core.api.auth import auth_check
+from django.contrib.auth import authenticate
+from openstack.manager import OpenStackManager
 from core.models import SliceMembership
 from core.api.users import _get_users
 from core.api.slices import _get_slices
@@ -22,7 +21,9 @@ def _get_slice_memberships(filter):
 
  
 def add_slice_membership(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+
     users = _get_users(fields.get('user')) 
     slices = _get_slices(fields.get('slice')) 
     roles = _get_roles(fields.get('role'))
@@ -32,12 +33,8 @@ def add_slice_membership(auth, fields):
     if roles: fields['role'] = roles[0]
  
     slice_membership = SliceMembership(**fields)
-
-    # update nova role
-    driver.add_user_role(slice_membership.user.user_id, 
-                         slice_membership.slice.tenant_id, 
-                         slice_membership.role.name)
-    
+    auth['tenant'] = sites[0].login_base
+    slice_membership.os_manager = OpenStackManager(auth=auth, caller = user) 
     slice_membership.save()
     return slice_membership
 
@@ -45,17 +42,19 @@ def update_slice_membership(auth, id, **fields):
     return  
 
 def delete_slice_membership(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
     slice_memberships = _get_slice_memberships(filter)
     for slice_membership in slice_memberships:
-        driver.delete_user_role(kuser_id=slice_membership.user.id,
-                                tenant_id = slice_membership.slice.tenant_id,
-                                role_name = slice_membership.role.name) 
+        slice_membership.os_manager = OpenStackManager(auth=auth, caller = user)
         slice_membership.delete()
     return 1
 
 def get_slice_memberships(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     users = _get_users(fields.get('user'))
     slices = _get_slices(fields.get('slice'))
     roles = _get_roles(fields.get('role'))

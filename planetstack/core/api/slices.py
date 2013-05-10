@@ -1,9 +1,7 @@
 import re
 from types import StringTypes
 from django.contrib.auth import authenticate
-from openstack.client import OpenStackClient
-from openstack.driver import OpenStackDriver
-from core.api.auth import auth_check
+from openstack.manager import OpenStackManager
 from core.models import Slice
 from core.api.sites import _get_sites
 
@@ -22,61 +20,44 @@ def _get_slices(filter):
     
  
 def add_slice(auth, fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
     login_base = fields['name'][:fields['name'].find('_')]
     sites = _get_sites(login_base) 
     if sites: fields['site'] = sites[0]     
     slice = Slice(**fields)
-   
-    # create tenant
-    nova_fields = {'tenant_name': slice.name,
-                   'description': slice.description,
-                   'enabled': slice.enabled}
-    tenant = driver.create_tenant(**nova_fields)
-    slice.tenant_id=tenant.id
-    
-    # create network
-    network = driver.create_network(slice.name)
-    slice.network_id = network['id']
-
-    # create router
-    router = driver.create_router(slice.name)
-    slice.router_id = router['id']    
-
+    slice.os_manager = OpenStackManager(auth=auth, caller = user) 
     slice.save()
     return slice
 
 def update_slice(auth, id, **fields):
-    driver = OpenStackDriver(client = auth_check(auth))
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
     slices = _get_slices(id)
     if not slices:
         return
-
-    # update tenant
     slice = slices[0]
-    nova_fields = {}
-    if 'name' in fields:
-        nova_fields['tenant_name'] = fields['name']
-    if 'description' in fields:
-        nova_fields['description'] = fields['description']
-    if 'enabled' in fields:
-        nova_fields['enabled'] = fields['enabled']
-    driver.update_tenant(slice.tenant_id, **nova_fields)
-
-    # update db record 
     sites = _get_sites(fields.get('site'))
     if sites: fields['site'] = sites[0]
-    slice.update(**fields)
+
+    slice.os_manager = OpenStackManager(auth=auth, caller = user)
+    for (k,v) in fields.items():
+        setattr(slice, k, v)
+    slice.save()
 
     return slice 
 
 def delete_slice(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
-    slices = _get_slices(id)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+    slices = _get_slices(filter)
     for slice in slices:
-        driver.delete_network(slice.network_id)
-        driver.delete_router(slice.router_id)
-        driver.delete_slice(id=slice.tenant_id) 
+        slice.os_manager = OpenStackManager(auth=auth, caller = user) 
         slice.delete()
     return 1
 

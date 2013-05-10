@@ -1,5 +1,6 @@
 import os
 import datetime
+from collections import defaultdict
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Site
@@ -8,8 +9,6 @@ from openstack.manager import OpenStackManager
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Create your models here.
-has_openstack = False
-
 class UserManager(BaseUserManager):
     def create_user(self, email, firstname, lastname, password=None):
         """
@@ -57,7 +56,7 @@ class User(AbstractBaseUser):
         db_index=True,
     )
 
-    kuser_id = models.CharField(help_text="keystone user id", max_length=200) 
+    kuser_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
 
@@ -96,27 +95,31 @@ class User(AbstractBaseUser):
         # Simplest possible answer: Yes, always
         return True
 
-    @property
-    def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
+    def get_roles(self):
+        from plstackapi.core.models.site import SitePrivilege
+        from plstackapi.core.models.slice import SliceMembership
 
+        site_privileges = SitePrivilege.objects.filter(user=self)
+        slice_memberships = SliceMembership.objects.filter(user=self)
+        roles = defaultdict(list)
+        for site_privilege in site_privileges:
+            roles[site_privilege.role.role_type].append(site_privilege.site.login_base)
+        for slice_membership in slice_memberships:
+            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
+        return roles   
 
     def save(self, *args, **kwds):
-        if has_openstack:
-            if not hasattr(self, 'os_manager'):
-                setattr(self, 'os_manager', OpenStackManager())
-
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
             self.os_manager.save_user(self)
+
         if not self.id:
             self.set_password(self.password)    
         super(User, self).save(*args, **kwds)   
 
     def delete(self, *args, **kwds):
-        if has_openstack:
-            if not hasattr(self, 'os_manager'):
-                setattr(self, 'os_manager', OpenStackManager())
-
+        if not hasattr(self, 'os_manager'):
+            setattr(self, 'os_manager', OpenStackManager())
             self.os_manager.delete_user(self)
+
         super(User, self).delete(*args, **kwds)    

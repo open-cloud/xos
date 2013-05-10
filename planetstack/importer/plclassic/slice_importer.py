@@ -33,7 +33,6 @@ class SliceImporter:
             if slice['name'] not in self.local_slices:
                 site = local_sites[remote_sites[slice['site_id']]['login_base']]
                 new_slice = Slice(name=slice['name'],
-                                   instantiation=slice['instantiation'],
                                    omf_friendly = False,
                                    description = slice['description'],
                                    slice_url = slice['url'],

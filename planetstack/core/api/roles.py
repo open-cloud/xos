@@ -1,7 +1,6 @@
 from types import StringTypes
-from openstack.client import OpenStackClient
-from openstack.driver import OpenStackDriver
-from core.api.auth import auth_check
+from django.contrib.auth import authenticate
+from openstack.manager import OpenStackManager
 from core.models import Role
  
 
@@ -19,21 +18,27 @@ def _get_roles(filter):
     return roles
 
 def add_role(auth, name):
-    driver = OpenStackDriver(client = auth_check(auth))    
-    keystone_role = driver.create_role(name=name)
-    role = Role(role_type=name, role_id=keystone_role.id)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
+    auth['tenant'] = user.site.login_base
+
+    role = Role(role_type=name)
+    role.os_manager = OpenStackManager(auth=auth, caller = user) 
     role.save()
     return role
 
 def delete_role(auth, filter={}):
-    driver = OpenStackDriver(client = auth_check(auth))   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     roles = _get_roles(filter) 
     for role in roles:
-        driver.delete_role({'id': role.role_id}) 
+        auth['tenant'] = user.site.login_base
+        role.os_manager = OpenStackManager(auth=auth, caller = user)
         role.delete()
     return 1
 
 def get_roles(auth, filter={}):
-    client = auth_check(auth)
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     return _get_roles(filter)             
         

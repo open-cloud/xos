@@ -1,7 +1,5 @@
 from types import StringTypes
-from openstack.client import OpenStackClient
-from openstack.driver import OpenStackDriver
-from core.api.auth import auth_check
+from django.contrib.auth import authenticate
 from core.models import Image
  
 def _get_images(filter):
@@ -26,7 +24,8 @@ def delete_image(auth, filter={}):
     return 1
 
 def get_images(auth, filter={}):
-    auth_check(auth)   
+    user = authenticate(username=auth.get('username'),
+                        password=auth.get('password'))
     images = _get_images(filter)
     return images             
         
