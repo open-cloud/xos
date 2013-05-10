@@ -102,9 +102,9 @@ class PLUser(AbstractBaseUser):
         slice_memberships = SliceMembership.objects.filter(user=self)
         roles = defaultdict(list)
         for site_privilege in site_privileges:
-            roles[site_privilege.site.login_base].append(site_privilege.role.role_type)
+            roles[site_privilege.role.role_type].append(site_privilege.site.login_base)
         for slice_membership in slice_memberships:
-            roles[slice_membership.slice.name].append(slice_membership.role.role_type)
+            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
         return roles   
 
     def save(self, *args, **kwds):

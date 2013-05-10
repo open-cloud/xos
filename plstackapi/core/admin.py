@@ -144,6 +144,17 @@ class SiteAdmin(OSModelAdmin):
     inlines = [NodeInline,]
     search_fields = ['name']
 
+    def queryset(self, request):
+        # admins can see all keys. Users can only see sites they belong to.
+        qs = super(SiteAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            valid_sites = [request.user.site.login_base]
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                valid_sites.extend(tenant_list)
+            qs = qs.filter(login_base__in=valid_sites)
+        return qs
+
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
@@ -160,6 +171,20 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
         (None, {'fields': ['user', 'site', 'role']})
     ]
     list_display = ('user', 'site', 'role')
+
+    def queryset(self, request):
+        # admins can see all privileges. Users can only see privileges at sites
+        # where they have the admin role.
+        qs = super(SitePrivilegeAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            roles = request.user.get_roles()
+            tenants = []
+            for (role, tenant_list) in roles:
+                if role == 'admin':
+                    tenants.extend(tenant_list)
+            valid_sites = Sites.objects.filter(login_base__in=tenants)    
+            qs = qs.filter(site__in=valid_sites)
+        return qs
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant   
@@ -194,6 +219,17 @@ class SliceAdmin(OSModelAdmin):
     list_display = ('name', 'site','serviceClass', 'slice_url')
     inlines = [SliverInline]
 
+    def queryset(self, request):
+        # admins can see all keys. Users can only see slices they belong to.
+        qs = super(SliceAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            valid_slices = []
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                valid_slices.extend(tenant_list)
+            qs = qs.filter(name__in=valid_slices)
+        return qs
+
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
@@ -217,6 +253,20 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
         (None, {'fields': ['user', 'slice', 'role']})
     ]
     list_display = ('user', 'slice', 'role')
+
+    def queryset(self, request):
+        # admins can see all memberships. Users can only see memberships of
+        # slices where they have the admin role.
+        qs = super(SliceMembershipAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            roles = request.user.get_roles()
+            tenants = []
+            for (role, tenant_list) in roles:
+                if role == 'admin':
+                    tenants.extend(tenant_list)
+            valid_slices = Slice.objects.filter(name__in=tenants)
+            qs = qs.filter(slice__in=valid_slices)
+        return qs
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
@@ -257,6 +307,19 @@ class SliverAdmin(PlanetStackBaseAdmin):
         ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+
+    def queryset(self, request):
+        # admins can see all slivers. Users can only see slivers of 
+        # the slices they belong to.
+        qs = super(SliverAdmin, self).queryset(request)
+        if not request.user.is_admin:
+            tenants = []
+            roles = request.user.get_roles()
+            for tenant_list in roles.values():
+                tenants.extend(tenant_list)
+            valid_slices = Slice.objects.filter(name__in=tenants)
+            qs = qs.filter(slice__in=valid_slices)
+        return qs
 
     def get_formsets(self, request, obj=None):
         # make some fields read only if we are updating an existing record
