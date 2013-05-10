@@ -1,3 +1,4 @@
+import commands
 from plstackapi.planetstack.config import Config
 from plstackapi.openstack.client import OpenStackClient
 
@@ -202,7 +203,7 @@ class OpenStackDriver:
                                  'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
                                  'allocation_pools': allocation_pools}}          
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
-
+            self.add_external_route(subnet)
         # TODO: Add route to external network
         # e.g. #  route add -net 10.0.3.0/24 dev br-ex gw 10.100.0.5 
         return subnet
@@ -218,7 +219,64 @@ class OpenStackDriver:
             if subnet['id'] == id:
                 self.delete_subnet_ports(subnet['id'])
                 self.shell.quantum.delete_subnet(id)
-        return
+                self.delete_external_route(subnet)
+        return 1
+
+    def add_external_route(self, subnet):
+        ports = self.shell.quantum.list_ports()['ports']
+
+        gw_ip = subnet['gateway_ip']
+        subnet_id = subnet['id']
+
+        # 1. Find the port associated with the subnet's gateway
+        # 2. Find the router associated with that port
+        # 3. Find the port associated with this router and on the external net
+        # 4. Set up route to the subnet through the port from step 3
+        ip_address = None
+        for port in ports:
+            for fixed_ip in port['fixed_ips']:
+                if fixed_ip['subnet_id'] == subnet_id and fixed_ip['ip_address'] == gw_ip:
+                    gw_port = port
+                    router_id = gw_port['device_id']
+                    router = self.shell.quantum.show_router(router_id)['router']
+                    ext_net = router['external_gateway_info']['network_id']
+                    for port in ports:
+                        if port['device_id'] == router_id and port['network_id'] == ext_net:
+                            ip_address = port['fixed_ips'][0]['ip_address']
+
+        if ip_address:
+            cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
+            commands.getstatusoutput(cmd)
+
+        return 1
+
+    def delete_external_route(self, subnet):
+        ports = self.shell.quantum.list_ports()['ports']
+
+        gw_ip = subnet['gateway_ip']
+        subnet_id = subnet['id']
+
+        # 1. Find the port associated with the subnet's gateway
+        # 2. Find the router associated with that port
+        # 3. Find the port associated with this router and on the external net
+        # 4. Set up route to the subnet through the port from step 3
+        ip_address = None
+        for port in ports:
+            for fixed_ip in port['fixed_ips']:
+                if fixed_ip['subnet_id'] == subnet_id and fixed_ip['ip_address'] == gw_ip:
+                    gw_port = port
+                    router_id = gw_port['device_id']
+                    router = self.shell.quantum.show_router(router_id)['router']
+                    ext_net = router['external_gateway_info']['network_id']
+                    for port in ports:
+                        if port['device_id'] == router_id and port['network_id'] == ext_net:
+                            ip_address = port['fixed_ips'][0]['ip_address']
+
+        if ip_address:
+            cmd = "route delete -net %s" % (subnet['cidr'])
+            commands.getstatusoutput(cmd)
+             
+        return 1
     
     def create_keypair(self, name, key):
         keys = self.shell.nova.keypairs.findall(name=name)
