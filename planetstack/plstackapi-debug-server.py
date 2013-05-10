@@ -3,6 +3,7 @@ import os
 import sys
 import threading
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from planetstack.config import Config 
 from openstack.sliveragent import SliverAgent
 from openstack.siteagent import SiteAgent
