@@ -49,11 +49,13 @@ class SliceMembership(PlCoreBase):
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.driver.add_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)
+            if self.os_manager.driver:
+                self.os_manager.driver.add_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)
         super(SliceMembership, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.driver.delete_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)
+            if self.os_manager.driver:
+                self.os_manager.driver.delete_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)
         super(SliceMembership, self).delete(*args, **kwds)

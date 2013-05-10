@@ -59,6 +59,14 @@ class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
 
+class SitePrivilegeInline(admin.TabularInline):
+    model = SitePrivilege
+    extra = 0
+
+class SliceMembershipInline(admin.TabularInline):
+    model = SliceMembership
+    extra = 0
+
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
 
@@ -124,7 +132,7 @@ class DeploymentNetworkAdminForm(forms.ModelForm):
 
 class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
     form = DeploymentNetworkAdminForm
-    inlines = [NodeInline,]
+    inlines = [NodeInline,SliverInline]
 
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -146,7 +154,7 @@ class SiteAdmin(OSModelAdmin):
     ]
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
-    inlines = [NodeInline, UserInline]
+    inlines = [NodeInline, UserInline, SitePrivilegeInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -416,15 +424,16 @@ class UserAdmin(UserAdmin, OSModelAdmin):
     # that reference specific fields on auth.User.
     list_display = ('email', 'site', 'firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
+    inlines = [SitePrivilegeInline, SliceMembershipInline]
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('firstname','lastname','phone', 'is_admin', 'site', 'key')}),
+        (None, {'fields': ('email', 'password', 'site')}),
+        ('Personal info', {'fields': ('firstname','lastname','phone', 'key')}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'is_admin', 'key','password1', 'password2')}
+            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'key','password1', 'password2')}
         ),
     )
     search_fields = ('email',)
@@ -445,14 +454,14 @@ admin.site.register(User, UserAdmin)
 admin.site.unregister(Group)
 
 admin.site.register(Site, SiteAdmin)
-#admin.site.register(SitePrivilege, SitePrivilegeAdmin)
+admin.site.register(SitePrivilege, SitePrivilegeAdmin)
 admin.site.register(Slice, SliceAdmin)
-#admin.site.register(SliceMembership, SliceMembershipAdmin)
-#admin.site.register(Subnet, SubnetAdmin)
+admin.site.register(SliceMembership, SliceMembershipAdmin)
+#admin.site.register(Subnet)
 admin.site.register(Image, ImageAdmin)
-#admin.site.register(Node, NodeAdmin)
+admin.site.register(Node, NodeAdmin)
 admin.site.register(Sliver, SliverAdmin)
 admin.site.register(Key, KeyAdmin)
-#admin.site.register(Role, RoleAdmin)
+admin.site.register(Role, RoleAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
 
