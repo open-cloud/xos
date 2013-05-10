@@ -1,5 +1,6 @@
 import os
 import datetime
+from collections import defaultdict
 from django.db import models
 from plstackapi.core.models import PlCoreBase
 from plstackapi.core.models import Site
@@ -92,6 +93,19 @@ class PLUser(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+
+    def get_roles(self):
+        from plstackapi.core.models.site import SitePrivilege
+        from plstackapi.core.models.slice import SliceMembership
+
+        site_privileges = SitePrivilege.objects.filter(user=self)
+        slice_memberships = SliceMembership.objects.filter(user=self)
+        roles = defaultdict(list)
+        for site_privilege in site_privileges:
+            roles[site_privilege.site.login_base].append(site_privilege.role.role_type)
+        for slice_membership in slice_memberships:
+            roles[slice_membership.slice.name].append(slice_membership.role.role_type)
+        return roles   
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):

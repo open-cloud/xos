@@ -181,13 +181,13 @@ class KeyAdmin(OSModelAdmin):
     ]
     list_display = ['key', 'type', 'blacklisted', 'user']
 
-    def get_queryset(self, request):
-        # get keys user is allowed to see
-        qs = super(KeyAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        # users can only see their own keys
-        return qs.filter(user=request.user)  
+    def queryset(self, request):
+        # admins can see all keys. Users can only see their own key.
+        if request.user.is_admin:
+            qs = super(KeyAdmin, self).queryset(request) 
+        else:
+            qs = Key.objects.filter(user=request.user)
+        return qs 
         
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
