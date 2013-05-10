@@ -11,4 +11,6 @@ from .slice import Slice
 from .slice import SliceMembership
 from .sliver import Sliver
 from .subnet import Subnet
+from .serviceclass import ServiceClass
+from .serviceresource import ServiceResource
 

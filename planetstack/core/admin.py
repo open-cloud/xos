@@ -437,6 +437,17 @@ class UserAdmin(UserAdmin, OSModelAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
+class ServiceResourceInline(admin.TabularInline):
+    model = ServiceResource
+    extra = 0
+
+class ServiceClassAdmin(admin.ModelAdmin):
+    list_display = ('name', 'commitment', 'membershipFee')
+    inlines = [ServiceResourceInline]
+
+class ServiceResourceAdmin(admin.ModelAdmin):
+    list_display = ('serviceClass', 'name', 'cost', 'calendarReservable', 'maxUnitsDeployment', 'maxUnitsNode')
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -461,4 +472,6 @@ admin.site.register(Sliver, SliverAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
+admin.site.register(ServiceClass, ServiceClassAdmin)
+admin.site.register(ServiceResource, ServiceResourceAdmin)
 
