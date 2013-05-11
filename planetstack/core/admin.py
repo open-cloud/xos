@@ -337,7 +337,8 @@ class SliverAdmin(PlanetStackBaseAdmin):
             #self.readonly_fields = ('ip', 'instance_name') 
             self.readonly_fields = () 
         else:
-            self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key') 
+            self.readonly_fields = () 
+            #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key') 
 
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
