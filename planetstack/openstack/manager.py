@@ -1,3 +1,6 @@
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
 from django.core import management
@@ -10,8 +13,7 @@ try:
 except:
     has_openstack = False
 
-#manager_enabled = Config().api_nova_enabled
-manager_enabled = False
+manager_enabled = Config().api_nova_enabled
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):
@@ -277,6 +279,7 @@ class OpenStackManager:
         Node.objects.filter(name__in=old_node_names).delete()
 
     def refresh_images(self):
+        from core.models.image import Image
         # collect local images
         images = Image.objects.all()
         images_dict = {}    

@@ -1,8 +1,6 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from openstack.manager import OpenStackManager
-
 
 # Create your models here.
 
@@ -17,13 +15,15 @@ class Key(PlCoreBase):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.save_key(self)
+        self.os_manager.save_key(self)
         super(Key, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.delete_key(self)
+        self.os_manager.delete_key(self)
         super(Key, self).delete(*args, **kwds) 
     

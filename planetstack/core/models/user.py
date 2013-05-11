@@ -5,7 +5,6 @@ from django.db import models
 from core.models import PlCoreBase
 from core.models import Site
 from core.models import Key
-from openstack.manager import OpenStackManager
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Create your models here.
@@ -110,8 +109,9 @@ class User(AbstractBaseUser):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager 
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.save_user(self)
+        self.os_manager.save_user(self)
 
         if not self.id:
             self.set_password(self.password)    
@@ -119,7 +119,8 @@ class User(AbstractBaseUser):
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.delete_user(self)
+        self.os_manager.delete_user(self)
 
         super(User, self).delete(*args, **kwds)    

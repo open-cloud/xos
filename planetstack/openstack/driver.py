@@ -2,7 +2,6 @@ import commands
 from planetstack.config import Config
 from openstack.client import OpenStackClient
 
-has_openstack = False
 class OpenStackDriver:
 
     def __init__(self, config = None, client=None): 
@@ -12,10 +11,7 @@ class OpenStackDriver:
             self.config = Config() 
 
         self.admin_client = OpenStackClient()
-        if has_openstack:
-            self.admin_user = self.admin_client.keystone.users.find(name=self.admin_client.keystone.username)
-        else:
-            self.admin_user = None
+        self.admin_user = self.admin_client.keystone.users.find(name=self.admin_client.keystone.username)
 
         if client:
             self.shell = client

@@ -2,7 +2,6 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import DeploymentNetwork
-from openstack.manager import OpenStackManager
 
 class Site(PlCoreBase):
 
@@ -22,15 +21,17 @@ class Site(PlCoreBase):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.save_site(self)
+        self.os_manager.save_site(self)
         super(Site, self).save(*args, **kwds)               
 
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.delete_site(self)
+        self.os_manager.delete_site(self)
         super(Site, self).delete(*args, **kwds)         
         
 
@@ -44,12 +45,14 @@ class SitePrivilege(PlCoreBase):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
             self.os_manager.driver.add_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
             self.os_manager.driver.delete_user_role(self.user.kuser_id, self.site.tenant_id, self.role.role_type)
         super(SitePrivilege, self).delete(*args, **kwds)

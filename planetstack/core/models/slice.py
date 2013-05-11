@@ -5,7 +5,6 @@ from core.models import Site
 from core.models import User
 from core.models import Role
 from core.models import DeploymentNetwork
-from openstack.manager import OpenStackManager
 
 # Create your models here.
 
@@ -29,14 +28,16 @@ class Slice(PlCoreBase):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.save_slice(self)
+        self.os_manager.save_slice(self)
         super(Slice, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.delete_slice(self)
+        self.os_manager.delete_slice(self)
         super(Slice, self).delete(*args, **kwds)    
 
 class SliceMembership(PlCoreBase):
@@ -48,6 +49,7 @@ class SliceMembership(PlCoreBase):
 
     def save(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
             if self.os_manager.driver:
                 self.os_manager.driver.add_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)
@@ -55,6 +57,7 @@ class SliceMembership(PlCoreBase):
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
             if self.os_manager.driver:
                 self.os_manager.driver.delete_user_role(self.user.kuser_id, self.slice.tenant_id, self.role.role_type)

@@ -8,7 +8,6 @@ from core.models import Slice
 from core.models import Node
 from core.models import Site
 from core.models import DeploymentNetwork
-from openstack.manager import OpenStackManager
 
 # Create your models here.
 class Sliver(PlCoreBase):
@@ -30,12 +29,14 @@ class Sliver(PlCoreBase):
         if not self.name:
             self.name = self.slice.name
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.save_sliver(self)
+        self.os_manager.save_sliver(self)
         super(Sliver, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
         if not hasattr(self, 'os_manager'):
+            from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
-            self.os_manager.delete_sliver(self)
+        self.os_manager.delete_sliver(self)
         super(Sliver, self).delete(*args, **kwds)
