@@ -74,16 +74,16 @@ class OpenStackManager:
 
     @require_enabled
     def save_key(self, key):
-        if not key.key_id:
+        if not key.nkey_id:
             key_fields = {'name': key.user.email[:key.user.email.find('@')],
                           'key': key.key}
             nova_key = self.driver.create_keypair(**key_fields)
-            key.key_id = nova_key.id        
+            key.nkey_id = nova_key.id        
 
     @require_enabled
     def delete_key(self, key):
-        if key.key_id:
-            self.driver.delete_keypair(key.key_id)
+        if key.nkey_id:
+            self.driver.delete_keypair(key.nkey_id)
 
     @require_enabled
     def save_user(self, user):
