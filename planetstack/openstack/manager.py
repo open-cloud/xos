@@ -1,5 +1,7 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+import string
+import random
 
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
@@ -14,6 +16,10 @@ except:
     has_openstack = False
 
 manager_enabled = Config().api_nova_enabled
+
+
+def random_string(size=6):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(size))
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):
@@ -75,7 +81,7 @@ class OpenStackManager:
     @require_enabled
     def save_key(self, key):
         if not key.nkey_id:
-            key_fields = {'name': key.user.email[:key.user.email.find('@')],
+            key_fields = {'name': random_string(8),
                           'key': key.key}
             nova_key = self.driver.create_keypair(**key_fields)
             key.nkey_id = nova_key.id        
