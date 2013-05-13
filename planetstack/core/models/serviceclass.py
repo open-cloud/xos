@@ -15,5 +15,8 @@ class ServiceClass(PlCoreBase):
     upgradeRequiresApproval = models.BooleanField(default=False)
     upgradeFrom = models.ManyToManyField('self', blank=True, null=True)
 
+    class Meta(PlCoreBase.Meta):
+       verbose_name_plural = "Service classes"
+
     def __unicode__(self):  return u'%s' % (self.name)
 
