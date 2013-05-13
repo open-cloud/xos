@@ -7,8 +7,9 @@ from .key import Key
 from .user import User
 from .role import Role
 from .node import Node
+from .serviceclass import ServiceClass
+from .serviceresource import ServiceResource
 from .slice import Slice
 from .slice import SliceMembership
 from .sliver import Sliver
-from .serviceclass import ServiceClass
-from .serviceresource import ServiceResource
+
