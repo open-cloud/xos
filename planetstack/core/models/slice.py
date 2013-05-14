@@ -5,6 +5,7 @@ from core.models import Site
 from core.models import User
 from core.models import Role
 from core.models import DeploymentNetwork
+from core.models import ServiceClass
 
 # Create your models here.
 
@@ -20,13 +21,16 @@ class Slice(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
-    SVC_CLASS_CHOICES = (('besteffort', 'Best Effort'), ('silver', 'Silver'), ('gold','Gold'))
-    serviceClass = models.CharField(verbose_name="Service Class",default="besteffort",help_text="The Service Class of this slice", max_length=30, choices=SVC_CLASS_CHOICES)
-
+    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=ServiceClass.get_default)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
+        if self.serviceClass is None:
+            # We allowed None=True for serviceClass because Django evolution
+            # will fail unless it is allowed. But, we we really don't want it to
+            # ever save None, so fix it up here.
+            self.serviceClass = ServiceClass.get_default()
         if not hasattr(self, 'os_manager'):
             from openstack.manager import OpenStackManager
             setattr(self, 'os_manager', OpenStackManager())
