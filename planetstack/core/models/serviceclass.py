@@ -20,3 +20,11 @@ class ServiceClass(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    @staticmethod
+    def get_default():
+        try:
+            return ServiceClass.objects.get(name="Best Effort")
+        except ServiceClass.DoesNotExist:
+            return None
+
+
