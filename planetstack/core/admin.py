@@ -498,10 +498,16 @@ class ReservationAddRefreshForm(ReservationAddForm):
         redrawn.
     """
 
-    """ don't validate anything """
+    """ don't validate anything other than slice """
+    dont_validate_fields = ("startTime", "duration")
+
     def full_clean(self):
         result = super(ReservationAddForm, self).full_clean()
-        self._errors = forms.util.ErrorDict()
+
+        for fieldname in self.dont_validate_fields:
+            if fieldname in self._errors:
+                del self._errors[fieldname]
+
         return result
 
     """ don't save anything """
@@ -517,9 +523,14 @@ class ReservationAdmin(admin.ModelAdmin):
         request._refresh = False
         request._slice = None
         if request.method == 'POST':
+            # "refresh" will be set to "1" if the form was submitted due to
+            # a change in the Slice dropdown.
             if request.POST.get("refresh","1") == "1":
                 request._refresh = True
                 request.POST["refresh"] = "0"
+
+            # Keep track of the slice that was selected, so the
+            # reservedResource inline can filter items for the slice.
             request._slice = request.POST.get("slice",None)
             if (request._slice is not None):
                 request._slice = Slice.objects.get(id=request._slice)
@@ -530,6 +541,8 @@ class ReservationAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         request._obj_ = obj
         if obj is not None:
+            # For changes, set request._slice to the slice already set in the
+            # object.
             request._slice = obj.slice
             self.form = ReservationChangeForm
         else:
