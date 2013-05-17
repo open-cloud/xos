@@ -222,8 +222,8 @@ class KeyAdmin(OSModelAdmin):
         #    qs = super(KeyAdmin, self).queryset(request) 
         #else:
         #    qs = Key.objects.filter(user=request.user)
-        #return qs 
-        
+        #return qs
+
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
@@ -446,8 +446,106 @@ class ServiceClassAdmin(admin.ModelAdmin):
     list_display = ('name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
-class ServiceResourceAdmin(admin.ModelAdmin):
-    list_display = ('serviceClass', 'name', 'cost', 'calendarReservable', 'maxUnitsDeployment', 'maxUnitsNode')
+class ReservedResourceInline(admin.TabularInline):
+    model = ReservedResource
+    extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        field = super(ReservedResourceInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        if db_field.name == 'resource':
+            # restrict resources to those that the slice's service class allows
+            if request._slice is not None:
+                field.queryset = field.queryset.filter(serviceClass = request._slice.serviceClass, calendarReservable=True)
+                if len(field.queryset) > 0:
+                    field.initial = field.queryset.all()[0]
+            else:
+                field.queryset = field.queryset.none()
+        elif db_field.name == 'sliver':
+            # restrict slivers to those that belong to the slice
+            if request._slice is not None:
+                field.queryset = field.queryset.filter(slice = request._slice)
+            else:
+                field.queryset = field.queryset.none()
+
+        return field
+
+class ReservationChangeForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+
+class ReservationAddForm(forms.ModelForm):
+    slice = forms.ModelChoiceField(queryset=Slice.objects.all(), widget=forms.Select(attrs={"onChange":"document.getElementById('id_refresh').value=1; submit()"}))
+    refresh = forms.CharField(widget=forms.HiddenInput())
+
+    class Media:
+       css = {'all': ('planetstack.css',)}   # .field-refresh { display: none; }
+
+    def clean_slice(self):
+        slice = self.cleaned_data.get("slice")
+        x = ServiceResource.objects.filter(serviceClass = slice.serviceClass, calendarReservable=True)
+        if len(x) == 0:
+            raise forms.ValidationError("The slice you selected does not have a service class that allows reservations")
+        return slice
+
+    class Meta:
+        model = Reservation
+
+class ReservationAddRefreshForm(ReservationAddForm):
+    """ This form is displayed when the Reservation Form receives an update
+        from the Slice dropdown onChange handler. It doesn't validate the
+        data and doesn't save the data. This will cause the form to be
+        redrawn.
+    """
+
+    """ don't validate anything """
+    def full_clean(self):
+        result = super(ReservationAddForm, self).full_clean()
+        self._errors = forms.util.ErrorDict()
+        return result
+
+    """ don't save anything """
+    def is_valid(self):
+        return False
+
+class ReservationAdmin(admin.ModelAdmin):
+    list_display = ('startTime', 'duration')
+    inlines = [ReservedResourceInline]
+    form = ReservationAddForm
+
+    def add_view(self, request, form_url='', extra_context=None):
+        request._refresh = False
+        request._slice = None
+        if request.method == 'POST':
+            if request.POST.get("refresh","1") == "1":
+                request._refresh = True
+                request.POST["refresh"] = "0"
+            request._slice = request.POST.get("slice",None)
+            if (request._slice is not None):
+                request._slice = Slice.objects.get(id=request._slice)
+
+        result =  super(ReservationAdmin, self).add_view(request, form_url, extra_context)
+        return result
+
+    def get_form(self, request, obj=None, **kwargs):
+        request._obj_ = obj
+        if obj is not None:
+            request._slice = obj.slice
+            self.form = ReservationChangeForm
+        else:
+            if getattr(request, "_refresh", False):
+                self.form = ReservationAddRefreshForm
+            else:
+                self.form = ReservationAddForm
+        return super(ReservationAdmin, self).get_form(request, obj, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        if (obj is not None):
+            # Prevent slice from being changed after the reservation has been
+            # created.
+            return ['slice']
+        else:
+            return []
 
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
@@ -474,5 +572,5 @@ admin.site.register(Key, KeyAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
-admin.site.register(ServiceResource, ServiceResourceAdmin)
+admin.site.register(Reservation, ReservationAdmin)
 
