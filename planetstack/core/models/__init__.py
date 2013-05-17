@@ -12,4 +12,5 @@ from .serviceresource import ServiceResource
 from .slice import Slice
 from .slice import SliceMembership
 from .sliver import Sliver
-
+from .reservation import ReservedResource
+from .reservation import Reservation
