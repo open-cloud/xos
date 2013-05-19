@@ -13,7 +13,7 @@ class Reservation(PlCoreBase):
     slice = models.ForeignKey(Slice, related_name="reservations")
     duration = models.IntegerField(default=1)
 
-    def __unicode__(self):  return u'%s duration %d' % (self.startTime, self.duration)
+    def __unicode__(self):  return u'%s to %s' % (self.startTime, self.endTime)
 
     @property
     def endTime(self):
