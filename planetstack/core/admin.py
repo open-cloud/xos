@@ -424,7 +424,7 @@ class UserAdmin(UserAdmin, OSModelAdmin):
     list_filter = ('site',)
     inlines = [SitePrivilegeInline, SliceMembershipInline]
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'site', 'is_admin')}),
+        (None, {'fields': ('email', 'password', 'site', 'is_admin', 'timezone')}),
         ('Personal info', {'fields': ('firstname','lastname','phone', 'key')}),
         #('Important dates', {'fields': ('last_login',)}),
     )

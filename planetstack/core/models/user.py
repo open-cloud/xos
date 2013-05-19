@@ -6,6 +6,7 @@ from core.models import PlCoreBase
 from core.models import Site
 from core.models import Key
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from timezones.fields import TimeZoneField
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -68,6 +69,8 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
 
+    timezone = TimeZoneField()
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -95,8 +98,8 @@ class User(AbstractBaseUser):
         return True
 
     def get_roles(self):
-        from plstackapi.core.models.site import SitePrivilege
-        from plstackapi.core.models.slice import SliceMembership
+        from core.models.site import SitePrivilege
+        from core.models.slice import SliceMembership
 
         site_privileges = SitePrivilege.objects.filter(user=self)
         slice_memberships = SliceMembership.objects.filter(user=self)
