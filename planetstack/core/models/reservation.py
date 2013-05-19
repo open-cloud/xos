@@ -1,4 +1,5 @@
 import os
+import datetime
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Sliver
@@ -13,6 +14,10 @@ class Reservation(PlCoreBase):
     duration = models.IntegerField(default=1)
 
     def __unicode__(self):  return u'%s duration %d' % (self.startTime, self.duration)
+
+    @property
+    def endTime(self):
+        return self.startTime + datetime.timedelta(hours=self.duration)
 
 class ReservedResource(PlCoreBase):
     sliver = models.ForeignKey(Sliver, related_name="reservedResourrces")
