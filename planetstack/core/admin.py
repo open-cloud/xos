@@ -9,7 +9,8 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.contrib.auth.signals import user_logged_in 
+from django.contrib.auth.signals import user_logged_in
+from django.utils import timezone
 
 
 class ReadonlyTabularInline(admin.TabularInline):
@@ -520,6 +521,7 @@ class ReservationAdmin(admin.ModelAdmin):
     form = ReservationAddForm
 
     def add_view(self, request, form_url='', extra_context=None):
+        timezone.activate(request.user.timezone)
         request._refresh = False
         request._slice = None
         if request.method == 'POST':
@@ -537,6 +539,10 @@ class ReservationAdmin(admin.ModelAdmin):
 
         result =  super(ReservationAdmin, self).add_view(request, form_url, extra_context)
         return result
+
+    def changelist_view(self, request, extra_context = None):
+        timezone.activate(request.user.timezone)
+        return super(ReservationAdmin, self).changelist_view(request, extra_context)
 
     def get_form(self, request, obj=None, **kwargs):
         request._obj_ = obj
