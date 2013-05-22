@@ -65,6 +65,10 @@ class SliceMembershipInline(admin.TabularInline):
     model = SliceMembership
     extra = 0
 
+class SliceTagInline(admin.TabularInline):
+    model = SliceTag
+    extra = 0
+
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
 
@@ -228,7 +232,7 @@ class KeyAdmin(OSModelAdmin):
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline]
+    inlines = [SliverInline, SliceMembershipInline, SliceTagInline]
 
     def queryset(self, request):
         # admins can see all keys. Users can only see slices they belong to.

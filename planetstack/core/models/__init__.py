@@ -11,6 +11,7 @@ from .serviceclass import ServiceClass
 from .serviceresource import ServiceResource
 from .slice import Slice
 from .slice import SliceMembership
+from .slicetag import SliceTag
 from .sliver import Sliver
 from .reservation import ReservedResource
 from .reservation import Reservation
