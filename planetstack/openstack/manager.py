@@ -175,6 +175,8 @@ class OpenStackManager:
             slice.subnet_id = subnet['id']
             # add subnet as interface to slice's router
             self.driver.add_router_interface(router['id'], subnet['id'])
+            # add external route
+            self.driver.add_external_route(subnet)               
  
 
         if slice.id and slice.tenant_id:
@@ -190,6 +192,14 @@ class OpenStackManager:
             self.driver.delete_router(slice.router_id)
             self.driver.delete_network(slice.network_id)
             self.driver.delete_tenant(slice.tenant_id)
+            # delete external route
+            subnet = None 
+            subnets = self.driver.shell.quantum.list_subnets()['subnets']
+            for snet in subnets:
+                if snet['id'] == slice.subnet_id:
+                    subnet = snet
+            if subnet:
+                self.driver.delete_external_route(subnet)
 
     
 
@@ -233,7 +243,7 @@ class OpenStackManager:
     def save_sliver(self, sliver):
         if not sliver.instance_id:
             instance = self.driver.spawn_instance(name=sliver.name,
-                                   key_name = sliver.key.name,
+                                   key_name = sliver.key.nkey_id,
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name )
             sliver.instance_id = instance.id
