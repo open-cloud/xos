@@ -7,7 +7,7 @@ from core.models import Key
 from core.models import Slice
 from core.models import Node
 from core.models import Site
-from core.models import DeploymentNetwork
+from core.models import Deployment
 
 # Create your models here.
 class Sliver(PlCoreBase):
@@ -19,7 +19,7 @@ class Sliver(PlCoreBase):
     key = models.ForeignKey(Key, related_name='slivers')
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    deploymentNetwork = models.ForeignKey(DeploymentNetwork, verbose_name='deployment', related_name='sliver_deploymentNetwork')
+    deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
 
 

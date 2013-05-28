@@ -1,5 +1,5 @@
 from .plcorebase import PlCoreBase
-from .deploymentnetwork import DeploymentNetwork
+from .deployment import Deployment
 from .site import Site
 from .site import SitePrivilege
 from .image import Image

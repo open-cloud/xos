@@ -11,6 +11,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
+import django_evolution 
 
 
 class ReadonlyTabularInline(admin.TabularInline):
@@ -104,7 +105,7 @@ class RoleAdmin(OSModelAdmin):
     list_display = ('role_type',)
 
 
-class DeploymentNetworkAdminForm(forms.ModelForm):
+class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
@@ -113,16 +114,16 @@ class DeploymentNetworkAdminForm(forms.ModelForm):
         )
     )
     class Meta:
-        model = DeploymentNetwork
+        model = Deployment
 
     def __init__(self, *args, **kwargs):
-        super(DeploymentNetworkAdminForm, self).__init__(*args, **kwargs)
+        super(DeploymentAdminForm, self).__init__(*args, **kwargs)
 
         if self.instance and self.instance.pk:
             self.fields['sites'].initial = self.instance.sites.all()
 
     def save(self, commit=True):
-        deploymentNetwork = super(DeploymentNetworkAdminForm, self).save(commit=False)
+        deploymentNetwork = super(DeploymentAdminForm, self).save(commit=False)
         if commit:
             deploymentNetwork.save()
 
@@ -132,8 +133,8 @@ class DeploymentNetworkAdminForm(forms.ModelForm):
 
         return deploymentNetwork
 
-class DeploymentNetworkAdmin(PlanetStackBaseAdmin):
-    form = DeploymentNetworkAdminForm
+class DeploymentAdmin(PlanetStackBaseAdmin):
+    form = DeploymentAdminForm
     inlines = [NodeInline,SliverInline]
 
     def get_formsets(self, request, obj=None):
@@ -302,8 +303,8 @@ class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
 
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'site', 'deploymentNetwork')
-    list_filter = ('deploymentNetwork',)
+    list_display = ('name', 'site', 'deployment')
+    list_filter = ('deployment',)
 
 
 class SliverForm(forms.ModelForm):
@@ -583,17 +584,30 @@ admin.site.register(User, UserAdmin)
 # unregister the Group model from admin.
 admin.site.unregister(Group)
 
+#Do not show django evolution in the admin interface
+from django_evolution.models import Version, Evolution
+admin.site.unregister(Version)
+admin.site.unregister(Evolution)
+
+
+# When debugging it is often easier to see all the classes, but for regular use 
+# only the top-levels should be displayed
+showAll = False
+
+admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
-admin.site.register(SitePrivilege, SitePrivilegeAdmin)
 admin.site.register(Slice, SliceAdmin)
-admin.site.register(SliceMembership, SliceMembershipAdmin)
 #admin.site.register(Subnet)
-admin.site.register(Image, ImageAdmin)
-admin.site.register(Node, NodeAdmin)
-admin.site.register(Sliver, SliverAdmin)
 admin.site.register(Key, KeyAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(DeploymentNetwork, DeploymentNetworkAdmin)
-admin.site.register(ServiceClass, ServiceClassAdmin)
-admin.site.register(Reservation, ReservationAdmin)
+
+
+if showAll:
+    admin.site.register(Node, NodeAdmin)
+    admin.site.register(SliceMembership, SliceMembershipAdmin)
+    admin.site.register(SitePrivilege, SitePrivilegeAdmin)
+    admin.site.register(Role, RoleAdmin)
+    admin.site.register(Sliver, SliverAdmin)
+    admin.site.register(ServiceClass, ServiceClassAdmin)
+    admin.site.register(Reservation, ReservationAdmin)
+    admin.site.register(Image, ImageAdmin)
 

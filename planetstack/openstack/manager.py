@@ -1,5 +1,5 @@
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 import string
 import random
 
@@ -256,7 +256,7 @@ class OpenStackManager:
             if 'viccidev10' not in node.name:
                 nodes_dict[node.name] = node 
         
-        deployment = DeploymentNetwork.objects.filter(name='VICCI')[0]
+        deployment = Deployment.objects.filter(name='VICCI')[0]
         login_bases = ['princeton', 'stanford', 'gt', 'uw', 'mpisws']
         sites = Site.objects.filter(login_base__in=login_bases)
         # collect nova nodes:

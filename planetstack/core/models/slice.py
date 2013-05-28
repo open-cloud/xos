@@ -4,7 +4,7 @@ from core.models import PlCoreBase
 from core.models import Site
 from core.models import User
 from core.models import Role
-from core.models import DeploymentNetwork
+from core.models import Deployment
 from core.models import ServiceClass
 
 # Create your models here.

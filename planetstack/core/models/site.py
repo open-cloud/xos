@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import DeploymentNetwork
+from core.models import Deployment
 
 class Site(PlCoreBase):
 
@@ -15,7 +15,7 @@ class Site(PlCoreBase):
     is_public = models.BooleanField(default=True, help_text="Indicates the visibility of this site to other members")
     abbreviated_name = models.CharField(max_length=80)
 
-    deployments = models.ManyToManyField(DeploymentNetwork, blank=True, related_name='sites')
+    deployments = models.ManyToManyField(Deployment, blank=True, related_name='sites')
 
     def __unicode__(self):  return u'%s' % (self.name)
 

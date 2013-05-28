@@ -2,7 +2,7 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Site
-from core.models import DeploymentNetwork
+from core.models import Deployment
 
 # Create your models here.
 

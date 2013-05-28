@@ -123,13 +123,13 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
                   'site',
                   'role')
 
-class DeploymentNetworkSerializer(serializers.HyperlinkedModelSerializer):
+class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     sites = serializers.HyperlinkedRelatedField(view_name='deploymentnetwork-detail')
     class Meta:
-        model = DeploymentNetwork
+        model = Deployment
         fields = ('id',
                   'name',
                   'sites'
@@ -189,7 +189,7 @@ serializerLookUp = {
                  SliceMembership: SliceMembershipSerializer,
                  Node: NodeSerializer,
                  Sliver: SliverSerializer,
-                 DeploymentNetwork: DeploymentNetworkSerializer,
+                 Deployment: DeploymentSerializer,
                  Image: ImageSerializer,
                  None: None,
                 }

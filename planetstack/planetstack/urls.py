@@ -10,7 +10,7 @@ from core.views.slices import SliceListCreate, SliceRetrieveUpdateDestroy
 from core.views.slice_memberships import SliceMembershipListCreate, SliceMembershipRetrieveUpdateDestroy
 from core.views.slivers import SliverListCreate, SliverRetrieveUpdateDestroy
 from core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
-from core.views.deployment_networks import DeploymentNetworkListCreate, DeploymentNetworkRetrieveUpdateDestroy
+from core.views.deployment_networks import DeploymentListCreate, DeploymentRetrieveUpdateDestroy
 from core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from core.views.nodes import NodeListCreate, NodeRetrieveUpdateDestroy
 from core.models import Site
@@ -59,8 +59,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/nodes/$', NodeListCreate.as_view(), name='node-list'),
     url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
     
-    url(r'^plstackapi/deploymentnetworks/$', DeploymentNetworkListCreate.as_view(), name='deploymentnetwork-list'),
-    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentNetworkRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
+    url(r'^plstackapi/deploymentnetworks/$', DeploymentListCreate.as_view(), name='deploymentnetwork-list'),
+    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
 
     url(r'^plstackapi/images/$', ImageListCreate.as_view(), name='image-list'),
     url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
