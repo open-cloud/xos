@@ -63,7 +63,8 @@ class User(AbstractBaseUser):
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too", null=True)
-    key = models.ForeignKey(Key, related_name='user', null=True, blank=True)
+    #key = models.ForeignKey(Key, related_name='user', null=True, blank=True)
+    public_key = models.CharField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=True)
@@ -83,6 +84,10 @@ class User(AbstractBaseUser):
     def get_short_name(self):
         # The user is identified by their email address
         return self.email
+
+    @property
+    def keyname(self):
+        return self.email[:self.email.find('@')]
 
     def __unicode__(self):
         return self.email

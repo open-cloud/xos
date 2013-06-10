@@ -6,11 +6,11 @@ import random
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
 from django.core import management
+from core.models import * 
 from planetstack.config import Config
 try:
     from openstack.client import OpenStackClient
     from openstack.driver import OpenStackDriver
-    from core.models import * 
     has_openstack = True
 except:
     has_openstack = False
@@ -79,12 +79,10 @@ class OpenStackManager:
             self.driver.delete_role({'id': role.role})
 
     @require_enabled
-    def save_key(self, key):
-        if not key.nkey_id:
-            key_fields = {'name': random_string(8),
-                          'key': key.key}
-            nova_key = self.driver.create_keypair(**key_fields)
-            key.nkey_id = nova_key.id        
+    def save_key(self, key, name):
+        key_fields = {'name': name,
+                      'public_key': key}
+        nova_key = self.driver.create_keypair(**key_fields)
 
     @require_enabled
     def delete_key(self, key):
@@ -101,6 +99,10 @@ class OpenStackManager:
                            'enabled': True}
             keystone_user = self.driver.create_user(**user_fields)
             user.kuser_id = keystone_user.id
+
+        if user.public_key:
+            self.save_key(user.public_key, user.keyname)
+
         if user.site:
             self.driver.add_user_role(user.kuser_id, user.site.tenant_id, 'user')
             if user.is_admin:
@@ -243,7 +245,7 @@ class OpenStackManager:
     def save_sliver(self, sliver):
         if not sliver.instance_id:
             instance = self.driver.spawn_instance(name=sliver.name,
-                                   key_name = sliver.key.nkey_id,
+                                   key_name = sliver.creator.keyname,
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name )
             sliver.instance_id = instance.id
@@ -286,7 +288,7 @@ class OpenStackManager:
             site = sites[i]
             node = Node(name=compute_nodes_dict[name].hypervisor_hostname,
                         site=site,
-                        deploymentNetwork=deployment)
+                        deployment=deployment)
             node.save()
             i+=1
 

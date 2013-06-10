@@ -278,12 +278,16 @@ class OpenStackDriver:
              
         return 1
     
-    def create_keypair(self, name, key):
+    def create_keypair(self, name, public_key):
         keys = self.shell.nova.keypairs.findall(name=name)
         if keys:
             key = keys[0]
+            # update key     
+            if key.public_key != public_key:
+                self.delete_keypair(key.id)
+                key = self.shell.nova.keypairs.create(name=name, public_key=public_key)
         else:
-            key = self.shell.nova.keypairs.create(name=name, public_key=key)
+            key = self.shell.nova.keypairs.create(name=name, public_key=public_key)
         return key
 
     def delete_keypair(self, id):

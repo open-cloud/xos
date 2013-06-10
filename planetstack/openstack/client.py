@@ -3,6 +3,8 @@ try:
     from glance import client as glance_client
     from novaclient.v1_1 import client as nova_client
     from quantumclient.v2_0 import client as quantum_client
+    from nova.db.sqlalchemy import api as nova_db_api 
+    from nova.context import get_admin_context
     has_openstack = True
 except:
     has_openstack = False
@@ -110,6 +112,23 @@ class NovaClient(Client):
     def __getattr__(self, name):
         return getattr(self.client, name)
 
+class NovaDB(Client):
+    def __init__(self, *args, **kwds):
+        Client.__init__(self, *args, **kwds)
+        if has_openstack:
+            self.ctx = get_admin_context()
+            api.FLAGS(default_config_files=['/etc/nova/nova.conf'])
+            self.client = nova_db_api
+
+
+    @require_enabled
+    def connect(self, *args, **kwds):
+        self.__init__(*args, **kwds)
+
+    @require_enabled
+    def __getattr__(self, name):
+        return getattr(self.client, name)
+
 class QuantumClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
@@ -137,6 +156,7 @@ class OpenStackClient:
         self.keystone = KeystoneClient(*args, **kwds)
         self.glance = GlanceClient(*args, **kwds)
         self.nova = NovaClient(*args, **kwds)
+        self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
 
     @require_enabled

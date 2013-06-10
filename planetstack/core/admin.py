@@ -32,7 +32,7 @@ class ReadonlyTabularInline(admin.TabularInline):
 
 class SliverInline(admin.TabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     extra = 0
     #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
@@ -333,6 +333,7 @@ class SliceAdmin(OSModelAdmin):
             auth = request.session.get('auth', {})
             auth['tenant'] = obj.name       # meed to connect using slice's tenant
             inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
+            inline.model.creator = request.user
             yield inline.get_formset(request, obj)
 
     def get_queryset(self, request):
@@ -469,6 +470,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
         auth = request.session.get('auth', {})
         auth['tenant'] = obj.slice.name
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
+        obj.creator = request.user
         obj.save()
 
     def delete_model(self, request, obj):
@@ -486,7 +488,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'firstname', 'lastname', 'phone', 'key', 'site')
+        fields = ('email', 'firstname', 'lastname', 'phone', 'public_key', 'site')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -539,13 +541,13 @@ class UserAdmin(UserAdmin, OSModelAdmin):
     inlines = [SitePrivilegeInline, SliceMembershipInline]
     fieldsets = (
         (None, {'fields': ('email', 'password', 'site', 'is_admin', 'timezone')}),
-        ('Personal info', {'fields': ('firstname','lastname','phone', 'key')}),
+        ('Personal info', {'fields': ('firstname','lastname','phone', 'public_key')}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'key','password1', 'password2', 'is_admin')}
+            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'public_key','password1', 'password2', 'is_admin')}
         ),
     )
     search_fields = ('email',)

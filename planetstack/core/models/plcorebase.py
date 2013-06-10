@@ -6,6 +6,7 @@ class PlCoreBase(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    enacted = models.DateTimeField(null=True, default=None)
 
     class Meta:
         abstract = True
