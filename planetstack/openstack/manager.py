@@ -54,15 +54,18 @@ class OpenStackManager:
                 self.init_admin()
 
     @require_enabled 
-    def init_user(self, auth, caller):
+    def init_caller(self, caller, tenant):
+        auth = {'username': caller.email,
+                'password': '',
+                'tenant': tenant}
         self.client = OpenStackClient(**auth)
         self.driver = OpenStackDriver(client=self.client)
         self.caller = caller                 
     
     @require_enabled
-    def init_admin(self):
+    def init_admin(self, tenant=None):
         # use the admin credentials 
-        self.client = OpenStackClient()
+        self.client = OpenStackClient(tenant=tenant)
         self.driver = OpenStackDriver(client=self.client)
         self.caller = self.driver.admin_user
         self.caller.kuser_id = self.caller.id 
@@ -203,8 +206,8 @@ class OpenStackManager:
             if subnet:
                 self.driver.delete_external_route(subnet)
 
-    
 
+    @require_enabled
     def get_next_subnet(self):
         # limit ourself to 10.0.x.x for now
         valid_subnet = lambda net: net.startswith('10.0')  

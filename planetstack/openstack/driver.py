@@ -69,6 +69,10 @@ class OpenStackDriver:
     def delete_user(self, id):
         users = self.shell.keystone.users.findall(id=id)
         for user in users:
+            # delete users keys
+            keys = self.shell.nova.keypairs.findall()
+            for key in keys:
+                self.shell.nova.keypairs.delete(key)
             self.shell.keystone.users.delete(user)
         return 1 
 
