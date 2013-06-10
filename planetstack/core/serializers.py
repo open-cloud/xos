@@ -170,7 +170,6 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
 serializerLookUp = { 
                  Role: RoleSerializer,
                  User: UserSerializer,
-                 Key: KeySerializer,
                  Site: SiteSerializer,
                  SitePrivilege: SitePrivilegeSerializer,
                  Slice: SliceSerializer,

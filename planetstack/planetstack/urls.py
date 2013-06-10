@@ -9,7 +9,6 @@ from core.views.users import UserListCreate, UserRetrieveUpdateDestroy
 from core.views.slices import SliceListCreate, SliceRetrieveUpdateDestroy
 from core.views.slice_memberships import SliceMembershipListCreate, SliceMembershipRetrieveUpdateDestroy
 from core.views.slivers import SliverListCreate, SliverRetrieveUpdateDestroy
-from core.views.keys import KeyListCreate, KeyRetrieveUpdateDestroy
 from core.views.deployment_networks import DeploymentListCreate, DeploymentRetrieveUpdateDestroy
 from core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
 from core.views.nodes import NodeListCreate, NodeRetrieveUpdateDestroy
@@ -37,9 +36,6 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/users/$', UserListCreate.as_view(), name='user-list'),
     url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
-
-    url(r'^plstackapi/keys/$', KeyListCreate.as_view(), name='key-list'),
-    url(r'^plstackapi/keys/(?P<pk>[a-zA-Z0-9_\-]+)/$', KeyRetrieveUpdateDestroy.as_view(), name='key-detail'),
 
     url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
