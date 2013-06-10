@@ -117,7 +117,7 @@ class NovaDB(Client):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
             self.ctx = get_admin_context()
-            api.FLAGS(default_config_files=['/etc/nova/nova.conf'])
+            nova_db_api.FLAGS(default_config_files=['/etc/nova/nova.conf'])
             self.client = nova_db_api
 
 
