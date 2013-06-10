@@ -37,19 +37,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                   'slice_memberships',
                   'site_privileges')
                     
-class KeySerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    user = serializers.HyperlinkedRelatedField(view_name='user-detail') 
-    class Meta:
-        model = Key
-        fields = ('id',
-                  'name',
-                  'key',
-                  'type',
-                  'blacklisted', 
-                  'user')
-
-
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()

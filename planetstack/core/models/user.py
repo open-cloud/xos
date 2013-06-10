@@ -4,7 +4,6 @@ from collections import defaultdict
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Site
-from core.models import Key
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
 
@@ -63,7 +62,6 @@ class User(AbstractBaseUser):
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too", null=True)
-    #key = models.ForeignKey(Key, related_name='user', null=True, blank=True)
     public_key = models.CharField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     is_active = models.BooleanField(default=True)

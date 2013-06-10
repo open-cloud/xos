@@ -282,20 +282,6 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
-class KeyAdmin(OSModelAdmin):
-    fieldsets = [
-        ('Key', {'fields': ['key', 'type', 'blacklisted']})
-    ]
-    list_display = ['key', 'type', 'blacklisted']
-
-    #def queryset(self, request):
-        # admins can see all keys. Users can only see their own key.
-        #if request.user.is_admin:
-        #    qs = super(KeyAdmin, self).queryset(request) 
-        #else:
-        #    qs = Key.objects.filter(user=request.user)
-        #return qs
-
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
@@ -720,7 +706,6 @@ admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 #admin.site.register(Subnet)
-admin.site.register(Key, KeyAdmin)
 
 
 if showAll:

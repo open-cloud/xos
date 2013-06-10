@@ -3,7 +3,6 @@ from .deployment import Deployment
 from .site import Site
 from .site import SitePrivilege
 from .image import Image
-from .key import Key
 from .user import User
 from .role import Role
 from .node import Node
