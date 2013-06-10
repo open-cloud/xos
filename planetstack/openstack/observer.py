@@ -10,10 +10,11 @@ class OpenStackObserver:
     def __init__(self):
         self.manager = OpenStackManager() 
 
-    def sync_sites(self):
+    def sync_tenants(self):
         """
-        save all sites where enacted < updated or enacted == None. Remove sites that
-        no don't exist in openstack db if they have an enacted time (enacted != None).
+        Save all sites and sliceswhere enacted < updated or enacted == None. 
+        Remove sites and slices that no don't exist in openstack db if they 
+        have an enacted time (enacted != None).
         """ 
         # get all sites that need to be synced (enacted < updated or enacted is None)
         pending_sites = Site.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
@@ -22,30 +23,19 @@ class OpenStackObserver:
             site.enacted = datetime.now()
             site.save()
 
-        # get all sites that where enacted != null. We can assume these sites
-        # have previously been synced and need to be checed for deletion.
-        sites = Site.objects.filter(enacted__isnull=False)
-        site_dict = {}
-        for site in sites:
-            site_dict[site.login_base] = site
-
-        # delete keystone tenants that don't have a site record
-        tenants = self.manager.driver.shell.keystone.tenants.findall()
-        for tenant in tenants:
-            if tenant.name not in site_dict:
-                self.manager.driver.delete_tenant(tenant.id)
-
-    def sync_slices(self):
-        """
-        save all slices where enacted < updated or enacted == None. Remove slices that
-        no don't exist in openstack db if they have an enacted time (enacted != None).
-        """
         # get all slices that need to be synced (enacted < updated or enacted is None)
         pending_slices = Slice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for slice in pending_slices:
             self.manager.save_slice(slice)
             slice.enacted = datetime.now()
             slice.save()
+
+        # get all sites that where enacted != null. We can assume these sites
+        # have previously been synced and need to be checed for deletion.
+        sites = Site.objects.filter(enacted__isnull=False)
+        site_dict = {}
+        for site in sites:
+            site_dict[site.login_base] = site
 
         # get all slices that where enacted != null. We can assume these slices
         # have previously been synced and need to be checed for deletion.
@@ -57,8 +47,12 @@ class OpenStackObserver:
         # delete keystone tenants that don't have a site record
         tenants = self.manager.driver.shell.keystone.tenants.findall()
         for tenant in tenants:
-            if tenant.name not in slice_dict:
-                self.manager.driver.delete_tenant(tenant.id)                
+            if tenant.name == 'admin': 
+                continue
+            if tenant.name not in site_dict and tenant.name not in slice_dict:
+                print "delete " + tenant.name
+                #self.manager.driver.delete_tenant(tenant.id)
+
 
     def sync_users(self):
         """
@@ -82,10 +76,12 @@ class OpenStackObserver:
         # delete keystone users that don't have a user record
         user = self.manager.driver.shell.keystone.users.findall()
         for user in users:
+            if user.name == 'admin':
+                continue
             if user.id not in user_dict:
-                self.manager.driver.delete_user(user.id)
+                pass
+                #self.manager.driver.delete_user(user.id)
         
-
         
     def sync_slivers(self):
         """
