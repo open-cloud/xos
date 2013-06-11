@@ -2,6 +2,7 @@ import os
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 import string
 import random
+import md5
 
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
@@ -56,7 +57,7 @@ class OpenStackManager:
     @require_enabled 
     def init_caller(self, caller, tenant):
         auth = {'username': caller.email,
-                'password': '',
+                'password': md5.new(caller.password).hexdigest()[:6],
                 'tenant': tenant}
         self.client = OpenStackClient(**auth)
         self.driver = OpenStackDriver(client=self.client)
@@ -94,17 +95,16 @@ class OpenStackManager:
 
     @require_enabled
     def save_user(self, user):
+        name = user.email[:user.email.find('@')]
+        user_fields = {'name': name,
+                       'email': user.email,
+                       'password': md5.new(user.password).hexdigest()[:6],
+                       'enabled': True}
         if not user.kuser_id:
-            name = user.email[:user.email.find('@')]
-            user_fields = {'name': name,
-                           'email': user.email,
-                           'password': user.password,
-                           'enabled': True}
             keystone_user = self.driver.create_user(**user_fields)
             user.kuser_id = keystone_user.id
-
-        if user.public_key:
-            self.save_key(user.public_key, user.keyname)
+        else:
+            self.driver.update_user(user.kuser_id, user_fields)     
 
         if user.site:
             self.driver.add_user_role(user.kuser_id, user.site.tenant_id, 'user')
@@ -113,6 +113,11 @@ class OpenStackManager:
             else:
                 # may have admin role so attempt to remove it
                 self.driver.delete_user_role(user.kuser_id, user.site.tenant_id, 'admin')
+
+        if user.public_key:
+            self.init_caller(user, user.site.login_base)
+            self.save_key(user.public_key, user.keyname)
+            self.init_admin()
   
     @require_enabled
     def delete_user(self, user):

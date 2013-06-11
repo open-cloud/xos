@@ -16,7 +16,7 @@ class OpenStackObserver:
             return
         while True:
             try:
-                self.sync_roles()
+                #self.sync_roles()
                 self.sync_tenants()
                 self.sync_users()
                 #self.sync_user_tenant_roles()

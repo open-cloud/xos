@@ -106,8 +106,12 @@ class OpenStackDriver:
 
         return 1 
 
-    def update_user(self, id, **kwds):
-        return self.shell.keystone.users.update(id, **kwds)
+    def update_user(self, id, fields):
+        if 'password' in fields:
+            self.shell.keystone.users.update_password(id, fields['password'])
+        if 'enabled' in fields:
+            self.shell.keystone.users.update_enabled(id, fields['enabled']) 
+        return 1 
 
     def create_router(self, name, set_gateway=True):
         routers = self.shell.quantum.list_routers(name=name)['routers']
