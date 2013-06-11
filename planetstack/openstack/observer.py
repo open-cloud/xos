@@ -101,7 +101,6 @@ class OpenStackObserver:
         # get all users that need to be synced (enacted < updated or enacted is None)
         pending_users = User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for user in pending_users:
-            print "syncing user", user
             self.manager.save_user(user)
             user.enacted = datetime.now()
             user.save(update_fields=['enacted'])
