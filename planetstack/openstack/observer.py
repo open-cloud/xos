@@ -16,7 +16,7 @@ class OpenStackObserver:
             return
         while True:
             try:
-                #self.sync_roles()
+                self.sync_roles()
                 self.sync_tenants()
                 self.sync_users()
                 #self.sync_user_tenant_roles()
@@ -24,6 +24,29 @@ class OpenStackObserver:
                 time.sleep(7)
             except:
                 traceback.print_exc() 
+
+    def sync_roles(self):
+        """
+        save all role that don't already exist in keystone. Remove keystone roles that
+        don't exist in planetstack
+        """
+        # sync all roles that don't already in keystone  
+        keystone_roles = self.manager.driver.shell.keystone.roles.findall()
+        keystone_role_names = [kr.name for kr in keystone_roles]
+        pending_roles = Role.objects.all()
+        pending_role_names = [r.role_type for r in pending_roles] 
+        for role in pending_roles:
+            if role.role_type not in keystone_role_names:
+                self.manager.save_role(role)
+
+
+        # delete keystone roles that don't exist in planetstack 
+        for keystone_role in keystone_roles:
+            if keystone_role.name == 'admin':
+                continue
+            if keystone_role.name not in pending_role_names:
+                pass
+                #self.manager.driver.delete_role({id: keystone_role.id})
 
     def sync_tenants(self):
         """
