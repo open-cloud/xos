@@ -252,10 +252,13 @@ class OpenStackManager:
     @require_enabled
     def save_sliver(self, sliver):
         if not sliver.instance_id:
+            slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
+            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key != null] 
             instance = self.driver.spawn_instance(name=sliver.name,
                                    key_name = sliver.creator.keyname,
                                    image_id = sliver.image.image_id,
-                                   hostname = sliver.node.name )
+                                   hostname = sliver.node.name,
+                                   pubkeys = pubkeys )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 

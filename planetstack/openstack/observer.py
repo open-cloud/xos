@@ -59,14 +59,14 @@ class OpenStackObserver:
         for site in pending_sites:
             self.manager.save_site(site)
             site.enacted = datetime.now()
-            site.save()
+            site.save(update_fields=['enacted'])
 
         # get all slices that need to be synced (enacted < updated or enacted is None)
         pending_slices = Slice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for slice in pending_slices:
             self.manager.save_slice(slice)
             slice.enacted = datetime.now()
-            slice.save()
+            slice.save(update_fields=['enacted'])
 
         # get all sites that where enacted != null. We can assume these sites
         # have previously been synced and need to be checed for deletion.
@@ -101,9 +101,10 @@ class OpenStackObserver:
         # get all users that need to be synced (enacted < updated or enacted is None)
         pending_users = User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for user in pending_users:
+            print "syncing user", user
             self.manager.save_user(user)
             user.enacted = datetime.now()
-            user.save()
+            user.save(update_fields=['enacted'])
 
         # get all users that where enacted != null. We can assume these users
         # have previously been synced and need to be checed for deletion.
@@ -135,7 +136,7 @@ class OpenStackObserver:
                 self.manager.init_caller(sliver.creator)
                 self.manager.save_sliver(sliver)
                 sliver.enacted = datetime.now()
-                sliver.save()
+                sliver.save(update_fields=['enacted'])
 
         # get all slivers that where enacted != null. We can assume these users
         # have previously been synced and need to be checed for deletion.
@@ -150,6 +151,7 @@ class OpenStackObserver:
         for instance in instances:
             if instance.id not in sliver_dict:
                 # lookup tenant and update context  
-                tenant = self.manager.driver.shell.keystone.tenants.findall(id=instance.tenant_id) 
-                self.manager.init_admin(tenant=tenant.name)  
-                self.manager.driver.destroy_instance(instance.id)
+                #tenant = self.manager.driver.shell.keystone.tenants.findall(id=instance.tenant_id) 
+                #self.manager.init_admin(tenant=tenant.name)  
+                #self.manager.driver.destroy_instance(instance.id)
+                pass
