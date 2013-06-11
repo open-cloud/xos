@@ -1,4 +1,5 @@
 import time
+import traceback
 from datetime import datetime
 from core.models import *
 from django.db.models import F, Q
@@ -8,7 +9,21 @@ from openstack.manager import OpenStackManager
 class OpenStackObserver:
     
     def __init__(self):
-        self.manager = OpenStackManager() 
+        self.manager = OpenStackManager()
+
+    def run(self):
+        if not self.manager.enabled or not self.manager.has_openstack:
+            return
+        while True:
+            try:
+                #self.sync_roles()
+                self.sync_tenants()
+                self.sync_users()
+                #self.sync_user_tenant_roles()
+                #self.sync_slivers()
+                time.sleep(7)
+            except:
+                traceback.print_exc() 
 
     def sync_tenants(self):
         """
@@ -50,7 +65,8 @@ class OpenStackObserver:
             if tenant.name == 'admin': 
                 continue
             if tenant.name not in site_dict and tenant.name not in slice_dict:
-                print "delete " + tenant.name
+                #print "delete " + tenant.name
+                pass
                 #self.manager.driver.delete_tenant(tenant.id)
 
 
@@ -74,7 +90,7 @@ class OpenStackObserver:
             user_dict[user.kuser_id] = user
 
         # delete keystone users that don't have a user record
-        user = self.manager.driver.shell.keystone.users.findall()
+        users = self.manager.driver.shell.keystone.users.findall()
         for user in users:
             if user.name == 'admin':
                 continue

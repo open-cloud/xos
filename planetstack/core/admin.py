@@ -126,24 +126,7 @@ class PlainTextWidget(forms.HiddenInput):
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
 
-class OSModelAdmin(PlanetStackBaseAdmin):
-    """Attach client connection to openstack on delete() and save()"""
-
-    def save_model(self, request, obj, form, change):
-        if request.user.site:
-            auth = request.session.get('auth', {})
-            auth['tenant'] = request.user.site.login_base
-            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.save()
-
-    def delete_model(self, request, obj):
-        if request.user.site:
-            auth = request.session.get('auth', {})
-            auth['tenant'] = request.user.site.login_base
-            obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.delete() 
-
-class RoleAdmin(OSModelAdmin):
+class RoleAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
@@ -194,7 +177,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
             inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
-class SiteAdmin(OSModelAdmin):
+class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base']}),
         ('Location', {'fields': ['latitude', 'longitude']}),
@@ -221,10 +204,6 @@ class SiteAdmin(OSModelAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            # give inline object access to driver and caller
-            auth = request.session.get('auth', {})
-            #auth['tenant'] = request.user.site.login_base
-            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
             yield inline.get_formset(request, obj)
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
@@ -267,20 +246,6 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             sites = Site.objects.filter(login_base__in=login_bases)
             qs = qs.filter(site__in=sites)
         return qs
-
-    def save_model(self, request, obj, form, change):
-        # update openstack connection to use this site/tenant   
-        auth = request.session.get('auth', {})
-        #auth['tenant'] = obj.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.save()
-
-    def delete_model(self, request, obj):
-        # update openstack connection to use this site/tenant   
-        auth = request.session.get('auth', {})
-        #auth['tenant'] = obj.site.login_base
-        obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
-        obj.delete()
 
 class SliceAdmin(OSModelAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']

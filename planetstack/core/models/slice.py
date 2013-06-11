@@ -31,18 +31,7 @@ class Slice(PlCoreBase):
             # will fail unless it is allowed. But, we we really don't want it to
             # ever save None, so fix it up here.
             self.serviceClass = ServiceClass.get_default()
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.save_slice(self)
         super(Slice, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.delete_slice(self)
-        super(Slice, self).delete(*args, **kwds)    
 
 class SliceMembership(PlCoreBase):
     user = models.ForeignKey('User', related_name='slice_memberships')

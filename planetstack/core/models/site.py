@@ -19,22 +19,6 @@ class Site(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    def save(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.save_site(self)
-        super(Site, self).save(*args, **kwds)               
-
-
-    def delete(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.delete_site(self)
-        super(Site, self).delete(*args, **kwds)         
-        
-
 class SitePrivilege(PlCoreBase):
 
     user = models.ForeignKey('User', related_name='site_privileges')

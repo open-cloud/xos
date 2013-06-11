@@ -68,6 +68,10 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    enacted = models.DateTimeField(null=True, default=None)
+
     timezone = TimeZoneField()
 
     objects = UserManager()
@@ -114,19 +118,6 @@ class User(AbstractBaseUser):
         return roles   
 
     def save(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager 
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.save_user(self)
-
         if not self.id:
             self.set_password(self.password)    
         super(User, self).save(*args, **kwds)   
-
-    def delete(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.delete_user(self)
-
-        super(User, self).delete(*args, **kwds)    
