@@ -29,15 +29,6 @@ class Sliver(PlCoreBase):
     def save(self, *args, **kwds):
         if not self.name:
             self.name = self.slice.name
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.save_sliver(self)
+        if not self.creator and hasattr(self, 'caller'):
+            self.creator = self.caller
         super(Sliver, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.delete_sliver(self)
-        super(Sliver, self).delete(*args, **kwds)

@@ -20,7 +20,7 @@ class OpenStackObserver:
                 self.sync_tenants()
                 self.sync_users()
                 #self.sync_user_tenant_roles()
-                #self.sync_slivers()
+                self.sync_slivers()
                 time.sleep(7)
             except:
                 traceback.print_exc() 
@@ -58,13 +58,16 @@ class OpenStackObserver:
         pending_sites = Site.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for site in pending_sites:
             self.manager.save_site(site)
+            site.save()
             site.enacted = datetime.now()
             site.save(update_fields=['enacted'])
 
         # get all slices that need to be synced (enacted < updated or enacted is None)
         pending_slices = Slice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for slice in pending_slices:
+            self.manager.init_caller(slice.creator, slice.creator.site.login_base)
             self.manager.save_slice(slice)
+            slice.save()
             slice.enacted = datetime.now()
             slice.save(update_fields=['enacted'])
 
@@ -102,6 +105,7 @@ class OpenStackObserver:
         pending_users = User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for user in pending_users:
             self.manager.save_user(user)
+            user.save()
             user.enacted = datetime.now()
             user.save(update_fields=['enacted'])
 
@@ -130,10 +134,11 @@ class OpenStackObserver:
         # get all users that need to be synced (enacted < updated or enacted is None)
         pending_slivers = Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for sliver in pending_slivers:
-            if sliver.creator:  
+            if not sliver.instance_id and sliver.creator:  
                 # update manager context
-                self.manager.init_caller(sliver.creator)
+                self.manager.init_caller(sliver.creator, sliver.slice.name)
                 self.manager.save_sliver(sliver)
+                sliver.save()
                 sliver.enacted = datetime.now()
                 sliver.save(update_fields=['enacted'])
 

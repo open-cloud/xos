@@ -22,6 +22,7 @@ class Slice(PlCoreBase):
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=ServiceClass.get_default)
+    creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -31,6 +32,8 @@ class Slice(PlCoreBase):
             # will fail unless it is allowed. But, we we really don't want it to
             # ever save None, so fix it up here.
             self.serviceClass = ServiceClass.get_default()
+        if not self.creator and hasattr(self, 'caller'):
+            self.creator = self.caller
         super(Slice, self).save(*args, **kwds)
 
 class SliceMembership(PlCoreBase):

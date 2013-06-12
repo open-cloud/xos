@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate
 from openstack.manager import OpenStackManager
 from core.models import Sliver, Slice
 from core.api.images import _get_images
-from core.api.keys import _get_keys
 from core.api.slices import _get_slices
 from core.api.deployment_networks import _get_deployment_networks
 from core.api.nodes import _get_nodes
@@ -26,12 +25,10 @@ def add_sliver(auth, fields):
                         password=auth.get('password'))
     
     images = _get_images(fields.get('image'))
-    keys = _get_keys(fields.get('key'))
     slices = _get_slices(fields.get('slice'))
     deployment_networks = _get_deployment_networks(fields.get('deploymentNetwork'))
     nodes = _get_nodes(fields.get('node'))
     if images: fields['image'] = images[0]     
-    if keys: fields['key'] = keys[0]     
     if slices: fields['slice'] = slices[0]     
     if deployment_networks: fields['deploymentNetwork'] = deployment_networks[0]     
     if nodes: fields['node'] = nodes[0]     

@@ -88,6 +88,7 @@ class SitePrivilegeInline(admin.TabularInline):
 class SliceMembershipInline(admin.TabularInline):
     model = SliceMembership
     extra = 0
+    fields = ('user', 'role')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -204,6 +205,17 @@ class SiteAdmin(PlanetStackBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
+            if isinstance(inline, SliceInline):
+                inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
+
+    def get_formsets(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            # hide MyInline in the add view
+            if obj is None:
+                continue
+            if isinstance(inline, SliverInline):
+                inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
@@ -247,7 +259,7 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             qs = qs.filter(site__in=sites)
         return qs
 
-class SliceAdmin(OSModelAdmin):
+class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
     inlines = [SliverInline, SliceMembershipInline, SliceTagInline]
@@ -280,11 +292,8 @@ class SliceAdmin(OSModelAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            # give inline object access to driver and caller
-            auth = request.session.get('auth', {})
-            auth['tenant'] = obj.name       # meed to connect using slice's tenant
-            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
-            inline.model.creator = request.user
+            if isinstance(inline, SliverInline):
+                inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
     def get_queryset(self, request):
@@ -292,7 +301,12 @@ class SliceAdmin(OSModelAdmin):
         if request.user.is_superuser:
             return qs
         # users can only see slices at their site
-        return qs.filter(site=request.user.site) 
+        return qs.filter(site=request.user.site)
+
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this site/tenant
+        obj.caller = request.user
+        obj.save() 
 
 class SliceMembershipAdmin(PlanetStackBaseAdmin):
     fieldsets = [
@@ -476,7 +490,7 @@ class UserChangeForm(forms.ModelForm):
         return self.initial["password"]
 
 
-class UserAdmin(UserAdmin, OSModelAdmin):
+class UserAdmin(UserAdmin):
     class Meta:
         app_label = "core"
 
