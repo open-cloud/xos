@@ -2,7 +2,7 @@ import os
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 import string
 import random
-import md5
+import hashlib
 
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
@@ -57,7 +57,7 @@ class OpenStackManager:
     @require_enabled 
     def init_caller(self, caller, tenant):
         auth = {'username': caller.email,
-                'password': md5.new(caller.password).hexdigest()[:6],
+                'password': hashlib.md5(caller.password).hexdigest()[:6],
                 'tenant': tenant}
         self.client = OpenStackClient(**auth)
         self.driver = OpenStackDriver(client=self.client)
@@ -98,7 +98,7 @@ class OpenStackManager:
         name = user.email[:user.email.find('@')]
         user_fields = {'name': name,
                        'email': user.email,
-                       'password': md5.new(user.password).hexdigest()[:6],
+                       'password': hashlib.md5(user.password).hexdigest()[:6],
                        'enabled': True}
         if not user.kuser_id:
             keystone_user = self.driver.create_user(**user_fields)
