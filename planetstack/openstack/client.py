@@ -5,6 +5,9 @@ try:
     from quantumclient.v2_0 import client as quantum_client
     from nova.db.sqlalchemy import api as nova_db_api 
     from nova.context import get_admin_context
+    from keystone.common.sql import core  
+    core.CONF(args=[], project='keystone', default_config_files=['/etc/keystone/keystone.conf'])
+    from keystone.identity.backends.sql import Metadata
     has_openstack = True
 except:
     has_openstack = False
@@ -58,6 +61,17 @@ class Client:
 
         if '@' in self.username:
             self.username = self.username[:self.username.index('@')]
+
+class KeystoneDB:
+    @require_enabled
+    def get_session(self):
+        return core.Base().get_session()
+
+    @require_enabled
+    def get_metadata(self):
+        session = self.get_session()
+        return session.query(Metadata).all()     
+
 
 class KeystoneClient(Client):
     def __init__(self, *args, **kwds):
@@ -154,6 +168,7 @@ class OpenStackClient:
     def __init__ ( self, *args, **kwds) :
         # instantiate managers
         self.keystone = KeystoneClient(*args, **kwds)
+        self.keystone_db = KeystoneDB()
         self.glance = GlanceClient(*args, **kwds)
         self.nova = NovaClient(*args, **kwds)
         self.nova_db = NovaDB(*args, **kwds)

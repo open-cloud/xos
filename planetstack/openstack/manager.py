@@ -3,6 +3,7 @@ import os
 import string
 import random
 import hashlib
+from datetime import datetime
 
 from netaddr import IPAddress, IPNetwork
 from planetstack import settings
@@ -118,6 +119,10 @@ class OpenStackManager:
             self.init_caller(user, user.site.login_base)
             self.save_key(user.public_key, user.keyname)
             self.init_admin()
+
+        user.save()
+        user.enacted = datetime.now()
+        user.save(update_fields=['enacted'])
   
     @require_enabled
     def delete_user(self, user):
@@ -140,11 +145,33 @@ class OpenStackManager:
                                       description=site.name,
                                       enabled=site.enabled)
 
+        # commit the updated record
+        site.save()
+        site.enacted = datetime.now()
+        site.save(update_fields=['enacted']) # enusre enacted > updated  
+        
+
     @require_enabled
     def delete_site(self, site):
         if site.tenant_id:
             self.driver.delete_tenant(site.tenant_id)
                
+    @require_enabled
+    def save_site_privilege(self, site_priv):
+        if site_priv.user.kuser_id and site_priv.site.tenant_id:
+            self.driver.add_user_role(site_priv.user.kuser_id,
+                                      site_priv.site.tenant_id,
+                                      site_priv.role.role_type)
+        site_priv.enacted = datetime.now()
+        site_priv.save(update_fields=['enacted'])
+
+    
+    @require_enabled
+    def delete_site_privilege(self, site_priv):
+        self.driver.delete_user_role(site_priv.user.kuser_id, 
+                                     site_priv.site.tenant_id, 
+                                     site_priv.role.role_type)
+
     @require_enabled
     def save_slice(self, slice):
         if not slice.tenant_id:
@@ -186,30 +213,55 @@ class OpenStackManager:
             # add subnet as interface to slice's router
             self.driver.add_router_interface(router['id'], subnet['id'])
             # add external route
-            self.driver.add_external_route(subnet)               
- 
+            self.driver.add_external_route(subnet)
+
 
         if slice.id and slice.tenant_id:
             self.driver.update_tenant(slice.tenant_id,
                                       description=slice.description,
-                                      enabled=slice.enabled)    
+                                      enabled=slice.enabled)   
+
+        slice.save()
+        slice.enacted = datetime.now()
+        slice.save(update_fields=['enacted']) 
 
     @require_enabled
     def delete_slice(self, slice):
         if slice.tenant_id:
-            self.driver.delete_router_interface(slice.router_id, slice.subnet_id)
-            self.driver.delete_subnet(slice.subnet_id)
-            self.driver.delete_router(slice.router_id)
-            self.driver.delete_network(slice.network_id)
-            self.driver.delete_tenant(slice.tenant_id)
-            # delete external route
-            subnet = None 
-            subnets = self.driver.shell.quantum.list_subnets()['subnets']
-            for snet in subnets:
-                if snet['id'] == slice.subnet_id:
-                    subnet = snet
-            if subnet:
-                self.driver.delete_external_route(subnet)
+            self._delete_slice(slice.tenant_id, slice.network_id, 
+                               slice.router_id, slice.subnet_id)
+    @require_enabled
+    def _delete_slice(self, tenant_id, network_id, router_id, subnet_id):
+        self.driver.delete_router_interface(slice.router_id, slice.subnet_id)
+        self.driver.delete_subnet(slice.subnet_id)
+        self.driver.delete_router(slice.router_id)
+        self.driver.delete_network(slice.network_id)
+        self.driver.delete_tenant(slice.tenant_id)
+        # delete external route
+        subnet = None
+        subnets = self.driver.shell.quantum.list_subnets()['subnets']
+        for snet in subnets:
+            if snet['id'] == slice.subnet_id:
+                subnet = snet
+        if subnet:
+            self.driver.delete_external_route(subnet) 
+
+    
+    @require_enabled
+    def save_slice_membership(self, slice_memb):
+        if slice_memb.user.kuser_id and slice_memb.slice.tenant_id:
+            self.driver.add_user_role(slice_memb.user.kuser_id,
+                                      slice_memb.slice.tenant_id,
+                                      slice_memb.role.role_type)
+        slice_memb.enacted = datetime.now()
+        slice_memb.save(update_fields=['enacted'])
+
+
+    @require_enabled
+    def delete_slice_membership(self, slice_memb):
+        self.driver.delete_user_role(slice_memb.user.kuser_id,
+                                     slice_memb.slice.tenant_id,
+                                     slice_memb.role.role_type)
 
 
     @require_enabled
@@ -265,6 +317,10 @@ class OpenStackManager:
 
         if sliver.instance_id and ("numberCores" in sliver.changed_fields):
             self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
+
+        sliver.save()
+        sliver.enacted = datetime.now()
+        sliver.save(update_fields=['enacted'])
 
     @require_enabled
     def delete_sliver(self, sliver):
