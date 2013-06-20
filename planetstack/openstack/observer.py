@@ -105,7 +105,7 @@ class OpenStackObserver:
         tenants = self.manager.driver.shell.keystone.tenants.findall()
         system_tenants = ['admin','service']
         for tenant in tenants:
-            if tenant.name == 'admin': 
+            if tenant.name in system_tenants: 
                 continue
             if tenant.name not in site_dict and tenant.name not in slice_dict:
                 try:
