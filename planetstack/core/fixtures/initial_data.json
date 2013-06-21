@@ -166,26 +166,6 @@
 },
 {
     "pk": 1, 
-    "model": "core.user", 
-    "fields": {
-        "firstname": "PA", 
-        "user_url": null, 
-        "lastname": "DMIN", 
-        "is_active": true, 
-        "site": null, 
-        "phone": null, 
-        "kuser_id": null, 
-        "is_staff": true, 
-        "last_login": "2013-05-28T00:10:27.088Z", 
-        "key": null, 
-        "timezone": "America/New_York", 
-        "is_admin": true, 
-        "password": "pbkdf2_sha256$10000$uMW3Svx8sYju$Olv9L2iY9WX+eUBsEHtcArU+Jc8P3eLUqt643gb6wVU=", 
-        "email": "padmin@vicci.org"
-    }
-},
-{
-    "pk": 1, 
     "model": "core.serviceclass", 
     "fields": {
         "updated": "2013-05-10T23:30:52.931Z", 
