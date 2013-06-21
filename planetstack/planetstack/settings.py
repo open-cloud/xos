@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'django_evolution',
     'core',
+    'geoposition'
 )
 
 # A sample logging configuration. The only tangible logging

@@ -4,6 +4,7 @@ from core.models import PlCoreBase
 from core.models import Deployment
 from core.models import Tag
 from django.contrib.contenttypes import generic
+from geoposition.fields import GeopositionField
 
 class Site(PlCoreBase):
 
@@ -11,6 +12,7 @@ class Site(PlCoreBase):
     name = models.CharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
+    location = GeopositionField()
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     login_base = models.CharField(max_length=50, unique=True, help_text="Prefix for Slices associated with this Site")

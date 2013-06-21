@@ -4,6 +4,7 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:09.331Z", 
+        "enacted": null, 
         "name": "VICCI", 
         "created": "2013-04-03T22:57:09.331Z"
     }
@@ -13,6 +14,7 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:15.013Z", 
+        "enacted": null, 
         "name": "VINI", 
         "created": "2013-04-03T22:57:15.013Z"
     }
@@ -22,6 +24,7 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:23.015Z", 
+        "enacted": null, 
         "name": "PlanetLab Classic", 
         "created": "2013-04-03T22:57:23.015Z"
     }
@@ -31,6 +34,7 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:29.569Z", 
+        "enacted": null, 
         "name": "GENI", 
         "created": "2013-04-03T22:57:29.569Z"
     }
@@ -39,129 +43,129 @@
     "pk": 1, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:21:04.135Z", 
+        "updated": "2013-06-21T21:12:16.675Z", 
         "name": "Princeton University", 
         "created": "2013-04-03T23:00:10.085Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": -74.6524, 
         "site_url": "http://princeton.edu/", 
         "login_base": "princeton", 
-        "latitude": 40.3502, 
+        "location": "40.3502,-74.6524", 
         "is_public": true, 
         "deployments": [
             3, 
             4
         ], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 2, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:42:36.517Z", 
+        "updated": "2013-06-21T21:19:35.989Z", 
         "name": "Stanford University", 
         "created": "2013-04-03T23:03:51.742Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": -122.172, 
         "site_url": "http://www.stanford.edu/", 
         "login_base": "stanford", 
-        "latitude": 37.4294, 
+        "location": "37.4294,-122.172", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 3, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:42:17.263Z", 
+        "updated": "2013-06-21T21:18:43.118Z", 
         "name": "Georgia Institute of Technology", 
         "created": "2013-04-03T23:05:51.984Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": -84.3976, 
         "site_url": "http://www.gatech.edu/", 
         "login_base": "gt", 
-        "latitude": 33.7772, 
+        "location": "33.7772,-84.3976", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 4, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:39:27.501Z", 
+        "updated": "2013-06-21T21:17:55.537Z", 
         "name": "University of Washington", 
         "created": "2013-04-03T23:09:52.337Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": -122.313, 
         "site_url": "https://www.washington.edu/", 
         "login_base": "uw", 
-        "latitude": 47.6531, 
+        "location": "47.6531,-122.313", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 5, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:38:56.889Z", 
+        "updated": "2013-06-21T21:17:13.982Z", 
         "name": "ETH Zuerich - Computer Science", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": 8.54513, 
         "site_url": "http://www.inf.ethz.ch/", 
         "login_base": "ethzcs", 
-        "latitude": 47.3794, 
+        "location": "47.3794,8.54513", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 6, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:38:15.960Z", 
+        "updated": "2013-06-21T21:16:29.653Z", 
         "name": "Max Planck Institute for Software Systems", 
         "created": "2013-04-03T23:19:38.789Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": 6.589, 
         "site_url": "http://www.mpi-sws.mpg.de/", 
         "login_base": "mpisws", 
-        "latitude": 49.14, 
+        "location": "49.14,6.589", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
     "pk": 7, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-04-05T15:37:32.185Z", 
+        "updated": "2013-06-21T21:14:49.235Z", 
         "name": "University of Tokyo", 
         "created": "2013-04-03T23:20:49.815Z", 
         "tenant_id": "", 
         "enabled": true, 
-        "longitude": 139.5, 
         "site_url": "http://www.planet-lab-jp.org/", 
         "login_base": "utokyo", 
-        "latitude": 35.75, 
+        "location": "35.75,139.5", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": ""
+        "abbreviated_name": "", 
+        "enacted": null
     }
 },
 {
@@ -170,6 +174,7 @@
     "fields": {
         "updated": "2013-05-10T23:30:52.931Z", 
         "membershipFee": 0, 
+        "description": "Best Effort", 
         "membershipFeeMonths": 0, 
         "created": "2013-05-10T23:30:52.931Z", 
         "upgradeFrom": [
@@ -179,7 +184,7 @@
         "commitment": 0, 
         "name": "Best Effort", 
         "upgradeRequiresApproval": false, 
-        "description": "Best Effort"
+        "enacted": null
     }
 },
 {
@@ -188,6 +193,7 @@
     "fields": {
         "updated": "2013-05-10T23:35:51.694Z", 
         "membershipFee": 100, 
+        "description": "Silver", 
         "membershipFeeMonths": 1, 
         "created": "2013-05-10T23:33:24.930Z", 
         "upgradeFrom": [
@@ -197,7 +203,7 @@
         "commitment": 365, 
         "name": "Silver", 
         "upgradeRequiresApproval": false, 
-        "description": "Silver"
+        "enacted": null
     }
 },
 {
@@ -206,6 +212,7 @@
     "fields": {
         "updated": "2013-05-10T23:34:01.320Z", 
         "membershipFee": 18000, 
+        "description": "Gold", 
         "membershipFeeMonths": 12, 
         "created": "2013-05-10T23:34:01.320Z", 
         "upgradeFrom": [
@@ -215,7 +222,7 @@
         "commitment": 365, 
         "name": "Gold", 
         "upgradeRequiresApproval": false, 
-        "description": "Gold"
+        "enacted": null
     }
 },
 {
@@ -228,11 +235,12 @@
         "created": "2013-05-10T23:37:09.312Z", 
         "serviceClass": 1, 
         "maxUnitsDeployment": 0, 
+        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "calendarReservable": false, 
+        "maxUnitsNode": 0, 
         "maxDuration": 0, 
-        "maxUnitsNode": 0
+        "enacted": null
     }
 },
 {
@@ -245,11 +253,12 @@
         "created": "2013-05-10T23:44:39.936Z", 
         "serviceClass": 2, 
         "maxUnitsDeployment": 0, 
+        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "calendarReservable": false, 
+        "maxUnitsNode": 0, 
         "maxDuration": 0, 
-        "maxUnitsNode": 0
+        "enacted": null
     }
 },
 {
@@ -262,11 +271,12 @@
         "created": "2013-05-10T23:45:16.137Z", 
         "serviceClass": 3, 
         "maxUnitsDeployment": 0, 
+        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "calendarReservable": false, 
+        "maxUnitsNode": 0, 
         "maxDuration": 0, 
-        "maxUnitsNode": 0
+        "enacted": null
     }
 },
 {
@@ -279,11 +289,12 @@
         "created": "2013-05-10T23:46:33.201Z", 
         "serviceClass": 2, 
         "maxUnitsDeployment": 210, 
+        "calendarReservable": true, 
         "bucketInRate": 10, 
         "cost": 7, 
-        "calendarReservable": true, 
+        "maxUnitsNode": 6, 
         "maxDuration": 168, 
-        "maxUnitsNode": 6
+        "enacted": null
     }
 },
 {
@@ -296,11 +307,12 @@
         "created": "2013-05-10T23:47:31.770Z", 
         "serviceClass": 3, 
         "maxUnitsDeployment": 210, 
+        "calendarReservable": true, 
         "bucketInRate": 0, 
         "cost": 0, 
-        "calendarReservable": true, 
+        "maxUnitsNode": 6, 
         "maxDuration": 8760, 
-        "maxUnitsNode": 6
+        "enacted": null
     }
 }
 ]

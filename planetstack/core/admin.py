@@ -46,6 +46,7 @@ class SliverInline(PlStackTabularInline):
     #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
     
+
 class SiteInline(PlStackTabularInline):
     model = Site
     extra = 0
@@ -142,6 +143,7 @@ class RoleAdmin(PlanetStackBaseAdmin):
     ]
     list_display = ('role_type',)
 
+
 class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
         queryset=Site.objects.all(),
@@ -188,8 +190,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base']}),
-        ('Location', {'fields': ['latitude', 'longitude']}),
+        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']}),
         ('Deployment Networks', {'fields': ['deployments']})
     ]
     list_display = ('name', 'login_base','site_url', 'enabled')
@@ -372,6 +373,7 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
+
 class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
 
@@ -379,6 +381,7 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deployment')
     list_filter = ('deployment',)
     inlines = [TagInline]
+
 
 class SliverForm(forms.ModelForm):
     class Meta:
@@ -486,6 +489,7 @@ class UserCreationForm(forms.ModelForm):
             user.save()
         return user
 
+
 class UserChangeForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
@@ -501,6 +505,7 @@ class UserChangeForm(forms.ModelForm):
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
         return self.initial["password"]
+
 
 class UserAdmin(UserAdmin):
     class Meta:
