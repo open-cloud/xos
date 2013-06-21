@@ -11,8 +11,9 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
-import django_evolution 
+from django.contrib.contenttypes import generic
 
+import django_evolution 
 
 class ReadonlyTabularInline(admin.TabularInline):
     can_delete = False
@@ -29,6 +30,11 @@ class ReadonlyTabularInline(admin.TabularInline):
 
     def has_add_permission(self, request):
         return False
+
+class TagInline(generic.GenericTabularInline):
+    model = Tag
+    exclude = ['enacted']
+    extra = 1
 
 class SliverInline(admin.TabularInline):
     model = Sliver
@@ -186,7 +192,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     ]
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
-    inlines = [NodeInline, UserInline, SitePrivilegeInline]
+    inlines = [TagInline, NodeInline, UserInline, SitePrivilegeInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -262,7 +268,7 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, SliceTagInline]
+    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -371,6 +377,7 @@ class ImageAdmin(admin.ModelAdmin):
 class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deployment')
     list_filter = ('deployment',)
+    inlines = [TagInline]
 
 
 class SliverForm(forms.ModelForm):
@@ -389,6 +396,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
         ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
     list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    inlines = [TagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -684,10 +692,9 @@ showAll = False
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
-#admin.site.register(Subnet)
-
 
 if showAll:
+    admin.site.register(Tag)
     admin.site.register(Node, NodeAdmin)
     admin.site.register(SliceMembership, SliceMembershipAdmin)
     admin.site.register(SitePrivilege, SitePrivilegeAdmin)

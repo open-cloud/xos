@@ -6,6 +6,8 @@ from core.models import User
 from core.models import Role
 from core.models import Deployment
 from core.models import ServiceClass
+from core.models import Tag
+from django.contrib.contenttypes import generic
 
 # Create your models here.
 
@@ -20,6 +22,8 @@ class Slice(PlCoreBase):
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+
+    tags = generic.GenericRelation(Tag)
 
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=ServiceClass.get_default)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)

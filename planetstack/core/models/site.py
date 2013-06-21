@@ -2,6 +2,8 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Deployment
+from core.models import Tag
+from django.contrib.contenttypes import generic
 
 class Site(PlCoreBase):
 
@@ -16,6 +18,7 @@ class Site(PlCoreBase):
     abbreviated_name = models.CharField(max_length=80)
 
     deployments = models.ManyToManyField(Deployment, blank=True, related_name='sites')
+    tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

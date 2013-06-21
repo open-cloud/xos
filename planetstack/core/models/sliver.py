@@ -8,6 +8,8 @@ from core.models import Node
 from core.models import Site
 from core.models import Deployment
 from core.models import User
+from core.models import Tag
+from django.contrib.contenttypes import generic
 
 # Create your models here.
 class Sliver(PlCoreBase):
@@ -22,7 +24,7 @@ class Sliver(PlCoreBase):
     node = models.ForeignKey(Node, related_name='slivers')
     deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
-
+    tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.instance_name)
 
