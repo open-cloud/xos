@@ -1,5 +1,6 @@
 from .plcorebase import PlCoreBase
 from .deployment import Deployment
+from .project import Project
 from .tag import Tag
 from .site import Site
 from .site import SitePrivilege

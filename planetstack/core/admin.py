@@ -15,7 +15,10 @@ from django.contrib.contenttypes import generic
 
 import django_evolution 
 
-class ReadonlyTabularInline(admin.TabularInline):
+class PlStackTabularInline(admin.TabularInline):
+    exclude = ['enacted']
+
+class ReadonlyTabularInline(PlStackTabularInline):
     can_delete = False
     extra = 0
     editable_fields = []
@@ -36,36 +39,35 @@ class TagInline(generic.GenericTabularInline):
     exclude = ['enacted']
     extra = 1
 
-class SliverInline(admin.TabularInline):
+class SliverInline(PlStackTabularInline):
     model = Sliver
     fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     extra = 0
     #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
     
-
-class SiteInline(admin.TabularInline):
+class SiteInline(PlStackTabularInline):
     model = Site
     extra = 0
 
-class UserInline(admin.TabularInline):
+class UserInline(PlStackTabularInline):
     model = User
     fields = ['email', 'firstname', 'lastname']
     extra = 0
 
-class SliceInline(admin.TabularInline):
+class SliceInline(PlStackTabularInline):
     model = Slice
     extra = 0
 
-class RoleInline(admin.TabularInline):
+class RoleInline(PlStackTabularInline):
     model = Role
     extra = 0 
 
-class NodeInline(admin.TabularInline):
+class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
 
-class SitePrivilegeInline(admin.TabularInline):
+class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
 
@@ -91,7 +93,7 @@ class SitePrivilegeInline(admin.TabularInline):
                 kwargs['queryset'] = users
         return super(SitePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SliceMembershipInline(admin.TabularInline):
+class SliceMembershipInline(PlStackTabularInline):
     model = SliceMembership
     extra = 0
     fields = ('user', 'role')
@@ -118,7 +120,7 @@ class SliceMembershipInline(admin.TabularInline):
 
         return super(SliceMembershipInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SliceTagInline(admin.TabularInline):
+class SliceTagInline(PlStackTabularInline):
     model = SliceTag
     extra = 0
 
@@ -132,13 +134,13 @@ class PlainTextWidget(forms.HiddenInput):
 
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
+    exclude = ['enacted']
 
 class RoleAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         ('Role', {'fields': ['role_type']})
     ]
     list_display = ('role_type',)
-
 
 class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
@@ -370,7 +372,6 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
-
 class ImageAdmin(admin.ModelAdmin):
     fields = ['image_id', 'name', 'disk_format', 'container_format']
 
@@ -378,7 +379,6 @@ class NodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'deployment')
     list_filter = ('deployment',)
     inlines = [TagInline]
-
 
 class SliverForm(forms.ModelForm):
     class Meta:
@@ -389,6 +389,12 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
         }
+
+class ProjectAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+
+class TagAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
 
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
@@ -480,7 +486,6 @@ class UserCreationForm(forms.ModelForm):
             user.save()
         return user
 
-
 class UserChangeForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
@@ -496,7 +501,6 @@ class UserChangeForm(forms.ModelForm):
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
         return self.initial["password"]
-
 
 class UserAdmin(UserAdmin):
     class Meta:
@@ -692,9 +696,10 @@ showAll = False
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
+admin.site.register(Project, ProjectAdmin)
 
 if showAll:
-    admin.site.register(Tag)
+    admin.site.register(Tag, TagAdmin)
     admin.site.register(Node, NodeAdmin)
     admin.site.register(SliceMembership, SliceMembershipAdmin)
     admin.site.register(SitePrivilege, SitePrivilegeAdmin)
