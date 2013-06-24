@@ -235,7 +235,7 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("save sliver failed: %s" % sliver) 
 
-        # get all slivers that where enacted != null. We can assume these users
+        # get all slivers where enacted != null. We can assume these users
         # have previously been synced and need to be checed for deletion.
         slivers = Sliver.objects.filter(enacted__isnull=False)
         sliver_dict = {}
@@ -246,12 +246,12 @@ class OpenStackObserver:
         ctx = self.manager.driver.shell.nova_db.ctx 
         instances = self.manager.driver.shell.nova_db.instance_get_all(ctx)
         for instance in instances:
-            if instance.id not in sliver_dict:
+            if instance.uuid not in sliver_dict:
                 try:
                     # lookup tenant and update context  
                     tenant = self.manager.driver.shell.keystone.tenants.find(id=instance.project_id) 
                     self.manager.init_admin(tenant=tenant.name)  
-                    self.manager.driver.destroy_instance(instance.id)
+                    self.manager.driver.destroy_instance(instance.uuid)
                     logger.info("destroyed sliver: %s" % (instance))
                 except:
                     logger.log_exc("destroy sliver failed: %s" % instance) 
