@@ -13,11 +13,13 @@ class EventHandler:
     def __init__(self):
         self.manager = OpenStackManager()
 
-    def get_events(self):
+    @staticmethod
+    def get_events():
         events = []
-        for attrib in dir(self):
-            if hasattr(attrib, 'event'):
-                events.append(getattr(attrib, 'event'))
+        for name in dir(EventHandler):
+            attribute = getattr(EventHandler, name)
+            if hasattr(attribute, 'event'):
+                events.append(getattr(attribute, 'event'))
         return events
 
     def dispatch(self, event, *args, **kwds):
@@ -96,14 +98,12 @@ class EventListener:
 
     def run(self):
         # register events
-        event_names = [{'title': name} for name in self.handler.get_events()]
+        event_names = [{'title': name} for name in EventHandler.get_events()]
         url = 'http://www.feefie.com/command'
         params = {'action': 'add',
                   'u': 'pl',
-                  'events': event_names}
+                  'events': json.dumps(event_names)}
         r = requests.get(url, params=params)
-        print dir(r)
-        print r
         r_data = json.loads(r)
         events = r_data.get('events', [])
         # spanw a  thread for each event
