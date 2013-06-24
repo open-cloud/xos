@@ -1,5 +1,4 @@
 import threading
-from openstack.sliveragent import SliverAgent
 from openstack.observer import OpenStackObserver
 from openstack.event_listener import EventListener
 

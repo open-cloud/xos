@@ -226,7 +226,7 @@ class OpenStackObserver:
         # get all users that need to be synced (enacted < updated or enacted is None)
         pending_slivers = Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for sliver in pending_slivers:
-            if not sliver.instance_id and sliver.creator: 
+            if sliver.creator: 
                 try: 
                     # update manager context
                     self.manager.init_caller(sliver.creator, sliver.slice.name)

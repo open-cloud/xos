@@ -17,7 +17,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 setup(name='planetstack',
       version='0.1',
       description='PlanetStack',
-      scripts=['planetstack/plstackapi-debug-server.py'],
+      scripts=['planetstack/planetstack-backend.py'],
       data_files=[
         ('/etc/planetstack/', ['planetstack/plstackapi_config']),
         ])
