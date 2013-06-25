@@ -3,6 +3,10 @@ import requests, json
 from core.models import *
 from openstack.manager import OpenStackManager
 
+import os
+import base64
+import fofum
+
 # decorator that marks dispatachable event methods  
 def event(func):
     setattr(func, 'event', func.__name__)
@@ -80,35 +84,20 @@ class EventHandler:
     
 
 class EventListener:
-
     def __init__(self):
         self.handler = EventHandler()
 
-    def listen_for_event(self, event, hash):
-        url = 'http://www.feefie.com/command'
-        params = {'action': 'subscribe',
-                  'hash': hash,
-                  'htm': 1}
-        while True:
-            r = requests.get(url, params=params)
-            r_data = json.loads(r)
-            payload = r_data.get('payload')
-            self.handler.dispatch(event, **payload)
-
+    def handle_event(self, payload):
+        payload_dict = json.loads(payload)
+        event = payload_dict['event']
+        ctx = payload_dict['ctx']
+        self.handler.dispatch(event,**ctx)   
 
     def run(self):
-        # register events
-        event_names = [{'title': name} for name in EventHandler.get_events()]
-        url = 'http://www.feefie.com/command'
-        params = {'action': 'add',
-                  'u': 'pl',
-                  'events': json.dumps(event_names)}
-        r = requests.get(url, params=params)
-        r_data = json.loads(r)
-        events = r_data.get('events', [])
-        # spanw a  thread for each event
-        for event in events:
-            args = (event['title'], event['hash'])
-            listener_thread = threading.Thread(target=self.listen_for_event, args=args)
-            listener_tread.start()
-                                    
+        # This is our unique client id, to be used when firing and receiving events
+        clid = base64.urlsafe_b64encode(os.urandom(12))
+
+        f = Fofum()
+        
+        listener_thread = threading.Thread(target=f.listen_on_event,args=(clid,self.handle_event))
+        listener_thread.start()
