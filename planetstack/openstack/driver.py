@@ -51,8 +51,17 @@ class OpenStackDriver:
         return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
+        ctx = self.shell.nova_db.ctx
         tenants = self.shell.keystone.tenants.findall(id=id)
         for tenant in tenants:
+            # nova does not automatically delete the tenant's instances
+            # so we manually delete instances before deleteing the tenant   
+            instances = self.shell.nova_db.instance_get_all_by_filters(ctx, 
+                       {'project_id': tenant.id}, 'id', 'asc')
+            client = OpenStackClient(tenant=tenant)
+            driver = OpenStackDriver(client=client)
+            for instance in instances:
+                driver.destroy_instance(instance.id)
             self.shell.keystone.tenants.delete(tenant)
         return 1
 
