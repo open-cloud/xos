@@ -702,6 +702,7 @@ admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(ServiceClass, ServiceClassAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)
@@ -710,7 +711,6 @@ if showAll:
     admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Role, RoleAdmin)
     admin.site.register(Sliver, SliverAdmin)
-    admin.site.register(ServiceClass, ServiceClassAdmin)
     admin.site.register(Reservation, ReservationAdmin)
     admin.site.register(Image, ImageAdmin)
 
