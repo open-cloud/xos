@@ -99,5 +99,5 @@ class EventListener:
 
         f = Fofum()
         
-        listener_thread = threading.Thread(target=f.listen_on_event,args=(clid,self.handle_event))
+        listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
         listener_thread.start()
