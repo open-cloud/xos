@@ -1,5 +1,6 @@
 import time
 import traceback
+import commands
 from datetime import datetime
 from collections import defaultdict
 from core.models import *
@@ -263,7 +264,7 @@ class OpenStackObserver:
         for sliver in slivers:
             # update connection
             self.manager.init_admin(tenant=sliver.slice.name)
-            servers = self.manager.client.nova.servers.findall(id=sliver.instance_id)
+            servers = self.manager.driver.shell.nova.servers.findall(id=sliver.instance_id)
             if not servers:
                 continue
             server = servers[0]
@@ -273,3 +274,10 @@ class OpenStackObserver:
             sliver.ip = ips[0]['addr']
             sliver.save()
             logger.info("saved sliver ip: %s %s" % (sliver, ips[0]))
+
+    def sync_external_routes(self):
+        routes = self.manager.driver.get_external_routes() 
+        subnets = self.manager.driver.shell.quantum.list_subnets()
+        for subnet in subnets:
+            self.manager.driver.add_external_route(subnet, routes)         
+ 

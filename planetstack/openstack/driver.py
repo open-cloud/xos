@@ -239,7 +239,15 @@ class OpenStackDriver:
                 self.delete_external_route(subnet)
         return 1
 
-    def add_external_route(self, subnet):
+    def get_external_routes(self):
+        status, output = commands.getstatusoutput('route')
+        routes = output.split('\n')[3:]
+        return routes
+
+    def add_external_route(self, subnet, routes=[]):
+        if not routes:
+            routes = self.get_external_routes()
+ 
         ports = self.shell.quantum.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
@@ -262,8 +270,15 @@ class OpenStackDriver:
                             ip_address = port['fixed_ips'][0]['ip_address']
 
         if ip_address:
-            cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
-            commands.getstatusoutput(cmd)
+            # check if external route already exists
+            route_exists = False
+            if routes:
+                for route in routes:
+                    if subnet['cidr'] in route and ip_address in route:
+                        route_exists = True
+            if not route_exists:
+                cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
+                commands.getstatusoutput(cmd)
 
         return 1
 
