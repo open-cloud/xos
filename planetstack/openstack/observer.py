@@ -27,7 +27,8 @@ class OpenStackObserver:
                 self.sync_user_tenant_roles()
                 self.sync_slivers()
                 self.sync_sliver_ips()
-                time.sleep(7)
+                self.sync_external_routes()
+                time.sleep(10)
             except:
                 traceback.print_exc() 
 
@@ -277,7 +278,10 @@ class OpenStackObserver:
 
     def sync_external_routes(self):
         routes = self.manager.driver.get_external_routes() 
-        subnets = self.manager.driver.shell.quantum.list_subnets()
+        subnets = self.manager.driver.shell.quantum.list_subnets()['subnets']
         for subnet in subnets:
-            self.manager.driver.add_external_route(subnet, routes)         
+            try: 
+                self.manager.driver.add_external_route(subnet, routes)         
+            except: 
+                logger.log_exc("failed to add external route for subnet %s" % subnet)
  

@@ -264,10 +264,11 @@ class OpenStackDriver:
                     gw_port = port
                     router_id = gw_port['device_id']
                     router = self.shell.quantum.show_router(router_id)['router']
-                    ext_net = router['external_gateway_info']['network_id']
-                    for port in ports:
-                        if port['device_id'] == router_id and port['network_id'] == ext_net:
-                            ip_address = port['fixed_ips'][0]['ip_address']
+                    if router:
+                        ext_net = router['external_gateway_info']['network_id']
+                        for port in ports:
+                            if port['device_id'] == router_id and port['network_id'] == ext_net:
+                                ip_address = port['fixed_ips'][0]['ip_address']
 
         if ip_address:
             # check if external route already exists
@@ -278,7 +279,8 @@ class OpenStackDriver:
                         route_exists = True
             if not route_exists:
                 cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
-                commands.getstatusoutput(cmd)
+                s, o = commands.getstatusoutput(cmd)
+                #print cmd, "\n", s, o
 
         return 1
 
