@@ -549,10 +549,12 @@ class UserAdmin(UserAdmin):
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ServiceResourceInline(admin.TabularInline):
+    exclude = ['enacted']
     model = ServiceResource
     extra = 0
 
 class ServiceClassAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
     list_display = ('name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
