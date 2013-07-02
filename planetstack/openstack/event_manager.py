@@ -1,7 +1,9 @@
 import threading
 import requests, json
+
 from core.models import *
 from openstack.manager import OpenStackManager
+from planetstack.config import Config
 
 import os
 import base64
@@ -13,7 +15,7 @@ def event(func):
     return func      
 
 class EventHandler:
-
+    # This code is currently not in use.
     def __init__(self):
         self.manager = OpenStackManager()
 
@@ -82,10 +84,25 @@ class EventHandler:
         self.manager.destroy_instance(instance_id)                            
 
     
+class EventSender:
+    def __init__(self,user=None,clientid=None):
+        try:
+            clid = Config().feefie_client_id
+            user = Config().feefie_client_user
+        except:
+            clid = 'planetstack_core_team'
+            user = 'pl'
+
+        self.fofum = Fofum(user=user)
+        self.fofum.make(clid)
+
+    def fire(self):
+        self.fofum.fire()
 
 class EventListener:
-    def __init__(self):
+    def __init__(self,wake_up=None):
         self.handler = EventHandler()
+        self.wake_up = wake_up()
 
     def handle_event(self, payload):
         payload_dict = json.loads(payload)
@@ -93,11 +110,22 @@ class EventListener:
         ctx = payload_dict['ctx']
         self.handler.dispatch(event,**ctx)   
 
+        if (self.wake_up):
+            self.wake_up()
+        
+
     def run(self):
         # This is our unique client id, to be used when firing and receiving events
-        clid = base64.urlsafe_b64encode(os.urandom(12))
+        # It needs to be generated once and placed in the config file
 
-        f = Fofum()
+        try:
+            clid = Config().feefie_client_id
+            user = Config().feefie_client_user
+        except:
+            clid = 'planetstack_core_team'
+            user = 'pl'
+
+        f = Fofum(user=user)
         
-        listener_thread = threading.Thread(target=f.listen_on_event,args=(clid,self.handle_event))
+        listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
         listener_thread.start()

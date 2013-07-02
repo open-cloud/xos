@@ -1,12 +1,15 @@
 import time
 import traceback
 import commands
+import threading
+
 from datetime import datetime
 from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
 from openstack.manager import OpenStackManager
 from util.logger import Logger, logging
+from timeout import timeout
 
 
 logger = Logger(logfile='observer.log', level=logging.INFO)
@@ -15,6 +18,18 @@ class OpenStackObserver:
     
     def __init__(self):
         self.manager = OpenStackManager()
+        # The Condition object that gets signalled by Feefie events
+        self.event_cond = threading.Condition()
+
+    def wait_for_event(self, timeout):
+        self.event_cond.acquire()
+        self.event_cond.wait(timeout)
+        self.event_cond.release()
+        
+    def wake_up(self):
+        self.event_cond.acquire()
+        self.event_cond.notify()
+        self.event_cond.release()
 
     def run(self):
         if not self.manager.enabled or not self.manager.has_openstack:
@@ -28,7 +43,9 @@ class OpenStackObserver:
                 self.sync_slivers()
                 self.sync_sliver_ips()
                 self.sync_external_routes()
-                time.sleep(10)
+
+                self.wait_for_event(timeout=30)
+
             except:
                 traceback.print_exc() 
 
