@@ -2,17 +2,17 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from core.views.roles import RoleListCreate, RoleRetrieveUpdateDestroy
-from core.views.sites import SiteListCreate, SiteRetrieveUpdateDestroy
-from core.views.site_privileges import SitePrivilegeListCreate, SitePrivilegeRetrieveUpdateDestroy
-from core.views.users import UserListCreate, UserRetrieveUpdateDestroy
-from core.views.slices import SliceListCreate, SliceRetrieveUpdateDestroy
-from core.views.slice_memberships import SliceMembershipListCreate, SliceMembershipRetrieveUpdateDestroy
-from core.views.slivers import SliverListCreate, SliverRetrieveUpdateDestroy
-from core.views.deployment_networks import DeploymentListCreate, DeploymentRetrieveUpdateDestroy
-from core.views.images import ImageListCreate, ImageRetrieveUpdateDestroy
-from core.views.nodes import NodeListCreate, NodeRetrieveUpdateDestroy
-from core.models import Site
+from core.views.roles import RoleList, RoleDetail
+from core.views.sites import SiteList, SiteDetail
+from core.views.site_privileges import SitePrivilegeList, SitePrivilegeDetail
+from core.views.users import UserList, UserDetail
+from core.views.slices import SliceList, SliceDetail
+from core.views.slice_memberships import SliceMembershipList, SliceMembershipDetail
+from core.views.slivers import SliverList, SliverDetail
+from core.views.deployment_networks import DeploymentList, DeploymentDetail
+from core.views.images import ImageList, ImageDetail
+from core.views.nodes import NodeList, NodeDetail
+from core.models import *
 from core.api_root import api_root
 from rest_framework import generics
 
@@ -31,35 +31,36 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/$', api_root),
     
-    url(r'^plstackapi/roles/$', RoleListCreate.as_view(), name='role-list'),
-    url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleRetrieveUpdateDestroy.as_view(), name='role-detail'),
+    url(r'^plstackapi/roles/$', RoleList.as_view(), name='role-list'),
+    url(r'^plstackapi/roles/(?P<pk>[a-zA-Z0-9]+)/$', RoleDetail.as_view(), name='role-detail'),
 
-    url(r'^plstackapi/users/$', UserListCreate.as_view(), name='user-list'),
-    url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserRetrieveUpdateDestroy.as_view(), name='user-detail'),
+    url(r'^plstackapi/users/$', UserList.as_view(), name='user-list'),
+    url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserDetail.as_view(), name='user-detail'),
 
-    url(r'^plstackapi/sites/$', SiteListCreate.as_view(), name='site-list'),
-    url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteRetrieveUpdateDestroy.as_view(), name='site-detail'),
+    url(r'^plstackapi/sites/$', SiteList.as_view(), name='site-list'),
+    url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteDetail.as_view(), name='site-detail'),
 
-    url(r'^plstackapi/site_privileges/$', SitePrivilegeListCreate.as_view(), name='siteprivilege-list'),
-    url(r'^plstackapi/site_privileges/(?P<pk>[a-zA-Z0-9_]+)/$', SitePrivilegeRetrieveUpdateDestroy.as_view(), name='siteprivilege-detail'),
+    url(r'^plstackapi/site_privileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
+    url(r'^plstackapi/site_privileges/(?P<pk>[a-zA-Z0-9_]+)/$', SitePrivilegeDetail.as_view(), name='siteprivilege-detail'),
+  
+    url(r'^plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
 
-    url(r'^plstackapi/slices/$', SliceListCreate.as_view(), name='slice-list'),
-    url(r'^plstackapi/slices/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceRetrieveUpdateDestroy.as_view(), name='slice-detail'),
+    url(r'^plstackapi/slices/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='slice-detail'),
 
-    url(r'^plstackapi/slice_memberships/$', SliceMembershipListCreate.as_view(), name='slice_membership-list'),
-    url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SliceMembershipRetrieveUpdateDestroy.as_view(), name='slice_membership-detail'),
+    url(r'^plstackapi/slice_memberships/$', SliceMembershipList.as_view(), name='slice-membership-list'),
+    url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SliceMembershipDetail.as_view(), name='slice-membership-detail'),
     
-    url(r'^plstackapi/slivers/$', SliverListCreate.as_view(), name='sliver-list'),
-    url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliverRetrieveUpdateDestroy.as_view(), name='sliver-detail'),
+    url(r'^plstackapi/slivers/$', SliverList.as_view(), name='sliver-list'),
+    url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliverDetail.as_view(), name='sliver-detail'),
 
-    url(r'^plstackapi/nodes/$', NodeListCreate.as_view(), name='node-list'),
-    url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeRetrieveUpdateDestroy.as_view(), name='node-detail'),
+    url(r'^plstackapi/nodes/$', NodeList.as_view(), name='node-list'),
+    url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeDetail.as_view(), name='node-detail'),
     
-    url(r'^plstackapi/deploymentnetworks/$', DeploymentListCreate.as_view(), name='deploymentnetwork-list'),
-    url(r'^plstackapi/deploymentnetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRetrieveUpdateDestroy.as_view(), name='deploymentnetwork-detail'),
+    url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
+    url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
 
-    url(r'^plstackapi/images/$', ImageListCreate.as_view(), name='image-list'),
-    url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageRetrieveUpdateDestroy.as_view(), name='image-detail'),
+    url(r'^plstackapi/images/$', ImageList.as_view(), name='image-list'),
+    url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageDetail.as_view(), name='image-detail'),
 
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),

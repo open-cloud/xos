@@ -402,9 +402,9 @@ class TagAdmin(admin.ModelAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     inlines = [TagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
