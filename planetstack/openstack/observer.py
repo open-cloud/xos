@@ -233,7 +233,7 @@ class OpenStackObserver:
                     # update manager context
                     self.manager.init_caller(sliver.creator, sliver.slice.name)
                     self.manager.save_sliver(sliver)
-                    logger.info("saved sliver: %s %s" % (sliver))
+                    logger.info("saved sliver: %s" % (sliver))
                 except:
                     logger.log_exc("save sliver failed: %s" % sliver) 
 
