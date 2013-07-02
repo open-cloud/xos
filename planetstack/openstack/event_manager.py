@@ -1,7 +1,13 @@
 import threading
 import requests, json
+
 from core.models import *
 from openstack.manager import OpenStackManager
+from planetstack.config import Config
+
+import os
+import base64
+import fofum
 
 # decorator that marks dispatachable event methods  
 def event(func):
@@ -9,15 +15,17 @@ def event(func):
     return func      
 
 class EventHandler:
-
+    # This code is currently not in use.
     def __init__(self):
         self.manager = OpenStackManager()
 
-    def get_events(self):
+    @staticmethod
+    def get_events():
         events = []
-        for attrib in dir(self):
-            if hasattr(attrib, 'event'):
-                events.append(getattr(attrib, 'event'))
+        for name in dir(EventHandler):
+            attribute = getattr(EventHandler, name)
+            if hasattr(attribute, 'event'):
+                events.append(getattr(attribute, 'event'))
         return events
 
     def dispatch(self, event, *args, **kwds):
@@ -76,39 +84,48 @@ class EventHandler:
         self.manager.destroy_instance(instance_id)                            
 
     
+class EventSender:
+    def __init__(self,user=None,clientid=None):
+        try:
+            clid = Config().feefie_client_id
+            user = Config().feefie_client_user
+        except:
+            clid = 'planetstack_core_team'
+            user = 'pl'
+
+        self.fofum = Fofum(user=user)
+        self.fofum.make(clid)
+
+    def fire(self):
+        self.fofum.fire()
 
 class EventListener:
-
-    def __init__(self):
+    def __init__(self,wake_up=None):
         self.handler = EventHandler()
+        self.wake_up = wake_up()
 
-    def listen_for_event(self, event, hash):
-        url = 'http://www.feefie.com/command'
-        params = {'action': 'subscribe',
-                  'hash': hash,
-                  'htm': 1}
-        while True:
-            r = requests.get(url, params=params)
-            r_data = json.loads(r)
-            payload = r_data.get('payload')
-            self.handler.dispatch(event, **payload)
+    def handle_event(self, payload):
+        payload_dict = json.loads(payload)
+        event = payload_dict['event']
+        ctx = payload_dict['ctx']
+        self.handler.dispatch(event,**ctx)   
 
+        if (self.wake_up):
+            self.wake_up()
+        
 
     def run(self):
-        # register events
-        event_names = [{'title': name} for name in self.handler.get_events()]
-        url = 'http://www.feefie.com/command'
-        params = {'action': 'add',
-                  'u': 'pl',
-                  'events': event_names}
-        r = requests.get(url, params=params)
-        print dir(r)
-        print r
-        r_data = json.loads(r)
-        events = r_data.get('events', [])
-        # spanw a  thread for each event
-        for event in events:
-            args = (event['title'], event['hash'])
-            listener_thread = threading.Thread(target=self.listen_for_event, args=args)
-            listener_tread.start()
-                                    
+        # This is our unique client id, to be used when firing and receiving events
+        # It needs to be generated once and placed in the config file
+
+        try:
+            clid = Config().feefie_client_id
+            user = Config().feefie_client_user
+        except:
+            clid = 'planetstack_core_team'
+            user = 'pl'
+
+        f = Fofum(user=user)
+        
+        listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
+        listener_thread.start()

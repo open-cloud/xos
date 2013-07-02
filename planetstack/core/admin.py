@@ -549,14 +549,17 @@ class UserAdmin(UserAdmin):
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ServiceResourceInline(admin.TabularInline):
+    exclude = ['enacted']
     model = ServiceResource
     extra = 0
 
 class ServiceClassAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
     list_display = ('name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
 class ReservedResourceInline(admin.TabularInline):
+    exclude = ['enacted']
     model = ReservedResource
     extra = 0
 
@@ -625,6 +628,7 @@ class ReservationAddRefreshForm(ReservationAddForm):
         return False
 
 class ReservationAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
     list_display = ('startTime', 'duration')
     inlines = [ReservedResourceInline]
     form = ReservationAddForm
@@ -702,6 +706,8 @@ admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(ServiceClass, ServiceClassAdmin)
+admin.site.register(Reservation, ReservationAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)
@@ -710,7 +716,5 @@ if showAll:
     admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Role, RoleAdmin)
     admin.site.register(Sliver, SliverAdmin)
-    admin.site.register(ServiceClass, ServiceClassAdmin)
-    admin.site.register(Reservation, ReservationAdmin)
     admin.site.register(Image, ImageAdmin)
 

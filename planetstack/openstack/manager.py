@@ -1,3 +1,4 @@
+w
 import os
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 import string
@@ -305,7 +306,7 @@ class OpenStackManager:
     def save_sliver(self, sliver):
         if not sliver.instance_id:
             slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
-            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key != null]
+            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key) 
             instance = self.driver.spawn_instance(name=sliver.name,
                                    key_name = sliver.creator.keyname,

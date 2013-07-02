@@ -1,11 +1,15 @@
 import time
 import traceback
+import commands
+import threading
+
 from datetime import datetime
 from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
 from openstack.manager import OpenStackManager
 from util.logger import Logger, logging
+from timeout import timeout
 
 
 logger = Logger(logfile='observer.log', level=logging.INFO)
@@ -14,6 +18,18 @@ class OpenStackObserver:
     
     def __init__(self):
         self.manager = OpenStackManager()
+        # The Condition object that gets signalled by Feefie events
+        self.event_cond = threading.Condition()
+
+    def wait_for_event(self, timeout):
+        self.event_cond.acquire()
+        self.event_cond.wait(timeout)
+        self.event_cond.release()
+        
+    def wake_up(self):
+        self.event_cond.acquire()
+        self.event_cond.notify()
+        self.event_cond.release()
 
     def run(self):
         if not self.manager.enabled or not self.manager.has_openstack:
@@ -26,7 +42,10 @@ class OpenStackObserver:
                 self.sync_user_tenant_roles()
                 self.sync_slivers()
                 self.sync_sliver_ips()
-                time.sleep(7)
+                self.sync_external_routes()
+
+                self.wait_for_event(timeout=30)
+
             except:
                 traceback.print_exc() 
 
@@ -226,16 +245,16 @@ class OpenStackObserver:
         # get all users that need to be synced (enacted < updated or enacted is None)
         pending_slivers = Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         for sliver in pending_slivers:
-            if not sliver.instance_id and sliver.creator: 
+            if sliver.creator: 
                 try: 
                     # update manager context
                     self.manager.init_caller(sliver.creator, sliver.slice.name)
                     self.manager.save_sliver(sliver)
-                    logger.info("saved sliver: %s %s" % (sliver))
+                    logger.info("saved sliver: %s" % (sliver))
                 except:
                     logger.log_exc("save sliver failed: %s" % sliver) 
 
-        # get all slivers that where enacted != null. We can assume these users
+        # get all slivers where enacted != null. We can assume these users
         # have previously been synced and need to be checed for deletion.
         slivers = Sliver.objects.filter(enacted__isnull=False)
         sliver_dict = {}
@@ -246,12 +265,12 @@ class OpenStackObserver:
         ctx = self.manager.driver.shell.nova_db.ctx 
         instances = self.manager.driver.shell.nova_db.instance_get_all(ctx)
         for instance in instances:
-            if instance.id not in sliver_dict:
+            if instance.uuid not in sliver_dict:
                 try:
                     # lookup tenant and update context  
                     tenant = self.manager.driver.shell.keystone.tenants.find(id=instance.project_id) 
                     self.manager.init_admin(tenant=tenant.name)  
-                    self.manager.driver.destroy_instance(instance.id)
+                    self.manager.driver.destroy_instance(instance.uuid)
                     logger.info("destroyed sliver: %s" % (instance))
                 except:
                     logger.log_exc("destroy sliver failed: %s" % instance) 
@@ -263,7 +282,7 @@ class OpenStackObserver:
         for sliver in slivers:
             # update connection
             self.manager.init_admin(tenant=sliver.slice.name)
-            servers = self.manager.client.nova.servers.findall(id=sliver.instance_id)
+            servers = self.manager.driver.shell.nova.servers.findall(id=sliver.instance_id)
             if not servers:
                 continue
             server = servers[0]
@@ -273,3 +292,13 @@ class OpenStackObserver:
             sliver.ip = ips[0]['addr']
             sliver.save()
             logger.info("saved sliver ip: %s %s" % (sliver, ips[0]))
+
+    def sync_external_routes(self):
+        routes = self.manager.driver.get_external_routes() 
+        subnets = self.manager.driver.shell.quantum.list_subnets()['subnets']
+        for subnet in subnets:
+            try: 
+                self.manager.driver.add_external_route(subnet, routes)         
+            except: 
+                logger.log_exc("failed to add external route for subnet %s" % subnet)
+ 

@@ -51,8 +51,17 @@ class OpenStackDriver:
         return self.shell.keystone.tenants.update(id, **kwds)
 
     def delete_tenant(self, id):
+        ctx = self.shell.nova_db.ctx
         tenants = self.shell.keystone.tenants.findall(id=id)
         for tenant in tenants:
+            # nova does not automatically delete the tenant's instances
+            # so we manually delete instances before deleteing the tenant   
+            instances = self.shell.nova_db.instance_get_all_by_filters(ctx, 
+                       {'project_id': tenant.id}, 'id', 'asc')
+            client = OpenStackClient(tenant=tenant)
+            driver = OpenStackDriver(client=client)
+            for instance in instances:
+                driver.destroy_instance(instance.id)
             self.shell.keystone.tenants.delete(tenant)
         return 1
 
@@ -230,7 +239,15 @@ class OpenStackDriver:
                 self.delete_external_route(subnet)
         return 1
 
-    def add_external_route(self, subnet):
+    def get_external_routes(self):
+        status, output = commands.getstatusoutput('route')
+        routes = output.split('\n')[3:]
+        return routes
+
+    def add_external_route(self, subnet, routes=[]):
+        if not routes:
+            routes = self.get_external_routes()
+ 
         ports = self.shell.quantum.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
@@ -247,14 +264,23 @@ class OpenStackDriver:
                     gw_port = port
                     router_id = gw_port['device_id']
                     router = self.shell.quantum.show_router(router_id)['router']
-                    ext_net = router['external_gateway_info']['network_id']
-                    for port in ports:
-                        if port['device_id'] == router_id and port['network_id'] == ext_net:
-                            ip_address = port['fixed_ips'][0]['ip_address']
+                    if router:
+                        ext_net = router['external_gateway_info']['network_id']
+                        for port in ports:
+                            if port['device_id'] == router_id and port['network_id'] == ext_net:
+                                ip_address = port['fixed_ips'][0]['ip_address']
 
         if ip_address:
-            cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
-            commands.getstatusoutput(cmd)
+            # check if external route already exists
+            route_exists = False
+            if routes:
+                for route in routes:
+                    if subnet['cidr'] in route and ip_address in route:
+                        route_exists = True
+            if not route_exists:
+                cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
+                s, o = commands.getstatusoutput(cmd)
+                #print cmd, "\n", s, o
 
         return 1
 
