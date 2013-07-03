@@ -7,7 +7,7 @@ from planetstack.config import Config
 
 import os
 import base64
-import fofum
+from fofum import Fofum
 
 # decorator that marks dispatachable event methods  
 def event(func):

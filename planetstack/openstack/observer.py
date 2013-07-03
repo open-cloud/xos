@@ -9,7 +9,7 @@ from core.models import *
 from django.db.models import F, Q
 from openstack.manager import OpenStackManager
 from util.logger import Logger, logging
-from timeout import timeout
+#from timeout import timeout
 
 
 logger = Logger(logfile='observer.log', level=logging.INFO)
