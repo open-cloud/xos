@@ -102,13 +102,17 @@ class EventSender:
 class EventListener:
     def __init__(self,wake_up=None):
         self.handler = EventHandler()
-        self.wake_up = wake_up()
+        self.wake_up = wake_up
 
     def handle_event(self, payload):
         payload_dict = json.loads(payload)
-        event = payload_dict['event']
-        ctx = payload_dict['ctx']
-        self.handler.dispatch(event,**ctx)   
+
+	# The code below will come back when we optimize the observer syncs
+	# into 'small' and 'big' syncs.
+
+        #event = payload_dict['event']
+        #ctx = payload_dict['ctx']
+        #self.handler.dispatch(event,**ctx)   
 
         if (self.wake_up):
             self.wake_up()
