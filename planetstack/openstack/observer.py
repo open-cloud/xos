@@ -8,8 +8,8 @@ from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
 from openstack.manager import OpenStackManager
-from util.logger import Logger, logging
-from timeout import timeout
+from util.logger import Logger, logging, logger
+#from timeout import timeout
 
 
 logger = Logger(logfile='observer.log', level=logging.INFO)
@@ -27,6 +27,7 @@ class OpenStackObserver:
         self.event_cond.release()
         
     def wake_up(self):
+        logger.info('Wake up routine called. Event cond %r'%self.event_cond)
         self.event_cond.acquire()
         self.event_cond.notify()
         self.event_cond.release()
@@ -36,16 +37,18 @@ class OpenStackObserver:
             return
         while True:
             try:
+                logger.info('Observer run loop')
                 #self.sync_roles()
+                logger.info('Calling sync tenants')
                 self.sync_tenants()
                 self.sync_users()
                 self.sync_user_tenant_roles()
                 self.sync_slivers()
                 self.sync_sliver_ips()
+                logger.info('Calling sync external routes')
                 self.sync_external_routes()
-
-                self.wait_for_event(timeout=30)
-
+                self.wait_for_event(timeout=300)
+                logger.info('Observer woken up')
             except:
                 traceback.print_exc() 
 
