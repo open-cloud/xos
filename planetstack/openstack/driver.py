@@ -264,7 +264,7 @@ class OpenStackDriver:
                     gw_port = port
                     router_id = gw_port['device_id']
                     router = self.shell.quantum.show_router(router_id)['router']
-                    if router:
+                    if router and router.get('external_gateway_info'):
                         ext_net = router['external_gateway_info']['network_id']
                         for port in ports:
                             if port['device_id'] == router_id and port['network_id'] == ext_net:
