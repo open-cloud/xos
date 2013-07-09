@@ -58,7 +58,7 @@ class OpenStackDriver:
             # so we manually delete instances before deleteing the tenant   
             instances = self.shell.nova_db.instance_get_all_by_filters(ctx, 
                        {'project_id': tenant.id}, 'id', 'asc')
-            client = OpenStackClient(tenant=tenant)
+            client = OpenStackClient(tenant=tenant.name)
             driver = OpenStackDriver(client=client)
             for instance in instances:
                 driver.destroy_instance(instance.id)
