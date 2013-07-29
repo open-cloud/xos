@@ -7,7 +7,7 @@ from django.contrib.contenttypes import generic
 
 # If true, then IP addresses will be allocated by the model. If false, then
 # we will assume the observer handles it.
-#NO_OBSERVER=True
+NO_OBSERVER=False
 
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
@@ -44,7 +44,7 @@ class Network(PlCoreBase):
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
-    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True)
+    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
 
     def save(self, *args, **kwds):
         if (not self.ip) and (NO_OBSERVER):
