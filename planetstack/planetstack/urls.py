@@ -9,7 +9,7 @@ from core.views.users import UserList, UserDetail
 from core.views.slices import SliceList, SliceDetail
 from core.views.slice_memberships import SliceMembershipList, SliceMembershipDetail
 from core.views.slivers import SliverList, SliverDetail
-from core.views.deployment_networks import DeploymentList, DeploymentDetail
+from core.views.deployments import DeploymentList, DeploymentDetail
 from core.views.images import ImageList, ImageDetail
 from core.views.nodes import NodeList, NodeDetail
 from core.models import *
