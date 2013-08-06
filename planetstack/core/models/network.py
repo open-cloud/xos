@@ -30,8 +30,13 @@ class Network(PlCoreBase):
     guaranteedBandwidth = models.IntegerField(default=0)
     permitAllSlices = models.BooleanField(default=False)
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
-    slices = models.ManyToManyField(Slice, blank=True, related_name="networks")
+    slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
     slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
+
+    # for observer/manager
+    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -41,12 +46,40 @@ class Network(PlCoreBase):
             self.subnet = find_unused_subnet(existing_subnets=[x.subnet for x in Network.objects.all()])
         super(Network, self).save(*args, **kwds)
 
+class NetworkSlice(PlCoreBase):
+    # This object exists solely so we can implement the permission check when
+    # adding slices to networks. It adds no additional fields to the relation.
+
+    network = models.ForeignKey(Network)
+    slice = models.ForeignKey(Slice)
+
+    def save(self, *args, **kwds):
+        slice = self.slice
+        if (slice not in self.network.permittedSlices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
+            # to add a sliver to the network, then one of the following must be true:
+            #   1) sliver's slice is in network's permittedSlices list,
+            #   2) sliver's slice is network's owner, or
+            #   3) network's permitAllSlices is true
+            raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
+
+        super(NetworkSlice, self).save(*args, **kwds)
+
+    def __unicode__(self):  return u'%s-%s' % (self.network.name, self.slice.name)
+
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
 
     def save(self, *args, **kwds):
+        slice = self.sliver.slice
+        if (slice not in self.network.permittedSlices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
+            # to add a sliver to the network, then one of the following must be true:
+            #   1) sliver's slice is in network's permittedSlices list,
+            #   2) sliver's slice is network's owner, or
+            #   3) network's permitAllSlices is true
+            raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
+
         if (not self.ip) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_address
             self.ip = find_unused_address(self.network.subnet,
