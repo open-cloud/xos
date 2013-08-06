@@ -766,11 +766,18 @@ class NetworkSliversInline(admin.TabularInline):
     verbose_name_plural = "Slivers"
     verbose_name = "Sliver"
 
+class NetworkSlicesInline(admin.TabularInline):
+    exclude = ['enacted']
+    model = NetworkSlice
+    extra = 0
+    verbose_name_plural = "Slices"
+    verbose_name = "Slice"
+
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
     readonly_fields = ("subnet", )
-    inlines = [NetworkParameterInline, NetworkSliversInline, RouterInline]
+    inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
 
 class NetworkTemplateAdmin(admin.ModelAdmin):
     exclude = ['enacted']
