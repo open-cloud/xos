@@ -11,11 +11,13 @@ NO_OBSERVER=False
 
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
+    TRANSLATION_CHOICES = (('none', 'none'), ('NAT', 'NAT'))
 
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
     guaranteedBandwidth = models.IntegerField(default=0)
     visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
+    translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
