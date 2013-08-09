@@ -18,6 +18,8 @@ class NetworkTemplate(PlCoreBase):
     guaranteedBandwidth = models.IntegerField(default=0)
     visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
     translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
+    sharedNetworkName = models.CharField(max_length=30, blank=True, null=True)
+    sharedNetworkId = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
