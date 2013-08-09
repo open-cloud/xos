@@ -343,6 +343,21 @@ class OpenStackDriver:
         shared_networks = self.shell.quantum.list_networks(**search_opts)
         return shared_networks
 
+    def get_network_subnet(self, network_id):
+        subnet_id = None
+        subnet = None
+        if network_id:
+            os_networks = self.shell.quantum.list_networks(id=network_id)["networks"]
+            if os_networks:
+                os_network = os_networks[0]
+                if os_network['subnets']:
+                    subnet_id = os_network['subnets'][0]
+                    os_subnets = self.shell.quantum.list_subnets(id=subnet_id)['subnets']
+                    if os_subnets:
+                        subnet = os_subnets[0]['cidr']
+
+        return (subnet_id, subnet)
+
     def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], networks=None):
         flavor_name = self.config.nova_default_flavor
         flavor = self.shell.nova.flavors.find(name=flavor_name)

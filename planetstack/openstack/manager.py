@@ -412,34 +412,38 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
-            network_name = network.name
+            if network.template.sharedNetworkName:
+                network.network_id = network.template.sharedNetworkId
+                (network.subnet_id, network.subnet) = self.driver.get_network_subnet(network.network_id)
+            else:
+                network_name = network.name
 
-            # create network
-            os_network = self.driver.create_network(network_name)
-            network.network_id = os_network['id']
+                # create network
+                os_network = self.driver.create_network(network_name)
+                network.network_id = os_network['id']
 
-            # create router
-            router = self.driver.create_router(network_name)
-            network.router_id = router['id']
+                # create router
+                router = self.driver.create_router(network_name)
+                network.router_id = router['id']
 
-            # create subnet
-            next_subnet = self.get_next_subnet()
-            cidr = str(next_subnet.cidr)
-            ip_version = next_subnet.version
-            start = str(next_subnet[2])
-            end = str(next_subnet[-2])
-            subnet = self.driver.create_subnet(name=network_name,
-                                               network_id = network.network_id,
-                                               cidr_ip = cidr,
-                                               ip_version = ip_version,
-                                               start = start,
-                                               end = end)
-            network.subnet = cidr
-            network.subnet_id = subnet['id']
-            # add subnet as interface to slice's router
-            self.driver.add_router_interface(router['id'], subnet['id'])
-            # add external route
-            self.driver.add_external_route(subnet)
+                # create subnet
+                next_subnet = self.get_next_subnet()
+                cidr = str(next_subnet.cidr)
+                ip_version = next_subnet.version
+                start = str(next_subnet[2])
+                end = str(next_subnet[-2])
+                subnet = self.driver.create_subnet(name=network_name,
+                                                   network_id = network.network_id,
+                                                   cidr_ip = cidr,
+                                                   ip_version = ip_version,
+                                                   start = start,
+                                                   end = end)
+                network.subnet = cidr
+                network.subnet_id = subnet['id']
+                # add subnet as interface to slice's router
+                self.driver.add_router_interface(router['id'], subnet['id'])
+                # add external route
+                self.driver.add_external_route(subnet)
 
         network.save()
         network.enacted = datetime.now()
@@ -455,12 +459,22 @@ class OpenStackManager:
         if network.network_id:
             self.driver.delete_network(network.network_id)
 
+    def save_network_template(self, template):
+        if (template.sharedNetworkName) and (not template.sharedNetworkId):
+            os_networks = self.driver.shell.quantum.list_networks(name=template.sharedNetworkName)['networks']
+            if os_networks:
+                template.sharedNetworkId = os_networks[0]["id"]
+
+        template.save()
+        template.enacted = datetime.now()
+        template.save(update_fields=['enacted'])
+
     def find_or_make_template_for_network(self, name):
         """ Given a network name, try to guess the right template for it """
 
         # templates for networks we may encounter
         if name=='nat-net':
-            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat"}
+            template_dict = None # {"name": "private-nat", "visibility": "private", "translation": "nat"}
         elif name=='sharednet1':
             template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none"}
         else:
@@ -471,9 +485,18 @@ class OpenStackManager:
         if templates:
             return templates[0]
 
+        if template_dict == None:
+            return None
+
         template = NetworkTemplate(**template_dict)
         template.save()
         return template
+
+    def refresh_network_templates(self):
+        for template in NetworkTemplate.objects.all():
+            if (template.sharedNetworkName) and (not template.sharedNetworkId):
+                 # this will cause us to try to fill in the sharedNetworkId
+                 self.save_network_template(template)
 
     def refresh_networks(self):
         # get a list of all networks in the model
@@ -503,15 +526,12 @@ class OpenStackManager:
                 owner_slice = Slice.objects.get(tenant_id = os_network['tenant_id'])
                 template = self.find_or_make_template_for_network(os_network['name'])
 
-                # Make a best-effort attempt to figure out the subnet. If we
-                # cannot determine the subnet, then leave those fields blank.
-                subnet_id = None
-                subnet = None
-                if os_network['subnets']:
-                    subnet_id = os_network['subnets'][0]
-                    os_subnets = self.driver.shell.quantum.list_subnets(id=subnet_id)['subnets']
-                    if os_subnets:
-                        subnet = os_subnets[0]['cidr']
+                if (template is None):
+                    # This is our way of saying we don't want to auto-instantiate
+                    # this network type.
+                    continue
+
+                (subnet_id, subnet) = self.driver.get_network_subnet(os_network['id'])
 
                 if owner_slice:
                     #print "creating model object for OS network", os_network['name']
