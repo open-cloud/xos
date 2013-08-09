@@ -39,18 +39,63 @@ class OpenStackObserver:
             try:
                 logger.info('Observer run loop')
                 #self.sync_roles()
+
                 logger.info('Calling sync tenants')
-                self.sync_tenants()
-                self.sync_users()
-                self.sync_user_tenant_roles()
-                self.sync_slivers()
-                self.sync_sliver_ips()
+                try:
+                    self.sync_tenants()
+                except:
+                    logger.log_exc("Exception in sync_tenants")
+                    traceback.print_exc()
+
+                logger.info('Calling sync users')
+                try:
+                    self.sync_users()
+                except:
+                    logger.log_exc("Exception in sync_users")
+                    traceback.print_exc()
+
+                logger.info('Calling sync tenant roles')
+                try:
+                    self.sync_user_tenant_roles()
+                except:
+                    logger.log_exc("Exception in sync_users")
+                    traceback.print_exc()
+
+                logger.info('Calling sync slivers')
+                try:
+                    self.sync_slivers()
+                except:
+                    logger.log_exc("Exception in sync slivers")
+                    traceback.print_exc()
+
+                logger.info('Calling sync sliver ips')
+                try:
+                    self.sync_sliver_ips()
+                except:
+                    logger.log_exc("Exception in sync_sliver_ips")
+                    traceback.print_exc()
+
+                logger.info('Calling sync networks')
+                try:
+                    self.sync_networks()
+                except:
+                    logger.log_exc("Exception in sync_networks")
+                    traceback.print_exc()
+
                 logger.info('Calling sync external routes')
-                self.sync_external_routes()
+                try:
+                    self.sync_external_routes()
+                except:
+                     logger.log_exc("Exception in sync_external_routes")
+                     traceback.print_exc()
+
+                logger.info('Waiting for event')
                 self.wait_for_event(timeout=300)
+                time.sleep(300)
                 logger.info('Observer woken up')
             except:
-                traceback.print_exc() 
+                logger.log_exc("Exception in observer run loop")
+                traceback.print_exc()
 
     def sync_roles(self):
         """
@@ -300,8 +345,35 @@ class OpenStackObserver:
         routes = self.manager.driver.get_external_routes() 
         subnets = self.manager.driver.shell.quantum.list_subnets()['subnets']
         for subnet in subnets:
-            try: 
-                self.manager.driver.add_external_route(subnet, routes)         
-            except: 
+            try:
+                self.manager.driver.add_external_route(subnet, routes)
+            except:
                 logger.log_exc("failed to add external route for subnet %s" % subnet)
- 
+
+    def sync_networks(self):
+        """
+        save all networks where enacted < updated or enacted == None. Remove networks that
+        no don't exist in openstack db if they have an enacted time (enacted != None).
+        """
+        # get all users that need to be synced (enacted < updated or enacted is None)
+        pending_networks = Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        for network in pending_networks:
+            if network.owner and network.owner.creator:
+                try:
+                    # update manager context
+                    self.manager.init_caller(network.owner.creator, network.owner.name)
+                    self.manager.save_network(network)
+                    logger.info("saved network: %s" % (network))
+                except:
+                    logger.log_exc("save network failed: %s" % network)
+
+        # get all networks where enacted != null. We can assume these users
+        # have previously been synced and need to be checed for deletion.
+        networks = Network.objects.filter(enacted__isnull=False)
+        network_dict = {}
+        for network in networks:
+            network_dict[network.network_id] = network
+
+        # TODO: delete Network objects if quantum network doesn't exist
+        #       (need to write self.manager.driver.shell.quantum_db)
+
