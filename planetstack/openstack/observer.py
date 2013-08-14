@@ -97,7 +97,7 @@ class OpenStackObserver:
                 tSleep = 300 - (time.time() - tBeforeWait)
                 if tSleep > 0:
                     logger.info('Sleeping for %d seconds' % tSleep)
-                    time.sleep(300)
+                    time.sleep(tSleep)
 
                 logger.info('Observer woken up')
             except:
