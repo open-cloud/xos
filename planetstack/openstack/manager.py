@@ -316,11 +316,7 @@ class OpenStackManager:
     @require_enabled
     def save_sliver(self, sliver):
         if not sliver.instance_id:
-            if (sliver.slice.name == "smbaker-slice-8") or (sliver.slice.name.startswith("smbaker-slice-net")):
-                # only inflict this pain on myself, for now...
-                nics = self.get_requested_networks(sliver.slice)
-            else:
-                nics = None
+            nics = self.get_requested_networks(sliver.slice)
             file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
             slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
@@ -420,7 +416,7 @@ class OpenStackManager:
                 network_name = network.name
 
                 # create network
-                os_network = self.driver.create_network(network_name)
+                os_network = self.driver.create_network(network_name, shared=True)
                 network.network_id = os_network['id']
 
                 # create router
