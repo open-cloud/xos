@@ -309,7 +309,7 @@ class OpenStackManager:
 
         networks = []
         for network_id in network_ids:
-            networks.append({"uuid": network_id})
+            networks.append({"net-id": network_id})
 
         return networks
 
@@ -318,9 +318,10 @@ class OpenStackManager:
         if not sliver.instance_id:
             if (sliver.slice.name == "smbaker-slice-8") or (sliver.slice.name.startswith("smbaker-slice-net")):
                 # only inflict this pain on myself, for now...
-                requested_networks = self.get_requested_networks(sliver.slice)
+                nics = self.get_requested_networks(sliver.slice)
             else:
-                requested_networks = None
+                nics = None
+            file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
             slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key)
@@ -329,7 +330,7 @@ class OpenStackManager:
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name,
                                    pubkeys = pubkeys,
-                                   networks = requested_networks )
+                                   nics = nics )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
