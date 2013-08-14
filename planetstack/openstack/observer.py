@@ -90,8 +90,15 @@ class OpenStackObserver:
                      traceback.print_exc()
 
                 logger.info('Waiting for event')
+                tBeforeWait = time.time()
                 self.wait_for_event(timeout=300)
-                time.sleep(300)
+
+                # Enforce 5 minutes between wakeups
+                tSleep = 300 - (time.time() - tBeforeWait)
+                if tSleep > 0:
+                    logger.info('Sleeping for %d seconds' % tSleep)
+                    time.sleep(300)
+
                 logger.info('Observer woken up')
             except:
                 logger.log_exc("Exception in observer run loop")
