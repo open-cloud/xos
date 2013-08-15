@@ -171,8 +171,7 @@ class SliceMembershipInline(PlStackTabularInline):
 
         return super(SliceMembershipInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SliceNetworkInline(admin.TabularInline):
-    # exclude = ['enacted']
+class SliceNetworkInline(PlStackTabularInline):
     model = Network.slices.through
     extra = 0
     verbose_name = "Network Connection"
