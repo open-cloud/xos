@@ -74,6 +74,7 @@ class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
+    port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
 
     def save(self, *args, **kwds):
         slice = self.sliver.slice
