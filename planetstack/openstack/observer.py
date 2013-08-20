@@ -82,6 +82,13 @@ class OpenStackObserver:
                     logger.log_exc("Exception in sync_networks")
                     traceback.print_exc()
 
+                logger.info('Calling sync network slivers')
+                try:
+                    self.sync_network_slivers()
+                except:
+                    logger.log_exc("Exception in sync_network_slivers")
+                    traceback.print_exc()
+
                 logger.info('Calling sync external routes')
                 try:
                     self.sync_external_routes()
@@ -377,7 +384,6 @@ class OpenStackObserver:
 
         ports = self.manager.driver.shell.quantum.list_ports()["ports"]
         for port in ports:
-#            print port
             if port["id"] in networkSlivers_by_port:
                 # we already have it
                 print "already accounted for port", port["id"]
@@ -416,7 +422,7 @@ class OpenStackObserver:
                 print "port", port["id"], "has no fixed_ips"
                 continue
 
-            print "XXX", port
+#            print "XXX", port
 
             ns = NetworkSliver(network=network,
                                sliver=sliver,
