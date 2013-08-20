@@ -79,7 +79,7 @@ class SliverInline(PlStackTabularInline):
 
         for sliver in obj.slivers.all():
             for nbs in sliver.networksliver_set.all():
-                if nbs.ip is not None:
+                if nbs.ip:
                     network_name = nbs.network.name
                     if network_name not in [str(x) for x in readonly_fields]:
                         readonly_fields.append(NetworkLookerUpper(network_name))
