@@ -9,7 +9,6 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Role
         fields = ('id', 
-                  'role_id',
                   'role',
                   'role_type')
 
@@ -19,11 +18,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
     slice_memberships = serializers.HyperlinkedRelatedField(view_name='slice-membership-detail')
-    site_privileges = serializers.HyperlinkedRelatedField(view_name='site-privilege-detail')
+    site_privileges = serializers.HyperlinkedRelatedField(view_name='siteprivilege-detail')
     class Meta:
         model = User
         fields = ('id',
-                  'user_id', 
                   'kuser_id', 
                   'firstname', 
                   'lastname',
@@ -66,7 +64,7 @@ class SliceMembershipSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.HyperlinkedRelatedField(view_name='user-detail')
     role = serializers.HyperlinkedRelatedField(view_name='role-detail')
     class Meta:
-        model = SitePrivilege
+        model = SliceMembership
         fields = ('id',
                   'user',
                   'slice',
@@ -115,7 +113,7 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
-    sites = serializers.HyperlinkedRelatedField(view_name='deploymentnetwork-detail')
+    sites = serializers.HyperlinkedRelatedField(view_name='site-detail')
     class Meta:
         model = Deployment
         fields = ('id',
@@ -127,9 +125,8 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     image = serializers.HyperlinkedRelatedField(view_name='image-detail')
-    key = serializers.HyperlinkedRelatedField(view_name='key-detail')
     slice = serializers.HyperlinkedRelatedField(view_name='slice-detail')
-    deployment_network = serializers.HyperlinkedRelatedField(view_name='deployment_network-detail')
+    deployment = serializers.HyperlinkedRelatedField(view_name='deployment-detail')
     node = serializers.HyperlinkedRelatedField(view_name='node-detail')
     
     
@@ -143,9 +140,8 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
                   'instance_name',
                   'ip',
                   'image',
-                  'key',
                   'slice',
-                  'deploymentNetwork',
+                  'deployment',
                   'node')
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):

@@ -1,6 +1,6 @@
 import threading
 from openstack.observer import OpenStackObserver
-from openstack.event_listener import EventListener
+from openstack.event_manager import EventListener
 
 class Backend:
     
@@ -11,7 +11,7 @@ class Backend:
         observer_thread.start()
 
         # start event listene
-        event_listener = EventListener()
-        event_listener_thread = threading.Thread(target=event_listener.run)
-        event_listener_thread.start()
+        event_manager = EventListener(wake_up=observer.wake_up)
+        event_manager_thread = threading.Thread(target=event_manager.run)
+        event_manager_thread.start()
                 

@@ -18,12 +18,12 @@ class OpenStackDriver:
         else:
             self.shell = OpenStackClient()
 
-    def create_role(self, name): 
+    def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
         if not roles:
             role = self.shell.keystone.roles.create(name)
         else:
-            role = roles[0] 
+            role = roles[0]
         return role
 
     def delete_role(self, filter):
@@ -56,9 +56,9 @@ class OpenStackDriver:
         for tenant in tenants:
             # nova does not automatically delete the tenant's instances
             # so we manually delete instances before deleteing the tenant   
-            instances = self.shell.nova_db.instance_get_all_by_filters(ctx, 
+            instances = self.shell.nova_db.instance_get_all_by_filters(ctx,
                        {'project_id': tenant.id}, 'id', 'asc')
-            client = OpenStackClient(tenant=tenant)
+            client = OpenStackClient(tenant=tenant.name)
             driver = OpenStackDriver(client=client)
             for instance in instances:
                 driver.destroy_instance(instance.id)
@@ -160,12 +160,12 @@ class OpenStackDriver:
         if router and subnet:
             self.shell.quantum.remove_interface_router(router_id, {'subnet_id': subnet_id})
  
-    def create_network(self, name):
+    def create_network(self, name, shared=False):
         nets = self.shell.quantum.list_networks(name=name)['networks']
         if nets: 
             net = nets[0]
         else:
-            net = self.shell.quantum.create_network({'network': {'name': name}})['network']
+            net = self.shell.quantum.create_network({'network': {'name': name, 'shared': shared}})['network']
         return net
  
     def delete_network(self, id):
@@ -210,7 +210,7 @@ class OpenStackDriver:
         for snet in subnets:
             if snet['cidr'] == cidr_ip and snet['network_id'] == network_id:
                 subnet = snet
- 
+
         if not subnet:
             allocation_pools = [{'start': start, 'end': end}]
             subnet = {'subnet': {'name': name,
@@ -218,7 +218,7 @@ class OpenStackDriver:
                                  'ip_version': ip_version,
                                  'cidr': cidr_ip,
                                  'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
-                                 'allocation_pools': allocation_pools}}          
+                                 'allocation_pools': allocation_pools}}
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
             self.add_external_route(subnet)
         # TODO: Add route to external network
@@ -239,7 +239,15 @@ class OpenStackDriver:
                 self.delete_external_route(subnet)
         return 1
 
-    def add_external_route(self, subnet):
+    def get_external_routes(self):
+        status, output = commands.getstatusoutput('route')
+        routes = output.split('\n')[3:]
+        return routes
+
+    def add_external_route(self, subnet, routes=[]):
+        if not routes:
+            routes = self.get_external_routes()
+ 
         ports = self.shell.quantum.list_ports()['ports']
 
         gw_ip = subnet['gateway_ip']
@@ -256,14 +264,23 @@ class OpenStackDriver:
                     gw_port = port
                     router_id = gw_port['device_id']
                     router = self.shell.quantum.show_router(router_id)['router']
-                    ext_net = router['external_gateway_info']['network_id']
-                    for port in ports:
-                        if port['device_id'] == router_id and port['network_id'] == ext_net:
-                            ip_address = port['fixed_ips'][0]['ip_address']
+                    if router and router.get('external_gateway_info'):
+                        ext_net = router['external_gateway_info']['network_id']
+                        for port in ports:
+                            if port['device_id'] == router_id and port['network_id'] == ext_net:
+                                ip_address = port['fixed_ips'][0]['ip_address']
 
         if ip_address:
-            cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
-            commands.getstatusoutput(cmd)
+            # check if external route already exists
+            route_exists = False
+            if routes:
+                for route in routes:
+                    if subnet['cidr'] in route and ip_address in route:
+                        route_exists = True
+            if not route_exists:
+                cmd = "route add -net %s dev br-ex gw %s" % (subnet['cidr'], ip_address)
+                s, o = commands.getstatusoutput(cmd)
+                #print cmd, "\n", s, o
 
         return 1
 
@@ -311,9 +328,37 @@ class OpenStackDriver:
         keys = self.shell.nova.keypairs.findall(id=id)
         for key in keys:
             self.shell.nova.keypairs.delete(key) 
-        return 1 
+        return 1
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[]):
+    def get_private_networks(self, tenant=None):
+        if not tenant:
+            tenant = self.shell.nova.tenant
+        tenant = self.shell.keystone.tenants.find(name=tenant)
+        search_opts = {"tenant_id": tenant.id, "shared": False}
+        private_networks = self.shell.quantum.list_networks(**search_opts)
+        return private_networks
+
+    def get_shared_networks(self):
+        search_opts = {"shared": True}
+        shared_networks = self.shell.quantum.list_networks(**search_opts)
+        return shared_networks
+
+    def get_network_subnet(self, network_id):
+        subnet_id = None
+        subnet = None
+        if network_id:
+            os_networks = self.shell.quantum.list_networks(id=network_id)["networks"]
+            if os_networks:
+                os_network = os_networks[0]
+                if os_network['subnets']:
+                    subnet_id = os_network['subnets'][0]
+                    os_subnets = self.shell.quantum.list_subnets(id=subnet_id)['subnets']
+                    if os_subnets:
+                        subnet = os_subnets[0]['cidr']
+
+        return (subnet_id, subnet)
+
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None):
         flavor_name = self.config.nova_default_flavor
         flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
@@ -337,7 +382,8 @@ class OpenStackDriver:
                                             security_group = security_group,
                                             files=files,
                                             scheduler_hints=hints,
-                                            availability_zone=availability_zone)
+                                            availability_zone=availability_zone,
+                                            nics=nics)
         return server
           
     def destroy_instance(self, id):

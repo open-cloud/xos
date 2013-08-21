@@ -39,12 +39,62 @@ class TagInline(generic.GenericTabularInline):
     exclude = ['enacted']
     extra = 1
 
+class NetworkLookerUpper:
+    """ This is a callable that looks up a network name in a sliver and returns
+        the ip address for that network.
+    """
+
+    def __init__(self, name):
+        self.short_description = name
+        self.__name__ = name
+        self.network_name = name
+
+    def __call__(self, obj):
+        if obj is not None:
+            for nbs in obj.networksliver_set.all():
+                if (nbs.network.name == self.network_name):
+                    return nbs.ip
+        return ""
+
+    def __str__(self):
+        return self.network_name
+
 class SliverInline(PlStackTabularInline):
     model = Sliver
     fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     extra = 0
-    #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
+
+
+    def _declared_fieldsets(self):
+        # Return None so django will call get_fieldsets and we can insert our
+        # dynamic fields
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super(SliverInline, self).get_readonly_fields(request, obj)
+
+        # Lookup the networks that are bound to the slivers, and add those
+        # network names to the list of readonly fields.
+
+        for sliver in obj.slivers.all():
+            for nbs in sliver.networksliver_set.all():
+                if nbs.ip:
+                    network_name = nbs.network.name
+                    if network_name not in [str(x) for x in readonly_fields]:
+                        readonly_fields.append(NetworkLookerUpper(network_name))
+
+        return readonly_fields
+
+    def get_fieldsets(self, request, obj=None):
+        form = self.get_formset(request, obj).form
+        # fields = the read/write files + the read-only fields
+        fields = self.fields
+        for fieldName in self.get_readonly_fields(request,obj):
+            if not fieldName in fields:
+                fields.append(fieldName)
+
+        return [(None, {'fields': fields})]
     
 
 class SiteInline(PlStackTabularInline):
@@ -120,6 +170,12 @@ class SliceMembershipInline(PlStackTabularInline):
                 kwargs['queryset'] = list(users)
 
         return super(SliceMembershipInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SliceNetworkInline(PlStackTabularInline):
+    model = Network.slices.through
+    extra = 0
+    verbose_name = "Network Connection"
+    verbose_name_plural = "Network Connections"
 
 class SliceTagInline(PlStackTabularInline):
     model = SliceTag
@@ -271,7 +327,7 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline]
+    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline, SliceNetworkInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -402,9 +458,9 @@ class TagAdmin(admin.ModelAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     inlines = [TagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -549,10 +605,12 @@ class UserAdmin(UserAdmin):
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ServiceResourceInline(admin.TabularInline):
+    exclude = ['enacted']
     model = ServiceResource
     extra = 0
 
 class ServiceClassAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
     list_display = ('name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
@@ -677,6 +735,53 @@ class ReservationAdmin(admin.ModelAdmin):
         else:
             return []
 
+class NetworkParameterTypeAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterInline(admin.TabularInline):
+    # exclude = ['enacted']
+    model = Router.networks.through
+    extra = 0
+    verbose_name_plural = "Routers"
+    verbose_name = "Router"
+
+class NetworkParameterInline(generic.GenericTabularInline):
+    exclude = ['enacted']
+    model = NetworkParameter
+    extra = 1
+    verbose_name_plural = "Parameters"
+    verbose_name = "Parameter"
+
+class NetworkSliversInline(admin.TabularInline):
+    exclude = ['enacted']
+    readonly_fields = ("ip", )
+    model = NetworkSliver
+    extra = 0
+    verbose_name_plural = "Slivers"
+    verbose_name = "Sliver"
+
+class NetworkSlicesInline(admin.TabularInline):
+    exclude = ['enacted']
+    model = NetworkSlice
+    extra = 0
+    verbose_name_plural = "Slices"
+    verbose_name = "Slice"
+
+class NetworkAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "subnet", "ports", "labels")
+    readonly_fields = ("subnet", )
+    inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
+
+class NetworkTemplateAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "guaranteedBandwidth", "visibility")
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -706,6 +811,10 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
 admin.site.register(Reservation, ReservationAdmin)
+admin.site.register(Network, NetworkAdmin)
+admin.site.register(Router, RouterAdmin)
+admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
+admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)

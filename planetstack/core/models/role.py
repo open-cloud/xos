@@ -5,8 +5,8 @@ from core.models import PlCoreBase
 
 class Role(PlCoreBase):
 
-    #ROLE_CHOICES = (('admin', 'Admin'), ('pi', 'Principle Investigator'), ('user','User'))
-    role = models.CharField(null=True, blank=True,max_length=256, unique=True)
+    ROLE_CHOICES = (('admin', 'Admin'), ('pi', 'Principle Investigator'), ('tech', 'Technician'), ('user','User'))
+    role = models.CharField(null=True, blank=True,max_length=256, unique=True, choices=ROLE_CHOICES)
     role_type = models.CharField(max_length=80, unique=True)
 
     def __unicode__(self):  return u'%s' % (self.role_type)
