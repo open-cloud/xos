@@ -37,6 +37,7 @@ class OpenStackObserver:
             return
         while True:
             try:
+                start_time=time.time()
                 logger.info('Observer run loop')
                 #self.sync_roles()
 
@@ -46,6 +47,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync_tenants")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync tenants took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync users')
                 try:
@@ -53,6 +56,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync_users")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync users took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync tenant roles')
                 try:
@@ -67,6 +72,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync slivers")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync slivers took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync sliver ips')
                 try:
@@ -74,6 +81,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync_sliver_ips")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync sliver ips took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync networks')
                 try:
@@ -81,6 +90,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync_networks")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync networks took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync network slivers')
                 try:
@@ -88,6 +99,8 @@ class OpenStackObserver:
                 except:
                     logger.log_exc("Exception in sync_network_slivers")
                     traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync network sliver ips took %f seconds'%(finish_time-start_time))
 
                 logger.info('Calling sync external routes')
                 try:
@@ -95,6 +108,8 @@ class OpenStackObserver:
                 except:
                      logger.log_exc("Exception in sync_external_routes")
                      traceback.print_exc()
+                finish_time = time.time()
+                logger.info('Sync external routes took %f seconds'%(finish_time-start_time))
 
                 logger.info('Waiting for event')
                 tBeforeWait = time.time()
@@ -329,11 +344,16 @@ class OpenStackObserver:
         for instance in instances:
             if instance.uuid not in sliver_dict:
                 try:
-                    # lookup tenant and update context  
-                    tenant = self.manager.driver.shell.keystone.tenants.find(id=instance.project_id) 
-                    self.manager.init_admin(tenant=tenant.name)  
+                    # lookup tenant and update context
+                    try:
+                        tenant = self.manager.driver.shell.keystone.tenants.find(id=instance.project_id)
+                        tenant_name = tenant.name
+                    except:
+                        tenant_name = None
+                        logger.info("exception while retrieving tenant %s. Deleting instance using root tenant." % instance.project_id)
+                    self.manager.init_admin(tenant=tenant_name)
                     self.manager.driver.destroy_instance(instance.uuid)
-                    logger.info("destroyed sliver: %s" % (instance))
+                    logger.info("destroyed sliver: %s" % (instance.uuid))
                 except:
                     logger.log_exc("destroy sliver failed: %s" % instance) 
                 
