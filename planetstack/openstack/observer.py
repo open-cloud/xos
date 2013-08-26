@@ -14,7 +14,7 @@ from util.logger import Logger, logging, logger
 
 logger = Logger(logfile='observer.log', level=logging.INFO)
 
-class OpenStackObserver:
+class PlanetStackObserver:
     
     def __init__(self):
         self.manager = OpenStackManager()
