@@ -10,7 +10,13 @@ from openstack.manager import OpenStackManager
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
 def ps_id_to_pl_id(x):
-    return 10000 + x
+    # Since we don't want the PlanetStack object IDs to conflict with existing
+    # PlanetLab object IDs in the CMI, just add 100000 to the PlanetStack object
+    # IDs.
+    return 100000 + x
+
+def pl_id_to_ps_id(x):
+    return x - 100000
 
 def filter_fields(src, fields):
     dest = {}
@@ -36,7 +42,7 @@ def GetSlices(filter={}):
                  "peer_slice_id": None,
                  "slice_tag_ids": [],
                  "peer_id": None,
-                 "site_id": ps_id_to_pl_id(ps.site_id),
+                 "site_id": ps_id_to_pl_id(ps_slice.site_id),
                  "name": ps_slice.name}
 
                  # creator_person_id, person_ids, expires, created
@@ -44,8 +50,8 @@ def GetSlices(filter={}):
         slices.append(slice)
     return slices
 
-def GetNodes(node_ids, fields=None)
-    ps_nodes = Node.objects.filter(id__in=node_ids)
+def GetNodes(node_ids, fields=None):
+    ps_nodes = Node.objects.filter(id__in=[pl_id_to_ps_id(nid) for nid in node_ids])
     nodes = []
     for ps_node in ps_nodes:
         slice_ids=[]
@@ -56,7 +62,7 @@ def GetNodes(node_ids, fields=None)
                 "site_id": ps_id_to_pl_id(ps_node.site_id),
                 "node_type": "regular",
                 "peer_node_id": None,
-                "hostname": node.name,
+                "hostname": ps_node.name,
                 "conf_file_ids": [],
                 "slice_ids": slice_ids,
                 "model": "planetstack",
@@ -75,7 +81,7 @@ def GetNodes(node_ids, fields=None)
     return nodes
 
 def GetTags(slicename,node_id):
-    return []
+    return {}
 
 def GetSites():
     ps_sites = Site.objects.all()
@@ -116,12 +122,14 @@ def GetSites():
     return sites
 
 
-def GetConfigurations(name):
+def GetConfiguration(name):
     slicename = name["name"]
     if "node_id" in name:
         node_id = name["node_id"]
     else:
         node_id = 0
+
+    node_sliver_tags = GetTags(slicename, node_id)
 
     slices = GetSlices({"name": slicename})
     perhost = {}
@@ -160,6 +168,8 @@ def GetConfigurations(name):
             'interfaces': allinterfaces,
             'sites': sites,
             'nodes': nodes}
+
+print GetConfiguration({"name": "smbaker-coblitz"})
 
 
 
