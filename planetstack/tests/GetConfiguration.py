@@ -1,5 +1,6 @@
 import os
 import json
+import socket
 import sys
 import time
 
@@ -121,6 +122,32 @@ def GetSites():
 
     return sites
 
+def GetInterfaces(slicename, node_ids):
+    interfaces = []
+    ps_slices = Slice.objects.filter(name=slicename)
+    for ps_slice in ps_slices:
+        for ps_sliver in ps_slice.slivers.all():
+            node_id = ps_id_to_pl_id(ps_sliver.node_id)
+            if node_id in node_ids:
+                ps_node = ps_sliver.node
+                interface = {"node_id": node_id,
+                             "ip": socket.gethostbyname(ps_node.name),
+                             "broadcast": None,
+                             "mac": "11:22:33:44:55:66",
+                             "bwlimit": None,
+                             "network": None,
+                             "is_primary": True,
+                             "dns1": None,
+                             "hostname": None,
+                             "netmask": None,
+                             "interface_tag_ids": [],
+                             "interface_id": node_id,     # assume each node has only one interface
+                             "gateway": None,
+                             "dns2": None,
+                             "type": "ipv4",
+                             "method": "dhcp"}
+                interfaces.append(interface)
+    return interfaces
 
 def GetConfiguration(name):
     slicename = name["name"]
@@ -144,7 +171,15 @@ def GetConfiguration(name):
         for node in nodes:
             nodemap[node['node_id']]=node['hostname']
 
-        # interfaces
+        interfaces = GetInterfaces(slicename, node_ids)
+        hostipmap = {}
+        for interface in interfaces:
+            if nodemap[interface['node_id']] not in allinterfaces:
+                allinterfaces[nodemap[interface['node_id']]] = []
+            interface['interface_tags'] = []
+            allinterfaces[nodemap[interface['node_id']]].append(interface)
+            if interface['is_primary']:
+                hostipmap[nodemap[interface['node_id']]] = interface['ip']
 
         for nid in node_ids:
             sliver_tags = GetTags(slicename,nid)
