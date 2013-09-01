@@ -19,6 +19,13 @@ def ps_id_to_pl_id(x):
 def pl_id_to_ps_id(x):
     return x - 100000
 
+def pl_slice_id(slice):
+    if slice.name == "princeton_vcoblitz":
+        # 70 is the slice id of princeton_vcoblitz on vicci
+        return 70
+    else:
+        return ps_id_to_pl_id(slice.id)
+
 def filter_fields(src, fields):
     dest = {}
     for (key,value) in src.items():
@@ -36,7 +43,7 @@ def GetSlices(filter={}):
 
         slice = {"instantiation": "plc-instantiated",
                  "description": "planetstack slice",
-                 "slice_id": ps_id_to_pl_id(ps_slice.id),
+                 "slice_id": pl_slice_id(ps_slice),
                  "node_ids": node_ids,
                  "url": "planetstack",
                  "max_nodes": 1000,
@@ -51,13 +58,16 @@ def GetSlices(filter={}):
         slices.append(slice)
     return slices
 
-def GetNodes(node_ids, fields=None):
-    ps_nodes = Node.objects.filter(id__in=[pl_id_to_ps_id(nid) for nid in node_ids])
+def GetNodes(node_ids=None, fields=None):
+    if node_ids:
+        ps_nodes = Node.objects.filter(id__in=[pl_id_to_ps_id(nid) for nid in node_ids])
+    else:
+        ps_nodes = Node.objects.all()
     nodes = []
     for ps_node in ps_nodes:
         slice_ids=[]
         for ps_sliver in ps_node.slivers.all():
-            slice_ids.append(ps_id_to_pl_id(ps_sliver.slice.id))
+            slice_ids.append(pl_slice_id(ps_sliver.slice))
 
         node = {"node_id": ps_id_to_pl_id(ps_node.id),
                 "site_id": ps_id_to_pl_id(ps_node.site_id),
@@ -90,7 +100,7 @@ def GetSites():
     for ps_site in ps_sites:
         slice_ids=[]
         for ps_slice in ps_site.slices.all():
-            slice_ids.append(ps_id_to_pl_id(ps_slice.id))
+            slice_ids.append(pl_slice_id(ps_slice))
 
         node_ids=[]
         for ps_node in ps_site.nodes.all():
@@ -205,7 +215,15 @@ def GetConfiguration(name):
             'nodes': nodes}
 
 if __name__ == '__main__':
-    print GetConfiguration({"name": "smbaker-coblitz"})
+    config = GetConfiguration({"name": "smbaker-coblitz"})
+    slices = GetSlices()
+    nodes = GetNodes()
 
-
-
+    if ("-d" in sys.argv):
+        print config
+        print slices
+        print nodes
+    else:
+        file("planetstack_config","w").write(json.dumps(config))
+        file("planetstack_slices","w").write(json.dumps(slices))
+        file("planetstack_nodes","w").write(json.dumps(nodes))
