@@ -169,7 +169,8 @@ def GetConfiguration(name):
             'sites': sites,
             'nodes': nodes}
 
-print GetConfiguration({"name": "smbaker-coblitz"})
+if __name__ == '__main__':
+    print GetConfiguration({"name": "smbaker-coblitz"})
 
 
 
