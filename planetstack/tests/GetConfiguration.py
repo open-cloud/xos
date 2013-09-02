@@ -215,15 +215,19 @@ def GetConfiguration(name):
             'nodes': nodes}
 
 if __name__ == '__main__':
-    config = GetConfiguration({"name": "smbaker-coblitz"})
     slices = GetSlices()
     nodes = GetNodes()
 
     if ("-d" in sys.argv):
+        config = GetConfiguration({"name": "princeton_coblitz"})
         print config
         print slices
         print nodes
     else:
-        file("planetstack_config","w").write(json.dumps(config))
+        configs={}
+        for slicename in ["princeton_vcoblitz"]:
+            configs[slicename] = GetConfiguration({"name": slicename})
+
+        file("planetstack_config","w").write(json.dumps(configs))
         file("planetstack_slices","w").write(json.dumps(slices))
         file("planetstack_nodes","w").write(json.dumps(nodes))
