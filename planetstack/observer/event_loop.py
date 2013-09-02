@@ -11,6 +11,7 @@ from django.db.models import F, Q
 from openstack.manager import OpenStackManager
 from util.logger import Logger, logging, logger
 #from timeout import timeout
+from planetstack.config import Config
 
 debug_mode = False
 
@@ -59,7 +60,6 @@ class PlanetStackObserver:
 	sync_steps = ['SyncNetworks','SyncNetworkSlivers','SyncSites','SyncSitePrivileges','SyncSlices','SyncSliceMemberships','SyncSlivers','SyncSliverIps']
 
 	def __init__(self):
-		self.manager = OpenStackManager()
 		# The Condition object that gets signalled by Feefie events
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()

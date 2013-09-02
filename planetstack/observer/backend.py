@@ -1,6 +1,6 @@
 import threading
-from openstack.observer import PlanetStackObserver
-from openstack.event_manager import EventListener
+from observer.event_loop import PlanetStackObserver
+from observer.event_manager import EventListener
 
 class Backend:
     
