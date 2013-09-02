@@ -39,14 +39,13 @@ class SyncStep:
 		return Sliver.objects.filter(ip=None)
 	
 	def check_dependencies(self, obj):
-		for dep in dependencies:
+		for dep in self.dependencies:
 			peer_object = getattr(obj, dep.name.lowercase())
 			if (peer_object.pk==dep.pk):
 				raise DependencyFailed
 
-	def call(self, failed=failed_objects):
+	def call(self, failed=[]):
 		pending = self.fetch_pending()
-		failed = []
 		for o in pending:
 			if (not self.depends_on(o, failed)):
 				try:

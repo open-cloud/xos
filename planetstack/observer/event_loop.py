@@ -12,6 +12,7 @@ from openstack.manager import OpenStackManager
 from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
+from observer.steps import *
 
 debug_mode = False
 
@@ -42,6 +43,7 @@ def toposort(g, steps):
 
 	order = []
 	marked = []
+
 	while sources:
 		n = sources.pop()
 		try:
@@ -51,19 +53,16 @@ def toposort(g, steps):
 					marked.append(m)
 		except KeyError:
 			pass
-		if (n in steps):
-			order.append(n)
-
+		order.append(n)
 	return order
 
 class PlanetStackObserver:
-	sync_steps = ['SyncNetworks','SyncNetworkSlivers','SyncSites','SyncSitePrivileges','SyncSlices','SyncSliceMemberships','SyncSlivers','SyncSliverIps']
+	sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps]
 
 	def __init__(self):
 		# The Condition object that gets signalled by Feefie events
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
-		self.load_enacted()
 
 	def wait_for_event(self, timeout):
 		self.event_cond.acquire()
@@ -77,42 +76,52 @@ class PlanetStackObserver:
 		self.event_cond.release()
 
 	def load_sync_steps(self):
-		dep_path = Config().pl_dependency_path
+		dep_path = Config().observer_dependency_path
 		try:
 			# This contains dependencies between records, not sync steps
 			self.model_dependency_graph = json.loads(open(dep_path).read())
 		except Exception,e:
 			raise e
 
-		backend_path = Config().backend_dependency_path
+		backend_path = Config().observer_backend_dependency_path
 		try:
 			# This contains dependencies between backend records
 			self.backend_dependency_graph = json.loads(open(backend_path).read())
 		except Exception,e:
-			raise e
+			# We can work without a backend graph
+			self.backend_dependency_graph = {}
 
 		provides_dict = {}
-		for s in sync_steps:
+		for s in self.sync_steps:
 			for m in s.provides:
-				provides_dict[m]=s.__name__
+				try:
+					provides_dict[m.__name__].append(s.__name__)
+				except KeyError:
+					provides_dict[m.__name__]=[s.__name__]
+
 				
 		step_graph = {}
-		for k,v in model_dependency_graph.iteritems():
+		for k,v in self.model_dependency_graph.iteritems():
 			try:
-				source = provides_dict[k]
-				for m in v:
-					try:
-						dest = provides_dict[m]
-					except KeyError:
-						pass
-						# no deps, pass
-					step_graph[source]=dest
+				for source in provides_dict[k]:
+					for m in v:
+						try:
+							for dest in provides_dict[m]:
+								# no deps, pass
+								try:
+									step_graph[source].append(dest)
+								except:
+									step_graph[source]=[dest]
+						except KeyError:
+							pass
 					
 			except KeyError:
 				pass
 				# no dependencies, pass
 		
-		if (backend_dependency_graph):
+		import pdb
+		pdb.set_trace()
+		if (self.backend_dependency_graph):
 			backend_dict = {}
 			for s in sync_steps:
 				for m in s.serves:
@@ -135,7 +144,8 @@ class PlanetStackObserver:
 
 		dependency_graph = step_graph
 
-		self.ordered_steps = toposort(dependency_graph, steps)
+		self.ordered_steps = toposort(dependency_graph, self.sync_steps)
+		print "Order of steps=",self.ordered_steps
 		self.load_run_times()
 		
 

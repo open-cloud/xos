@@ -1,6 +1,8 @@
 import os
 import base64
 from planetstack.config import Config
+from observer.openstacksyncstep import OpenStackSyncStep
+from core.models.site import Site
 
 class SyncSites(OpenStackSyncStep):
 	provides=[Site]
