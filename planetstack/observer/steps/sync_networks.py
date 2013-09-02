@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncNetworks(OpenStackSyncStep):
 	provides=[Network]
+	requested_interval = 0
 
 	def save_network(self, network):
 		if not network.network_id:

@@ -3,6 +3,7 @@ import base64
 from planetstack.config import Config
 
 class SyncSliceMemberships(OpenStackSyncStep):
+	requested_interval=0
 	provides=[SliceMembership]
 	def sync_record(self, user):
 		if slice_memb.user.kuser_id and slice_memb.slice.tenant_id:

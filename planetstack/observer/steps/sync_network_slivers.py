@@ -3,7 +3,7 @@ import base64
 from planetstack.config import Config
 
 class SyncNetworkSlivers(OpenStackSyncStep):
-	slow=True
+	requested_interval = 3600
 	provides=[NetworkSliver]
 
 	def call(self):

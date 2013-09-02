@@ -4,6 +4,8 @@ from planetstack.config import Config
 
 class SyncExternalRoutes(SyncStep):
 	# XXX what does this provide?
+	requested_interval = 86400 # This step is slow like a pig. Let's run it infrequently
+
 	def call(self):
 		routes = self.manager.driver.get_external_routes()
         subnets = self.manager.driver.shell.quantum.list_subnets()['subnets']

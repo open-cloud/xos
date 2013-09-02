@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncSites(OpenStackSyncStep):
 	provides=[Site]
+	requested_interval=0
 	def sync_record(self, site):
 		save_site = False
 		if not site.tenant_id:

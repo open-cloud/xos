@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncSliverIps(OpenStackSyncStep):
 	provides=[Sliver]
+	requested_interval=0
 	def fetch_pending(self):
 		slivers = Sliver.objects.filter(ip=None)
 		return slivers

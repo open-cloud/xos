@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncSlivers(OpenStackSyncStep):
 	provides=[Sliver]
+	requested_interval=0
 	def sync_record(self, slice):
 		if not sliver.instance_id:
 				nics = self.get_requested_networks(sliver.slice)

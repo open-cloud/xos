@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncUsers(OpenStackSyncStep):
 	provides=[User]
+	requested_interval=0
 	def sync_record(self, user):
         name = user.email[:user.email.find('@')]
         user_fields = {'name': name,

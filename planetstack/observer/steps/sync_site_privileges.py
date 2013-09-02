@@ -3,6 +3,8 @@ import base64
 from planetstack.config import Config
 
 class SyncSitePrivileges(OpenStackSyncStep):
+	requested_interval=0
+
 	provides=[SitePrivilege]
 	def sync_record(self, user):
 	   if site_priv.user.kuser_id and site_priv.site.tenant_id:

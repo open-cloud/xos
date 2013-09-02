@@ -4,6 +4,7 @@ from planetstack.config import Config
 
 class SyncSlices(OpenStackSyncStep):
 	provides=[Slice]
+	requested_interval=0
 	def sync_record(self, slice):
 		if not slice.tenant_id:
             nova_fields = {'tenant_name': slice.name,
