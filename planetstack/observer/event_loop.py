@@ -136,9 +136,8 @@ class PlanetStackObserver:
 		dependency_graph = step_graph
 
 		self.ordered_steps = toposort(dependency_graph, steps)
-		self.last_run_times={}
-		for e in self.ordered_steps:
-			self.last_run_times[e.name]=0
+		self.load_run_times()
+		
 
 	def check_duration(self):
 		try:
@@ -160,6 +159,21 @@ class PlanetStackObserver:
 			logger.info('Step %s does not have requested_interval set'%step.name)
 			raise StepNotReady
 	
+	def load_run_times(self):
+		try:
+			jrun_times = open('/tmp/observer_run_times').read()
+			self.last_run_times = json.loads(jrun_times)
+		except:
+			self.last_run_times={}
+			for e in self.ordered_steps:
+				self.last_run_times[e.name]=0
+
+
+
+	def save_run_times(self):
+		run_times = json.dumps(self.last_run_times)
+		open('/tmp/observer_run_times','w').write(run_times)
+
 	def check_class_dependency(self, step, failed_steps):
 		for failed_step in failed_steps:
 			if (failed_step in self.dependency_graph[step.name]):
@@ -215,6 +229,7 @@ class PlanetStackObserver:
 							self.update_run_time(sync_step)
 						except:
 							failed_steps.add(S)
+				self.save_run_times()
 			except:
 				logger.log_exc("Exception in observer run loop")
 				traceback.print_exc()
