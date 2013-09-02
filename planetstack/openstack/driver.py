@@ -385,11 +385,18 @@ class OpenStackDriver:
                                             availability_zone=availability_zone,
                                             nics=nics)
         return server
-          
+
     def destroy_instance(self, id):
-        servers = self.shell.nova.servers.findall(id=id)
+        if (self.shell.nova.tenant=="admin"):
+            # findall() is implemented as a list() followed by a python search of the
+            # list. Since findall() doesn't accept "all_tenants", we do this using
+            # list() ourselves. This allows us to delete an instance as admin.
+            servers = self.shell.nova.servers.list(search_opts={"all_tenants": True})
+        else:
+            servers = self.shell.nova.servers.list()
         for server in servers:
-            self.shell.nova.servers.delete(server)
+            if server.id == id:
+                result=self.shell.nova.servers.delete(server)
 
     def update_instance_metadata(self, id, metadata):
         servers = self.shell.nova.servers.findall(id=id)
