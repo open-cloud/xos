@@ -1,12 +1,12 @@
 import threading
-from openstack.observer import OpenStackObserver
+from openstack.observer import PlanetStackObserver
 from openstack.event_manager import EventListener
 
 class Backend:
     
     def run(self):
         # start the openstack observer
-        observer = OpenStackObserver()
+        observer = PlanetStackObserver()
         observer_thread = threading.Thread(target=observer.run)
         observer_thread.start()
 
