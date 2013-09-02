@@ -2,6 +2,9 @@ import os
 import base64
 from planetstack.config import Config
 
+class FailedDependency(Exception):
+	pass
+
 class SyncStep:
 	""" A PlanetStack Sync step. 
 
@@ -24,6 +27,7 @@ class SyncStep:
 		   		name -- Name of the step
 				provides -- PlanetStack models sync'd by this step
 		"""
+		dependencies = []
 		try:
 			self.soft_deadline = int(self.get_prop('soft_deadline_seconds'))
 		except:
@@ -33,9 +37,26 @@ class SyncStep:
 
 	def fetch_pending(self):
 		return Sliver.objects.filter(ip=None)
+	
+	def check_dependencies(self, obj):
+		for dep in dependencies:
+			peer_object = getattr(obj, dep.name.lowercase())
+			if (peer_object.pk==dep.pk):
+				raise DependencyFailed
 
-	def call(self):
-		return True
+	def call(self, failed=failed_objects):
+		pending = self.fetch_pending()
+		failed = []
+		for o in pending:
+			if (not self.depends_on(o, failed)):
+				try:
+					check_dependencies(o) # Raises exception if failed					
+					self.sync_record(o)
+					o.enacted = datetime.now() # Is this the same timezone? XXX
+					o.save(update_fields=['enacted'])
+				except:
+					failed.append(o)
+		return failed
 
 	def __call__(self):
 		return self.call()
