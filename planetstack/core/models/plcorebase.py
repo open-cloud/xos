@@ -35,6 +35,11 @@ class PlCoreBase(models.Model):
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
+	def delete(self, *args, **kwds):
+        super(PlCoreBase, self).delete(*args, **kwds)
+
+		EventSender().fire({'delete_flag':True,'model':self.__name__})
+
     def save(self, *args, **kwargs):
         super(PlCoreBase, self).save(*args, **kwargs)
         

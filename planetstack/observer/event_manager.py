@@ -4,10 +4,12 @@ import requests, json
 from core.models import *
 #from openstack.manager import OpenStackManager
 from planetstack.config import Config
+from observer.deleters import deleters
 
 import os
 import base64
 from fofum import Fofum
+import json
 
 # decorator that marks dispatachable event methods	
 def event(func):
@@ -33,57 +35,6 @@ class EventHandler:
 			return getattr(self, event)(*args, **kwds)
 			
 		
-	@event
-	def save_site(self, id):
-		sites = Site.objects.filter(id=id)
-		if sites:
-			self.manager.save_site(sites[0])
-	
-	@event
-	def delete_site(self, tenant_id):
-		self.manager.driver.delete_tenant(tenant_id)
-
-	@event
-	def save_site_privilege(self, id):
-		site_privileges = SitePrivilege.objects.filter(id=id)
-		if site_privileges:
-			site_priv = self.manager.save_site_privilege(site_privileges[0])
-
-	@event
-	def delete_site_privilege(self, kuser_id, tenant_id, role_type):
-		self.manager.driver.delete_user_role(kuser_id, tenant_id, role_type)
-
-	@event
-	def save_slice(self, id):
-		slices = Slice.objects.filter(id=id)
-		if slices:
-			self.manager.save_slice(slices[0])
-	
-	@event
-	def delete_slice(self, tenant_id, network_id, router_id, subnet_id):
-		self.manager._delete_slice(tenant_id, network_id, router_id, subnet_id)
-
-	@event
-	def save_user(self, id):
-		users = User.objects.filter(id=id)
-		if users:
-			self.manager.save_user(users[0])
-		
-	@event
-	def delete_user(self, kuser_id):
-		self.manager.driver.delete_user(kuser_id)
-	
-	@event
-	def save_sliver(self, id):
-		slivers = Sliver.objects.filter(id=id)
-		if slivers:
-			self.manager.save_sliver(slivers[0])
-
-	@event
-	def delete_sliver(self, instance_id):
-		self.manager.destroy_instance(instance_id)							  
-
-	
 class EventSender:
 	def __init__(self,user=None,clientid=None):
 		try:
@@ -96,8 +47,8 @@ class EventSender:
 		self.fofum = Fofum(user=user)
 		self.fofum.make(clid)
 
-	def fire(self):
-		self.fofum.fire()
+	def fire(self,**args):
+		self.fofum.fire(json.dumps(args))
 
 class EventListener:
 	def __init__(self,wake_up=None):
@@ -107,19 +58,14 @@ class EventListener:
 	def handle_event(self, payload):
 		payload_dict = json.loads(payload)
 
-	# The code below will come back when we optimize the observer syncs
-	# into 'small' and 'big' syncs.
-
-		#event = payload_dict['event']
-		#ctx = payload_dict['ctx']
-		#self.handler.dispatch(event,**ctx)   
-
 		try:
 			deletion = payload_dict['deletion_flag']
 			if (deletion):
-				cmd = payload_dict['command']
-				ctx = payload_dict['ctx']
-				self.handler.dispatch(cmd,**ctx)
+				model = payload_dict['model']
+				pk = payload_dict['pk']
+
+				for deleter in deleters[model]:
+					deleter(pk)
 		except:
 			deletion = False
 
