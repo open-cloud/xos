@@ -7,6 +7,7 @@ _files = os.listdir(_path)
 _files = filter(lambda x:x.endswith('deleter.py'),_files)
 _files = map(lambda x:x.rstrip('.py'),_files)
 
+"""
 for f in _files:
 	m = __import__(f)
 	deleter = getattr(m,f.title().replace('_',''))
@@ -14,3 +15,4 @@ for f in _files:
 		deleters[deleter.model].append(deleter)
 	except KeyError:
 		deleters[deleter.model]=[deleter]
+"""
