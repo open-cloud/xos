@@ -12,11 +12,18 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
+from suit.widgets import LinkedSelect
 
 import django_evolution 
 
 class PlStackTabularInline(admin.TabularInline):
     exclude = ['enacted']
+
+class ReservationInline(PlStackTabularInline):
+    model = Reservation
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-reservations'
+
 
 class ReadonlyTabularInline(PlStackTabularInline):
     can_delete = False
@@ -34,10 +41,27 @@ class ReadonlyTabularInline(PlStackTabularInline):
     def has_add_permission(self, request):
         return False
 
+class UserMembershipInline(generic.GenericTabularInline):
+    model = Member
+    exclude = ['enacted']
+    extra = 1
+    suit_classes = 'suit-tab suit-tab-membership'
+
+    def queryset(self, request):
+        qs = super(UserMembershipInline, self).queryset(request)
+        return qs.filter(user=request.user)
+        
+class MemberInline(generic.GenericTabularInline):
+    model = Member
+    exclude = ['enacted']
+    extra = 1
+    suit_classes = 'suit-tab suit-tab-members'
+
 class TagInline(generic.GenericTabularInline):
     model = Tag
     exclude = ['enacted']
-    extra = 1
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tags'
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
@@ -45,32 +69,51 @@ class SliverInline(PlStackTabularInline):
     extra = 0
     #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
+    suit_classes = 'suit-tab suit-tab-slivers'
     
 
 class SiteInline(PlStackTabularInline):
     model = Site
     extra = 0
+    suit_classes = 'suit-tab suit-tab-sites'
 
 class UserInline(PlStackTabularInline):
     model = User
     fields = ['email', 'firstname', 'lastname']
     extra = 0
+    suit_classes = 'suit-tab suit-tab-users'
 
 class SliceInline(PlStackTabularInline):
     model = Slice
+    fields = ['name','enabled','description','slice_url']
     extra = 0
+    suit_classes = 'suit-tab suit-tab-slices'
+
 
 class RoleInline(PlStackTabularInline):
     model = Role
     extra = 0 
+    suit_classes = 'suit-tab suit-tab-roles'
 
 class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
+    suit_classes = 'suit-tab suit-tab-nodes'
+
+class SlicePrivilegeInline(PlStackTabularInline):
+    model = SlicePrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-sliceprivileges'
+
+class DeploymentPrivilegeInline(PlStackTabularInline):
+    model = DeploymentPrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-deploymentprivileges'
 
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
+    suit_classes = 'suit-tab suit-tab-siteprivileges'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -94,10 +137,17 @@ class SitePrivilegeInline(PlStackTabularInline):
                 kwargs['queryset'] = users
         return super(SitePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SliceMembershipInline(PlStackTabularInline):
-    model = SliceMembership
+class SitePrivilegeInline(PlStackTabularInline):
+    model = SitePrivilege
+    suit_classes = 'suit-tab suit-tab-siteprivileges'
     extra = 0
-    fields = ('user', 'role')
+    fields = ('user', 'site','role')
+
+class SlicePrivilegeInline(PlStackTabularInline):
+    model = SlicePrivilege
+    suit_classes = 'suit-tab suit-tab-sliceprivileges'
+    extra = 0
+    fields = ('user', 'slice','role')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -119,7 +169,7 @@ class SliceMembershipInline(PlStackTabularInline):
                 users = User.objects.filter(email__in=emails) 
                 kwargs['queryset'] = list(users)
 
-        return super(SliceMembershipInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(SlicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class SliceTagInline(PlStackTabularInline):
     model = SliceTag
@@ -137,11 +187,38 @@ class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
     exclude = ['enacted']
 
+#class RoleMemberForm(forms.ModelForm):
+#    request=None
+#    member=forms.ModelChoiceField(queryset=Member.objects.all()) #first get all
+#
+#    def __init__(self,fata=None,files=None,auto_id='id_%s',prefix=None,initial=None,error_class=ErrorList,label_suffix=':',empty_permitted=False,instance=None):
+#        super(RoleMemberForm,self).__init__data,files,auto_id,prefix,initial,error_class,label_suffix,empty_permitted,instance)
+#
+#        self.fields["member"].queryset = member.objects.filter(
+
+class RoleMemberInline (admin.StackedInline):
+    model = Member
+#    form = RoleMemberForm
+    
+    def get_formset(self,request,obj=None, **kwargs):
+        self.form.request=request
+        return super(RoleMemberInline, self).get_formset(request, obj, **kwargs)
+
+class SliceRoleAdmin(PlanetStackBaseAdmin):
+    model = SliceRole
+    pass
+
+class SiteRoleAdmin(PlanetStackBaseAdmin):
+    model = SiteRole
+    pass
+
 class RoleAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        ('Role', {'fields': ['role_type']})
+        ('Role', {'fields': ['role_type', 'description','content_type'],
+                  'classes':['collapse']})
     ]
-    list_display = ('role_type',)
+    inlines = [ MemberInline,]
+    list_display = ('role_type','description','content_type')
 
 
 class DeploymentAdminForm(forms.ModelForm):
@@ -155,47 +232,30 @@ class DeploymentAdminForm(forms.ModelForm):
     class Meta:
         model = Deployment
 
-    def __init__(self, *args, **kwargs):
-        super(DeploymentAdminForm, self).__init__(*args, **kwargs)
-
-        if self.instance and self.instance.pk:
-            self.fields['sites'].initial = self.instance.sites.all()
-
-    def save(self, commit=True):
-        deploymentNetwork = super(DeploymentAdminForm, self).save(commit=False)
-        if commit:
-            deploymentNetwork.save()
-
-        if deploymentNetwork.pk:
-            deploymentNetwork.sites = self.cleaned_data['sites']
-            self.save_m2m()
-
-        return deploymentNetwork
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     form = DeploymentAdminForm
-    inlines = [NodeInline,SliverInline]
-
-    def get_formsets(self, request, obj=None):
-        for inline in self.get_inline_instances(request, obj):
-            # hide MyInline in the add view
-            if obj is None:
-                continue
-            # give inline object access to driver and caller
-            auth = request.session.get('auth', {})
-            if request.user.site:
-                auth['tenant'] = request.user.site.login_base
-            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
-            yield inline.get_formset(request, obj)
+    inlines = [MemberInline,NodeInline,SliverInline,TagInline]
+    fieldsets = [
+        (None, {'fields': ['sites'], 'classes':['suit-tab suit-tab-sites']}),]
+    suit_form_tabs =(('sites', 'Sites'),('nodes','Nodes'),('members','Members'),('tags','Tags'))
 
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']}),
-        ('Deployment Networks', {'fields': ['deployments']})
+        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location'], 'classes':['suit-tab suit-tab-general']}),
+        ('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
+    suit_form_tabs =(('general', 'Site Details'),
+        ('users','Users'),
+        ('members','Privileges'),
+        ('deployments','Deployments'),
+        ('slices','Slices'),
+        ('nodes','Nodes'), 
+        ('tags','Tags'),
+    )
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
-    inlines = [TagInline, NodeInline, UserInline, SitePrivilegeInline]
+    inlines = [SliceInline,UserInline,TagInline, NodeInline, MemberInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -229,7 +289,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['user', 'site', 'role']})
+        (None, {'fields': ['user', 'site', 'role'], 'classes':['collapse']})
     ]
     list_display = ('user', 'site', 'role')
 
@@ -269,9 +329,17 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
         return qs
 
 class SliceAdmin(PlanetStackBaseAdmin):
-    fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
+    fieldsets = [('Slice Details', {'fields': ['name', 'site', 'serviceClass', 'description', 'slice_url'], 'classes':['suit-tab suit-tab-general']}),]
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline]
+    inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline]
+
+
+    suit_form_tabs =(('general', 'Slice Details'),
+        ('sliceprivileges','Privileges'),
+        ('slivers','Slivers'),
+        ('tags','Tags'),
+        ('reservations','Reservations'),
+    )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -317,7 +385,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
         obj.caller = request.user
         obj.save() 
 
-class SliceMembershipAdmin(PlanetStackBaseAdmin):
+class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['user', 'slice', 'role']})
     ]
@@ -344,12 +412,12 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
                 users = User.objects.filter(email__in=emails)
                 kwargs['queryset'] = users
 
-        return super(SliceMembershipAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(SlicePrivilegeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         # admins can see all memberships. Users can only see memberships of
         # slices where they have the admin role.
-        qs = super(SliceMembershipAdmin, self).queryset(request)
+        qs = super(SlicePrivilegeAdmin, self).queryset(request)
         if not request.user.is_admin:
             roles = Role.objects.filter(role_type__in=['admin', 'pi'])
             site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
@@ -374,13 +442,33 @@ class SliceMembershipAdmin(PlanetStackBaseAdmin):
         obj.delete()
 
 
-class ImageAdmin(admin.ModelAdmin):
-    fields = ['image_id', 'name', 'disk_format', 'container_format']
+class ImageAdmin(PlanetStackBaseAdmin):
+
+    fieldsets = [('Image Details', 
+                   {'fields': ['image_id', 'name', 'disk_format', 'container_format'], 
+                    'classes': ['suit-tab suit-tab-general']})
+               ]
+
+    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'))
+
+    inlines = [SliverInline]
+
+class NodeForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            'site': LinkedSelect,
+            'deployment': LinkedSelect
+        }
 
 class NodeAdmin(admin.ModelAdmin):
+    form = NodeForm
+    exclude = ['enacted']
     list_display = ('name', 'site', 'deployment')
     list_filter = ('deployment',)
-    inlines = [TagInline]
+    inlines = [TagInline,SliverInline]
+    fieldsets = [('Node Details', {'fields': ['name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
+
+    suit_form_tabs =(('details','Node Details'),('slivers','Slivers'),('tags','Tags'))
 
 
 class SliverForm(forms.ModelForm):
@@ -391,26 +479,41 @@ class SliverForm(forms.ModelForm):
         widgets = {
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
+            'slice': LinkedSelect,
+            'deploymentNetwork': LinkedSelect,
+            'node': LinkedSelect,
+            'image': LinkedSelect
         }
 
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ['enacted']
+    inlines = [TagInline]
+
+class MemberAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ['role', 'rightContent_type', 'content_type', 'content_object',]
 
 class TagAdmin(admin.ModelAdmin):
     exclude = ['enacted']
+    list_display = ['project', 'name', 'value', 'content_type', 'content_object',]
 
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']})
+        ('Sliver Details', {'fields': ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+
+    suit_form_tabs =(('general', 'Sliver Details'),
+        ('tags','Tags'),
+    )
+
     inlines = [TagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
             if not request.user.is_admin:
-                slices = set([sm.slice.name for sm in SliceMembership.objects.filter(user=request.user)]) 
+                slices = set([sm.slice.name for sm in SlicePrivilege.objects.filter(user=request.user)]) 
                 kwargs['queryset'] = Slice.objects.filter(name__in=list(slices))
 
         return super(SliverAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -470,7 +573,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'firstname', 'lastname', 'phone', 'public_key', 'site')
+        fields = ('email', 'firstname', 'lastname', 'phone', 'public_key')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -518,23 +621,25 @@ class UserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'site', 'firstname', 'lastname', 'is_admin', 'last_login')
-    list_filter = ('site',)
-    inlines = [SitePrivilegeInline, SliceMembershipInline]
+    list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
+    list_filter = ()
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline]
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'site', 'is_admin', 'timezone')}),
-        ('Personal info', {'fields': ('firstname','lastname','phone', 'public_key')}),
+        ('Login Details', {'fields': ('email', 'username','site','password', 'is_admin', 'public_key'), 'classes':['suit-tab suit-tab-general']}),
+        ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'phone', 'site', 'public_key','password1', 'password2', 'is_admin')}
+            'fields': ('email', 'username','firstname', 'lastname', 'phone', 'public_key','password1', 'password2')}
         ),
     )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+
+    suit_form_tabs =(('general','Login Details'),('contact','Contact Information'),('sliceprivileges','Slice Privileges'),('siteprivileges','Site Privileges'),('deploymentprivileges','Deployment Privileges'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -562,6 +667,7 @@ class ReservedResourceInline(admin.TabularInline):
     exclude = ['enacted']
     model = ReservedResource
     extra = 0
+    suit_classes = 'suit-tab suit-tab-reservedresources'
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         field = super(ReservedResourceInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -586,6 +692,9 @@ class ReservedResourceInline(admin.TabularInline):
 class ReservationChangeForm(forms.ModelForm):
     class Meta:
         model = Reservation
+        widgets = {
+            'slice' : LinkedSelect
+        }
 
 class ReservationAddForm(forms.ModelForm):
     slice = forms.ModelChoiceField(queryset=Slice.objects.all(), widget=forms.Select(attrs={"onChange":"document.getElementById('id_refresh').value=1; submit()"}))
@@ -603,6 +712,10 @@ class ReservationAddForm(forms.ModelForm):
 
     class Meta:
         model = Reservation
+        widgets = {
+            'slice' : LinkedSelect
+        }
+
 
 class ReservationAddRefreshForm(ReservationAddForm):
     """ This form is displayed when the Reservation Form receives an update
@@ -629,9 +742,13 @@ class ReservationAddRefreshForm(ReservationAddForm):
 
 class ReservationAdmin(admin.ModelAdmin):
     exclude = ['enacted']
+    fieldsets = [('Reservation Details', {'fields': ['startTime', 'duration','slice'], 'classes': ['suit-tab suit-tab-general']})]
     list_display = ('startTime', 'duration')
-    inlines = [ReservedResourceInline]
     form = ReservationAddForm
+
+    suit_form_tabs = (('general','Reservation Details'), ('reservedresources','Reserved Resources'))
+
+    inlines = [ReservedResourceInline]
 
     def add_view(self, request, form_url='', extra_context=None):
         timezone.activate(request.user.timezone)
@@ -700,7 +817,7 @@ admin.site.unregister(Evolution)
 
 # When debugging it is often easier to see all the classes, but for regular use 
 # only the top-levels should be displayed
-showAll = False
+showAll = True
 
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
@@ -708,13 +825,19 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
 admin.site.register(Reservation, ReservationAdmin)
+#admin.site.register(SliceRole, SliceRoleAdmin)
+#admin.site.register(SiteRole, SiteRoleAdmin)
+#admin.site.register(PlanetStackRole)
+#admin.site.register(DeploymentRole)
 
 if showAll:
+    #admin.site.register(PlanetStack)
     admin.site.register(Tag, TagAdmin)
     admin.site.register(Node, NodeAdmin)
-    admin.site.register(SliceMembership, SliceMembershipAdmin)
-    admin.site.register(SitePrivilege, SitePrivilegeAdmin)
+    #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
+    #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Role, RoleAdmin)
+    admin.site.register(Member, MemberAdmin)
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
 

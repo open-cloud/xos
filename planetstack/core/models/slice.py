@@ -40,15 +40,16 @@ class Slice(PlCoreBase):
             self.creator = self.caller
         super(Slice, self).save(*args, **kwds)
 
-class SliceMembership(PlCoreBase):
-    user = models.ForeignKey('User', related_name='slice_memberships')
-    slice = models.ForeignKey('Slice', related_name='slice_memberships')
-    role = models.ForeignKey('Role')
+class SliceRole(PlCoreBase):
+    ROLE_CHOICES = (('admin','Admin'),('default','Default'))
+
+    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+
+    def __unicode__(self):  return u'%s' % (self.role)
+
+class SlicePrivilege(PlCoreBase):
+    user = models.ForeignKey('User', related_name='slice_privileges')
+    slice = models.ForeignKey('Slice', related_name='slice_privileges')
+    role = models.ForeignKey('SliceRole')
 
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
-
-    def save(self, *args, **kwds):
-        super(SliceMembership, self).save(*args, **kwds)
-
-    def delete(self, *args, **kwds):
-        super(SliceMembership, self).delete(*args, **kwds)
