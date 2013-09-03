@@ -9,127 +9,136 @@ import os
 import base64
 from fofum import Fofum
 
-# decorator that marks dispatachable event methods  
+# decorator that marks dispatachable event methods	
 def event(func):
-    setattr(func, 'event', func.__name__)
-    return func      
+	setattr(func, 'event', func.__name__)
+	return func		 
 
 class EventHandler:
-    # This code is currently not in use.
-    def __init__(self):
-        pass #self.manager = OpenStackManager()
+	# This code is currently not in use.
+	def __init__(self):
+		pass #self.manager = OpenStackManager()
 
-    @staticmethod
-    def get_events():
-        events = []
-        for name in dir(EventHandler):
-            attribute = getattr(EventHandler, name)
-            if hasattr(attribute, 'event'):
-                events.append(getattr(attribute, 'event'))
-        return events
+	@staticmethod
+	def get_events():
+		events = []
+		for name in dir(EventHandler):
+			attribute = getattr(EventHandler, name)
+			if hasattr(attribute, 'event'):
+				events.append(getattr(attribute, 'event'))
+		return events
 
-    def dispatch(self, event, *args, **kwds):
-        if hasattr(self, event):
-            return getattr(self, event)(*args, **kwds)
-            
-        
-    @event
-    def save_site(self, id):
-        sites = Site.objects.filter(id=id)
-        if sites:
-            self.manager.save_site(sites[0])
-    
-    @event
-    def delete_site(self, tenant_id):
-        self.manager.driver.delete_tenant(tenant_id)
+	def dispatch(self, event, *args, **kwds):
+		if hasattr(self, event):
+			return getattr(self, event)(*args, **kwds)
+			
+		
+	@event
+	def save_site(self, id):
+		sites = Site.objects.filter(id=id)
+		if sites:
+			self.manager.save_site(sites[0])
+	
+	@event
+	def delete_site(self, tenant_id):
+		self.manager.driver.delete_tenant(tenant_id)
 
-    @event
-    def save_site_privilege(self, id):
-        site_privileges = SitePrivilege.objects.filter(id=id)
-        if site_privileges:
-            site_priv = self.manager.save_site_privilege(site_privileges[0])
+	@event
+	def save_site_privilege(self, id):
+		site_privileges = SitePrivilege.objects.filter(id=id)
+		if site_privileges:
+			site_priv = self.manager.save_site_privilege(site_privileges[0])
 
-    @event
-    def delete_site_privilege(self, kuser_id, tenant_id, role_type):
-        self.manager.driver.delete_user_role(kuser_id, tenant_id, role_type)
+	@event
+	def delete_site_privilege(self, kuser_id, tenant_id, role_type):
+		self.manager.driver.delete_user_role(kuser_id, tenant_id, role_type)
 
-    @event
-    def save_slice(self, id):
-        slices = Slice.objects.filter(id=id)
-        if slices:
-            self.manager.save_slice(slices[0])
-    
-    @event
-    def delete_slice(self, tenant_id, network_id, router_id, subnet_id):
-        self.manager._delete_slice(tenant_id, network_id, router_id, subnet_id)
+	@event
+	def save_slice(self, id):
+		slices = Slice.objects.filter(id=id)
+		if slices:
+			self.manager.save_slice(slices[0])
+	
+	@event
+	def delete_slice(self, tenant_id, network_id, router_id, subnet_id):
+		self.manager._delete_slice(tenant_id, network_id, router_id, subnet_id)
 
-    @event
-    def save_user(self, id):
-        users = User.objects.filter(id=id)
-        if users:
-            self.manager.save_user(users[0])
-        
-    @event
-    def delete_user(self, kuser_id):
-        self.manager.driver.delete_user(kuser_id)
-    
-    @event
-    def save_sliver(self, id):
-        slivers = Sliver.objects.filter(id=id)
-        if slivers:
-            self.manager.save_sliver(slivers[0])
+	@event
+	def save_user(self, id):
+		users = User.objects.filter(id=id)
+		if users:
+			self.manager.save_user(users[0])
+		
+	@event
+	def delete_user(self, kuser_id):
+		self.manager.driver.delete_user(kuser_id)
+	
+	@event
+	def save_sliver(self, id):
+		slivers = Sliver.objects.filter(id=id)
+		if slivers:
+			self.manager.save_sliver(slivers[0])
 
-    @event
-    def delete_sliver(self, instance_id):
-        self.manager.destroy_instance(instance_id)                            
+	@event
+	def delete_sliver(self, instance_id):
+		self.manager.destroy_instance(instance_id)							  
 
-    
+	
 class EventSender:
-    def __init__(self,user=None,clientid=None):
-        try:
-            clid = Config().feefie_client_id
-            user = Config().feefie_client_user
-        except:
-            clid = 'planetstack_core_team'
-            user = 'pl'
+	def __init__(self,user=None,clientid=None):
+		try:
+			clid = Config().feefie_client_id
+			user = Config().feefie_client_user
+		except:
+			clid = 'planetstack_core_team'
+			user = 'pl'
 
-        self.fofum = Fofum(user=user)
-        self.fofum.make(clid)
+		self.fofum = Fofum(user=user)
+		self.fofum.make(clid)
 
-    def fire(self):
-        self.fofum.fire()
+	def fire(self):
+		self.fofum.fire()
 
 class EventListener:
-    def __init__(self,wake_up=None):
-        self.handler = EventHandler()
-        self.wake_up = wake_up
+	def __init__(self,wake_up=None):
+		self.handler = EventHandler()
+		self.wake_up = wake_up
 
-    def handle_event(self, payload):
-        payload_dict = json.loads(payload)
+	def handle_event(self, payload):
+		payload_dict = json.loads(payload)
 
 	# The code below will come back when we optimize the observer syncs
 	# into 'small' and 'big' syncs.
 
-        #event = payload_dict['event']
-        #ctx = payload_dict['ctx']
-        #self.handler.dispatch(event,**ctx)   
+		#event = payload_dict['event']
+		#ctx = payload_dict['ctx']
+		#self.handler.dispatch(event,**ctx)   
 
-        if (self.wake_up):
-            self.wake_up()
-        
+		try:
+			deletion = payload_dict['deletion_flag']
+			if (deletion):
+				cmd = payload_dict['command']
+				ctx = payload_dict['ctx']
+				self.handler.dispatch(cmd,**ctx)
+		except:
+			deletion = False
 
-    def run(self):
-        # This is our unique client id, to be used when firing and receiving events
-        # It needs to be generated once and placed in the config file
+		if (not deletion and self.wake_up):
+			self.wake_up()
+		
 
-        try:
-            clid = Config().feefie_client_id
-            user = Config().feefie_client_user
-        except:
-            clid = 'planetstack_core_team'
-            user = 'pl'
+	def run(self):
+		# This is our unique client id, to be used when firing and receiving events
+		# It needs to be generated once and placed in the config file
 
-        f = Fofum(user=user)
-        
-        listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
-        listener_thread.start()
+		try:
+			clid = Config().feefie_client_id
+			user = Config().feefie_client_user
+		except:
+			clid = 'planetstack_core_team'
+			user = 'pl'
+
+		f = Fofum(user=user)
+		
+		listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
+		listener_thread.start()
