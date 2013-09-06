@@ -17,7 +17,7 @@ from suit.widgets import LinkedSelect
 import django_evolution 
 
 class PlStackTabularInline(admin.TabularInline):
-    exclude = ['enacted']
+    pass
 
 class ReservationInline(PlStackTabularInline):
     model = Reservation
@@ -43,7 +43,6 @@ class ReadonlyTabularInline(PlStackTabularInline):
 
 class TagInline(generic.GenericTabularInline):
     model = Tag
-    exclude = ['enacted']
     extra = 0
     suit_classes = 'suit-tab suit-tab-tags'
 
@@ -227,7 +226,6 @@ class PlainTextWidget(forms.HiddenInput):
 
 class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
-    exclude = ['enacted']
 
 class SliceRoleAdmin(PlanetStackBaseAdmin):
     model = SliceRole
@@ -480,7 +478,6 @@ class NodeForm(forms.ModelForm):
 
 class NodeAdmin(admin.ModelAdmin):
     form = NodeForm
-    exclude = ['enacted']
     list_display = ('name', 'site', 'deployment')
     list_filter = ('deployment',)
     inlines = [TagInline,SliverInline]
@@ -504,15 +501,9 @@ class SliverForm(forms.ModelForm):
         }
 
 class ProjectAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     inlines = [TagInline]
 
-class MemberAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
-    list_display = ['role', 'rightContent_type', 'content_type', 'content_object',]
-
 class TagAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ['project', 'name', 'value', 'content_type', 'content_object',]
 
 class SliverAdmin(PlanetStackBaseAdmin):
@@ -672,17 +663,14 @@ class UserAdmin(UserAdmin):
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ServiceResourceInline(admin.TabularInline):
-    exclude = ['enacted']
     model = ServiceResource
     extra = 0
 
 class ServiceClassAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ('name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
 class ReservedResourceInline(admin.TabularInline):
-    exclude = ['enacted']
     model = ReservedResource
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservedresources'
@@ -759,7 +747,6 @@ class ReservationAddRefreshForm(ReservationAddForm):
         return False
 
 class ReservationAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     fieldsets = [('Reservation Details', {'fields': ['startTime', 'duration','slice'], 'classes': ['suit-tab suit-tab-general']})]
     list_display = ('startTime', 'duration')
     form = ReservationAddForm
@@ -815,15 +802,12 @@ class ReservationAdmin(admin.ModelAdmin):
             return []
 
 class NetworkParameterTypeAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ("name", )
 
 class RouterAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ("name", )
 
 class RouterInline(admin.TabularInline):
-    # exclude = ['enacted']
     model = Router.networks.through
     extra = 0
     verbose_name_plural = "Routers"
@@ -831,7 +815,6 @@ class RouterInline(admin.TabularInline):
     suit_classes = 'suit-tab suit-tab-routers'
 
 class NetworkParameterInline(generic.GenericTabularInline):
-    exclude = ['enacted']
     model = NetworkParameter
     extra = 1
     verbose_name_plural = "Parameters"
@@ -839,7 +822,6 @@ class NetworkParameterInline(generic.GenericTabularInline):
     suit_classes = 'suit-tab suit-tab-netparams'
 
 class NetworkSliversInline(admin.TabularInline):
-    exclude = ['enacted']
     readonly_fields = ("ip", )
     model = NetworkSliver
     extra = 0
@@ -848,7 +830,6 @@ class NetworkSliversInline(admin.TabularInline):
     suit_classes = 'suit-tab suit-tab-networkslivers'
 
 class NetworkSlicesInline(admin.TabularInline):
-    exclude = ['enacted']
     model = NetworkSlice
     extra = 0
     verbose_name_plural = "Slices"
@@ -856,7 +837,6 @@ class NetworkSlicesInline(admin.TabularInline):
     suit_classes = 'suit-tab suit-tab-networkslices'
 
 class NetworkAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
     readonly_fields = ("subnet", )
 
@@ -873,7 +853,6 @@ class NetworkAdmin(admin.ModelAdmin):
         ('routers','Routers'),
     )
 class NetworkTemplateAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
     list_display = ("name", "guaranteedBandwidth", "visibility")
 
 # register a signal that caches the user's credentials when they log in
@@ -916,7 +895,6 @@ if showAll:
     admin.site.register(Node, NodeAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
-    admin.site.register(Member, MemberAdmin)
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
 
