@@ -54,7 +54,9 @@ class User(AbstractBaseUser):
         unique=True,
         db_index=True,
     )
-    username = models.CharField(max_length=200, default="Something" )
+
+    username = models.CharField(max_length=255, default="Something" )
+
 
     kuser_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
@@ -124,4 +126,5 @@ class User(AbstractBaseUser):
     def save(self, *args, **kwds):
         if not self.id:
             self.set_password(self.password)    
+        self.username = self.email
         super(User, self).save(*args, **kwds)   

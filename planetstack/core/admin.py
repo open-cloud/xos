@@ -630,18 +630,18 @@ class UserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
+    list_display = ('email', 'firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ()
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline]
     fieldsets = (
-        ('Login Details', {'fields': ('email', 'username','site','password', 'is_admin', 'public_key'), 'classes':['suit-tab suit-tab-general']}),
+        ('Login Details', {'fields': ('email', 'site','password', 'is_admin', 'public_key'), 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username','firstname', 'lastname', 'phone', 'public_key','password1', 'password2')}
+            'fields': ('email', 'firstname', 'lastname', 'phone', 'public_key','password1', 'password2')}
         ),
     )
     search_fields = ('email',)
