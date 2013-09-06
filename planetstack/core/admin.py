@@ -41,35 +41,70 @@ class ReadonlyTabularInline(PlStackTabularInline):
     def has_add_permission(self, request):
         return False
 
-class UserMembershipInline(generic.GenericTabularInline):
-    model = Member
-    exclude = ['enacted']
-    extra = 1
-    suit_classes = 'suit-tab suit-tab-membership'
-
-    def queryset(self, request):
-        qs = super(UserMembershipInline, self).queryset(request)
-        return qs.filter(user=request.user)
-        
-class MemberInline(generic.GenericTabularInline):
-    model = Member
-    exclude = ['enacted']
-    extra = 1
-    suit_classes = 'suit-tab suit-tab-members'
-
 class TagInline(generic.GenericTabularInline):
     model = Tag
     exclude = ['enacted']
     extra = 0
     suit_classes = 'suit-tab suit-tab-tags'
 
+class NetworkLookerUpper:
+    """ This is a callable that looks up a network name in a sliver and returns
+        the ip address for that network.
+    """
+
+    def __init__(self, name):
+        self.short_description = name
+        self.__name__ = name
+        self.network_name = name
+
+    def __call__(self, obj):
+        if obj is not None:
+            for nbs in obj.networksliver_set.all():
+                if (nbs.network.name == self.network_name):
+                    return nbs.ip
+        return ""
+
+    def __str__(self):
+        return self.network_name
+
 class SliverInline(PlStackTabularInline):
     model = Sliver
     fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     extra = 0
-    #readonly_fields = ['ip', 'instance_name', 'image']
     readonly_fields = ['ip', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
+
+# Note this is breaking in the admin.py when trying to use an inline to add a node/image 
+#    def _declared_fieldsets(self):
+#        # Return None so django will call get_fieldsets and we can insert our
+#        # dynamic fields
+#        return None
+#
+#    def get_readonly_fields(self, request, obj=None):
+#        readonly_fields = super(SliverInline, self).get_readonly_fields(request, obj)
+#
+#        # Lookup the networks that are bound to the slivers, and add those
+#        # network names to the list of readonly fields.
+#
+#        for sliver in obj.slivers.all():
+#            for nbs in sliver.networksliver_set.all():
+#                if nbs.ip:
+#                    network_name = nbs.network.name
+#                    if network_name not in [str(x) for x in readonly_fields]:
+#                        readonly_fields.append(NetworkLookerUpper(network_name))
+#
+#        return readonly_fields
+#
+#    def get_fieldsets(self, request, obj=None):
+#        form = self.get_formset(request, obj).form
+#        # fields = the read/write files + the read-only fields
+#        fields = self.fields
+#        for fieldName in self.get_readonly_fields(request,obj):
+#            if not fieldName in fields:
+#                fields.append(fieldName)
+#
+#        return [(None, {'fields': fields})]
+
     
 
 class SiteInline(PlStackTabularInline):
@@ -171,6 +206,13 @@ class SlicePrivilegeInline(PlStackTabularInline):
 
         return super(SlicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+class SliceNetworkInline(PlStackTabularInline):
+    model = Network.slices.through
+    extra = 0
+    verbose_name = "Network Connection"
+    verbose_name_plural = "Network Connections"
+    suit_classes = 'suit-tab suit-tab-slicenetworks'
+
 class SliceTagInline(PlStackTabularInline):
     model = SliceTag
     extra = 0
@@ -187,23 +229,6 @@ class PlanetStackBaseAdmin(admin.ModelAdmin):
     save_on_top = False
     exclude = ['enacted']
 
-#class RoleMemberForm(forms.ModelForm):
-#    request=None
-#    member=forms.ModelChoiceField(queryset=Member.objects.all()) #first get all
-#
-#    def __init__(self,fata=None,files=None,auto_id='id_%s',prefix=None,initial=None,error_class=ErrorList,label_suffix=':',empty_permitted=False,instance=None):
-#        super(RoleMemberForm,self).__init__data,files,auto_id,prefix,initial,error_class,label_suffix,empty_permitted,instance)
-#
-#        self.fields["member"].queryset = member.objects.filter(
-
-class RoleMemberInline (admin.StackedInline):
-    model = Member
-#    form = RoleMemberForm
-    
-    def get_formset(self,request,obj=None, **kwargs):
-        self.form.request=request
-        return super(RoleMemberInline, self).get_formset(request, obj, **kwargs)
-
 class SliceRoleAdmin(PlanetStackBaseAdmin):
     model = SliceRole
     pass
@@ -211,15 +236,6 @@ class SliceRoleAdmin(PlanetStackBaseAdmin):
 class SiteRoleAdmin(PlanetStackBaseAdmin):
     model = SiteRole
     pass
-
-class RoleAdmin(PlanetStackBaseAdmin):
-    fieldsets = [
-        ('Role', {'fields': ['role_type', 'description','content_type'],
-                  'classes':['collapse']})
-    ]
-    inlines = [ MemberInline,]
-    list_display = ('role_type','description','content_type')
-
 
 class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
@@ -235,10 +251,10 @@ class DeploymentAdminForm(forms.ModelForm):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     form = DeploymentAdminForm
-    inlines = [MemberInline,NodeInline,SliverInline,TagInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline]
     fieldsets = [
         (None, {'fields': ['sites'], 'classes':['suit-tab suit-tab-sites']}),]
-    suit_form_tabs =(('sites', 'Sites'),('nodes','Nodes'),('members','Members'),('tags','Tags'))
+    suit_form_tabs =(('sites', 'Sites'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'))
 
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
@@ -247,7 +263,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     ]
     suit_form_tabs =(('general', 'Site Details'),
         ('users','Users'),
-        ('members','Privileges'),
+        ('siteprivileges','Privileges'),
         ('deployments','Deployments'),
         ('slices','Slices'),
         ('nodes','Nodes'), 
@@ -255,7 +271,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     )
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, NodeInline, MemberInline]
+    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -331,10 +347,12 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
 class SliceAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Slice Details', {'fields': ['name', 'site', 'serviceClass', 'description', 'slice_url'], 'classes':['suit-tab suit-tab-general']}),]
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline]
+    inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
 
+    #inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline, SliceNetworkInline]
     suit_form_tabs =(('general', 'Slice Details'),
+        ('slicenetworks','Networks'),
         ('sliceprivileges','Privileges'),
         ('slivers','Slivers'),
         ('tags','Tags'),
@@ -796,6 +814,68 @@ class ReservationAdmin(admin.ModelAdmin):
         else:
             return []
 
+class NetworkParameterTypeAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterInline(admin.TabularInline):
+    # exclude = ['enacted']
+    model = Router.networks.through
+    extra = 0
+    verbose_name_plural = "Routers"
+    verbose_name = "Router"
+    suit_classes = 'suit-tab suit-tab-routers'
+
+class NetworkParameterInline(generic.GenericTabularInline):
+    exclude = ['enacted']
+    model = NetworkParameter
+    extra = 1
+    verbose_name_plural = "Parameters"
+    verbose_name = "Parameter"
+    suit_classes = 'suit-tab suit-tab-netparams'
+
+class NetworkSliversInline(admin.TabularInline):
+    exclude = ['enacted']
+    readonly_fields = ("ip", )
+    model = NetworkSliver
+    extra = 0
+    verbose_name_plural = "Slivers"
+    verbose_name = "Sliver"
+    suit_classes = 'suit-tab suit-tab-networkslivers'
+
+class NetworkSlicesInline(admin.TabularInline):
+    exclude = ['enacted']
+    model = NetworkSlice
+    extra = 0
+    verbose_name_plural = "Slices"
+    verbose_name = "Slice"
+    suit_classes = 'suit-tab suit-tab-networkslices'
+
+class NetworkAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "subnet", "ports", "labels")
+    readonly_fields = ("subnet", )
+
+    inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
+
+    fieldsets = [
+        (None, {'fields': ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+
+    suit_form_tabs =(
+        ('general','Network Details'),
+        ('netparams', 'Parameters'),
+        ('networkslivers','Slivers'),
+        ('networkslices','Slices'),
+        ('routers','Routers'),
+    )
+class NetworkTemplateAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "guaranteedBandwidth", "visibility")
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -825,10 +905,10 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
 admin.site.register(Reservation, ReservationAdmin)
-#admin.site.register(SliceRole, SliceRoleAdmin)
-#admin.site.register(SiteRole, SiteRoleAdmin)
-#admin.site.register(PlanetStackRole)
-#admin.site.register(DeploymentRole)
+admin.site.register(Network, NetworkAdmin)
+admin.site.register(Router, RouterAdmin)
+admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
+admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if showAll:
     #admin.site.register(PlanetStack)
@@ -836,7 +916,6 @@ if showAll:
     admin.site.register(Node, NodeAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
-    admin.site.register(Role, RoleAdmin)
     admin.site.register(Member, MemberAdmin)
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)

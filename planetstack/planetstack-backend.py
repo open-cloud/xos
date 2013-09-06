@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
-from openstack.backend import Backend 
+from observer.backend import Backend 
 
 if __name__ == '__main__':
 

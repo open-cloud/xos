@@ -26,7 +26,16 @@ class Sliver(PlCoreBase):
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
     tags = generic.GenericRelation(Tag)
 
-    def __unicode__(self):  return u'%s' % (self.instance_name)
+    def __unicode__(self):
+        if self.instance_name:
+            return u'%s' % (self.instance_name)
+        elif self.id:
+            return u'uninstantiated-%s' % str(self.id)
+        elif self.slice:
+            return u'unsaved-sliver on %s' % self.slice.name
+        else:
+            return u'unsaved-sliver'
+
 
     def save(self, *args, **kwds):
         if not self.name:

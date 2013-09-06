@@ -1,0 +1,49 @@
+#!/usr/bin/python
+
+import os
+import pdb
+import sys
+import json
+
+sys.path.append('.')
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+
+from django.db.models.fields.related import ForeignKey
+from core.models import *
+
+try:
+	output = sys.args[1]
+except:
+	output = '-json'
+
+g = globals()
+model_classes = []
+class_names = []
+for c in g.values():
+	if type(c)==type(PlCoreBase):
+		model_classes.append(c)
+		class_names.append(c.__name__)
+
+
+if (output=='-dot'):
+	print "digraph plstack {";
+	for c in model_classes:
+		fields = c._meta.fields
+		for f in fields:
+			if type(f)==ForeignKey and f.name.title() in class_names:
+				print '\t"%s"->"%s";'%(c.__name__,f.name.title())
+	print "}\n";
+elif (output=='-json'):
+	d = {}
+	for c in model_classes:
+		fields = c._meta.fields
+		for f in fields:
+			if type(f)==ForeignKey and f.name.title() in class_names:
+				try:
+					d[c.__name__].append(f.name.title())
+				except KeyError:
+					d[c.__name__]=[f.name.title()]
+	print json.dumps(d,indent=4)
+	
+	

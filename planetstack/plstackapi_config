@@ -27,3 +27,6 @@ url=http://localhost:5000/v2.0/
 default_image=None
 default_flavor=m1.small
 default_security_group=default
+
+[observer]
+pl_dependency_graph='/opt/planetstack/model-deps'
