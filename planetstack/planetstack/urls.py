@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from core.views.deployment import DeploymentList, DeploymentDetail
+from core.views.deployments import DeploymentList, DeploymentDetail
 from core.views.images import ImageList, ImageDetail
 from core.views.nodes import NodeList, NodeDetail
 from core.views.projects import ProjectList, ProjectDetail

@@ -4,7 +4,6 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:09.331Z", 
-        "enacted": null, 
         "name": "VICCI", 
         "created": "2013-04-03T22:57:09.331Z"
     }
@@ -14,7 +13,6 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:15.013Z", 
-        "enacted": null, 
         "name": "VINI", 
         "created": "2013-04-03T22:57:15.013Z"
     }
@@ -24,7 +22,6 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
         "name": "PlanetLab Classic", 
         "created": "2013-04-03T22:57:23.015Z"
     }
@@ -34,7 +31,6 @@
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:29.569Z", 
-        "enacted": null, 
         "name": "GENI", 
         "created": "2013-04-03T22:57:29.569Z"
     }
@@ -56,8 +52,7 @@
             3, 
             4
         ], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": ""
     }
 },
 {
@@ -74,8 +69,7 @@
         "location": "37.4294,-122.172", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": "" 
     }
 },
 {
@@ -92,8 +86,7 @@
         "location": "33.7772,-84.3976", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": "" 
     }
 },
 {
@@ -110,8 +103,7 @@
         "location": "47.6531,-122.313", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": "" 
     }
 },
 {
@@ -128,8 +120,7 @@
         "location": "47.3794,8.54513", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": "" 
     }
 },
 {
@@ -146,8 +137,7 @@
         "location": "49.14,6.589", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": ""
     }
 },
 {
@@ -164,8 +154,7 @@
         "location": "35.75,139.5", 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "", 
-        "enacted": null
+        "abbreviated_name": "" 
     }
 },
 {
@@ -183,8 +172,7 @@
         ], 
         "commitment": 0, 
         "name": "Best Effort", 
-        "upgradeRequiresApproval": false, 
-        "enacted": null
+        "upgradeRequiresApproval": false 
     }
 },
 {
@@ -202,8 +190,7 @@
         ], 
         "commitment": 365, 
         "name": "Silver", 
-        "upgradeRequiresApproval": false, 
-        "enacted": null
+        "upgradeRequiresApproval": false 
     }
 },
 {
@@ -221,8 +208,7 @@
         ], 
         "commitment": 365, 
         "name": "Gold", 
-        "upgradeRequiresApproval": false, 
-        "enacted": null
+        "upgradeRequiresApproval": false 
     }
 },
 {
@@ -239,8 +225,7 @@
         "bucketInRate": 0, 
         "cost": 7, 
         "maxUnitsNode": 0, 
-        "maxDuration": 0, 
-        "enacted": null
+        "maxDuration": 0 
     }
 },
 {
@@ -257,8 +242,7 @@
         "bucketInRate": 0, 
         "cost": 7, 
         "maxUnitsNode": 0, 
-        "maxDuration": 0, 
-        "enacted": null
+        "maxDuration": 0 
     }
 },
 {
@@ -275,8 +259,7 @@
         "bucketInRate": 0, 
         "cost": 7, 
         "maxUnitsNode": 0, 
-        "maxDuration": 0, 
-        "enacted": null
+        "maxDuration": 0 
     }
 },
 {
@@ -293,8 +276,7 @@
         "bucketInRate": 10, 
         "cost": 7, 
         "maxUnitsNode": 6, 
-        "maxDuration": 168, 
-        "enacted": null
+        "maxDuration": 168 
     }
 },
 {
@@ -311,8 +293,7 @@
         "bucketInRate": 0, 
         "cost": 0, 
         "maxUnitsNode": 6, 
-        "maxDuration": 8760, 
-        "enacted": null
+        "maxDuration": 8760 
     }
 },
 {
@@ -323,8 +304,7 @@
         "description": "PlanetStack Application Administrator", 
         "created": "2013-07-30T10:30:28.633Z", 
         "content_type": 8, 
-        "role_type": "Admin", 
-        "enacted": null
+        "role_type": "Admin" 
     }
 },
 {
@@ -335,8 +315,7 @@
         "description": "User level role for PlanetStack Application", 
         "created": "2013-07-30T10:31:02.627Z", 
         "content_type": 8, 
-        "role_type": "Default", 
-        "enacted": null
+        "role_type": "Default" 
     }
 },
 {
@@ -347,8 +326,7 @@
         "description": "Administrative role for a Slice", 
         "created": "2013-07-30T10:31:25.829Z", 
         "content_type": 21, 
-        "role_type": "Admin", 
-        "enacted": null
+        "role_type": "Admin" 
     }
 },
 {
@@ -359,8 +337,7 @@
         "description": "User level access for a particular Slice", 
         "created": "2013-07-30T10:31:48.791Z", 
         "content_type": 21, 
-        "role_type": "Default", 
-        "enacted": null
+        "role_type": "Default" 
     }
 },
 {
@@ -371,8 +348,7 @@
         "description": "Administrator role for a particular Site", 
         "created": "2013-07-30T10:32:20.600Z", 
         "content_type": 15, 
-        "role_type": "Admin", 
-        "enacted": null
+        "role_type": "Admin" 
     }
 },
 {
@@ -383,8 +359,7 @@
         "description": "Principal Investigator for a particular Site", 
         "created": "2013-07-30T10:34:39.494Z", 
         "content_type": 15, 
-        "role_type": "PI", 
-        "enacted": null
+        "role_type": "PI" 
     }
 },
 {
@@ -395,8 +370,7 @@
         "description": "Technical support for a particular Site. Allows for Read/Write access to a Site's Nodes.", 
         "created": "2013-07-30T10:35:27.633Z", 
         "content_type": 15, 
-        "role_type": "Tech", 
-        "enacted": null
+        "role_type": "Tech" 
     }
 },
 {
@@ -407,8 +381,7 @@
         "description": "Responsibility for a particular Site's accounting and invoices.", 
         "created": "2013-07-30T10:38:04.554Z", 
         "content_type": 15, 
-        "role_type": "Billing", 
-        "enacted": null
+        "role_type": "Billing" 
     }
 },
 {
@@ -419,8 +392,7 @@
         "description": "Default access for a particular Site which allows for Read-only access to the Site's objects.", 
         "created": "2013-07-30T10:39:07.062Z", 
         "content_type": 15, 
-        "role_type": "Default", 
-        "enacted": null
+        "role_type": "Default" 
     }
 },
 {
@@ -431,8 +403,7 @@
         "description": "Represents the Site through which a particular user is managed through.", 
         "created": "2013-07-30T10:39:55.479Z", 
         "content_type": 15, 
-        "role_type": "Homed", 
-        "enacted": null
+        "role_type": "Homed" 
     }
 },
 {
@@ -443,8 +414,7 @@
         "description": "Administrative responsibility for a particular Deployment.",
         "created": "2013-07-30T17:35:59.815Z",
         "content_type": 9,
-        "role_type": "Admin",
-        "enacted": null
+        "role_type": "Admin"
     }
 },
 {
@@ -455,8 +425,7 @@
         "description": "Default access for a particular Deployment.",
         "created": "2013-07-30T17:36:54.728Z",
         "content_type": 9,
-        "role_type": "Default",
-        "enacted": null
+        "role_type": "Default"
     }
 },
 {
@@ -464,7 +433,6 @@
     "model": "core.planetstackrole",
     "fields": {
         "updated": "2013-09-03T11:47:42.611Z",
-        "enacted": "2013-09-03T11:47:51Z",
         "role": "admin",
         "created": "2013-09-03T11:47:42.611Z"
     }
@@ -474,7 +442,6 @@
     "model": "core.siterole",
     "fields": {
         "updated": "2013-09-03T11:48:34.966Z",
-        "enacted": null,
         "role": "admin",
         "created": "2013-09-03T11:48:34.966Z"
     }
@@ -484,7 +451,6 @@
     "model": "core.siterole",
     "fields": {
         "updated": "2013-09-03T11:48:49.480Z",
-        "enacted": null,
         "role": "pi",
         "created": "2013-09-03T11:48:49.480Z"
     }
@@ -494,7 +460,6 @@
     "model": "core.siterole",
     "fields": {
         "updated": "2013-09-03T11:49:03.678Z",
-        "enacted": null,
         "role": "tech",
         "created": "2013-09-03T11:49:03.678Z"
     }
@@ -504,7 +469,6 @@
     "model": "core.siterole",
     "fields": {
         "updated": "2013-09-03T11:49:17.254Z",
-        "enacted": null,
         "role": "billing",
         "created": "2013-09-03T11:49:17.254Z"
     }
@@ -514,7 +478,6 @@
     "model": "core.slicerole",
     "fields": {
         "updated": "2013-09-03T11:48:02.080Z",
-        "enacted": null,
         "role": "admin",
         "created": "2013-09-03T11:48:02.080Z"
     }
@@ -524,7 +487,6 @@
     "model": "core.slicerole",
     "fields": {
         "updated": "2013-09-03T11:48:17.688Z",
-        "enacted": null,
         "role": "default",
         "created": "2013-09-03T11:48:17.688Z"
     }
@@ -534,7 +496,6 @@
     "model": "core.deploymentrole",
     "fields": {
         "updated": "2013-09-03T11:48:02.080Z",
-        "enacted": null,
         "role": "admin",
         "created": "2013-09-03T11:48:02.080Z"
     }
