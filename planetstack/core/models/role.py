@@ -2,14 +2,16 @@ import os
 import datetime
 from django.db import models
 from core.models import PlCoreBase
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 class Role(PlCoreBase):
 
-    ROLE_CHOICES = (('admin', 'Admin'), ('pi', 'Principle Investigator'), ('tech', 'Technician'), ('user','User'))
-    role = models.CharField(null=True, blank=True,max_length=256, unique=True, choices=ROLE_CHOICES)
-    role_type = models.CharField(max_length=80, unique=True)
+    role_type = models.CharField(max_length=80, verbose_name="Name")
+    description = models.CharField(max_length=120, verbose_name="Description")
+    content_type = models.ForeignKey(ContentType, verbose_name="Role Scope")
 
-    def __unicode__(self):  return u'%s' % (self.role_type)
+    def __unicode__(self):  return u'%s:%s' % (self.content_type,self.role_type)
 
 
     def save(self, *args, **kwds):

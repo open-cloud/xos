@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from django.forms.models import model_to_dict
-from openstack.event_manager import EventSender
+from observer.event_manager import EventSender
 
 
 class PlCoreBase(models.Model):

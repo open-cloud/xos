@@ -1,1 +1,2 @@
-.field-refresh { display: none; }
+.required:after {color: red ! important; font-size: 18px }
+#.btn-success {color:black}

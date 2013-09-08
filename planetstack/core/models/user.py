@@ -2,10 +2,10 @@ import os
 import datetime
 from collections import defaultdict
 from django.db import models
-from core.models import PlCoreBase
-from core.models import Site
+from core.models import PlCoreBase,Site
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
+
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -55,13 +55,16 @@ class User(AbstractBaseUser):
         db_index=True,
     )
 
+    username = models.CharField(max_length=255, default="Something" )
+
+
     kuser_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
 
     phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
-    site = models.ForeignKey(Site, related_name='users', verbose_name="Site this user will be homed too", null=True)
+    site = models.ForeignKey(Site, related_name='users', help_text="Site this user will be homed too", null=True)
     public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     is_active = models.BooleanField(default=True)
@@ -104,20 +107,24 @@ class User(AbstractBaseUser):
         # Simplest possible answer: Yes, always
         return True
 
-    def get_roles(self):
-        from core.models.site import SitePrivilege
-        from core.models.slice import SliceMembership
+    def is_superuser(self):
+        return False
 
-        site_privileges = SitePrivilege.objects.filter(user=self)
-        slice_memberships = SliceMembership.objects.filter(user=self)
-        roles = defaultdict(list)
-        for site_privilege in site_privileges:
-            roles[site_privilege.role.role_type].append(site_privilege.site.login_base)
-        for slice_membership in slice_memberships:
-            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
-        return roles   
+#    def get_roles(self):
+#        from core.models.site import SitePrivilege
+#        from core.models.slice import SliceMembership
+#
+#        site_privileges = SitePrivilege.objects.filter(user=self)
+#        slice_memberships = SliceMembership.objects.filter(user=self)
+#        roles = defaultdict(list)
+#        for site_privilege in site_privileges:
+#            roles[site_privilege.role.role_type].append(site_privilege.site.login_base)
+#        for slice_membership in slice_memberships:
+#            roles[slice_membership.role.role_type].append(slice_membership.slice.name)
+#        return roles   
 
     def save(self, *args, **kwds):
         if not self.id:
             self.set_password(self.password)    
+        self.username = self.email
         super(User, self).save(*args, **kwds)   
