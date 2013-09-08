@@ -1,4 +1,11 @@
 #! /usr/bin/python
+
+"""
+    Check the status of libvirt, openstack-nova-compute, and
+    quantum-openvswitch-agent. If these services are enabled and have failed,
+    then restart them.
+"""
+
 import os
 import sys
 import subprocess
