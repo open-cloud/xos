@@ -315,9 +315,22 @@ class OpenStackManager:
 
     @require_enabled
     def save_sliver(self, sliver):
+        metadata_update = {}
+        if ("numberCores" in sliver.changed_fields):
+            metadata_update["cpu_cores"] = str(sliver.numberCores)
+
+        for tag in sliver.slice.tags.all():
+            if tag.name.startswith("sysctl-"):
+                metadata_update[tag.name] = tag.value
+
         if not sliver.instance_id:
             nics = self.get_requested_networks(sliver.slice)
-            file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
+            for nic in nics:
+                # If a network hasn't been instantiated yet, then we'll fail
+                # during slice creation. Defer saving the sliver for now.
+                if not nic.get("net-id", None):
+                    sliver.save()   # in case it hasn't been saved yet
+                    return
             slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key)
@@ -326,12 +339,13 @@ class OpenStackManager:
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name,
                                    pubkeys = pubkeys,
-                                   nics = nics )
+                                   nics = nics,
+                                   metadata = metadata_update )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
-
-        if sliver.instance_id and ("numberCores" in sliver.changed_fields):
-            self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
+        else:
+            if metadata_update:
+                self.driver.update_instance_metadata(sliver.instance_id, metadata_update)
 
         sliver.save()
         sliver.enacted = datetime.now()
