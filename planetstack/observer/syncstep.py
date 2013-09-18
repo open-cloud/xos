@@ -28,6 +28,7 @@ class SyncStep:
 				provides -- PlanetStack models sync'd by this step
 		"""
 		dependencies = []
+        self.driver = args.get('driver')
 		try:
 			self.soft_deadline = int(self.get_prop('soft_deadline_seconds'))
 		except:

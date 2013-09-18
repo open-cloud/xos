@@ -11,10 +11,10 @@ class SyncExternalRoutes(SyncStep):
 		pass
 
 	def call(self):
-		routes = self.manager.driver.get_external_routes()
-		subnets = self.manager.driver.shell.quantum.list_subnets()['subnets']
+		routes = self.driver.get_external_routes()
+		subnets = self.driver.shell.quantum.list_subnets()['subnets']
 		for subnet in subnets:
 			try:
-				self.manager.driver.add_external_route(subnet, routes)
+				self.driver.add_external_route(subnet, routes)
 			except:
 				logger.log_exc("failed to add external route for subnet %s" % subnet)

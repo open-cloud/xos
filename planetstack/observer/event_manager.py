@@ -2,7 +2,6 @@ import threading
 import requests, json
 
 from core.models import *
-#from openstack.manager import OpenStackManager
 from planetstack.config import Config
 from observer.deleters import deleters
 
@@ -19,7 +18,7 @@ def event(func):
 class EventHandler:
 	# This code is currently not in use.
 	def __init__(self):
-		pass #self.manager = OpenStackManager()
+        pass 
 
 	@staticmethod
 	def get_events():

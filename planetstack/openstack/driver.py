@@ -1,6 +1,14 @@
 import commands
 from planetstack.config import Config
-from openstack.client import OpenStackClient
+
+try:
+    from openstack.client import OpenStackClient
+    from openstack.driver import OpenStackDriver
+    has_openstack = True
+except:
+    has_openstack = False
+
+manager_enabled = Config().api_nova_enabled
 
 class OpenStackDriver:
 
@@ -17,6 +25,21 @@ class OpenStackDriver:
             self.shell = client
         else:
             self.shell = OpenStackClient()
+
+    def client_driver(self, caller=None, tenant=None):
+        if caller:
+            auth = {'username': caller.email,
+                    'password': hashlib.md5(caller.password).hexdigest()[:6],
+                    'tenant': tenant}
+            client = OpenStackClient(**auth)
+        else:
+            client = OpenStackClient(tenant=tenant)
+        driver = OpenStackDriver(client=client)
+        return driver
+
+    def admin_driver(self, tenant=None):
+        client = OpenStackClient(tenant=tenant)
+        driver = OpenStackDriver(client=client) 
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)

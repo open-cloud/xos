@@ -26,7 +26,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
 		for sliver in slivers:
 			slivers_by_instance_id[sliver.instance_id] = sliver
 
-		ports = self.manager.driver.shell.quantum.list_ports()["ports"]
+		ports = self.driver.shell.quantum.list_ports()["ports"]
 		for port in ports:
 			if port["id"] in networkSlivers_by_port:
 				# we already have it

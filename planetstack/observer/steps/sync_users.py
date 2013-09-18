@@ -28,8 +28,9 @@ class SyncUsers(OpenStackSyncStep):
 				self.driver.delete_user_role(user.kuser_id, user.site.tenant_id, 'admin')
 
 		if user.public_key:
-			self.init_caller(user, user.site.login_base)
-			self.save_key(user.public_key, user.keyname)
-			self.init_admin()
+            driver = self.driver.client_driver(caller=user, tenant=user.site.login_base) 
+            key_fields =  {'name': user.keyname,
+                           'public_key': user.public_key}
+            driver.create_keypair(**key_fields)
 
 		user.save()

@@ -8,7 +8,8 @@ from datetime import datetime
 from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
-from openstack.manager import OpenStackManager
+#from openstack.manager import OpenStackManager
+from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
@@ -63,6 +64,7 @@ class PlanetStackObserver:
 		# The Condition object that gets signalled by Feefie events
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
+        self.driver = OpenStackDriver()
 
 	def wait_for_event(self, timeout):
 		self.event_cond.acquire()
@@ -190,7 +192,7 @@ class PlanetStackObserver:
 				raise StepNotReady
 
 	def run(self):
-		if not self.manager.enabled or not self.manager.has_openstack:
+		if not self.driver.enabled or not self.driver.has_openstack:
 			return
 
 		while True:
@@ -209,7 +211,7 @@ class PlanetStackObserver:
 				for S in self.ordered_steps:
 					start_time=time.time()
 					
-					sync_step = S()
+					sync_step = S(driver=self.driver)
 					sync_step.dependencies = self.dependencies[sync_step.name]
 					sync_step.debug_mode = debug_mode
 

@@ -38,13 +38,19 @@ class SyncNetworks(OpenStackSyncStep):
 												   end = end)
 				network.subnet = cidr
 				network.subnet_id = subnet['id']
+                # add subnet as interface to slice's router
+                self.driver.add_router_interface(router['id'], subnet['id'])
+                # add external route
+                self.driver.add_external_route(subnet)
 
 	def sync_record(self, site):
 		if network.owner and network.owner.creator:
 				try:
 					# update manager context
-					self.driver.init_caller(network.owner.creator, network.owner.name)
+                    real_driver = self.driver
+                    self.driver = self.driver.client_driver(network.owner.creator, network.owner.name)
 					self.save_network(network)
+                    self.driver = real_driver
 					logger.info("saved network: %s" % (network))
 				except Exception,e:
 					logger.log_exc("save network failed: %s" % network)	
