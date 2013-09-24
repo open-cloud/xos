@@ -85,8 +85,8 @@ class PlanetStackObserver:
         except Exception,e:
             raise e
 
-        backend_path = Config().observer_backend_dependency_graph
         try:
+            backend_path = Config().observer_pl_dependency_graph
             # This contains dependencies between backend records
             self.backend_dependency_graph = json.loads(open(backend_path).read())
         except Exception,e:
@@ -178,7 +178,7 @@ class PlanetStackObserver:
         except:
             self.last_run_times={}
             for e in self.ordered_steps:
-                self.last_run_times[e.name]=0
+                self.last_run_times[e]=0
 
 
 

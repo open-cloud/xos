@@ -26,6 +26,9 @@ class OpenStackDriver:
         else:
             self.shell = OpenStackClient()
 
+        self.enabled = manager_enabled
+        self.has_openstack = has_openstack
+
     def client_driver(self, caller=None, tenant=None):
         if caller:
             auth = {'username': caller.email,
