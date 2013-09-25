@@ -62,6 +62,7 @@ class PlanetStackObserver:
 
     def __init__(self):
         # The Condition object that gets signalled by Feefie events
+        self.step_lookup = {}
         self.load_sync_steps()
         self.event_cond = threading.Condition()
         self.driver = OpenStackDriver()
@@ -95,6 +96,7 @@ class PlanetStackObserver:
 
         provides_dict = {}
         for s in self.sync_steps:
+            self.step_lookup[s.__name__] = s
             for m in s.provides:
                 try:
                     provides_dict[m.__name__].append(s.__name__)
@@ -209,10 +211,11 @@ class PlanetStackObserver:
                 failed_step_objects = []
 
                 for S in self.ordered_steps:
+                    step = self.step_lookup[S]
                     start_time=time.time()
                     
-                    sync_step = S(driver=self.driver)
-                    sync_step.dependencies = self.dependencies[sync_step.name]
+                    sync_step = step(driver=self.driver)
+                    #sync_step.dependencies = self.dependencies[sync_step.name]
                     sync_step.debug_mode = debug_mode
 
                     should_run = False
@@ -224,9 +227,9 @@ class PlanetStackObserver:
                         should_run = True
                     except StepNotReady:
                         logging.info('Step not ready: %s'%sync_step.name)
-                        failed_steps.add(sync_step)
+                        failed_steps.append(sync_step)
                     except:
-                        failed_steps.add(sync_step)
+                        failed_steps.append(sync_step)
 
                     if (should_run):
                         try:
