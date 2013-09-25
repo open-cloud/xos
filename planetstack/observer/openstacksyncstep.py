@@ -10,5 +10,5 @@ class OpenStackSyncStep:
         SyncStep.__init__(self, **args)
         return
 
-    def __call__(self):
-        return self.call()
+    def __call__(self, **args):
+        return self.call(**args)

@@ -59,5 +59,5 @@ class SyncStep:
                     failed.append(o)
         return failed
 
-    def __call__(self):
-        return self.call()
+    def __call__(self, **args):
+        return self.call(**args)

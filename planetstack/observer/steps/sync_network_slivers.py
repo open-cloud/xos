@@ -8,7 +8,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
     requested_interval = 3600
     provides=[NetworkSliver]
 
-    def call(self):
+    def call(self, failed=[]):
         networkSlivers = NetworkSliver.objects.all()
         networkSlivers_by_id = {}
         networkSlivers_by_port = {}
