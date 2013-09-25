@@ -8,3 +8,4 @@ from .sync_slices import SyncSlices
 from .sync_sliver_ips import SyncSliverIps
 from .sync_slivers import SyncSlivers
 from .sync_users import SyncUsers
+from .garbage_collector import GarbageCollector

@@ -7,6 +7,10 @@ from core.models.site import Site
 class SyncSites(OpenStackSyncStep):
 	provides=[Site]
 	requested_interval=0
+
+    def fetch_pending(self):
+        return Site.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
 	def sync_record(self, site):
 		save_site = False
 		if not site.tenant_id:

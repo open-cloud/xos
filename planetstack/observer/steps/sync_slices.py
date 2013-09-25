@@ -7,6 +7,10 @@ from core.models.slice import Slice
 class SyncSlices(OpenStackSyncStep):
 	provides=[Slice]
 	requested_interval=0
+
+    def fetch_pending(self):
+        return Slice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
 	def sync_record(self, slice):
 		if not slice.tenant_id:
 			nova_fields = {'tenant_name': slice.name,

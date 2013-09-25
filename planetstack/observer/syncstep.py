@@ -37,7 +37,8 @@ class SyncStep:
         return
 
     def fetch_pending(self):
-        return Sliver.objects.filter(ip=None)
+        #return Sliver.objects.filter(ip=None)
+        return []
     
     def check_dependencies(self, obj):
         for dep in self.dependencies:

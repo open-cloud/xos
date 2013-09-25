@@ -58,7 +58,7 @@ def toposort(g, steps):
     return order
 
 class PlanetStackObserver:
-    sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps]
+    sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,GarbageCollector]
 
     def __init__(self):
         # The Condition object that gets signalled by Feefie events

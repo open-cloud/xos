@@ -8,6 +8,9 @@ class SyncNetworks(OpenStackSyncStep):
     provides=[Network]
     requested_interval = 0
 
+    def fetch_pending(self):
+        return Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
     def save_network(self, network):
         if not network.network_id:
             if network.template.sharedNetworkName:
@@ -45,14 +48,14 @@ class SyncNetworks(OpenStackSyncStep):
 
     def sync_record(self, site):
         if network.owner and network.owner.creator:
-                try:
-                    # update manager context
-                    real_driver = self.driver
-                    self.driver = self.driver.client_driver(network.owner.creator, network.owner.name)
-                    self.save_network(network)
-                    self.driver = real_driver
-                    logger.info("saved network: %s" % (network))
-                except Exception,e:
-                    logger.log_exc("save network failed: %s" % network)    
-                    raise e
+            try:
+                # update manager context
+                real_driver = self.driver
+                self.driver = self.driver.client_driver(network.owner.creator, network.owner.name)
+                self.save_network(network)
+                self.driver = real_driver
+                logger.info("saved network: %s" % (network))
+            except Exception,e:
+                logger.log_exc("save network failed: %s" % network)    
+                raise e
 

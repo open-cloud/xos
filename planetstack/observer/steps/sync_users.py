@@ -7,6 +7,10 @@ from core.models.user import User
 class SyncUsers(OpenStackSyncStep):
     provides=[User]
     requested_interval=0
+
+    def fetch_pending(self):
+        return User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
     def sync_record(self, user):
         name = user.email[:user.email.find('@')]
         user_fields = {'name': name,

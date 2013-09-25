@@ -3,7 +3,6 @@ from planetstack.config import Config
 
 try:
     from openstack.client import OpenStackClient
-    from openstack.driver import OpenStackDriver
     has_openstack = True
 except:
     has_openstack = False

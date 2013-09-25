@@ -6,7 +6,11 @@ from core.models.slice import *
 
 class SyncSliceMemberships(OpenStackSyncStep):
     requested_interval=0
-    provides=[SliceRole]
+    provides=[SlicePrivilege]
+
+    def fetch_pending(self):
+        return SlicePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
     def sync_record(self, user):
         if slice_memb.user.kuser_id and slice_memb.slice.tenant_id:
                 self.driver.add_user_role(slice_memb.user.kuser_id,

@@ -1,15 +1,13 @@
 import os
 import base64
 from planetstack.config import Config
+from observer.openstacksyncstep import OpenStackSyncStep
 
-class GarbageCollector(SyncStep):
-	requested_interval = 86400
-	provides=[]
+class GarbageCollector(OpenStackSyncStep):
+    requested_interval = 86400
+    provides=[]
 
-	def call(self):
-		pass
-
-    def run(self):
+    def call(self):
         try:
             logger.info('gc start')
             #self.sync_roles()
