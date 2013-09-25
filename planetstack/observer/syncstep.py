@@ -49,14 +49,13 @@ class SyncStep:
     def call(self, failed=[]):
         pending = self.fetch_pending()
         for o in pending:
-            if (not self.depends_on(o, failed)):
-                try:
-                    check_dependencies(o) # Raises exception if failed                    
-                    self.sync_record(o)
-                    o.enacted = datetime.now() # Is this the same timezone? XXX
-                    o.save(update_fields=['enacted'])
-                except:
-                    failed.append(o)
+            try:
+                check_dependencies(o) # Raises exception if failed                    
+                self.sync_record(o)
+                o.enacted = datetime.now() # Is this the same timezone? XXX
+                o.save(update_fields=['enacted'])
+            except:
+                failed.append(o)
         return failed
 
     def __call__(self, **args):
