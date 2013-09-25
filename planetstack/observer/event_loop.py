@@ -165,12 +165,12 @@ class PlanetStackObserver:
         self.last_run_times[step.name]=time.time()
 
     def check_schedule(self, step):
-        time_since_last_run = time.time() - self.last_run_times[step.name]
+        time_since_last_run = time.time() - self.last_run_times[step.__name__]
         try:
             if (time_since_last_run < step.requested_interval):
                 raise StepNotReady
         except AttributeError:
-            logger.info('Step %s does not have requested_interval set'%step.name)
+            logger.info('Step %s does not have requested_interval set'%step.__name__)
             raise StepNotReady
     
     def load_run_times(self):
@@ -190,7 +190,8 @@ class PlanetStackObserver:
 
     def check_class_dependency(self, step, failed_steps):
         for failed_step in failed_steps:
-            if (failed_step in self.dependency_graph[step.name]):
+            dependencies = self.model_dependency_graph.get(step.provides[0].__name__, [])
+            if (failed_step in dependencies):
                 raise StepNotReady
 
     def run(self):
@@ -215,6 +216,7 @@ class PlanetStackObserver:
                     start_time=time.time()
                     
                     sync_step = step(driver=self.driver)
+                    sync_step.__name__ = step.__name__    
                     #sync_step.dependencies = self.dependencies[sync_step.name]
                     sync_step.debug_mode = debug_mode
 
@@ -243,7 +245,7 @@ class PlanetStackObserver:
                             failed_step_objects.extend(failed_objects)
                             self.update_run_time(sync_step)
                         except:
-                            failed_steps.add(S)
+                            failed_steps.append(S)
                 self.save_run_times()
             except:
                 logger.log_exc("Exception in observer run loop")
