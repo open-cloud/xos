@@ -190,8 +190,8 @@ class PlanetStackObserver:
 
     def check_class_dependency(self, step, failed_steps):
         for failed_step in failed_steps:
-            dependencies = self.model_dependency_graph.get(step.provides[0].__name__, [])
-            if (failed_step in dependencies):
+            step.dependencies = self.model_dependency_graph.get(step.provides[0].__name__, [])
+            if (failed_step in step.dependencies):
                 raise StepNotReady
 
     def run(self):

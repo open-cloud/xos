@@ -1,5 +1,6 @@
 import os
 import base64
+from datetime import datetime
 from planetstack.config import Config
 
 class FailedDependency(Exception):
@@ -42,7 +43,7 @@ class SyncStep:
     
     def check_dependencies(self, obj):
         for dep in self.dependencies:
-            peer_object = getattr(obj, dep.name.lowercase())
+            peer_object = getattr(obj, dep.lower())
             if (peer_object.pk==dep.pk):
                 raise DependencyFailed
 
@@ -50,7 +51,7 @@ class SyncStep:
         pending = self.fetch_pending()
         for o in pending:
             try:
-                check_dependencies(o) # Raises exception if failed                    
+                self.check_dependencies(o) # Raises exception if failed                    
                 self.sync_record(o)
                 o.enacted = datetime.now() # Is this the same timezone? XXX
                 o.save(update_fields=['enacted'])
