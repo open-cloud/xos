@@ -153,16 +153,16 @@ class PlanetStackObserver:
         self.load_run_times()
         
 
-    def check_duration(self):
+    def check_duration(self, step, duration):
         try:
-            if (duration > S.deadline):
-                logger.info('Sync step %s missed deadline, took %.2f seconds'%(S.name,duration))
+            if (duration > step.deadline):
+                logger.info('Sync step %s missed deadline, took %.2f seconds'%(step.name,duration))
         except AttributeError:
             # S doesn't have a deadline
             pass
 
     def update_run_time(self, step):
-        self.last_run_times[step.name]=time.time()
+        self.last_run_times[step.__name__]=time.time()
 
     def check_schedule(self, step):
         time_since_last_run = time.time() - self.last_run_times[step.__name__]
@@ -228,7 +228,7 @@ class PlanetStackObserver:
                         self.check_schedule(sync_step) # dont run sync_network_routes if time since last run < 1 hour
                         should_run = True
                     except StepNotReady:
-                        logging.info('Step not ready: %s'%sync_step.name)
+                        logging.info('Step not ready: %s'%sync_step.__name__)
                         failed_steps.append(sync_step)
                     except:
                         failed_steps.append(sync_step)
@@ -241,8 +241,9 @@ class PlanetStackObserver:
                             failed_objects = sync_step(failed=failed_step_objects)
 
 
-                            check_deadline(sync_step, duration)
-                            failed_step_objects.extend(failed_objects)
+                            self.check_duration(sync_step, duration)
+                            if failed_objects:
+                                failed_step_objects.extend(failed_objects)
                             self.update_run_time(sync_step)
                         except:
                             failed_steps.append(S)
