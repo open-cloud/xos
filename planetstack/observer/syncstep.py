@@ -38,25 +38,27 @@ class SyncStep:
         return
 
     def fetch_pending(self):
-        #return Sliver.objects.filter(ip=None)
         return []
+        #return Sliver.objects.filter(ip=None)
     
-    def check_dependencies(self, obj):
+    def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
             peer_object = getattr(obj, dep.lower())
-            if (peer_object.pk==dep.pk):
+            if (peer_object.pk==failed.pk):
                 raise DependencyFailed
 
     def call(self, failed=[]):
         pending = self.fetch_pending()
         for o in pending:
             try:
-                self.check_dependencies(o) # Raises exception if failed                    
+                for f in failed:
+                    self.check_dependencies(o,f) # Raises exception if failed                    
                 self.sync_record(o)
                 o.enacted = datetime.now() # Is this the same timezone? XXX
                 o.save(update_fields=['enacted'])
             except:
                 failed.append(o)
+
         return failed
 
     def __call__(self, **args):

@@ -218,7 +218,14 @@ class PlanetStackObserver:
                     
                     sync_step = step(driver=self.driver)
                     sync_step.__name__ = step.__name__
-                    #sync_step.dependencies = self.dependencies[sync_step.name]
+                    sync_step.dependencies = []
+                    try:
+                        mlist = sync_step.provides
+                        
+                        for m in mlist:
+                            sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
+                    except KeyError:
+                        pass
                     sync_step.debug_mode = debug_mode
 
                     should_run = False
@@ -239,6 +246,8 @@ class PlanetStackObserver:
                             duration=time.time() - start_time
 
                             # ********* This is the actual sync step
+                            import pdb
+                            pdb.set_trace()
                             failed_objects = sync_step(failed=failed_step_objects)
 
 
