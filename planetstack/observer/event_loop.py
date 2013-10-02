@@ -55,6 +55,8 @@ def toposort(g, steps):
         except KeyError:
             pass
         order.append(n)
+
+    order.extend(set(steps)-set(order))
     return order
 
 class PlanetStackObserver:
@@ -96,7 +98,7 @@ class PlanetStackObserver:
 
         provides_dict = {}
         for s in self.sync_steps:
-            self.step_lookup[s.__name__] = s
+            self.step_lookup[s.__name__] = s 
             for m in s.provides:
                 try:
                     provides_dict[m.__name__].append(s.__name__)
@@ -148,7 +150,7 @@ class PlanetStackObserver:
 
         dependency_graph = step_graph
 
-        self.ordered_steps = toposort(dependency_graph, self.sync_steps)
+        self.ordered_steps = toposort(dependency_graph, map(lambda s:s.__name__,self.sync_steps))
         print "Order of steps=",self.ordered_steps
         self.load_run_times()
         
@@ -197,12 +199,11 @@ class PlanetStackObserver:
     def run(self):
         if not self.driver.enabled or not self.driver.has_openstack:
             return
-
         while True:
             try:
                 logger.info('Waiting for event')
                 tBeforeWait = time.time()
-                self.wait_for_event(timeout=300)
+                self.wait_for_event(timeout=30)
                 logger.info('Observer woke up')
 
                 # Set of whole steps that failed
@@ -216,7 +217,7 @@ class PlanetStackObserver:
                     start_time=time.time()
                     
                     sync_step = step(driver=self.driver)
-                    sync_step.__name__ = step.__name__    
+                    sync_step.__name__ = step.__name__
                     #sync_step.dependencies = self.dependencies[sync_step.name]
                     sync_step.debug_mode = debug_mode
 
@@ -246,6 +247,7 @@ class PlanetStackObserver:
                                 failed_step_objects.extend(failed_objects)
                             self.update_run_time(sync_step)
                         except:
+                            raise
                             failed_steps.append(S)
                 self.save_run_times()
             except:
