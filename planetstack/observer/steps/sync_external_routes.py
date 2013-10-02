@@ -8,9 +8,6 @@ class SyncExternalRoutes(OpenStackSyncStep):
     provides=[]
     requested_interval = 86400 # This step is slow like a pig. Let's run it infrequently
 
-    def __init__(self):
-        pass
-
     def call(self):
         routes = self.driver.get_external_routes()
         subnets = self.driver.shell.quantum.list_subnets()['subnets']
