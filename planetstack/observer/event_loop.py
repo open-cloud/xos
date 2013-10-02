@@ -22,7 +22,14 @@ logger = Logger(logfile='observer.log', level=logging.INFO)
 class StepNotReady(Exception):
     pass
 
-def toposort(g, steps):
+def toposort(g, steps=None):
+	if (not steps):
+		keys = set(g.keys())
+		values = set({})
+		for v in g.values():
+			values=values | set(v)
+		
+		steps=list(keys|values)
     reverse = {}
 
     for k,v in g.items():
@@ -42,7 +49,7 @@ def toposort(g, steps):
         if (not v):
             sources.append(k)
 
-    order = []
+    rev_order = []
     marked = []
 
     while sources:
@@ -54,8 +61,10 @@ def toposort(g, steps):
                     marked.append(m)
         except KeyError:
             pass
-        order.append(n)
+		if (n in steps):
+			rev_order.append(n)
 
+	order = rev_order.reverse()
     order.extend(set(steps)-set(order))
     return order
 

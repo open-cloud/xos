@@ -9,7 +9,15 @@ import json
 from datetime import datetime
 from collections import defaultdict
 
-def toposort(g, steps):
+def toposort(g, steps=None):
+	if (not steps):
+		keys = set(g.keys())
+		values = set({})
+		for v in g.values():
+			values=values | set(v)
+		
+		steps=list(keys|values)
+
 	reverse = {}
 
 	for k,v in g.items():
@@ -24,15 +32,14 @@ def toposort(g, steps):
 		if not reverse.has_key(k):
 			sources.append(k)
 
-
 	for k,v in reverse.iteritems():
 		if (not v):
 			sources.append(k)
 
-	order = []
+	rev_order = []
 	marked = []
 	while sources:
-		n = sources.pop()
+		n = sources.pop(0)
 		try:
 			for m in g[n]:
 				if m not in marked:
@@ -41,8 +48,13 @@ def toposort(g, steps):
 		except KeyError:
 			pass
 		if (n in steps):
-			order.append(n)
+			rev_order.append(n)
+	order = rev_order.reverse()
 
 	return order
 
-print toposort({'a':'b','b':'c','c':'d','d':'c'},['d','c','b','a'])
+graph_file=open('model-deps').read()
+g = json.loads(graph_file)
+print toposort(g)
+
+#print toposort({'a':'b','b':'c','c':'d','d':'c'},['d','c','b','a'])
