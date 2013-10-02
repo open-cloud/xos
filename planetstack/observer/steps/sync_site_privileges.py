@@ -10,7 +10,7 @@ class SyncSitePrivileges(OpenStackSyncStep):
     provides=[SitePrivilege]
 
     def fetch_pending(self):
-        return Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        return SitePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, user):
         if site_priv.user.kuser_id and site_priv.site.tenant_id:

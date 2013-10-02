@@ -9,6 +9,9 @@ class SyncNetworkSlivers(OpenStackSyncStep):
     requested_interval = 3600
     provides=[NetworkSliver]
 
+    def fetch_pending(self):
+        return NetworkSliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+
     def call(self, failed=[]):
         networkSlivers = NetworkSliver.objects.all()
         networkSlivers_by_id = {}
