@@ -1,7 +1,6 @@
 import threading
 import requests, json
 
-from core.models import *
 from planetstack.config import Config
 from observer.deleters import deleters
 
