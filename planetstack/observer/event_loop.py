@@ -49,7 +49,7 @@ def toposort(g, steps=None):
 		if (not v):
 			sources.append(k)
 
-	rev_order = []
+	order = []
 	marked = []
 
 	while sources:
@@ -62,9 +62,9 @@ def toposort(g, steps=None):
 		except KeyError:
 			pass
 		if (n in steps):
-			rev_order.append(n)
+			order.append(n)
 
-	order = rev_order.reverse()
+	order.reverse()
 	order.extend(set(steps)-set(order))
 	return order
 
@@ -255,8 +255,8 @@ class PlanetStackObserver:
 							duration=time.time() - start_time
 
 							# ********* This is the actual sync step
-							import pdb
-							pdb.set_trace()
+							#import pdb
+							#pdb.set_trace()
 							failed_objects = sync_step(failed=failed_step_objects)
 
 
