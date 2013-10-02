@@ -36,8 +36,9 @@ def toposort(g, steps=None):
 		if (not v):
 			sources.append(k)
 
-	rev_order = []
+	order = []
 	marked = []
+
 	while sources:
 		n = sources.pop(0)
 		try:
@@ -48,8 +49,9 @@ def toposort(g, steps=None):
 		except KeyError:
 			pass
 		if (n in steps):
-			rev_order.append(n)
-	order = rev_order.reverse()
+			order.append(n)
+
+	order.reverse()
 
 	return order
 
