@@ -194,16 +194,17 @@ class PlanetStackObserver:
 				self.last_run_times[e]=0
 
 
-
 	def save_run_times(self):
 		run_times = json.dumps(self.last_run_times)
 		open('/tmp/observer_run_times','w').write(run_times)
 
 	def check_class_dependency(self, step, failed_steps):
-		for failed_step in failed_steps:
-			step.dependencies = self.model_dependency_graph.get(step.provides[0].__name__, [])
-			if (failed_step in step.dependencies):
-				raise StepNotReady
+        step.dependenices = []
+        for obj in step.provides:
+            step.dependenices.extend(self.model_dependency_graph.get(obj.__name__, []))
+        for failed_step in failed_steps:
+            if (failed_step in step.dependencies):
+                raise StepNotReady
 
 	def run(self):
 		if not self.driver.enabled or not self.driver.has_openstack:
