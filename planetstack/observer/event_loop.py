@@ -176,7 +176,7 @@ class PlanetStackObserver:
 		self.last_run_times[step.__name__]=time.time()
 
 	def check_schedule(self, step):
-		time_since_last_run = time.time() - self.last_run_times[step.__name__]
+		time_since_last_run = time.time() - self.last_run_times.get(step.__name__, 0)
 		try:
 			if (time_since_last_run < step.requested_interval):
 				raise StepNotReady
