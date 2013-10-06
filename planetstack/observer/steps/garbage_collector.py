@@ -70,7 +70,7 @@ class GarbageCollector(OpenStackSyncStep):
 
         # delete keystone tenants that don't have a site record
         tenants = self.driver.shell.keystone.tenants.findall()
-        system_tenants = ['admin','service']
+        system_tenants = ['admin','service', 'invisible_to_admin']
         for tenant in tenants:
             if tenant.name in system_tenants: 
                 continue
