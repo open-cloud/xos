@@ -8,7 +8,7 @@ class GarbageCollector(OpenStackSyncStep):
     requested_interval = 86400
     provides=[]
 
-    def call(self):
+    def call(self, **args):
         try:
             logger.info('gc start')
             #self.sync_roles()
