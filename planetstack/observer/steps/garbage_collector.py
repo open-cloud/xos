@@ -95,14 +95,14 @@ class GarbageCollector(OpenStackSyncStep):
             user_dict[user.kuser_id] = user
 
         # delete keystone users that don't have a user record
-        system_users = ['admin', 'nova', 'quantum', 'glance', 'cinder', 'swift', 'service']
+        system_users = ['admin', 'nova', 'quantum', 'glance', 'cinder', 'swift', 'service', 'demo']
         users = self.driver.shell.keystone.users.findall()
         for user in users:
             if user.name in system_users:
                 continue
             if user.id not in user_dict:
                 try:
-                    #self.driver.delete_user(user.id)
+                    self.driver.delete_user(user.id)
                     logger.info("deleted user: %s" % user)
                 except:
                     logger.log_exc("delete user failed: %s" % user)
