@@ -1,8 +1,14 @@
 import os
 import base64
+import traceback
+from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
+from util.logger import Logger, logging
 from observer.openstacksyncstep import OpenStackSyncStep
+from core.models import *
+
+logger = Logger(logfile='observer.log', level=logging.INFO)
 
 class GarbageCollector(OpenStackSyncStep):
     requested_interval = 86400
@@ -10,7 +16,6 @@ class GarbageCollector(OpenStackSyncStep):
 
     def call(self, **args):
         try:
-            logger.info('gc start')
             #self.sync_roles()
             self.gc_tenants()
             self.gc_users()
@@ -39,7 +44,7 @@ class GarbageCollector(OpenStackSyncStep):
                 continue
             if keystone_role.name not in pending_role_names:
                 try:
-                    self.manager.driver.delete_role({id: keystone_role.id})
+                    self.driver.delete_role({id: keystone_role.id})
                 except:
                     traceback.print_exc()
         """
@@ -97,7 +102,7 @@ class GarbageCollector(OpenStackSyncStep):
                 continue
             if user.id not in user_dict:
                 try:
-                    #self.manager.driver.delete_user(user.id)
+                    #self.driver.delete_user(user.id)
                     logger.info("deleted user: %s" % user)
                 except:
                     logger.log_exc("delete user failed: %s" % user)
@@ -112,7 +117,7 @@ class GarbageCollector(OpenStackSyncStep):
         user_tenant_roles = defaultdict(list)
         for site_priv in SitePrivilege.objects.filter(enacted__isnull=False):
             user_tenant_roles[(site_priv.user.kuser_id, site_priv.site.tenant_id)].append(site_priv.role.role)
-        for slice_memb in SliceMembership.objects.filter(enacted__isnull=False):
+        for slice_memb in SlicePrivilege.objects.filter(enacted__isnull=False):
             user_tenant_roles[(slice_memb.user.kuser_id, slice_memb.slice.tenant_id)].append(slice_memb.role.role)  
  
         # Some user tenant role aren't stored in planetstack but they must be preserved. 
@@ -124,7 +129,8 @@ class GarbageCollector(OpenStackSyncStep):
         preserved_roles = {}
         for user in users:
             tenant_ids = [s['tenant_id'] for s in user.slices.values()]
-            tenant_ids.append(user.site.tenant_id) 
+            if user.site:
+                tenant_ids.append(user.site.tenant_id) 
             preserved_roles[user.kuser_id] = tenant_ids
 
  
@@ -132,7 +138,7 @@ class GarbageCollector(OpenStackSyncStep):
         # Metadata table.
         for metadata in self.driver.shell.keystone_db.get_metadata():
             # skip admin roles
-            if metadata.user_id == self.manager.driver.admin_user.id:
+            if metadata.user_id == self.driver.admin_user.id:
                 continue
             # skip preserved tenant ids
             if metadata.user_id in preserved_roles and \
@@ -189,8 +195,8 @@ class GarbageCollector(OpenStackSyncStep):
         slivers = Sliver.objects.filter(ip=None)
         for sliver in slivers:
             # update connection
-            self.manager.init_admin(tenant=sliver.slice.name)
-            servers = self.manager.driver.shell.nova.servers.findall(id=sliver.instance_id)
+            driver = self.driver.client_driver(tenant=sliver.slice.name)
+            servers = driver.shell.nova.servers.findall(id=sliver.instance_id)
             if not servers:
                 continue
             server = servers[0]
