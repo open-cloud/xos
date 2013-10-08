@@ -1,0 +1,36 @@
+import os
+import base64
+from django.db.models import F, Q
+from planetstack.config import Config
+from observer.openstacksyncstep import OpenStackSyncStep
+from core.models.role import Role
+from core.models.site import SiteRole
+from core.models.slice import SliceRole
+
+class SyncRoles(OpenStackSyncStep):
+    provides=[Role]
+    requested_interval=0
+
+    def fetch_pending(self):
+        site_roles = SiteRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)
+        slice_roles = SliceRole.objects.filter(Q(enacted__lt=F('updated') | Q(enacted=None))
+
+        roles = []
+        for site_role in site_roles:
+            roles.append(site_role)
+        for slice_role in slice_roles:
+            roles.append(slice_role)
+
+        return roles
+
+
+    def sync_record(self, role):
+        save_role = False
+        if not role.krole_id:
+            krole = self.driver.create_role(role.role)
+            role.krole_id = krole.id
+            save_role = True
+
+        if (save_role):
+            role.save()
+    
