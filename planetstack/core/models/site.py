@@ -26,7 +26,7 @@ class Site(PlCoreBase):
 
 class SiteRole(PlCoreBase):
 
-    ROLE_CHOICES = (('admin','Admin'),('pi','PI'),('tech','Tech'),('billing','Billing'))
+    ROLE_CHOICES = (('admin','Admin'),('pi','PI'),('tech','Tech'),('billing','Billing'), ('user', 'User'))
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
     def __unicode__(self):  return u'%s' % (self.role)

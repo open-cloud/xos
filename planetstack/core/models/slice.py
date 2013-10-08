@@ -41,7 +41,7 @@ class Slice(PlCoreBase):
         super(Slice, self).save(*args, **kwds)
 
 class SliceRole(PlCoreBase):
-    ROLE_CHOICES = (('admin','Admin'),('default','Default'))
+    ROLE_CHOICES = (('admin','Admin'),('default','Default'), ('user', 'User'), ('pi', 'PI'))
 
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
