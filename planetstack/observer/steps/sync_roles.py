@@ -13,7 +13,7 @@ class SyncRoles(OpenStackSyncStep):
 
     def fetch_pending(self):
         site_roles = SiteRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)
-        slice_roles = SliceRole.objects.filter(Q(enacted__lt=F('updated') | Q(enacted=None))
+        slice_roles = SliceRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
         roles = []
         for site_role in site_roles:
