@@ -16,4 +16,4 @@ class SyncSitePrivileges(OpenStackSyncStep):
         if site_priv.user.kuser_id and site_priv.site.tenant_id:
             self.driver.add_user_role(site_priv.user.kuser_id,
                                       site_priv.site.tenant_id,
-                                      site_priv.role.role_type) 
+                                      site_priv.role.role) 

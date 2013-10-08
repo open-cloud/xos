@@ -16,4 +16,4 @@ class SyncSliceMemberships(OpenStackSyncStep):
         if slice_memb.user.kuser_id and slice_memb.slice.tenant_id:
                 self.driver.add_user_role(slice_memb.user.kuser_id,
                                           slice_memb.slice.tenant_id,
-                                          slice_memb.role.role_type)
+                                          slice_memb.role.role)
