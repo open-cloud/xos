@@ -2,7 +2,7 @@ import os
 import base64
 from syncstep import SyncStep
 
-class OpenStackSyncStep:
+class OpenStackSyncStep(SyncStep):
     """ PlanetStack Sync step for copying data to OpenStack 
     """ 
     
