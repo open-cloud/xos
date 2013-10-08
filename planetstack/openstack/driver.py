@@ -1,4 +1,5 @@
 import commands
+import hashlib
 from planetstack.config import Config
 
 try:
