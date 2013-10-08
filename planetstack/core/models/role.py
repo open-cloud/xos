@@ -8,7 +8,7 @@ from django.contrib.contenttypes import generic
 class Role(PlCoreBase):
 
     role_type = models.CharField(max_length=80, verbose_name="Name")
-    role = models.CharField(max_length=80, verbose_name="Keystone role id")
+    role = models.CharField(max_length=80, verbose_name="Keystone role id", null=True, blank=True)
     description = models.CharField(max_length=120, verbose_name="Description")
     content_type = models.ForeignKey(ContentType, verbose_name="Role Scope")
 
