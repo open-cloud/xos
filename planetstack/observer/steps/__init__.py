@@ -10,4 +10,5 @@ from .sync_slivers import SyncSlivers
 from .sync_users import SyncUsers
 from .sync_roles import SyncRoles
 from .sync_nodes import SyncNodes
+from .sync_images import SyncImages
 from .garbage_collector import GarbageCollector

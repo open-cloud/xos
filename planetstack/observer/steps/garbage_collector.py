@@ -227,4 +227,18 @@ class GarbageCollector(OpenStackSyncStep):
         Node.objects.filter(name__in=old_node_names).delete()
 
     def gc_images(self):
-        pass
+        # collect local images
+        images = Image.objects.all()
+        images_dict = {}
+        for image in images:
+            images_dict[image.name] = image
+
+        # collect glance images
+        glance_images = self.driver.shell.glance.get_images()
+        glance_images_dict = {}
+        for glance_image in glance_images:
+            glance_images_dict[glance_image['name']] = glance_image
+
+        # remove old images
+        old_image_names = set(images_dict.keys()).difference(glance_images_dict.keys())
+        Image.objects.filter(name__in=old_image_names).delete()
