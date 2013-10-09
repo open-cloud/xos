@@ -12,7 +12,27 @@ class SyncSlivers(OpenStackSyncStep):
     def fetch_pending(self):
         return Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
+    def get_requested_networks(self, slice):
+        network_ids = [x.network_id for x in slice.networks.all()]
+
+        if slice.network_id is not None:
+            network_ids.append(slice.network_id)
+
+        networks = []
+        for network_id in network_ids:
+            networks.append({"net-id": network_id})
+
+        return networks
+
     def sync_record(self, slice):
+        metadata_update = {}
+        if ("numberCores" in sliver.changed_fields):
+            metadata_update["cpu_cores"] = str(sliver.numberCores)
+
+        for tag in sliver.slice.tags.all():
+            if tag.name.startswith("sysctl-"):
+                metadata_update[tag.name] = tag.value
+
         if not sliver.instance_id:
             nics = self.get_requested_networks(sliver.slice)
             file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
@@ -28,7 +48,7 @@ class SyncSlivers(OpenStackSyncStep):
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
-        if sliver.instance_id and ("numberCores" in sliver.changed_fields):
-            self.driver.update_instance_metadata(sliver.instance_id, {"cpu_cores": str(sliver.numberCores)})
+        if sliver.instance_id and metadata_update:
+            self.driver.update_instance_metadata(sliver.instance_id, metadata_update)
 
         sliver.save()    
