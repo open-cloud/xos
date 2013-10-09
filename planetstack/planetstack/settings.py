@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'django_evolution',
     'core',
     'hpc',
+    'requestrouter',
     'geoposition',
 )
 

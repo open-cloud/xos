@@ -8,6 +8,7 @@ from core.models import Deployment
 from core.models import ServiceClass
 from core.models import Tag
 from django.contrib.contenttypes import generic
+from core.models import Service
 
 # Create your models here.
 
@@ -22,6 +23,7 @@ class Slice(PlCoreBase):
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+    service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
 
     tags = generic.GenericRelation(Tag)
 

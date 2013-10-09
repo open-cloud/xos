@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Project
+from core.models import Service
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 
 class Tag(PlCoreBase):
 
-    project = models.ForeignKey(Project, related_name='tags', help_text="The Project this Tag is associated with")
+    service = models.ForeignKey(Service, related_name='tags', help_text="The Service this Tag is associated with")
 
     name = models.SlugField(help_text="The name of this tag", max_length=128)
     value = models.CharField(help_text="The value of this tag", max_length=1024)

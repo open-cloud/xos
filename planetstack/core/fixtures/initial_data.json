@@ -1,6 +1,147 @@
 [
 {
     "pk": 1, 
+    "model": "core.planetstackrole", 
+    "fields": {
+        "updated": "2013-09-03T11:47:42.611Z", 
+        "role": "admin", 
+        "created": "2013-09-03T11:47:42.611Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:35:50.572Z", 
+        "content_type": 8, 
+        "description": "PlanetStack Application Administrator", 
+        "role_type": "Admin", 
+        "created": "2013-07-30T10:30:28.633Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:36:30.174Z", 
+        "content_type": 8, 
+        "description": "User level role for PlanetStack Application", 
+        "role_type": "Default", 
+        "created": "2013-07-30T10:31:02.627Z"
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:36:07.877Z", 
+        "content_type": 21, 
+        "description": "Administrative role for a Slice", 
+        "role_type": "Admin", 
+        "created": "2013-07-30T10:31:25.829Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:36:20.679Z", 
+        "content_type": 21, 
+        "description": "User level access for a particular Slice", 
+        "role_type": "Default", 
+        "created": "2013-07-30T10:31:48.791Z"
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:35:59.388Z", 
+        "content_type": 15, 
+        "description": "Administrator role for a particular Site", 
+        "role_type": "Admin", 
+        "created": "2013-07-30T10:32:20.600Z"
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:34:39.494Z", 
+        "content_type": 15, 
+        "description": "Principal Investigator for a particular Site", 
+        "role_type": "PI", 
+        "created": "2013-07-30T10:34:39.494Z"
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:35:27.633Z", 
+        "content_type": 15, 
+        "description": "Technical support for a particular Site. Allows for Read/Write access to a Site's Nodes.", 
+        "role_type": "Tech", 
+        "created": "2013-07-30T10:35:27.633Z"
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:38:04.554Z", 
+        "content_type": 15, 
+        "description": "Responsibility for a particular Site's accounting and invoices.", 
+        "role_type": "Billing", 
+        "created": "2013-07-30T10:38:04.554Z"
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:39:07.062Z", 
+        "content_type": 15, 
+        "description": "Default access for a particular Site which allows for Read-only access to the Site's objects.", 
+        "role_type": "Default", 
+        "created": "2013-07-30T10:39:07.062Z"
+    }
+},
+{
+    "pk": 10, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T10:39:55.479Z", 
+        "content_type": 15, 
+        "description": "Represents the Site through which a particular user is managed through.", 
+        "role_type": "Homed", 
+        "created": "2013-07-30T10:39:55.479Z"
+    }
+},
+{
+    "pk": 11, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T17:35:59.815Z", 
+        "content_type": 9, 
+        "description": "Administrative responsibility for a particular Deployment.", 
+        "role_type": "Admin", 
+        "created": "2013-07-30T17:35:59.815Z"
+    }
+},
+{
+    "pk": 12, 
+    "model": "core.role", 
+    "fields": {
+        "updated": "2013-07-30T17:36:54.728Z", 
+        "content_type": 9, 
+        "description": "Default access for a particular Deployment.", 
+        "role_type": "Default", 
+        "created": "2013-07-30T17:36:54.728Z"
+    }
+},
+{
+    "pk": 1, 
     "model": "core.deployment", 
     "fields": {
         "updated": "2013-04-03T22:57:09.331Z", 
@@ -37,16 +178,27 @@
 },
 {
     "pk": 1, 
+    "model": "core.deploymentrole", 
+    "fields": {
+        "updated": "2013-09-03T11:48:02.080Z", 
+        "role": "admin", 
+        "created": "2013-09-03T11:48:02.080Z"
+    }
+},
+{
+    "pk": 1, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-06-21T21:12:16.675Z", 
+        "updated": "2013-09-22T22:04:18.656Z", 
         "name": "Princeton University", 
         "created": "2013-04-03T23:00:10.085Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://princeton.edu/", 
         "login_base": "princeton", 
         "location": "40.3502,-74.6524", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [
             3, 
@@ -64,12 +216,14 @@
         "created": "2013-04-03T23:03:51.742Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://www.stanford.edu/", 
         "login_base": "stanford", 
         "location": "37.4294,-122.172", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "" 
+        "abbreviated_name": ""
     }
 },
 {
@@ -81,12 +235,14 @@
         "created": "2013-04-03T23:05:51.984Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://www.gatech.edu/", 
         "login_base": "gt", 
         "location": "33.7772,-84.3976", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "" 
+        "abbreviated_name": ""
     }
 },
 {
@@ -98,12 +254,14 @@
         "created": "2013-04-03T23:09:52.337Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "https://www.washington.edu/", 
         "login_base": "uw", 
         "location": "47.6531,-122.313", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "" 
+        "abbreviated_name": ""
     }
 },
 {
@@ -115,12 +273,14 @@
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://www.inf.ethz.ch/", 
         "login_base": "ethzcs", 
         "location": "47.3794,8.54513", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "" 
+        "abbreviated_name": ""
     }
 },
 {
@@ -132,9 +292,11 @@
         "created": "2013-04-03T23:19:38.789Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://www.mpi-sws.mpg.de/", 
         "login_base": "mpisws", 
         "location": "49.14,6.589", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
         "abbreviated_name": ""
@@ -149,12 +311,218 @@
         "created": "2013-04-03T23:20:49.815Z", 
         "tenant_id": "", 
         "enabled": true, 
+        "longitude": null, 
         "site_url": "http://www.planet-lab-jp.org/", 
         "login_base": "utokyo", 
         "location": "35.75,139.5", 
+        "latitude": null, 
         "is_public": true, 
         "deployments": [], 
-        "abbreviated_name": "" 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.siterole", 
+    "fields": {
+        "updated": "2013-09-03T11:48:34.966Z", 
+        "role": "admin", 
+        "created": "2013-09-03T11:48:34.966Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.siterole", 
+    "fields": {
+        "updated": "2013-09-03T11:48:49.480Z", 
+        "role": "pi", 
+        "created": "2013-09-03T11:48:49.480Z"
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.siterole", 
+    "fields": {
+        "updated": "2013-09-03T11:49:03.678Z", 
+        "role": "tech", 
+        "created": "2013-09-03T11:49:03.678Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.siterole", 
+    "fields": {
+        "updated": "2013-09-03T11:49:17.254Z", 
+        "role": "billing", 
+        "created": "2013-09-03T11:49:17.254Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.user", 
+    "fields": {
+        "username": "padmin@vicci.org", 
+        "public_key": null, 
+        "updated": "2013-09-22T21:47:30.993Z", 
+        "firstname": "PlanetStack", 
+        "user_url": null, 
+        "lastname": "Admin", 
+        "created": "2013-09-22T21:47:30.959Z", 
+        "is_active": true, 
+        "site": null, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T21:48:01.047Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "pbkdf2_sha256$10000$myaBvvoueiQR$o6h2VfhUUfsgDNUYB8v9Qt3U4t+uPSQSb+OMVIPoNsI=", 
+        "email": "padmin@vicci.org", 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.user", 
+    "fields": {
+        "username": "tony.mack@gmail.com", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.249Z", 
+        "firstname": "Tony", 
+        "user_url": null, 
+        "lastname": "Mack", 
+        "created": "2013-09-22T22:04:26.249Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.628Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "tony.mack@gmail.com", 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.user", 
+    "fields": {
+        "username": "smbaker@gmail.com", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.250Z", 
+        "firstname": "Scott", 
+        "user_url": null, 
+        "lastname": "Baker", 
+        "created": "2013-09-22T22:04:26.250Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.630Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "smbaker@gmail.com", 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.user", 
+    "fields": {
+        "username": "pete.larry@gmail.com", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.251Z", 
+        "firstname": "Larry", 
+        "user_url": null, 
+        "lastname": "Peterson", 
+        "created": "2013-09-22T22:04:26.251Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.633Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "pete.larry@gmail.com", 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.user", 
+    "fields": {
+        "username": "john.hartman@gmail.com", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.252Z", 
+        "firstname": "John", 
+        "user_url": null, 
+        "lastname": "Hartman", 
+        "created": "2013-09-22T22:04:26.252Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.635Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "john.hartman@gmail.com", 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.user", 
+    "fields": {
+        "username": "mhw@princeton.cs.edu", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.253Z", 
+        "firstname": "Michael", 
+        "user_url": null, 
+        "lastname": "Wawrzoniak", 
+        "created": "2013-09-22T22:04:26.253Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.636Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "mhw@princeton.cs.edu", 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.user", 
+    "fields": {
+        "username": "andybavier@gmail.com", 
+        "public_key": null, 
+        "updated": "2013-09-22T22:04:26.253Z", 
+        "firstname": "Andy", 
+        "user_url": null, 
+        "lastname": "Bavier", 
+        "created": "2013-09-22T22:04:26.253Z", 
+        "is_active": true, 
+        "site": 1, 
+        "phone": null, 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-09-22T22:04:18.638Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "andybavier@gmail.com", 
+        "enacted": null
     }
 },
 {
@@ -163,7 +531,6 @@
     "fields": {
         "updated": "2013-05-10T23:30:52.931Z", 
         "membershipFee": 0, 
-        "description": "Best Effort", 
         "membershipFeeMonths": 0, 
         "created": "2013-05-10T23:30:52.931Z", 
         "upgradeFrom": [
@@ -172,7 +539,8 @@
         ], 
         "commitment": 0, 
         "name": "Best Effort", 
-        "upgradeRequiresApproval": false 
+        "upgradeRequiresApproval": false, 
+        "description": "Best Effort"
     }
 },
 {
@@ -181,7 +549,6 @@
     "fields": {
         "updated": "2013-05-10T23:35:51.694Z", 
         "membershipFee": 100, 
-        "description": "Silver", 
         "membershipFeeMonths": 1, 
         "created": "2013-05-10T23:33:24.930Z", 
         "upgradeFrom": [
@@ -190,7 +557,8 @@
         ], 
         "commitment": 365, 
         "name": "Silver", 
-        "upgradeRequiresApproval": false 
+        "upgradeRequiresApproval": false, 
+        "description": "Silver"
     }
 },
 {
@@ -199,7 +567,6 @@
     "fields": {
         "updated": "2013-05-10T23:34:01.320Z", 
         "membershipFee": 18000, 
-        "description": "Gold", 
         "membershipFeeMonths": 12, 
         "created": "2013-05-10T23:34:01.320Z", 
         "upgradeFrom": [
@@ -208,7 +575,100 @@
         ], 
         "commitment": 365, 
         "name": "Gold", 
-        "upgradeRequiresApproval": false 
+        "upgradeRequiresApproval": false, 
+        "description": "Gold"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.service", 
+    "fields": {
+        "updated": "2013-09-22T21:53:48.013Z", 
+        "name": "Request Router Service", 
+        "enabled": true, 
+        "description": "Service to help load balance and direct traffic flow to content within the CDN", 
+        "created": "2013-09-22T21:53:48.013Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.slice", 
+    "fields": {
+        "router_id": null, 
+        "service": 1, 
+        "updated": "2013-09-22T21:54:33.729Z", 
+        "name": "DnsRedir", 
+        "created": "2013-09-22T21:54:33.729Z", 
+        "network_id": null, 
+        "tenant_id": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 1, 
+        "omf_friendly": false, 
+        "subnet_id": null, 
+        "slice_url": "", 
+        "creator": 1, 
+        "description": ""
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.slice", 
+    "fields": {
+        "router_id": null, 
+        "service": 1, 
+        "updated": "2013-09-22T22:07:48.740Z", 
+        "name": "Redirect", 
+        "created": "2013-09-22T22:06:33.765Z", 
+        "network_id": null, 
+        "tenant_id": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 1, 
+        "omf_friendly": false, 
+        "subnet_id": null, 
+        "slice_url": "", 
+        "creator": 1, 
+        "description": ""
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.slice", 
+    "fields": {
+        "router_id": null, 
+        "service": 1, 
+        "updated": "2013-09-22T22:07:21.804Z", 
+        "name": "DnsDemux", 
+        "created": "2013-09-22T22:07:21.804Z", 
+        "network_id": null, 
+        "tenant_id": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 1, 
+        "omf_friendly": false, 
+        "subnet_id": null, 
+        "slice_url": "", 
+        "creator": 1, 
+        "description": ""
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.slicerole", 
+    "fields": {
+        "updated": "2013-09-03T11:48:02.080Z", 
+        "role": "admin", 
+        "created": "2013-09-03T11:48:02.080Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.slicerole", 
+    "fields": {
+        "updated": "2013-09-03T11:48:17.688Z", 
+        "role": "default", 
+        "created": "2013-09-03T11:48:17.688Z"
     }
 },
 {
@@ -221,11 +681,11 @@
         "created": "2013-05-10T23:37:09.312Z", 
         "serviceClass": 1, 
         "maxUnitsDeployment": 0, 
-        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "maxUnitsNode": 0, 
-        "maxDuration": 0 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
     }
 },
 {
@@ -238,11 +698,11 @@
         "created": "2013-05-10T23:44:39.936Z", 
         "serviceClass": 2, 
         "maxUnitsDeployment": 0, 
-        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "maxUnitsNode": 0, 
-        "maxDuration": 0 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
     }
 },
 {
@@ -255,11 +715,11 @@
         "created": "2013-05-10T23:45:16.137Z", 
         "serviceClass": 3, 
         "maxUnitsDeployment": 0, 
-        "calendarReservable": false, 
         "bucketInRate": 0, 
         "cost": 7, 
-        "maxUnitsNode": 0, 
-        "maxDuration": 0 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
     }
 },
 {
@@ -272,11 +732,11 @@
         "created": "2013-05-10T23:46:33.201Z", 
         "serviceClass": 2, 
         "maxUnitsDeployment": 210, 
-        "calendarReservable": true, 
         "bucketInRate": 10, 
         "cost": 7, 
-        "maxUnitsNode": 6, 
-        "maxDuration": 168 
+        "calendarReservable": true, 
+        "maxDuration": 168, 
+        "maxUnitsNode": 6
     }
 },
 {
@@ -289,215 +749,22 @@
         "created": "2013-05-10T23:47:31.770Z", 
         "serviceClass": 3, 
         "maxUnitsDeployment": 210, 
-        "calendarReservable": true, 
         "bucketInRate": 0, 
         "cost": 0, 
-        "maxUnitsNode": 6, 
-        "maxDuration": 8760 
+        "calendarReservable": true, 
+        "maxDuration": 8760, 
+        "maxUnitsNode": 6
     }
 },
 {
     "pk": 1, 
-    "model": "core.role", 
+    "model": "requestrouter.requestrouterservice", 
     "fields": {
-        "updated": "2013-07-30T10:35:50.572Z", 
-        "description": "PlanetStack Application Administrator", 
-        "created": "2013-07-30T10:30:28.633Z", 
-        "content_type": 8, 
-        "role_type": "Admin" 
-    }
-},
-{
-    "pk": 2, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:36:30.174Z", 
-        "description": "User level role for PlanetStack Application", 
-        "created": "2013-07-30T10:31:02.627Z", 
-        "content_type": 8, 
-        "role_type": "Default" 
-    }
-},
-{
-    "pk": 3, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:36:07.877Z", 
-        "description": "Administrative role for a Slice", 
-        "created": "2013-07-30T10:31:25.829Z", 
-        "content_type": 21, 
-        "role_type": "Admin" 
-    }
-},
-{
-    "pk": 4, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:36:20.679Z", 
-        "description": "User level access for a particular Slice", 
-        "created": "2013-07-30T10:31:48.791Z", 
-        "content_type": 21, 
-        "role_type": "Default" 
-    }
-},
-{
-    "pk": 5, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:35:59.388Z", 
-        "description": "Administrator role for a particular Site", 
-        "created": "2013-07-30T10:32:20.600Z", 
-        "content_type": 15, 
-        "role_type": "Admin" 
-    }
-},
-{
-    "pk": 6, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:34:39.494Z", 
-        "description": "Principal Investigator for a particular Site", 
-        "created": "2013-07-30T10:34:39.494Z", 
-        "content_type": 15, 
-        "role_type": "PI" 
-    }
-},
-{
-    "pk": 7, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:35:27.633Z", 
-        "description": "Technical support for a particular Site. Allows for Read/Write access to a Site's Nodes.", 
-        "created": "2013-07-30T10:35:27.633Z", 
-        "content_type": 15, 
-        "role_type": "Tech" 
-    }
-},
-{
-    "pk": 8, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:38:04.554Z", 
-        "description": "Responsibility for a particular Site's accounting and invoices.", 
-        "created": "2013-07-30T10:38:04.554Z", 
-        "content_type": 15, 
-        "role_type": "Billing" 
-    }
-},
-{
-    "pk": 9, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:39:07.062Z", 
-        "description": "Default access for a particular Site which allows for Read-only access to the Site's objects.", 
-        "created": "2013-07-30T10:39:07.062Z", 
-        "content_type": 15, 
-        "role_type": "Default" 
-    }
-},
-{
-    "pk": 10, 
-    "model": "core.role", 
-    "fields": {
-        "updated": "2013-07-30T10:39:55.479Z", 
-        "description": "Represents the Site through which a particular user is managed through.", 
-        "created": "2013-07-30T10:39:55.479Z", 
-        "content_type": 15, 
-        "role_type": "Homed" 
-    }
-},
-{
-    "pk": 11,
-    "model": "core.role",
-    "fields": {
-        "updated": "2013-07-30T17:35:59.815Z",
-        "description": "Administrative responsibility for a particular Deployment.",
-        "created": "2013-07-30T17:35:59.815Z",
-        "content_type": 9,
-        "role_type": "Admin"
-    }
-},
-{
-    "pk": 12,
-    "model": "core.role",
-    "fields": {
-        "updated": "2013-07-30T17:36:54.728Z",
-        "description": "Default access for a particular Deployment.",
-        "created": "2013-07-30T17:36:54.728Z",
-        "content_type": 9,
-        "role_type": "Default"
-    }
-},
-{
-    "pk": 1,
-    "model": "core.planetstackrole",
-    "fields": {
-        "updated": "2013-09-03T11:47:42.611Z",
-        "role": "admin",
-        "created": "2013-09-03T11:47:42.611Z"
-    }
-},
-{
-    "pk": 1,
-    "model": "core.siterole",
-    "fields": {
-        "updated": "2013-09-03T11:48:34.966Z",
-        "role": "admin",
-        "created": "2013-09-03T11:48:34.966Z"
-    }
-},
-{
-    "pk": 2,
-    "model": "core.siterole",
-    "fields": {
-        "updated": "2013-09-03T11:48:49.480Z",
-        "role": "pi",
-        "created": "2013-09-03T11:48:49.480Z"
-    }
-},
-{
-    "pk": 3,
-    "model": "core.siterole",
-    "fields": {
-        "updated": "2013-09-03T11:49:03.678Z",
-        "role": "tech",
-        "created": "2013-09-03T11:49:03.678Z"
-    }
-},
-{
-    "pk": 4,
-    "model": "core.siterole",
-    "fields": {
-        "updated": "2013-09-03T11:49:17.254Z",
-        "role": "billing",
-        "created": "2013-09-03T11:49:17.254Z"
-    }
-},
-{
-    "pk": 1,
-    "model": "core.slicerole",
-    "fields": {
-        "updated": "2013-09-03T11:48:02.080Z",
-        "role": "admin",
-        "created": "2013-09-03T11:48:02.080Z"
-    }
-},
-{
-    "pk": 2,
-    "model": "core.slicerole",
-    "fields": {
-        "updated": "2013-09-03T11:48:17.688Z",
-        "role": "default",
-        "created": "2013-09-03T11:48:17.688Z"
-    }
-},
-{
-    "pk": 1,
-    "model": "core.deploymentrole",
-    "fields": {
-        "updated": "2013-09-03T11:48:02.080Z",
-        "role": "admin",
-        "created": "2013-09-03T11:48:02.080Z"
+        "behindNat": false, 
+        "defaultAction": "best", 
+        "defaultTTL": 30, 
+        "lastResortAction": "random", 
+        "maxAnswers": 3
     }
 }
 ]

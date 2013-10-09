@@ -1,2 +1,21 @@
 .required:after {color: red ! important; font-size: 18px }
 #.btn-success {color:black}
+#suit-center {
+padding: 20px;
+width: 100%;
+min-width:650px;
+}
+.inner-two-columns .inner-center-column .tab-content {
+overflow: inherit;
+margin-bottom: 15px;
+min-width: 650px;
+}
+.inner-two-columns .inner-center-column {
+#margin-right: 200px;
+#background-color: rgb(158, 163, 159);
+}
+label {
+display: block;
+font-weight: bold;
+margin-bottom: 5px;
+}

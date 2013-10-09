@@ -38,13 +38,13 @@ class PlCoreBase(models.Model):
 	def delete(self, *args, **kwds):
 		super(PlCoreBase, self).delete(*args, **kwds)
 
-		EventSender().fire({'delete_flag':True,'model':self.__name__})
+#		EventSender().fire({'delete_flag':True,'model':self.__name__})
 
 	def save(self, *args, **kwargs):
 		super(PlCoreBase, self).save(*args, **kwargs)
 		
 		# Tell the observer that the source database has been updated
-		EventSender().fire()
+		#EventSender().fire()
 
 		self.__initial = self._dict
 

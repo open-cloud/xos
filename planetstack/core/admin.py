@@ -16,6 +16,15 @@ from suit.widgets import LinkedSelect
 
 import django_evolution 
 
+class SingletonAdmin (admin.ModelAdmin):
+    def has_add_permission(self, request):
+        num_objects = self.model.objects.count()
+        if num_objects >= 1:
+            return False
+        else:
+            return True
+
+
 class PlStackTabularInline(admin.TabularInline):
     pass
 
@@ -119,7 +128,7 @@ class UserInline(PlStackTabularInline):
 
 class SliceInline(PlStackTabularInline):
     model = Slice
-    fields = ['name','enabled','description','slice_url']
+    fields = ['name','site', 'serviceClass', 'service']
     extra = 0
     suit_classes = 'suit-tab suit-tab-slices'
 
@@ -254,6 +263,22 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
         (None, {'fields': ['sites'], 'classes':['suit-tab suit-tab-sites']}),]
     suit_form_tabs =(('sites', 'Sites'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'))
 
+class ServiceAttrAsTabInline(PlStackTabularInline):
+    model = ServiceAttribute
+    fields = ['name','value']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-serviceattrs'
+
+class ServiceAttributeInline(PlStackTabularInline):
+    model = ServiceAttribute
+    fields = ['name','value']
+    extra = 0
+
+class ServiceAdmin(PlanetStackBaseAdmin):
+    list_display = ("name","enabled")
+    fieldsets = [(None, {'fields': ['name','enabled','description']})]
+    inlines = [ServiceAttributeInline,]
+
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location'], 'classes':['suit-tab suit-tab-general']}),
@@ -342,8 +367,16 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             qs = qs.filter(site__in=sites)
         return qs
 
+class SliceForm(forms.ModelForm):
+    class Meta:
+        model = Slice
+        widgets = {
+            'service': LinkedSelect 
+        }
+
 class SliceAdmin(PlanetStackBaseAdmin):
-    fieldsets = [('Slice Details', {'fields': ['name', 'site', 'serviceClass', 'description', 'slice_url'], 'classes':['suit-tab suit-tab-general']}),]
+    form = SliceForm
+    fieldsets = [('Slice Details', {'fields': ['name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url'], 'classes':['suit-tab suit-tab-general']}),]
     list_display = ('name', 'site','serviceClass', 'slice_url')
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
@@ -500,11 +533,8 @@ class SliverForm(forms.ModelForm):
             'image': LinkedSelect
         }
 
-class ProjectAdmin(admin.ModelAdmin):
-    inlines = [TagInline]
-
 class TagAdmin(admin.ModelAdmin):
-    list_display = ['project', 'name', 'value', 'content_type', 'content_object',]
+    list_display = ['service', 'name', 'value', 'content_type', 'content_object',]
 
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
@@ -631,6 +661,7 @@ class UserAdmin(UserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'firstname', 'lastname', 'is_admin', 'last_login')
+    #list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ()
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline]
     fieldsets = (
@@ -747,7 +778,7 @@ class ReservationAddRefreshForm(ReservationAddForm):
         return False
 
 class ReservationAdmin(admin.ModelAdmin):
-    fieldsets = [('Reservation Details', {'fields': ['startTime', 'duration','slice'], 'classes': ['suit-tab suit-tab-general']})]
+    fieldsets = [('Reservation Details', {'fields': ['slice', 'startTime', 'duration'], 'classes': ['suit-tab suit-tab-general']})]
     list_display = ('startTime', 'duration')
     form = ReservationAddForm
 
@@ -862,11 +893,12 @@ def cache_credentials(sender, user, request, **kwds):
     request.session['auth'] = auth
 user_logged_in.connect(cache_credentials)
 
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
 # unregister the Group model from admin.
-admin.site.unregister(Group)
+#admin.site.unregister(Group)
 
 #Do not show django evolution in the admin interface
 from django_evolution.models import Version, Evolution
@@ -881,8 +913,8 @@ showAll = True
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
-admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
+admin.site.register(Service, ServiceAdmin)
 admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
@@ -892,6 +924,10 @@ admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 if showAll:
     #admin.site.register(PlanetStack)
     admin.site.register(Tag, TagAdmin)
+    admin.site.register(DeploymentRole)
+    admin.site.register(SiteRole)
+    admin.site.register(SliceRole)
+    admin.site.register(PlanetStackRole)
     admin.site.register(Node, NodeAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)

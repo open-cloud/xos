@@ -29,7 +29,7 @@ class Network(PlCoreBase):
     subnet = models.CharField(max_length=32, blank=True)
     ports = models.CharField(max_length=1024, blank=True, null=True)
     labels = models.CharField(max_length=1024, blank=True, null=True)
-    owner = models.ForeignKey(Slice, related_name="ownedNetworks")
+    owner = models.ForeignKey(Slice, related_name="ownedNetworks", help_text="Slice that owns control of this Network")
 
     guaranteedBandwidth = models.IntegerField(default=0)
     permitAllSlices = models.BooleanField(default=False)
