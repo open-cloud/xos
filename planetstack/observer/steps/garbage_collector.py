@@ -16,7 +16,7 @@ class GarbageCollector(OpenStackSyncStep):
 
     def call(self, **args):
         try:
-            #self.sync_roles()
+            #self.gc_roles()
             self.gc_tenants()
             self.gc_users()
             self.gc_user_tenant_roles()
@@ -207,4 +207,24 @@ class GarbageCollector(OpenStackSyncStep):
                 logger.info("updated sliver ip: %s %s" % (sliver, ips[0]))
 
     def gc_external_routes(self):
+        pass
+
+    def gc_nodes(self):
+         # collect local nodes
+        nodes = Node.objects.all()
+        nodes_dict = {}
+        for node in nodes:
+            nodes_dict[node.name] = node
+
+        # collect nova nodes:
+        compute_nodes = self.client.nova.hypervisors.list()
+        compute_nodes_dict = {}
+        for compute_node in compute_nodes:
+            compute_nodes_dict[compute_node.hypervisor_hostname] = compute_node
+
+        # remove old nodes
+        old_node_names = set(nodes_dict.keys()).difference(compute_nodes_dict.keys())
+        Node.objects.filter(name__in=old_node_names).delete()
+
+    def gc_images(self):
         pass

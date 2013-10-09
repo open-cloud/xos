@@ -1,5 +1,6 @@
 [plc]
 name=plc
+deployment=plc
 
 [db]
 name=planetstack
