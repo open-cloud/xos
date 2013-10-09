@@ -75,12 +75,11 @@ class EventListener:
 			self.wake_up()
 		
 	def random_client_id(self):
-		if (self.client_id):
+		try:
 			return self.client_id
-		else:
+		except AttributeError:
 			self.client_id = base64.urlsafe_b64encode(os.urandom(12))
 			return self.client_id
-
 	
 	def run(self):
 		# This is our unique client id, to be used when firing and receiving events
