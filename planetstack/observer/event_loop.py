@@ -8,7 +8,8 @@ from datetime import datetime
 from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
-from openstack.manager import OpenStackManager
+#from openstack.manager import OpenStackManager
+from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
@@ -21,7 +22,14 @@ logger = Logger(logfile='observer.log', level=logging.INFO)
 class StepNotReady(Exception):
 	pass
 
-def toposort(g, steps):
+def toposort(g, steps=None):
+	if (not steps):
+		keys = set(g.keys())
+		values = set({})
+		for v in g.values():
+			values=values | set(v)
+		
+		steps=list(keys|values)
 	reverse = {}
 
 	for k,v in g.items():
@@ -53,16 +61,22 @@ def toposort(g, steps):
 					marked.append(m)
 		except KeyError:
 			pass
-		order.append(n)
+		if (n in steps):
+			order.append(n)
+
+	order.reverse()
+	order.extend(set(steps)-set(order))
 	return order
 
 class PlanetStackObserver:
-	sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps]
+	sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,GarbageCollector]
 
 	def __init__(self):
 		# The Condition object that gets signalled by Feefie events
+		self.step_lookup = {}
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
+		self.driver = OpenStackDriver()
 
 	def wait_for_event(self, timeout):
 		self.event_cond.acquire()
@@ -76,15 +90,15 @@ class PlanetStackObserver:
 		self.event_cond.release()
 
 	def load_sync_steps(self):
-		dep_path = Config().observer_dependency_path
+		dep_path = Config().observer_backend_dependency_graph
 		try:
 			# This contains dependencies between records, not sync steps
 			self.model_dependency_graph = json.loads(open(dep_path).read())
 		except Exception,e:
 			raise e
 
-		backend_path = Config().observer_backend_dependency_path
 		try:
+			backend_path = Config().observer_pl_dependency_graph
 			# This contains dependencies between backend records
 			self.backend_dependency_graph = json.loads(open(backend_path).read())
 		except Exception,e:
@@ -93,6 +107,7 @@ class PlanetStackObserver:
 
 		provides_dict = {}
 		for s in self.sync_steps:
+			self.step_lookup[s.__name__] = s 
 			for m in s.provides:
 				try:
 					provides_dict[m.__name__].append(s.__name__)
@@ -119,11 +134,11 @@ class PlanetStackObserver:
 				pass
 				# no dependencies, pass
 		
-		import pdb
-		pdb.set_trace()
+		#import pdb
+		#pdb.set_trace()
 		if (self.backend_dependency_graph):
 			backend_dict = {}
-			for s in sync_steps:
+			for s in self.sync_steps:
 				for m in s.serves:
 					backend_dict[m]=s.__name__
 					
@@ -144,29 +159,29 @@ class PlanetStackObserver:
 
 		dependency_graph = step_graph
 
-		self.ordered_steps = toposort(dependency_graph, self.sync_steps)
+		self.ordered_steps = toposort(dependency_graph, map(lambda s:s.__name__,self.sync_steps))
 		print "Order of steps=",self.ordered_steps
 		self.load_run_times()
 		
 
-	def check_duration(self):
+	def check_duration(self, step, duration):
 		try:
-			if (duration > S.deadline):
-				logger.info('Sync step %s missed deadline, took %.2f seconds'%(S.name,duration))
+			if (duration > step.deadline):
+				logger.info('Sync step %s missed deadline, took %.2f seconds'%(step.name,duration))
 		except AttributeError:
 			# S doesn't have a deadline
 			pass
 
 	def update_run_time(self, step):
-		self.last_run_times[step.name]=time.time()
+		self.last_run_times[step.__name__]=time.time()
 
 	def check_schedule(self, step):
-		time_since_last_run = time.time() - self.last_run_times[step.name]
+		time_since_last_run = time.time() - self.last_run_times.get(step.__name__, 0)
 		try:
 			if (time_since_last_run < step.requested_interval):
 				raise StepNotReady
 		except AttributeError:
-			logger.info('Step %s does not have requested_interval set'%step.name)
+			logger.info('Step %s does not have requested_interval set'%step.__name__)
 			raise StepNotReady
 	
 	def load_run_times(self):
@@ -176,8 +191,7 @@ class PlanetStackObserver:
 		except:
 			self.last_run_times={}
 			for e in self.ordered_steps:
-				self.last_run_times[e.name]=0
-
+				self.last_run_times[e]=0
 
 
 	def save_run_times(self):
@@ -185,19 +199,21 @@ class PlanetStackObserver:
 		open('/tmp/observer_run_times','w').write(run_times)
 
 	def check_class_dependency(self, step, failed_steps):
-		for failed_step in failed_steps:
-			if (failed_step in self.dependency_graph[step.name]):
-				raise StepNotReady
+        step.dependenices = []
+        for obj in step.provides:
+            step.dependenices.extend(self.model_dependency_graph.get(obj.__name__, []))
+        for failed_step in failed_steps:
+            if (failed_step in step.dependencies):
+                raise StepNotReady
 
 	def run(self):
-		if not self.manager.enabled or not self.manager.has_openstack:
+		if not self.driver.enabled or not self.driver.has_openstack:
 			return
-
 		while True:
 			try:
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
-				self.wait_for_event(timeout=300)
+				self.wait_for_event(timeout=30)
 				logger.info('Observer woke up')
 
 				# Set of whole steps that failed
@@ -207,10 +223,19 @@ class PlanetStackObserver:
 				failed_step_objects = []
 
 				for S in self.ordered_steps:
+					step = self.step_lookup[S]
 					start_time=time.time()
 					
-					sync_step = S()
-					sync_step.dependencies = self.dependencies[sync_step.name]
+					sync_step = step(driver=self.driver)
+					sync_step.__name__ = step.__name__
+					sync_step.dependencies = []
+					try:
+						mlist = sync_step.provides
+						
+						for m in mlist:
+							sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
+					except KeyError:
+						pass
 					sync_step.debug_mode = debug_mode
 
 					should_run = False
@@ -221,24 +246,28 @@ class PlanetStackObserver:
 						self.check_schedule(sync_step) # dont run sync_network_routes if time since last run < 1 hour
 						should_run = True
 					except StepNotReady:
-						logging.info('Step not ready: %s'%sync_step.name)
-						failed_steps.add(sync_step)
+						logging.info('Step not ready: %s'%sync_step.__name__)
+						failed_steps.append(sync_step)
 					except:
-						failed_steps.add(sync_step)
+						failed_steps.append(sync_step)
 
 					if (should_run):
 						try:
 							duration=time.time() - start_time
 
 							# ********* This is the actual sync step
+							#import pdb
+							#pdb.set_trace()
 							failed_objects = sync_step(failed=failed_step_objects)
 
 
-							check_deadline(sync_step, duration)
-							failed_step_objects.extend(failed_objects)
+							self.check_duration(sync_step, duration)
+							if failed_objects:
+								failed_step_objects.extend(failed_objects)
 							self.update_run_time(sync_step)
 						except:
-							failed_steps.add(S)
+							raise
+							failed_steps.append(S)
 				self.save_run_times()
 			except:
 				logger.log_exc("Exception in observer run loop")

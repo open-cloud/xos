@@ -8,6 +8,7 @@ class PlCoreBase(models.Model):
 
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
+	enacted = models.DateTimeField(null=True, default=None)
 
 	class Meta:
 		abstract = True
@@ -38,7 +39,11 @@ class PlCoreBase(models.Model):
 	def delete(self, *args, **kwds):
 		super(PlCoreBase, self).delete(*args, **kwds)
 
-#		EventSender().fire({'delete_flag':True,'model':self.__name__})
+		try:
+			EventSender().fire({'delete_flag':True,'model':self.__name__})
+		except:
+			# Investigate later. 
+			pass
 
 	def save(self, *args, **kwargs):
 		super(PlCoreBase, self).save(*args, **kwargs)

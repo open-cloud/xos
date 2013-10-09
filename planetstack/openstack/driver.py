@@ -1,6 +1,14 @@
 import commands
+import hashlib
 from planetstack.config import Config
-from openstack.client import OpenStackClient
+
+try:
+    from openstack.client import OpenStackClient
+    has_openstack = True
+except:
+    has_openstack = False
+
+manager_enabled = Config().api_nova_enabled
 
 class OpenStackDriver:
 
@@ -17,6 +25,24 @@ class OpenStackDriver:
             self.shell = client
         else:
             self.shell = OpenStackClient()
+
+        self.enabled = manager_enabled
+        self.has_openstack = has_openstack
+
+    def client_driver(self, caller=None, tenant=None):
+        if caller:
+            auth = {'username': caller.email,
+                    'password': hashlib.md5(caller.password).hexdigest()[:6],
+                    'tenant': tenant}
+            client = OpenStackClient(**auth)
+        else:
+            client = OpenStackClient(tenant=tenant)
+        driver = OpenStackDriver(client=client)
+        return driver
+
+    def admin_driver(self, tenant=None):
+        client = OpenStackClient(tenant=tenant)
+        driver = OpenStackDriver(client=client) 
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
@@ -358,18 +384,18 @@ class OpenStackDriver:
 
         return (subnet_id, subnet)
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None):
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None):
         flavor_name = self.config.nova_default_flavor
         flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
         #    image = self.config.nova_default_imave
         if not security_group:
-            security_group = self.config.nova_default_security_group 
+            security_group = self.config.nova_default_security_group
 
         files = {}
-        if pubkeys:    
+        if pubkeys:
             files['/root/.ssh/authorized_keys'] = "\n".join(pubkeys)
-       
+
         hints = {}
         availability_zone = None
         if hostname:
@@ -383,7 +409,8 @@ class OpenStackDriver:
                                             files=files,
                                             scheduler_hints=hints,
                                             availability_zone=availability_zone,
-                                            nics=nics)
+                                            nics=nics,
+                                            meta=metadata)
         return server
 
     def destroy_instance(self, id):

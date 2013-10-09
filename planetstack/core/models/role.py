@@ -8,6 +8,7 @@ from django.contrib.contenttypes import generic
 class Role(PlCoreBase):
 
     role_type = models.CharField(max_length=80, verbose_name="Name")
+    role = models.CharField(max_length=80, verbose_name="Keystone role id", null=True, blank=True)
     description = models.CharField(max_length=120, verbose_name="Description")
     content_type = models.ForeignKey(ContentType, verbose_name="Role Scope")
 
@@ -15,16 +16,8 @@ class Role(PlCoreBase):
 
 
     def save(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.save_role(self)
         super(Role, self).save(*args, **kwds)
     
     def delete(self, *args, **kwds):
-        if not hasattr(self, 'os_manager'):
-            from openstack.manager import OpenStackManager
-            setattr(self, 'os_manager', OpenStackManager())
-        self.os_manager.delete_role(self)   
         super(Role, self).delete(*args, **kwds)
             

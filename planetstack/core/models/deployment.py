@@ -15,6 +15,7 @@ class DeploymentRole(PlCoreBase):
 
     ROLE_CHOICES = (('admin','Admin'),)
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+    krole_id = models.CharField(max_length=80, verbose_name="Keystone role id", null=True, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.role)
 
