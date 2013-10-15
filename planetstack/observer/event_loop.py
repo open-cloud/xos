@@ -90,7 +90,7 @@ class PlanetStackObserver:
         self.event_cond.release()
 
     def load_sync_steps(self):
-        dep_path = Config().observer_backend_dependency_graph
+        dep_path = Config().observer_dependency_graph
         try:
             # This contains dependencies between records, not sync steps
             self.model_dependency_graph = json.loads(open(dep_path).read())
