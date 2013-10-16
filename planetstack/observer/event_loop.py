@@ -266,7 +266,6 @@ class PlanetStackObserver:
                                 failed_step_objects.extend(failed_objects)
                             self.update_run_time(sync_step)
                         except:
-                            raise
                             failed_steps.append(S)
                 self.save_run_times()
             except:
