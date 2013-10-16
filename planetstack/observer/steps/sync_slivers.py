@@ -4,6 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
+from core.models.slice import SlicePrivilege
 
 class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
@@ -24,7 +25,7 @@ class SyncSlivers(OpenStackSyncStep):
 
         return networks
 
-    def sync_record(self, slice):
+    def sync_record(self, sliver):
         metadata_update = {}
         if ("numberCores" in sliver.changed_fields):
             metadata_update["cpu_cores"] = str(sliver.numberCores)
@@ -36,7 +37,7 @@ class SyncSlivers(OpenStackSyncStep):
         if not sliver.instance_id:
             nics = self.get_requested_networks(sliver.slice)
             file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
-            slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
+            slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key)
             instance = self.driver.spawn_instance(name=sliver.name,
