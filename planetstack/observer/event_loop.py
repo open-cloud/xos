@@ -220,7 +220,7 @@ class PlanetStackObserver:
                 failed_steps = []
 
                 # Set of individual objects within steps that failed
-                failed_step_objects = []
+                failed_step_objects = set()
 
                 for S in self.ordered_steps:
                     step = self.step_lookup[S]
@@ -258,12 +258,12 @@ class PlanetStackObserver:
                             # ********* This is the actual sync step
                             #import pdb
                             #pdb.set_trace()
-                            failed_objects = sync_step(failed=failed_step_objects)
+                            failed_objects = sync_step(failed=list(failed_step_objects))
 
 
                             self.check_duration(sync_step, duration)
                             if failed_objects:
-                                failed_step_objects.extend(failed_objects)
+                                failed_step_objects.update(failed_objects)
                             self.update_run_time(sync_step)
                         except:
                             failed_steps.append(S)
