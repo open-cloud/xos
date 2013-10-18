@@ -2,6 +2,9 @@ import os
 import base64
 from datetime import datetime
 from planetstack.config import Config
+from util.logger import Logger, logging
+
+logger = Logger(logfile='observer.log', level=logging.INFO)
 
 class FailedDependency(Exception):
     pass
@@ -52,11 +55,12 @@ class SyncStep:
         for o in pending:
             try:
                 for f in failed:
-                    self.check_dependencies(o,f) # Raises exception if failed                    
+                    self.check_dependencies(o,f) # Raises exception if failed
                 self.sync_record(o)
                 o.enacted = datetime.now() # Is this the same timezone? XXX
                 o.save(update_fields=['enacted'])
             except:
+                logger.log_exc("sync step failed!")
                 failed.append(o)
 
         return failed
