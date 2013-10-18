@@ -5,6 +5,9 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice
+from util.logger import Logger, logging
+
+logger = Logger(logfile='observer.log', level=logging.INFO)
 
 class SyncSlices(OpenStackSyncStep):
     provides=[Slice]
@@ -23,8 +26,10 @@ class SyncSlices(OpenStackSyncStep):
         last_ip = IPAddress(ints[-1])
         last_network = IPNetwork(str(last_ip) + "/24")
         next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
+        return next_network
 
     def sync_record(self, slice):
+        logger.info("sync'ing slice %s" % slice.name)
         if not slice.tenant_id:
             nova_fields = {'tenant_name': slice.name,
                    'description': slice.description,
