@@ -71,7 +71,7 @@ class SyncSlices(OpenStackSyncStep):
 
 
         if slice.id and slice.tenant_id:
-            client_driver.update_tenant(slice.tenant_id,
+            self.driver.update_tenant(slice.tenant_id,
                                       description=slice.description,
                                       enabled=slice.enabled)   
 
