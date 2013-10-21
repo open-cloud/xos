@@ -48,7 +48,7 @@ class SyncStep:
         for dep in self.dependencies:
             peer_object = getattr(obj, dep.lower())
             if (peer_object.pk==failed.pk):
-                raise DependencyFailed
+                raise FailedDependency
 
     def call(self, failed=[]):
         pending = self.fetch_pending()

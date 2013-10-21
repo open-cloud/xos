@@ -12,7 +12,7 @@ class SyncSitePrivileges(OpenStackSyncStep):
     def fetch_pending(self):
         return SitePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
-    def sync_record(self, user):
+    def sync_record(self, site_priv):
         if site_priv.user.kuser_id and site_priv.site.tenant_id:
             self.driver.add_user_role(site_priv.user.kuser_id,
                                       site_priv.site.tenant_id,

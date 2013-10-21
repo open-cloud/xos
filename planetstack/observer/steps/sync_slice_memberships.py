@@ -12,7 +12,7 @@ class SyncSliceMemberships(OpenStackSyncStep):
     def fetch_pending(self):
         return SlicePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
-    def sync_record(self, user):
+    def sync_record(self, slice_memb):
         if slice_memb.user.kuser_id and slice_memb.slice.tenant_id:
                 self.driver.add_user_role(slice_memb.user.kuser_id,
                                           slice_memb.slice.tenant_id,
