@@ -4,7 +4,7 @@ from datetime import datetime
 from planetstack.config import Config
 from util.logger import Logger, logging
 
-logger = Logger(logfile='observer.log', level=logging.INFO)
+logger = Logger(level=logging.INFO)
 
 class FailedDependency(Exception):
     pass

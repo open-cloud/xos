@@ -8,7 +8,7 @@ from util.logger import Logger, logging
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import *
 
-logger = Logger(logfile='observer.log', level=logging.INFO)
+logger = Logger(level=logging.INFO)
 
 class GarbageCollector(OpenStackSyncStep):
     requested_interval = 86400

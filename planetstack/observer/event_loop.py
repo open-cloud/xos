@@ -17,7 +17,7 @@ from observer.steps import *
 
 debug_mode = False
 
-logger = Logger(logfile='observer.log', level=logging.INFO)
+logger = Logger(level=logging.INFO)
 
 class StepNotReady(Exception):
     pass
