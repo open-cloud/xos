@@ -20,6 +20,7 @@ setup(name='planetstack',
       scripts=['planetstack/planetstack-backend.py'],
       data_files=[
         ('/etc/planetstack/', ['planetstack/plstackapi_config']),
+        ('/lib/systemd/system/', ['planetstack/redhat/planetstack-backend.service']),
         ])
 
 copytree('planetstack/', '/opt/planetstack')
