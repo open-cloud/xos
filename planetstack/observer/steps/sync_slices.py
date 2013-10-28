@@ -7,7 +7,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice
 from util.logger import Logger, logging
 
-logger = Logger(logfile='observer.log', level=logging.INFO)
+logger = Logger(level=logging.INFO)
 
 class SyncSlices(OpenStackSyncStep):
     provides=[Slice]
@@ -51,7 +51,7 @@ class SyncSlices(OpenStackSyncStep):
             router = client_driver.create_router(slice.name)
             slice.router_id = router['id']
 
-            # create subnet
+            # create subnet for slice's private network
             next_subnet = self.get_next_subnet()
             cidr = str(next_subnet.cidr)
             ip_version = next_subnet.version
