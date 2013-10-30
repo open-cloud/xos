@@ -237,19 +237,25 @@ def GetConfiguration(name):
             'sites': sites,
             'nodes': nodes}
 
-def DoGetConfiguration():
+def HandleGetConfiguration():
     find_multi_slicename("princeton_vcoblitz")
-    slices = GetSlices()
-    nodes = GetNodes()
     configs={}
     for slicename in ["princeton_vcoblitz"]:
         configs[slicename] = GetConfiguration({"name": slicename})
+    return configs
 
-    result = {"configs": configs,
-              "slices": slices,
-              "nodes": nodes}
+def HandleGetNodes():
+    find_multi_slicename("princeton_vcoblitz")
+    return GetNodes()
 
-    return result
+def HandleGetSlices():
+    find_multi_slicename("princeton_vcoblitz")
+    return GetSlices()
+
+
+FUNCS = {"GetConfiguration": HandleGetConfiguration,
+         "GetNodes": HandleGetNodes,
+         "GetSlices": HandleGetSlices}
 
 @csrf_exempt
 def LegacyXMLRPC(request):
@@ -257,8 +263,8 @@ def LegacyXMLRPC(request):
         try:
             (args, method) = xmlrpclib.loads(request.body)
             result = None
-            if (method == "GetConfiguration"):
-                result = DoGetConfiguration()
+            if method in FUNCS:
+                result = FUNCS[method]()
             return HttpResponse(xmlrpclib.dumps((result,), methodresponse=True, allow_none=1))
         except:
             traceback.print_exc()
