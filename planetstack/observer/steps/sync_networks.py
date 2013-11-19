@@ -4,6 +4,9 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
+from util.logger import Logger, logging
+
+logger = Logger(level=logging.INFO)
 
 class SyncNetworks(OpenStackSyncStep):
     provides=[Network]
@@ -47,7 +50,7 @@ class SyncNetworks(OpenStackSyncStep):
                 # add external route
                 self.driver.add_external_route(subnet)
 
-    def sync_record(self, site):
+    def sync_record(self, network):
         if network.owner and network.owner.creator:
             try:
                 # update manager context
