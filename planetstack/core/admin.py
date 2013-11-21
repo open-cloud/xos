@@ -867,14 +867,23 @@ class NetworkSlicesInline(admin.TabularInline):
     verbose_name = "Slice"
     suit_classes = 'suit-tab suit-tab-networkslices'
 
+class NetworkForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            'deployment': LinkedSelect,
+            'site': LinkedSelect,
+        }
+
 class NetworkAdmin(admin.ModelAdmin):
+    form = NetworkForm
     list_display = ("name", "subnet", "ports", "labels")
+    list_filter = ('deployment', )
     readonly_fields = ("subnet", )
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
 
     fieldsets = [
-        (None, {'fields': ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','site','deployment','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
 
     suit_form_tabs =(
         ('general','Network Details'),

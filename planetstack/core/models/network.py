@@ -1,7 +1,7 @@
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver
+from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
@@ -26,6 +26,8 @@ class NetworkTemplate(PlCoreBase):
 class Network(PlCoreBase):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
+    deployment = models.ForeignKey(Deployment, related_name="networks", help_text="Deployment this Network belongs to")
+    site = models.ForeignKey(Site, blank=True, null=True, default=None, related_name="networks", help_text="Is this an infrastructure Network at a single Site?")
     subnet = models.CharField(max_length=32, blank=True)
     ports = models.CharField(max_length=1024, blank=True, null=True)
     labels = models.CharField(max_length=1024, blank=True, null=True)
