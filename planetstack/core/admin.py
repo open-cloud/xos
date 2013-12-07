@@ -902,6 +902,72 @@ def cache_credentials(sender, user, request, **kwds):
     request.session['auth'] = auth
 user_logged_in.connect(cache_credentials)
 
+class InvoiceInline(admin.TabularInline):
+    model = Invoice
+    extra = 1
+    verbose_name_plural = "Invoices"
+    verbose_name = "Invoice"
+    exclude = ['enacted']
+    fields = ["date", "amount"]
+    readonly_fields = ["date", "amount"]
+    suit_classes = 'suit-tab suit-tab-accountinvoice'
+
+class InvoiceChargeInline(admin.TabularInline):
+    model = Charge
+    extra = 1
+    verbose_name_plural = "Charges"
+    verbose_name = "Charge"
+    exclude = ['enacted']
+    readonly_fields = ["date", "kind", "state", "object", "coreHours", "amount", "slice"]
+
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ("date", "account")
+
+    inlines = [InvoiceChargeInline]
+
+    fields = ["date", "account", "amount"]
+    readonly_fields = ["date", "account", "amount"]
+
+class PendingChargeInline(admin.TabularInline):
+    model = Charge
+    extra = 1
+    verbose_name_plural = "Charges"
+    verbose_name = "Charge"
+    exclude = ['enacted', "invoice"]
+    readonly_fields = ["date", "kind", "state", "object", "coreHours", "amount", "slice"]
+    suit_classes = 'suit-tab suit-tab-accountpendingcharges'
+
+    def queryset(self, request):
+        qs = super(PendingChargeInline, self).queryset(request)
+        qs = qs.filter(state="pending")
+        return qs
+
+class PaymentInline(admin.TabularInline):
+    model=Payment
+    extra = 1
+    verbose_name_plural = "Payments"
+    verbose_name = "Payment"
+    exclude = ['enacted']
+    readonly_fields = ["date", "amount"]
+    suit_classes = 'suit-tab suit-tab-accountpayments'
+
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ("site", "balance_due")
+
+    inlines = [InvoiceInline, PaymentInline, PendingChargeInline]
+
+    fieldsets = [
+        (None, {'fields': ['site', 'balance_due', 'total_invoices', 'total_payments']})] # ,'classes':['suit-tab suit-tab-general']}),]
+
+    readonly_fields = ['site', 'balance_due', 'total_invoices', 'total_payments']
+
+    suit_form_tabs =(
+        ('general','Account Details'),
+        ('accountinvoice', 'Invoices'),
+        ('accountpayments', 'Payments'),
+        ('accountpendingcharges','Pending Charges'),
+    )
+
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
@@ -918,6 +984,9 @@ admin.site.unregister(Evolution)
 # When debugging it is often easier to see all the classes, but for regular use 
 # only the top-levels should be displayed
 showAll = True
+
+admin.site.register(Account, AccountAdmin)
+#admin.site.register(Invoice, InvoiceAdmin)
 
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
