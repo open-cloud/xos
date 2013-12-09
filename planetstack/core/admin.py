@@ -902,19 +902,31 @@ def cache_credentials(sender, user, request, **kwds):
     request.session['auth'] = auth
 user_logged_in.connect(cache_credentials)
 
-class InvoiceInline(admin.TabularInline):
-    model = Invoice
-    extra = 1
-    verbose_name_plural = "Invoices"
-    verbose_name = "Invoice"
-    exclude = ['enacted']
-    fields = ["date", "amount"]
-    readonly_fields = ["date", "amount"]
-    suit_classes = 'suit-tab suit-tab-accountinvoice'
+def dollar_field(fieldName, short_description):
+    def newFunc(self, obj):
+        try:
+            x= "$ %0.2f" % float(getattr(obj, fieldName, 0.0))
+        except:
+            x=getattr(obj, fieldName, 0.0)
+        return x
+    newFunc.short_description = short_description
+    return newFunc
+
+def right_dollar_field(fieldName, short_description):
+    def newFunc(self, obj):
+        try:
+            #x= '<div align=right style="width:6em">$ %0.2f</div>' % float(getattr(obj, fieldName, 0.0))
+            x= '<div align=right>$ %0.2f</div>' % float(getattr(obj, fieldName, 0.0))
+        except:
+            x=getattr(obj, fieldName, 0.0)
+        return x
+    newFunc.short_description = short_description
+    newFunc.allow_tags = True
+    return newFunc
 
 class InvoiceChargeInline(admin.TabularInline):
     model = Charge
-    extra = 1
+    extra = 0
     verbose_name_plural = "Charges"
     verbose_name = "Charge"
     exclude = ['enacted']
@@ -928,19 +940,38 @@ class InvoiceAdmin(admin.ModelAdmin):
     fields = ["date", "account", "amount"]
     readonly_fields = ["date", "account", "amount"]
 
+class InvoiceInline(admin.TabularInline):
+    model = Invoice
+    extra = 0
+    verbose_name_plural = "Invoices"
+    verbose_name = "Invoice"
+    exclude = ['enacted']
+    fields = ["date", "dollar_amount"]
+    readonly_fields = ["date", "dollar_amount"]
+    suit_classes = 'suit-tab suit-tab-accountinvoice'
+    can_delete=False
+    max_num=0
+
+    dollar_amount = right_dollar_field("amount", "Amount")
+
 class PendingChargeInline(admin.TabularInline):
     model = Charge
-    extra = 1
+    extra = 0
     verbose_name_plural = "Charges"
     verbose_name = "Charge"
     exclude = ['enacted', "invoice"]
-    readonly_fields = ["date", "kind", "state", "object", "coreHours", "amount", "slice"]
+    fields = ["date", "kind", "state", "object", "coreHours", "dollar_amount", "slice"]
+    readonly_fields = ["date", "kind", "state", "object", "coreHours", "dollar_amount", "slice"]
     suit_classes = 'suit-tab suit-tab-accountpendingcharges'
+    can_delete=False
+    max_num=0
 
     def queryset(self, request):
         qs = super(PendingChargeInline, self).queryset(request)
         qs = qs.filter(state="pending")
         return qs
+
+    dollar_amount = right_dollar_field("amount", "Amount")
 
 class PaymentInline(admin.TabularInline):
     model=Payment
@@ -948,8 +979,14 @@ class PaymentInline(admin.TabularInline):
     verbose_name_plural = "Payments"
     verbose_name = "Payment"
     exclude = ['enacted']
-    readonly_fields = ["date", "amount"]
+    fields = ["date", "dollar_amount"]
+    readonly_fields = ["date", "dollar_amount"]
     suit_classes = 'suit-tab suit-tab-accountpayments'
+    can_delete=False
+    max_num=0
+
+    dollar_amount = right_dollar_field("amount", "Amount")
+
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ("site", "balance_due")
@@ -957,9 +994,9 @@ class AccountAdmin(admin.ModelAdmin):
     inlines = [InvoiceInline, PaymentInline, PendingChargeInline]
 
     fieldsets = [
-        (None, {'fields': ['site', 'balance_due', 'total_invoices', 'total_payments']})] # ,'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['site', 'dollar_balance_due', 'dollar_total_invoices', 'dollar_total_payments']})] # ,'classes':['suit-tab suit-tab-general']}),]
 
-    readonly_fields = ['site', 'balance_due', 'total_invoices', 'total_payments']
+    readonly_fields = ['site', 'dollar_balance_due', 'dollar_total_invoices', 'dollar_total_payments']
 
     suit_form_tabs =(
         ('general','Account Details'),
@@ -967,6 +1004,10 @@ class AccountAdmin(admin.ModelAdmin):
         ('accountpayments', 'Payments'),
         ('accountpendingcharges','Pending Charges'),
     )
+
+    dollar_balance_due = dollar_field("balance_due", "Balance Due")
+    dollar_total_invoices = dollar_field("total_invoices", "Total Invoices")
+    dollar_total_payments = dollar_field("total_payments", "Total Payments")
 
 
 # Now register the new UserAdmin...
