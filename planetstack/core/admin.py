@@ -282,7 +282,7 @@ class ServiceAdmin(PlanetStackBaseAdmin):
 
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location', 'accountLink'], 'classes':['suit-tab suit-tab-general']}),
+        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink', 'location'], 'classes':['suit-tab suit-tab-general']}),
         ('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
     suit_form_tabs =(('general', 'Site Details'),
@@ -942,16 +942,23 @@ class InvoiceChargeInline(admin.TabularInline):
     extra = 0
     verbose_name_plural = "Charges"
     verbose_name = "Charge"
-    exclude = ['enacted']
-    readonly_fields = ["date", "kind", "state", "object", "coreHours", "amount", "slice"]
+    exclude = ['enacted', 'account']
+    fields = ["date", "kind", "state", "object", "coreHours", "dollar_amount", "slice"]
+    readonly_fields = ["date", "kind", "state", "object", "coreHours", "dollar_amount", "slice"]
+    can_delete = False
+    max_num = 0
+
+    dollar_amount = right_dollar_field("amount", "Amount")
 
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ("date", "account")
 
     inlines = [InvoiceChargeInline]
 
-    fields = ["date", "account", "amount"]
-    readonly_fields = ["date", "account", "amount"]
+    fields = ["date", "account", "dollar_amount"]
+    readonly_fields = ["date", "account", "dollar_amount"]
+
+    dollar_amount = dollar_field("amount", "Amount")
 
 class InvoiceInline(admin.TabularInline):
     model = Invoice
@@ -959,13 +966,20 @@ class InvoiceInline(admin.TabularInline):
     verbose_name_plural = "Invoices"
     verbose_name = "Invoice"
     exclude = ['enacted']
-    fields = ["date", "dollar_amount"]
-    readonly_fields = ["date", "dollar_amount"]
+    fields = ["date", "dollar_amount", "invoiceLink"]
+    readonly_fields = ["date", "dollar_amount", "invoiceLink"]
     suit_classes = 'suit-tab suit-tab-accountinvoice'
     can_delete=False
     max_num=0
 
     dollar_amount = right_dollar_field("amount", "Amount")
+
+    def invoiceLink(self, obj):
+        reverse_path = "admin:core_invoice_change"
+        url = reverse(reverse_path, args =(obj.id,))
+        return "<a href='%s'>%s</a>" % (url, "details")
+    invoiceLink.allow_tags = True
+    invoiceLink.short_description = "Details"
 
 class PendingChargeInline(admin.TabularInline):
     model = Charge
@@ -1040,7 +1054,7 @@ admin.site.unregister(Evolution)
 showAll = True
 
 admin.site.register(Account, AccountAdmin)
-#admin.site.register(Invoice, InvoiceAdmin)
+admin.site.register(Invoice, InvoiceAdmin)
 
 admin.site.register(Deployment, DeploymentAdmin)
 admin.site.register(Site, SiteAdmin)
