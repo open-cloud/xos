@@ -12,6 +12,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 from suit.widgets import LinkedSelect
 
 import django_evolution 
@@ -281,7 +282,7 @@ class ServiceAdmin(PlanetStackBaseAdmin):
 
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location'], 'classes':['suit-tab suit-tab-general']}),
+        (None, {'fields': ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'location', 'accountLink'], 'classes':['suit-tab suit-tab-general']}),
         ('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
     suit_form_tabs =(('general', 'Site Details'),
@@ -289,9 +290,10 @@ class SiteAdmin(PlanetStackBaseAdmin):
         ('siteprivileges','Privileges'),
         ('deployments','Deployments'),
         ('slices','Slices'),
-        ('nodes','Nodes'), 
+        ('nodes','Nodes'),
         ('tags','Tags'),
     )
+    readonly_fields = ['accountLink']
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
     inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline]
@@ -325,6 +327,17 @@ class SiteAdmin(PlanetStackBaseAdmin):
             if isinstance(inline, SliverInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
+
+    def accountLink(self, obj):
+        link_obj = obj.accounts.all()
+        if link_obj:
+            reverse_path = "admin:core_account_change"
+            url = reverse(reverse_path, args =(link_obj[0].id,))
+            return "<a href='%s'>%s</a>" % (url, "view billing details")
+        else:
+            return "no billing data for this site"
+    accountLink.allow_tags = True
+    accountLink.short_description = "Billing"
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
