@@ -5,12 +5,15 @@ import sys
 import time
 import traceback
 import xmlrpclib
+
+#  XXX for testing
+#sys.path.append("/opt/planetstack")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-slice_name_map = {}
 
 def ps_id_to_pl_id(x):
     # Since we don't want the PlanetStack object IDs to conflict with existing
@@ -21,15 +24,19 @@ def ps_id_to_pl_id(x):
 def pl_id_to_ps_id(x):
     return x - 100000
 
-def pl_slice_id(slice):
-    if slice.name.startswith("princeton_vcoblitz"):
-        # 70 is the slice id of princeton_vcoblitz on vicci
-        return 70
+# slice_remap is a dict of ps_slice_name -> (pl_slice_name, pl_slice_id)
+
+def pl_slice_id(slice, slice_remap={}):
+    if slice.name in slice_remap:
+        return int(slice_remap[slice.name][1])
     else:
         return ps_id_to_pl_id(slice.id)
 
-def ps_slicename_to_pl_slicename(x):
-    return slice_name_map.get(x,x)
+def pl_slicename(slice, slice_remap={}):
+    if slice.name in slice_remap:
+        return slice_remap[slice.name][0]
+    else:
+        return slice.name
 
 def filter_fields(src, fields):
     dest = {}
@@ -38,17 +45,23 @@ def filter_fields(src, fields):
             dest[key] = value
     return dest
 
-def GetSlices(filter={}):
-    ps_slices = Slice.objects.filter(**filter)
+def GetSlices(filter={}, slice_remap={}):
+    #ps_slices = Slice.objects.filter(**filter)
+    ps_slices = Slice.objects.all()
     slices = []
     for ps_slice in ps_slices:
+        if (filter) and ("name" in filter):
+            remapped_name = slice_remap.get(ps_slice.name, (ps_slice.name,))[0]
+            if (remapped_name != filter["name"]):
+                continue
+
         node_ids=[]
         for ps_sliver in ps_slice.slivers.all():
             node_ids.append(ps_id_to_pl_id(ps_sliver.node.id))
 
         slice = {"instantiation": "plc-instantiated",
                  "description": "planetstack slice",
-                 "slice_id": pl_slice_id(ps_slice),
+                 "slice_id": pl_slice_id(ps_slice, slice_remap),
                  "node_ids": node_ids,
                  "url": "planetstack",
                  "max_nodes": 1000,
@@ -56,14 +69,15 @@ def GetSlices(filter={}):
                  "slice_tag_ids": [],
                  "peer_id": None,
                  "site_id": ps_id_to_pl_id(ps_slice.site_id),
-                 "name": ps_slicename_to_pl_slicename(ps_slice.name)}
+                 "name": pl_slicename(ps_slice, slice_remap),
+                 "planetstack_name": ps_slice.name}
 
                  # creator_person_id, person_ids, expires, created
 
         slices.append(slice)
     return slices
 
-def GetNodes(node_ids=None, fields=None):
+def GetNodes(node_ids=None, fields=None, slice_remap={}):
     if node_ids:
         ps_nodes = Node.objects.filter(id__in=[pl_id_to_ps_id(nid) for nid in node_ids])
     else:
@@ -72,7 +86,7 @@ def GetNodes(node_ids=None, fields=None):
     for ps_node in ps_nodes:
         slice_ids=[]
         for ps_sliver in ps_node.slivers.all():
-            slice_ids.append(pl_slice_id(ps_sliver.slice))
+            slice_ids.append(pl_slice_id(ps_sliver.slice, slice_remap))
 
         node = {"node_id": ps_id_to_pl_id(ps_node.id),
                 "site_id": ps_id_to_pl_id(ps_node.site_id),
@@ -99,18 +113,17 @@ def GetNodes(node_ids=None, fields=None):
 def GetTags(slicename,node_id):
     return {}
 
-def GetSites():
+def GetSites(slice_remap={}):
     ps_sites = Site.objects.all()
     sites = []
     for ps_site in ps_sites:
         slice_ids=[]
         for ps_slice in ps_site.slices.all():
-            slice_ids.append(pl_slice_id(ps_slice))
+            slice_ids.append(pl_slice_id(ps_slice, slice_remap))
 
         node_ids=[]
         for ps_node in ps_site.nodes.all():
             node_ids.append(ps_id_to_pl_id(ps_node.id))
-
 
         site = {"site_id": ps_id_to_pl_id(ps_site.id),
                 "node_ids": node_ids,
@@ -164,34 +177,16 @@ def GetInterfaces(slicename, node_ids):
                 interfaces.append(interface)
     return interfaces
 
-def find_multi_slicename(orig_slicename):
-    """
-         Because we sometimes have issues deleting a slice in planetstack and
-         creating a new one, allow us to use a prefix match, that way someone
-         can put a version number of the end of the slicename
-    """
-    global slice_name_map
-    slices = Slice.objects.filter()
-    for slice in slices:
-        if slice.name.startswith(orig_slicename):
-            slice_name_map[slice.name] = orig_slicename
-            return slice.name
-
-    return orig_slicename
-
-
-def GetConfiguration(name):
+def GetConfiguration(name, slice_remap={}):
     slicename = name["name"]
     if "node_id" in name:
         node_id = name["node_id"]
     else:
         node_id = 0
 
-    slicename = find_multi_slicename(slicename)
-
     node_sliver_tags = GetTags(slicename, node_id)
 
-    slices = GetSlices({"name": slicename})
+    slices = GetSlices({"name": slicename}, slice_remap=slice_remap)
     perhost = {}
     allinterfaces = {}
     hostipmap = {}
@@ -199,12 +194,13 @@ def GetConfiguration(name):
     if len(slices)==1:
         slice = slices[0]
         node_ids = slice['node_ids']
-        nodes = GetNodes(node_ids, ['hostname', 'node_id', 'site_id'])
+        nodes = GetNodes(node_ids, ['hostname', 'node_id', 'site_id'], slice_remap=slice_remap)
         nodemap = {}
         for node in nodes:
             nodemap[node['node_id']]=node['hostname']
 
-        interfaces = GetInterfaces(slicename, node_ids)
+        interfaces = GetInterfaces(slice["planetstack_name"], node_ids)
+        print "XXX", interfaces
         hostipmap = {}
         for interface in interfaces:
             if nodemap[interface['node_id']] not in allinterfaces:
@@ -218,11 +214,11 @@ def GetConfiguration(name):
             sliver_tags = GetTags(slicename,nid)
             perhost[nodemap[nid]] = sliver_tags
 
-    slivers = GetSlices()
+    slivers = GetSlices(slice_remap=slice_remap)
     if node_id != 0:
         slivers = [slice for slice in slivers if (node_id in slice.node_ids)]
 
-    sites = GetSites()
+    sites = GetSites(slice_remap=slice_remap)
     for site in sites:
         site["site_tags"] = []
 
@@ -237,25 +233,35 @@ def GetConfiguration(name):
             'sites': sites,
             'nodes': nodes}
 
-def HandleGetConfiguration():
-    find_multi_slicename("princeton_vcoblitz")
+DEFAULT_REMAP = {"princeton_vcoblitz2": ["princeton_vcoblitz", 70]}
+
+def HandleGetConfiguration1():
     configs={}
     for slicename in ["princeton_vcoblitz"]:
-        configs[slicename] = GetConfiguration({"name": slicename})
+        configs[slicename] = GetConfiguration({"name": slicename}, DEFAULT_REMAP)
     return configs
 
-def HandleGetNodes():
-    find_multi_slicename("princeton_vcoblitz")
-    return GetNodes()
+def HandleGetNodes1():
+    return GetNodes(slice_remap=DEFAULT_REMAP)
 
-def HandleGetSlices():
-    find_multi_slicename("princeton_vcoblitz")
-    return GetSlices()
+def HandleGetSlices1():
+    return GetSlices(slice_remap=DEFAULT_REMAP)
 
+def HandleGetConfiguration2(name, slice_remap):
+    return GetConfiguration(name, slice_remap=slice_remap)
 
-FUNCS = {"GetConfiguration": HandleGetConfiguration,
-         "GetNodes": HandleGetNodes,
-         "GetSlices": HandleGetSlices}
+def HandleGetNodes2(slice_remap):
+    return GetNodes(slice_remap=slice_remap)
+
+def HandleGetSlices2(slice_remap):
+    return GetSlices(slice_remap=slice_remap)
+
+FUNCS = {"GetConfiguration": HandleGetConfiguration1,
+         "GetNodes": HandleGetNodes1,
+         "GetSlices": HandleGetSlices1,
+         "GetConfiguration2": HandleGetConfiguration2,
+         "GetNodes2": HandleGetNodes2,
+         "GetSlices2": HandleGetSlices2}
 
 @csrf_exempt
 def LegacyXMLRPC(request):
@@ -264,7 +270,7 @@ def LegacyXMLRPC(request):
             (args, method) = xmlrpclib.loads(request.body)
             result = None
             if method in FUNCS:
-                result = FUNCS[method]()
+                result = FUNCS[method](*args)
             return HttpResponse(xmlrpclib.dumps((result,), methodresponse=True, allow_none=1))
         except:
             traceback.print_exc()
@@ -273,20 +279,17 @@ def LegacyXMLRPC(request):
         return HttpResponse("Not Implemented")
 
 if __name__ == '__main__':
-    find_multi_slicename("princeton_vcoblitz")  # set up the mapping for princeton_vcoblitz2 -> princeton_vcoblitz
-
-    slices = GetSlices()
-    nodes = GetNodes()
+    slices = GetSlices(slice_remap = DEFAULT_REMAP)
+    nodes = GetNodes(slice_remap = DEFAULT_REMAP)
 
     if ("-d" in sys.argv):
-        config = GetConfiguration({"name": "princeton_vcoblitz"})
+        config = GetConfiguration({"name": "princeton_vcoblitz"}, slice_remap = DEFAULT_REMAP)
         print config
         print slices
         print nodes
     else:
         configs={}
-        for slicename in ["princeton_vcoblitz"]:
-            configs[slicename] = GetConfiguration({"name": slicename})
+        configs[slicename] = GetConfiguration({"name": "princeton_vcoblitz"})
 
         file("planetstack_config","w").write(json.dumps(configs))
         file("planetstack_slices","w").write(json.dumps(slices))
