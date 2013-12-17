@@ -19,7 +19,7 @@ class Slice(PlCoreBase):
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
-    site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Node belongs too")
+    site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
