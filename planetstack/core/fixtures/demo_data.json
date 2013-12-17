@@ -375,15 +375,15 @@
     "pk": 22, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-06-21T21:17:13.982Z", 
+        "updated": "2013-12-16T23:46:40.131Z", 
         "name": "ON.Lab", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
-        "site_url": "http://www.internet2.edu", 
+        "site_url": "http://www.internet2.edu/", 
         "login_base": "onlab", 
-        "location": "47.6531,-122.313", 
+        "location": "37.452955,-122.181766", 
         "latitude": null, 
         "is_public": true, 
         "deployments": [
@@ -394,6 +394,25 @@
             9, 
             10
         ], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 23, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-12-17T17:10:48.731Z", 
+        "name": "I2 Singapore", 
+        "created": "2013-12-17T17:08:49.669Z", 
+        "tenant_id": null, 
+        "enabled": true, 
+        "longitude": null, 
+        "site_url": "http://www.internet2.edu/", 
+        "login_base": "i2singapore", 
+        "location": "1.33544,103.88999999999999", 
+        "latitude": null, 
+        "is_public": true, 
+        "deployments": [], 
         "abbreviated_name": ""
     }
 },
@@ -577,7 +596,7 @@
         "phone": null, 
         "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2013-12-04T20:46:13.536Z", 
+        "last_login": "2013-12-17T16:21:46.493Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -589,24 +608,24 @@
     "pk": 6, 
     "model": "core.user", 
     "fields": {
-        "username": "jude@onlab.us", 
-        "public_key": null, 
-        "updated": "2013-09-22T21:47:30.993Z", 
+        "username": "jcnelson@cs.princeton.edu", 
+        "public_key": "", 
+        "updated": "2013-12-16T15:44:27.429Z", 
         "is_readonly": false, 
         "firstname": "Jude", 
         "user_url": null, 
         "lastname": "Nelson", 
         "created": "2013-09-22T21:47:30.959Z", 
         "is_active": true, 
-        "site": 22, 
-        "phone": null, 
+        "site": 10, 
+        "phone": "", 
         "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
-        "email": "jude@onlab.us", 
+        "email": "jcnelson@cs.princeton.edu", 
         "enacted": null
     }
 },
@@ -5132,6 +5151,50 @@
         "deployment": 10, 
         "name": "node2.wash.internet2.vini-veritas.net", 
         "created": "2013-04-03T23:14:11.072Z"
+    }
+},
+{
+    "pk": 752, 
+    "model": "core.node", 
+    "fields": {
+        "site": 23, 
+        "updated": "2013-12-17T17:10:48.740Z", 
+        "deployment": 10, 
+        "name": "opencloud0.sing.internet2.edu", 
+        "created": "2013-12-17T17:10:48.740Z"
+    }
+},
+{
+    "pk": 753, 
+    "model": "core.node", 
+    "fields": {
+        "site": 23, 
+        "updated": "2013-12-17T17:10:48.742Z", 
+        "deployment": 10, 
+        "name": "opencloud1.sing.internet2.edu", 
+        "created": "2013-12-17T17:10:48.741Z"
+    }
+},
+{
+    "pk": 754, 
+    "model": "core.node", 
+    "fields": {
+        "site": 23, 
+        "updated": "2013-12-17T17:10:48.742Z", 
+        "deployment": 10, 
+        "name": "opencloud2.sing.internet2.edu", 
+        "created": "2013-12-17T17:10:48.742Z"
+    }
+},
+{
+    "pk": 755, 
+    "model": "core.node", 
+    "fields": {
+        "site": 23, 
+        "updated": "2013-12-17T17:10:48.743Z", 
+        "deployment": 10, 
+        "name": "opencloud3.sing.internet2.edu", 
+        "created": "2013-12-17T17:10:48.743Z"
     }
 },
 {
