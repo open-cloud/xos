@@ -39,32 +39,6 @@
     }
 },
 {
-    "pk": 6, 
-    "model": "core.service", 
-    "fields": {
-        "updated": "2013-12-12T00:00:42.038Z", 
-        "description": "HPC Service", 
-        "created": "2013-12-12T00:00:42.038Z", 
-        "enabled": true, 
-        "versionNumber": "2.8", 
-        "published": true, 
-        "name": "coblitz"
-    }
-},
-{
-    "pk": 7, 
-    "model": "core.service", 
-    "fields": {
-        "updated": "2013-12-12T00:04:22.009Z", 
-        "description": "Request Router Service", 
-        "created": "2013-12-12T00:04:03.740Z", 
-        "enabled": true, 
-        "versionNumber": "2.8", 
-        "published": true, 
-        "name": "Request Router"
-    }
-},
-{
     "pk": 8, 
     "model": "core.service", 
     "fields": {
@@ -81,14 +55,14 @@
     "pk": 8, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-05T01:40:10.294Z", 
+        "updated": "2013-12-17T18:00:47.910Z", 
         "name": "Stanford", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.stanford.edu/", 
-        "login_base": "usstanford", 
+        "login_base": "stanford", 
         "location": "37.4294,-122.17200000000003", 
         "latitude": null, 
         "is_public": true, 
@@ -102,14 +76,14 @@
     "pk": 9, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-05T01:39:55.076Z", 
+        "updated": "2013-12-17T18:00:38.431Z", 
         "name": "Washington", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "https://www.washington.edu/", 
-        "login_base": "uswash", 
+        "login_base": "wash", 
         "location": "47.6531,-122.31299999999999", 
         "latitude": null, 
         "is_public": true, 
@@ -123,14 +97,14 @@
     "pk": 10, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-05T01:39:17.419Z", 
+        "updated": "2013-12-17T18:00:28.495Z", 
         "name": "Princeton", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://princeton.edu/", 
-        "login_base": "usprinceton", 
+        "login_base": "princeton", 
         "location": "40.3502,-74.6524", 
         "latitude": null, 
         "is_public": true, 
@@ -144,14 +118,14 @@
     "pk": 11, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-05T01:40:36.873Z", 
+        "updated": "2013-12-17T18:00:18.964Z", 
         "name": "GeorgiaTech", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.gatech.edu/", 
-        "login_base": "usgt", 
+        "login_base": "gt", 
         "location": "33.7772,-84.39760000000001", 
         "latitude": null, 
         "is_public": true, 
@@ -165,14 +139,14 @@
     "pk": 12, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-05T01:40:52.585Z", 
+        "updated": "2013-12-17T18:00:07.704Z", 
         "name": "MaxPlanck", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.mpi-sws.mpg.de/", 
-        "login_base": "eumpisws", 
+        "login_base": "mpisws", 
         "location": "49.14,6.588999999999942", 
         "latitude": null, 
         "is_public": true, 
@@ -375,15 +349,15 @@
     "pk": 22, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-16T23:46:40.131Z", 
+        "updated": "2013-12-17T17:30:14.491Z", 
         "name": "ON.Lab", 
         "created": "2013-04-03T23:14:11.072Z", 
         "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
-        "site_url": "http://www.internet2.edu/", 
+        "site_url": "http://www.onlab.us/", 
         "login_base": "onlab", 
-        "location": "37.452955,-122.181766", 
+        "location": "37.452955,-122.18176599999998", 
         "latitude": null, 
         "is_public": true, 
         "deployments": [
@@ -401,7 +375,7 @@
     "pk": 23, 
     "model": "core.site", 
     "fields": {
-        "updated": "2013-12-17T17:10:48.731Z", 
+        "updated": "2013-12-17T18:21:43.870Z", 
         "name": "I2 Singapore", 
         "created": "2013-12-17T17:08:49.669Z", 
         "tenant_id": null, 
@@ -412,8 +386,38 @@
         "location": "1.33544,103.88999999999999", 
         "latitude": null, 
         "is_public": true, 
+        "deployments": [
+            10
+        ], 
+        "abbreviated_name": ""
+    }
+},
+{
+    "pk": 24, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2013-12-17T18:08:01.373Z", 
+        "name": "Arizona", 
+        "created": "2013-12-17T18:07:14.190Z", 
+        "tenant_id": null, 
+        "enabled": true, 
+        "longitude": null, 
+        "site_url": "http://www.cs.arizona.edu/", 
+        "login_base": "arizona", 
+        "location": "32.2333,-110.94799999999998", 
+        "latitude": null, 
+        "is_public": true, 
         "deployments": [], 
         "abbreviated_name": ""
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.siterole", 
+    "fields": {
+        "updated": "2013-12-17T18:08:54.842Z", 
+        "role": "pi", 
+        "created": "2013-12-17T18:08:54.842Z"
     }
 },
 {
@@ -468,15 +472,6 @@
         "updated": "2013-04-03T22:57:23.015Z", 
         "name": "Internet2", 
         "created": "2013-04-03T22:57:23.015Z"
-    }
-},
-{
-    "pk": 11, 
-    "model": "core.deployment", 
-    "fields": {
-        "updated": "2013-12-13T04:59:43.680Z", 
-        "name": "washington", 
-        "created": "2013-12-13T04:59:43.680Z"
     }
 },
 {
@@ -571,7 +566,7 @@
         "phone": null, 
         "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2013-12-04T20:46:13.172Z", 
+        "last_login": "2013-12-17T18:22:01.970Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -646,7 +641,7 @@
         "phone": "", 
         "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2013-12-06T21:20:46.483Z", 
+        "last_login": "2013-12-17T17:29:10.464Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -821,11 +816,36 @@
         "phone": "", 
         "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2013-12-06T21:15:43.463Z", 
+        "last_login": "2013-12-17T18:54:01.976Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$jaLSTW2ksHEN$HDpjDKieFDjMvtV5wbF/ow3zfq8EqcFtNXLfuo+150s=", 
         "email": "demo@onlab.us", 
+        "enacted": null
+    }
+},
+{
+    "pk": 15, 
+    "model": "core.user", 
+    "fields": {
+        "username": "jhh@cs.arizona.edu", 
+        "public_key": "", 
+        "updated": "2013-12-17T18:08:58.288Z", 
+        "is_readonly": false, 
+        "firstname": "John", 
+        "user_url": null, 
+        "lastname": "Hartman", 
+        "created": "2013-12-17T18:08:01.381Z", 
+        "is_active": true, 
+        "site": 24, 
+        "phone": "", 
+        "kuser_id": null, 
+        "is_staff": true, 
+        "last_login": "2013-12-17T18:08:01.356Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "!", 
+        "email": "jhh@cs.arizona.edu", 
         "enacted": null
     }
 },
@@ -993,7 +1013,7 @@
     "model": "core.slice", 
     "fields": {
         "router_id": null, 
-        "updated": "2013-12-13T21:51:36.922Z", 
+        "updated": "2013-12-17T18:09:29.065Z", 
         "name": "Stork", 
         "service": 8, 
         "created": "2013-12-13T21:49:59.476Z", 
@@ -1001,7 +1021,7 @@
         "tenant_id": "", 
         "serviceClass": 1, 
         "enabled": true, 
-        "site": 22, 
+        "site": 24, 
         "omf_friendly": false, 
         "subnet_id": null, 
         "slice_url": "", 
@@ -1014,7 +1034,7 @@
     "model": "core.slice", 
     "fields": {
         "router_id": null, 
-        "updated": "2013-12-13T21:53:34.996Z", 
+        "updated": "2013-12-17T18:09:20.587Z", 
         "name": "Owl", 
         "service": 8, 
         "created": "2013-12-13T21:52:15.590Z", 
@@ -1022,7 +1042,7 @@
         "tenant_id": "", 
         "serviceClass": 1, 
         "enabled": true, 
-        "site": 22, 
+        "site": 24, 
         "omf_friendly": false, 
         "subnet_id": null, 
         "slice_url": "", 
@@ -6339,46 +6359,6 @@
         "labels": "public-net", 
         "guaranteedBandwidth": 0, 
         "network_id": "017a3914-5eaf-4bcb-8609-6d17ebcdf075", 
-        "template": 1, 
-        "owner": 10, 
-        "ports": ""
-    }
-},
-{
-    "pk": 7, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": "", 
-        "subnet": "64.57.18.32/28", 
-        "updated": "2013-12-09T14:38:11.552Z", 
-        "subnet_id": "4438dfbd-099a-4229-bd86-cf29478a009b", 
-        "name": "VINI-I2Houston-public", 
-        "created": "2013-12-09T14:38:11.552Z", 
-        "permitAllSlices": false, 
-        "permittedSlices": [], 
-        "labels": "public-net", 
-        "guaranteedBandwidth": 0, 
-        "network_id": "fdf0e3b1-439b-4673-b56e-d9dfe52b2bb7", 
-        "template": 1, 
-        "owner": 10, 
-        "ports": ""
-    }
-},
-{
-    "pk": 8, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": "", 
-        "subnet": "64.57.18.32/28", 
-        "updated": "2013-12-09T14:39:51.262Z", 
-        "subnet_id": "4438dfbd-099a-4229-bd86-cf29478a009b", 
-        "name": "VINI-I2Houston-public", 
-        "created": "2013-12-09T14:39:51.262Z", 
-        "permitAllSlices": false, 
-        "permittedSlices": [], 
-        "labels": "public-net", 
-        "guaranteedBandwidth": 0, 
-        "network_id": "fdf0e3b1-439b-4673-b56e-d9dfe52b2bb7", 
         "template": 1, 
         "owner": 10, 
         "ports": ""
@@ -31484,22 +31464,6 @@
     }
 },
 {
-    "pk": 7, 
-    "model": "requestrouter.requestrouterservice", 
-    "fields": {
-        "behindNat": false, 
-        "defaultAction": "best", 
-        "defaultTTL": 30, 
-        "lastResortAction": "random", 
-        "maxAnswers": 3
-    }
-},
-{
-    "pk": 6, 
-    "model": "hpc.hpcservice", 
-    "fields": {}
-},
-{
     "pk": 1, 
     "model": "hpc.serviceprovider", 
     "fields": {
@@ -37041,6 +37005,17 @@
         "prefix": "onlab.vicci.org", 
         "defaultOriginServer": 3882, 
         "contentProvider": 35
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.siteprivilege", 
+    "fields": {
+        "site": 24, 
+        "updated": "2013-12-17T18:08:58.293Z", 
+        "role": 1, 
+        "user": 15, 
+        "created": "2013-12-17T18:08:58.293Z"
     }
 }
 ]
