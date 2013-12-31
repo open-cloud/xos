@@ -1,3 +1,6 @@
+import os
+import imp
+import inspect
 import time
 import traceback
 import commands
@@ -14,6 +17,7 @@ from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
 from observer.steps import *
+from syncstep import SyncStep
 
 debug_mode = False
 
@@ -69,11 +73,13 @@ def toposort(g, steps=None):
     return order
 
 class PlanetStackObserver:
-    sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
+    #sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
+    sync_steps = []
 
     def __init__(self):
         # The Condition object that gets signalled by Feefie events
         self.step_lookup = {}
+        self.load_sync_step_modules()
         self.load_sync_steps()
         self.event_cond = threading.Condition()
         self.driver = OpenStackDriver()
@@ -82,15 +88,39 @@ class PlanetStackObserver:
         self.event_cond.acquire()
         self.event_cond.wait(timeout)
         self.event_cond.release()
-        
+
     def wake_up(self):
         logger.info('Wake up routine called. Event cond %r'%self.event_cond)
         self.event_cond.acquire()
         self.event_cond.notify()
         self.event_cond.release()
 
+    def load_sync_step_modules(self, step_dir=None):
+        if step_dir is None:
+            if hasattr(Config(), "step_dir"):
+                step_dir = Config().step_dir
+            else:
+                step_dir = "/opt/planetstack/observer/steps"
+
+        for fn in os.listdir(step_dir):
+            pathname = os.path.join(step_dir,fn)
+            if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py"):
+                module = imp.load_source(fn[:-3],pathname)
+                for classname in dir(module):
+                    c = getattr(module, classname, None)
+
+                    # make sure 'c' is a descendent of SyncStep and has a
+                    # provides field (this eliminates the abstract base classes
+                    # since they don't have a provides)
+
+                    if inspect.isclass(c) and issubclass(c, SyncStep) and hasattr(c,"provides") and (c not in self.sync_steps):
+                        self.sync_steps.append(c)
+        logger.info('loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps]))
+        # print 'loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps])
+
     def load_sync_steps(self):
         dep_path = Config().observer_dependency_graph
+        logger.info('Loading model dependency graph from %s' % dep_path)
         try:
             # This contains dependencies between records, not sync steps
             self.model_dependency_graph = json.loads(open(dep_path).read())
@@ -99,9 +129,11 @@ class PlanetStackObserver:
 
         try:
             backend_path = Config().observer_pl_dependency_graph
+            logger.info('Loading backend dependency graph from %s' % backend_path)
             # This contains dependencies between backend records
             self.backend_dependency_graph = json.loads(open(backend_path).read())
         except Exception,e:
+            logger.info('Backend dependency graph not loaded')
             # We can work without a backend graph
             self.backend_dependency_graph = {}
 
@@ -254,6 +286,8 @@ class PlanetStackObserver:
                     if (should_run):
                         try:
                             duration=time.time() - start_time
+
+                            logger.info('Executing step %s' % sync_step.__name__)
 
                             # ********* This is the actual sync step
                             #import pdb
