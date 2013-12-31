@@ -7,10 +7,13 @@ import tempfile
 import codecs
 from StringIO import StringIO
 from util.xml import Xml
+from optparse import OptionParser
 
 default_config = \
 """
 """
+
+DEFAULT_CONFIG_FN = '/opt/planetstack/plstackapi_config'
 
 def isbool(v):
 	return v.lower() in ("true", "false")
@@ -20,7 +23,10 @@ def str2bool(v):
 
 class Config:
 
-	def __init__(self, config_file='/opt/planetstack/plstackapi_config'):
+	def __init__(self, config_file=None):
+                if (config_file==None):
+                    config_file = self.get_config_fn()
+
 		self._files = []
 		self.config_path = os.path.dirname(config_file)
 		self.config = ConfigParser.ConfigParser()
@@ -29,6 +35,16 @@ class Config:
 			self.create(self.filename)
 		self.load(self.filename)
 
+        def get_config_fn(self):
+            parser = OptionParser(usage="%s [options]" % sys.argv[0],
+                    description="The planetstack observer")
+
+            parser.add_option("-C", "--config-file", dest="config_fn",
+                    help="name of observer config file", metavar="FILENAME", default=DEFAULT_CONFIG_FN)
+
+            (options, args) = parser.parse_args(sys.argv[1:])
+
+            return options.config_fn
 
 	def _header(self):
 		header = """
