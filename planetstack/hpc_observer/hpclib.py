@@ -62,13 +62,17 @@ class HpcLibrary:
 
         return mapping
 
-    def write_slices_file(self, hpc_service, rr_service):
+    def write_slices_file(self, hpc_service=None, rr_service=None):
+        if (hpc_service is None):
+            hpc_service = HpcService.objects.get()
+
+        if (rr_service is None):
+            rr_service = RequestRouterService.objects.get()
+
         mapping = self.extract_slice_info(hpc_service)
         rr_mapping = self.extract_slice_info(rr_service)
 
         mapping.update(rr_mapping)
-
-        print mapping
 
         fn = "/tmp/slices"
 
@@ -95,9 +99,7 @@ PUPPET_MASTER_PORT="8140"
 """ % mapping)
 
 if __name__ == '__main__':
-    hpc_service = HpcService.objects.get()
-    rr_service = RequestRouterService.objects.get()
     lib = HpcLibrary()
-    lib.write_slices_file(hpc_service, rr_service)
+    lib.write_slices_file()
 
 
