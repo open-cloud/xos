@@ -38,41 +38,42 @@ class Logger:
     def __init__ (self,logfile=None,loggername=None,level=logging.INFO):
         # default is to locate loggername from the logfile if avail.
         if not logfile:
-            #loggername='console'
-            #handler=logging.StreamHandler()
-            #handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
-
             try:
                 from planetstack.config import Config
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/planetstack.log"
 
-        if not loggername:
-            loggername=os.path.basename(logfile)
-        try:
-            handler=logging.handlers.RotatingFileHandler(logfile,maxBytes=1000000, backupCount=5) 
-        except IOError:
-            # This is usually a permissions error becaue the file is
-            # owned by root, but httpd is trying to access it.
-            tmplogfile=os.getenv("TMPDIR", "/tmp") + os.path.sep + os.path.basename(logfile)
-            # In strange uses, 2 users on same machine might use same code,
-            # meaning they would clobber each others files
-            # We could (a) rename the tmplogfile, or (b)
-            # just log to the console in that case.
-            # Here we default to the console.
-            if os.path.exists(tmplogfile) and not os.access(tmplogfile,os.W_OK):
-                loggername = loggername + "-console"
-                handler = logging.StreamHandler()
-            else:
-                handler=logging.handlers.RotatingFileHandler(tmplogfile,maxBytes=1000000, backupCount=5) 
+        if (logfile == "console"):
+            loggername = "console"
+            handler = logging.StreamHandler()
+        else:
+            if not loggername:
+                loggername=os.path.basename(logfile)
+            try:
+                handler=logging.handlers.RotatingFileHandler(logfile,maxBytes=1000000, backupCount=5)
+            except IOError:
+                # This is usually a permissions error becaue the file is
+                # owned by root, but httpd is trying to access it.
+                tmplogfile=os.getenv("TMPDIR", "/tmp") + os.path.sep + os.path.basename(logfile)
+                # In strange uses, 2 users on same machine might use same code,
+                # meaning they would clobber each others files
+                # We could (a) rename the tmplogfile, or (b)
+                # just log to the console in that case.
+                # Here we default to the console.
+                if os.path.exists(tmplogfile) and not os.access(tmplogfile,os.W_OK):
+                    loggername = loggername + "-console"
+                    handler = logging.StreamHandler()
+                else:
+                    handler=logging.handlers.RotatingFileHandler(tmplogfile,maxBytes=1000000, backupCount=5)
+
         handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
         self.logger=logging.getLogger(loggername)
         self.logger.setLevel(level)
         # check if logger already has the handler we're about to add
         handler_exists = False
         for l_handler in self.logger.handlers:
-            if l_handler.baseFilename == handler.baseFilename and \
+            if ((not hasattr(l_handler,"baseFilename")) or (l_handler.baseFilename == handler.baseFilename)) and \
                l_handler.level == handler.level:
                 handler_exists = True 
 
