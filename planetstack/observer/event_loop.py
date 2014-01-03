@@ -72,6 +72,10 @@ def toposort(g, steps=None):
     order.extend(set(steps)-set(order))
     return order
 
+class NoOpDriver:
+    def __init__(self):
+         self.enabled = True
+
 class PlanetStackObserver:
     #sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
     sync_steps = []
@@ -82,7 +86,13 @@ class PlanetStackObserver:
         self.load_sync_step_modules()
         self.load_sync_steps()
         self.event_cond = threading.Condition()
-        self.driver = OpenStackDriver()
+
+
+        self.driver_kind = getattr(Config(), "observer_driver", "openstack")
+        if self.driver_kind=="openstack":
+            self.driver = OpenStackDriver()
+        else:
+            self.driver = NoOpDriver()
 
     def wait_for_event(self, timeout):
         self.event_cond.acquire()
@@ -97,8 +107,8 @@ class PlanetStackObserver:
 
     def load_sync_step_modules(self, step_dir=None):
         if step_dir is None:
-            if hasattr(Config(), "step_dir"):
-                step_dir = Config().step_dir
+            if hasattr(Config(), "observer_steps_dir"):
+                step_dir = Config().observer_steps_dir
             else:
                 step_dir = "/opt/planetstack/observer/steps"
 
@@ -239,8 +249,11 @@ class PlanetStackObserver:
                 raise StepNotReady
 
     def run(self):
-        if not self.driver.enabled or not self.driver.has_openstack:
+        if not self.driver.enabled:
             return
+        if (self.driver_kind=="openstack") and (not self.driver.has_openstack):
+            return
+
         while True:
             try:
                 logger.info('Waiting for event')
