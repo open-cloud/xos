@@ -45,7 +45,7 @@ class Logger:
             try:
                 from config import Config
                 logfile = Config().observer_log_file
-            else:
+            except:
                 logfile = "/var/log/planetstack.log"
 
         if not loggername:
