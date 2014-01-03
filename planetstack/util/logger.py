@@ -43,7 +43,7 @@ class Logger:
             #handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
 
             try:
-                from config import Config
+                from planetstack.config import Config
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/planetstack.log"
