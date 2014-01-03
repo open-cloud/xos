@@ -41,7 +41,12 @@ class Logger:
             #loggername='console'
             #handler=logging.StreamHandler()
             #handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
-            logfile = "/var/log/planetstack.log"
+
+            try:
+                from config import Config
+                logfile = Config().observer_log_file
+            else:
+                logfile = "/var/log/planetstack.log"
 
         if not loggername:
             loggername=os.path.basename(logfile)
