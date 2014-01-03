@@ -7,7 +7,6 @@ import tempfile
 import codecs
 from StringIO import StringIO
 from util.xml import Xml
-from optparse import OptionParser
 
 default_config = \
 """
@@ -36,15 +35,18 @@ class Config:
 		self.load(self.filename)
 
         def get_config_fn(self):
-            parser = OptionParser(usage="%s [options]" % sys.argv[0],
-                    description="The planetstack observer")
+             # Look for "-C <something>" to get the
+             # name of the config file. Using a real OptionParser here is
+             # problematic as it will throw 'no such option' errors for options
+             # that it does not understand.
 
-            parser.add_option("-C", "--config-file", dest="config_fn",
-                    help="name of observer config file", metavar="FILENAME", default=DEFAULT_CONFIG_FN)
+             last = None
+             for arg in sys.argv:
+                 if (last=="-C"):
+                     return arg
+                 last = arg
 
-            (options, args) = parser.parse_args(sys.argv[1:])
-
-            return options.config_fn
+             return DEFAULT_CONFIG_FN
 
 	def _header(self):
 		header = """
