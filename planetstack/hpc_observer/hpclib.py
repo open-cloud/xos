@@ -1,6 +1,7 @@
 import os
 import base64
 import sys
+import xmlrpclib
 
 if __name__ == '__main__':
     sys.path.append("/opt/planetstack")
@@ -13,6 +14,43 @@ from requestrouter.models import RequestRouterService
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
+
+class APIHelper:
+    def __init__(self, proxy, auth, method=None):
+        self.proxy = proxy
+        self.auth = auth
+        self.method = method
+
+    def __getattr__(self, name):
+        if name.startswith("_"):
+            return getattr(self, name)
+        else:
+            return APIHelper(self.proxy, self.auth, name)
+
+    def __call__(self, *args):
+        method = getattr(self.proxy, self.method)
+        return method(self.auth, *args)
+
+class CmiClient:
+    def __init__(self, hostname, port=8003, username="apiuser", password="apiuser"):
+        self.connect_api(hostname, port, username, password)
+
+    def connect_api(self, hostname, port=8003, username="apiuser", password="apiuser"):
+        #print "https://%s:%d/COAPI/" % (hostname, port)
+        cob = xmlrpclib.ServerProxy("https://%s:%d/COAPI/" % (hostname, port), allow_none=True)
+        cob_auth = {}
+        cob_auth["Username"] = username
+        cob_auth["AuthString"] = password
+        cob_auth["AuthMethod"] = "password"
+
+        onev = xmlrpclib.ServerProxy("https://%s:%d/ONEV_API/" % (hostname, port), allow_none=True)
+        onev_auth = {}
+        onev_auth["Username"] = username
+        onev_auth["AuthString"] = password
+        onev_auth["AuthMethod"] = "password"
+
+        self.cob = APIHelper(cob, cob_auth)
+        self.onev = APIHelper(onev, onev_auth)
 
 class HpcLibrary:
     def extract_slice_info(self, service):
@@ -62,6 +100,13 @@ class HpcLibrary:
 
         return mapping
 
+    def get_cmi_hostname(self, hpc_service=None):
+        if (hpc_service is None):
+            hpc_service = HpcService.objects.get()
+
+        slice_info = self.extract_slice_info(hpc_service)
+        return slice_info["hostname_cmi"]
+
     def write_slices_file(self, hpc_service=None, rr_service=None):
         if (hpc_service is None):
             hpc_service = HpcService.objects.get()
@@ -99,7 +144,15 @@ PUPPET_MASTER_PORT="8140"
 """ % mapping)
 
 if __name__ == '__main__':
+    print "testing write_slices_file"
     lib = HpcLibrary()
     lib.write_slices_file()
+
+    print "testing API connection"
+    client = CmiClient(lib.get_cmi_hostname())
+    client.cob.GetNewObjects()
+    client.onev.ListAll("CDN")
+
+
 
 
