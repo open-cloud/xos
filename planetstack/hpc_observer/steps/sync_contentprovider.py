@@ -37,12 +37,14 @@ class SyncContentProvider(SyncStep, HpcLibrary):
 
         spid = cp.serviceProvider.service_provider_id
 
-        cp_dict = {"account": account_name, "name": cp.name, "enabled": sp.enabled, "service_provider_id": spid}
+        cp_dict = {"account": account_name, "name": cp.name, "enabled": cp.enabled, "service_provider_id": spid}
 
-        if not cp.service_provider_id:
+        #print cp_dict
+
+        if not cp.content_provider_id:
             id = self.client.onev.Create("ContentProvider", cp_dict)
             cp.content_provider_id = id
         else:
-            self.client.onev.Update("ContentProvider", cp_dict)
+            self.client.onev.Update("ContentProvider", cp.content_provider_id, cp_dict)
 
         cp.save()

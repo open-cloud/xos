@@ -6,7 +6,6 @@ from planetstack.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
 from hpc.models import ServiceProvider
-from requestrouter.models import RequestRouterService
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
@@ -32,10 +31,11 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
         logger.info("sync'ing service provider %s" % str(sp))
         account_name = self.make_account_name(sp.name)
         print "XXX", sp.name, account_name
+        sp_dict = {"account": account_name, "name": sp.name, "enabled": sp.enabled}
         if not sp.service_provider_id:
-            id = self.client.onev.Create("ServiceProvider", {"account": account_name, "name": sp.name, "enabled": sp.enabled})
+            id = self.client.onev.Create("ServiceProvider", sp_dict)
             sp.service_provider_id = id
         else:
-            self.client.onev.Update("ServiceProvider", {"account": account_name, "name": sp.name, "enabled": sp.enabled})
+            self.client.onev.Update("ServiceProvider", sp.service_provider_id, sp_dict)
 
         sp.save()
