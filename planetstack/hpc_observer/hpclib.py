@@ -63,7 +63,7 @@ class HpcLibrary:
         for c in x:
             if (c in (string.lowercase + string.digits)):
                 y = y + c
-        return y
+        return y[:20]
 
     def extract_slice_info(self, service):
         """ Produce a dict that describes the slices for the CMI
