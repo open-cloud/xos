@@ -25,7 +25,8 @@ nova_enabled=True
 dependency_graph=/opt/planetstack/hpc_observer/model-deps
 steps_dir=/opt/planetstack/hpc_observer/steps
 deleters_dir=/opt/planetstack/hpc_ovserver/deleters
-log_file=/var/log/hpc.log
+log_file=console
+#/var/log/hpc.log
 driver=None
 
 [feefie]
