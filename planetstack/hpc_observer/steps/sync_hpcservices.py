@@ -21,6 +21,10 @@ class SyncHpcService(SyncStep, HpcLibrary):
     provides=[HpcService]
     requested_interval=0
 
+    def __init__(self, **args):
+        SyncStep.__init__(self, **args)
+        HpcLibrary.__init__(self)
+
     def fetch_pending(self):
         return HpcService.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 

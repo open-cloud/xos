@@ -1,5 +1,6 @@
 import os
 import base64
+import string
 import sys
 import xmlrpclib
 
@@ -53,6 +54,17 @@ class CmiClient:
         self.onev = APIHelper(onev, onev_auth)
 
 class HpcLibrary:
+    def __init__(self):
+        self._client = None
+
+    def make_account_name(self, x):
+        x=x.lower()
+        y = ""
+        for c in x:
+            if (c in (string.lowercase + string.digits)):
+                y = y + c
+        return y
+
     def extract_slice_info(self, service):
         """ Produce a dict that describes the slices for the CMI
 
@@ -143,15 +155,20 @@ PUPPET_MASTER_HOSTNAME="%(hostname_cmi)s"
 PUPPET_MASTER_PORT="8140"
 """ % mapping)
 
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = CmiClient(self.get_cmi_hostname())
+        return self._client
+
 if __name__ == '__main__':
     print "testing write_slices_file"
     lib = HpcLibrary()
     lib.write_slices_file()
 
     print "testing API connection"
-    client = CmiClient(lib.get_cmi_hostname())
-    client.cob.GetNewObjects()
-    client.onev.ListAll("CDN")
+    lib.client.cob.GetNewObjects()
+    lib.client.onev.ListAll("CDN")
 
 
 
