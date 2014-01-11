@@ -6,7 +6,6 @@ from core.models import PlCoreBase,Site
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
 
-
 # Create your models here.
 class UserManager(BaseUserManager):
     def create_user(self, email, firstname, lastname, password=None):
@@ -70,6 +69,7 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
+    is_readonly = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -81,6 +81,9 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['firstname', 'lastname']
+
+    def isReadOnlyUser(self):
+        return self.is_readonly
 
     def get_full_name(self):
         # The user is identified by their email address

@@ -21,7 +21,9 @@ from core.views.legacyapi import LegacyXMLRPC
 from core.models import *
 from core.api_root import api_root
 from rest_framework import generics
+from core.plus.sites import SitePlus
 
+admin.site = SitePlus()
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -30,10 +32,12 @@ urlpatterns = patterns('',
     # url(r'^planetstack/', include('planetstack.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(admin.site.urls)),
+    #url(r'^profile/home', 'core.views.home'),
 
     url(r'^plstackapi/$', api_root),
     

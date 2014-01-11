@@ -43,10 +43,9 @@ class Slice(PlCoreBase):
         super(Slice, self).save(*args, **kwds)
 
 class SliceRole(PlCoreBase):
-    ROLE_CHOICES = (('admin','Admin'),('default','Default'), ('user', 'User'), ('pi', 'PI'))
+    ROLE_CHOICES = (('admin','Admin'),('default','Default'))
 
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
-    krole_id = models.CharField(max_length=80, verbose_name="Keystone role id", null=True, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.role)
 

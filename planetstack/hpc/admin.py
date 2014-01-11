@@ -65,4 +65,5 @@ admin.site.register(ServiceProvider, ServiceProviderAdmin)
 admin.site.register(ContentProvider, ContentProviderAdmin)
 admin.site.register(CDNPrefix, CDNPrefixAdmin)
 admin.site.register(OriginServer,OriginServerAdmin)
+admin.site.register(HpcService)
 

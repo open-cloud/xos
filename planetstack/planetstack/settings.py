@@ -11,6 +11,8 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
+LOGIN_REDIRECT_URL = '/admin/core/user'
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -139,6 +141,7 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'requestrouter',
+    'syndicate',
     'geoposition',
 )
 
@@ -151,7 +154,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
-    'ADMIN_NAME': 'PlanetStack',
+    'ADMIN_NAME': 'OpenCloud',
     # 'HEADER_DATE_FORMAT': 'l, j. F Y',
     # 'HEADER_TIME_FORMAT': 'H:i',
 
@@ -166,14 +169,42 @@ SUIT_CONFIG = {
     #    'auth': 'icon-lock',
     # },
     # 'MENU_OPEN_FIRST_CHILD': True, # Default True
-    'MENU_EXCLUDE': ('auth.group','auth'),
-    'MENU': (
+    'MENU_EXCLUDE': (
+         'auth.group',
+         'auth', 
+         'core.network',
+         'core.sliver',
+         'core.node',
+         'core.image',
+         'core.deploymentrole',
+         'core.siterole',
+         'core.slicerole',
+         'core.planetstackrole',
+         'core.networktemplate',
+         'core.networkparametertype',
+         'core.router',
+         'core.tag',
+         'core.account',
+         'core.invoice',
+         'core.serviceclass',
     ),
+    'MENU': (
+        #{'app': 'core', 'icon':'icon-lock'},
+        #{'app': 'core', 'icon': 'icon-lock', 'models': ('core.site', 'core.deployment', 'core.service', 'core.slice', 'core.user', 'core.reservation', 'core.account', 'core.invoice', 'core.payment', 'core.usableobject')},
+        {'label': 'Deployments', 'icon':'icon-deployment', 'url': '/admin/core/deployment/'},
+        {'label': 'Sites', 'icon':'icon-site', 'url': '/admin/core/site/'},
+        {'label': 'Slices', 'icon':'icon-slice', 'url': '/admin/core/slice/'},
+        {'label': 'Users', 'icon':'icon-user', 'url': '/admin/core/user/'},
+        {'label': 'Request Routing', 'icon':'icon-cog', 'app': 'requestrouter'},
+        {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
+        {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate'},
+        #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
     #     'sites',
     #     {'app': 'auth', 'icon':'icon-lock', 'models': ('user', 'group')},
-    #     {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
     #     {'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
+    #   {'label': 'Settings', 'icon':'icon-cog', 'models': ('core.user', 'core.site')},
     # ),
+    ),
 
     # misc
     # 'LIST_PER_PAGE': 15

@@ -1,0 +1,63 @@
+{% extends "admin/base_site_login.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/static/suit/bootstrap/css/bootstrap.min.css" media="all"/>
+<link rel="stylesheet" type="text/css" href="{% static "planetstack.css" %}" />
+{% endblock %}
+
+{% block bodyclass %}login{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors and not form.this_is_the_login_form.errors %}
+<p class="errornote">
+{% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors or form.this_is_the_login_form.errors %}
+{% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+<div id="wrap">
+<div id="content-main">
+<h1><i class="icon-lock icon-white"></i> OpenCloud</h1>
+<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+  <div class="form-row">
+    {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}
+     {{ form.username }}
+  </div>
+  <div class="form-row">
+    {% if not form.this_is_the_login_form.errors %}{{ form.password.errors }}{% endif %}
+     {{ form.password }}
+    <input type="hidden" name="this_is_the_login_form" value="1" />
+    <input type="hidden" name="next" value="{{ next }}" />
+  </div>
+  {% url 'admin_password_reset' as password_reset_url %}
+  {% if password_reset_url %}
+  <div class="password-reset-link">
+    <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
+  </div>
+  {% endif %}
+  <div class="submit-row">
+    <input type="submit" class="btn btn-info" value="{% trans 'SIGN IN' %}" />
+  </div>
+
+<div class="forgotLink"><a href="{{ password_reset_url }}">{% trans 'Forgot password?' %}</a></div><div class="createAccountLink"><a href="#">{% trans 'Create an Account' %}</a></div>
+</form>
+
+<script type="text/javascript">
+document.getElementById('id_username').focus()
+</script>
+</div>
+</div>
+{% endblock %}

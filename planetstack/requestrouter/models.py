@@ -22,4 +22,6 @@ class ClientMap(models.Model):
     site = models.OneToOneField(Site, unique=True)
     name = models.CharField(max_length=64, help_text="Name of the Client Map")
     description = models.TextField(null=True, blank=True,max_length=130)
+
+    def __unicode__(self):  return self.name
     

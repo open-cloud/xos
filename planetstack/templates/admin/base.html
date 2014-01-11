@@ -1,7 +1,7 @@
 {% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-  <title>{% block title %}{{ title }} | {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
+  <title>{% block title %}  {%if title %} {{ title }} | {% endif %} {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
@@ -17,6 +17,8 @@
   {% block extrahead %}{% endblock %}
   {% block blockbots %}
     <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
+  <link rel="shortcut icon" href="{% static 'favicon.png' %}">
+
 </head>
 {% load i18n %}
 
@@ -33,12 +35,34 @@
         {% if not is_popup %}
           <!-- Header -->
           <div id="header" class="header">
+            
             <div id="branding">
-              <a href="{% url 'admin:index' %}"><h1 id="site-name">{% block branding %}{{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</h1></a>
+              <table width="100%">
+                <tr>
+                  <td width="70%">
+             <!-- <a href="{% url 'admin:index' %}"><h1 id="site-name">{% block branding %}{{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</h1></a>-->
+             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img src="{% static 'open-cloud-themed.png' %}"/></h1></a>
+             </td>
+              <td width="30%">
+                  {% block quick-search %}
+                {% with 'SEARCH_URL'|suit_conf as search_url %}
+                  {% if search_url %}
+                    <form class="form-search nav-quick-search" autocomplete="off" action="{% if '/' in search_url %}{{ search_url }}{% else %}{% url search_url %}{% endif %}" method="GET">
+                      <i class="input-icon icon-search"></i>
+                      <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                      <input type="submit" class="submit" value="">
+                    </form>
+                  {% endif %}
+                {% endwith %}
+              {% endblock %}
+                 </td>
+               </tr>
+             </table>
             </div>
-
+          
             {% block header_time %}
-            <div class="header-content header-content-first">
+            <div id="branding2">
+            <!--<div class="header-content header-content-first">
               <div class="header-column icon">
                 <i class="icon-time"></i>
               </div>
@@ -46,7 +70,8 @@
                 <span class="date"> {% suit_date %}</span><br>
                 <span class="time" id="clock">{% suit_time %}</span>
               </div>
-            </div>
+            </div>-->
+          
             {% endblock %}
 
             {% block header_content %}
@@ -80,8 +105,11 @@
                 {% endblock %}
               </div>
             {% endif %}
+
             {% block nav-global %}{% endblock %}
+
           </div>
+           </div>
         {% endif %}
         <!-- END Header -->
       {% endblock %}
@@ -94,7 +122,7 @@
 
             {% if not is_popup %}
               {% block breadcrumbs %}
-                <ul class="breadcrumb">
+                <ul class="breadcrumb"> 
                   <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
                     {% if title %}
                       <span class="divider">&raquo;</span>
@@ -105,6 +133,12 @@
                     </li>
                 </ul>
               {% endblock %}
+               <label class="nodetextbox" >Active Nodes: </label>
+              <label class="nodelabel" >37</label>
+              <label class="nodetextbox">CPU Utilization: </label>
+              <label class="nodelabel" >12%</label>
+            <label class="nodetextbox">Bytes Transferred:</label>     
+              <label class="nodelabel" style="width:60px;">4321GB</label>
             {% endif %}
 
             {% block messages %}
@@ -144,17 +178,7 @@
         {% block content-left %}
           {% if not is_popup %}
             <div id="suit-left" class="suit-column">
-              {% block quick-search %}
-                {% with 'SEARCH_URL'|suit_conf as search_url %}
-                  {% if search_url %}
-                    <form class="form-search nav-quick-search" autocomplete="off" action="{% if '/' in search_url %}{{ search_url }}{% else %}{% url search_url %}{% endif %}" method="GET">
-                      <input type="text" name="q" class="input-medium search-query" id="quick-search">
-                      <i class="input-icon icon-search"></i>
-                      <input type="submit" class="submit" value="">
-                    </form>
-                  {% endif %}
-                {% endwith %}
-              {% endblock %}
+         
 
               {% include 'suit/menu.html' %}
 

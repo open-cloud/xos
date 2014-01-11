@@ -5,8 +5,14 @@ from django.contrib.contenttypes import generic
 
 # Create your models here.
 
+class ManyToManyField_NoSyncdb(models.ManyToManyField):
+    def __init__(self, *args, **kwargs):
+        super(ManyToManyField_NoSyncdb, self).__init__(*args, **kwargs)
+        self.creates_table = False
+
 class Deployment(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
+#    sites = ManyToManyField_NoSyncdb('Site', through=Site.deployments.through, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -15,7 +21,6 @@ class DeploymentRole(PlCoreBase):
 
     ROLE_CHOICES = (('admin','Admin'),)
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
-    krole_id = models.CharField(max_length=80, verbose_name="Keystone role id", null=True, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.role)
 

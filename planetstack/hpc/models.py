@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import User
+from core.models import User, Service, SingletonModel, PlCoreBase
 import os
 from django.db import models
 from django.forms.models import model_to_dict
@@ -7,56 +7,24 @@ from django.forms.models import model_to_dict
 
 # Create your models here.
 
-class HpcCoreBase(models.Model):
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+class HpcService(SingletonModel,Service):
 
     class Meta:
-        abstract = True
         app_label = "hpc"
+        verbose_name = "HPC Service"
 
-    def __init__(self, *args, **kwargs):
-        super(HpcCoreBase, self).__init__(*args, **kwargs)
-        self.__initial = self._dict
-
-    @property
-    def diff(self):
-        d1 = self.__initial
-        d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
-        return dict(diffs)
-
-    @property
-    def has_changed(self):
-        return bool(self.diff)
-
-    @property
-    def changed_fields(self):
-        return self.diff.keys()
-
-    def get_field_diff(self, field_name):
-        return self.diff.get(field_name, None)
-
-    def save(self, *args, **kwargs):
-        super(HpcCoreBase, self).save(*args, **kwargs)
-
-        self.__initial = self._dict
-
-    @property
-    def _dict(self):
-        return model_to_dict(self, fields=[field.name for field in
-                             self._meta.fields])
-
-    
-class ServiceProvider(HpcCoreBase):
+class ServiceProvider(PlCoreBase):
+    class Meta:
+        app_label = "hpc"
     name = models.CharField(max_length=254,help_text="Service Provider Name")
     description = models.TextField(max_length=254,null=True, blank=True, help_text="Description of Service Provider")
     enabled = models.BooleanField(default=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class ContentProvider(HpcCoreBase):
+class ContentProvider(PlCoreBase):
+    class Meta:
+        app_label = "hpc"
     name = models.CharField(max_length=254)
     enabled = models.BooleanField(default=True)
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Content Provider")
@@ -67,7 +35,9 @@ class ContentProvider(HpcCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class OriginServer(HpcCoreBase):
+class OriginServer(PlCoreBase):
+    class Meta:
+        app_label = "hpc"
     url = models.URLField()
     contentProvider = models.ForeignKey(ContentProvider)
 
@@ -80,7 +50,9 @@ class OriginServer(HpcCoreBase):
     
     def __unicode__(self):  return u'%s' % (self.url)
 
-class CDNPrefix(HpcCoreBase):
+class CDNPrefix(PlCoreBase):
+    class Meta:
+        app_label = "hpc"
     prefix = models.CharField(max_length=200, help_text="Registered Prefix for Domain")
     contentProvider = models.ForeignKey(ContentProvider)
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Content Provider")

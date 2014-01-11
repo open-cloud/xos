@@ -6,6 +6,7 @@ class Service(PlCoreBase):
     enabled = models.BooleanField(default=True)
     name = models.CharField(max_length=30, help_text="Service Name")
     versionNumber = models.CharField(max_length=30, help_text="Version of Service Definition")
+    published = models.BooleanField(default=True)
 
     def __unicode__(self): return u'%s' % (self.name)
 

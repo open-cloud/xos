@@ -19,3 +19,519 @@ display: block;
 font-weight: bold;
 margin-bottom: 5px;
 }
+
+
+/*Added by Beena*/
+/*For increasing the header height*/
+.header {
+height: 90px;
+}
+
+/*For changing the background color of the left side navigation list items*/
+/*For changing the color of the left side navigation list items*/
+/*For changing the font of the left side navigation list items*/
+.left-nav>ul>li>a {
+background-color: #CDE7FF;
+font-weight: bold;
+color: #105E9E;
+font-size: 13px;
+border-bottom: none;
+}
+
+/*For giving the padding for the left side navigation*/
+.left-nav>ul {
+padding-left: 5px;
+}
+
+/*For increasing the height of left side navigation list items*/
+.left-nav>ul>li {
+padding-top:4px;
+line-height: 35px;
+width: 180px;
+}
+
+/*For changing background color of suit enter*/
+#suit-center {
+background-color: #ffffff;
+}
+
+.left-nav>ul>li.active>a {
+background-color: #448CCA;
+
+left: 10px;
+background-image: url("right_arrow.png");
+    background-position: 97% center;
+}
+
+
+.nav-tabs-suit li{
+background-color: #CDE7FF;
+/*background-color: #FFFFFF;*/
+}
+
+.nav-tabs-suit li a {
+background-color: #CDE7FF;
+font-weight: bold;
+color: #105E9E;
+border-radius: 0px;
+border: none;
+box-shadow: none;
+}
+.nav-tabs-suit li.active{
+/*Changed on Dec 11*/
+background-color: #448CCA;
+     /*background-position: 50% 100%; 
+background-image:url('donw_arrow.png');*/
+}
+
+.nav-tabs-suit li.hover{
+/*Changed on Dec 11*/
+background-color: #448CCA;
+}
+
+.nav-tabs-suit li.active a {
+background-color: #448CCA;
+color:#ffffff;
+padding-top:10px;
+text-decoration:none;
+}
+
+.nav-tabs-suit li.active a:after{ /*arrow added to downarrowdiv DIV*/
+width: 0;
+height: 0;
+border-left: 5px solid transparent;
+border-right: 5px solid transparent;
+border-top: 5px solid #2f2f2f;
+font-size: 0;
+line-height: 0;
+}
+
+
+/* create an arrow that points down */
+
+
+.left-nav>ul>li.active>a:hover{
+background-color: #448CCA;
+color:#ffffff;
+/*padding-top:10px;*/
+text-decoration:none;
+}
+
+.left-nav>ul>li>a:hover{
+background-color: #448CCA;
+color:#ffffff;
+/*padding-top:10px;*/
+text-decoration:none;
+border-left: 15px solid #105E9E ;
+}
+.nav-tabs-suit li.active a:hover,.nav-tabs-suit li a:hover{
+background-color: #448CCA;
+color:#ffffff;
+padding-top:10px;
+text-decoration:none;
+}
+
+.breadcrumb li a {
+font-weight:bold;
+}
+
+.nav-tabs {
+border-bottom: 1px solid #B5D1EA;
+}
+
+.nav-tabs>li {
+margin-bottom: 0px;
+}
+
+/*.icon-home {
+background-image: url('home.png');
+background-repeat: no-repeat;
+background-position: 85%;
+}*/
+
+/*Changed Dec11*/
+
+/*
+.icon-home {
+background-image: url('home.png');
+background-repeat: no-repeat;
+background-position: 40%;
+width: 25px;
+height: 25px;
+vertical-align: middle;
+}
+*/
+
+
+.header #branding{
+height:60px;
+}
+
+#branding2{
+padding-top:60px;
+height:20px;
+width:100%;
+/*background-color: #000000;*/
+/*margin-bottom: 10px;*/
+}
+.header .header-content .date{
+padding-left:10px;
+}
+
+.header .header-content .time {
+font-weight: normal;
+}
+.header .header-content.header-content-first{
+height: 15px;
+padding-bottom: 0px;
+}
+
+.header .header-content {
+padding-bottom: 0px;
+padding: 7px 0 0 0px;
+}
+
+.header #branding {
+border-right:none;
+}
+
+.left-nav>ul>li.active>a:after {
+content: none;
+
+}
+
+.nav-quick-search{
+margin: 0px 0 0px 0px;
+padding:0 20px 0 0;
+float:right;
+}
+
+.header #branding {
+width: 100%;
+}
+
+/**
+* login page
+*/
+
+
+/*.login #wrap {
+background-color: #ffffff;
+}*/
+
+.login #content-main {
+width: 280px;
+height: 365px;
+border-radius: 0px;
+/*background: #EBF0F2;*/
+background: rgba(255,255,255,0.85);
+/*background: rgba(235,240,242,0.6);*/
+}
+
+.login #content-main h1 {
+/*background: #EBF0F2;*/
+background: url("open-cloud-login-themed-light.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
+/*background-position: 40%;*/
+height: 55px;
+background-repeat: no-repeat;
+font-size: 0px;
+padding-top: 70px;
+}
+.login #content-main h1 i {
+display:none;
+}
+
+.login #content-main h1 img{
+padding-left: 8px;
+}
+
+.login #content-main .control-group .control-label{
+display:none;
+}
+
+.login #content-main form input[type=text]{
+width: 94%;
+padding:4px 6px;
+border-radius: 0px;
+height: 30px;
+background-color: #E5E5E5;
+background-image: url('name.png');
+background-repeat: no-repeat;
+background-position: 95%;
+font-size: 12px;
+}
+
+.login #content-main form input[type=password] {
+  width: 94%;
+padding:4px 6px;
+font-size: 12px;
+border-radius: 0px;
+height: 30px;
+background-color: #E5E5E5;
+background-image: url('password.png');
+background-repeat: no-repeat;
+background-position: 95%;
+}
+
+.login #content-main .submit-row{
+background: #EBF0F215px;
+background: rgba(235,240,242,0.0);
+border-top:none;
+padding-top:0px;
+box-shadow: none;
+}
+
+.login #content-main .submit-row .btn-info {
+background-color : #448CCA;
+background-image: none;
+height: 40px;
+border-radius: 0px;
+width: 100%;
+margin-bottom: 4px;
+}
+#forgot_pwd{
+font-size: 11px;
+font-style: normal;
+text-decoration: none;
+}
+
+#create_acct{
+font-size: 11px;
+font-style: normal;
+text-decoration: none;
+padding-left: 45px;
+}
+
+/*Dec 11 2013*/
+
+.nav-tabs-suit li.active a{
+text-shadow: none;
+-webkit-box-shadow: none;
+-moz-box-shadow: none;
+box-shadow: none;
+}
+
+.nav-tabs>.active>a{
+border: none;
+}
+
+.nav-tabs-suit li a:hover{
+border: none;
+}
+
+.nav-tabs-suit li.active a:hover{
+border: none;
+}
+
+/*.nav-tabs-suit li.active {*/
+ /*background: transparent url('home.png') no-repeat scroll center bottom;*/
+  /*border-left: 5px solid transparent;
+border-right: 5px solid transparent;
+border-top: 5px solid #2f2f2f;
+font-size: 0;
+line-height: 0;
+width: 0;;
+height: 0;
+   margin: 0;
+}*/
+
+.login {
+background-image: url('bg.jpg');
+background-size: 100%;
+background-repeat: no-repeat;
+}
+
+
+.login #content-main {
+	float: none;
+    height: 330px;
+    margin: 100px auto 0;
+    width: 265px;
+}
+
+
+.header{
+background-color: #000000;
+background-image: url('bg2.jpg');
+background-size: 100% auto;
+}
+
+
+#wrap{
+background:none;
+}
+
+body{
+background-color:#ffffff;
+}
+
+.suit-column{
+background-color:#ffffff;
+}
+.nav-quick-search .search-query{
+border-radius:0px;
+border:none;
+box-shadow:0px;
+background-color:#282828;
+padding-left: 27px;
+}
+
+/*Added on 13th*/
+
+/*.input-icon {
+margin-right: 30px;
+}
+
+.icon-search{
+
+margin-left: -165px;
+}*/
+
+.login #content-main form {
+margin: 5px 15px 0;
+}
+
+.login {
+height: 84.5%;
+}
+
+
+.login #wrap {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+#wrap {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+#wrap {
+    background: url("../img/bg_left_white.gif") repeat-y scroll left top rgba(0, 0, 0, 0);
+}
+#wrap {
+    height: auto !important;
+    margin: 0 auto -60px;
+    min-height: 100%;
+}
+
+.forgotLink {
+	width: 45%;
+	text-align: left;
+	float: left;
+}
+
+.createAccountLink {
+	width: 55%;
+	text-align: right;
+	float: left;
+	
+}
+
+.login .btn-info {
+	color: #FFF;
+}
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+	background-color: #448CCA;
+	color: #FFF;
+	border: none;
+}
+
+/*Added by Beena for adding the three components in dashboard*/
+.breadcrumb{
+		width: 37%;
+	display:inline-block;
+	background-color: #fff;
+
+}
+
+.nodetextbox{
+	background-color: #ededed;
+	line-height: 25px;
+	width: 150px; 
+	text-align: center;
+	font-weight: bold;
+	margin-left:5px;
+	display:inline-block;
+	border:none;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 13px;
+}
+
+.nodelabel{
+width: 40px;
+display: inline-block;
+border-radius: 0px;
+border:1px solid #000;
+line-height: 23px;
+text-align: center;
+}
+
+.header-content .header-column {
+	display: none;
+}
+.header .input-icon {
+    background-image: url("Search.png");
+    background-repeat: no-repeat;
+background-position:left center;
+opacity:1;
+    background-size: 100%;
+    vertical-align:middle;
+	margin-right: -30px;
+    /*margin-top: 5px;*/
+    position: relative;
+    height: 22px;
+    width: 22px;
+}
+
+.header .icon-search {
+	/*background-image: url("search.png") !important;
+    background-repeat: no-repeat !important;
+    background-size: 120% auto !important;
+    background-position: 0;*/
+}
+
+.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
+background-position: left center;
+width:22px;
+height:22px;	
+}
+
+.icon-app {
+background-image: url("opencloudApp.png");
+}
+.icon-home {
+background-image: url("Home.png");
+}
+.icon-deployment{
+background-image: url("Deployments.png");
+}
+.icon-site{
+background-image: url("Sites.png");
+}
+.icon-slice{
+background-image: url("Slices.png");
+}
+.icon-user{
+background-image: url("Users.png");
+}
+.icon-reservation{
+background-image: url("Reservations.png");
+}
+
+.left-nav>ul>li.active>a>.icon-home , .left-nav>ul>li:hover>a>.icon-home , .left-nav>ul>li.focus>a>.icon-home{
+background-image: url("Home_over.png");
+}
+
+.left-nav>ul>li.active>a>.icon-deployment,.left-nav>ul>li:hover>a>.icon-deployment,.left-nav>ul>li.focus>a>.icon-deployment{
+background-image: url("Deployments_over.png");
+}
+.left-nav>ul>li.active>a>.icon-site , .left-nav>ul>li:hover>a>.icon-site , .left-nav>ul>li.focus>a>.icon-site{
+background-image: url("Sites_over.png");
+}
+.left-nav>ul>li.active>a>.icon-slice , .left-nav>ul>li:hover>a>.icon-slice , .left-nav>ul>li.focus>a>.icon-slice {
+background-image: url("Slices_over.png");
+}
+.left-nav>ul>li.active>a>.icon-user , .left-nav>ul>li:hover>a>.icon-user , .left-nav>ul>li.focus>a>.icon-user{
+background-image: url("Users_over.png");
+}
+.left-nav>ul>li.active>a>.icon-reservation , .left-nav>ul>li:hover>a>.icon-reservation , .left-nav>ul>li.focus>a>.icon-reservation{
+background-image: url("Reservations_over.png");
+}
