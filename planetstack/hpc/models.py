@@ -16,6 +16,8 @@ class HpcService(SingletonModel,Service):
 class ServiceProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
+
+    service_provider_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=254,help_text="Service Provider Name")
     description = models.TextField(max_length=254,null=True, blank=True, help_text="Description of Service Provider")
     enabled = models.BooleanField(default=True)
@@ -25,6 +27,8 @@ class ServiceProvider(PlCoreBase):
 class ContentProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
+
+    content_provider_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=254)
     enabled = models.BooleanField(default=True)
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Content Provider")
@@ -38,6 +42,8 @@ class ContentProvider(PlCoreBase):
 class OriginServer(PlCoreBase):
     class Meta:
         app_label = "hpc"
+
+    origin_server_id = models.IntegerField(null=True, blank=True)
     url = models.URLField()
     contentProvider = models.ForeignKey(ContentProvider)
 
@@ -53,6 +59,8 @@ class OriginServer(PlCoreBase):
 class CDNPrefix(PlCoreBase):
     class Meta:
         app_label = "hpc"
+
+    cdn_prefix_id = models.IntegerField(null=True, blank=True)
     prefix = models.CharField(max_length=200, help_text="Registered Prefix for Domain")
     contentProvider = models.ForeignKey(ContentProvider)
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Content Provider")
