@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 
 import django_evolution 
 
@@ -77,6 +77,17 @@ class PlStackTabularInline(admin.TabularInline):
         # InlineModelAdmin as no get_fields() method, so in order to add
         # the selflink field, we override __init__ to modify self.fields and
         # self.readonly_fields.
+
+        self.setup_selflink()
+
+    def setup_selflink(self):
+        reverse_path = "admin:%s_change" % (self.model._meta.db_table)
+        try:
+            url = reverse(reverse_path, args=(0,))
+        except NoReverseMatch:
+            # We don't have an admin for this object, so don't create the
+            # selflink.
+            return
 
         if (self.fields is None):
             self.fields = []
