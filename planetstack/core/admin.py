@@ -71,7 +71,34 @@ class SingletonAdmin (admin.ModelAdmin):
 
 
 class PlStackTabularInline(admin.TabularInline):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(PlStackTabularInline, self).__init__(*args, **kwargs)
+
+        # InlineModelAdmin as no get_fields() method, so in order to add
+        # the selflink field, we override __init__ to modify self.fields and
+        # self.readonly_fields.
+
+        #if (self.fields is None):
+        #    self.fields = self.model._meta.get_all_field_names()
+
+        if (self.fields is not None):
+            self.fields = tuple(self.fields) + ("selflink", )
+
+            if self.readonly_fields is None:
+                self.readonly_fields = ()
+
+            self.readonly_fields = tuple(self.readonly_fields) + ("selflink", )
+
+    def selflink(self, obj):
+        if obj.id:
+            reverse_path = "admin:%s_change" % (self.model._meta.db_table)
+            url = reverse(reverse_path, args =(obj.id,))
+            return "<a href='%s'>Details</a>" % str(url)
+        else:
+            return "Not present"
+
+    selflink.allow_tags = True
+    selflink.short_description = "Details"
 
 class ReadOnlyTabularInline(PlStackTabularInline):
     can_delete = False
