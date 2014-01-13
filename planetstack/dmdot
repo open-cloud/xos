@@ -20,6 +20,7 @@ except:
 g = globals()
 model_classes = []
 class_names = []
+
 for c in g.values():
 	if type(c)==type(PlCoreBase):
 		model_classes.append(c)
