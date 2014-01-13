@@ -78,8 +78,11 @@ class PlStackTabularInline(admin.TabularInline):
         # the selflink field, we override __init__ to modify self.fields and
         # self.readonly_fields.
 
-        #if (self.fields is None):
-        #    self.fields = self.model._meta.get_all_field_names()
+        if (self.fields is None):
+            self.fields = []
+            for f in self.model._meta.fields:
+                if f.editable and f.name != "id":
+                    self.fields.append(f.name)
 
         if (self.fields is not None):
             self.fields = tuple(self.fields) + ("selflink", )
@@ -917,7 +920,7 @@ class ServiceResourceROInline(ReadOnlyTabularInline):
     extra = 0
     fields = ['serviceClass', 'name', 'maxUnitsDeployment', 'maxUnitsNode', 'maxDuration', 'bucketInRate', 'bucketMaxSize', 'cost', 'calendarReservable']
 
-class ServiceResourceInline(admin.TabularInline):
+class ServiceResourceInline(PlStackTabularInline):
     model = ServiceResource
     extra = 0
 
@@ -934,7 +937,7 @@ class ReservedResourceROInline(ReadOnlyTabularInline):
     fields = ['sliver', 'resource','quantity','reservationSet']
     suit_classes = 'suit-tab suit-tab-reservedresources'
 
-class ReservedResourceInline(admin.TabularInline):
+class ReservedResourceInline(PlStackTabularInline):
     model = ReservedResource
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservedresources'
@@ -1087,7 +1090,7 @@ class RouterROInline(ReadOnlyTabularInline):
 
     fields = ['name', 'owner', 'permittedNetworks', 'networks']
 
-class RouterInline(admin.TabularInline):
+class RouterInline(PlStackTabularInline):
     model = Router.networks.through
     extra = 0
     verbose_name_plural = "Routers"
@@ -1117,7 +1120,7 @@ class NetworkSliversROInline(ReadOnlyTabularInline):
     verbose_name = "Sliver"
     suit_classes = 'suit-tab suit-tab-networkslivers'
 
-class NetworkSliversInline(admin.TabularInline):
+class NetworkSliversInline(PlStackTabularInline):
     readonly_fields = ("ip", )
     model = NetworkSliver
     extra = 0
@@ -1133,7 +1136,7 @@ class NetworkSlicesROInline(ReadOnlyTabularInline):
     suit_classes = 'suit-tab suit-tab-networkslices'
     fields = ['network','slice']
 
-class NetworkSlicesInline(admin.TabularInline):
+class NetworkSlicesInline(PlStackTabularInline):
     model = NetworkSlice
     extra = 0
     verbose_name_plural = "Slices"
@@ -1193,7 +1196,7 @@ def right_dollar_field(fieldName, short_description):
     newFunc.allow_tags = True
     return newFunc
 
-class InvoiceChargeInline(admin.TabularInline):
+class InvoiceChargeInline(PlStackTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1216,27 +1219,20 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     dollar_amount = dollar_field("amount", "Amount")
 
-class InvoiceInline(admin.TabularInline):
+class InvoiceInline(PlStackTabularInline):
     model = Invoice
     extra = 0
     verbose_name_plural = "Invoices"
     verbose_name = "Invoice"
-    fields = ["date", "dollar_amount", "invoiceLink"]
-    readonly_fields = ["date", "dollar_amount", "invoiceLink"]
+    fields = ["date", "dollar_amount"]
+    readonly_fields = ["date", "dollar_amount"]
     suit_classes = 'suit-tab suit-tab-accountinvoice'
     can_delete=False
     max_num=0
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-    def invoiceLink(self, obj):
-        reverse_path = "admin:core_invoice_change"
-        url = reverse(reverse_path, args =(obj.id,))
-        return "<a href='%s'>%s</a>" % (url, "details")
-    invoiceLink.allow_tags = True
-    invoiceLink.short_description = "Details"
-
-class PendingChargeInline(admin.TabularInline):
+class PendingChargeInline(PlStackTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1255,7 +1251,7 @@ class PendingChargeInline(admin.TabularInline):
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-class PaymentInline(admin.TabularInline):
+class PaymentInline(PlStackTabularInline):
     model=Payment
     extra = 1
     verbose_name_plural = "Payments"
