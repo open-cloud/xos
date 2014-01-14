@@ -80,33 +80,56 @@ class PlStackTabularInline(admin.TabularInline):
 
         self.setup_selflink()
 
-    def setup_selflink(self):
-        reverse_path = "admin:%s_change" % (self.model._meta.db_table)
+    def get_change_url(self, model, id):
+        """ Get the URL to a change form in the admin for this model """
+        reverse_path = "admin:%s_change" % (model._meta.db_table)
         try:
-            url = reverse(reverse_path, args=(0,))
+            url = reverse(reverse_path, args=(id,))
         except NoReverseMatch:
-            # We don't have an admin for this object, so don't create the
-            # selflink.
+            return None
+
+        return url
+
+    def setup_selflink(self):
+        if hasattr(self, "selflink_fieldname"):
+            """ self.selflink_model can be defined to punch through a relation
+                to its target object. For example, in SliceNetworkInline, set
+                selflink_model = "network", and the URL will lead to the Network
+                object instead of trying to bring up a change view of the
+                SliceNetwork object.
+            """
+            self.selflink_model = getattr(self.model,self.selflink_fieldname).field.rel.to
+        else:
+            self.selflink_model = self.model
+
+        url = self.get_change_url(self.selflink_model, 0)
+
+        # We don't have an admin for this object, so don't create the
+        # selflink.
+        if (url == None):
             return
 
+        # Since we need to add "selflink" to the field list, we need to create
+        # self.fields if it is None.
         if (self.fields is None):
             self.fields = []
             for f in self.model._meta.fields:
                 if f.editable and f.name != "id":
                     self.fields.append(f.name)
 
-        if (self.fields is not None):
-            self.fields = tuple(self.fields) + ("selflink", )
+        self.fields = tuple(self.fields) + ("selflink", )
 
-            if self.readonly_fields is None:
-                self.readonly_fields = ()
+        if self.readonly_fields is None:
+            self.readonly_fields = ()
 
-            self.readonly_fields = tuple(self.readonly_fields) + ("selflink", )
+        self.readonly_fields = tuple(self.readonly_fields) + ("selflink", )
 
     def selflink(self, obj):
+        if hasattr(self, "selflink_fieldname"):
+            obj = getattr(obj, self.selflink_fieldname)
+
         if obj.id:
-            reverse_path = "admin:%s_change" % (self.model._meta.db_table)
-            url = reverse(reverse_path, args =(obj.id,))
+            url = self.get_change_url(self.selflink_model, obj.id)
             return "<a href='%s'>Details</a>" % str(url)
         else:
             return "Not present"
@@ -358,6 +381,7 @@ class SliceNetworkROInline(ReadOnlyTabularInline):
 
 class SliceNetworkInline(PlStackTabularInline):
     model = Network.slices.through
+    selflink_fieldname = "network"
     extra = 0
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
@@ -1134,6 +1158,7 @@ class NetworkSliversROInline(ReadOnlyTabularInline):
 class NetworkSliversInline(PlStackTabularInline):
     readonly_fields = ("ip", )
     model = NetworkSliver
+    selflink_fieldname = "sliver"
     extra = 0
     verbose_name_plural = "Slivers"
     verbose_name = "Sliver"
@@ -1149,6 +1174,7 @@ class NetworkSlicesROInline(ReadOnlyTabularInline):
 
 class NetworkSlicesInline(PlStackTabularInline):
     model = NetworkSlice
+    selflink_fieldname = "slice"
     extra = 0
     verbose_name_plural = "Slices"
     verbose_name = "Slice"
