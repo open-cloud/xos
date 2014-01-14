@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 
 import django_evolution 
 
@@ -78,21 +78,58 @@ class PlStackTabularInline(admin.TabularInline):
         # the selflink field, we override __init__ to modify self.fields and
         # self.readonly_fields.
 
-        #if (self.fields is None):
-        #    self.fields = self.model._meta.get_all_field_names()
+        self.setup_selflink()
 
-        if (self.fields is not None):
-            self.fields = tuple(self.fields) + ("selflink", )
+    def get_change_url(self, model, id):
+        """ Get the URL to a change form in the admin for this model """
+        reverse_path = "admin:%s_change" % (model._meta.db_table)
+        try:
+            url = reverse(reverse_path, args=(id,))
+        except NoReverseMatch:
+            return None
 
-            if self.readonly_fields is None:
-                self.readonly_fields = ()
+        return url
 
-            self.readonly_fields = tuple(self.readonly_fields) + ("selflink", )
+    def setup_selflink(self):
+        if hasattr(self, "selflink_fieldname"):
+            """ self.selflink_model can be defined to punch through a relation
+                to its target object. For example, in SliceNetworkInline, set
+                selflink_model = "network", and the URL will lead to the Network
+                object instead of trying to bring up a change view of the
+                SliceNetwork object.
+            """
+            self.selflink_model = getattr(self.model,self.selflink_fieldname).field.rel.to
+        else:
+            self.selflink_model = self.model
+
+        url = self.get_change_url(self.selflink_model, 0)
+
+        # We don't have an admin for this object, so don't create the
+        # selflink.
+        if (url == None):
+            return
+
+        # Since we need to add "selflink" to the field list, we need to create
+        # self.fields if it is None.
+        if (self.fields is None):
+            self.fields = []
+            for f in self.model._meta.fields:
+                if f.editable and f.name != "id":
+                    self.fields.append(f.name)
+
+        self.fields = tuple(self.fields) + ("selflink", )
+
+        if self.readonly_fields is None:
+            self.readonly_fields = ()
+
+        self.readonly_fields = tuple(self.readonly_fields) + ("selflink", )
 
     def selflink(self, obj):
+        if hasattr(self, "selflink_fieldname"):
+            obj = getattr(obj, self.selflink_fieldname)
+
         if obj.id:
-            reverse_path = "admin:%s_change" % (self.model._meta.db_table)
-            url = reverse(reverse_path, args =(obj.id,))
+            url = self.get_change_url(self.selflink_model, obj.id)
             return "<a href='%s'>Details</a>" % str(url)
         else:
             return "Not present"
@@ -344,6 +381,7 @@ class SliceNetworkROInline(ReadOnlyTabularInline):
 
 class SliceNetworkInline(PlStackTabularInline):
     model = Network.slices.through
+    selflink_fieldname = "network"
     extra = 0
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
@@ -917,7 +955,7 @@ class ServiceResourceROInline(ReadOnlyTabularInline):
     extra = 0
     fields = ['serviceClass', 'name', 'maxUnitsDeployment', 'maxUnitsNode', 'maxDuration', 'bucketInRate', 'bucketMaxSize', 'cost', 'calendarReservable']
 
-class ServiceResourceInline(admin.TabularInline):
+class ServiceResourceInline(PlStackTabularInline):
     model = ServiceResource
     extra = 0
 
@@ -934,7 +972,7 @@ class ReservedResourceROInline(ReadOnlyTabularInline):
     fields = ['sliver', 'resource','quantity','reservationSet']
     suit_classes = 'suit-tab suit-tab-reservedresources'
 
-class ReservedResourceInline(admin.TabularInline):
+class ReservedResourceInline(PlStackTabularInline):
     model = ReservedResource
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservedresources'
@@ -1087,7 +1125,7 @@ class RouterROInline(ReadOnlyTabularInline):
 
     fields = ['name', 'owner', 'permittedNetworks', 'networks']
 
-class RouterInline(admin.TabularInline):
+class RouterInline(PlStackTabularInline):
     model = Router.networks.through
     extra = 0
     verbose_name_plural = "Routers"
@@ -1117,9 +1155,10 @@ class NetworkSliversROInline(ReadOnlyTabularInline):
     verbose_name = "Sliver"
     suit_classes = 'suit-tab suit-tab-networkslivers'
 
-class NetworkSliversInline(admin.TabularInline):
+class NetworkSliversInline(PlStackTabularInline):
     readonly_fields = ("ip", )
     model = NetworkSliver
+    selflink_fieldname = "sliver"
     extra = 0
     verbose_name_plural = "Slivers"
     verbose_name = "Sliver"
@@ -1133,8 +1172,9 @@ class NetworkSlicesROInline(ReadOnlyTabularInline):
     suit_classes = 'suit-tab suit-tab-networkslices'
     fields = ['network','slice']
 
-class NetworkSlicesInline(admin.TabularInline):
+class NetworkSlicesInline(PlStackTabularInline):
     model = NetworkSlice
+    selflink_fieldname = "slice"
     extra = 0
     verbose_name_plural = "Slices"
     verbose_name = "Slice"
@@ -1193,7 +1233,7 @@ def right_dollar_field(fieldName, short_description):
     newFunc.allow_tags = True
     return newFunc
 
-class InvoiceChargeInline(admin.TabularInline):
+class InvoiceChargeInline(PlStackTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1216,27 +1256,20 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     dollar_amount = dollar_field("amount", "Amount")
 
-class InvoiceInline(admin.TabularInline):
+class InvoiceInline(PlStackTabularInline):
     model = Invoice
     extra = 0
     verbose_name_plural = "Invoices"
     verbose_name = "Invoice"
-    fields = ["date", "dollar_amount", "invoiceLink"]
-    readonly_fields = ["date", "dollar_amount", "invoiceLink"]
+    fields = ["date", "dollar_amount"]
+    readonly_fields = ["date", "dollar_amount"]
     suit_classes = 'suit-tab suit-tab-accountinvoice'
     can_delete=False
     max_num=0
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-    def invoiceLink(self, obj):
-        reverse_path = "admin:core_invoice_change"
-        url = reverse(reverse_path, args =(obj.id,))
-        return "<a href='%s'>%s</a>" % (url, "details")
-    invoiceLink.allow_tags = True
-    invoiceLink.short_description = "Details"
-
-class PendingChargeInline(admin.TabularInline):
+class PendingChargeInline(PlStackTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1255,7 +1288,7 @@ class PendingChargeInline(admin.TabularInline):
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-class PaymentInline(admin.TabularInline):
+class PaymentInline(PlStackTabularInline):
     model=Payment
     extra = 1
     verbose_name_plural = "Payments"
