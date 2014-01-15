@@ -46,5 +46,3 @@ elif (output=='-json'):
 				except KeyError:
 					d[c.__name__]=[f.name.title()]
 	print json.dumps(d,indent=4)
-	
-	

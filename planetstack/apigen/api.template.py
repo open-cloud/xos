@@ -14,6 +14,7 @@ from django.forms import widgets
 		plural: English plural of object name
 		camel: CamelCase version of object name
 		refs: list of references to other Model objects
+		props: list of properties minus refs
 
 	TODO: Deal with subnets
 """
@@ -23,8 +24,7 @@ from django.forms import widgets
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-		{% for object in generator.all %} 
-        '{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
+		{% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
 		{% endfor %}
     })
 
@@ -35,11 +35,11 @@ def api_root(request, format=None):
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	{% for ref in object.refs %}
-	sites = serializers.HyperlinkedRelatedField(view_name='{{ ref }}-detail')
+	{{ ref.plural }} = serializers.HyperlinkedRelatedField(view_name='{{ ref }}-detail')
 	{% endfor %}
 	class Meta:
 		model = {{ object }}
-		fields = ('id',{% for ref in object.refs %}'{{ ref }}',{% endfor %})
+		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %})
 {% endfor %}
 
 serializerLookUp = { 
