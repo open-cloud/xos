@@ -21,7 +21,7 @@ class Site(PlCoreBase):
     is_public = models.BooleanField(default=True, help_text="Indicates the visibility of this site to other members")
     abbreviated_name = models.CharField(max_length=80)
 
-    deployments = models.ManyToManyField('Deployment', blank=True)
+    deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
     #deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True)
     tags = generic.GenericRelation(Tag)
 

@@ -417,6 +417,24 @@ class DeploymentAdminForm(forms.ModelForm):
     class Meta:
         model = Deployment
 
+    def __init__(self, *args, **kwargs):
+      super(DeploymentAdminForm, self).__init__(*args, **kwargs)
+
+      if self.instance and self.instance.pk:
+        self.fields['sites'].initial = self.instance.sites.all()
+
+    def save(self, commit=True):
+      deployment = super(DeploymentAdminForm, self).save(commit=False)
+
+      if commit:
+        deployment.save()
+
+      if deployment.pk:
+        deployment.sites = self.cleaned_data['sites']
+        self.save_m2m()
+
+      return deployment
+
 class SiteAssocInline(PlStackTabularInline):
     model = Site.deployments.through
     extra = 0
