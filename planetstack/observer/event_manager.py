@@ -4,6 +4,7 @@ import requests, json
 from planetstack.config import Config
 from observer.deleters import deleters
 
+import uuid
 import os
 import base64
 from fofum import Fofum
@@ -49,8 +50,10 @@ class EventSender:
 		self.fofum = Fofum(user=user)
 		self.fofum.make(clid)
 
-	def fire(self,**args):
-		self.fofum.fire(json.dumps(args))
+	def fire(self,**kwargs):
+                kwargs["uuid"] = str(uuid.uuid1())
+                print "YYY fire", kwargs
+		self.fofum.fire(json.dumps(kwargs))
 
 class EventListener:
 	def __init__(self,wake_up=None):
@@ -61,26 +64,30 @@ class EventListener:
 		payload_dict = json.loads(payload)
 
 		try:
-			deletion = payload_dict['deletion_flag']
+			deletion = payload_dict.get('delete_flag', False)
+                        print "XXX", payload_dict, deletion
 			if (deletion):
 				model = payload_dict['model']
 				pk = payload_dict['pk']
 
+                                print "XXX", model, pk, deleters
+
 				for deleter in deleters[model]:
+                                        print "ZZZ executing deleter"
 					deleter(pk)
 		except:
 			deletion = False
 
 		if (not deletion and self.wake_up):
 			self.wake_up()
-		
+
 	def random_client_id(self):
 		try:
 			return self.client_id
 		except AttributeError:
 			self.client_id = base64.urlsafe_b64encode(os.urandom(12))
 			return self.client_id
-	
+
 	def run(self):
 		# This is our unique client id, to be used when firing and receiving events
 		# It needs to be generated once and placed in the config file

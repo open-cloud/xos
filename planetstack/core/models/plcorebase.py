@@ -1,6 +1,7 @@
 import os
 from django.db import models
 from django.forms.models import model_to_dict
+from django.core.urlresolvers import reverse
 # This is a no-op if observer_disabled is set to 1 in the config file
 from observer import *
 
@@ -40,7 +41,7 @@ class PlCoreBase(models.Model):
         super(PlCoreBase, self).delete(*args, **kwds)
 
         # This is a no-op if observer_disabled is set
-        notify_observer(model=self, delete=True)
+        notify_observer(model=self, delete=True, pk=self.pk)
 
     def save(self, *args, **kwargs):
         super(PlCoreBase, self).save(*args, **kwargs)
