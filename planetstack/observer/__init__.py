@@ -10,14 +10,14 @@ print_once = True
 if (not observer_disabled):
     from .event_manager import EventSender
 
-    def notify_observer(model=None, delete=False, pk=None):
+    def notify_observer(model=None, delete=False, pk=None, model_dict={}):
         try:
             if (model and delete):
                 if hasattr(model,"__name__"):
                     modelName = model.__name__
                 else:
                     modelName = model.__class__.__name__
-                EventSender().fire(delete_flag = delete, model = modelName, pk = pk)
+                EventSender().fire(delete_flag = delete, model = modelName, pk = pk, model_dict=model_dict)
             else:
                 EventSender().fire()
         except Exception,e:

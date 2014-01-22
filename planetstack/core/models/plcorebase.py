@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 # This is a no-op if observer_disabled is set to 1 in the config file
 from observer import *
 
@@ -38,10 +39,17 @@ class PlCoreBase(models.Model):
         return self.diff.get(field_name, None)
 
     def delete(self, *args, **kwds):
+        # so we have something to give the observer
+        pk = self.pk
+        model_dict = model_to_dict(self)
+        for (k,v) in model_dict.items():
+            # things like datetime are not JSON serializable
+            model_dict[k] = str(v)
+
         super(PlCoreBase, self).delete(*args, **kwds)
 
         # This is a no-op if observer_disabled is set
-        notify_observer(model=self, delete=True, pk=self.pk)
+        notify_observer(model=self, delete=True, pk=pk, model_dict=model_dict)
 
     def save(self, *args, **kwargs):
         super(PlCoreBase, self).save(*args, **kwargs)
