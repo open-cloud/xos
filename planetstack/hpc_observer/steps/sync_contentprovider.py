@@ -28,7 +28,7 @@ class SyncContentProvider(SyncStep, HpcLibrary):
         return ContentProvider.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, cp):
-        logger.info("sync'ing service provider %s" % str(cp))
+        logger.info("sync'ing content provider %s" % str(cp))
         account_name = self.make_account_name(cp.name)
         print "XXX", cp.name, account_name
 
@@ -37,11 +37,12 @@ class SyncContentProvider(SyncStep, HpcLibrary):
 
         spid = cp.serviceProvider.service_provider_id
 
-        cp_dict = {"account": account_name, "name": cp.name, "enabled": cp.enabled, "service_provider_id": spid}
+        cp_dict = {"account": account_name, "name": cp.name, "enabled": cp.enabled}
 
         #print cp_dict
 
         if not cp.content_provider_id:
+            cp_dict["service_provider_id"] = spid
             id = self.client.onev.Create("ContentProvider", cp_dict)
             cp.content_provider_id = id
         else:
