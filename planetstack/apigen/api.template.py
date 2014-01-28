@@ -35,7 +35,11 @@ def api_root(request, format=None):
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	{% for ref in object.refs %}
-	{{ ref.plural }} = serializers.HyperlinkedRelatedField(view_name='{{ ref }}-detail')
+	{% if ref.multi %}
+	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+	{% else %}
+	{{ ref }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+	{% endif %}
 	{% endfor %}
 	class Meta:
 		model = {{ object }}
@@ -53,11 +57,11 @@ serializerLookUp = {
 {% for object in generator.all %}
 
 class {{ object.camel }}List(generics.ListCreateAPIView):
-    queryset = {{ object.camel }}.objects.all()
+    queryset = {{ object.camel }}.objects.select_related.all()
     serializer_class = {{ object.camel }}Serializer
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = {{ object.camel }}.objects.all()
+    queryset = {{ object.camel }}.objects.select_related.all()
     serializer_class = {{ object.camel }}Serializer
 
 {% endfor %}

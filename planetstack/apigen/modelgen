@@ -11,8 +11,16 @@ from django.template import Context, Template
 
 sys.path.append('.')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
-from django.db.models.fields.related import ForeignKey
+from django.db.models.fields.related import ForeignKey, ManyToManyField
 from core.models import *
+
+def singular(foo, keys):
+	for k in keys:
+		if (foo==k+'es'):
+			return k
+		elif (foo==k+'s'):
+			return k
+	raise Exception('Plural to singular error for %s'%foo)
 
 g = globals()
 
@@ -66,6 +74,18 @@ class Generator(dict):
 					obj.refs.append(refobj)
 				else:
 					obj.props.append(f.name)
+			m2m = obj.model._meta.many_to_many
+			for f in m2m:
+				try:
+					related_model_name = f.m2m_reverse_field_name()
+				except:
+					related_model_name = f.m2m_db_table().rsplit('_',1)[-1]
+
+				if related_model_name in self.keys():
+					refobj = self[related_model_name]
+					obj.multi=True
+					refobj.refs.append(obj)
+
 			
 def main():
 	try:
