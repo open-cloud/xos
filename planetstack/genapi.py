@@ -80,7 +80,7 @@ class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = ServiceAttribute
-		fields = ('id','created','updated','enacted','name','value',)
+		fields = ('id','created','updated','enacted','name','value','service',)
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
@@ -140,7 +140,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Tag
-		fields = ('id','created','updated','enacted','name','value','content_type','object_id',)
+		fields = ('id','created','updated','enacted','name','value','content_type','object_id','site','service','slice','sliver','node',)
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
@@ -152,7 +152,7 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Invoice
-		fields = ('id','created','updated','enacted','date',)
+		fields = ('id','created','updated','enacted','date','account',)
 
 
 class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
@@ -180,7 +180,7 @@ class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = SlicePrivilege
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','user','slice','role',)
 
 
 class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
@@ -196,7 +196,7 @@ class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = NetworkSliver
-		fields = ('id','created','updated','enacted','ip','port_id',)
+		fields = ('id','created','updated','enacted','ip','port_id','network','sliver',)
 
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
@@ -220,7 +220,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Slice
-		fields = ('id','created','updated','enacted','tenant_id','name','enabled','omf_friendly','description','slice_url','network_id','router_id','subnet_id','serviceClass','creator',)
+		fields = ('id','created','updated','enacted','tenant_id','name','enabled','omf_friendly','description','slice_url','network_id','router_id','subnet_id','serviceClass','creator','site','service','network','network',)
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
@@ -236,7 +236,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Network
-		fields = ('id','created','updated','enacted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id',)
+		fields = ('id','created','updated','enacted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','router','router',)
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer):
@@ -280,7 +280,7 @@ class ChargeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Charge
-		fields = ('id','created','updated','enacted','kind','state','date','object','amount','coreHours',)
+		fields = ('id','created','updated','enacted','kind','state','date','object','amount','coreHours','account','slice','invoice',)
 
 
 class RoleSerializer(serializers.HyperlinkedModelSerializer):
@@ -320,7 +320,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Sliver
-		fields = ('id','created','updated','enacted','instance_id','name','instance_name','ip','creator','deploymentNetwork','numberCores',)
+		fields = ('id','created','updated','enacted','instance_id','name','instance_name','ip','creator','deploymentNetwork','numberCores','network','image','slice','node',)
 
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
@@ -336,7 +336,7 @@ class NodeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Node
-		fields = ('id','created','updated','enacted','name',)
+		fields = ('id','created','updated','enacted','name','site','deployment',)
 
 
 class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
@@ -348,7 +348,7 @@ class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = ReservedResource
-		fields = ('id','created','updated','enacted','resource','quantity','reservationSet',)
+		fields = ('id','created','updated','enacted','resource','quantity','reservationSet','sliver',)
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
@@ -360,7 +360,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Payment
-		fields = ('id','created','updated','enacted','amount','date',)
+		fields = ('id','created','updated','enacted','amount','date','account',)
 
 
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
@@ -376,7 +376,7 @@ class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = NetworkSlice
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','network','slice',)
 
 
 class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
@@ -396,7 +396,7 @@ class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = PlanetStackPrivilege
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','user','planetstack','role',)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -408,7 +408,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = User
-		fields = ('id','password','last_login','email','username','kuser_id','firstname','lastname','phone','user_url','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','timezone',)
+		fields = ('id','password','last_login','email','username','kuser_id','firstname','lastname','phone','user_url','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','timezone','site',)
 
 
 class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
@@ -420,7 +420,7 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Deployment
-		fields = ('id','created','updated','enacted','name',)
+		fields = ('id','created','updated','enacted','name','site',)
 
 
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
@@ -432,7 +432,7 @@ class ReservationSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Reservation
-		fields = ('id','created','updated','enacted','startTime','duration',)
+		fields = ('id','created','updated','enacted','startTime','duration','slice',)
 
 
 class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
@@ -452,7 +452,7 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = SitePrivilege
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','user','site','role',)
 
 
 class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
@@ -472,7 +472,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Account
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','site',)
 
 
 class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -496,7 +496,7 @@ class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = SiteDeployments
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','site','deployment',)
 
 
 class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
@@ -516,7 +516,7 @@ class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = DeploymentPrivilege
-		fields = ('id','created','updated','enacted',)
+		fields = ('id','created','updated','enacted','user','deployment','role',)
 
 
 class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
@@ -544,7 +544,7 @@ class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = SliceTag
-		fields = ('id','created','updated','enacted','name','value',)
+		fields = ('id','created','updated','enacted','name','value','slice',)
 
 
 class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
