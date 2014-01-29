@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
+from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 
@@ -31,10 +32,9 @@ def api_root(request, format=None):
 		'sliceroles': reverse('slicerole-list', request=request, format=format),
 		'tags': reverse('tag-list', request=request, format=format),
 		'invoices': reverse('invoice-list', request=request, format=format),
-		'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
 		'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
+		'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
 		'networkslivers': reverse('networksliver-list', request=request, format=format),
-		'projects': reverse('project-list', request=request, format=format),
 		'slices': reverse('slice-list', request=request, format=format),
 		'networks': reverse('network-list', request=request, format=format),
 		'services': reverse('service-list', request=request, format=format),
@@ -53,14 +53,13 @@ def api_root(request, format=None):
 		'deployments': reverse('deployment-list', request=request, format=format),
 		'reservations': reverse('reservation-list', request=request, format=format),
 		'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
-		'singletonmodels': reverse('singletonmodel-list', request=request, format=format),
 		'planetstacks': reverse('planetstack-list', request=request, format=format),
 		'accounts': reverse('account-list', request=request, format=format),
 		'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
 		'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
 		'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
 		'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
-		'plcorebases': reverse('plcorebase-list', request=request, format=format),
+		'projects': reverse('project-list', request=request, format=format),
 		'slicetags': reverse('slicetag-list', request=request, format=format),
 		'networktemplates': reverse('networktemplate-list', request=request, format=format),
 		'routers': reverse('router-list', request=request, format=format),
@@ -72,15 +71,15 @@ def api_root(request, format=None):
 
 
 
-class ServiceattributeSerializer(serializers.HyperlinkedModelSerializer):
+class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	service = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='service-detail')
+	service = serializers.HyperlinkedRelatedField(read_only=True, view_name='service-detail')
 	
 	
 	class Meta:
-		model = serviceattribute
+		model = ServiceAttribute
 		fields = ('id','created','updated','enacted','name','value',)
 
 
@@ -88,15 +87,15 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = image
+		model = Image
 		fields = ('id','created','updated','enacted','image_id','name','disk_format','container_format',)
 
 
-class NetworkparameterSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = networkparameter
+		model = NetworkParameter
 		fields = ('id','created','updated','enacted','parameter','value','content_type','object_id',)
 
 
@@ -104,15 +103,15 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = site
+		model = Site
 		fields = ('id','created','updated','enacted','tenant_id','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
 
 
-class SliceroleSerializer(serializers.HyperlinkedModelSerializer):
+class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = slicerole
+		model = SliceRole
 		fields = ('id','created','updated','enacted','role',)
 
 
@@ -124,7 +123,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
-	service = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='service-detail')
+	service = serializers.HyperlinkedRelatedField(read_only=True, view_name='service-detail')
 	
 	
 	
@@ -140,7 +139,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	class Meta:
-		model = tag
+		model = Tag
 		fields = ('id','created','updated','enacted','name','value','content_type','object_id',)
 
 
@@ -148,75 +147,67 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	account = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='account-detail')
+	account = serializers.HyperlinkedRelatedField(read_only=True, view_name='account-detail')
 	
 	
 	class Meta:
-		model = invoice
+		model = Invoice
 		fields = ('id','created','updated','enacted','date',)
 
 
-class SliceprivilegeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	
-	user = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
-	
-	
-	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
-	
-	
-	
-	role = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='role-detail')
-	
-	
-	class Meta:
-		model = sliceprivilege
-		fields = ('id','created','updated','enacted',)
-
-
-class PlanetstackroleSerializer(serializers.HyperlinkedModelSerializer):
+class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = planetstackrole
+		model = PlanetStackRole
 		fields = ('id','created','updated','enacted','role',)
 
 
-class NetworksliverSerializer(serializers.HyperlinkedModelSerializer):
+class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+	user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
 	
 	
 	
-	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
+	
+	
+	
+	role = serializers.HyperlinkedRelatedField(read_only=True, view_name='role-detail')
 	
 	
 	class Meta:
-		model = networksliver
+		model = SlicePrivilege
+		fields = ('id','created','updated','enacted',)
+
+
+class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	
+	network = serializers.HyperlinkedRelatedField(read_only=True, view_name='network-detail')
+	
+	
+	
+	sliver = serializers.HyperlinkedRelatedField(read_only=True, view_name='sliver-detail')
+	
+	
+	class Meta:
+		model = NetworkSliver
 		fields = ('id','created','updated','enacted','ip','port_id',)
-
-
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = project
-		fields = ('id','created','updated','enacted','name',)
 
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	
-	service = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='service-detail')
+	service = serializers.HyperlinkedRelatedField(read_only=True, view_name='service-detail')
 	
 	
 	
@@ -228,7 +219,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	class Meta:
-		model = slice
+		model = Slice
 		fields = ('id','created','updated','enacted','tenant_id','name','enabled','omf_friendly','description','slice_url','network_id','router_id','subnet_id','serviceClass','creator',)
 
 
@@ -244,7 +235,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	class Meta:
-		model = network
+		model = Network
 		fields = ('id','created','updated','enacted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id',)
 
 
@@ -252,23 +243,23 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = service
+		model = Service
 		fields = ('id','created','updated','enacted','description','enabled','name','versionNumber','published',)
 
 
-class ServiceclassSerializer(serializers.HyperlinkedModelSerializer):
+class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = serviceclass
+		model = ServiceClass
 		fields = ('id','created','updated','enacted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 
-class SiteroleSerializer(serializers.HyperlinkedModelSerializer):
+class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = siterole
+		model = SiteRole
 		fields = ('id','created','updated','enacted','role',)
 
 
@@ -276,19 +267,19 @@ class ChargeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	account = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='account-detail')
+	account = serializers.HyperlinkedRelatedField(read_only=True, view_name='account-detail')
 	
 	
 	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
 	
 	
 	
-	invoice = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='invoice-detail')
+	invoice = serializers.HyperlinkedRelatedField(read_only=True, view_name='invoice-detail')
 	
 	
 	class Meta:
-		model = charge
+		model = Charge
 		fields = ('id','created','updated','enacted','kind','state','date','object','amount','coreHours',)
 
 
@@ -296,15 +287,15 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = role
+		model = Role
 		fields = ('id','created','updated','enacted','role_type','role','description','content_type',)
 
 
-class UsableobjectSerializer(serializers.HyperlinkedModelSerializer):
+class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = usableobject
+		model = UsableObject
 		fields = ('id','created','updated','enacted','name',)
 
 
@@ -316,19 +307,19 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
-	image = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='image-detail')
+	image = serializers.HyperlinkedRelatedField(read_only=True, view_name='image-detail')
 	
 	
 	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
 	
 	
 	
-	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
+	node = serializers.HyperlinkedRelatedField(read_only=True, view_name='node-detail')
 	
 	
 	class Meta:
-		model = sliver
+		model = Sliver
 		fields = ('id','created','updated','enacted','instance_id','name','instance_name','ip','creator','deploymentNetwork','numberCores',)
 
 
@@ -336,27 +327,27 @@ class NodeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	
-	deployment = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+	deployment = serializers.HyperlinkedRelatedField(read_only=True, view_name='deployment-detail')
 	
 	
 	class Meta:
-		model = node
+		model = Node
 		fields = ('id','created','updated','enacted','name',)
 
 
-class ReservedresourceSerializer(serializers.HyperlinkedModelSerializer):
+class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	sliver = serializers.HyperlinkedRelatedField(read_only=True, view_name='sliver-detail')
 	
 	
 	class Meta:
-		model = reservedresource
+		model = ReservedResource
 		fields = ('id','created','updated','enacted','resource','quantity','reservationSet',)
 
 
@@ -364,47 +355,47 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	account = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='account-detail')
+	account = serializers.HyperlinkedRelatedField(read_only=True, view_name='account-detail')
 	
 	
 	class Meta:
-		model = payment
+		model = Payment
 		fields = ('id','created','updated','enacted','amount','date',)
 
 
-class NetworksliceSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+	network = serializers.HyperlinkedRelatedField(read_only=True, view_name='network-detail')
 	
 	
 	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
 	
 	
 	class Meta:
-		model = networkslice
+		model = NetworkSlice
 		fields = ('id','created','updated','enacted',)
 
 
-class PlanetstackprivilegeSerializer(serializers.HyperlinkedModelSerializer):
+class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	user = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
+	user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
 	
 	
 	
-	planetstack = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='planetstack-detail')
+	planetstack = serializers.HyperlinkedRelatedField(read_only=True, view_name='planetstack-detail')
 	
 	
 	
-	role = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='role-detail')
+	role = serializers.HyperlinkedRelatedField(read_only=True, view_name='role-detail')
 	
 	
 	class Meta:
-		model = planetstackprivilege
+		model = PlanetStackPrivilege
 		fields = ('id','created','updated','enacted',)
 
 
@@ -412,11 +403,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	class Meta:
-		model = user
+		model = User
 		fields = ('id','password','last_login','email','username','kuser_id','firstname','lastname','phone','user_url','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','timezone',)
 
 
@@ -428,7 +419,7 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	class Meta:
-		model = deployment
+		model = Deployment
 		fields = ('id','created','updated','enacted','name',)
 
 
@@ -436,47 +427,39 @@ class ReservationSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
 	
 	
 	class Meta:
-		model = reservation
+		model = Reservation
 		fields = ('id','created','updated','enacted','startTime','duration',)
 
 
-class SiteprivilegeSerializer(serializers.HyperlinkedModelSerializer):
+class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	user = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
+	user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
 	
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	
-	role = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='role-detail')
+	role = serializers.HyperlinkedRelatedField(read_only=True, view_name='role-detail')
 	
 	
 	class Meta:
-		model = siteprivilege
+		model = SitePrivilege
 		fields = ('id','created','updated','enacted',)
 
 
-class SingletonmodelSerializer(serializers.HyperlinkedModelSerializer):
+class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = singletonmodel
-		fields = ()
-
-
-class PlanetstackSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = planetstack
+		model = PlanetStack
 		fields = ('id','created','updated','enacted','description',)
 
 
@@ -484,91 +467,91 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	class Meta:
-		model = account
+		model = Account
 		fields = ('id','created','updated','enacted',)
 
 
-class NetworkparametertypeSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = networkparametertype
+		model = NetworkParameterType
 		fields = ('id','created','updated','enacted','name','description',)
 
 
-class SitedeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
 	
-	deployment = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+	deployment = serializers.HyperlinkedRelatedField(read_only=True, view_name='deployment-detail')
 	
 	
 	class Meta:
-		model = sitedeployments
+		model = SiteDeployments
 		fields = ('id','created','updated','enacted',)
 
 
-class DeploymentprivilegeSerializer(serializers.HyperlinkedModelSerializer):
+class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	user = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
+	user = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail')
 	
 	
 	
-	deployment = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+	deployment = serializers.HyperlinkedRelatedField(read_only=True, view_name='deployment-detail')
 	
 	
 	
-	role = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='role-detail')
+	role = serializers.HyperlinkedRelatedField(read_only=True, view_name='role-detail')
 	
 	
 	class Meta:
-		model = deploymentprivilege
+		model = DeploymentPrivilege
 		fields = ('id','created','updated','enacted',)
 
 
-class DeploymentroleSerializer(serializers.HyperlinkedModelSerializer):
+class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = deploymentrole
+		model = DeploymentRole
 		fields = ('id','created','updated','enacted','role',)
 
 
-class PlcorebaseSerializer(serializers.HyperlinkedModelSerializer):
+class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = plcorebase
-		fields = ('created','updated','enacted',)
+		model = Project
+		fields = ('id','created','updated','enacted','name',)
 
 
-class SlicetagSerializer(serializers.HyperlinkedModelSerializer):
+class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
 	
 	
 	class Meta:
-		model = slicetag
+		model = SliceTag
 		fields = ('id','created','updated','enacted','name','value',)
 
 
-class NetworktemplateSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = networktemplate
+		model = NetworkTemplate
 		fields = ('id','created','updated','enacted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId',)
 
 
@@ -576,41 +559,39 @@ class RouterSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = router
+		model = Router
 		fields = ('id','created','updated','enacted','name','owner',)
 
 
-class ServiceresourceSerializer(serializers.HyperlinkedModelSerializer):
+class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = serviceresource
+		model = ServiceResource
 		fields = ('id','created','updated','enacted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 
 serializerLookUp = { 
 
-                 Serviceattribute: ServiceattributeSerializer,
+                 ServiceAttribute: ServiceAttributeSerializer,
 
                  Image: ImageSerializer,
 
-                 Networkparameter: NetworkparameterSerializer,
+                 NetworkParameter: NetworkParameterSerializer,
 
                  Site: SiteSerializer,
 
-                 Slicerole: SliceroleSerializer,
+                 SliceRole: SliceRoleSerializer,
 
                  Tag: TagSerializer,
 
                  Invoice: InvoiceSerializer,
 
-                 Sliceprivilege: SliceprivilegeSerializer,
+                 PlanetStackRole: PlanetStackRoleSerializer,
 
-                 Planetstackrole: PlanetstackroleSerializer,
+                 SlicePrivilege: SlicePrivilegeSerializer,
 
-                 Networksliver: NetworksliverSerializer,
-
-                 Project: ProjectSerializer,
+                 NetworkSliver: NetworkSliverSerializer,
 
                  Slice: SliceSerializer,
 
@@ -618,27 +599,27 @@ serializerLookUp = {
 
                  Service: ServiceSerializer,
 
-                 Serviceclass: ServiceclassSerializer,
+                 ServiceClass: ServiceClassSerializer,
 
-                 Siterole: SiteroleSerializer,
+                 SiteRole: SiteRoleSerializer,
 
                  Charge: ChargeSerializer,
 
                  Role: RoleSerializer,
 
-                 Usableobject: UsableobjectSerializer,
+                 UsableObject: UsableObjectSerializer,
 
                  Sliver: SliverSerializer,
 
                  Node: NodeSerializer,
 
-                 Reservedresource: ReservedresourceSerializer,
+                 ReservedResource: ReservedResourceSerializer,
 
                  Payment: PaymentSerializer,
 
-                 Networkslice: NetworksliceSerializer,
+                 NetworkSlice: NetworkSliceSerializer,
 
-                 Planetstackprivilege: PlanetstackprivilegeSerializer,
+                 PlanetStackPrivilege: PlanetStackPrivilegeSerializer,
 
                  User: UserSerializer,
 
@@ -646,31 +627,29 @@ serializerLookUp = {
 
                  Reservation: ReservationSerializer,
 
-                 Siteprivilege: SiteprivilegeSerializer,
+                 SitePrivilege: SitePrivilegeSerializer,
 
-                 Singletonmodel: SingletonmodelSerializer,
-
-                 Planetstack: PlanetstackSerializer,
+                 PlanetStack: PlanetStackSerializer,
 
                  Account: AccountSerializer,
 
-                 Networkparametertype: NetworkparametertypeSerializer,
+                 NetworkParameterType: NetworkParameterTypeSerializer,
 
-                 Sitedeployments: SitedeploymentsSerializer,
+                 SiteDeployments: SiteDeploymentsSerializer,
 
-                 Deploymentprivilege: DeploymentprivilegeSerializer,
+                 DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
-                 Deploymentrole: DeploymentroleSerializer,
+                 DeploymentRole: DeploymentRoleSerializer,
 
-                 Plcorebase: PlcorebaseSerializer,
+                 Project: ProjectSerializer,
 
-                 Slicetag: SlicetagSerializer,
+                 SliceTag: SliceTagSerializer,
 
-                 Networktemplate: NetworktemplateSerializer,
+                 NetworkTemplate: NetworkTemplateSerializer,
 
                  Router: RouterSerializer,
 
-                 Serviceresource: ServiceresourceSerializer,
+                 ServiceResource: ServiceResourceSerializer,
 
                  None: None,
                 }
@@ -678,413 +657,393 @@ serializerLookUp = {
 # Based on core/views/*.py
 
 
-class ServiceattributeList(generics.ListCreateAPIView):
-    queryset = Serviceattribute.objects.select_related.all()
-    serializer_class = ServiceattributeSerializer
+class ServiceAttributeList(generics.ListCreateAPIView):
+    queryset = ServiceAttribute.objects.select_related().all()
+    serializer_class = ServiceAttributeSerializer
 
-class ServiceattributeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Serviceattribute.objects.select_related.all()
-    serializer_class = ServiceattributeSerializer
+class ServiceAttributeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ServiceAttribute.objects.select_related().all()
+    serializer_class = ServiceAttributeSerializer
 
 
 
 class ImageList(generics.ListCreateAPIView):
-    queryset = Image.objects.select_related.all()
+    queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
 
 class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Image.objects.select_related.all()
+    queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
 
 
 
-class NetworkparameterList(generics.ListCreateAPIView):
-    queryset = Networkparameter.objects.select_related.all()
-    serializer_class = NetworkparameterSerializer
+class NetworkParameterList(generics.ListCreateAPIView):
+    queryset = NetworkParameter.objects.select_related().all()
+    serializer_class = NetworkParameterSerializer
 
-class NetworkparameterDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Networkparameter.objects.select_related.all()
-    serializer_class = NetworkparameterSerializer
+class NetworkParameterDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NetworkParameter.objects.select_related().all()
+    serializer_class = NetworkParameterSerializer
 
 
 
 class SiteList(generics.ListCreateAPIView):
-    queryset = Site.objects.select_related.all()
+    queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
 
 class SiteDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Site.objects.select_related.all()
+    queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
 
 
 
-class SliceroleList(generics.ListCreateAPIView):
-    queryset = Slicerole.objects.select_related.all()
-    serializer_class = SliceroleSerializer
+class SliceRoleList(generics.ListCreateAPIView):
+    queryset = SliceRole.objects.select_related().all()
+    serializer_class = SliceRoleSerializer
 
-class SliceroleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Slicerole.objects.select_related.all()
-    serializer_class = SliceroleSerializer
+class SliceRoleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SliceRole.objects.select_related().all()
+    serializer_class = SliceRoleSerializer
 
 
 
 class TagList(generics.ListCreateAPIView):
-    queryset = Tag.objects.select_related.all()
+    queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
 
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tag.objects.select_related.all()
+    queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
 
 
 
 class InvoiceList(generics.ListCreateAPIView):
-    queryset = Invoice.objects.select_related.all()
+    queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
 
 class InvoiceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Invoice.objects.select_related.all()
+    queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
 
 
 
-class SliceprivilegeList(generics.ListCreateAPIView):
-    queryset = Sliceprivilege.objects.select_related.all()
-    serializer_class = SliceprivilegeSerializer
+class PlanetStackRoleList(generics.ListCreateAPIView):
+    queryset = PlanetStackRole.objects.select_related().all()
+    serializer_class = PlanetStackRoleSerializer
 
-class SliceprivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sliceprivilege.objects.select_related.all()
-    serializer_class = SliceprivilegeSerializer
-
-
-
-class PlanetstackroleList(generics.ListCreateAPIView):
-    queryset = Planetstackrole.objects.select_related.all()
-    serializer_class = PlanetstackroleSerializer
-
-class PlanetstackroleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Planetstackrole.objects.select_related.all()
-    serializer_class = PlanetstackroleSerializer
+class PlanetStackRoleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PlanetStackRole.objects.select_related().all()
+    serializer_class = PlanetStackRoleSerializer
 
 
 
-class NetworksliverList(generics.ListCreateAPIView):
-    queryset = Networksliver.objects.select_related.all()
-    serializer_class = NetworksliverSerializer
+class SlicePrivilegeList(generics.ListCreateAPIView):
+    queryset = SlicePrivilege.objects.select_related().all()
+    serializer_class = SlicePrivilegeSerializer
 
-class NetworksliverDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Networksliver.objects.select_related.all()
-    serializer_class = NetworksliverSerializer
+class SlicePrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SlicePrivilege.objects.select_related().all()
+    serializer_class = SlicePrivilegeSerializer
 
 
 
-class ProjectList(generics.ListCreateAPIView):
-    queryset = Project.objects.select_related.all()
-    serializer_class = ProjectSerializer
+class NetworkSliverList(generics.ListCreateAPIView):
+    queryset = NetworkSliver.objects.select_related().all()
+    serializer_class = NetworkSliverSerializer
 
-class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Project.objects.select_related.all()
-    serializer_class = ProjectSerializer
+class NetworkSliverDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NetworkSliver.objects.select_related().all()
+    serializer_class = NetworkSliverSerializer
 
 
 
 class SliceList(generics.ListCreateAPIView):
-    queryset = Slice.objects.select_related.all()
+    queryset = Slice.objects.select_related().all()
     serializer_class = SliceSerializer
 
 class SliceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Slice.objects.select_related.all()
+    queryset = Slice.objects.select_related().all()
     serializer_class = SliceSerializer
 
 
 
 class NetworkList(generics.ListCreateAPIView):
-    queryset = Network.objects.select_related.all()
+    queryset = Network.objects.select_related().all()
     serializer_class = NetworkSerializer
 
 class NetworkDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Network.objects.select_related.all()
+    queryset = Network.objects.select_related().all()
     serializer_class = NetworkSerializer
 
 
 
 class ServiceList(generics.ListCreateAPIView):
-    queryset = Service.objects.select_related.all()
+    queryset = Service.objects.select_related().all()
     serializer_class = ServiceSerializer
 
 class ServiceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Service.objects.select_related.all()
+    queryset = Service.objects.select_related().all()
     serializer_class = ServiceSerializer
 
 
 
-class ServiceclassList(generics.ListCreateAPIView):
-    queryset = Serviceclass.objects.select_related.all()
-    serializer_class = ServiceclassSerializer
+class ServiceClassList(generics.ListCreateAPIView):
+    queryset = ServiceClass.objects.select_related().all()
+    serializer_class = ServiceClassSerializer
 
-class ServiceclassDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Serviceclass.objects.select_related.all()
-    serializer_class = ServiceclassSerializer
+class ServiceClassDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ServiceClass.objects.select_related().all()
+    serializer_class = ServiceClassSerializer
 
 
 
-class SiteroleList(generics.ListCreateAPIView):
-    queryset = Siterole.objects.select_related.all()
-    serializer_class = SiteroleSerializer
+class SiteRoleList(generics.ListCreateAPIView):
+    queryset = SiteRole.objects.select_related().all()
+    serializer_class = SiteRoleSerializer
 
-class SiteroleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Siterole.objects.select_related.all()
-    serializer_class = SiteroleSerializer
+class SiteRoleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SiteRole.objects.select_related().all()
+    serializer_class = SiteRoleSerializer
 
 
 
 class ChargeList(generics.ListCreateAPIView):
-    queryset = Charge.objects.select_related.all()
+    queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
 
 class ChargeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Charge.objects.select_related.all()
+    queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
 
 
 
 class RoleList(generics.ListCreateAPIView):
-    queryset = Role.objects.select_related.all()
+    queryset = Role.objects.select_related().all()
     serializer_class = RoleSerializer
 
 class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Role.objects.select_related.all()
+    queryset = Role.objects.select_related().all()
     serializer_class = RoleSerializer
 
 
 
-class UsableobjectList(generics.ListCreateAPIView):
-    queryset = Usableobject.objects.select_related.all()
-    serializer_class = UsableobjectSerializer
+class UsableObjectList(generics.ListCreateAPIView):
+    queryset = UsableObject.objects.select_related().all()
+    serializer_class = UsableObjectSerializer
 
-class UsableobjectDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Usableobject.objects.select_related.all()
-    serializer_class = UsableobjectSerializer
+class UsableObjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UsableObject.objects.select_related().all()
+    serializer_class = UsableObjectSerializer
 
 
 
 class SliverList(generics.ListCreateAPIView):
-    queryset = Sliver.objects.select_related.all()
+    queryset = Sliver.objects.select_related().all()
     serializer_class = SliverSerializer
 
 class SliverDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sliver.objects.select_related.all()
+    queryset = Sliver.objects.select_related().all()
     serializer_class = SliverSerializer
 
 
 
 class NodeList(generics.ListCreateAPIView):
-    queryset = Node.objects.select_related.all()
+    queryset = Node.objects.select_related().all()
     serializer_class = NodeSerializer
 
 class NodeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Node.objects.select_related.all()
+    queryset = Node.objects.select_related().all()
     serializer_class = NodeSerializer
 
 
 
-class ReservedresourceList(generics.ListCreateAPIView):
-    queryset = Reservedresource.objects.select_related.all()
-    serializer_class = ReservedresourceSerializer
+class ReservedResourceList(generics.ListCreateAPIView):
+    queryset = ReservedResource.objects.select_related().all()
+    serializer_class = ReservedResourceSerializer
 
-class ReservedresourceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Reservedresource.objects.select_related.all()
-    serializer_class = ReservedresourceSerializer
+class ReservedResourceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ReservedResource.objects.select_related().all()
+    serializer_class = ReservedResourceSerializer
 
 
 
 class PaymentList(generics.ListCreateAPIView):
-    queryset = Payment.objects.select_related.all()
+    queryset = Payment.objects.select_related().all()
     serializer_class = PaymentSerializer
 
 class PaymentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Payment.objects.select_related.all()
+    queryset = Payment.objects.select_related().all()
     serializer_class = PaymentSerializer
 
 
 
-class NetworksliceList(generics.ListCreateAPIView):
-    queryset = Networkslice.objects.select_related.all()
-    serializer_class = NetworksliceSerializer
+class NetworkSliceList(generics.ListCreateAPIView):
+    queryset = NetworkSlice.objects.select_related().all()
+    serializer_class = NetworkSliceSerializer
 
-class NetworksliceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Networkslice.objects.select_related.all()
-    serializer_class = NetworksliceSerializer
+class NetworkSliceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NetworkSlice.objects.select_related().all()
+    serializer_class = NetworkSliceSerializer
 
 
 
-class PlanetstackprivilegeList(generics.ListCreateAPIView):
-    queryset = Planetstackprivilege.objects.select_related.all()
-    serializer_class = PlanetstackprivilegeSerializer
+class PlanetStackPrivilegeList(generics.ListCreateAPIView):
+    queryset = PlanetStackPrivilege.objects.select_related().all()
+    serializer_class = PlanetStackPrivilegeSerializer
 
-class PlanetstackprivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Planetstackprivilege.objects.select_related.all()
-    serializer_class = PlanetstackprivilegeSerializer
+class PlanetStackPrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PlanetStackPrivilege.objects.select_related().all()
+    serializer_class = PlanetStackPrivilegeSerializer
 
 
 
 class UserList(generics.ListCreateAPIView):
-    queryset = User.objects.select_related.all()
+    queryset = User.objects.select_related().all()
     serializer_class = UserSerializer
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.select_related.all()
+    queryset = User.objects.select_related().all()
     serializer_class = UserSerializer
 
 
 
 class DeploymentList(generics.ListCreateAPIView):
-    queryset = Deployment.objects.select_related.all()
+    queryset = Deployment.objects.select_related().all()
     serializer_class = DeploymentSerializer
 
 class DeploymentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Deployment.objects.select_related.all()
+    queryset = Deployment.objects.select_related().all()
     serializer_class = DeploymentSerializer
 
 
 
 class ReservationList(generics.ListCreateAPIView):
-    queryset = Reservation.objects.select_related.all()
+    queryset = Reservation.objects.select_related().all()
     serializer_class = ReservationSerializer
 
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Reservation.objects.select_related.all()
+    queryset = Reservation.objects.select_related().all()
     serializer_class = ReservationSerializer
 
 
 
-class SiteprivilegeList(generics.ListCreateAPIView):
-    queryset = Siteprivilege.objects.select_related.all()
-    serializer_class = SiteprivilegeSerializer
+class SitePrivilegeList(generics.ListCreateAPIView):
+    queryset = SitePrivilege.objects.select_related().all()
+    serializer_class = SitePrivilegeSerializer
 
-class SiteprivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Siteprivilege.objects.select_related.all()
-    serializer_class = SiteprivilegeSerializer
-
-
-
-class SingletonmodelList(generics.ListCreateAPIView):
-    queryset = Singletonmodel.objects.select_related.all()
-    serializer_class = SingletonmodelSerializer
-
-class SingletonmodelDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Singletonmodel.objects.select_related.all()
-    serializer_class = SingletonmodelSerializer
+class SitePrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SitePrivilege.objects.select_related().all()
+    serializer_class = SitePrivilegeSerializer
 
 
 
-class PlanetstackList(generics.ListCreateAPIView):
-    queryset = Planetstack.objects.select_related.all()
-    serializer_class = PlanetstackSerializer
+class PlanetStackList(generics.ListCreateAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
 
-class PlanetstackDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Planetstack.objects.select_related.all()
-    serializer_class = PlanetstackSerializer
+class PlanetStackDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
 
 
 
 class AccountList(generics.ListCreateAPIView):
-    queryset = Account.objects.select_related.all()
+    queryset = Account.objects.select_related().all()
     serializer_class = AccountSerializer
 
 class AccountDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Account.objects.select_related.all()
+    queryset = Account.objects.select_related().all()
     serializer_class = AccountSerializer
 
 
 
-class NetworkparametertypeList(generics.ListCreateAPIView):
-    queryset = Networkparametertype.objects.select_related.all()
-    serializer_class = NetworkparametertypeSerializer
+class NetworkParameterTypeList(generics.ListCreateAPIView):
+    queryset = NetworkParameterType.objects.select_related().all()
+    serializer_class = NetworkParameterTypeSerializer
 
-class NetworkparametertypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Networkparametertype.objects.select_related.all()
-    serializer_class = NetworkparametertypeSerializer
-
-
-
-class SitedeploymentsList(generics.ListCreateAPIView):
-    queryset = Sitedeployments.objects.select_related.all()
-    serializer_class = SitedeploymentsSerializer
-
-class SitedeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sitedeployments.objects.select_related.all()
-    serializer_class = SitedeploymentsSerializer
+class NetworkParameterTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NetworkParameterType.objects.select_related().all()
+    serializer_class = NetworkParameterTypeSerializer
 
 
 
-class DeploymentprivilegeList(generics.ListCreateAPIView):
-    queryset = Deploymentprivilege.objects.select_related.all()
-    serializer_class = DeploymentprivilegeSerializer
+class SiteDeploymentsList(generics.ListCreateAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
 
-class DeploymentprivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Deploymentprivilege.objects.select_related.all()
-    serializer_class = DeploymentprivilegeSerializer
-
-
-
-class DeploymentroleList(generics.ListCreateAPIView):
-    queryset = Deploymentrole.objects.select_related.all()
-    serializer_class = DeploymentroleSerializer
-
-class DeploymentroleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Deploymentrole.objects.select_related.all()
-    serializer_class = DeploymentroleSerializer
+class SiteDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
 
 
 
-class PlcorebaseList(generics.ListCreateAPIView):
-    queryset = Plcorebase.objects.select_related.all()
-    serializer_class = PlcorebaseSerializer
+class DeploymentPrivilegeList(generics.ListCreateAPIView):
+    queryset = DeploymentPrivilege.objects.select_related().all()
+    serializer_class = DeploymentPrivilegeSerializer
 
-class PlcorebaseDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Plcorebase.objects.select_related.all()
-    serializer_class = PlcorebaseSerializer
-
-
-
-class SlicetagList(generics.ListCreateAPIView):
-    queryset = Slicetag.objects.select_related.all()
-    serializer_class = SlicetagSerializer
-
-class SlicetagDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Slicetag.objects.select_related.all()
-    serializer_class = SlicetagSerializer
+class DeploymentPrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DeploymentPrivilege.objects.select_related().all()
+    serializer_class = DeploymentPrivilegeSerializer
 
 
 
-class NetworktemplateList(generics.ListCreateAPIView):
-    queryset = Networktemplate.objects.select_related.all()
-    serializer_class = NetworktemplateSerializer
+class DeploymentRoleList(generics.ListCreateAPIView):
+    queryset = DeploymentRole.objects.select_related().all()
+    serializer_class = DeploymentRoleSerializer
 
-class NetworktemplateDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Networktemplate.objects.select_related.all()
-    serializer_class = NetworktemplateSerializer
+class DeploymentRoleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DeploymentRole.objects.select_related().all()
+    serializer_class = DeploymentRoleSerializer
+
+
+
+class ProjectList(generics.ListCreateAPIView):
+    queryset = Project.objects.select_related().all()
+    serializer_class = ProjectSerializer
+
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.select_related().all()
+    serializer_class = ProjectSerializer
+
+
+
+class SliceTagList(generics.ListCreateAPIView):
+    queryset = SliceTag.objects.select_related().all()
+    serializer_class = SliceTagSerializer
+
+class SliceTagDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SliceTag.objects.select_related().all()
+    serializer_class = SliceTagSerializer
+
+
+
+class NetworkTemplateList(generics.ListCreateAPIView):
+    queryset = NetworkTemplate.objects.select_related().all()
+    serializer_class = NetworkTemplateSerializer
+
+class NetworkTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NetworkTemplate.objects.select_related().all()
+    serializer_class = NetworkTemplateSerializer
 
 
 
 class RouterList(generics.ListCreateAPIView):
-    queryset = Router.objects.select_related.all()
+    queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
 
 class RouterDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Router.objects.select_related.all()
+    queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
 
 
 
-class ServiceresourceList(generics.ListCreateAPIView):
-    queryset = Serviceresource.objects.select_related.all()
-    serializer_class = ServiceresourceSerializer
+class ServiceResourceList(generics.ListCreateAPIView):
+    queryset = ServiceResource.objects.select_related().all()
+    serializer_class = ServiceResourceSerializer
 
-class ServiceresourceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Serviceresource.objects.select_related.all()
-    serializer_class = ServiceresourceSerializer
+class ServiceResourceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ServiceResource.objects.select_related().all()
+    serializer_class = ServiceResourceSerializer
 
 
 

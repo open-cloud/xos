@@ -39,7 +39,7 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	{% if ref.multi %}
 	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
 	{% else %}
-	{{ ref }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+	{{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
 	{% endif %}
 	{% endfor %}
 	class Meta:
