@@ -44,7 +44,7 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	{% endfor %}
 	class Meta:
 		model = {{ object.camel }}
-		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}'{{ ref }}',{% endfor %})
+		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 {% endfor %}
 
 serializerLookUp = { 

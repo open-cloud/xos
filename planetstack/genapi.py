@@ -86,9 +86,13 @@ class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
+	
+	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	
+	
 	class Meta:
 		model = Image
-		fields = ('id','created','updated','enacted','image_id','name','disk_format','container_format',)
+		fields = ('id','created','updated','enacted','image_id','name','disk_format','container_format','slivers',)
 
 
 class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
@@ -102,9 +106,29 @@ class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
+	
+	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	
+	
+	
+	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
+	
+	
+	
+	users = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user-detail')
+	
+	
+	
+	site_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='siteprivilege-detail')
+	
+	
+	
+	accounts = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='account-detail')
+	
+	
 	class Meta:
 		model = Site
-		fields = ('id','created','updated','enacted','tenant_id','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
+		fields = ('id','created','updated','enacted','tenant_id','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','slices','nodes','users','site_privileges','accounts',)
 
 
 class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
@@ -123,6 +147,10 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
+	
+	
+	
 	service = serializers.HyperlinkedRelatedField(read_only=True, view_name='service-detail')
 	
 	
@@ -131,16 +159,28 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
+	slice = serializers.HyperlinkedRelatedField(read_only=True, view_name='slice-detail')
+	
+	
+	
 	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	
+	
+	
+	sliver = serializers.HyperlinkedRelatedField(read_only=True, view_name='sliver-detail')
 	
 	
 	
 	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
 	
 	
+	
+	node = serializers.HyperlinkedRelatedField(read_only=True, view_name='node-detail')
+	
+	
 	class Meta:
 		model = Tag
-		fields = ('id','created','updated','enacted','name','value','content_type','object_id','site','service','slice','sliver','node',)
+		fields = ('id','created','updated','enacted','name','value','content_type','object_id','sites','site','service','slices','slice','slivers','sliver','nodes','node',)
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
@@ -150,9 +190,13 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
 	account = serializers.HyperlinkedRelatedField(read_only=True, view_name='account-detail')
 	
 	
+	
+	charges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='charge-detail')
+	
+	
 	class Meta:
 		model = Invoice
-		fields = ('id','created','updated','enacted','date','account',)
+		fields = ('id','created','updated','enacted','date','account','charges',)
 
 
 class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
@@ -203,6 +247,10 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
+	slice_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliceprivilege-detail')
+	
+	
+	
 	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
 	
 	
@@ -215,12 +263,36 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
+	network = serializers.HyperlinkedRelatedField(read_only=True, view_name='network-detail')
+	
+	
+	
 	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+	
+	
+	
+	network = serializers.HyperlinkedRelatedField(read_only=True, view_name='network-detail')
+	
+	
+	
+	charges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='charge-detail')
+	
+	
+	
+	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	
+	
+	
+	reservations = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
+	
+	
+	
+	slicetags = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slicetag-detail')
 	
 	
 	class Meta:
 		model = Slice
-		fields = ('id','created','updated','enacted','tenant_id','name','enabled','omf_friendly','description','slice_url','network_id','router_id','subnet_id','serviceClass','creator','site','service','network','network',)
+		fields = ('id','created','updated','enacted','tenant_id','name','enabled','omf_friendly','description','slice_url','network_id','router_id','subnet_id','serviceClass','creator','slice_privileges','site','service','networks','network','networks','network','charges','slivers','reservations','slicetags',)
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
@@ -231,20 +303,40 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
+	router = serializers.HyperlinkedRelatedField(read_only=True, view_name='router-detail')
+	
+	
+	
 	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+	
+	
+	
+	router = serializers.HyperlinkedRelatedField(read_only=True, view_name='router-detail')
 	
 	
 	class Meta:
 		model = Network
-		fields = ('id','created','updated','enacted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','router','router',)
+		fields = ('id','created','updated','enacted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','router','routers','router',)
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
+	
+	serviceattributes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='serviceattribute-detail')
+	
+	
+	
+	tags = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tag-detail')
+	
+	
+	
+	service = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
+	
+	
 	class Meta:
 		model = Service
-		fields = ('id','created','updated','enacted','description','enabled','name','versionNumber','published',)
+		fields = ('id','created','updated','enacted','description','enabled','name','versionNumber','published','serviceattributes','tags','service',)
 
 
 class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
@@ -307,6 +399,14 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	
 	
 	
+	network = serializers.HyperlinkedRelatedField(read_only=True, view_name='network-detail')
+	
+	
+	
+	serviceclass = serializers.HyperlinkedRelatedField(read_only=True, view_name='serviceclass-detail')
+	
+	
+	
 	image = serializers.HyperlinkedRelatedField(read_only=True, view_name='image-detail')
 	
 	
@@ -318,13 +418,21 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	node = serializers.HyperlinkedRelatedField(read_only=True, view_name='node-detail')
 	
 	
+	
+	reservedResourrces = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservedresource-detail')
+	
+	
 	class Meta:
 		model = Sliver
-		fields = ('id','created','updated','enacted','instance_id','name','instance_name','ip','creator','deploymentNetwork','numberCores','network','image','slice','node',)
+		fields = ('id','created','updated','enacted','instance_id','name','instance_name','ip','creator','deploymentNetwork','numberCores','networks','network','serviceclass','image','slice','node','reservedResourrces',)
 
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
+	
+	
+	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+	
 	
 	
 	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
@@ -336,7 +444,7 @@ class NodeSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Node
-		fields = ('id','created','updated','enacted','name','site','deployment',)
+		fields = ('id','created','updated','enacted','name','slivers','site','deployment',)
 
 
 class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
@@ -403,12 +511,28 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	
+	slice_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliceprivilege-detail')
+	
+	
+	
+	planetstack_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='planetstackprivilege-detail')
+	
+	
+	
 	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
+	
+	
+	
+	site_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='siteprivilege-detail')
+	
+	
+	
+	deployment_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deploymentprivilege-detail')
 	
 	
 	class Meta:
 		model = User
-		fields = ('id','password','last_login','email','username','kuser_id','firstname','lastname','phone','user_url','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','timezone','site',)
+		fields = ('id','password','last_login','email','username','kuser_id','firstname','lastname','phone','user_url','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','timezone','slice_privileges','planetstack_privileges','site','site_privileges','deployment_privileges',)
 
 
 class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
@@ -418,9 +542,21 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
 	
 	
+	
+	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
+	
+	
+	
+	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
+	
+	
+	
+	deployment_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deploymentprivilege-detail')
+	
+	
 	class Meta:
 		model = Deployment
-		fields = ('id','created','updated','enacted','name','site',)
+		fields = ('id','created','updated','enacted','name','sites','site','nodes','deployment_privileges',)
 
 
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
@@ -458,13 +594,29 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
+	
+	planetstack_privileges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='planetstackprivilege-detail')
+	
+	
 	class Meta:
 		model = PlanetStack
-		fields = ('id','created','updated','enacted','description',)
+		fields = ('id','created','updated','enacted','description','planetstack_privileges',)
 
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
+	
+	
+	invoices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='invoice-detail')
+	
+	
+	
+	charges = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='charge-detail')
+	
+	
+	
+	payments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='payment-detail')
+	
 	
 	
 	site = serializers.HyperlinkedRelatedField(read_only=True, view_name='site-detail')
@@ -472,7 +624,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Account
-		fields = ('id','created','updated','enacted','site',)
+		fields = ('id','created','updated','enacted','invoices','charges','payments','site',)
 
 
 class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):

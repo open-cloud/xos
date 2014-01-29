@@ -43,13 +43,17 @@ class GenObj(object):
 		self.model = m
 		self.props = []
 		self.refs = []
+		self.plural_name = None
 
 	def plural(self):
-		name = str(self)
-		if (name.endswith('s')):
-			return name+'es'
+		if (self.plural_name):
+			return self.plural_name
 		else:
-			return name+'s'
+			name = str(self)
+			if (name.endswith('s')):
+				return name+'es'
+			else:
+				return name+'s'
 
 	def camel(self):
 		name = str(self.model.__name__)
@@ -70,13 +74,19 @@ class Generator(dict):
 
 	def compute_links(self):
 		for obj in self.values():
-			#if (str(obj).lower()=='user'):
+			#if (str(obj)=='siteprivilege'):
 			#	pdb.set_trace()
 			fields = obj.model._meta.fields
 			for f in fields:
 				if type(f)==ForeignKey and f.name in self.keys():
 					refobj = self[f.name]
 					obj.refs.append(refobj)
+					related_name = f.related_query_name()
+					if (related_name.lower()!=str(obj).lower()):
+						cobj = copy.deepcopy(obj)
+						cobj.multi = True
+						cobj.plural_name = related_name
+						refobj.refs.append(cobj)
 				else:
 					obj.props.append(f.name)
 			m2m = obj.model._meta.many_to_many
@@ -92,6 +102,14 @@ class Generator(dict):
 					cobj = copy.deepcopy(obj)
 					cobj.multi=True
 					refobj.refs.append(cobj)
+				
+				if (related_name.lower()!=str(obj).lower()):
+					cobj = copy.deepcopy(obj)
+					cobj.multi = True
+					cobj.plural_name = related_name
+					refobj.refs.append(obj)
+
+
 
 			
 def main():
