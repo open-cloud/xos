@@ -107,7 +107,7 @@ class Generator(dict):
 					cobj = copy.deepcopy(obj)
 					cobj.multi = True
 					cobj.plural_name = related_name
-					refobj.refs.append(obj)
+					refobj.refs.append(cobj)
 
 
 
