@@ -7,6 +7,8 @@ import json
 import re
 from django.template import Context, Template
 
+blacklist = ['SingletonModel','PlCoreBase']
+
 # Django set up
 
 sys.path.append('.')
@@ -27,7 +29,7 @@ g = globals()
 def enum_classes():
 	model_classes = []
 	for c in g.values():
-		if type(c)==type(PlCoreBase):
+		if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
 			model_classes.append(c)
 	return model_classes
 
@@ -50,7 +52,7 @@ class GenObj(object):
 
 	def camel(self):
 		name = str(self.model.__name__)
-		return name.title()
+		return name
 		
 class Generator(dict):
 	def all(self):
@@ -67,6 +69,8 @@ class Generator(dict):
 
 	def compute_links(self):
 		for obj in self.values():
+			if (str(obj).lower()=='user'):
+				pdb.set_trace()
 			fields = obj.model._meta.fields
 			for f in fields:
 				if type(f)==ForeignKey and f.name in self.keys():

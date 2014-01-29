@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
+from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 
@@ -42,7 +43,7 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	{% endif %}
 	{% endfor %}
 	class Meta:
-		model = {{ object }}
+		model = {{ object.camel }}
 		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %})
 {% endfor %}
 
@@ -57,11 +58,11 @@ serializerLookUp = {
 {% for object in generator.all %}
 
 class {{ object.camel }}List(generics.ListCreateAPIView):
-    queryset = {{ object.camel }}.objects.select_related.all()
+    queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = {{ object.camel }}.objects.select_related.all()
+    queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
 
 {% endfor %}

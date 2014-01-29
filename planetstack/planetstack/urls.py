@@ -16,7 +16,7 @@ from core.views.slices import SliceList, SliceDetail
 from core.views.slice_privileges import SlicePrivilegeList, SlicePrivilegeDetail
 from core.views.slivers import SliverList, SliverDetail
 from core.views.tags import TagList, TagDetail
-from core.views.users import UserList, UserDetail
+from genapi import UserList, UserDetail
 from core.views.legacyapi import LegacyXMLRPC
 from core.models import *
 from core.api_root import api_root
