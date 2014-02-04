@@ -43,3 +43,19 @@ class Sliver(PlCoreBase):
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
         super(Sliver, self).save(*args, **kwds)
+
+    def can_update(self, user):
+        return self.slice.can_update(user)
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.slice.can_update(user):
+            super(Sliver, self).save(*args, **kwds)  
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = Sliver.objects.all()
+        else:
+            slice_ids = [s.id for s in Slice.select_by_user(user)]
+            qs = Sliver.objects.filter(id__in=slice_ids)
+        return qs

@@ -156,6 +156,9 @@ class ReservationInline(PlStackTabularInline):
     model = Reservation
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservations'
+        
+    def queryset(self, request):
+        return Reservation.select_by_user(request.user)
 
 class TagROInline(generic.GenericTabularInline):
     model = Tag
@@ -175,6 +178,10 @@ class TagInline(generic.GenericTabularInline):
     model = Tag
     extra = 0
     suit_classes = 'suit-tab suit-tab-tags'
+    fields = ['service', 'name', 'value']
+
+    def queryset(self, request):
+        return Tag.select_by_user(request.user)
 
 class NetworkLookerUpper:
     """ This is a callable that looks up a network name in a sliver and returns
@@ -207,6 +214,9 @@ class SliverInline(PlStackTabularInline):
     extra = 0
     readonly_fields = ['ip', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
+
+    def queryset(self, request):
+        return Sliver.select_by_user(request.user)
 
 # Note this is breaking in the admin.py when trying to use an inline to add a node/image 
 #    def _declared_fieldsets(self):
@@ -252,6 +262,9 @@ class SiteInline(PlStackTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-sites'
 
+    def queryset(self, request):
+        return Site.select_by_user(request.user)
+
 class UserROInline(ReadOnlyTabularInline):
     model = User
     fields = ['email', 'firstname', 'lastname']
@@ -264,6 +277,9 @@ class UserInline(PlStackTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-users'
 
+    def queryset(self, request):
+        return User.select_by_user(request.user)
+
 class SliceROInline(ReadOnlyTabularInline):
     model = Slice
     suit_classes = 'suit-tab suit-tab-slices'
@@ -275,6 +291,9 @@ class SliceInline(PlStackTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-slices'
 
+    def queryset(self, request):
+        return Slice.select_by_user(request.user)
+
 class NodeROInline(ReadOnlyTabularInline):
     model = Node
     extra = 0
@@ -285,6 +304,7 @@ class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
+    fields = ['name','deployment']
 
 class DeploymentPrivilegeROInline(ReadOnlyTabularInline):
     model = DeploymentPrivilege
@@ -296,6 +316,10 @@ class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
+    fields = ['user','role']
+
+    def queryset(self, request):
+        return DeploymentPrivilege.select_by_user(request.user)
 
 #CLEANUP DOUBLE SitePrivilegeInline
 class SitePrivilegeROInline(ReadOnlyTabularInline):
@@ -308,34 +332,18 @@ class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-siteprivileges'
+    fields = ['user','site', 'role']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            if not request.user.is_admin:
-                # only show sites where user is an admin or pi
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
-                sites = Site.objects.filter(login_base__in=login_bases)
-                kwargs['queryset'] = sites
+            kwargs['queryset'] = Site.select_by_user(request.user)
 
         if db_field.name == 'user':
-            if not request.user.is_admin:
-                # only show users from sites where caller has admin or pi role
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                sites = [site_privilege.site for site_privilege in site_privileges]
-                site_privileges = SitePrivilege.objects.filter(site__in=sites)
-                emails = [site_privilege.user.email for site_privilege in site_privileges]
-                users = User.objects.filter(email__in=emails)
-                kwargs['queryset'] = users
+            kwargs['queryset'] = User.select_by_user(request.user)
         return super(SitePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class SitePrivilegeInline(PlStackTabularInline):
-    model = SitePrivilege
-    suit_classes = 'suit-tab suit-tab-siteprivileges'
-    extra = 0
-    fields = ('user', 'site','role')
+    def queryset(self, request):
+        return SitePrivilege.select_by_user(request.user)
 
 class SlicePrivilegeROInline(ReadOnlyTabularInline):
     model = SlicePrivilege
@@ -351,25 +359,14 @@ class SlicePrivilegeInline(PlStackTabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
-            if not request.user.is_admin:
-                # only show slices at sites where caller has admin or pi role
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                sites = [site_privilege.site for site_privilege in site_privileges]
-                slices = Slice.objects.filter(site__in=sites)
-                kwargs['queryset'] = slices 
+           kwargs['queryset'] = Slice.select_by_user(request.user) 
         if db_field.name == 'user':
-            if not request.user.is_admin:
-                # only show users from sites where caller has admin or pi role
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                sites = [site_privilege.site for site_privilege in site_privileges]
-                site_privileges = SitePrivilege.objects.filter(site__in=sites)
-                emails = [site_privilege.user.email for site_privilege in site_privileges]   
-                users = User.objects.filter(email__in=emails) 
-                kwargs['queryset'] = list(users)
+           kwargs['queryset'] = User.select_by_user(request.user) 
 
         return super(SlicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def queryset(self, request):
+        return SlicePrivilege.select_by_user(request.user)
 
 class SliceNetworkROInline(ReadOnlyTabularInline):
     model = Network.slices.through
@@ -503,15 +500,8 @@ class SiteAdmin(PlanetStackBaseAdmin):
     search_fields = ['name']
 
     def queryset(self, request):
-        # admins can see all keys. Users can only see sites they belong to.
-        qs = super(SiteAdmin, self).queryset(request)
-        if not request.user.is_admin:
-            valid_sites = [request.user.site.login_base]
-            roles = request.user.get_roles()
-            for tenant_list in roles.values():
-                valid_sites.extend(tenant_list)
-            qs = qs.filter(login_base__in=valid_sites)
-        return qs
+        #print dir(UserInline)
+        return Site.select_by_user(request.user)
 
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -579,12 +569,12 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
         # admins can see all privileges. Users can only see privileges at sites
         # where they have the admin role or pi role.
         qs = super(SitePrivilegeAdmin, self).queryset(request)
-        if not request.user.is_admin:
-            roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-            site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-            login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
-            sites = Site.objects.filter(login_base__in=login_bases)
-            qs = qs.filter(site__in=sites)
+        #if not request.user.is_admin:
+        #    roles = Role.objects.filter(role_type__in=['admin', 'pi'])
+        #    site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
+        #    login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
+        #    sites = Site.objects.filter(login_base__in=login_bases)
+        #    qs = qs.filter(site__in=sites)
         return qs
 
 class SliceForm(forms.ModelForm):
@@ -614,26 +604,13 @@ class SliceAdmin(PlanetStackBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            if not request.user.is_admin:
-                # only show sites where user is a pi or admin 
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
-                sites = Site.objects.filter(login_base__in=login_bases)
-                kwargs['queryset'] = sites
-
+            kwargs['queryset'] = Site.select_by_user(request.user)
+                
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         # admins can see all keys. Users can only see slices they belong to.
-        qs = super(SliceAdmin, self).queryset(request)
-        if not request.user.is_admin:
-            valid_slices = []
-            roles = request.user.get_roles()
-            for tenant_list in roles.values():
-                valid_slices.extend(tenant_list)
-            qs = qs.filter(name__in=valid_slices)
-        return qs
+        return Slice.select_by_user(request.user)
 
     def get_formsets(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -644,12 +621,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
-    def get_queryset(self, request):
-        qs = super(SliceAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        # users can only see slices at their site
-        return qs.filter(site=request.user.site)
 
 class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
@@ -662,39 +633,17 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
-            if not request.user.is_admin:
-                # only show slices at sites where caller has admin or pi role
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                sites = [site_privilege.site for site_privilege in site_privileges]
-                slices = Slice.objects.filter(site__in=sites)
-                kwargs['queryset'] = slices
+            kwargs['queryset'] = Slice.select_by_user(request.user)
         
         if db_field.name == 'user':
-            if not request.user.is_admin:
-                # only show users from sites where caller has admin or pi role
-                roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-                site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-                sites = [site_privilege.site for site_privilege in site_privileges]
-                site_privileges = SitePrivilege.objects.filter(site__in=sites)
-                emails = [site_privilege.user.email for site_privilege in site_privileges]
-                users = User.objects.filter(email__in=emails)
-                kwargs['queryset'] = users
+            kwargs['queryset'] = User.select_by_user(request.user)
 
         return super(SlicePrivilegeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         # admins can see all memberships. Users can only see memberships of
         # slices where they have the admin role.
-        qs = super(SlicePrivilegeAdmin, self).queryset(request)
-        if not request.user.is_admin:
-            roles = Role.objects.filter(role_type__in=['admin', 'pi'])
-            site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
-            login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
-            sites = Site.objects.filter(login_base__in=login_bases)
-            slices = Slice.objects.filter(site__in=sites)
-            qs = qs.filter(slice__in=slices)
-        return qs
+        return SlicePrivilege.select_by_user(request.user)
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
@@ -783,24 +732,15 @@ class SliverAdmin(PlanetStackBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
-            if not request.user.is_admin:
-                slices = set([sm.slice.name for sm in SlicePrivilege.objects.filter(user=request.user)]) 
-                kwargs['queryset'] = Slice.objects.filter(name__in=list(slices))
+            kwargs['queryset'] = Slice.select_by_user(request.user)
 
         return super(SliverAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         # admins can see all slivers. Users can only see slivers of 
         # the slices they belong to.
-        qs = super(SliverAdmin, self).queryset(request)
-        if not request.user.is_admin:
-            tenants = []
-            roles = request.user.get_roles()
-            for tenant_list in roles.values():
-                tenants.extend(tenant_list)
-            valid_slices = Slice.objects.filter(name__in=tenants)
-            qs = qs.filter(slice__in=valid_slices)
-        return qs
+        return Sliver.select_by_user(request.user)
+
 
     def get_formsets(self, request, obj=None):
         # make some fields read only if we are updating an existing record
@@ -815,11 +755,6 @@ class SliverAdmin(PlanetStackBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            # give inline object access to driver and caller
-            auth = request.session.get('auth', {})
-            auth['tenant'] = obj.name       # meed to connect using slice's tenant
-            inline.model.os_manager = OpenStackManager(auth=auth, caller=request.user)
-            yield inline.get_formset(request, obj)
 
     #def save_model(self, request, obj, form, change):
     #    # update openstack connection to use this site/tenant
@@ -922,13 +857,7 @@ class UserAdmin(UserAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            if not request.user.is_admin:
-                # show sites where caller is an admin or pi 
-                sites = []
-                for site_privilege in SitePrivilege.objects.filer(user=request.user):
-                    if site_privilege.role.role_type in ['admin', 'pi']:
-                        sites.append(site_privilege.site.login_base)  
-                kwargs['queryset'] = Site.objects.filter(login_base__in(list(sites)))
+            kwargs['queryset'] = Site.select_by_user(request.user)
 
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -965,6 +894,9 @@ class UserAdmin(UserAdmin):
         #groups = [x.name for x in request.user.groups.all() ]
         #return "readonly" in groups
         return request.user.isReadOnlyUser()
+
+    def queryset(self, request):
+        return User.select_by_user(request.user)
 
 
 
@@ -1014,6 +946,9 @@ class ReservedResourceInline(PlStackTabularInline):
                 field.queryset = field.queryset.none()
 
         return field
+
+    def queryset(self, request):
+        return ReservedResource.select_by_user(request.user)
 
 class ReservationChangeForm(forms.ModelForm):
     class Meta:
@@ -1123,6 +1058,9 @@ class ReservationAdmin(PlanetStackBaseAdmin):
             return ['slice']
         else:
             return []
+
+    def queryset(self, request):
+        return Reservation.select_by_user(request.user)
 
 class NetworkParameterTypeAdmin(PlanetStackBaseAdmin):
     list_display = ("name", )

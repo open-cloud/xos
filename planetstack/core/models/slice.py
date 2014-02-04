@@ -42,6 +42,31 @@ class Slice(PlCoreBase):
             self.creator = self.caller
         super(Slice, self).save(*args, **kwds)
 
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
+        for slice_priv in slice_privs:
+            if slice_priv.role.role_type == 'admin':
+                return True
+        return False
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(Slice, self).save(*args, **kwds)
+
+    
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = Slice.objects.all()
+        else:
+            slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
+            qs = Slice.objects.filter(id__in=slice_ids)
+        return qs
+
 class SliceRole(PlCoreBase):
     ROLE_CHOICES = (('admin','Admin'),('default','Default'))
 
@@ -55,3 +80,25 @@ class SlicePrivilege(PlCoreBase):
     role = models.ForeignKey('SliceRole')
 
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
+
+    def can_update(self, user):
+        if user.is_admin:
+            return True
+        slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
+        for slice_priv in slice_privs:
+            if slice_priv.role.role_type == 'admin':
+                return True
+        return False
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(SlicePrivilege, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = SlicePrivilege.objects.all()
+        else:
+            sp_ids = [sp.id for sp in SlicePrivilege.objects.filter(user=user)]
+            qs = SlicePrivilege.objects.filter(id__in=sp_ids)
+        return qs

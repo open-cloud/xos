@@ -27,4 +27,6 @@ class ServiceClass(PlCoreBase):
         except ServiceClass.DoesNotExist:
             return None
 
-
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(ServiceClass, self).save(*args, **kwds)

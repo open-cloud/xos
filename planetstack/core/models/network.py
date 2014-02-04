@@ -50,6 +50,22 @@ class Network(PlCoreBase):
             self.subnet = find_unused_subnet(existing_subnets=[x.subnet for x in Network.objects.all()])
         super(Network, self).save(*args, **kwds)
 
+    def can_update(self, user):
+        return self.slice.can_update(user)
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.slice.can_update(user):
+            super(Network, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = Network.objects.all()
+        else:
+            slice_ids = [s.id for s in Slice.select_by_user(user)]
+            qs = Network.objects.filter(id__in=slice_ids)
+        return qs
+
 class NetworkSlice(PlCoreBase):
     # This object exists solely so we can implement the permission check when
     # adding slices to networks. It adds no additional fields to the relation.
@@ -69,6 +85,22 @@ class NetworkSlice(PlCoreBase):
         super(NetworkSlice, self).save(*args, **kwds)
 
     def __unicode__(self):  return u'%s-%s' % (self.network.name, self.slice.name)
+
+    def can_update(self, user):
+        return self.slice.can_update(user)
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.slice.can_update(user):
+            super(NetworkSlice, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = NetworkSlice.objects.all()
+        else:
+            slice_ids = [s.id for s in Slice.select_by_user(user)]
+            qs = NetworkSlice.objects.filter(id__in=slice_ids)
+        return qs
 
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
@@ -92,6 +124,22 @@ class NetworkSliver(PlCoreBase):
         super(NetworkSliver, self).save(*args, **kwds)
 
     def __unicode__(self):  return u'%s-%s' % (self.network.name, self.sliver.instance_name)
+
+    def can_update(self, user):
+        return self.sliver.can_update(user)
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.sliver.can_update(user):
+            super(NetworkSliver, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = NetworkSliver.objects.all()
+        else:
+            sliver_ids = [s.id for s in NetworkSliver.select_by_user(user)]
+            qs = NetworkSliver.objects.filter(id__in=sliver_ids)
+        return qs
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)

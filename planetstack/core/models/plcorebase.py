@@ -38,6 +38,13 @@ class PlCoreBase(models.Model):
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        return False
+
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         pk = self.pk
@@ -58,6 +65,10 @@ class PlCoreBase(models.Model):
         notify_observer()
 
         self.__initial = self._dict
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            self.save(*args, **kwds)
 
     @property
     def _dict(self):

@@ -27,6 +27,30 @@ class Site(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    def can_update(self, user):
+        if user.is_admin:
+            return True
+        site_privs = SitePrivilege.objects.filter(user=user, site=self)
+        for site_priv in site_privs:
+            if site_priv.role.role_type == 'pi':
+                return True
+        return False 
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(Site, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = Site.objects.all()
+        else:
+            site_ids = [sp.site.id for sp in SitePrivilege.objects.filter(user=user)]
+            site_ids.append(user.site.id)
+            qs = Site.objects.filter(id__in=site_ids)
+        return qs
+
+
 class SiteRole(PlCoreBase):
 
     ROLE_CHOICES = (('admin','Admin'),('pi','PI'),('tech','Tech'),('billing','Billing'))
@@ -47,6 +71,28 @@ class SitePrivilege(PlCoreBase):
 
     def delete(self, *args, **kwds):
         super(SitePrivilege, self).delete(*args, **kwds)
+
+    def can_update(self, user):
+        if user.is_admin:
+            return True
+        site_privs = SitePrivilege.objects.filter(user=user, site=self)
+        for site_priv in site_privs:
+            if site_priv.role.role_type == 'pi':
+                return True
+        return False 
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(SitePrivilege, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = SitePrivilege.objects.all()
+        else:
+            sp_ids = [sp.id for sp in SitePrivilege.objects.filter(user=user)]
+            qs = SitePrivilege.objects.filter(id__in=sp_ids)
+        return qs
 
 class Deployment(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
@@ -69,6 +115,30 @@ class DeploymentPrivilege(PlCoreBase):
     role = models.ForeignKey('DeploymentRole')
 
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
+
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        dprivs = DeploymentPrivilege.objects.filter(user=user)
+        for dpriv in dprivs:
+            if dpriv.role.role_type == 'admin':
+                return True
+        return False
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(DeploymentPrivilege, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = DeploymentPrivilege.objects.all()
+        else:
+            dpriv_ids = [dp.id for dp in DeploymentPrivilege.objects.filter(user=user)]
+            qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
+        return qs 
 
 class SiteDeployments(PlCoreBase):
     site = models.ForeignKey(Site)

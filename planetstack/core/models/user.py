@@ -2,6 +2,7 @@ import os
 import datetime
 from collections import defaultdict
 from django.db import models
+from django.db.models import F, Q
 from core.models import PlCoreBase,Site
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
@@ -130,4 +131,22 @@ class User(AbstractBaseUser):
         if not self.id:
             self.set_password(self.password)    
         self.username = self.email
-        super(User, self).save(*args, **kwds)   
+        super(User, self).save(*args, **kwds)  
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = User.objects.all()
+        else:
+            # can see all users at any site where this user has pi role
+            from core.models.site import SitePrivilege
+            site_privs = SitePrivilege.objects.filter(user=user)
+            sites = [sp.site for sp in site_privs if sp.role.role == 'pi']
+            # get site privs of users at these sites
+            site_privs = SitePrivilege.objects.filter(site__in=sites)
+            user_ids = [sp.user.id for sp in site_privs] + [user.id] 
+            qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
+        return qs            
+
+             
+     

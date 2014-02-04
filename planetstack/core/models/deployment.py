@@ -32,3 +32,27 @@ class DeploymentPrivilege(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
+
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        dprivs = DeploymentPrivilege.objects.filter(user=user)
+        for dpriv in dprivs:
+            if dpriv.role.role_type == 'admin':
+                return True
+        return False
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            super(DeploymentPrivilege, self).save(*args, **kwds)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = DeploymentPrivilege.objects.all()
+        else:
+            dpriv_ids = [dp.id for dp in DeploymentPrivilege.objects.filter(user=user)]
+            qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
+        return qs
