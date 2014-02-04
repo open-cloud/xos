@@ -53,11 +53,6 @@ class Slice(PlCoreBase):
                 return True
         return False
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(Slice, self).save(*args, **kwds)
-
-    
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -89,10 +84,6 @@ class SlicePrivilege(PlCoreBase):
             if slice_priv.role.role_type == 'admin':
                 return True
         return False
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(SlicePrivilege, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):

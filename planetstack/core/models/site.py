@@ -36,10 +36,6 @@ class Site(PlCoreBase):
                 return True
         return False 
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(Site, self).save(*args, **kwds)
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -80,10 +76,6 @@ class SitePrivilege(PlCoreBase):
             if site_priv.role.role_type == 'pi':
                 return True
         return False 
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(SitePrivilege, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):
@@ -126,10 +118,6 @@ class DeploymentPrivilege(PlCoreBase):
             if dpriv.role.role_type == 'admin':
                 return True
         return False
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(DeploymentPrivilege, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):

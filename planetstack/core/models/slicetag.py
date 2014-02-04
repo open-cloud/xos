@@ -13,10 +13,6 @@ class SliceTag(PlCoreBase):
     def can_update(self, user):
         return self.slice.can_update(user)
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(SliceTag, self).save(*args, **kwds)
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:

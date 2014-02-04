@@ -44,10 +44,6 @@ class DeploymentPrivilege(PlCoreBase):
                 return True
         return False
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(DeploymentPrivilege, self).save(*args, **kwds)
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:

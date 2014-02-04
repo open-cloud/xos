@@ -70,6 +70,10 @@ class PlCoreBase(models.Model):
         if self.can_update(user):
             self.save(*args, **kwds)
 
+    def delete_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            self.delete(*args, **kwds)
+
     @property
     def _dict(self):
         return model_to_dict(self, fields=[field.name for field in

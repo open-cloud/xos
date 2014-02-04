@@ -53,10 +53,6 @@ class Network(PlCoreBase):
     def can_update(self, user):
         return self.slice.can_update(user)
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.slice.can_update(user):
-            super(Network, self).save(*args, **kwds)
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -88,10 +84,6 @@ class NetworkSlice(PlCoreBase):
 
     def can_update(self, user):
         return self.slice.can_update(user)
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.slice.can_update(user):
-            super(NetworkSlice, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):
@@ -127,10 +119,6 @@ class NetworkSliver(PlCoreBase):
 
     def can_update(self, user):
         return self.sliver.can_update(user)
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.sliver.can_update(user):
-            super(NetworkSliver, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):

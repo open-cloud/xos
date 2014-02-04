@@ -394,6 +394,19 @@ class PlainTextWidget(forms.HiddenInput):
 
 class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
     save_on_top = False
+    
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this site/tenant
+        obj.save_by_user(request.user)
+
+    def delete_model(self, request, obj):
+        obj.delete_by_user(request.user)
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.save_by_user(request.user)
+        formset.save_m2m()
 
 class SliceRoleAdmin(PlanetStackBaseAdmin):
     model = SliceRole
@@ -532,6 +545,13 @@ class SiteAdmin(PlanetStackBaseAdmin):
     accountLink.allow_tags = True
     accountLink.short_description = "Billing"
 
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this site/tenant
+        obj.save_by_user(request.user) 
+
+    def delete_model(self, request, obj):
+        obj.delete_by_user(request.user)
+        
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldList = ['user', 'site', 'role']

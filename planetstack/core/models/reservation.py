@@ -22,10 +22,6 @@ class Reservation(PlCoreBase):
     def can_update(self, user):
         return self.slice.can_update(user)
 
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(Reservation, self).save(*args, **kwds)
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -48,10 +44,6 @@ class ReservedResource(PlCoreBase):
 
     def can_update(self, user):
         return self.sliver.slice.can_update(user)
-
-    def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            super(ReservedResource, self).save(*args, **kwds)
 
     @staticmethod
     def select_by_user(user):
