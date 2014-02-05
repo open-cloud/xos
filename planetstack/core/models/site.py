@@ -28,11 +28,13 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def can_update(self, user):
+        if user.is_readonly:
+            return False
         if user.is_admin:
             return True
         site_privs = SitePrivilege.objects.filter(user=user, site=self)
         for site_priv in site_privs:
-            if site_priv.role.role_type == 'pi':
+            if site_priv.role.role == 'pi':
                 return True
         return False 
 
@@ -69,13 +71,7 @@ class SitePrivilege(PlCoreBase):
         super(SitePrivilege, self).delete(*args, **kwds)
 
     def can_update(self, user):
-        if user.is_admin:
-            return True
-        site_privs = SitePrivilege.objects.filter(user=user, site=self)
-        for site_priv in site_privs:
-            if site_priv.role.role_type == 'pi':
-                return True
-        return False 
+        return self.site.can_update(user)
 
     @staticmethod
     def select_by_user(user):
@@ -115,7 +111,7 @@ class DeploymentPrivilege(PlCoreBase):
             return True
         dprivs = DeploymentPrivilege.objects.filter(user=user)
         for dpriv in dprivs:
-            if dpriv.role.role_type == 'admin':
+            if dpriv.role.role == 'admin':
                 return True
         return False
 

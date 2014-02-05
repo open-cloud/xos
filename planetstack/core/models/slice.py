@@ -49,7 +49,7 @@ class Slice(PlCoreBase):
             return True
         slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
         for slice_priv in slice_privs:
-            if slice_priv.role.role_type == 'admin':
+            if slice_priv.role.role == 'admin':
                 return True
         return False
 
@@ -77,13 +77,7 @@ class SlicePrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 
     def can_update(self, user):
-        if user.is_admin:
-            return True
-        slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
-        for slice_priv in slice_privs:
-            if slice_priv.role.role_type == 'admin':
-                return True
-        return False
+        return self.slice.can_update(user)
 
     @staticmethod
     def select_by_user(user):
