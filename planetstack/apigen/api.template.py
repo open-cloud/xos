@@ -57,7 +57,7 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
     serializer_class = {{ object.camel }}Serializer
     
     def get_queryset(self):
-        return {{ object.camel }}.select_by_user(self.request.user
+        return {{ object.camel }}.select_by_user(self.request.user)
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
     #queryset = {{ object.camel }}.objects.all()
