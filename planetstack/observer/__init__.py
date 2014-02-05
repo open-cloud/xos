@@ -25,6 +25,7 @@ if (not observer_disabled):
 
 else:
     def notify_observer(model=None, delete=False, pk=None, model_dict={}):
+        global print_once
         if (print_once):
             print "The observer is disabled"
             print_once = False
