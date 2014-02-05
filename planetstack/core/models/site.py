@@ -132,7 +132,7 @@ class SiteDeployments(PlCoreBase):
     site = models.ForeignKey(Site)
     deployment = models.ForeignKey(Deployment)
 
-    class Meta:
-        db_table = 'site_deployments'
-        #auto_created = Site
+    #class Meta:
+    #    db_table = 'core_site_deployments'
+    #    #auto_created = Site
 
