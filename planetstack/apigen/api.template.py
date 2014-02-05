@@ -53,11 +53,17 @@ serializerLookUp = {
 {% for object in generator.all %}
 
 class {{ object.camel }}List(generics.ListCreateAPIView):
-    queryset = {{ object.camel }}.objects.all()
+    #queryset = {{ object.camel }}.objects.all()
     serializer_class = {{ object.camel }}Serializer
+    
+    def get_queryset(self):
+        return {{ object.camel }}.select_by_user(self.request.user
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = {{ object.camel }}.objects.all()
+    #queryset = {{ object.camel }}.objects.all()
     serializer_class = {{ object.camel }}Serializer
+    
+    def get_queryset(self):
+        return {{ object.camel }}.select_by_user(self.request.user) 
 
 {% endfor %}
