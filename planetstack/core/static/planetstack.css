@@ -535,3 +535,32 @@ background-image: url("Users_over.png");
 .left-nav>ul>li.active>a>.icon-reservation , .left-nav>ul>li:hover>a>.icon-reservation , .left-nav>ul>li.focus>a>.icon-reservation{
 background-image: url("Reservations_over.png");
 }
+
+#dashboardHPC {
+    padding-bottom: 10px;
+}
+.summary-attr {
+    padding-right: 20px;
+}
+.summary-attr-util {
+    padding-right: 20px;
+    color: green;
+}
+.SiteDetail {
+color: darkBlue;
+    font-size: 1.5em;
+}
+#addSlivers {
+ color: green;
+text-decoration: underline;
+    padding-right: 20px;
+}
+#remSlivers {
+ color: red;
+ text-decoration: underline;
+}
+#map-us {
+    padding-top: 10px;
+    width: 700px;
+    height: 400px;
+}
