@@ -1,0 +1,62 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo usage: $0 "[initdb | resetdb ]"
+    exit
+fi
+
+cd /opt/planetstack
+
+function initdb {
+    #Figure out if the script is running on Fedora 16 or 17
+    if grep 16 /etc/fedora-release;  then
+        sudo -u postgres initdb -D /var/lib/pgsql/data/
+        sudo -u postgres pg_ctl -D /var/lib/pgsql/data -l logfile start
+    else
+        #Try normal Fedora 17 commands
+        echo "Trying Fedora 17 commands" > /dev/stdout
+        /sbin/service postgresql initdb
+        /sbin/service postgresql start
+        /sbin/chkconfig postgresql on
+    fi
+}
+function createdb {
+    echo "Creating OpenCloud database..."
+    sudo -u postgres createdb planetstack 
+}
+function dropdb {
+    echo "Dropping OpenCloud database..."
+    sudo -u postgres dropdb planetstack
+}
+function syncdb {
+    echo "Syncing OpenCloud services..."
+    python /opt/planetstack/manage.py syncdb --noinput
+}
+function runserver {
+#    python manage.py runserver 128.95.1.128:8000
+    echo "Starting OpenCloud Service on $HOSTNAME:8000"
+    python manage.py runserver  $HOSTNAME:8000&
+}
+
+COMMAND=$1
+
+if [ "$COMMAND" = "initdb" ]; then
+    initdb
+    createdb
+    syncdb
+    runserver
+fi
+if [ "$COMMAND" = "resetdb" ]; then
+    dropdb
+    createdb
+    syncdb
+    runserver
+fi
+if [ "$COMMAND" = "syncdb" ]; then
+    syncdb
+    runserver
+fi
+if [ "$COMMAND" = "runserver" ]; then
+    runserver
+fi
+
