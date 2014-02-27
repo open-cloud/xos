@@ -488,15 +488,12 @@ opacity:1;
     background-position: 0;*/
 }
 
-.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
+.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation{
 background-position: left center;
 width:22px;
 height:22px;	
 }
 
-.icon-app {
-background-image: url("opencloudApp.png");
-}
 .icon-home {
 background-image: url("Home.png");
 }
@@ -564,3 +561,132 @@ text-decoration: underline;
     width: 700px;
     height: 400px;
 }
+
+
+
+
+
+/* Charts CSS */
+p.numeral
+{
+	font-size:32pt;
+	color:#ffffff;
+	opacity: 0.7;
+	font-family:Helvetica Neue;
+	font-weight:100;
+	text-align:center;
+	line-height:75%;
+}
+
+.helper-text
+{
+	border: 1px solid #fff;
+	padding: 7px;
+	border-radius: 18px;
+	font-size:13pt;
+	color:#ffffff;
+	opacity: 0.7;
+	font-family:Helvetica Neue;
+	font-weight:200;
+	text-align:center;
+	line-height:100%;
+}
+p.osobject
+{
+	font-size:12pt;
+	color:#ffffff;
+	opacity: 0.7;
+	font-family:Helvetica Neue;
+	font-weight:200;
+	text-align:center;
+	line-height:100%;
+}
+
+p.heading
+{
+	font-size:20pt;
+	color:#ffffff;
+	opacity: 0.7;
+	font-family:Helvetica Neue;
+	font-weight:200;
+	text-align:center;
+}
+
+/*p.heading
+{
+	font-size:32pt;
+	color:#ffffff;
+	opacity: 0.7;
+	font-family:Helvetica Neue;
+	font-weight:200;
+	text-align:center;
+}*/
+
+div.graph 
+{
+	height:340px;
+}
+
+div.numeral 
+{
+	height:120px;
+}
+
+div.heading 
+{
+	height:10px;
+}
+
+div.padding 
+{
+	height:20px;
+}
+
+div.chartContainer
+{
+	background-image:url('chartsBg.jpg');
+	width:527px;
+	height:400px;
+	border:1px;
+}
+
+/* D3 */
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #ffffff;
+  opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+
+.x.axis path {
+  display: none;
+}
+
+.x.axis text {
+  fill: white;
+  opacity: 0.5;
+}
+
+.y.axis text {
+  opacity: 0.5;
+  fill: white;
+}
+
+.y.axis text.legend {
+  opacity: 1.0;
+  fill: white;
+  font-size:8pt;
+}
+
+.line {
+  fill: none;
+  stroke: white;
+  stroke-width: 3px;
+  opacity: 0.6;
+}
+
+
+/* Charts CSS */
