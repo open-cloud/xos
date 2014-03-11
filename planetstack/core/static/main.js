@@ -48,17 +48,17 @@ $(document).ready(function() {
 			whereClause = " WHERE %hostname='"+selectedNodeTxt+"'";
 			alert(whereClause);
 		} else {
-			console.log('Error: Unkown object type:'+parentNodeTxt)
+			console.log('Error: Unkown object type:'+parentNodeTxt);
 		}
 	} else {
-		whereClause = ''
+		whereClause = '';
 	}
-	finalNodeQuery = encodeURIComponent(baseNodeQuery + whereClause + groupByClause)
-	finalCpuQuery = encodeURIComponent(baseCpuQuery + whereClause + groupByClause)
-	finalBwQuery = encodeURIComponent(baseBwQuery + whereClause + groupByClause)
-	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Node+Count&tqx=saber&q='+finalNodeQuery,'nodesLabel','nodesValue')
-	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Load&tqx=saber&q='+finalCpuQuery,'cpuLabel','cpuValue')
-	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Bandwidth&tqx=saber&q='+finalBwQuery,'bandwidthLabel','bandwidthValue')
+	finalNodeQuery = encodeURIComponent(baseNodeQuery + whereClause + groupByClause);
+	finalCpuQuery = encodeURIComponent(baseCpuQuery + whereClause + groupByClause);
+	finalBwQuery = encodeURIComponent(baseBwQuery + whereClause + groupByClause);
+	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Node+Count&tqx=saber&q='+finalNodeQuery,'nodesLabel','nodesValue');
+	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Load&tqx=saber&q='+finalCpuQuery,'cpuLabel','cpuValue');
+	getServerData('http://cloud-scrutiny.appspot.com/command?action=send_query&legend=Bandwidth&tqx=saber&q='+finalBwQuery,'bandwidthLabel','bandwidthValue');
 
 	$('.nodesLabel, .nodesValue').click(function() {
 		var jsonData = window.nodesCnt;
