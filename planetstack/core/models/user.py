@@ -156,7 +156,7 @@ class UserDeployments(PlCoreBase):
     deployment = models.ForeignKey(Deployment)
     kuser_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
 
-    def __unicode__(self):  return u'%s %s %s' % (self.user, self.deployment.name)
+    def __unicode__(self):  return u'%s %s' % (self.user, self.deployment.name)
 
     @staticmethod
     def select_by_user(user):

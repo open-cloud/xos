@@ -7,6 +7,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import SiteDeployments
 from core.models.slice import Slice, SliceDeployments
+from core.models.user import UserDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -63,37 +64,42 @@ class SyncSliceDeployments(OpenStackSyncStep):
             slice_deployment.tenant_id = tenant.id
 
             # XXX give caller an admin role at the tenant they've created
-            driver.add_user_role(slice_deployment.slice.creator.kuser_id, tenant.id, 'admin')
+            deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
+                                                             deployment=slice_deployment.deployment)            
+            if not deployment_users or not deployment_users[0].kuser_id:
+                logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name)
+            else:
+                driver.add_user_role(slice_deployment.slice.creator.kuser_id, tenant.id, 'admin')
 
-            # refresh credentials using this tenant
-            client_driver = self.driver.client_driver(tenant=tenant.name, 
-                                                      deployment=slice_deployment.deployment.name)
+                # refresh credentials using this tenant
+                client_driver = self.driver.client_driver(tenant=tenant.name, 
+                                                          deployment=slice_deployment.deployment.name)
 
-            # create network
-            network = client_driver.create_network(slice.name)
-            slice_deployment.network_id = network['id']
+                # create network
+                network = client_driver.create_network(slice.name)
+                slice_deployment.network_id = network['id']
 
-            # create router
-            router = client_driver.create_router(slice.name)
-            slice_deployment.router_id = router['id']
+                # create router
+                router = client_driver.create_router(slice.name)
+                slice_deployment.router_id = router['id']
 
-            # create subnet for slice's private network
-            next_subnet = self.get_next_subnet(deployment=slice_deployment.deployment.name)
-            cidr = str(next_subnet.cidr)
-            ip_version = next_subnet.version
-            start = str(next_subnet[2])
-            end = str(next_subnet[-2]) 
-            subnet = client_driver.create_subnet(name=slice.name,
-                                               network_id = network['id'],
-                                               cidr_ip = cidr,
-                                               ip_version = ip_version,
-                                               start = start,
-                                               end = end)
-            slice_deployment.subnet_id = subnet['id']
-            # add subnet as interface to slice's router
-            client_driver.add_router_interface(router['id'], subnet['id'])
-            # add external route
-            client_driver.add_external_route(subnet)
+                # create subnet for slice's private network
+                next_subnet = self.get_next_subnet(deployment=slice_deployment.deployment.name)
+                cidr = str(next_subnet.cidr)
+                ip_version = next_subnet.version
+                start = str(next_subnet[2])
+                end = str(next_subnet[-2]) 
+                subnet = client_driver.create_subnet(name=slice.name,
+                                                   network_id = network['id'],
+                                                   cidr_ip = cidr,
+                                                   ip_version = ip_version,
+                                                   start = start,
+                                                   end = end)
+                slice_deployment.subnet_id = subnet['id']
+                # add subnet as interface to slice's router
+                client_driver.add_router_interface(router['id'], subnet['id'])
+                # add external route
+                client_driver.add_external_route(subnet)
 
 
         if slice_deployment.id and slice_deployment.tenant_id:
