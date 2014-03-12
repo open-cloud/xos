@@ -48,7 +48,7 @@ class SyncUserDeployments(OpenStackSyncStep):
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
         name = user_deployment.user.email[:user_deployment.user.email.find('@')]
-        user_fields = {'name': name,
+        user_fields = {'name': user_deployment.user.email,
                        'email': user_deployment.user.email,
                        'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
                        'enabled': True}    
