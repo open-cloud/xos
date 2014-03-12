@@ -40,7 +40,7 @@ class SyncSlivers(OpenStackSyncStep):
             slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key)
-            driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name)
+            driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
             instance = driver.spawn_instance(name=sliver.name,
                                 key_name = sliver.creator.keyname,
                                 image_id = sliver.image.image_id,

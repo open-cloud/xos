@@ -1,5 +1,5 @@
 from core.models import Site
-from observer.delete import Deleter
+from observer.deleter import Deleter
 
 class SiteDeleter(Deleter):
     model='Site'

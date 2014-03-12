@@ -6,6 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.openstacksyncstep import OpenStackSyncStep
+from deployment_auth import deployment_auth
 from core.models import *
 
 logger = Logger(level=logging.INFO)
@@ -69,17 +70,20 @@ class GarbageCollector(OpenStackSyncStep):
             slice_dict[slice.name] = slice
 
         # delete keystone tenants that don't have a site record
-        tenants = self.driver.shell.keystone.tenants.findall()
-        system_tenants = ['admin','service', 'invisible_to_admin']
-        for tenant in tenants:
-            if tenant.name in system_tenants: 
-                continue
-            if tenant.name not in site_dict and tenant.name not in slice_dict:
-                try:
-                    self.driver.delete_tenant(tenant.id)
-                    logger.info("deleted tenant: %s" % (tenant))
-                except:
-                    logger.log_exc("delete tenant failed: %s" % tenant)
+        for deployment in deployment_auth:
+            driver = self.driver.admin_driver(deployment=deployment)
+            tenants = driver.shell.keystone.tenants.findall()
+
+            system_tenants = ['admin','service', 'invisible_to_admin']
+            for tenant in tenants:
+                if tenant.name in system_tenants: 
+                    continue
+                if tenant.name not in site_dict and tenant.name not in slice_dict:
+                    try:
+                        driver.delete_tenant(tenant.id)
+                        logger.info("deleted tenant: %s" % (tenant))
+                    except:
+                        logger.log_exc("delete tenant failed: %s" % tenant)
 
 
     def gc_users(self):
@@ -96,16 +100,18 @@ class GarbageCollector(OpenStackSyncStep):
 
         # delete keystone users that don't have a user record
         system_users = ['admin', 'nova', 'quantum', 'glance', 'cinder', 'swift', 'service', 'demo']
-        users = self.driver.shell.keystone.users.findall()
-        for user in users:
-            if user.name in system_users:
-                continue
-            if user.id not in user_dict:
-                try:
-                    self.driver.delete_user(user.id)
-                    logger.info("deleted user: %s" % user)
-                except:
-                    logger.log_exc("delete user failed: %s" % user)
+        for deployment in deployment_auth:
+            driver = self.driver.admin_driver(deployment=deployment)
+            users = driver.shell.keystone.users.findall()
+            for user in users:
+                if user.name in system_users:
+                    continue
+                if user.id not in user_dict:
+                    try:
+                        self.driver.delete_user(user.id)
+                        logger.info("deleted user: %s" % user)
+                    except:
+                        logger.log_exc("delete user failed: %s" % user)
                     
 
     def gc_user_tenant_roles(self):
@@ -126,39 +132,43 @@ class GarbageCollector(OpenStackSyncStep):
         # 2. Never remove a user's role at a slice they've created.
         # Keep track of all roles that must be preserved.     
         users = User.objects.all()
-        preserved_roles = {}
-        for user in users:
-            tenant_ids = [s['tenant_id'] for s in user.slices.values()]
-            if user.site:
-                tenant_ids.append(user.site.tenant_id) 
-            preserved_roles[user.kuser_id] = tenant_ids
+        for deployment in deployment_auth:
+            driver = self.driver.admin_driver(deployment=deployment)
+            tenants = driver.shell.keystone.tenants.list() 
+            for user in users:
+                # skip admin roles
+                if user.kuser_id == self.driver.admin_user.id:
+                    continue
+     
+                ignore_tenant_ids = []
+                k_user = driver.shell.keystone.users.find(id=user.kuser_id)
+                ignore_tenant_ids = [s['tenant_id'] for s in user.slices.values()]
+                if user.site:
+                    ignore_tenant_ids.append(user.site.tenant_id) 
 
- 
-        # begin removing user tenant roles from keystone. This is stored in the 
-        # Metadata table.
-        for metadata in self.driver.shell.keystone_db.get_metadata():
-            # skip admin roles
-            if metadata.user_id == self.driver.admin_user.id:
-                continue
-            # skip preserved tenant ids
-            if metadata.user_id in preserved_roles and \
-               metadata.tenant_id in preserved_roles[metadata.user_id]: 
-                continue           
-            # get roles for user at this tenant
-            user_tenant_role_ids = user_tenant_roles.get((metadata.user_id, metadata.tenant_id), [])
+                # get user roles in keystone
+                for tenant in tenants:
+                    # skip preserved tenant ids
+                    if tenant.tenant_id in ignore_tenant_ids: 
+                        continue          
+                    # compare user tenant roles
+                    user_tenant_role_ids = user_tenant_roles.get((user.kuser_id, tenant.id), [])
 
-            if user_tenant_role_ids:
-                # The user has roles at the tenant. Check if roles need to 
-                # be updated.
-                user_keystone_role_ids = metadata.data.get('roles', [])
-                for role_id in user_keystone_role_ids:
-                    if role_id not in user_tenant_role_ids: 
-                        user_keystone_role_ids.pop(user_keystone_role_ids.index(role_id))
-            else:
-                # The user has no roles at this tenant. 
-                metadata.data['roles'] = [] 
-            #session.add(metadata)
-            logger.info("pruning metadata for %s at %s" % (metadata.user_id, metadata.tenant_id))
+                    if user_tenant_role_ids:
+                        # The user has roles at the tenant. Check if roles need to 
+                        # be updated.
+                        k_user_roles =  driver.shell.keystone.roles.roles_for_user(k_user, tenant)
+                        for k_user_role in k_user_roles:
+                            if k_user_role.role_id not in user_tenant_role_ids: 
+                                driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant) 
+                                logger.info("removed user role %s for %s at %s" % \
+                                           (k_user_role, k_user.username, tenant.name))
+                    else:
+                        # remove all roles the user has at the tenant. 
+                        for k_user_role in k_user_roles:
+                            driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant) 
+                            logger.info("removed user role %s for %s at %s" % \
+                                       (k_user_role, k_user.username, tenant.name))
  
     def gc_slivers(self):
         """
@@ -172,20 +182,17 @@ class GarbageCollector(OpenStackSyncStep):
         for sliver in slivers:
             sliver_dict[sliver.instance_id] = sliver
 
-        # delete sliver that don't have a sliver record
-        ctx = self.driver.shell.nova_db.ctx 
-        instances = self.driver.shell.nova_db.instance_get_all(ctx)
-        for instance in instances:
-            if instance.uuid not in sliver_dict:
-                try:
-                    # lookup tenant and update context  
-                    tenant = self.driver.shell.keystone.tenants.find(id=instance.project_id)
-                    driver = self.driver.client_driver(tenant=tenant.name) 
-                    driver.destroy_instance(instance.uuid)
-                    logger.info("destroyed sliver: %s" % (instance))
-                except:
-                    logger.log_exc("destroy sliver failed: %s" % instance) 
-                
+        for tenant in self.driver.shell.keystone.tenants.list():
+            # delete sliver that don't have a sliver record
+            tenant_driver = self.driver.client_driver(tenant=tenant.name, deployment=sliver.node.deployment)
+            for instance in tenant_driver.nova.servers.list():
+                if instance.uuid not in sliver_dict:
+                    try:
+                        tenant_driver.destroy_instance(instance.uuid)
+                        logger.info("destroyed sliver: %s" % (instance))
+                    except:
+                        logger.log_exc("destroy sliver failed: %s" % instance)
+               
 
     def gc_sliver_ips(self):
         """
@@ -195,7 +202,8 @@ class GarbageCollector(OpenStackSyncStep):
         slivers = Sliver.objects.filter(ip=None)
         for sliver in slivers:
             # update connection
-            driver = self.driver.client_driver(tenant=sliver.slice.name)
+            
+            driver = self.driver.client_driver(tenant=sliver.slice.name, deployment=sliver.node.deployment)
             servers = driver.shell.nova.servers.findall(id=sliver.instance_id)
             if not servers:
                 continue
@@ -217,10 +225,12 @@ class GarbageCollector(OpenStackSyncStep):
             nodes_dict[node.name] = node
 
         # collect nova nodes:
-        compute_nodes = self.client.nova.hypervisors.list()
         compute_nodes_dict = {}
-        for compute_node in compute_nodes:
-            compute_nodes_dict[compute_node.hypervisor_hostname] = compute_node
+        for deployment in deployment_auth:
+            driver = self.driver.admin_driver(deployment=deployment) 
+            compute_nodes = driver.nova.hypervisors.list()
+            for compute_node in compute_nodes:
+                compute_nodes_dict[compute_node.hypervisor_hostname] = compute_node
 
         # remove old nodes
         old_node_names = set(nodes_dict.keys()).difference(compute_nodes_dict.keys())
@@ -234,10 +244,12 @@ class GarbageCollector(OpenStackSyncStep):
             images_dict[image.name] = image
 
         # collect glance images
-        glance_images = self.driver.shell.glance.get_images()
         glance_images_dict = {}
-        for glance_image in glance_images:
-            glance_images_dict[glance_image['name']] = glance_image
+        for deployment in deployment_auth:
+            driver = self.driver.admin_driver(deployment=deployment)
+            glance_images = driver.shell.glance.get_images()
+            for glance_image in glance_images:
+                glance_images_dict[glance_image['name']] = glance_image
 
         # remove old images
         old_image_names = set(images_dict.keys()).difference(glance_images_dict.keys())

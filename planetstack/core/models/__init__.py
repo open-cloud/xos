@@ -8,10 +8,10 @@ from .tag import Tag
 from .role import Role
 #from .deployment import Deployment
 from .site import Site,Deployment, DeploymentRole, DeploymentPrivilege, SiteDeployments
-from .user import User
+from .user import User, UserDeployments
 from .serviceclass import ServiceClass
-from .slice import Slice
-from .site import SitePrivilege
+from .slice import Slice, SliceDeployments
+from .site import SitePrivilege, SiteDeployments
 from .image import Image
 from .node import Node
 from .serviceresource import ServiceResource
