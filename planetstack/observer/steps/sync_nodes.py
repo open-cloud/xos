@@ -14,28 +14,26 @@ class SyncNodes(OpenStackSyncStep):
     requested_interval=0
 
     def fetch_pending(self):
-        config = Config()
-        deployment = Deployment.objects.filter(name=config.plc_deployment)[0]
-        login_bases = ['princeton', 'stanford', 'gt', 'uw', 'mpisws']
-        sites = Site.objects.filter(login_base__in=login_bases)
-        
         # collect local nodes
+        sites = Site.objects.all()
         nodes = Node.objects.all()
         node_hostnames  = [node.name for node in nodes]
 
-        # collect nova nodes
-        # generate list of new nodes
-        new_nodes = []
-        compute_nodes = self.driver.shell.nova.hypervisors.list()
-        for compute_node in compute_nodes:
+        # fetch all nodes from each deployment 
+        deployments = Deployment.objects.all()
+        for deployment in deployments:
+            driver = self.driver.admin_driver(deployment=deployment.name)
+            compute_nodes = driver.shell.nova.hypervisors.list()
             if compute_node.hypervisor_hostname not in node_hostnames:
-                # pick a random site to add the node to for now
+                # XX TODO:figure out how to correctly identify a node's site.
+                # XX pick a random site to add the node to for now
                 site_index = random.randint(0, len(sites))
-                node = Node(name=compute_node.hypervisor_hostname, 
+                node = Node(name=compute_node.hypervisor_hostname,
                             site=sites[site_index], deployment=deployment)
-                new_nodes.append(node) 
-        
-        return new_nodes
+                new_nodes.append(node)
+
+        return new_nodes    
+                 
 
     def sync_record(self, node):
         node.save()

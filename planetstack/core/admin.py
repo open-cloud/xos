@@ -345,6 +345,32 @@ class SitePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
+class SiteDeploymentROInline(ReadOnlyTabularInline):
+    model = SiteDeployments
+    #model = Site.deployments.through
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-sitedeployments'
+    fields = ['deployment','site']
+
+class SiteDeploymentInline(PlStackTabularInline):
+    model = SiteDeployments
+    #model = Site.deployments.through
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-deployments'
+    fields = ['deployment','site']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'site':
+            kwargs['queryset'] = Site.select_by_user(request.user)
+
+        if db_field.name == 'deployment':
+            kwargs['queryset'] = Deployment.select_by_user(request.user)
+        return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def queryset(self, request):
+        return SiteDeployments.select_by_user(request.user)
+
+
 class SlicePrivilegeROInline(ReadOnlyTabularInline):
     model = SlicePrivilege
     extra = 0
@@ -492,7 +518,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     fieldList = ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
-        ('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
+        #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
     suit_form_tabs =(('general', 'Site Details'),
         ('users','Users'),
@@ -505,11 +531,11 @@ class SiteAdmin(PlanetStackBaseAdmin):
     readonly_fields = ['accountLink']
 
     user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
-    user_readonly_inlines = [SliceROInline,UserROInline,TagROInline, NodeROInline, SitePrivilegeROInline]
+    user_readonly_inlines = [SliceROInline,UserROInline,TagROInline, NodeROInline, SitePrivilegeROInline,SiteDeploymentROInline]
 
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline]
+    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentInline]
     search_fields = ['name']
 
     def queryset(self, request):

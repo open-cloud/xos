@@ -13,6 +13,7 @@ except:
     has_openstack = False
 
 from planetstack.config import Config
+from deployment_auth import deployment_auth
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):
@@ -39,16 +40,22 @@ def parse_novarc(filename):
     return opts
 
 class Client:
-    def __init__(self, username=None, password=None, tenant=None, url=None, config=None, *args, **kwds):
-        if config:
-            config = Config(config)
+    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, *args, **kwds):
+        
+            
+        if not deployment or deployment not in deployment_auth:
+            auth = deployment_auth['default']
         else:
-            config = Config()
+            auth = deployment_auth[deployment]
+            
+            
         self.has_openstack = has_openstack
-        self.username = config.nova_admin_user
-        self.password = config.nova_admin_password
-        self.tenant = config.nova_admin_tenant
-        self.url = config.nova_url
+        self.username = auth['user']
+        self.password = auth['password']
+        self.tenant = auth['tenant']
+        self.url = auth['url']
+        self.endpoint = auth['endpoint']
+        self.token = auth['token']  
 
         if username:
             self.username = username
@@ -58,6 +65,10 @@ class Client:
             self.tenant = tenant
         if url:
             self.url = url
+        if token:
+            self.token = token    
+        if endpoint:
+            self.endpoint = endpoint
 
         if '@' in self.username:
             self.username = self.username[:self.username.index('@')]
@@ -80,7 +91,10 @@ class KeystoneClient(Client):
             self.client = keystone_client.Client(username=self.username,
                                                  password=self.password,
                                                  tenant_name=self.tenant,
-                                                 auth_url=self.url)
+                                                 auth_url=self.url,
+                                                 endpoint=self.endpoint,
+                                                 token=self.token
+                                                )
 
     @require_enabled
     def connect(self, *args, **kwds):

@@ -18,7 +18,6 @@
   {% block blockbots %}
     <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
   <link rel="shortcut icon" href="{% static 'favicon.png' %}">
-
 </head>
 {% load i18n %}
 
@@ -133,12 +132,20 @@
                     </li>
                 </ul>
               {% endblock %}
-               <label class="nodetextbox" >Active Nodes: </label>
-              <label class="nodelabel" >37</label>
-              <label class="nodetextbox">CPU Utilization: </label>
-              <label class="nodelabel" >12%</label>
-            <label class="nodetextbox">Bytes Transferred:</label>     
-              <label class="nodelabel" style="width:60px;">4321GB</label>
+		<div class="hide">{{ app_label|capfirst|escape }}</div>
+		<div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
+		<div class="hide currentOriginalNode">{{ original|truncatewords:"18" }}</div>  
+                  
+
+               <label class="nodetextbox nodesLabel" style="display: none;" > </label>
+              <label class="nodelabel nodesValue" style="display: none;" ></label>
+		<span class="nodesCnt hide"></span>
+              <label class="nodetextbox cpuLabel" style="display: none;" ></label>
+              <label class="nodelabel cpuValue" style="display: none;" ></label>
+		<span class="cpuCnt hide"></span>
+            <label class="nodetextbox bandwidthLabel" style="display: none;" ></label>    
+              <label class="nodelabel bandwidthValue" style="width:60px;display: none;"></label>
+		<span class="bandUsage hide"></span>
             {% endif %}
 
             {% block messages %}
@@ -230,7 +237,52 @@
 
   <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'suit/js/suit.js' %}"></script>
+  <script src="{% static 'main.js' %}"></script>
   {% block extrajs %}{% endblock %}
+<script src="http://d3js.org/d3.v3.js"></script>
 
+	<div class="modal fade hide" id="chartsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <!--<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">OpenCloud</h4>
+	      </div>-->
+	      <div class="modal-body">
+		<div class="chartContainer">
+			<div class="row">
+				<div class=" padding">
+				</div>
+			</div>
+
+			<div class="row">
+				<div class=" heading">
+					<p id="chartHeading" class="heading">OpenCloud</p>	
+				</div>
+			</div>
+			<div class="row">
+				<div class="padding"></div>
+				<div class="padding"></div>
+			</div>
+			<div class="row">
+				<div id="graph" class="graph">
+				</div>
+			</div>
+		</div>
+	      </div>
+	      <!--<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>-->
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+<script>
+
+
+
+
+</script>
 </body>
 </html>

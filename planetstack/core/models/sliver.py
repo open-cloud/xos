@@ -52,6 +52,6 @@ class Sliver(PlCoreBase):
         if user.is_admin:
             qs = Sliver.objects.all()
         else:
-            slice_ids = [s.id for s in Slice.select_by_user(user)]
-            qs = Sliver.objects.filter(id__in=slice_ids)
+            slices = Slice.select_by_user(user)
+            qs = Sliver.objects.filter(slice__in=slices)
         return qs

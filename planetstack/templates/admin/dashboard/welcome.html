@@ -22,4 +22,160 @@
 {% endif %}
 {% endfor %}
 </table>
+<script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
+<div id="HPCDashboard">
+    <h1>HPC Dashboard</h1>
+    <span id="hpcSummary">
+        <span class="summary-attr"><b>Active Slivers:</b> 78 </span>
+        <span class="summary-attr"><b>Overall Throughput:</b> 58Gbps</span>
+        <span class="summary-attr-util"><b>CPU Utilization:</b> 45%</span>
+
+    </span>
+    <div id="map-us" ></div>
+</div>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+
+<script src="{% static 'js/Leaflet.MakiMarkers.js' %}" > </script>
+
+<script>
+
+var consoleAppender = new log4javascript.BrowserConsoleAppender();
+var patternLayout = new log4javascript.PatternLayout("%d{HH:mm:ss,SSS} %l{s:l} %-5p - %m{1}%n");
+consoleAppender.setLayout(patternLayout);
+
+var log  = log4javascript.getRootLogger();
+log.addAppender(consoleAppender);
+log.setLevel(log4javascript.Level.ALL);
+
+L.Map = L.Map.extend({
+    openPopup: function(popup) {
+        this._popup = popup;
+
+        return this.addLayer(popup).fire('popupopen', {
+            popup: this._popup
+        });
+    }
+});
+
+
+//Iterate through data and find the max/min coordinates to include all of our points to start
+var map = L.map('map-us'); //.setView([0, 0], 1);
+
+L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: 'Test'
+}).addTo(map);
+
+var arrayOfLatLngs = [];
+var data = {{ cdnData|safe }};
+log.info( data );
+
+for ( var key in data ) {
+    arrayOfLatLngs.push([data[key]['lat'],data[key]['long']]);
+    log.info( arrayOfLatLngs );
+
+    data[key]['marker'] = L.marker([data[key]['lat'], data[key]['long']], {icon: getIcon(data[key]['numNodes'], data[key]['numHPCSlivers']) });
+    data[key]['marker'].addTo(map).bindPopup(setPopupVals(key, data[key]));
+
+}
+var bounds = new L.LatLngBounds(arrayOfLatLngs);
+map.fitBounds(bounds);
+
+var popup = L.popup();
+
+
+function setPopupVals (site, siteData) {
+    var retVal = '<span class="SiteDetail"><b>' + site + '</b></span>' + 
+                   '</br><a href="' + siteData['siteUrl'] + '">' + siteData['siteUrl'] + '</a>' + 
+                   '</br><b>Available Nodes: </b>' + siteData['numNodes'] + 
+                   '</br><b>Active HPC Slivers: </b>' + siteData['numHPCSlivers'] + 
+                   '</br><span id="addSlivers">Add HPC Slivers</span>' + 
+                   '<span id="remSlivers">Remove HPC Slivers</span>' ; 
+
+   return retVal;
+}
+function getIcon(numNodes, numHPCSlivers, currentBW) {
+    var colorChoices = ["#007FFF", "#0000FF", "#7f00ff", "#FF00FF", "#FF007F", "#FF0000"];
+
+    var ratio = (numHPCSlivers/numNodes) * 100;
+    var numColors = colorChoices.length;
+    var colorBands = 100/numColors;
+
+    //Algorithm for color tone should consider the number of available nodes
+    // on the site, and then how much the current dedicated nodes are impacted
+    //var iconColor = 0;
+    var iconColor = 5;
+    for (colorBand = 0; colorBand < numColors; colorBand ++) {
+        if (ratio < colorBands * colorBand+1) {
+            iconColor = colorBand
+            break;
+        }
+    }
+  
+    var icon = L.MakiMarkers.icon({icon: "star-stroked", color: colorChoices[iconColor] , size: "s"});
+    return icon;
+}
+
+function updateMaps() {
+    log.info("Attempting to update Maps");
+    $.ajax({
+    url : '/hpcdashboard',
+    dataType : 'json',
+    type : 'GET',
+    success: function(newData)
+    {
+        log.info("Successfully got data back...");
+        log.info(newData);
+        log.info("Still have old data too");
+        log.info(data);
+        updateMapData(newData);
+    }
+});
+    setTimeout(updateMaps, 45000)
+
+}
+
+function updateMapData(newData) {
+    for ( site in newData ) {
+        var isNewSite = false;
+        //check to see if the site is new or not
+        if (site in data) {
+            log.info("Site " + site + " already mapped");
+            //take ownership of marker
+            newData[site]['marker'] = data[site]['marker'];
+            delete data[site];
+            newData[site]['marker'].setIcon(getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers']));
+            // workaround, markers currently don't have a setPopup Content method -- so have to grab object directly
+            newData[site]['marker']._popup.setContent(setPopupVals(site, newData[site]));
+        }
+        else {
+            isNewSite = true;
+            log.info("New Site detected: " + site);
+            newData[site]['marker'] = L.marker([newData[site]['lat'], newData[site]['long']], 
+                                              {icon: getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers']) });
+            newData[site]['marker'].addTo(map).bindPopup(setPopupVals(site, newData[site])); //.openPopup();
+            log.info("Should have added the new site");
+
+        }
+    }
+
+    // Anything still in data needs to be removed since it is no longer a valid site
+    for (remSite in data) {
+        log.warn("Site: " + remSite + " is no longer valid, removing from map");
+        map.removeLayer(data[remSite]['marker']);
+    }
+    data = newData;
+}
+
+function onMapClick(e) {
+    popup
+    .setLatLng(e.latlng)
+    .setContent("You clicked the map at " + e.latlng.toString())
+    .openOn(map);
+}
+
+setTimeout(updateMaps, 5000)
+
+</script>
 {% endblock %}

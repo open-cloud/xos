@@ -21,8 +21,8 @@ class Site(PlCoreBase):
     is_public = models.BooleanField(default=True, help_text="Indicates the visibility of this site to other members")
     abbreviated_name = models.CharField(max_length=80)
 
-    deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
-    #deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True)
+    #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
+    deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True)
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -88,6 +88,9 @@ class Deployment(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    @staticmethod
+    def select_by_user(user):
+        return Deployment.objects.all()
 
 class DeploymentRole(PlCoreBase):
 
@@ -127,6 +130,11 @@ class DeploymentPrivilege(PlCoreBase):
 class SiteDeployments(PlCoreBase):
     site = models.ForeignKey(Site)
     deployment = models.ForeignKey(Deployment)
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
+
+    @staticmethod
+    def select_by_user(user):
+        return SiteDeployments.objects.all()
 
     #class Meta:
     #    db_table = 'core_site_deployments'

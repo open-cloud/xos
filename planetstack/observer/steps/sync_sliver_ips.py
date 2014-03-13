@@ -14,7 +14,8 @@ class SyncSliverIps(OpenStackSyncStep):
         return slivers
 
     def sync_record(self, sliver):
-        driver = self.driver.client_driver(tenant=sliver.slice.name)  
+        driver = self.driver.client_driver(tenant=sliver.slice.name, 
+                                           deployment=sliver.node.deployment.name)  
         servers = driver.shell.nova.servers.findall(id=sliver.instance_id)
         if not servers:
             return

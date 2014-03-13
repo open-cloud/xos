@@ -5,58 +5,69 @@ import traceback
 import commands
 import threading
 import json
+import pdb
 
 from datetime import datetime
 from collections import defaultdict
 
+# Topological sort
+# Notes:
+# - Uses a stack instead of recursion
+# - Forfeits optimization involving tracking currently visited nodes
 def toposort(g, steps=None):
+	# Get set of all nodes, including those without outgoing edges
+	keys = set(g.keys())
+	values = set({})
+	for v in g.values():
+		values=values | set(v)
+	
+	all_nodes=list(keys|values)
 	if (not steps):
-		keys = set(g.keys())
-		values = set({})
-		for v in g.values():
-			values=values | set(v)
-		
-		steps=list(keys|values)
+		steps = all_nodes
 
-	reverse = {}
-
-	for k,v in g.items():
-		for rk in v:
-			try:
-				reverse[rk].append(k)
-			except:
-				reverse[rk]=k
-
-	sources = []
-	for k,v in g.items():
-		if not reverse.has_key(k):
-			sources.append(k)
-
-	for k,v in reverse.iteritems():
-		if (not v):
-			sources.append(k)
-
+	# Final order
 	order = []
-	marked = []
 
-	while sources:
-		n = sources.pop(0)
-		try:
-			for m in g[n]:
-				if m not in marked:
-					sources.append(m)
-					marked.append(m)
-		except KeyError:
-			pass
-		if (n in steps):
-			order.append(n)
+	# DFS stack, not using recursion
+	stack = []
 
-	order.reverse()
+	# Unmarked set
+	unmarked = all_nodes
 
-	return order
+	# visiting = [] - skip, don't expect 1000s of nodes, |E|/|V| is small
 
-graph_file=open('model-deps').read()
-g = json.loads(graph_file)
-print toposort(g)
+	while unmarked:
+		stack.insert(0,unmarked[0]) # push first unmarked
+
+		while (stack):
+			n = stack[0]
+			add = True
+			try:
+				for m in g[n]:
+					if (m in unmarked):
+						if (m not in stack):
+							add = False
+							stack.insert(0,m)
+						else:
+							# Should not happen, if so there's a loop
+							print 'Loop at %s'%m
+			except KeyError:
+				pass
+			if (add):
+				if (n in steps):
+					order.append(n)
+				item = stack.pop(0)
+				unmarked.remove(item)
+
+	noorder = list(set(steps) - set(order))
+	return order + noorder
+
+def main():
+	graph_file=open('planetstack.deps').read()
+	g = json.loads(graph_file)
+	print toposort(g)
+
+if (__name__=='__main__'):
+	main()
 
 #print toposort({'a':'b','b':'c','c':'d','d':'c'},['d','c','b','a'])

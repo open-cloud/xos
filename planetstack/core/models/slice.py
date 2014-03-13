@@ -9,6 +9,7 @@ from core.models import ServiceClass
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
+from core.models import Deployment
 
 # Create your models here.
 
@@ -87,3 +88,22 @@ class SlicePrivilege(PlCoreBase):
             sp_ids = [sp.id for sp in SlicePrivilege.objects.filter(user=user)]
             qs = SlicePrivilege.objects.filter(id__in=sp_ids)
         return qs
+
+class SliceDeployments(PlCoreBase):
+    slice = models.ForeignKey(Slice)
+    deployment = models.ForeignKey(Deployment)
+    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+
+    def __unicode__(self):  return u'%s %s %s' % (self.slice, self.deployment)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = SliceDeployments.objects.all()
+        else:
+            slices = Slice.select_by_user(user)
+            qs = SliceDeployments.objects.filter(slice__in=slices)
+        return qs    
