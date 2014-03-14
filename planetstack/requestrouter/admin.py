@@ -25,7 +25,14 @@ class RequestRouterServiceAdmin(SingletonAdmin):
         ('serviceattrs','Additional Attributes'),
     )
 
+class ServiceMapAdmin(SingletonAdmin):
+    model = ServiceMap
+    verbose_name = "Service Map"
+    verbose_name_plural = "Service Map"
+    list_display = ("name", "owner", "slice", "prefix")
+    #readonly_fields = ["name"]
+
 
 admin.site.register(RequestRouterService, RequestRouterServiceAdmin)
-admin.site.register(ClientMap)
+admin.site.register(ServiceMap, ServiceMapAdmin)
 

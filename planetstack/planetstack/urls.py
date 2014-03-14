@@ -22,9 +22,15 @@ from core.models import *
 from core.api_root import api_root
 from rest_framework import generics
 from core.plus.sites import SitePlus
+from django.http import HttpResponseRedirect
 
 admin.site = SitePlus()
 admin.autodiscover()
+
+def redirect_to_apache(request):
+     """ bounce a request back to the apache server that is running on the machine """
+     apache_url = "http://%s%s" % (request.META['HOSTNAME'], request.path)
+     return HttpResponseRedirect(apache_url)
 
 urlpatterns = patterns('',
     # Examples:
@@ -89,6 +95,7 @@ urlpatterns = patterns('',
 
     url(r'^legacyapi/$', 'core.views.legacyapi.LegacyXMLRPC', name='xmlrpc'),
 
+    url(r'^files/', redirect_to_apache),
 
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
