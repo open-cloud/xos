@@ -61,9 +61,23 @@ class CDNPrefixAdmin(admin.ModelAdmin):
     form = CDNPrefixForm
     list_display = ['prefix','contentProvider']
 
+class SiteMapAdmin(admin.ModelAdmin):
+    model = SiteMap
+    verbose_name = "Site Map"
+    verbose_name_plural = "Site Map"
+    list_display = ("name", "contentProvider", "serviceProvider")
+
+class AccessMapAdmin(admin.ModelAdmin):
+    model = AccessMap
+    verbose_name = "Access Map"
+    verbose_name_plural = "Access Map"
+    list_display = ("name", "contentProvider")
+
 admin.site.register(ServiceProvider, ServiceProviderAdmin)
 admin.site.register(ContentProvider, ContentProviderAdmin)
 admin.site.register(CDNPrefix, CDNPrefixAdmin)
 admin.site.register(OriginServer,OriginServerAdmin)
 admin.site.register(HpcService)
+admin.site.register(SiteMap, SiteMapAdmin)
+admin.site.register(AccessMap, AccessMapAdmin)
 

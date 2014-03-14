@@ -70,3 +70,20 @@ class CDNPrefix(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.prefix)
 
+class AccessMap(models.Model):
+    contentProvider = models.ForeignKey(ContentProvider)
+    name = models.CharField(max_length=64, help_text="Name of the Access Map")
+    description = models.TextField(null=True, blank=True,max_length=130)
+    map = models.FileField(upload_to="maps/", help_text="specifies which client requests are allowed")
+
+    def __unicode__(self):  return self.name
+
+class SiteMap(models.Model):
+    """ can be bound to a ContentProvider, ServiceProvider, or neither """
+    contentProvider = models.ForeignKey(ContentProvider, blank=True, null=True)
+    serviceProvider = models.ForeignKey(ServiceProvider, blank=True, null=True)
+    name = models.CharField(max_length=64, help_text="Name of the Site Map")
+    description = models.TextField(null=True, blank=True,max_length=130)
+    map = models.FileField(upload_to="maps/", help_text="specifies how to map requests to hpc instances")
+
+    def __unicode__(self):  return self.name
