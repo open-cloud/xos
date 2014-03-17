@@ -97,7 +97,7 @@ class SliceDeployments(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
-    def __unicode__(self):  return u'%s %s %s' % (self.slice, self.deployment)
+    def __unicode__(self):  return u'%s %s'  % (self.slice, self.deployment)
 
     @staticmethod
     def select_by_user(user):
