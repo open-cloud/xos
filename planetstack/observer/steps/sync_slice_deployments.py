@@ -19,12 +19,12 @@ class SyncSliceDeployments(OpenStackSyncStep):
     def fetch_pending(self):
         # slice deployments are not visible to users. We must ensure
         # slices are deployed at all deploymets available to their site.
-        site_deployments = SiteDeployment.objects.all()
+        site_deployments = SiteDeployments.objects.all()
         site_deploy_lookup = defaultdict(list)
         for site_deployment in site_deployments:
             site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
         
-        slice_deployments = SliceDeployment.objects.all()
+        slice_deployments = SliceDeployments.objects.all()
         slice_deploy_lookup = defaultdict(list)
         for slice_deployment in slice_deployments:
             slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
@@ -66,21 +66,23 @@ class SyncSliceDeployments(OpenStackSyncStep):
             # XXX give caller an admin role at the tenant they've created
             deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
                                                              deployment=slice_deployment.deployment)            
-            if not deployment_users or not deployment_users[0].kuser_id:
-                logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name)
+            if not deployment_users:
+                logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
             else:
-                driver.add_user_role(slice_deployment.slice.creator.kuser_id, tenant.id, 'admin')
+                # lookup user id at this deployment
+                kuser= driver.shell.keystone.users.find(email=slice_deployment.slice.creator.email)
+                driver.add_user_role(kuser.id, tenant.id, 'admin')
 
                 # refresh credentials using this tenant
                 client_driver = self.driver.client_driver(tenant=tenant.name, 
                                                           deployment=slice_deployment.deployment.name)
 
                 # create network
-                network = client_driver.create_network(slice.name)
+                network = client_driver.create_network(slice_deployment.slice.name)
                 slice_deployment.network_id = network['id']
 
                 # create router
-                router = client_driver.create_router(slice.name)
+                router = client_driver.create_router(slice_deployment.slice.name)
                 slice_deployment.router_id = router['id']
 
                 # create subnet for slice's private network
@@ -89,7 +91,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
                 ip_version = next_subnet.version
                 start = str(next_subnet[2])
                 end = str(next_subnet[-2]) 
-                subnet = client_driver.create_subnet(name=slice.name,
+                subnet = client_driver.create_subnet(name=slice_deployment.slice.name,
                                                    network_id = network['id'],
                                                    cidr_ip = cidr,
                                                    ip_version = ip_version,
