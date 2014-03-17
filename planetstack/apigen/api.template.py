@@ -62,6 +62,7 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         #obj = {{ object.camel }}().update(request.DATA)
         obj = self.get_object()
+        obj.caller = request.user
         if obj.can_update(request.user):
             return super({{ object.camel }}List, self).create(request, *args, **kwargs)
         else:

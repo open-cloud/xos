@@ -422,6 +422,7 @@ class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
     save_on_top = False
     
     def save_model(self, request, obj, form, change):
+        obj.caller = request.user
         # update openstack connection to use this site/tenant
         obj.save_by_user(request.user)
 
