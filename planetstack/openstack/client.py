@@ -70,8 +70,8 @@ class Client:
         if endpoint:
             self.endpoint = endpoint
 
-        if '@' in self.username:
-            self.username = self.username[:self.username.index('@')]
+        #if '@' in self.username:
+        #    self.username = self.username[:self.username.index('@')]
 
 class KeystoneDB:
     @require_enabled

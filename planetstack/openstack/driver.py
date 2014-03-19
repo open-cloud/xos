@@ -397,7 +397,6 @@ class OpenStackDriver:
         files = {}
         if pubkeys:
             files['/root/.ssh/authorized_keys'] = "\n".join(pubkeys)
-
         hints = {}
         availability_zone = None
         if hostname:

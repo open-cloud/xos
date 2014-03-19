@@ -38,12 +38,21 @@ class SyncSlivers(OpenStackSyncStep):
             nics = self.get_requested_networks(sliver.slice)
             file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
             slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
-            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
-            pubkeys.append(sliver.creator.public_key)
-            driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
+            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key is not None]
+            if sliver.creator.public_key:
+                pubkeys.append(sliver.creator.public_key)
+            driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.deploymentNetwork.name)
+            # look up image id
+            deployment_driver = self.driver.admin_driver(deployment=sliver.deploymentNetwork.name)
+            image_id = None
+            images = deployment_driver.shell.glance.get_images()
+            for image in images:
+                if image['name'] == sliver.image.name:
+                    image_id = image['id']
+                     
             instance = driver.spawn_instance(name=sliver.name,
                                 key_name = sliver.creator.keyname,
-                                image_id = sliver.image.image_id,
+                                image_id = image_id,
                                 hostname = sliver.node.name,
                                 pubkeys = pubkeys,
                                 nics = nics )
@@ -51,6 +60,6 @@ class SyncSlivers(OpenStackSyncStep):
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
         if sliver.instance_id and metadata_update:
-            self.driver.update_instance_metadata(sliver.instance_id, metadata_update)
+            driver.update_instance_metadata(sliver.instance_id, metadata_update)
 
         sliver.save()    
