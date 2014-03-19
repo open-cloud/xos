@@ -92,10 +92,11 @@ class SlicePrivilege(PlCoreBase):
 class SliceDeployments(PlCoreBase):
     slice = models.ForeignKey(Slice)
     deployment = models.ForeignKey(Deployment)
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+    keyname = models.CharField(null=True, blank=True, max_length=256, help_text="Nova keypair name")
 
     def __unicode__(self):  return u'%s %s'  % (self.slice, self.deployment)
 
