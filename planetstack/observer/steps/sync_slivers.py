@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
-from core.models.slice import SlicePrivilege
+from core.models.slice import SlicePrivilege, SliceDeployments
 
 class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
@@ -49,9 +49,18 @@ class SyncSlivers(OpenStackSyncStep):
             for image in images:
                 if image['name'] == sliver.image.name:
                     image_id = image['id']
-                     
+                    
+            # look up key name at the deployment
+            keyname = None
+            slice_deployments = SliceDeployments.objects.filter(slice = sliver.slice, 
+                                                               deployment = sliver.deploymentNetwork)
+            for slice_deployment in slice_deployments:
+                if slice_deployment.keyname:
+                    keyname = slice_deployment.keyname
+                    break 
+ 
             instance = driver.spawn_instance(name=sliver.name,
-                                key_name = sliver.creator.keyname,
+                                key_name = keyname,
                                 image_id = image_id,
                                 hostname = sliver.node.name,
                                 pubkeys = pubkeys,

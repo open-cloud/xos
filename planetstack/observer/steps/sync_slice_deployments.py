@@ -69,13 +69,26 @@ class SyncSliceDeployments(OpenStackSyncStep):
             if not deployment_users:
                 logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
             else:
+                deployment_user = deployment_users[0]
                 # lookup user id at this deployment
                 kuser= driver.shell.keystone.users.find(email=slice_deployment.slice.creator.email)
-                driver.add_user_role(kuser.id, tenant.id, 'admin')
 
+                # add required roles at the slice's tenant 
+                driver.add_user_role(kuser.id, tenant.id, 'admin')
+                    
                 # refresh credentials using this tenant
-                client_driver = self.driver.client_driver(tenant=tenant.name, 
+                client_driver = self.driver.client_driver(caller=deployment_user.user,
+                                                          tenant=tenant.name, 
                                                           deployment=slice_deployment.deployment.name)
+
+                # create a public key for the slice creator
+                if deployment_user.user.public_key:
+                    keyname = deployment_user.user.email.lower().replace('@', 'AT').replace('.', '') +\
+                              slice_deployment.slice.name
+                    slice_deployment.keyname = keyname 
+                    key_fields =  {'name': keyname,
+                                   'public_key': deployment_user.user.public_key} 
+                    client_driver.create_keypair(**key_fields)
 
                 # create network
                 network = client_driver.create_network(slice_deployment.slice.name)

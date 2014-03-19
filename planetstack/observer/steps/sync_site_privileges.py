@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
-from core.models.user import UserDeployments    
+from core.models.user import User, UserDeployments    
 
 class SyncSitePrivileges(OpenStackSyncStep):
     requested_interval=0

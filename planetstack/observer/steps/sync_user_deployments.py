@@ -25,12 +25,8 @@ class SyncUserDeployments(OpenStackSyncStep):
         for site_deployment in site_deployments:
             site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
         
-        user_deployments = UserDeployments.objects.all()
-        user_deploy_lookup = defaultdict(list)
-        for user_deployment in user_deployments:
-            user_deploy_lookup[user_deployment.user].append(user_deployment.deployment)
-        
-        for user in User.objects.all():
+        user_deployments = []                
+        for user in User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)):
             if user.is_admin:
                 # admins should have an account at all deployments
                 expected_deployments = deployments
@@ -38,12 +34,10 @@ class SyncUserDeployments(OpenStackSyncStep):
                 # normal users should have an account at their site's deployments
                 expected_deployments = site_deploy_lookup[user.site]
             for expected_deployment in expected_deployments:
-                if expected_deployment not in user_deploy_lookup[user]:
-                    ud = UserDeployments(user=user, deployment=expected_deployment)
-                    ud.save()
+                ud = UserDeployments(user=user, deployment=expected_deployment)
+                user_deployments.append(ud)
 
-        # now we can return all slice deployments that need to be enacted   
-        return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        return user_deployments
 
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
@@ -59,7 +53,7 @@ class SyncUserDeployments(OpenStackSyncStep):
         else:
             driver.update_user(user_deployment.kuser_id, user_fields)
 
-        # setup user deployment site roles  
+        # setup user deployment home site roles  
         if user_deployment.user.site:
             site_deployments = SiteDeployments.objects.filter(site=user_deployment.user.site,
                                                               deployment=user_deployment.deployment)
@@ -74,11 +68,17 @@ class SyncUserDeployments(OpenStackSyncStep):
                     # may have admin role so attempt to remove it
                     driver.delete_user_role(user_deployment.kuser_id, tenant_id, 'admin')
 
-        if user_deployment.user.public_key:
-            user_driver = driver.client_driver(caller=user, tenant=user.site.login_base, 
-                                                    deployment=user_deployment.deployment.name)
-            key_fields =  {'name': user_deployment.user.keyname,
-                           'public_key': user_deployment.user.public_key}
-            user_driver.create_keypair(**key_fields)
+        #if user_deployment.user.public_key:
+        #    if not user_deployment.user.keyname:
+        #        keyname = user_deployment.user.email.lower().replace('@', 'AT').replace('.', '')
+        #        user_deployment.user.keyname = keyname
+        #        user_deployment.user.save()
+        #    
+        #    user_driver = driver.client_driver(caller=user_deployment.user, 
+        #                                       tenant=user_deployment.user.site.login_base, 
+        #                                       deployment=user_deployment.deployment.name)
+        #    key_fields =  {'name': user_deployment.user.keyname,
+        #                   'public_key': user_deployment.user.public_key}
+        #    user_driver.create_keypair(**key_fields)
 
         user_deployment.save()
