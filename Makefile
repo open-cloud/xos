@@ -9,7 +9,7 @@ dist rpm: $(NAME)-$(VERSION)-$(RELEASE).rpm
 
 $(NAME)-$(VERSION).tar.gz:
 	mkdir -p $(NAME)-$(VERSION)
-	rsync -av --exclude=.svn --exclude=.git --exclude=*.tar.gz --exclude=$(NAME)-$(VERSION)/ ./ $(NAME)-$(VERSION)
+	rsync -av --exclude=.svn --exclude=.git --exclude=*.tar.gz --exclude=__history --exclude=$(NAME)-$(VERSION)/ ./ $(NAME)-$(VERSION)
 	tar -czf $@ $(NAME)-$(VERSION)
 	rm -fr $(NAME)-$(VERSION)
 

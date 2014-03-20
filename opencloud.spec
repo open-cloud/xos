@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0
+Version: 1.0.2
 Release: 1
 License: GPL+
 Group: Development/Tools
@@ -16,6 +16,7 @@ requires: libxslt-devel
 requires: python-pip
 requires: tar
 requires: gcc
+requires: python-httplib2
 
 %description
 %{summary}
@@ -42,8 +43,13 @@ pip-python install django-geoposition
 pip-python install django-extensions
 pip-python install django-suit
 pip-python install django-evolution
+pip-python install django-bitfield
 
 easy_install django_evolution
+easy_install python_gflags
+easy_install google_api_python_client
+
+wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
 
 %install
 rm -rf %{buildroot}
