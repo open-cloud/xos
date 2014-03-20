@@ -66,7 +66,8 @@ class BigQueryAnalytics:
 
 	service = build('bigquery', 'v2', http=http)
 
-        body = {"query": query}
+        body = {"query": query,
+                "timeoutMs": 30000}
         response = service.jobs().query(projectId=PROJECT_NUMBER, body=body).execute()
 
         return response
