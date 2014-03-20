@@ -1,196 +1,148 @@
 #views.py
+import os
+import sys
 from django.views.generic import TemplateView, View
 import datetime
-
-import json 
-from core.models import Slice,SliceRole,SlicePrivilege,Site,Reservation
+from pprint import pprint
+import json
+from core.models import Slice,SliceRole,SlicePrivilege,Site,Reservation,Sliver
 from django.http import HttpResponse
+import traceback
 
+if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
+    sys.path.append("/home/smbaker/projects/vicci/cdn/bigquery")
+else:
+    sys.path.append("/opt/planetstack/hpc_wizard")
+import hpc_wizard
+from planetstack_analytics import DoPlanetStackAnalytics
 
 class DashboardWelcomeView(TemplateView):
     template_name = 'admin/dashboard/welcome.html'
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        try:
-            site = Site.objects.filter(id=request.user.site.id)
-        except:
-            site = Site.objects.filter(name="Princeton")
-        context['site'] = site[0]
+        userDetails = getUserSliceInfo(request.user)
+        #context['site'] = userDetails['site']
 
-        context['userSliceInfo'] = getSliceInfo(request, context)
-        context['cdnData'] = getCDNOperatorData();
+        context['userSliceInfo'] = userDetails['userSliceInfo']
+        context['cdnData'] = userDetails['cdnData']
         return self.render_to_response(context=context)
 
-def getSliceInfo(request, context):
+def getUserSliceInfo(user, tableFormat = False):
+        userDetails = {}
+#        try:
+# //           site = Site.objects.filter(id=user.site.id)
+#  //      except:
+#   //         site = Site.objects.filter(name="Princeton")
+#    //    userDetails['sitename'] = site[0].name
+#     //   userDetails['siteid'] = site[0].id
+
+        userSliceData = getSliceInfo(user)
+        if (tableFormat):
+#            pprint("*******      GET USER SLICE INFO")
+            userDetails['userSliceInfo'] = userSliceTableFormatter(userSliceData)
+        else:
+            userDetails['userSliceInfo'] = userSliceData
+        userDetails['cdnData'] = getCDNOperatorData();
+#        pprint( userDetails)
+        return userDetails
+
+def userSliceTableFormatter(data):
+#    pprint(data)
+    formattedData = {
+                     'rows' : data
+                    }
+    return formattedData
+
+def getSliceInfo(user):
     sliceList = Slice.objects.all()
-    slicePrivs = SlicePrivilege.objects.filter(user=request.user)
+    slicePrivs = SlicePrivilege.objects.filter(user=user)
     userSliceInfo = []
     for entry in slicePrivs:
 
+        slicename = Slice.objects.get(id=entry.slice.id).name
+        sliceid = Slice.objects.get(id=entry.slice.id).id
         try:
-            reservationList = Reservation.objects.filter(slice=entry.slice)
-            reservations = (True,reservationList)
-
+            sliverList = Sliver.objects.filter(slice=entry.slice.id)
+            siteList = {}
+            for x in sliverList:
+               if x.node.site not in siteList:
+                  siteList[x.node.site] = 1
+            slivercount = len(sliverList)
+            sitecount = len(siteList)
         except:
-            reservations = None
+            traceback.print_exc()
+            slivercount = 0
+            sitecount = 0
 
-        userSliceInfo.append({'slice': Slice.objects.get(id=entry.slice.id),
-                           'role': SliceRole.objects.get(id=entry.role.id).role,
-                           'reservations': reservations})
+        userSliceInfo.append({'slicename': slicename, 'sliceid':sliceid,
+                           'role': SliceRole.objects.get(id=entry.role.id).role, 'slivercount': slivercount, 'sitecount':sitecount})
+
     return userSliceInfo
 
-
 def getCDNOperatorData(randomizeData = False):
-    cdnData = {
-        "Arizona": {
-            "lat": 32.2333,
-            "long": -110.94799999999998,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 2,
-            "siteUrl": "http://www.cs.arizona.edu/"
-        },
-        "I2 Singapore": {
-            "lat": 1.33544,
-            "long": 103.88999999999999,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 5,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "ON.Lab": {
-            "lat": 37.452955,
-            "long": -122.18176599999998,
-            "health": 0,
-            "numNodes": 45,
-            "numHPCSlivers": 12,
-            "siteUrl": "http://www.onlab.us/"
-        },
-        "I2 Washington DC": {
-            "lat": 38.009,
-            "long": -77.00029999999998,
-            "health": 0,
-            "numNodes": 50,
-            "numHPCSlivers": 7,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Seattle": {
-            "lat": 47.6531,
-            "long": -122.31299999999999,
-            "health": 0,
-            "numNodes": 100,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Salt Lake City": {
-            "lat": 40.7659,
-            "long": -111.844,
-            "health": 0,
-            "numNodes": 35,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 New York": {
-            "lat": 40.72,
-            "long": -73.99000000000001,
-            "health": 0,
-            "numNodes": 25,
-            "numHPCSlivers": 4,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Los Angeles": {
-            "lat": 33.2505,
-            "long": -117.50299999999999,
-            "health": 0,
-            "numNodes": 20,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Kansas City": {
-            "lat": 39.0012,
-            "long": -94.00630000000001,
-            "health": 0,
-            "numNodes": 17,
-            "numHPCSlivers": 8,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Houston": {
-            "lat": 29.0077,
-            "long": -95.00369999999998,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Chicago": {
-            "lat": 41.0085,
-            "long": -87.00650000000002,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "I2 Atlanta": {
-            "lat": 33.0075,
-            "long": -84.00380000000001,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.internet2.edu/"
-        },
-        "MaxPlanck": {
-            "lat": 49.14,
-            "long": 6.588999999999942,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.mpi-sws.mpg.de/"
-        },
-        "GeorgiaTech": {
-            "lat": 33.7772,
-            "long": -84.39760000000001,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.gatech.edu/"
-        },
-        "Princeton": {
-            "lat": 40.3502,
-            "long": -74.6524,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://princeton.edu/"
-        },
-        "Washington": {
-            "lat": 47.6531,
-            "long": -122.31299999999999,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "https://www.washington.edu/"
-        },
-        "Stanford": {
-            "lat": 37.4294,
-            "long": -122.17200000000003,
-            "health": 0,
-            "numNodes": 15,
-            "numHPCSlivers": 10,
-            "siteUrl": "http://www.stanford.edu/"
-        },
-    }
+    return hpc_wizard.get_hpc_wizard().get_sites_for_view()
 
-    if randomizeData:
-        cdnData["Siobhan"] = { "lat": 43.34203, "long": -70.56351, "health": 10, "numNodes": 5, "numHPCSlivers": 3, "siteUrl": "https:devonrexes"}
-        del cdnData["Princeton"]
-        cdnData["I2 Seattle"]['siteUrl'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cdnData["I2 Salt Lake City"]["numHPCSlivers"] = 34
+def getPageSummary(request):
+    slice = request.GET.get('slice', None)
+    site = request.GET.get('site', None)
+    node = request.GET.get('node', None)
 
 
-    return cdnData
+class SimulatorView(View):
+    def get(self, request, **kwargs):
+        sim = json.loads(file("/tmp/simulator.json","r").read())
+        text = "<html><head></head><body>"
+        text += "Iteration: %d<br>" % sim["iteration"]
+        text += "Elapsed since report %d<br><br>" % sim["elapsed_since_report"]
+        text += "<table border=1>"
+        text += "<tr><th>site</th><th>trend</th><th>weight</th><th>bytes_sent</th><th>hot</th></tr>"
+        for site in sim["site_load"].values():
+            text += "<tr>"
+            text += "<td>%s</td><td>%0.2f</td><td>%0.2f</td><td>%d</td><td>%0.2f</td>" % \
+                        (site["name"], site["trend"], site["weight"], site["bytes_sent"], site["load_frac"])
+            text += "</tr>"
+        text += "</table>"
+        text += "</body></html>"
+        return HttpResponse(text)
+
+class DashboardUserSiteView(View):
+    def get(self, request, **kwargs):
+        return HttpResponse(json.dumps(getUserSliceInfo(request.user, True)), mimetype='application/javascript')
+
+class DashboardSummaryAjaxView(View):
+    def get(self, request, **kwargs):
+        return HttpResponse(json.dumps(hpc_wizard.get_hpc_wizard().get_summary_for_view()), mimetype='application/javascript')
+
+class DashboardAddOrRemoveSliverView(View):
+    def post(self, request, *args, **kwargs):
+        siteName = request.POST.get("site", "0")
+        actionToDo = request.POST.get("actionToDo", "0")
+
+        if (actionToDo == "add"):
+            hpc_wizard.get_hpc_wizard().increase_slivers(siteName, 1)
+        elif (actionToDo == "rem"):
+            hpc_wizard.get_hpc_wizard().decrease_slivers(siteName, 1)
+
+        print '*' * 50
+        print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Sliver'
+        return HttpResponse('This is POST request ')
 
 class DashboardAjaxView(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getCDNOperatorData(True)), mimetype='application/javascript')
-        
+
+class DashboardAnalyticsAjaxView(View):
+    def get(self, request, name="hello_world", **kwargs):
+        if (name == "hpcSummary"):
+            return HttpResponse(json.dumps(hpc_wizard.get_hpc_wizard().get_summary_for_view()), mimetype='application/javascript')
+        elif (name == "hpcUserSite"):
+            return HttpResponse(json.dumps(getUserSliceInfo(request.user, True)), mimetype='application/javascript')
+        elif (name == "hpcMap"):
+            return HttpResponse(json.dumps(getCDNOperatorData(True)), mimetype='application/javascript')
+        elif (name == "bigquery"):
+            (mimetype, data) = DoPlanetStackAnalytics(request)
+            return HttpResponse(data, mimetype=mimetype)
+        else:
+            return HttpResponse(json.dumps("Unknown"), mimetype='application/javascript')
+

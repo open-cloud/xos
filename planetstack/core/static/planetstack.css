@@ -1,3 +1,64 @@
+.alignCenter {
+    text-align: center !important;
+    align: center !important;
+}
+table.dataTable tr.odd {
+background-color: white !important;
+}
+table.dataTable tr.odd td.sorting_1 {
+background-color: white !important;
+}
+table.dataTable tr.even td.sorting_1 {
+background-color: white !important;
+}
+table.dataTable thead th div.DataTables_sort_wrapper {
+    font-weight: bold;
+}
+.dashboard-hpc-sliver .ui-widget-header, .dashboard-hpc-sliver .ui-dialog-title, .dashboard-hpc-sliver .ui-dialog-titlebar{
+}
+.ui-widget-overlay {
+    background: black !important;
+}
+.ui-corner-all {
+border-bottom-left-radius: 0px !important;
+border-bottom-right-radius: 0px !important;
+}
+
+#suit-center {
+  min-width: 977px !important;
+}
+#minDashboard {
+  min-width:625px;
+  display:inline;
+  float: right;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+background: none !important;
+border-top: 0px !important;
+border-left: 0px !important;
+border-right: 0px !important;
+}
+.ui-widget-header {
+background: none !important;
+border-top: 0px !important;
+border-left: 0px !important;
+border-right: 0px !important;
+}
+#suit_form_tabs {
+border-bottom: 1px solid #B5D1EA;
+border-bottom-width: 1px;
+border-bottom-style: solid;
+border-bottom-color: rgb(181, 209, 234);
+color:#105E9E;
+}
+#tabs {
+font-size: 12px;
+border: 0px;
+}
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+color: #105E9E ;
+}
+
 .required:after {color: red ! important; font-size: 18px }
 #.btn-success {color:black}
 #suit-center {
@@ -25,6 +86,7 @@ margin-bottom: 5px;
 /*For increasing the header height*/
 .header {
 height: 90px;
+min-width: 1321px;
 }
 
 /*For changing the background color of the left side navigation list items*/
@@ -488,12 +550,15 @@ opacity:1;
     background-position: 0;*/
 }
 
-.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation{
+.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
 background-position: left center;
 width:22px;
 height:22px;	
 }
 
+.icon-app {
+background-image: url("opencloudApp.png");
+}
 .icon-home {
 background-image: url("Home.png");
 }

@@ -1,4 +1,4 @@
-{% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
+﻿{% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
   <title>{% block title %}  {%if title %} {{ title }} | {% endif %} {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
@@ -9,7 +9,7 @@
   {% block extrastyle %}{% endblock %}
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>{% endif %}
   <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-  <script src="{% static 'suit/js/jquery-1.8.3.min.js' %}"></script>
+  <script src="{% static 'suit/js/jquery-1.9.1.min.js' %}"></script>
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
   <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
@@ -87,9 +87,7 @@
             {% if user.is_active and user.is_staff %}
               <div id="user-tools">
                 {% trans 'Welcome,' %}
-                <strong>
-                  {% filter force_escape %}
-                    {% firstof user.first_name user.username %}{% endfilter %}</strong>.
+                <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">{{user.email}}</a>
                 <span class="user-links">
                 {% block userlinks %}
                   {% url 'django-admindocs-docroot' as docsroot %}
@@ -120,6 +118,25 @@
           <div id="suit-center" class="suit-column">
 
             {% if not is_popup %}
+            <div id=openCloudTopPage>
+            <span id="minDashboard">
+                <div class="hide">{{ app_label|capfirst|escape }}</div>
+                <div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
+                <div class="hide currentOriginalNode">{{ original|truncatewords:"18" }}</div>
+
+
+               <label class="nodetextbox nodesLabel" style="display: none;" > </label>
+              <label class="nodelabel nodesValue" style="display: none;" ></label>
+                <span class="nodesCnt hide"></span>
+              <label class="nodetextbox cpuLabel" style="display: none;" ></label>
+              <label class="nodelabel cpuValue" style="display: none;" ></label>
+                <span class="cpuCnt hide"></span>
+            <label class="nodetextbox bandwidthLabel" style="display: none;" ></label>
+              <label class="nodelabel bandwidthValue" style="width:60px;display: none;"></label>
+                <span class="bandUsage hide"></span>
+            </span>
+            </div>
+
               {% block breadcrumbs %}
                 <ul class="breadcrumb"> 
                   <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
@@ -132,20 +149,6 @@
                     </li>
                 </ul>
               {% endblock %}
-		<div class="hide">{{ app_label|capfirst|escape }}</div>
-		<div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
-		<div class="hide currentOriginalNode">{{ original|truncatewords:"18" }}</div>  
-                  
-
-               <label class="nodetextbox nodesLabel" style="display: none;" > </label>
-              <label class="nodelabel nodesValue" style="display: none;" ></label>
-		<span class="nodesCnt hide"></span>
-              <label class="nodetextbox cpuLabel" style="display: none;" ></label>
-              <label class="nodelabel cpuValue" style="display: none;" ></label>
-		<span class="cpuCnt hide"></span>
-            <label class="nodetextbox bandwidthLabel" style="display: none;" ></label>    
-              <label class="nodelabel bandwidthValue" style="width:60px;display: none;"></label>
-		<span class="bandUsage hide"></span>
             {% endif %}
 
             {% block messages %}
@@ -237,10 +240,13 @@
 
   <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'suit/js/suit.js' %}"></script>
-  <script src="{% static 'main.js' %}"></script>
+  <script src="{% static 'page_analytics.js' %}"></script>
+  <script type="text/javascript" src="//www.google.com/jsapi"></script>
+  <script src="{% static 'planetstack_graphs.js' %}"></script>
+  <!-- src="{% static 'planetstack_graphs_old.js' %}" -->
+
   {% block extrajs %}{% endblock %}
 <script src="http://d3js.org/d3.v3.js"></script>
-
 	<div class="modal fade hide" id="chartsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
@@ -269,6 +275,7 @@
 				</div>
 			</div>
 		</div>
+                <div id="graph_work" style="display:none"></div>
 	      </div>
 	      <!--<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

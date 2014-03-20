@@ -2,51 +2,187 @@
 {% load admin_static %}
 
 {% block content %}
-<h1>Welcome <a href="core/user/{{user.id}}">{{user.email}}</a> from Site: <a href="core/site/{{site.id}}">{{site}}</a></h1>
-<table class="table table-striped table-bordered table-hover table-condensed">
-<thead><tr>
-<th class="sortable">Slices</th><th class="sortable">Privilege</th>
-<th class="sortable">Reservations</th>
-</tr></thead>
-{% for entry in userSliceInfo %}
-<tr><td> <a href="core/slice/{{entry.slice.id}}">{{entry.slice.name}}</a><br>
-</td><td>{{entry.role}}</td>
-{% if entry.reservations %}
-<td><a href="core/slice/{{entry.slice.id}}/#reservations">
-{% for resSlot in entry.reservations.1 %}
-{{resSlot}} <br>
-{% endfor %}
-</a></td></tr>
-{% else %}
-<td></td></tr>
-{% endif %}
-{% endfor %}
-</table>
-<script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
-<div id="HPCDashboard">
-    <h1>HPC Dashboard</h1>
-    <span id="hpcSummary">
-        <span class="summary-attr"><b>Active Slivers:</b> 78 </span>
-        <span class="summary-attr"><b>Overall Throughput:</b> 58Gbps</span>
-        <span class="summary-attr-util"><b>CPU Utilization:</b> 45%</span>
+<link rel="stylesheet"  href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
+<link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css">
+<link rel="stylesheet" type="text/css" href="{% static 'planetstack.css' %}" media="all">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 
-    </span>
-    <div id="map-us" ></div>
-</div>
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
-<script src="{% static 'js/Leaflet.MakiMarkers.js' %}" > </script>
 
+<!-- no need to include jquery here as it's already included by base.html. Including it multiple times will break mtuity statistics. -->
+<!-- src="http://code.jquery.com/jquery-1.9.1.js" -->
+
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
+<script src="{% static 'js/Leaflet.MakiMarkers.js' %}" > </script>
+  
+<script>
+  $(function() {
+    $( "#tabs" ).tabs({active: 0
+      //collapsible: true
+    });
+  });
+</script>
 <script>
 
+function confirmDialog(title,msg) {
+    var dialog = $('<div>'+msg+'</div>');
+    var def = $.Deferred();
+
+    $(dialog).dialog({
+        resizable: false,
+        title: title,
+        autoOpen: true,
+        modal: true,
+        dialogClass: "dashboard-hpc-sliver",
+        buttons: {
+            'OK': function() {
+                def.resolve();
+                log.debug("Chose to add a sliver");
+                $( this ).dialog( "close" );
+            },
+            'Cancel': function() {
+                def.reject();
+                $( this ).dialog( "close" );
+            }
+        },
+        close: {
+        }
+    });
+    return def.promise();
+}
+
+  </script>
+
+<div id="tabs" class="inner-center-column ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit">
+    <li class="active"><a href="#tabs-1">Developer View</a></li>
+    <li><a href="#tabs-2">CDN Operations </a></li>
+    <li><a href="#tabs-3">Historical</a></li>
+    <li><a href="#tabs-3">Tenant</a></li>
+  </ul>
+<div id="tabs-1">
+</div>
+<div id="tabs-2">
+    <div id="HPCDashboard">
+    <h1>CDN Operations View</h1>
+    <span id="hpcSummary">
+        <span class="summary-attr"><b>Active Slivers:</b> <span id="active-slivers-value"> </span> </span>
+        <span class="summary-attr"><b>Overall Throughput:</b> <span id="overall-throughput-value"> </span>  </span>
+        <span class="summary-attr-util"><b>Average CPU Utilization:</b> <span id="cpu-utilization-value"> </span>  </span>
+    </span>
+    <div id="map-us" ></div>
+    <div style="line-height: 30%"><br></div><table border=0><tr>
+    <td>Least Loaded&nbsp;&nbsp;</td>
+    <td bgcolor="#0000FF" width=40>&nbsp;</td>
+    <td bgcolor="#00FFFF" width=40>&nbsp;</td>
+    <td bgcolor="#00FF00" width=40>&nbsp;</td>
+    <td bgcolor="#FFFF00" width=40>&nbsp;</td>
+    <td bgcolor="#FF0000" width=40>&nbsp;</td>
+    <td>&nbsp;&nbsp;Most Loaded</td>
+    </tr></table>
+    </div>
+</div>
+<div id="tabs-3">
+{% include "/opt/planetstack/templates/admin/dashboard/hpc_historical.html" %}
+</div>
+</div>
+
+<script>
+var oTable;
 var consoleAppender = new log4javascript.BrowserConsoleAppender();
 var patternLayout = new log4javascript.PatternLayout("%d{HH:mm:ss,SSS} %l{s:l} %-5p - %m{1}%n");
 consoleAppender.setLayout(patternLayout);
 
+//var log  = log4javascript.getDefaultLogger();
 var log  = log4javascript.getRootLogger();
 log.addAppender(consoleAppender);
-log.setLevel(log4javascript.Level.ALL);
+log.setLevel(log4javascript.Level.ERROR);
+
+function updateUserSliceTable(){
+    log.debug("Should grab user slice info");
+    jQuery.ajax({
+        async:true,
+        dataType: 'json',
+        url: '/hpcdashuserslices',
+        success: function(data){
+            log.info("Got Data back for User SliceTable");
+            //parseData(data);
+            //createUserSliceTable(data);
+            setTimeout(function () { updateUserSliceTable() }, 5000);
+        },
+        error: function(data){
+            log.debug("COULDNT GET DATA BACK");
+            setTimeout(function () { updateUserSliceTable() }, 5000);
+        }
+    });
+}
+
+function createUserSliceTable(data) {
+    log.debug("Creating User Slice Table");
+
+    //Add check for #dynamicusersliceinfo_filter label-> input having focus here
+
+    $('#tabs-1').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamicusersliceinfo"></table>' );
+    var actualEntries = [];
+    log.debug(data['userSliceInfo']['rows'][0]['slicename']);
+
+    var rows = data['userSliceInfo']['rows'];
+    for (row in rows) {
+        log.debug(row[0]);
+        slicename = rows[row]['slicename'];
+        sliceid = rows[row]['sliceid'];
+        role = rows[row]['role'];
+        slivercount = rows[row]['slivercount'];
+        sitecount = rows[row]['sitecount'];
+        actualEntries.push(['<a href="http://{{request.get_host}}/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
+                            role, slivercount, sitecount]);
+    }
+    oTable = $('#dynamicusersliceinfo').dataTable( {
+        "bJQueryUI": true,
+        "aaData":  actualEntries ,
+        "bStateSave": true,
+        "aoColumns": [
+            { "sTitle": "Slice" },
+            { "sTitle": "Privilege" , sClass: "alignCenter"},
+            { "sTitle": "Number of Slivers" , sClass: "alignCenter"},
+            { "sTitle": "Number of Sites" , sClass: "alignCenter"},
+        ]
+    } );
+
+    // If the filter had focus, reapply here
+
+    setTimeout(function() {
+       jQuery.ajax({
+           url: '/hpcdashuserslices',
+           dataType: 'json',
+           success: function(data){ createUserSliceTable(data); },
+           complete: function(){ },
+       });
+    },  10000);
+}
+
+function initTable(){
+    log.debug("Initializing Table")
+    jQuery.ajax({
+        url: '/hpcdashuserslices',
+        dataType: 'json',
+        success: function(data){ createUserSliceTable(data); },
+        complete: function(){
+        }
+    });
+    updateUserSliceTable();
+}
+
+
+initTable();
+
+//$( "#dialogadd" ).dialog({ autoOpen: false });
+//$( "#remSliverdialog" ).dialog({ autoOpen: false });
 
 L.Map = L.Map.extend({
     openPopup: function(popup) {
@@ -61,22 +197,28 @@ L.Map = L.Map.extend({
 
 //Iterate through data and find the max/min coordinates to include all of our points to start
 var map = L.map('map-us'); //.setView([0, 0], 1);
+map.scrollWheelZoom.disable();
 
-L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+//
+// Great tiles, but starting to occasionally see 403 errors on certain tiles causing grey out effect
+//L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+//
+// Swapping out cloudmade tiles to openstreetmap - too many grey tiles showing
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
     attribution: 'Test'
 }).addTo(map);
 
 var arrayOfLatLngs = [];
-var data = {{ cdnData|safe }};
-log.info( data );
+var mapData = {{ cdnData|safe }};
+log.debug( mapData );
 
-for ( var key in data ) {
-    arrayOfLatLngs.push([data[key]['lat'],data[key]['long']]);
-    log.info( arrayOfLatLngs );
+for ( var key in mapData ) {
+    arrayOfLatLngs.push([mapData[key]['lat'],mapData[key]['long']]);
+    log.debug( arrayOfLatLngs );
 
-    data[key]['marker'] = L.marker([data[key]['lat'], data[key]['long']], {icon: getIcon(data[key]['numNodes'], data[key]['numHPCSlivers']) });
-    data[key]['marker'].addTo(map).bindPopup(setPopupVals(key, data[key]));
+    mapData[key]['marker'] = L.marker([mapData[key]['lat'], mapData[key]['long']], {icon: getIcon(mapData[key]['numNodes'], mapData[key]['numHPCSlivers'], 0, mapData[key]['hot']) });
+    mapData[key]['marker'].addTo(map).bindPopup(setPopupVals(key, mapData[key]));
 
 }
 var bounds = new L.LatLngBounds(arrayOfLatLngs);
@@ -88,51 +230,109 @@ var popup = L.popup();
 function setPopupVals (site, siteData) {
     var retVal = '<span class="SiteDetail"><b>' + site + '</b></span>' + 
                    '</br><a href="' + siteData['siteUrl'] + '">' + siteData['siteUrl'] + '</a>' + 
-                   '</br><b>Available Nodes: </b>' + siteData['numNodes'] + 
-                   '</br><b>Active HPC Slivers: </b>' + siteData['numHPCSlivers'] + 
-                   '</br><span id="addSlivers">Add HPC Slivers</span>' + 
-                   '<span id="remSlivers">Remove HPC Slivers</span>' ; 
+                   '</br><b>HPC Slivers: </b>' + siteData['numHPCSlivers'] + 
+                   '</br><b>Total Nodes: </b>' + siteData['numNodes'] +
+//                   '</br><b>Hot: </b>' + Math.round(siteData['hot']*100) +
+                   '</br><b>Measured Load: </b>' + siteData['load'] + '%' +
+                   '<span id="addSlivers"></br><a href="#" id="addHPCSliver" data-site="' + site + '" data-availNodes="' + siteData['numNodes'] +'">Add HPC Slivers</a> </span>' +
+                   '<span id="remSlivers"><a href="#" id="remHPCSliver" data-site="' + site + '">Remove HPC Slivers</a> </span>';
 
    return retVal;
 }
-function getIcon(numNodes, numHPCSlivers, currentBW) {
-    var colorChoices = ["#007FFF", "#0000FF", "#7f00ff", "#FF00FF", "#FF007F", "#FF0000"];
 
-    var ratio = (numHPCSlivers/numNodes) * 100;
+$('#map-us').on('click', '#remHPCSliver', function() {
+   
+    $.ajax({
+        url : '/dashboardaddorremsliver/',
+        dataType : 'json',
+        data: {site: $(this).data('site'),
+               actionToDo: "rem",
+               csrfmiddlewaretoken: "{{ csrf_token }}",   // < here 
+               state:"inactive" },
+        type : 'POST',
+        //success: function(response)
+        //{
+         //   alert("Successfully posted request to REMOVE sliver");
+        //},
+        complete:function(){
+            alert("Successfully posted request to REMOVE sliver");
+        },
+        //error:function (xhr, textStatus, thrownError){
+         //   alert("Could not request to remove HPC Sliver");
+        //}
+    });
+});
+
+$('#map-us').on('click', '#addHPCSliver', function() {
+   
+    $.ajax({
+        url : '/dashboardaddorremsliver/',
+        dataType : 'json',
+        data: {site: $(this).data('site'),
+               actionToDo: "add",
+               csrfmiddlewaretoken: "{{ csrf_token }}",   // < here 
+               state:"inactive" },
+        type : 'POST',
+        success: function(response)
+        {
+            alert("Successfully posted request to add sliver");
+        },
+        complete:function()
+        { 
+            alert("Successfully posted request to add sliver");
+        },
+        //error:function (xhr, textStatus, thrownError){
+         //   alert("error doing something");
+        //}
+    });
+  //  confirmDialog("Add HPC Slivers","Add some HPC Slivers to site " + $(this).data('site'));
+});
+
+function getIcon(numNodes, numHPCSlivers, currentBW, hot) {
+    //var colorChoices = ["#007FFF", "#0000FF", "#7f00ff", "#FF00FF", "#FF007F", "#FF0000"];
+    var colorChoices = ["#0000FF", "#00FFFF", "#00FF00", "#FFFF00", "#FF0000"];
+
+    var ratio = hot * 100; //(numHPCSlivers/numNodes) * 100;
     var numColors = colorChoices.length;
     var colorBands = 100/numColors;
 
     //Algorithm for color tone should consider the number of available nodes
     // on the site, and then how much the current dedicated nodes are impacted
     //var iconColor = 0;
-    var iconColor = 5;
+    var iconColor = colorChoices.length-1;
     for (colorBand = 0; colorBand < numColors; colorBand ++) {
         if (ratio < colorBands * colorBand+1) {
             iconColor = colorBand
             break;
         }
     }
-  
-    var icon = L.MakiMarkers.icon({icon: "star-stroked", color: colorChoices[iconColor] , size: "s"});
+
+    if (numHPCSlivers < 1) {
+        iconColor = "#7F7F7F";
+    } else {
+        iconColor = colorChoices[iconColor];
+    }
+
+    var icon = L.MakiMarkers.icon({icon: "star-stroked", color: iconColor , size: "s"});
     return icon;
 }
 
 function updateMaps() {
-    log.info("Attempting to update Maps");
+    log.debug("Attempting to update Maps");
     $.ajax({
     url : '/hpcdashboard',
     dataType : 'json',
     type : 'GET',
     success: function(newData)
     {
-        log.info("Successfully got data back...");
-        log.info(newData);
-        log.info("Still have old data too");
-        log.info(data);
+        log.debug("Successfully got data back...");
+        log.debug(newData);
+        log.debug("Still have old data too");
+        log.debug(mapData);
         updateMapData(newData);
     }
 });
-    setTimeout(updateMaps, 45000)
+    setTimeout(updateMaps, 30000)
 
 }
 
@@ -140,32 +340,32 @@ function updateMapData(newData) {
     for ( site in newData ) {
         var isNewSite = false;
         //check to see if the site is new or not
-        if (site in data) {
-            log.info("Site " + site + " already mapped");
+        if (site in mapData) {
+            log.debug("Site " + site + " already mapped");
             //take ownership of marker
-            newData[site]['marker'] = data[site]['marker'];
-            delete data[site];
-            newData[site]['marker'].setIcon(getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers']));
+            newData[site]['marker'] = mapData[site]['marker'];
+            delete mapData[site];
+            newData[site]['marker'].setIcon(getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers'],  0, newData[site]['hot']));
             // workaround, markers currently don't have a setPopup Content method -- so have to grab object directly
             newData[site]['marker']._popup.setContent(setPopupVals(site, newData[site]));
         }
         else {
             isNewSite = true;
-            log.info("New Site detected: " + site);
+            log.debug("New Site detected: " + site);
             newData[site]['marker'] = L.marker([newData[site]['lat'], newData[site]['long']], 
-                                              {icon: getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers']) });
+                                              {icon: getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers'],  0, newData[site]['hot']) });
             newData[site]['marker'].addTo(map).bindPopup(setPopupVals(site, newData[site])); //.openPopup();
-            log.info("Should have added the new site");
+            log.debug("Should have added the new site");
 
         }
     }
 
     // Anything still in data needs to be removed since it is no longer a valid site
-    for (remSite in data) {
+    for (remSite in mapData) {
         log.warn("Site: " + remSite + " is no longer valid, removing from map");
         map.removeLayer(data[remSite]['marker']);
     }
-    data = newData;
+    mapData = newData;
 }
 
 function onMapClick(e) {
@@ -176,6 +376,52 @@ function onMapClick(e) {
 }
 
 setTimeout(updateMaps, 5000)
+
+// from stackexchange
+function setInnerText (elementId, text) {
+    var element;
+    if (document.getElementById) {
+        element = document.getElementById(elementId);
+    } else if (document.all) {
+        element = document.all[elementId];
+    }
+    if (element) {
+        if (typeof element.textContent != 'undefined') {
+            element.textContent = text;
+        } else if (typeof element.innerText != 'undefined') {
+            element.innerText = text;
+        } else if (typeof element.removeChild != 'undefined') {
+            while (element.hasChildNodes()) {
+                element.removeChild(element.lastChild);
+            }
+            element.appendChild(document.createTextNode(text)) ;
+        }
+    }
+}
+
+function updateLabelData(summaryData) {
+    setInnerText("active-slivers-value", summaryData["total_slivers"]);
+    setInnerText("overall-throughput-value", (summaryData["total_bandwidth"]*8/1024/1024/1024).toFixed(2) + " Gbps");
+    setInnerText("cpu-utilization-value", summaryData["average_cpu"] + "%");
+}
+
+function updateLabels() {
+    log.debug("Attempting to update Labels");
+    $.ajax({
+    url : '/hpcsummary',
+    dataType : 'json',
+    type : 'GET',
+    success: function(newData)
+    {
+        updateLabelData(newData);
+    }
+});
+    setTimeout(updateLabels, 30000)
+
+}
+
+setTimeout(updateLabels, 5000)
+		
 
 </script>
 {% endblock %}
