@@ -1,5 +1,6 @@
 from bigquery_analytics import BigQueryAnalytics
 import json
+import traceback
 
 class PlanetStackAnalytics(BigQueryAnalytics):
     def __init__(self, tableName="demoevents"):

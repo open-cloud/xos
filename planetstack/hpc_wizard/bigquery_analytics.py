@@ -25,8 +25,13 @@ easy_install google_api_python_client
 
 PROJECT_NUMBER = '549187599759'
 
-FLOW = flow_from_clientsecrets('/opt/planetstack/hpc_wizard/client_secrets.json',
-                               scope='https://www.googleapis.com/auth/bigquery')
+try:
+    FLOW = flow_from_clientsecrets('/opt/planetstack/hpc_wizard/client_secrets.json',
+                                   scope='https://www.googleapis.com/auth/bigquery')
+except:
+    print "exception while initializing bigquery flow"
+    traceback.print_exc()
+    FLOW = None
 
 MINUTE_MS = 60*1000
 HOUR_MS = 60*60*1000
