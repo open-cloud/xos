@@ -1,46 +1,12 @@
 google.load('visualization', '1', {'packages' : ['controls','table','corechart','geochart']});
 
-function renderChartJson(jsondata, yField, xField, legend) {
-    $('#graph').empty();
-    $('#chartsModal').modal('show');
-    $('.modal-body').scrollTop(0);
-
-    var data = new google.visualization.DataTable();
-    data.addColumn("number", "Date");
-    data.addColumn("number", "NodeCount");
-
-    var arr = [];
-    jsondata.rows.forEach(function(d) {
-        arr.push([ +d[yField], +d[xField] ]);
-    });
-
-    console.log(arr);
-
-    data.addRows(arr);
-
-    var lineChart = new google.visualization.ChartWrapper({
-          'chartType': 'LineChart',
-          'containerId': 'graph',
-          'options': {
-            'width': 520,
-            'height': 300,
-            'title': 'Network-wide usage',
-			'pages': true,
-			'numRows': 9
-          },
-          'view': {'columns': [0, 1]}
-        });
-        lineChart.setDataTable(data);
-        lineChart.draw();
-}
-
-function renderChart(origQuery, yColumn, xColumn) {
+function renderChart(origQuery, yColumn, xColumn, title) {
     $('#graph').empty();
     $('#chartsModal').modal('show');
     $('.modal-body').scrollTop(0)
 
     var queryString = encodeURIComponent(origQuery);
-    var serverPart = "http://cloud-scrutiny.appspot.com/command?action=send_query&force=ColumnChart&q=";
+    var serverPart = "http://cloud-scrutiny.appspot.com/command?table=demoevents&action=send_query&force=ColumnChart&q=";
     var dataSourceUrl = serverPart + queryString;
 
     //var dataSourceUrl = "http://node36.princeton.vicci.org:8000/analytics/bigquery/?avg=%25cpu&count=%25hostname&format=raw";
@@ -48,14 +14,14 @@ function renderChart(origQuery, yColumn, xColumn) {
     var query = new google.visualization.Query(dataSourceUrl)
     query && query.abort();
     console.log("query.send")
-    query.send(function(response) {handleResponse_psg(response, yColumn, xColumn);});
+    query.send(function(response) {handleResponse_psg(response, yColumn, xColumn, title);});
     console.log("query.sent")
 }
 
 // NOTE: appended _psg to showLine() and handleResponse() to prevent conflict
 //       with Sapan's analytics page.
 
-function showLine_psg(dt) {
+function showLine_psg(dt, title) {
     console.log("showline")
     var lineChart = new google.visualization.ChartWrapper({
           'chartType': 'LineChart',
@@ -63,9 +29,17 @@ function showLine_psg(dt) {
           'options': {
             'width': 520,
             'height': 300,
-            'title': 'Network-wide usage',
-			'pages': true,
-			'numRows': 9
+            'title': title,
+  	    'pages': true,
+	    'numRows': 9,
+            'backgroundColor': 'transparent',
+            'titleTextStyle': {"color": "white"},
+            'legend': 'none',
+//            'legend': {"textStyle": {"color": "white"}},
+            'hAxis': {"baselineColor": "white",
+                      "textStyle": {"color": "white"}},
+            'vAxis': {"baselineColor": "white",
+                      "textStyle": {"color": "white"}},
           },
           'view': {'columns': [0, 1]}
         });
@@ -73,7 +47,11 @@ function showLine_psg(dt) {
         lineChart.draw();
 }
 
-function handleResponse_psg(response, yColumn, xColumn) {
+function fixDate(unixDate) {
+    return new Date(unixDate*1000);
+}
+
+function handleResponse_psg(response, yColumn, xColumn, title) {
     console.log("handleResponse")
 
     var supportedClasses = {
@@ -91,8 +69,8 @@ function handleResponse_psg(response, yColumn, xColumn) {
       'options': {
         'width': 800,
         'height': 300,
-                    pageSize:5,
-                    page:'enable',
+         pageSize:5,
+         page:'enable',
         'legend': 'none',
         'title': 'Nodes'
       },
@@ -100,15 +78,19 @@ function handleResponse_psg(response, yColumn, xColumn) {
     });
 
     google.visualization.events.addListener(proxy, 'ready', function () {
-        // 0 - time 1 - city 2 - node 3 - site 4 - cpu 5 - bytes
         var dt = proxy.getDataTable();
-        var groupedData1 = google.visualization.data.group(dt, [yColumn], [{
+        var groupedData1 = google.visualization.data.group(dt, [{
+           column: yColumn,
+           type: 'datetime',
+           modifier: fixDate,
+           }],
+           [{
             column: xColumn,
             type: 'number',
             label: dt.getColumnLabel(xColumn),
             aggregation: google.visualization.data.sum}]);
 
-        showLine_psg(groupedData1);
+        showLine_psg(groupedData1, title);
 
         console.log(xColumn);
     });
@@ -125,15 +107,15 @@ function handleResponse_psg(response, yColumn, xColumn) {
 
 $('.nodesLabel, .nodesValue').click(function() {
         var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query, 0, 2);
+        renderChart(jsonData.query, 0, 2, "Node Count");
         //renderChartJson(jsonData, "MinuteTime", "count_hostname", "Node Count");
 });
 
 $('.cpuLabel, .cpuValue').click(function() {
         var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query,0, 1);
+        renderChart(jsonData.query, 0, 1, "Average CPU");
 });
 $('.bandwidthLabel, .bandwidthValue').click(function() {
         var jsonData = window.pageBandData;
-        renderChart(jsonData.query, 0, 1);
+        renderChart(jsonData.query, 0, 1, "Total Bandwidth");
 });
