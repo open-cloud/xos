@@ -96,7 +96,7 @@ class HpcWizard:
             else:
                 site.availNodes.append(node)
 
-    def merge_site_statistics_old(self, sites):
+    def merge_site_statistics(self, sites):
         """ this does it based on the sumb of all bandwidth
 
             The issue here is that we the computed load reacts immediately to
@@ -126,7 +126,7 @@ class HpcWizard:
 
                     file("/tmp/scott2.txt","a").write("%s %d %0.2f %0.2f %0.2f %0.2f %d\n" % (site.name, site.bytes_sent, blue_load, red_load, site.hotness, time_delta, computed_duration))
 
-    def merge_site_statistics(self, sites):
+    def merge_site_statistics_new(self, sites):
         """ This does it based on max load
 
             Advantage of this method is that since we're effectively reporting
@@ -144,7 +144,7 @@ class HpcWizard:
                 site.max_avg_bandwidth = site_dict[site.name]["max_avg_bandwidth"]
                 site.bytes_sent = site_dict[site.name]["sum_bytes_sent"]
 
-                site.hotness = min(1.0, float(max(BLUE_LOAD, site.max_avg_bandwidth) - BLUE_LOAD) / RED_LOAD)
+                site.hotness = min(1.0, float(max(BLUE_LOAD, site.max_avg_bandwidth) - BLUE_LOAD) / (RED_LOAD-BLUE_LOAD))
                 site.load = int(site.max_avg_bandwidth*100/MAX_LOAD)
 
                 # we still need site["bandwidth"] for the summary statistics
