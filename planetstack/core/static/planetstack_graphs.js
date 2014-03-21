@@ -1,6 +1,6 @@
 google.load('visualization', '1', {'packages' : ['controls','table','corechart','geochart']});
 
-function renderChart(origQuery, yColumn, xColumn, title) {
+function renderChart(origQuery, yColumn, xColumn, title, aggFunc) {
     $('#graph').empty();
     $('#chartsModal').modal('show');
     $('.modal-body').scrollTop(0)
@@ -14,12 +14,20 @@ function renderChart(origQuery, yColumn, xColumn, title) {
     var query = new google.visualization.Query(dataSourceUrl)
     query && query.abort();
     console.log("query.send")
-    query.send(function(response) {handleResponse_psg(response, yColumn, xColumn, title);});
+    query.send(function(response) {handleResponse_psg(response, yColumn, xColumn, title, aggFunc);});
     console.log("query.sent")
 }
 
 // NOTE: appended _psg to showLine() and handleResponse() to prevent conflict
 //       with Sapan's analytics page.
+
+function agg_bandwidth(arr) {
+        var ret = 0;
+        for (var i = 0; i < arr.length; i++) {
+                ret+=arr[i]*8.0/1024.0/1024.0/1024.0;
+        }
+        return ret;
+}
 
 function showLine_psg(dt, title) {
     console.log("showline")
@@ -51,7 +59,7 @@ function fixDate(unixDate) {
     return new Date(unixDate*1000);
 }
 
-function handleResponse_psg(response, yColumn, xColumn, title) {
+function handleResponse_psg(response, yColumn, xColumn, title, aggFunc) {
     console.log("handleResponse")
 
     var supportedClasses = {
@@ -88,7 +96,7 @@ function handleResponse_psg(response, yColumn, xColumn, title) {
             column: xColumn,
             type: 'number',
             label: dt.getColumnLabel(xColumn),
-            aggregation: google.visualization.data.sum}]);
+            aggregation: aggFunc}]);
 
         showLine_psg(groupedData1, title);
 
@@ -107,15 +115,15 @@ function handleResponse_psg(response, yColumn, xColumn, title) {
 
 $('.nodesLabel, .nodesValue').click(function() {
         var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query, 0, 2, "Node Count");
+        renderChart(jsonData.query, 0, 2, "Node Count", google.visualization.data.sum);
         //renderChartJson(jsonData, "MinuteTime", "count_hostname", "Node Count");
 });
 
 $('.cpuLabel, .cpuValue').click(function() {
         var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query, 0, 1, "Average CPU");
+        renderChart(jsonData.query, 0, 1, "Average CPU", google.visualization.data.sum);
 });
 $('.bandwidthLabel, .bandwidthValue').click(function() {
         var jsonData = window.pageBandData;
-        renderChart(jsonData.query, 0, 1, "Total Bandwidth");
+        renderChart(jsonData.query, 0, 1, "Total Bandwidth", agg_bandwidth);
 });
