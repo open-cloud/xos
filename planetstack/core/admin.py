@@ -458,6 +458,7 @@ class DeploymentAdminForm(forms.ModelForm):
       super(DeploymentAdminForm, self).__init__(*args, **kwargs)
 
       if self.instance and self.instance.pk:
+        self.fields['sites'].initial = self.instance.site_set.all()
         self.fields['sites'].initial = self.instance.sites.all()
 
     def save(self, commit=True):
