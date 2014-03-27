@@ -10,6 +10,10 @@
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>{% endif %}
   <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
   <script src="{% static 'suit/js/jquery-1.9.1.min.js' %}"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
+
+
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
   <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
@@ -30,19 +34,13 @@
   {% block container %}
     <div id="container">
 
+             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
       {% block header %}
         {% if not is_popup %}
           <!-- Header -->
           <div id="header" class="header">
             
             <div id="branding">
-              <table width="100%">
-                <tr>
-                  <td width="70%">
-             <!-- <a href="{% url 'admin:index' %}"><h1 id="site-name">{% block branding %}{{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</h1></a>-->
-             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img src="{% static 'open-cloud-themed.png' %}"/></h1></a>
-             </td>
-              <td width="30%">
                   {% block quick-search %}
                 {% with 'SEARCH_URL'|suit_conf as search_url %}
                   {% if search_url %}
@@ -54,9 +52,6 @@
                   {% endif %}
                 {% endwith %}
               {% endblock %}
-                 </td>
-               </tr>
-             </table>
             </div>
           
             {% block header_time %}
@@ -119,9 +114,11 @@
 
             {% if not is_popup %}
             <div id=openCloudTopPage>
-            <span id="minDashboard">
-                <div class="hide">{{ app_label|capfirst|escape }}</div>
-                <div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
+            {% include "/opt/planetstack/templates/admin/newminidashboard.html" %}
+
+<!--            <div id="minDashboard">
+                <div class="hide">{{ app_label|capfirst|escape }}</div> 
+                <div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div> 
                 <div class="hide currentOriginalNode">{{ original|truncatewords:"18" }}</div>
 
 
@@ -134,8 +131,8 @@
             <label class="nodetextbox bandwidthLabel" style="display: none;" ></label>
               <label class="nodelabel bandwidthValue" style="width:60px;display: none;"></label>
                 <span class="bandUsage hide"></span>
-            </span>
-            </div>
+            </div> -->
+            </div> 
 
               {% block breadcrumbs %}
                 <ul class="breadcrumb"> 
@@ -181,6 +178,7 @@
               {% endblock %}
             </div>
             <!-- END Content -->
+          <span class="clearfix"></span>
           </div>
         {% endblock %}
 
@@ -219,11 +217,11 @@
         {% endblock %}
       </div>
 
-      <div class="copyright">
+      <!-- <div class="copyright">
         {% block copyright %}
           Copyright &copy; 2013 DjangoSuit.com<br>Developed by <a href="http://djangosuit.com" target="_blank">DjangoSuit.com</a>
         {% endblock %}
-      </div>
+      </div> -->
 
       <div class="branding">{% block footer_branding %}
         {% with 'ADMIN_NAME'|suit_conf as admin_name %}
