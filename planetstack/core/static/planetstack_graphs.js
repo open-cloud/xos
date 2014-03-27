@@ -1,21 +1,20 @@
 google.load('visualization', '1', {'packages' : ['controls','table','corechart','geochart']});
 
-function renderChart(origQuery, yColumn, xColumn, title, aggFunc) {
-    $('#graph').empty();
-    $('#chartsModal').modal('show');
-    $('.modal-body').scrollTop(0)
+function renderChart(newStyle, dialog, container, dataSourceUrl, yColumn, xColumn, aggFunc, options) {
+    if ( newStyle ) {
+        $(dialog).dialog("open");
+    }
+    else {
+        $(container).empty();
+        $(dialog).modal('show');
+        $('.modal-body').scrollTop(0);
+    }
 
-    var queryString = encodeURIComponent(origQuery);
-    var serverPart = "http://cloud-scrutiny.appspot.com/command?table=demoevents&action=send_query&force=ColumnChart&q=";
-    var dataSourceUrl = serverPart + queryString;
+    console.log(dataSourceUrl);
 
-    //var dataSourceUrl = "http://node36.princeton.vicci.org:8000/analytics/bigquery/?avg=%25cpu&count=%25hostname&format=raw";
-
-    var query = new google.visualization.Query(dataSourceUrl)
+    var query = new google.visualization.Query(dataSourceUrl);
     query && query.abort();
-    console.log("query.send")
-    query.send(function(response) {handleResponse_psg(response, yColumn, xColumn, title, aggFunc);});
-    console.log("query.sent")
+    query.send(function(response) {handleResponse_psg(container, response, yColumn, xColumn, aggFunc, options);});
 }
 
 // NOTE: appended _psg to showLine() and handleResponse() to prevent conflict
@@ -29,39 +28,45 @@ function agg_bandwidth(arr) {
         return ret;
 }
 
-function showLine_psg(dt, title) {
-    console.log("showline")
-    var lineChart = new google.visualization.ChartWrapper({
-          'chartType': 'LineChart',
-          'containerId': 'graph',
-          'options': {
+function showLine_psg(container, dt, options) {
+    console.log("showline_psg");
+
+    var base_options = {
             'width': 520,
             'height': 300,
-            'title': title,
   	    'pages': true,
 	    'numRows': 9,
             'backgroundColor': 'transparent',
-            'titleTextStyle': {"color": "white"},
+            'titleTextStyle': {"color": "black"},
             'legend': 'none',
-//            'legend': {"textStyle": {"color": "white"}},
-            'hAxis': {"baselineColor": "white",
-                      "textStyle": {"color": "white"}},
-            'vAxis': {"baselineColor": "white",
-                      "textStyle": {"color": "white"}},
-          },
-          'view': {'columns': [0, 1]}
+            'hAxis': {"baselineColor": "darkBlue",
+                      "textStyle": {"color": "black"}},
+            'vAxis': {"baselineColor": "darkBlue",
+                      "textStyle": {"color": "black"}},
+          }
+
+    options = $.extend(true, {}, base_options, options);
+
+    var lineChart = new google.visualization.ChartWrapper({
+          'chartType': 'LineChart',
+          'containerId': container.substring(1),
+          'view': {'columns': [0, 1]},
+          'options': options
         });
         lineChart.setDataTable(dt);
         lineChart.draw();
+
 }
 
 function fixDate(unixDate) {
     return new Date(unixDate*1000);
 }
 
-function handleResponse_psg(response, yColumn, xColumn, title, aggFunc) {
-    console.log("handleResponse")
+function fixDate2(unixDate) {
+    return new Date(unixDate);
+}
 
+function handleResponse_psg(container, response, yColumn, xColumn, aggFunc, options) {
     var supportedClasses = {
                     'Table':google.visualization.Table,
                     'LineChart':google.visualization.LineChart,
@@ -90,7 +95,7 @@ function handleResponse_psg(response, yColumn, xColumn, title, aggFunc) {
         var groupedData1 = google.visualization.data.group(dt, [{
            column: yColumn,
            type: 'datetime',
-           modifier: fixDate,
+           modifier: fixDate2,
            }],
            [{
             column: xColumn,
@@ -98,15 +103,10 @@ function handleResponse_psg(response, yColumn, xColumn, title, aggFunc) {
             label: dt.getColumnLabel(xColumn),
             aggregation: aggFunc}]);
 
-        showLine_psg(groupedData1, title);
-
-        console.log(xColumn);
+        console.log(groupedData1.getColumnRange(0))
+        console.log(groupedData1.getColumnRange(1))
+        showLine_psg(container, groupedData1, options);
     });
-
-    console.log(response.getReasons());
-    console.log(response.getDataTable());
-    console.log(response.getDetailedMessage());
-    console.log(response.getMessage());
 
     proxy.setDataTable(response.getDataTable());
 
@@ -114,16 +114,14 @@ function handleResponse_psg(response, yColumn, xColumn, title, aggFunc) {
 }
 
 $('.nodesLabel, .nodesValue').click(function() {
-        var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query, 0, 2, "Node Count", google.visualization.data.sum);
-        //renderChartJson(jsonData, "MinuteTime", "count_hostname", "Node Count");
+        renderChart(false,"#chartsModal", "#graph", window.pageAnalyticsUrl, 0, "Number of Nodes", 2, "Node Count", google.visualization.data.sum);
 });
 
 $('.cpuLabel, .cpuValue').click(function() {
         var jsonData = window.pageAnalyticsData;
-        renderChart(jsonData.query, 0, 1, "Average CPU", google.visualization.data.sum);
+        renderChart(false,"#chartsModal", "#graph", window.pageAnalyticsUrl, 0, "Average CPU", 1, "Average CPU", google.visualization.data.sum);
 });
 $('.bandwidthLabel, .bandwidthValue').click(function() {
         var jsonData = window.pageBandData;
-        renderChart(jsonData.query, 0, 1, "Total Bandwidth", agg_bandwidth);
+        renderChart(false,"#chartsModal", "#graph", window.pageBandUrl, 0, "Total Bandwidth (Gbps)", 1, "Total Bandwidth", agg_bandwidth);
 });

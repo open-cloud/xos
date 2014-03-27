@@ -23,23 +23,28 @@ function getObjectQuery() {
 
 
 function setPageStatInt(labelName, valueName, legend, units, value) {
-    $('.'+labelName).text(legend).show();
-    $('.'+valueName).text(Math.round(value)+units).show();
+    $(labelName).text(legend).show();
+    $(valueName).text(Math.round(value)+units).show();
 }
 
 function setPageStatFloat(labelName, valueName, legend, units, value, dp) {
-    $('.'+labelName).text(legend).show();
-    $('.'+valueName).text(Number(value).toFixed(dp)+units).show();
+    $(labelName).text(legend).show();
+    $(valueName).text(Number(value).toFixed(dp)+units).show();
 }
 
 // ----------------------------------------------------------------------------
 // node count and average cpu utilization
 
 function updatePageAnalyticsData(summaryData) {
-    window.pageAnalyticsData = summaryData;
+    window.pageAnalyticsUrl = summaryData["dataSourceUrl"];
     lastRow = summaryData.rows.length-1;
-    setPageStatInt("nodesLabel", "nodesValue", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
-    setPageStatInt("cpuLabel", "cpuValue", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
+
+    setPageStatInt(".nodesLabel", ".nodesValue", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
+    setPageStatInt(".cpuLabel", ".cpuValue", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
+
+    //New miniDashboard
+    setPageStatInt("#miniDashNodeCountLabel", "#miniDashNodeCount", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
+    setPageStatInt("#miniDashAvgLoadLabel", "#miniDashAvgLoad", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
 }
 
 function updatePageAnalytics() {
@@ -61,9 +66,10 @@ setTimeout(updatePageAnalytics, 5000);
 // bandwidth
 
 function updatePageBandwidthData(summaryData) {
-    window.pageBandData = summaryData;
+    window.pageBandwidthUrl = summaryData["dataSourceUrl"];
     lastRow = summaryData.rows.length-1;
-    setPageStatFloat("bandwidthLabel", "bandwidthValue", "Bandwidth", "Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
+    setPageStatFloat(".bandwidthLabel", ".bandwidthValue", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
+    setPageStatFloat("#miniDashBandwidthLabel", "#miniDashBandwidth", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
 }
 
 function updatePageBandwidth() {
