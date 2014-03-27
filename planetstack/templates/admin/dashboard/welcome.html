@@ -22,7 +22,7 @@
   
 <script>
   $(function() {
-    $( "#tabs" ).tabs({active: 0
+    $( "#hometabs" ).tabs({active: 0, //event: "mouseover"
       //collapsible: true
     });
   });
@@ -58,12 +58,14 @@ function confirmDialog(title,msg) {
 
   </script>
 
-<div id="tabs" class="inner-center-column ui-tabs ui-widget ui-widget-content ui-corner-all">
-  <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit">
-    <li class="active"><a href="#tabs-1">Developer View</a></li>
+<!-- <div id="hometabs" class="inner-center-column ui-tabs ui-widget ui-widget-content ui-corner-all"> -->
+<div id="hometabs" >
+  <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
+    <li><a href="#tabs-1">Developer View</a></li>
     <li><a href="#tabs-2">CDN Operations </a></li>
     <li><a href="#tabs-3">Historical</a></li>
-    <li><a href="#tabs-3">Tenant</a></li>
+    <li><a href="#tabs-4">Slice Interactions</a></li>
+    <li><a href="#tabs-5">Tenant</a></li>
   </ul>
 <div id="tabs-1">
 </div>
@@ -90,8 +92,16 @@ function confirmDialog(title,msg) {
 <div id="tabs-3">
 {% include "/opt/planetstack/templates/admin/dashboard/hpc_historical.html" %}
 </div>
+<div id="tabs-4">
+{% include "/opt/planetstack/templates/admin/dashboard/slice_interactions.html" %}
+</div>
+<div id="tabs-5">
+Coming Soon ...
+</div>
 </div>
 
+<div id="confirmNodeAdded" title="Added Node to Site"><p>Added Node to Site</p></div>
+<div id="confirmNodeRemoved" title="Removed Node from Site"><p>Added Node to Site</p></div>
 <script>
 var oTable;
 var consoleAppender = new log4javascript.BrowserConsoleAppender();
@@ -181,8 +191,14 @@ function initTable(){
 
 initTable();
 
-//$( "#dialogadd" ).dialog({ autoOpen: false });
-//$( "#remSliverdialog" ).dialog({ autoOpen: false });
+$( "#confirmNodeAdded" ).dialog({ autoOpen: false,
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                           $( this ).dialog( "close" );
+                        }
+                    }});
+$( "#confirmNodeRemoved" ).dialog({ autoOpen: false });
 
 L.Map = L.Map.extend({
     openPopup: function(popup) {
@@ -255,7 +271,7 @@ $('#map-us').on('click', '#remHPCSliver', function() {
          //   alert("Successfully posted request to REMOVE sliver");
         //},
         complete:function(){
-            alert("Successfully posted request to REMOVE sliver");
+            confirmDialog("Info","Removed an HPC Sliver from Site ");
         },
         //error:function (xhr, textStatus, thrownError){
          //   alert("Could not request to remove HPC Sliver");
@@ -275,11 +291,11 @@ $('#map-us').on('click', '#addHPCSliver', function() {
         type : 'POST',
         success: function(response)
         {
-            alert("Successfully posted request to add sliver");
+            //alert("Successfully posted request to add sliver");
         },
         complete:function()
         { 
-            alert("Successfully posted request to add sliver");
+            confirmDialog("Info","Added an HPC Sliver to Site ");
         },
         //error:function (xhr, textStatus, thrownError){
          //   alert("error doing something");
