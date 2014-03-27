@@ -1,8 +1,11 @@
 from bigquery_analytics import BigQueryAnalytics
+import datetime
+import re
 import os
 import sys
 import json
 import traceback
+import urllib2
 
 if os.path.exists("/home/smbaker/projects/vicci/plstackapi/planetstack"):
     sys.path.append("/home/smbaker/projects/vicci/plstackapi/planetstack")
@@ -32,18 +35,14 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return [slice.name for slice in slices]
 
-    def compose_query(self, slice=None, site=None, node=None, service=None, timeField="MinuteTime", avg=[], sum=[], count=[], computed=[], groupBy=["MinuteTime"], orderBy=["MinuteTime"], tableName="demoevents"):
+    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents"):
         tablePart = "%s.%s@-3600000--1" % ("vicci", tableName)
 
         fields = []
         fieldNames = []
 
-        if (timeField=="MinuteTime"):
-            fields.append("INTEGER(TIMESTAMP_TO_SEC(time)/60)*60 as MinuteTime")
-        elif (timeField=="HourTime"):
-            fields.append("INTEGER(TIMESTAMP_TO_SEC(time)/60/60)*60*60 as HourTime")
-        elif (timeField=="DayTime"):
-            fields.append("INTEGER(TIMESTAMP_TO_SEC(time)/60/60/24)*60*60*24 as DayTime")
+        fields.append("SEC_TO_TIMESTAMP(INTEGER(TIMESTAMP_TO_SEC(time)/%s)*%s) as Time" % (str(timeBucket),str(timeBucket)))
+        #fields.append("INTEGER(TIMESTAMP_TO_SEC(time)/%s)*%s as Time" % (str(timeBucket),str(timeBucket)))
 
         for fieldName in avg:
             fields.append("AVG(%s) as avg_%s" % (fieldName, fieldName.replace("%","")))
@@ -69,7 +68,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
             fieldNames.append(computedFieldName)
 
         for fieldName in groupBy:
-            if (fieldName not in ["MinuteTime", "HourTime", "DayTime"]):
+            if (fieldName not in ["Time"]):
                 fields.append(fieldName)
                 fieldNames.append(fieldName)
 
@@ -124,7 +123,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
             sumFields = ",".join(sumFields)
 
-            query = "SELECT %s, %s FROM (%s)" % (timeField, sumFields, subQuery)
+            query = "SELECT %s, %s FROM (%s)" % ("Time", sumFields, subQuery)
             if groupBy:
                 query = query + groupBy
             if orderBy:
@@ -144,11 +143,12 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         value = req.GET.get(name, None)
         if not value:
             return default
+        value=value.replace("@","%")
         return value.split(",")
 
-    def format_result(self, format, result, query):
+    def format_result(self, format, result, query, dataSourceUrl):
         if (format == "json_dicts"):
-            result = {"query": query, "rows": result}
+            result = {"query": query, "rows": result, "dataSourceUrl": dataSourceUrl}
             return ("application/javascript", json.dumps(result))
 
         elif (format == "json_arrays"):
@@ -219,7 +219,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
     def process_request(self, req):
         print req.GET
 
-        tqx = req.GET.get("reqId", None)
+        tqx = req.GET.get("tqx", None)
 
         slice = req.GET.get("slice", None)
         site = req.GET.get("site", None)
@@ -228,13 +228,13 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         format = req.GET.get("format", "json_dicts")
 
-        timeField = req.GET.get("timeField", "MinuteTime")
+        timeField = req.GET.get("timeBucket", "60")
         avg = self.get_list_from_req(req, "avg")
         sum = self.get_list_from_req(req, "sum")
         count = self.get_list_from_req(req, "count")
         computed = self.get_list_from_req(req, "computed")
-        groupBy = self.get_list_from_req(req, "groupBy", ["MinuteTime"])
-        orderBy = self.get_list_from_req(req, "orderBy", ["MinuteTime"])
+        groupBy = self.get_list_from_req(req, "groupBy", ["Time"])
+        orderBy = self.get_list_from_req(req, "orderBy", ["Time"])
 
         maxRows = req.GET.get("maxRows", None)
         onlyLargest = req.GET.get("onlyLargest", None)
@@ -243,11 +243,57 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         q = self.compose_query(slice, site, node, service, timeField, avg, sum, count, computed, groupBy, orderBy)
 
         print q
+        dataSourceUrl = "http://" + req.META["SERVER_NAME"] + ":" + req.META["SERVER_PORT"] + req.META["PATH_INFO"] + "?" + req.META["QUERY_STRING"].replace("format=","origFormat=").replace("%","%25") + "&format=charts";
 
-        if (format=="raw"):
+        if (format=="dataSourceUrl"):
+            result = {"dataSourceUrl": dataSourceUrl}
+            return ("application/javascript", result)
+
+        elif (format=="raw"):
             result = self.run_query_raw(q)
-            result["reqId"] = 0        # XXX FIXME
-            return ("application/javascript", json.dumps(result))
+            result["dataSourceUrl"] = dataSourceUrl
+
+            result = json.dumps(result);
+
+            return ("application/javascript", result)
+
+        elif (format=="charts"):
+            bq_result = self.run_query_raw(q)
+
+            # cloudscrutiny code is probably better!
+            table = {}
+            table["cols"] = self.schema_to_cols(bq_result["schema"])
+            rows = []
+            for row in bq_result["rows"]:
+                rowcols = []
+                for (colnum,col) in enumerate(row["f"]):
+                    if (colnum==0):
+                        dt = datetime.datetime.fromtimestamp(float(col["v"]))
+                        rowcols.append({"v": 'new Date("%s")' % dt.isoformat()})
+                    else:
+                        try:
+                            rowcols.append({"v": float(col["v"])})
+                        except:
+                            rowcols.append({"v": col["v"]})
+                rows.append({"c": rowcols})
+            table["rows"] = rows
+
+            if tqx:
+                reqId = tqx.strip("reqId:")
+            else:
+                reqId = "0"
+
+            result = {"status": "okColumnChart", "reqId": reqId, "table": table, "version": "0.6"}
+
+            result = "google.visualization.Query.setResponse(" + json.dumps(result) + ");"
+
+            def unquote_it(x): return x.group()[1:-1].replace('\\"', '"')
+
+            p = re.compile(r'"new Date\(\\"[^"]*\\"\)"')
+            result=p.sub(unquote_it, result)
+
+            return ("application/javascript", result)
+
         else:
             result = self.run_query(q)
 
@@ -260,7 +306,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
             if maxRows:
                 result = result[-int(maxRows):]
 
-            return self.format_result(format, result, q)
+            return self.format_result(format, result, q, dataSourceUrl)
 
 
 def DoPlanetStackAnalytics(request):
@@ -272,8 +318,7 @@ def DoPlanetStackAnalytics(request):
 def main():
     bq = PlanetStackAnalytics()
 
-    """
-    q=bq.compose_query(avg=["%cpu"], count=["%hostname"], slice="HyperCache")
+    q=bq.compose_query(avg=["%cpu","%bandwidth"], count=["%hostname"], slice="HyperCache")
     print q
     bq.dump_table(bq.run_query(q))
 
@@ -282,17 +327,16 @@ def main():
     print q
     bq.dump_table(bq.run_query(q))
 
-    q=bq.compose_query(timeField="HourTime", avg=["%cpu"], count=["%hostname"], computed=["%bytes_sent/%elapsed"], groupBy=["HourTime"], orderBy=["HourTime"])
+    q=bq.compose_query(timeBucket=60*60, avg=["%cpu"], count=["%hostname"], computed=["%bytes_sent/%elapsed"])
     print
     print q
     bq.dump_table(bq.run_query(q))
-    """
 
-    q=bq.compose_query(avg=["%cpu"], count=["%hostname"], computed=["%bytes_sent/%elapsed"], service="HPC Service", groupBy=["MinuteTime","%site"])
+    q=bq.compose_query(avg=["%cpu"], count=["%hostname"], computed=["%bytes_sent/%elapsed"], service="HPC Service", groupBy=["Time","%site"])
     print
     print q
     result=bq.run_query(q)
-    result = bq.only_largest(result, "MinuteTime")
+    result = bq.only_largest(result, "Time")
     bq.merge_datamodel_sites(result)
     #bq.dump_table(result)
     print bq.format_result("json_hpcdash", result, q)
