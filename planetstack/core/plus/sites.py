@@ -27,7 +27,7 @@ class AdminMixin(object):
                     name="simulator"),
                url(r'^hpcsummary/', self.admin_view(DashboardSummaryAjaxView.as_view()),   # DEPRECATED
                     name="hpcsummary"),
-               url(r'^analytics/(?P<name>\w+)/$', self.admin_view(DashboardAnalyticsAjaxView.as_view()),
+               url(r'^analytics/(?P<name>\w+)/$', DashboardAnalyticsAjaxView.as_view(),
                     name="analytics"),
                url(r'^dashboardaddorremsliver/$', self.admin_view(DashboardAddOrRemoveSliverView.as_view()),
                     name="addorremsliver")
