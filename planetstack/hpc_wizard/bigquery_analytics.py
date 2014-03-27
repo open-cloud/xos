@@ -36,12 +36,22 @@ except:
 MINUTE_MS = 60*1000
 HOUR_MS = 60*60*1000
 
+# global to hold cached mappings
+mappings = {}
+reverse_mappings = {}
+
+class MappingException(Exception):
+    pass
+
 class BigQueryAnalytics:
     def __init__(self, table = "demoevents"):
         self.projectName = "vicci"
         self.tableName = table
-        self.mapping = json.loads(self.fetch_mapping(table=self.tableName))
-        self.reverse_mapping = {v:k for k, v in self.mapping.items()}
+
+    def reload_mapping(self):
+        global mappings, reverse_mappings
+        mappings[self.tableName] = json.loads(self.fetch_mapping(table=self.tableName))
+        reverse_mappings[self.tableName] = {v:k for k, v in mappings[self.tableName].items()}
 
     def fetch_mapping(self, m=0, table="events"):
 	req = 'http://cloud-scrutiny.appspot.com/command?action=get_allocations&multiplexer=%d&table=%s'% (m,table)
@@ -53,7 +63,12 @@ class BigQueryAnalytics:
 
     def run_query_raw(self, query):
         p = re.compile('%[a-zA-z_]*')
-        query = p.sub(self.remap, query)
+
+        try:
+            query = p.sub(self.remap, query)
+        except MappingException:
+            self.reload_mapping()
+            query = p.sub(self.remap, query)
 
 	storage = Storage('/opt/planetstack/hpc_wizard/bigquery_credentials.dat')
  	credentials = storage.get()
@@ -74,7 +89,7 @@ class BigQueryAnalytics:
 
     def translate_schema(self, response):
         for field in response["schema"]["fields"]:
-            field["name"] = self.reverse_mapping.get(field["name"], field["name"])
+            field["name"] = reverse_mappings[self.tableName].get(field["name"], field["name"])
 
     def run_query(self, query):
         response = self.run_query_raw(query)
@@ -88,17 +103,22 @@ class BigQueryAnalytics:
             for row in response["rows"]:
                 this_result = {}
                 for (i,column) in enumerate(row["f"]):
-                    this_result[self.reverse_mapping.get(fieldNames[i],fieldNames[i])] = column["v"]
+                    this_result[reverse_mappings[self.tableName].get(fieldNames[i],fieldNames[i])] = column["v"]
                 result.append(this_result)
 
         return result
 
     def remap(self, match):
+        if not self.tableName in mappings:
+            raise MappingException("no mapping for table %s" % self.tableName)
+
+        mapping = mappings[self.tableName]
+
         token = match.group()[1:]
-        if token in self.mapping:
-            return self.mapping[token]
+        if token in mapping:
+            return mapping[token]
         else:
-            raise Exception('unknown token %s' % token)
+            raise MappingException('unknown token %s' % token)
 
     def dump_table(self, rows, keys=None):
         if not keys:
@@ -121,6 +141,22 @@ class BigQueryAnalytics:
             for key in keys:
                 print "%*s" % (lens[key], str(row.get(key,""))),
             print
+
+    def schema_to_cols(self, schema):
+        fields = schema["fields"]
+
+        colTypes = {"STRING": "string", "INTEGER": "number", "FLOAT": "number", "TIMESTAMP": "date"}
+
+        cols = []
+        i=0
+        for field in fields:
+            col = {"type": colTypes[field["type"]],
+                   "id": "Col%d" % i,
+                   "label": reverse_mappings[self.tableName].get(field["name"],field["name"])}
+            cols.append(col)
+            i=i+1
+
+        return cols
 
 def main():
     bq = BigQueryAnalytics()
