@@ -116,7 +116,18 @@ class OpenStackDriver:
     def add_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(name=role_name)
+        # admin role can be lowercase or title. Look for both
+        role = None
+        if role_name.lower() == 'admin':
+            for admin_role_name in ['admin', 'Admin']:
+                roles = self.shell.keystone.roles.findall(name=admin_role_name)
+                if roles:
+                    role = roles[0]
+                    break
+        
+        if not role:
+            # look up non admin role or force exception when admin role isnt found 
+            role = self.shell.keystone.roles.find(name=role_name)                   
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
