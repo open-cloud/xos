@@ -1,5 +1,5 @@
 from core.models import Network
-from deleter import Deleter
+from observer.deleter import Deleter
 
 class NetworkDeleter(Deleter):
     model='Network'
