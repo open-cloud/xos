@@ -51,7 +51,7 @@ class Network(PlCoreBase):
         super(Network, self).save(*args, **kwds)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return self.owner.can_update(user)
 
     @staticmethod
     def select_by_user(user):
