@@ -25,7 +25,7 @@ class SyncSitePrivileges(OpenStackSyncStep):
             user_deployments = UserDeployments.objects.filter(deployment=site_deployment.deployment)
             if user_deployments:
                 kuser_id  = user_deployments[0].kuser_id
-                driver = self.driver.admin_driver(deployment=site_deployment.name)
+                driver = self.driver.admin_driver(deployment=site_deployment.deployment.name)
                 driver.add_user_role(kuser_id,
                                      site_deployment.tenant_id,
-                                     slice_memb.role.role)
+                                     site_priv.role.role)

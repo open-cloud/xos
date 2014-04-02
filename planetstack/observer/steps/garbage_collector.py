@@ -88,7 +88,7 @@ class GarbageCollector(OpenStackSyncStep):
 
     def gc_users(self):
         """
-        Remove users that no don't exist in openstack db if they have an 
+        Remove users that do not exist in openstack db if they have an 
         enacted time (enacted != None).
         """ 
         # get all users that where enacted != null. We can assume these users

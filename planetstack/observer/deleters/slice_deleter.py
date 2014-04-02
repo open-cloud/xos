@@ -2,10 +2,10 @@ from core.models import Slice, SliceDeployments, User
 from observer.deleter import Deleter
 
 class SliceDeleter(Deleter):
-	model='Slice'
+    model='Slice'
 
-	def call(self, pk):
-		slice = Slice.objects.get(pk=pk)
+    def call(self, pk):
+        slice = Slice.objects.get(pk=pk)
         slice_deployments = SliceDeployments.objects.filter(slice=slice)
         for slice_deployment in slice_deployments:
             user = User.get(user=slice.creator)
