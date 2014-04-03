@@ -28,6 +28,8 @@ app = app + ".models"
 #models_module = imp.load_source(app, ".")
 models_module = __import__(app)
 for part in app.split(".")[1:]:
+    if hasattr(models_module, "PlCoreBase"):
+        break
     models_module = getattr(models_module,part)
 
 PlCoreBase = getattr(models_module,"PlCoreBase")
