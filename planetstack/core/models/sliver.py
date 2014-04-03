@@ -42,6 +42,7 @@ class Sliver(PlCoreBase):
             self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
+        self.deploymentNetwork = self.node.deployment
         super(Sliver, self).save(*args, **kwds)
 
     def can_update(self, user):
