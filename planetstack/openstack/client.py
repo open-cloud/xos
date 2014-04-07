@@ -40,7 +40,7 @@ def parse_novarc(filename):
     return opts
 
 class Client:
-    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, *args, **kwds):
+    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, admin=True, *args, **kwds):
         
             
         if not deployment or deployment not in deployment_auth:
@@ -48,14 +48,19 @@ class Client:
         else:
             auth = deployment_auth[deployment]
             
-            
         self.has_openstack = has_openstack
-        self.username = auth['user']
-        self.password = auth['password']
-        self.tenant = auth['tenant']
+
         self.url = auth['url']
-        self.endpoint = auth['endpoint']
-        self.token = auth['token']  
+        if admin:
+            self.username = auth['user']
+            self.password = auth['password']
+            self.tenant = auth['tenant']
+            self.endpoint = auth['endpoint']
+            self.token = auth['token']  
+        else:
+            self.username = None
+            self.password = None
+            self.tenant = None
 
         if username:
             self.username = username
