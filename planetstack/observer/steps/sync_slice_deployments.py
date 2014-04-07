@@ -29,8 +29,11 @@ class SyncSliceDeployments(OpenStackSyncStep):
         for slice_deployment in slice_deployments:
             slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
         
+        all_deployments = Deployment.objects.filter() 
         for slice in Slice.objects.all():
-            expected_deployments = site_deploy_lookup[slice.site]
+            # slices are added to all deployments for now
+            expected_deployments = all_deployments
+            #expected_deployments = site_deploy_lookup[slice.site]
             for expected_deployment in expected_deployments:
                 if slice not in slice_deploy_lookup or \
                    expected_deployment not in slice_deploy_lookup[slice]:
@@ -48,6 +51,10 @@ class SyncSliceDeployments(OpenStackSyncStep):
         ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
                 if valid_subnet(subnet['cidr'])]
         ints.sort()
+        if ints:
+            last_ip = IPAddress(ints[-1])
+        else:
+            last_ip = IPAddress('10.0.0.1')
         last_ip = IPAddress(ints[-1])
         last_network = IPNetwork(str(last_ip) + "/24")
         next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
