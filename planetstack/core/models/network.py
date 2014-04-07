@@ -1,7 +1,7 @@
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver
+from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
@@ -62,6 +62,28 @@ class Network(PlCoreBase):
             #slice_ids = [s.id for s in Slice.select_by_user(user)]
             qs = Network.objects.filter(owner__in=slices)
         return qs
+
+class NetworkDeployments(PlCoreBase):
+    # Stores the openstack ids at various deployments
+    network = models.ForeignKey(Network)    
+    deployment = models.ForeignKey(Deployment)
+    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id") 
+    subnet = models.CharField(max_length=32, blank=True)    
+       
+    def can_update(self, user):
+        return user.is_admin
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = NetworkDeployments.objects.all()
+        else:
+            slices = Slice.select_by_user(user)
+            networks = Network.objects.filter(owner__in=slices)
+            qs = NetworkDeployments.objects.filter(network__in=networks)
+        return qs      
 
 class NetworkSlice(PlCoreBase):
     # This object exists solely so we can implement the permission check when
