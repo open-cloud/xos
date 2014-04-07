@@ -14,4 +14,5 @@ class SyncUsers(OpenStackSyncStep):
         return User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, user):
-        user.save()
+        #user.save()
+        pass 
