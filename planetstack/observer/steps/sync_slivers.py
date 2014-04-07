@@ -5,6 +5,12 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from core.models.slice import SlicePrivilege, SliceDeployments
+from util.logger import Logger, logging
+
+logger = Logger(level=logging.INFO)
+m util.logger import Logger, logging
+
+logger = Logger(level=logging.INFO)
 
 class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
@@ -26,6 +32,7 @@ class SyncSlivers(OpenStackSyncStep):
         return networks
 
     def sync_record(self, sliver):
+        logger.info("sync'ing sliver %s" % sliver)
         metadata_update = {}
         if ("numberCores" in sliver.changed_fields):
             metadata_update["cpu_cores"] = str(sliver.numberCores)
