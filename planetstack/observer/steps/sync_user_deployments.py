@@ -30,7 +30,7 @@ class SyncUserDeployments(OpenStackSyncStep):
             user_deploy_lookup[user_deployment.user].append(user_deployment.deployment)
        
         user_deployments = [] 
-        for user in User.objects.filter():
+        for user in User.objects.all():
             if user.is_admin:
                 # admins should have an account at all deployments
                 expected_deployments = deployments
