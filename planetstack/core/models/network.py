@@ -67,7 +67,7 @@ class NetworkDeployments(PlCoreBase):
     # Stores the openstack ids at various deployments
     network = models.ForeignKey(Network)    
     deployment = models.ForeignKey(Deployment)
-    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id") 
     subnet = models.CharField(max_length=32, blank=True)    
