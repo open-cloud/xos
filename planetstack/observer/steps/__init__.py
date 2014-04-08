@@ -1,6 +1,7 @@
 from .sync_external_routes import SyncExternalRoutes
 from .sync_network_slivers import SyncNetworkSlivers
 from .sync_networks import SyncNetworks
+from .sync_network_deployments import SyncNetworkDeployments
 from .sync_site_privileges import SyncSitePrivileges
 from .sync_sites import SyncSites
 from .sync_slice_memberships import SyncSliceMemberships
