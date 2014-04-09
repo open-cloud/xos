@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.5
-Release: 2
+Version: 1.0.6
+Release: 1
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -71,7 +71,9 @@ rm -rf %{buildroot}
 /opt/planetstack/scripts/opencloud initdb
 
 %preun
-rm -rf /opt/planetstack
+if [ "$1" = 0 ] ; then
+    rm -rf /opt/planetstack
+fi
 
 %changelog
 * Sat Feb 22 2014  Siobhan Tully  1.0.0
