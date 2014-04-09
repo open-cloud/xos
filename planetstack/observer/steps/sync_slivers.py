@@ -5,10 +5,8 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from core.models.slice import SlicePrivilege, SliceDeployments
+from core.models.network import NetworkDeployments
 from util.logger import Logger, logging
-
-logger = Logger(level=logging.INFO)
-m util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
@@ -19,20 +17,15 @@ class SyncSlivers(OpenStackSyncStep):
     def fetch_pending(self):
         return Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
-    def get_requested_networks(self, slice):
-        network_ids = [x.network_id for x in slice.networks.all()]
-
-        if slice.network_id is not None:
-            network_ids.append(slice.network_id)
-
-        networks = []
-        for network_id in network_ids:
-            networks.append({"net-id": network_id})
-
-        return networks
+    def get_requested_networks(self, slice, deployment):
+        requested_networks = []
+        networks = slice.networks.all()
+        network_deployments = NetworkDeployments.objects.filter(network__in=networks, deployment=deployment)
+        requested_networks = [{'net-id': nd.net_id} for nd in network_deployments]
+        return requested_networks        
 
     def sync_record(self, sliver):
-        logger.info("sync'ing sliver %s" % sliver)
+        logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
         metadata_update = {}
         if ("numberCores" in sliver.changed_fields):
             metadata_update["cpu_cores"] = str(sliver.numberCores)
@@ -42,10 +35,10 @@ class SyncSlivers(OpenStackSyncStep):
                 metadata_update[tag.name] = tag.value
 
         if not sliver.instance_id:
-            nics = self.get_requested_networks(sliver.slice)
+            nics = self.get_requested_networks(sliver.slice, sliver.node.deployment)
             file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
             slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
-            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key is not None]
+            pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             if sliver.creator.public_key:
                 pubkeys.append(sliver.creator.public_key)
             driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.deploymentNetwork.name)
