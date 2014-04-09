@@ -7,10 +7,8 @@
 
     <script type="text/javascript">
 
-     var queryString = "/analytics/bigquery/?sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site";
-
      var options = {
-         width: 600,
+         width: 600,
          height: 400,
          showRowNumber: false,
          pages: true,
@@ -21,6 +19,9 @@
      // ask django for a data source URL to use for the graphs
 
      function updateDataSourceUrl() {
+         var sliceName = $("#historical_slicename :selected").text();
+         var queryString = "/analytics/bigquery/?sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
+
          $.ajax({
              url: queryString,
              dataType: 'json',
@@ -39,6 +40,11 @@
      SITE_COL = 5;
 
      google.setOnLoadCallback(function () {
+         $('#historical_slicename').change(function()
+         {
+             updateDataSourceUrl();
+         });
+
          updateDataSourceUrl();
      });
 
@@ -283,6 +289,14 @@
 
     </script>
     <div id="dashboard" class="container">
+                <div class="row">
+                        <span><b>Slice Name:</b></span>
+                        <span><select id="historical_slicename">
+                        {% for slice in userSliceInfo %}
+                           <option value="{{ slice.slicename }}">{{ slice.slicename }}</option>
+                        {% endfor %}
+                        </select></span>
+                </div>
 		<div class="row">
 			<div class="col-md-8">
 				<div class="col-md-4" id="control2"></div>
