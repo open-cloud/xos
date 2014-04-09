@@ -411,7 +411,7 @@ class OpenStackDriver:
         hints = {}
         availability_zone = None
         if hostname:
-            availability_zone = 'nova:%s' % hostname
+            availability_zone = 'nova:%s' % hostname.split('.')[0]
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
@@ -422,6 +422,7 @@ class OpenStackDriver:
                                             scheduler_hints=hints,
                                             availability_zone=availability_zone,
                                             nics=nics,
+                                            networks=nics,
                                             meta=metadata)
         return server
 
