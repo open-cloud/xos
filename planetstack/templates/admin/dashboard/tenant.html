@@ -107,8 +107,8 @@ $(document).ready(function () {
 		function UserSliceTable(data) {
 			//Add check for #dynamicusersliceinfo_filter label-> input having focus here
 			var rows = data['userSliceInfo']['rows'];
-			$("<div></div>").attr('id', 'tenantSliceDataWrapper').appendTo('#tabs-4');
-			$("<div></div>").attr('id', 'advancedTenantSliceDataWrapper').appendTo('#tabs-4');
+			$("<div></div>").attr('id', 'tenantSliceDataWrapper').appendTo('#tabs-5');
+			$("<div></div>").attr('id', 'advancedTenantSliceDataWrapper').appendTo('#tabs-5');
 			var sliceData = '';
 			sliceData += '<div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
 			var advSliceData = '';
@@ -120,11 +120,11 @@ $(document).ready(function () {
 			for (row in rows) {
 				$("#tenantSliceDropDown").append("<option>" + rows[row]['sliceName'] + "</option>");
 			}
-			$("<div></div>").attr('id', 'tenantSiteTable').appendTo('#tabs-4');
-			$("<div></div>").attr('id', 'advTenantSiteTable').appendTo('#tabs-4').css("display", "none");
-			$('<div class="btn btn-success" id="create-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Create New Slice</div>').appendTo("#tabs-4");
-			$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-4");
-			$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-4").css("display", "none");
+			$("<div></div>").attr('id', 'tenantSiteTable').appendTo('#tabs-5');
+			$("<div></div>").attr('id', 'advTenantSiteTable').appendTo('#tabs-5').css("display", "none");
+			$('<div class="btn btn-success" id="create-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Create New Slice</div>').appendTo("#tabs-5");
+			$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-5");
+			$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-5").css("display", "none");
 			$('#tenantSliceDropDown').on('change', function () {
 				showSliceData(data);
 			});
