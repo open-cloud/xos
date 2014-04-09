@@ -5,8 +5,9 @@ from django.views.generic import TemplateView, View
 import datetime
 from pprint import pprint
 import json
-from core.models import Slice,SliceRole,SlicePrivilege,Site,Reservation,Sliver
+from core.models import *
 from django.http import HttpResponse
+from django.core import urlresolvers
 import traceback
 
 if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
@@ -47,12 +48,100 @@ def getUserSliceInfo(user, tableFormat = False):
 #        pprint( userDetails)
         return userDetails
 
+class TenantCreateSlice(View):
+    def post(self, request, *args, **kwargs):
+        sliceName = request.POST.get("sliceName", "0")
+        serviceClass = request.POST.get("serviceClass", "0")
+        imageName = request.POST.get("imageName", "0")
+        actionToDo = request.POST.get("actionToDo", "0")
+        print sliceName
+        if (actionToDo == "add"):
+           serviceClass = ServiceClass.objects.get(name=serviceClass)
+           site = request.user.site
+           #image = Image.objects.get(name=imageName)
+           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=imageName)
+           newSlice.save()
+        return newSlice
+
+
+def getTenantSliceInfo(user, tableFormat = False):
+    tenantSliceDetails = {}
+    tenantSliceData = getTenantInfo(user)
+    tenantServiceClassData = getServiceClassInfo(user)
+    if (tableFormat):
+       tenantSliceDetails['userSliceInfo'] = userSliceTableFormatter(tenantSliceData)
+       tenantSliceDetails['sliceServiceClass']=userSliceTableFormatter(tenantServiceClassData)
+    else:
+       tenantSliceDetails['userSliceInfo'] = tenantSliceData
+    tenantSliceDetails['sliceServiceClass']=userSliceTableFormatter(tenantServiceClassData)
+    tenantSliceDetails['image']=userSliceTableFormatter(getImageInfo(user))
+    tenantSliceDetails['network']=userSliceTableFormatter(getNetworkInfo(user))
+    tenantSliceDetails['deploymentSites']=userSliceTableFormatter(getDeploymentSites())
+    tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo());
+    return tenantSliceDetails
+
+
+def getTenantInfo(user):
+    slices =Slice.objects.all()
+    userSliceInfo = []
+    for entry in slices:
+       sliceName = Slice.objects.get(id=entry.id).name
+       slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
+       sliceServiceClass = entry.serviceClass.name
+       preferredImage =  entry.imagePreference
+       numSliver = 0
+       sliceImage=""
+       sliceSite = {}
+       for sliver in slice.slivers.all():
+            numSliver +=sliver.numberCores
+           # sliceSite[sliver.deploymentNetwork.name] =sliceSite.get(sliver.deploymentNetwork.name,0) + 1
+            sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
+	    sliceImage = sliver.image.name
+       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver})
+    return userSliceInfo
+
+def getTenantSitesInfo():
+	tenantSiteInfo=[]
+        for entry in Site.objects.all():
+		tenantSiteInfo.append({'siteName':entry.name})
+	return tenantSiteInfo
+
 def userSliceTableFormatter(data):
 #    pprint(data)
     formattedData = {
                      'rows' : data
                     }
     return formattedData
+
+def getServiceClassInfo(user):
+    serviceClassList = ServiceClass.objects.all()
+    sliceInfo = []
+    for entry in serviceClassList:
+          sliceInfo.append({'serviceClass':entry.name})
+    return sliceInfo
+
+def getImageInfo(user):
+    imageList = Image.objects.all()
+    imageInfo = []
+    for imageEntry in imageList:
+          imageInfo.append({'Image':imageEntry.name})
+    return imageInfo
+
+def getNetworkInfo(user):
+   #networkList = Network.objects.all()
+    networkList = ['Private Only','Private and Publicly Routable']
+    networkInfo = []
+    for networkEntry in networkList:
+          #networkInfo.append({'Network':networkEntry.name})
+          networkInfo.append({'Network':networkEntry})
+    return networkInfo
+
+def getDeploymentSites():
+    deploymentList = Deployment.objects.all()
+    deploymentInfo = []
+    for entry in deploymentList:
+        deploymentInfo.append({'DeploymentSite':entry.name})
+    return deploymentInfo
 
 def getSliceInfo(user):
     sliceList = Slice.objects.all()
@@ -61,6 +150,13 @@ def getSliceInfo(user):
     for entry in slicePrivs:
 
         slicename = Slice.objects.get(id=entry.slice.id).name
+        slice = Slice.objects.get(name=Slice.objects.get(id=entry.slice.id).name)
+        sliverList=Sliver.objects.all()
+        sites_used = {}
+        for sliver in slice.slivers.all():
+             #sites_used['deploymentSites'] = sliver.node.deployment.name
+             # sites_used[sliver.image.name] = sliver.image.name
+             sites_used[sliver.node.site.name] = sliver.numberCores
         sliceid = Slice.objects.get(id=entry.slice.id).id
         try:
             sliverList = Sliver.objects.filter(slice=entry.slice.id)
@@ -76,7 +172,10 @@ def getSliceInfo(user):
             sitecount = 0
 
         userSliceInfo.append({'slicename': slicename, 'sliceid':sliceid,
-                           'role': SliceRole.objects.get(id=entry.role.id).role, 'slivercount': slivercount, 'sitecount':sitecount})
+                              'sitesUsed':sites_used,
+                              'role': SliceRole.objects.get(id=entry.role.id).role,
+                              'slivercount': slivercount,
+                              'sitecount':sitecount})
 
     return userSliceInfo
 
@@ -109,6 +208,10 @@ class SimulatorView(View):
 class DashboardUserSiteView(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getUserSliceInfo(request.user, True)), mimetype='application/javascript')
+
+class TenantViewData(View):
+    def get(self, request, **kwargs):
+        return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
 
 class DashboardSummaryAjaxView(View):
     def get(self, request, **kwargs):

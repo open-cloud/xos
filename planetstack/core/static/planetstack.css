@@ -1023,3 +1023,88 @@ div.chartContainer
     font-size: 24px;
     font-weight: bold;
 }
+
+.tenant-row{
+   padding-bottom: 0.7%;
+}
+
+
+/***********TENANT VIEW*************/
+
+#image-dropdown,#slice-image-value,#adv-slice-image-value{
+ margin-left: 5%;
+}
+
+#network-dropdown,#adv-network-dropdown{
+ margin-left: 3.7%;
+}
+
+#service-level-dropdown,#service-level-value,#adv-service-level-dropdown,#adv-service-level-value{
+ margin-left: 0.2% !important;
+}
+
+#slice-name-value,#adv-slice-name-value{
+   margin-left: 2%;
+}
+
+#advanced-tenant,#basic-tenant,#sliver-btn,#save-btn{
+  float:right;
+}
+
+#sliver-btn,#save-btn,#create-slice-btn{
+  margin-top:1%;
+}
+
+
+.ui-widget input{
+        border-radius: 0px !important;
+margin: 1.5% 0 0 5% !important;
+height: 20px !important;
+width: 100px !important;
+}
+
+.ui-dialog-buttonset .ui-button{
+border-radius: 0 !important;
+background-color: grey !important;
+font-weight: bold !important;
+font-size: 0.9em; !important
+}
+
+.ui-dialog-titlebar{
+border-radius: 0 !important;
+background-color: grey !important;
+}
+
+.create-slice-row{
+   margin-bottom:3%;
+}
+
+.create-slice-row label{
+   margin-right:1%;
+}
+
+.create-slice-row select{
+   height:24px;
+   width: 196px;
+   font-size: 0.9em !important;
+
+}
+
+#new-slice-name{
+     width: 194px !important;
+     margin-left: 16% !important;
+}
+
+#new-site-name{
+    margin-left: 20%;
+}
+
+#new-image{
+  margin-left: 15%;
+}
+
+#tooltip{
+font-size:0.7em;
+color:red;
+display:none;
+}

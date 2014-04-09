@@ -1,0 +1,325 @@
+<!doctype html>
+<style>
+#tenantSliceDataWrapper {
+	padding: 1% 0;
+}
+</style>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<div id="dialog-form" title="Add/Remove Slivers" style="display: none;">
+	<form>
+		<fieldset>
+			<label for="numberOfSlivers">Number of Slivers</label>
+			<input type="text" name="numberOfSlivers" id="numOfSlivers" class="text ui-widget-content ui-corner-all">
+		</fieldset>
+	</form>
+</div>
+<div id="adv-dialog-form" title="Add/Remove Slivers" style="display: none;">
+	<form>
+		<fieldset>
+			<label for="numberOfSlivers">Number of Slivers</label>
+			<input type="text" name="numberOfSlivers" id="advNumOfSlivers" class="text ui-widget-content ui-corner-all">
+		</fieldset>
+	</form>
+</div>
+<div id="create-slice-form" title="Create New Slice" style="display: none;">
+	<form>
+		<fieldset>
+			<div class="create-slice-row">
+				<label for="new-slice-name">Name</label>
+				<input type="text" name="new-slice-name" id="new-slice-name" class="text">
+			</div>
+			<div class="create-slice-row">
+				<label for="new-service-class">Service Class</label>
+				<select id="new-service-class"></select>
+			</div>
+			<div class="create-slice-row">
+				<label for="new-image">Image</label>
+				<select id="new-image"></select>
+			</div>
+			<div id=tooltip>Slice Name cannot be empty</div>
+		</fieldset>
+	</form>
+</div>
+<script type="text/javascript">
+google.load('visualization', '1', {
+	'packages': ['controls', 'table', 'corechart', 'geochart']
+});
+</script>
+<script>
+$(document).ready(function () {
+	function showSliceData(data) {
+		var value = $("#tenantSliceDropDown").val();
+		var imageData = data['image']['rows'];
+		var networkData = data['network']['rows'];
+		$("#service-level-value").empty();
+		$("#slice-image-value").empty();
+		$("#tenantSiteTable").empty();
+		$('#tenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="tenantSiteTableData"></table>');
+		var rows = data['userSliceInfo']['rows'];
+		var siteNames = [];
+		var sliverCount;
+		for (row in rows) {
+			if (rows[row]['sliceName'] == value) {
+				sliceImageData = rows[row]['sliceImage'];
+				$("#slice-image-value").html(sliceImageData);
+				serviceLevelData = rows[row]['sliceServiceClass'];
+				$("#service-level-value").html(serviceLevelData);
+				var innerRows = rows[row]['sliceSite'];
+				for (innerRow in innerRows) {
+					sliverCount = innerRows[innerRow];
+					siteNames.push([innerRow, sliverCount]);
+				}
+			}
+		}
+		oTable = $('#tenantSiteTableData').dataTable({
+			"bJQueryUI": true,
+			"bFilter": false,
+			"bInfo": false,
+			"bLengthChange": false,
+			"aaData": siteNames,
+			"bStateSave": true,
+			"aoColumns": [{
+					"sTitle": "Site Name"
+				}, {
+					"sTitle": "Allocated",
+					sClass: "alignCenter"
+				}
+				//{ "sTitle": "Allocated" , sClass: "alignCenter"},
+				//{ "sTitle": "Desired" , sClass: "alignCenter"},
+			]
+		});
+	}
+
+	function initTenant() {
+		jQuery.ajax({
+			url: '/tenantview',
+			dataType: 'json',
+			success: function (data) {
+				UserSliceTable(data);
+				showSliceData(data);
+                                $("#tooltip").css("display","none");
+			},
+			complete: function () {}
+		});
+
+		function UserSliceTable(data) {
+			//Add check for #dynamicusersliceinfo_filter label-> input having focus here
+			var rows = data['userSliceInfo']['rows'];
+			$("<div></div>").attr('id', 'tenantSliceDataWrapper').appendTo('#tabs-4');
+			$("<div></div>").attr('id', 'advancedTenantSliceDataWrapper').appendTo('#tabs-4');
+			var sliceData = '';
+			sliceData += '<div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
+			var advSliceData = '';
+			advSliceData += '<div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <span id="adv-slice-network-value"> </span>  </span></div><div class="btn btn-high btn-info" id="basic-tenant">Go to Basic View</div>';
+			$('#tenantSliceDataWrapper').append(sliceData);
+			$('#advancedTenantSliceDataWrapper').append(advSliceData);
+			$("#advancedTenantSliceDataWrapper").css("display", "none");
+			$("<select></select>").attr('id', 'tenantSliceDropDown').appendTo('#slice-name-value');
+			for (row in rows) {
+				$("#tenantSliceDropDown").append("<option>" + rows[row]['sliceName'] + "</option>");
+			}
+			$("<div></div>").attr('id', 'tenantSiteTable').appendTo('#tabs-4');
+			$("<div></div>").attr('id', 'advTenantSiteTable').appendTo('#tabs-4').css("display", "none");
+			$('<div class="btn btn-success" id="create-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Create New Slice</div>').appendTo("#tabs-4");
+			$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-4");
+			$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-4").css("display", "none");
+			$('#tenantSliceDropDown').on('change', function () {
+				showSliceData(data);
+			});
+			$("#advanced-tenant").click(function () {
+				$("#tenantSliceDataWrapper").toggle();
+				$("#advancedTenantSliceDataWrapper").toggle();
+				$("#advTenantSiteTable").toggle();
+				$("#tenantSiteTable").toggle();
+				$("#sliver-btn").toggle();
+				$("#save-btn").toggle();
+				$('#adv-slice-name-value').empty();
+				$("<select></select>").attr('id', 'advTenantSliceDropDown').appendTo('#adv-slice-name-value');
+				for (row in rows) {
+					$("#advTenantSliceDropDown").append("<option>" + rows[row]['sliceName'] + "</option>");
+				}
+				advShowSliceData(data);
+				editSliverAdv();
+				$('#advTenantSliceDropDown').on('change', function () {
+					advShowSliceData(data);
+					editSliverAdv();
+				});
+
+				function editSliverAdv() {
+					$(".edit-view").click(function () {
+						var allocatedSlivers = parseInt($(this).parent().siblings(".allocated").html());
+						var td=$(this).parent().siblings(".allocated");
+						var pos =oTable.fnGetPosition(td[0]);
+  						$("#adv-dialog-form").dialog({
+							autoOpen: false,
+							height: 200,
+							width: 350,
+							modal: true,
+							buttons: {
+								"Add": function () {
+									allocatedSlivers += parseInt($("#advNumOfSlivers").val());
+    									$(this).dialog("close");
+									td.html(allocatedSlivers);
+								},
+								"Remove": function () {
+                                                                        allocatedSlivers -= parseInt($("#advNumOfSlivers").val());
+                                                                        $(this).dialog("close");
+                                                                        td.html(allocatedSlivers);
+								}
+							}
+						});
+						$("#adv-dialog-form").dialog("open");
+					});
+				}
+
+				function advShowSliceData(data) {
+					var value = $("#advTenantSliceDropDown").val();
+					var serviceLevelData = data['sliceServiceClass']['rows'];
+					var imageData = data['image']['rows'];
+					var networkData = data['network']['rows'];
+					var siteRows = data['sites']['rows'];
+					$("#adv-service-level-value").empty();
+					$("#adv-slice-image-value").empty();
+					$("#adv-slice-network-value").empty();
+					$("<select></select>").attr('id', 'adv-service-level-dropdown').appendTo('#adv-service-level-value');
+					$("<select></select>").attr('id', 'adv-image-dropdown').appendTo('#adv-slice-image-value');
+					$("<select></select>").attr('id', 'adv-network-dropdown').appendTo('#adv-slice-network-value');
+					$('#advTenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="advTenantSiteTableData"></table>');
+					var rows = data['userSliceInfo']['rows'];
+					var siteNames = [];
+					var sliverCount;
+                                        var tableData ={};
+					for (row in rows) {
+						if (rows[row]['sliceName'] == value) {
+							var innerRows = rows[row]['sliceSite'];
+							for (innerRow in innerRows) {
+								tableData[innerRow]=innerRows[innerRow];
+							}
+						}
+					}
+					for (row in siteRows) {
+						var entry =siteRows[row]['siteName'];
+						if (!(entry in tableData)) {
+							tableData[siteRows[row]['siteName']] = 0;
+						}
+					}
+					for (row in tableData){
+						siteNames.push([row, tableData[row], '<a href="#" class="edit-view">Edit</a>']);
+					}
+					
+					oTable = $('#advTenantSiteTableData').dataTable({
+						"bJQueryUI": true,
+						"bFilter": false,
+						"bInfo": false,
+						"bLengthChange": false,
+						"aaData": siteNames,
+						"bStateSave": true,
+						"aoColumns": [{
+							"sTitle": "Site Name"
+						}, {
+							"sTitle": "Allocated",
+							sClass: "alignCenter allocated"
+						}, {
+							"sTitle": "Edit",
+							sClass: "alignCenter"
+						}]
+					});
+					for (row in serviceLevelData) {
+						$("#adv-service-level-dropdown").append("<option>" + serviceLevelData[row]['serviceClass'] + "</option>");
+					}
+					for (row in imageData) {
+						$("#adv-image-dropdown").append("<option>" + imageData[row]['Image'] + "</option>");
+					}
+					for (row in networkData) {
+						$("#adv-network-dropdown").append("<option>" + networkData[row]['Network'] + "</option>");
+					}
+				}
+			});
+			$("#basic-tenant").click(function () {
+				$("#tenantSliceDataWrapper").toggle();
+				$("#advancedTenantSliceDataWrapper").toggle();
+				$("#advTenantSiteTable").toggle();
+				$("#tenantSiteTable").toggle();
+				$("#sliver-btn").toggle();
+				$("#save-btn").toggle();
+			});
+			$("#sliver-btn").click(function () {
+				$("#dialog-form").dialog({
+					autoOpen: false,
+					height: 200,
+					width: 350,
+					modal: true,
+					buttons: {
+						"Submit": function () {
+							/************Code to add or remove slivers for a slice will go here*******/
+						},
+						Cancel: function () {
+							$(this).dialog("close");
+						}
+					}
+				});
+				$("#dialog-form").dialog("open");
+			});
+			$("#create-slice-btn").click(function () {
+				var serviceLevelData = data['sliceServiceClass']['rows'];
+				var imageData = data['image']['rows'];
+				for (row in serviceLevelData) {
+					$("#new-service-class").append("<option>" + serviceLevelData[row]['serviceClass'] + "</option>");
+				}
+				for (row in imageData) {
+					$("#new-image").append("<option>" + imageData[row]['Image'] + "</option>");
+				}
+				var nameOfSlice= $("#new-slice-name").val();
+				var nameOfServiceClass = $("#new-service-class").val();
+				var nameOfImage = $("#new-image").val();
+				$("#create-slice-form").dialog({
+						autoOpen: false,
+						height: 300,
+						width: 350,
+						modal: true,
+						buttons: {
+							"Submit": function () {
+								$.ajax({
+									url: '/createnewslice/',
+									dataType: 'json',
+									data: {
+										sliceName: $("#new-slice-name").val(),
+										serviceClass: nameOfServiceClass,
+                                                                                imageName: nameOfImage,
+										actionToDo: "add",
+										csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
+										state: "inactive"
+									},
+									type: 'POST',
+									beforeSend: function(){
+										if (!$("#new-slice-name").val()) {
+											$("#tooltip").css("display","block");
+											return false;
+										}
+                                                                                else{
+           										return true;
+										}
+									},
+									success: function (response) {
+									},
+									complete: function () {
+                                                                             location.reload();
+                                                                        }
+								});
+							},
+							Cancel: function () {
+								$(this).dialog("close");
+							}
+						}
+					});
+					$("#create-slice-form").dialog("open");
+			});
+		}
+	}
+	initTenant();
+});
+</script>
+
+</html>

@@ -24,6 +24,7 @@ class Slice(PlCoreBase):
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+    imagePreference = models.CharField(default="abc",null=True, blank=True, max_length=256)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
 
     tags = generic.GenericRelation(Tag)
