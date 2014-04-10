@@ -12,8 +12,8 @@ from util.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class SyncNetworkDeployments(OpenStackSyncStep):
+    requested_interval = 0 
     provides=[NetworkDeployments]
-    request_interval = 0 
     
     def fetch_pending(self):
         # network deployments are not visible to users. We must ensure
