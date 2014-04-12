@@ -5,6 +5,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from core.models.deployment import Deployment
 from core.models.site import SiteDeployments
 from core.models.slice import Slice, SliceDeployments
 from core.models.user import UserDeployments
@@ -13,7 +14,7 @@ from util.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class SyncSliceDeployments(OpenStackSyncStep):
-    provides=[Slice, SliceDeployments]
+    provides=[SliceDeployments]
     requested_interval=0
 
     def fetch_pending(self):
@@ -29,7 +30,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
         for slice_deployment in slice_deployments:
             slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
         
-        all_deployments = Deployment.objects.filter() 
+        all_deployments = Deployment.objects.all() 
         for slice in Slice.objects.all():
             # slices are added to all deployments for now
             expected_deployments = all_deployments
@@ -98,30 +99,30 @@ class SyncSliceDeployments(OpenStackSyncStep):
                     client_driver.create_keypair(**key_fields)
 
                 # create network
-                network = client_driver.create_network(slice_deployment.slice.name)
-                slice_deployment.network_id = network['id']
+                #network = client_driver.create_network(slice_deployment.slice.name)
+                #slice_deployment.network_id = network['id']
 
                 # create router
-                router = client_driver.create_router(slice_deployment.slice.name)
-                slice_deployment.router_id = router['id']
+                #router = client_driver.create_router(slice_deployment.slice.name)
+                #slice_deployment.router_id = router['id']
 
                 # create subnet for slice's private network
-                next_subnet = self.get_next_subnet(deployment=slice_deployment.deployment.name)
-                cidr = str(next_subnet.cidr)
-                ip_version = next_subnet.version
-                start = str(next_subnet[2])
-                end = str(next_subnet[-2]) 
-                subnet = client_driver.create_subnet(name=slice_deployment.slice.name,
-                                                   network_id = network['id'],
-                                                   cidr_ip = cidr,
-                                                   ip_version = ip_version,
-                                                   start = start,
-                                                   end = end)
-                slice_deployment.subnet_id = subnet['id']
+                #next_subnet = self.get_next_subnet(deployment=slice_deployment.deployment.name)
+                #cidr = str(next_subnet.cidr)
+                #ip_version = next_subnet.version
+                #start = str(next_subnet[2])
+                #end = str(next_subnet[-2]) 
+                #subnet = client_driver.create_subnet(name=slice_deployment.slice.name,
+                #                                   network_id = network['id'],
+                #                                   cidr_ip = cidr,
+                #                                   ip_version = ip_version,
+                #                                   start = start,
+                #                                   end = end)
+                #slice_deployment.subnet_id = subnet['id']
                 # add subnet as interface to slice's router
-                client_driver.add_router_interface(router['id'], subnet['id'])
+                #client_driver.add_router_interface(router['id'], subnet['id'])
                 # add external route
-                client_driver.add_external_route(subnet)
+                #client_driver.add_external_route(subnet)
 
 
         if slice_deployment.id and slice_deployment.tenant_id:

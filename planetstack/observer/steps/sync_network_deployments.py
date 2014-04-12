@@ -48,7 +48,7 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         if ints:
             last_ip = IPAddress(ints[-1])
         else:
-            last_ip = IPAddress('10.0.0.1')
+            last_ip = IPAddress('10.0.0.0')
         last_ip = IPAddress(ints[-1])
         last_network = IPNetwork(str(last_ip) + "/24")
         next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
