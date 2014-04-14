@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.6
+Version: 1.0.7
 Release: 1
 License: GPL+
 Group: Development/Tools
@@ -17,6 +17,7 @@ requires: python-pip
 requires: tar
 requires: gcc
 requires: python-httplib2
+requires: GeoIP
 
 %description
 %{summary}
@@ -44,6 +45,7 @@ pip-python install django-extensions
 pip-python install django-suit
 pip-python install django-evolution
 pip-python install django-bitfield
+pip-python install django-ipware
 
 easy_install django_evolution
 easy_install python_gflags
@@ -72,6 +74,7 @@ rm -rf %{buildroot}
 
 %preun
 if [ "$1" = 0 ] ; then
+    echo "doing preuninstall"
     rm -rf /opt/planetstack
 fi
 
