@@ -27,5 +27,5 @@ from .slicetag import SliceTag
 from .sliver import Sliver
 from .reservation import ReservedResource
 from .reservation import Reservation
-from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, NetworkTemplate, Router, NetworkSlice
+from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, NetworkTemplate, Router, NetworkSlice, NetworkDeployments
 from .billing import Account, Invoice, Charge, UsableObject, Payment

@@ -29,14 +29,17 @@ class SyncUserDeployments(OpenStackSyncStep):
         for user_deployment in UserDeployments.objects.all():
             user_deploy_lookup[user_deployment.user].append(user_deployment.deployment)
        
-        user_deployments = [] 
+        user_deployments = []
+        all_deployments = Deployment.objects.filter() 
         for user in User.objects.all():
             if user.is_admin:
                 # admins should have an account at all deployments
                 expected_deployments = deployments
             else:
                 # normal users should have an account at their site's deployments
-                expected_deployments = site_deploy_lookup[user.site]
+                #expected_deployments = site_deploy_lookup[user.site]
+                # users are added to all deployments for now
+                expected_deployments = deployments        
             for expected_deployment in expected_deployments:
                 if not user in user_deploy_lookup or \
                   expected_deployment not in user_deploy_lookup[user]: 

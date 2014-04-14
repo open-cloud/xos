@@ -111,7 +111,16 @@ class OpenStackDriver:
             for key in keys:
                 self.shell.nova.keypairs.delete(key)
             self.shell.keystone.users.delete(user)
-        return 1 
+        return 1
+
+    def get_admin_role(self):
+        role = None
+        for admin_role_name in ['admin', 'Admin']:
+            roles = self.shell.keystone.roles.findall(name=admin_role_name)
+            if roles:
+                role = roles[0]
+                break
+        return role 
 
     def add_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
@@ -119,13 +128,8 @@ class OpenStackDriver:
         # admin role can be lowercase or title. Look for both
         role = None
         if role_name.lower() == 'admin':
-            for admin_role_name in ['admin', 'Admin']:
-                roles = self.shell.keystone.roles.findall(name=admin_role_name)
-                if roles:
-                    role = roles[0]
-                    break
-        
-        if not role:
+            role = self.get_admin_role()
+        else:
             # look up non admin role or force exception when admin role isnt found 
             role = self.shell.keystone.roles.find(name=role_name)                   
 
@@ -142,7 +146,13 @@ class OpenStackDriver:
     def delete_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(name=role_name)
+        # admin role can be lowercase or title. Look for both
+        role = None
+        if role_name.lower() == 'admin':
+            role = self.get_admin_role()
+        else:
+            # look up non admin role or force exception when admin role isnt found
+            role = self.shell.keystone.roles.find(name=role_name)
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
