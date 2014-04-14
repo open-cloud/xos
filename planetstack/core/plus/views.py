@@ -9,6 +9,7 @@ from core.models import *
 from django.http import HttpResponse
 from django.core import urlresolvers
 import traceback
+import socket
 
 if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
     sys.path.append("/home/smbaker/projects/vicci/cdn/bigquery")
@@ -212,6 +213,91 @@ class DashboardUserSiteView(View):
 class TenantViewData(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
+
+def tenant_increase_slivers(user, siteName, slice, count):
+        site = Site.objects.filter(name=siteName)
+	nodes = Node.objects.filter(site=site)
+	print nodes
+	site.usedNodes = []
+        site.freeNodes = []
+	sliceName = Slice.objects.get(name=slice)
+        for node in nodes:
+            usedNode = False
+            for sliver in node.slivers.all():
+                if sliver in Sliver.objects.filter(slice=sliceName):
+                    usedNode = True
+            if usedNode:
+                site.usedNodes.append(node)
+		print site.usedNodes
+            else:
+                site.freeNodes.append(node)
+	    print site
+  	    slices =Slice.objects.all()
+	    sliceName = Slice.objects.get(name=slice)
+	    test = Sliver.objects.filter(slice=sliceName)
+	    while (len(site.freeNodes) > 0) and (count > 0):
+             	node = site.freeNodes.pop()
+            	hostname = node.name
+            	sliver = Sliver(name=node.name,
+                            slice=sliceName,
+                            node=node,
+                            image = Image.objects.all()[0],
+                            creator = User.objects.get(email=user),
+                            deploymentNetwork=node.deployment,
+                            numberCores =1 )
+            	sliver.save()
+
+            	print "created sliver", sliver
+	    	print sliver.node
+            	print sliver.numberCores
+	    	site.usedNodes.append(node)
+	    	count = int(count) - 1
+
+def tenant_decrease_slivers(user, siteName, slice, count):
+        site = Site.objects.filter(name=siteName)
+        nodes = Node.objects.filter(site=site)
+        slices = Slice.objects.all()
+	site.usedNodes = []
+        site.freeNodes = []
+        sliceName = Slice.objects.get(name=slice)
+
+	for node in nodes:
+            usedNode = False
+            for sliver in node.slivers.all():
+                if sliver in Sliver.objects.filter(slice=sliceName):
+                    usedNode = True
+            if usedNode:
+                site.usedNodes.append(node)
+            else:
+                site.freeNodes.append(node)
+            print "used nodes", site.usedNodes
+            slices =Slice.objects.all()
+            sliceName = Slice.objects.get(name=slice)
+            test = Sliver.objects.filter(slice=sliceName)
+            while (count > 0):
+                node = site.usedNodes.pop()
+		print node
+		print count
+		for sliver in node.slivers.all():	
+			if sliver.slice in slices:
+                     		print "deleting sliver", sliver.slice
+                     		sliver.delete()
+            	site.freeNodes.append(node)
+            	count = int(count) - 1
+                print "deleted sliver", sliver
+
+class TenantAddOrRemoveSliverView(View):
+    def post(self, request, *args, **kwargs):
+        siteName = request.POST.get("siteName", "0")
+        actionToDo = request.POST.get("actionToDo", "0")
+        count = request.POST.get("count","0")
+	slice = request.POST.get("slice","0")
+
+        if (actionToDo == "add"):
+            tenant_increase_slivers(request.user, siteName,slice, count)
+        elif (actionToDo == "rem"):
+            tenant_decrease_slivers(request.user,siteName,slice, count)
+        return HttpResponse('This is POST request ')
 
 class DashboardSummaryAjaxView(View):
     def get(self, request, **kwargs):

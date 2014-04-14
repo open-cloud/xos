@@ -99,7 +99,7 @@ $(document).ready(function () {
 			success: function (data) {
 				UserSliceTable(data);
 				showSliceData(data);
-                                $("#tooltip").css("display","none");
+				$("#tooltip").css("display", "none");
 			},
 			complete: function () {}
 		});
@@ -129,17 +129,19 @@ $(document).ready(function () {
 				showSliceData(data);
 			});
 			$("#advanced-tenant").click(function () {
+				var selectedValue = $("#tenantSliceDropDown").val();
 				$("#tenantSliceDataWrapper").toggle();
 				$("#advancedTenantSliceDataWrapper").toggle();
 				$("#advTenantSiteTable").toggle();
 				$("#tenantSiteTable").toggle();
 				$("#sliver-btn").toggle();
 				$("#save-btn").toggle();
-				$('#adv-slice-name-value').empty();
+				//$('#adv-slice-name-value').empty();
 				$("<select></select>").attr('id', 'advTenantSliceDropDown').appendTo('#adv-slice-name-value');
 				for (row in rows) {
 					$("#advTenantSliceDropDown").append("<option>" + rows[row]['sliceName'] + "</option>");
 				}
+				$("#advTenantSliceDropDown").val(selectedValue);
 				advShowSliceData(data);
 				editSliverAdv();
 				$('#advTenantSliceDropDown').on('change', function () {
@@ -150,9 +152,9 @@ $(document).ready(function () {
 				function editSliverAdv() {
 					$(".edit-view").click(function () {
 						var allocatedSlivers = parseInt($(this).parent().siblings(".allocated").html());
-						var td=$(this).parent().siblings(".allocated");
-						var pos =oTable.fnGetPosition(td[0]);
-  						$("#adv-dialog-form").dialog({
+						var td = $(this).parent().siblings(".allocated");
+						var pos = oTable.fnGetPosition(td[0]);
+						$("#adv-dialog-form").dialog({
 							autoOpen: false,
 							height: 200,
 							width: 350,
@@ -160,13 +162,13 @@ $(document).ready(function () {
 							buttons: {
 								"Add": function () {
 									allocatedSlivers += parseInt($("#advNumOfSlivers").val());
-    									$(this).dialog("close");
+									$(this).dialog("close");
 									td.html(allocatedSlivers);
 								},
 								"Remove": function () {
-                                                                        allocatedSlivers -= parseInt($("#advNumOfSlivers").val());
-                                                                        $(this).dialog("close");
-                                                                        td.html(allocatedSlivers);
+									allocatedSlivers -= parseInt($("#advNumOfSlivers").val());
+									$(this).dialog("close");
+									td.html(allocatedSlivers);
 								}
 							}
 						});
@@ -190,34 +192,80 @@ $(document).ready(function () {
 					var rows = data['userSliceInfo']['rows'];
 					var siteNames = [];
 					var sliverCount;
-                                        var tableData ={};
+					var tableData = {};
 					for (row in rows) {
 						if (rows[row]['sliceName'] == value) {
 							var innerRows = rows[row]['sliceSite'];
 							for (innerRow in innerRows) {
-								tableData[innerRow]=innerRows[innerRow];
+								tableData[innerRow] = innerRows[innerRow];
 							}
 						}
 					}
 					for (row in siteRows) {
-						var entry =siteRows[row]['siteName'];
+						var entry = siteRows[row]['siteName'];
 						if (!(entry in tableData)) {
 							tableData[siteRows[row]['siteName']] = 0;
 						}
 					}
-					for (row in tableData){
+					for (row in tableData) {
 						siteNames.push([row, tableData[row], '<a href="#" class="edit-view">Edit</a>']);
 					}
-					
+                                        $("#save-btn").click(function () {
+                                                  	var newTableData={};
+							var newSite = $(".siteName");
+							var newAllocated = $(".allocated");
+							for(i=1; i<newSite.length; i++){
+								newTableData[$($(".siteName")[i]).text()]=$($(".allocated")[i]).text();
+							}
+							for(newRow in newTableData){
+								if(newTableData[newRow] > tableData[newRow]){
+                                                                       $.ajax({
+       										url : '/tenantaddorremsliver/',
+        									dataType : 'json',
+        									data: {
+											siteName: newRow,
+											count : newTableData[newRow] - tableData[newRow],
+											slice : $("#advTenantSliceDropDown").val(),
+               									actionToDo: "add",
+               									csrfmiddlewaretoken: "{{ csrf_token }}",   // < here 
+               									state:"inactive" },
+        									type : 'POST',
+    								                complete:function(){
+            										location.reload();
+        									}
+    									});
+								}
+								else if(newTableData[newRow] < tableData[newRow]){
+                                                                       $.ajax({
+                                                                                url : '/tenantaddorremsliver/',
+                                                                                dataType : 'json',
+                                                                                data: {
+                                                                                        siteName: newRow,
+                                                                                        count : tableData[newRow] - newTableData[newRow],
+                                                                                        slice : $("#advTenantSliceDropDown").val(),
+                                                                                actionToDo: "rem",
+                                                                                csrfmiddlewaretoken: "{{ csrf_token }}",   // < here
+                                                                                state:"inactive" },
+                                                                                type : 'POST',
+                                                                                complete:function(){
+                                                                                        location.reload();
+                                                                                }
+                                                                        });
+                                                                }
+
+							}
+                        		});
 					oTable = $('#advTenantSiteTableData').dataTable({
 						"bJQueryUI": true,
 						"bFilter": false,
 						"bInfo": false,
 						"bLengthChange": false,
+						"bPaginate": false,
 						"aaData": siteNames,
 						"bStateSave": true,
 						"aoColumns": [{
-							"sTitle": "Site Name"
+							"sTitle": "Site Name",
+							sClass: "siteName"
 						}, {
 							"sTitle": "Allocated",
 							sClass: "alignCenter allocated"
@@ -271,50 +319,48 @@ $(document).ready(function () {
 				for (row in imageData) {
 					$("#new-image").append("<option>" + imageData[row]['Image'] + "</option>");
 				}
-				var nameOfSlice= $("#new-slice-name").val();
+				var nameOfSlice = $("#new-slice-name").val();
 				var nameOfServiceClass = $("#new-service-class").val();
 				var nameOfImage = $("#new-image").val();
 				$("#create-slice-form").dialog({
-						autoOpen: false,
-						height: 300,
-						width: 350,
-						modal: true,
-						buttons: {
-							"Submit": function () {
-								$.ajax({
-									url: '/createnewslice/',
-									dataType: 'json',
-									data: {
-										sliceName: $("#new-slice-name").val(),
-										serviceClass: nameOfServiceClass,
-                                                                                imageName: nameOfImage,
-										actionToDo: "add",
-										csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
-										state: "inactive"
-									},
-									type: 'POST',
-									beforeSend: function(){
-										if (!$("#new-slice-name").val()) {
-											$("#tooltip").css("display","block");
-											return false;
-										}
-                                                                                else{
-           										return true;
-										}
-									},
-									success: function (response) {
-									},
-									complete: function () {
-                                                                             location.reload();
-                                                                        }
-								});
-							},
-							Cancel: function () {
-								$(this).dialog("close");
-							}
+					autoOpen: false,
+					height: 300,
+					width: 350,
+					modal: true,
+					buttons: {
+						"Submit": function () {
+							$.ajax({
+								url: '/createnewslice/',
+								dataType: 'json',
+								data: {
+									sliceName: $("#new-slice-name").val(),
+									serviceClass: nameOfServiceClass,
+									imageName: nameOfImage,
+									actionToDo: "add",
+									csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
+									state: "inactive"
+								},
+								type: 'POST',
+								beforeSend: function () {
+									if (!$("#new-slice-name").val()) {
+										$("#tooltip").css("display", "block");
+										return false;
+									} else {
+										return true;
+									}
+								},
+								success: function (response) {},
+								complete: function () {
+									location.reload();
+								}
+							});
+						},
+						Cancel: function () {
+							$(this).dialog("close");
 						}
-					});
-					$("#create-slice-form").dialog("open");
+					}
+				});
+				$("#create-slice-form").dialog("open");
 			});
 		}
 	}
