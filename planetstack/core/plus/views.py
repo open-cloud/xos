@@ -263,7 +263,9 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
 
     return sites
 
-def tenant_increase_slivers(user, user_ip, siteList, slice, count):
+def tenant_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
+    sitesChanged = {}
+
     # let's compute how many slivers are in use in each node of each site
     for site in siteList:
         site.nodeList = list(site.nodes.all())
@@ -284,20 +286,27 @@ def tenant_increase_slivers(user, user_ip, siteList, slice, count):
 
         print "adding sliver at node", node.name, "of site", node.site.name
 
-        sliver = Sliver(name=node.name,
-                    slice=slice,
-                    node=node,
-                    image = Image.objects.all()[0],
-                    creator = User.objects.get(email=user),
-                    deploymentNetwork=node.deployment,
-                    numberCores =1 )
-        sliver.save()
+        if not noAct:
+            sliver = Sliver(name=node.name,
+                        slice=slice,
+                        node=node,
+                        image = Image.objects.all()[0],
+                        creator = User.objects.get(email=user),
+                        deploymentNetwork=node.deployment,
+                        numberCores =1 )
+            sliver.save()
 
         node.sliverCount = node.sliverCount + 1
 
         count = count - 1
 
-def tenant_decrease_slivers(user, siteList, slice, count):
+        sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) + 1
+
+    return sitesChanged
+
+def tenant_decrease_slivers(user, siteList, slice, count, noAct=False):
+    sitesChanged = {}
+
     if siteList:
         siteNames = [site.name for site in siteList]
     else:
@@ -310,15 +319,35 @@ def tenant_decrease_slivers(user, siteList, slice, count):
         node = sliver.node
         if (not siteNames) or (node.site.name in siteNames):
             print "deleting sliver", sliver, "at node", node.name, "of site", node.site.name
-            sliver.delete()
+            if not noAct:
+                sliver.delete()
             count = count -1
 
+            sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) - 1
+
+    return sitesChanged
+
 class TenantAddOrRemoveSliverView(View):
+    """ Add or remove slivers from a Slice
+
+        Arguments:
+            siteName - name of site. If not specified, PlanetStack will pick the
+                       best site.,
+            actionToDo - [add | rem]
+            count - number of slivers to add or remove
+            sliceName - name of slice
+            noAct - if set, no changes will be made to db
+
+        Returns:
+            Dictionary of sites that were modified, and the count of nodes
+            that were added or removed at each site.
+    """
     def post(self, request, *args, **kwargs):
         siteName = request.POST.get("siteName", None)
         actionToDo = request.POST.get("actionToDo", None)
         count = int(request.POST.get("count","0"))
 	sliceName = request.POST.get("slice", None)
+        noAct = request.POST.get("noAct", False)
 
         if not sliceName:
             return HttpResponseServerError("No slice name given")
@@ -335,13 +364,13 @@ class TenantAddOrRemoveSliverView(View):
             if (siteList is None):
                 siteList = tenant_pick_sites(user, user_ip, slice, count)
 
-            tenant_increase_slivers(request.user, user_ip, siteList, slice, count)
+            sitesChanged = tenant_increase_slivers(request.user, user_ip, siteList, slice, count, noAct)
         elif (actionToDo == "rem"):
-            tenant_decrease_slivers(request.user, siteList, slice, count)
+            sitesChanged = tenant_decrease_slivers(request.user, siteList, slice, count, noAct)
         else:
             return HttpResponseServerError("Unknown actionToDo %s" % actionToDo)
 
-        return HttpResponse('Operation Completed')
+        return HttpResponse(json.dumps(sitesChanged), mimetype='application/javascript')
 
     def get(self, request, *args, **kwargs):
         request.POST = request.GET
