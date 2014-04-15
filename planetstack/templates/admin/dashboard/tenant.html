@@ -227,7 +227,7 @@ $(document).ready(function () {
 											count : newTableData[newRow] - tableData[newRow],
 											slice : $("#advTenantSliceDropDown").val(),
                									actionToDo: "add",
-               									csrfmiddlewaretoken: "{{ csrf_token }}",   // < here 
+               									csrfmiddlewaretoken: "{{ csrf_token }}",   // < here
                									state:"inactive" },
         									type : 'POST',
     								                complete:function(){
@@ -300,9 +300,42 @@ $(document).ready(function () {
 					width: 350,
 					modal: true,
 					buttons: {
-						"Submit": function () {
-							/************Code to add or remove slivers for a slice will go here*******/
-						},
+                                                "Add": function () {
+                                                        delta = parseInt($("#numOfSlivers").val());
+                                                        $(this).dialog("close");
+                                                        $.ajax({
+                                                                url : '/tenantaddorremsliver/',
+                                                                dataType : 'json',
+                                                                data: {
+                                                                        count : delta,
+                                                                        slice : $("#tenantSliceDropDown").val(),
+                                                                        actionToDo: "add",
+                                                                        csrfmiddlewaretoken: "{{ csrf_token }}",   // < here
+                                                                        state:"inactive" },
+                                                                type : 'POST',
+                                                                complete:function(){
+                                                                        location.reload();
+                                                                }
+                                                         });
+                                                },
+                                                "Remove": function () {
+                                                        delta = parseInt($("#numOfSlivers").val());
+                                                        $(this).dialog("close");
+                                                        $.ajax({
+                                                                url : '/tenantaddorremsliver/',
+                                                                dataType : 'json',
+                                                                data: {
+                                                                        count : delta,
+                                                                        slice : $("#tenantSliceDropDown").val(),
+                                                                        actionToDo: "rem",
+                                                                        csrfmiddlewaretoken: "{{ csrf_token }}",   // < here
+                                                                        state:"inactive" },
+                                                                type : 'POST',
+                                                                complete:function(){
+                                                                        location.reload();
+                                                                }
+                                                         });
+                                                },
 						Cancel: function () {
 							$(this).dialog("close");
 						}
