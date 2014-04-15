@@ -53,6 +53,10 @@ easy_install google_api_python_client
 
 wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
 
+rm -f /usr/share/GeoIP/GeoLiteCity*
+wget -P /usr/share/GeoIP http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+gzip -d /usr/share/GeoIP/GeoLiteCity*.gz
+
 %install
 rm -rf %{buildroot}
 mkdir -p  %{buildroot}
