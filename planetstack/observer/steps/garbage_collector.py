@@ -18,12 +18,13 @@ class GarbageCollector(OpenStackSyncStep):
     def call(self, **args):
         try:
             #self.gc_roles()
-            self.gc_tenants()
-            self.gc_users()
-            self.gc_user_tenant_roles()
-            self.gc_slivers()
-            self.gc_sliver_ips()
-            self.gc_external_routes()
+            #self.gc_tenants()
+            #self.gc_users()
+            #self.gc_user_tenant_roles()
+            #self.gc_slivers()
+            #self.gc_sliver_ips()
+            #self.gc_external_routes()
+            pass 
         except:
             traceback.print_exc() 
 

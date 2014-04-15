@@ -1,4 +1,6 @@
 #views.py
+import functools
+import math
 import os
 import sys
 from django.views.generic import TemplateView, View
@@ -6,8 +8,12 @@ import datetime
 from pprint import pprint
 import json
 from core.models import *
-from django.http import HttpResponse
+from operator import attrgetter
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseServerError
 from django.core import urlresolvers
+from django.contrib.gis.geoip import GeoIP
+from ipware.ip import get_ip
 import traceback
 import socket
 
@@ -214,90 +220,174 @@ class TenantViewData(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
 
-def tenant_increase_slivers(user, siteName, slice, count):
-        site = Site.objects.filter(name=siteName)
-	nodes = Node.objects.filter(site=site)
-	print nodes
-	site.usedNodes = []
-        site.freeNodes = []
-	sliceName = Slice.objects.get(name=slice)
-        for node in nodes:
-            usedNode = False
+ALLOWED_TENANT_SITES = ["Stanford", "Washington", "Princeton", "GeorgiaTech", "MaxPlanck"]
+
+def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
+    # try to pick a site we're already using
+    has_slivers_here=False
+    if slice:
+        for sliver in slice.slivers.all():
+            if sliver.node.site.name == site.name:
+                has_slivers_here=True
+
+    # Haversine method
+    d = 0
+    site_lat = site.location.latitude
+    site_lon = site.location.longitude
+    if lat and lon and site_lat and site_lon:
+        site_lat = float(site_lat)
+        site_lon = float(site_lon)
+        R = 6378.1
+        a = math.sin( math.radians((lat - site_lat)/2.0) )**2 + math.cos( math.radians(lat) )*math.cos( math.radians(site_lat) )*(math.sin( math.radians((lon - site_lon)/2.0 ) )**2)
+        c = 2 * math.atan2( math.sqrt(a), math.sqrt(1 - a) )
+        d = R * c
+
+    return (-has_slivers_here, d)
+
+def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
+    """ Returns list of sites, sorted from most favorable to least favorable """
+    lat=None
+    lon=None
+    try:
+        client_geo = GeoIP().city(user_ip)
+        if client_geo:
+            lat=float(client_geo["latitude"])
+            lon=float(client_geo["longitude"])
+    except:
+        print "exception in geo code"
+        traceback.print_exc()
+
+    sites = Site.objects.all()
+    sites = [x for x in sites if x.name in ALLOWED_TENANT_SITES]
+    sites = sorted(sites, key=functools.partial(siteSortKey, slice=slice, count=count, lat=lat, lon=lon))
+
+    return sites
+
+def tenant_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
+    sitesChanged = {}
+
+    # let's compute how many slivers are in use in each node of each site
+    for site in siteList:
+        site.nodeList = list(site.nodes.all())
+        for node in site.nodeList:
+            node.sliverCount = 0
             for sliver in node.slivers.all():
-                if sliver in Sliver.objects.filter(slice=sliceName):
-                    usedNode = True
-            if usedNode:
-                site.usedNodes.append(node)
-		print site.usedNodes
-            else:
-                site.freeNodes.append(node)
-	    print site
-  	    slices =Slice.objects.all()
-	    sliceName = Slice.objects.get(name=slice)
-	    test = Sliver.objects.filter(slice=sliceName)
-	    while (len(site.freeNodes) > 0) and (count > 0):
-             	node = site.freeNodes.pop()
-            	hostname = node.name
-            	sliver = Sliver(name=node.name,
-                            slice=sliceName,
-                            node=node,
-                            image = Image.objects.all()[0],
-                            creator = User.objects.get(email=user),
-                            deploymentNetwork=node.deployment,
-                            numberCores =1 )
-            	sliver.save()
+                 if sliver.slice.name == slice.name:
+                     node.sliverCount = node.sliverCount +1
 
-            	print "created sliver", sliver
-	    	print sliver.node
-            	print sliver.numberCores
-	    	site.usedNodes.append(node)
-	    	count = int(count) - 1
+    # Allocate slivers to nodes
+    # for now, assume we want to allocate all slivers from the same site
+    nodes = siteList[0].nodeList
+    while (count>0):
+        # Sort the node list by number of slivers per node, then pick the
+        # node with the least number of slivers.
+        nodes = sorted(nodes, key=attrgetter("sliverCount"))
+        node = nodes[0]
 
-def tenant_decrease_slivers(user, siteName, slice, count):
-        site = Site.objects.filter(name=siteName)
-        nodes = Node.objects.filter(site=site)
-        slices = Slice.objects.all()
-	site.usedNodes = []
-        site.freeNodes = []
-        sliceName = Slice.objects.get(name=slice)
+        print "adding sliver at node", node.name, "of site", node.site.name
 
-	for node in nodes:
-            usedNode = False
-            for sliver in node.slivers.all():
-                if sliver in Sliver.objects.filter(slice=sliceName):
-                    usedNode = True
-            if usedNode:
-                site.usedNodes.append(node)
-            else:
-                site.freeNodes.append(node)
-            print "used nodes", site.usedNodes
-            slices =Slice.objects.all()
-            sliceName = Slice.objects.get(name=slice)
-            test = Sliver.objects.filter(slice=sliceName)
-            while (count > 0):
-                node = site.usedNodes.pop()
-		print node
-		print count
-		for sliver in node.slivers.all():	
-			if sliver.slice in slices:
-                     		print "deleting sliver", sliver.slice
-                     		sliver.delete()
-            	site.freeNodes.append(node)
-            	count = int(count) - 1
-                print "deleted sliver", sliver
+        if not noAct:
+            sliver = Sliver(name=node.name,
+                        slice=slice,
+                        node=node,
+                        image = Image.objects.all()[0],
+                        creator = User.objects.get(email=user),
+                        deploymentNetwork=node.deployment,
+                        numberCores =1 )
+            sliver.save()
+
+        node.sliverCount = node.sliverCount + 1
+
+        count = count - 1
+
+        sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) + 1
+
+    return sitesChanged
+
+def tenant_decrease_slivers(user, siteList, slice, count, noAct=False):
+    sitesChanged = {}
+
+    if siteList:
+        siteNames = [site.name for site in siteList]
+    else:
+        siteNames = None
+
+    for sliver in slice.slivers.all():
+        if (count <= 0):
+            break
+
+        node = sliver.node
+        if (not siteNames) or (node.site.name in siteNames):
+            print "deleting sliver", sliver, "at node", node.name, "of site", node.site.name
+            if not noAct:
+                sliver.delete()
+            count = count -1
+
+            sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) - 1
+
+    return sitesChanged
 
 class TenantAddOrRemoveSliverView(View):
+    """ Add or remove slivers from a Slice
+
+        Arguments:
+            siteName - name of site. If not specified, PlanetStack will pick the
+                       best site.,
+            actionToDo - [add | rem]
+            count - number of slivers to add or remove
+            sliceName - name of slice
+            noAct - if set, no changes will be made to db
+
+        Returns:
+            Dictionary of sites that were modified, and the count of nodes
+            that were added or removed at each site.
+    """
     def post(self, request, *args, **kwargs):
-        siteName = request.POST.get("siteName", "0")
-        actionToDo = request.POST.get("actionToDo", "0")
-        count = request.POST.get("count","0")
-	slice = request.POST.get("slice","0")
+        siteName = request.POST.get("siteName", None)
+        actionToDo = request.POST.get("actionToDo", None)
+        count = int(request.POST.get("count","0"))
+	sliceName = request.POST.get("slice", None)
+        noAct = request.POST.get("noAct", False)
+
+        if not sliceName:
+            return HttpResponseServerError("No slice name given")
+
+        slice = Slice.objects.get(name=sliceName)
+
+        if siteName:
+            siteList = [Site.objects.get(name=siteName)]
+        else:
+            siteList = None
 
         if (actionToDo == "add"):
-            tenant_increase_slivers(request.user, siteName,slice, count)
+            user_ip = request.GET.get("ip", get_ip(request))
+            if (siteList is None):
+                siteList = tenant_pick_sites(user, user_ip, slice, count)
+
+            sitesChanged = tenant_increase_slivers(request.user, user_ip, siteList, slice, count, noAct)
         elif (actionToDo == "rem"):
-            tenant_decrease_slivers(request.user,siteName,slice, count)
-        return HttpResponse('This is POST request ')
+            sitesChanged = tenant_decrease_slivers(request.user, siteList, slice, count, noAct)
+        else:
+            return HttpResponseServerError("Unknown actionToDo %s" % actionToDo)
+
+        return HttpResponse(json.dumps(sitesChanged), mimetype='application/javascript')
+
+    def get(self, request, *args, **kwargs):
+        request.POST = request.GET
+        return self.post(request, *args, **kwargs)  # for testing REST in browser
+        #return HttpResponseServerError("GET is not supported")
+
+class TenantPickSitesView(View):
+    """ primarily just for testing purposes """
+    def get(self, request, *args, **kwargs):
+        count = request.GET.get("count","0")
+	slice = request.GET.get("slice",None)
+        if slice:
+            slice = Slice.objects.get(name=slice)
+        ip = request.GET.get("ip", get_ip(request))
+        sites = tenant_pick_sites(request.user, user_ip=ip, count=0, slice=slice)
+        sites = [x.name for x in sites]
+        return HttpResponse(json.dumps(sites), mimetype='application/javascript')
 
 class DashboardSummaryAjaxView(View):
     def get(self, request, **kwargs):
