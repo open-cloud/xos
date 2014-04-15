@@ -17,6 +17,8 @@ from ipware.ip import get_ip
 import traceback
 import socket
 
+BLESSED_SITES = ["Stanford", "Washington", "Princeton", "GeorgiaTech", "MaxPlanck"]
+
 if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
     sys.path.append("/home/smbaker/projects/vicci/cdn/bigquery")
 else:
@@ -102,15 +104,18 @@ def getTenantInfo(user):
        for sliver in slice.slivers.all():
             numSliver +=sliver.numberCores
            # sliceSite[sliver.deploymentNetwork.name] =sliceSite.get(sliver.deploymentNetwork.name,0) + 1
-            sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
-	    sliceImage = sliver.image.name
+	    if sliver.node.site.name in BLESSED_SITES:
+                print "equal",sliver.node.site.name
+                sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
+                sliceImage = sliver.image.name
        userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver})
     return userSliceInfo
 
 def getTenantSitesInfo():
 	tenantSiteInfo=[]
         for entry in Site.objects.all():
-		tenantSiteInfo.append({'siteName':entry.name})
+            if entry.name in BLESSED_SITES:
+		 tenantSiteInfo.append({'siteName':entry.name})
 	return tenantSiteInfo
 
 def userSliceTableFormatter(data):
@@ -220,8 +225,6 @@ class TenantViewData(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
 
-ALLOWED_TENANT_SITES = ["Stanford", "Washington", "Princeton", "GeorgiaTech", "MaxPlanck"]
-
 def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
     # try to pick a site we're already using
     has_slivers_here=False
@@ -258,7 +261,7 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
         traceback.print_exc()
 
     sites = Site.objects.all()
-    sites = [x for x in sites if x.name in ALLOWED_TENANT_SITES]
+    sites = [x for x in sites if x.name in BLESSED_SITES]
     sites = sorted(sites, key=functools.partial(siteSortKey, slice=slice, count=count, lat=lat, lon=lon))
 
     return sites
@@ -336,7 +339,8 @@ class TenantAddOrRemoveSliverView(View):
             actionToDo - [add | rem]
             count - number of slivers to add or remove
             sliceName - name of slice
-            noAct - if set, no changes will be made to db
+            noAct - if set, no changes will be made to db, but result will still
+                    show which sites would have been modified.
 
         Returns:
             Dictionary of sites that were modified, and the count of nodes
