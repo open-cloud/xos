@@ -266,7 +266,7 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
 
     return sites
 
-def tenant_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
+def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
     sitesChanged = {}
 
     # let's compute how many slivers are in use in each node of each site
@@ -307,7 +307,7 @@ def tenant_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
 
     return sitesChanged
 
-def tenant_decrease_slivers(user, siteList, slice, count, noAct=False):
+def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
     sitesChanged = {}
 
     if siteList:
@@ -368,9 +368,9 @@ class TenantAddOrRemoveSliverView(View):
             if (siteList is None):
                 siteList = tenant_pick_sites(user, user_ip, slice, count)
 
-            sitesChanged = tenant_increase_slivers(request.user, user_ip, siteList, slice, count, noAct)
+            sitesChanged = slice_increase_slivers(request.user, user_ip, siteList, slice, count, noAct)
         elif (actionToDo == "rem"):
-            sitesChanged = tenant_decrease_slivers(request.user, siteList, slice, count, noAct)
+            sitesChanged = slice_decrease_slivers(request.user, siteList, slice, count, noAct)
         else:
             return HttpResponseServerError("Unknown actionToDo %s" % actionToDo)
 
@@ -398,14 +398,20 @@ class DashboardSummaryAjaxView(View):
         return HttpResponse(json.dumps(hpc_wizard.get_hpc_wizard().get_summary_for_view()), mimetype='application/javascript')
 
 class DashboardAddOrRemoveSliverView(View):
+    # TODO: deprecate this view in favor of using TenantAddOrRemoveSliverView
+
     def post(self, request, *args, **kwargs):
-        siteName = request.POST.get("site", "0")
+        siteName = request.POST.get("site", None)
         actionToDo = request.POST.get("actionToDo", "0")
 
+        siteList = [Site.objects.get(name=siteName)]
+        slice = Slice.objects.get(name="HyperCache")
+
         if (actionToDo == "add"):
-            hpc_wizard.get_hpc_wizard().increase_slivers(siteName, 1)
+            user_ip = request.GET.get("ip", get_ip(request))
+            slice_increase_slivers(request.user, user_ip, siteList, slice, 1)
         elif (actionToDo == "rem"):
-            hpc_wizard.get_hpc_wizard().decrease_slivers(siteName, 1)
+            slice_decrease_slivers(request.user, siteList, slice, 1)
 
         print '*' * 50
         print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Sliver'
