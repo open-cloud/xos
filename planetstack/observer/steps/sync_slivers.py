@@ -34,7 +34,8 @@ class SyncSlivers(OpenStackSyncStep):
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             if sliver.creator.public_key:
                 pubkeys.append(sliver.creator.public_key)
-            
+            if sliver.slice.creator.public_key:
+                pubkeys.append(sliver.slice.creator.public_key) 
             # netowrks
             #nics = self.get_requested_networks(sliver.slice, sliver.node.deployment)
             nics = []
@@ -76,8 +77,8 @@ class SyncSlivers(OpenStackSyncStep):
                                 nics = nics )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
+            sliver.save()    
 
         if sliver.instance_id and metadata_update:
             driver.update_instance_metadata(sliver.instance_id, metadata_update)
 
-        sliver.save()    

@@ -48,10 +48,12 @@ class OpenStackDriver:
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
-        if not roles:
+        roles_title = self.shell.keystone.roles.findall(name=name.title())
+        roles_found = roles + roles_title
+        if not roles_found:
             role = self.shell.keystone.roles.create(name)
         else:
-            role = roles[0]
+            role = roles_found[0]
         return role
 
     def delete_role(self, filter):

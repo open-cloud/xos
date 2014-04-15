@@ -19,7 +19,8 @@ class SyncSliceMemberships(OpenStackSyncStep):
         for slice_deployment in slice_deployments:
             if not slice_deployment.tenant_id:
                 continue
-            user_deployments = UserDeployments.objects.filter(deployment=slice_deployment.deployment)
+            user_deployments = UserDeployments.objects.filter(deployment=slice_deployment.deployment,
+                                                              user=slice_memb.user)
             if user_deployments:
                 kuser_id  = user_deployments[0].kuser_id
                 driver = self.driver.admin_driver(deployment=slice_deployment.deployment.name)
