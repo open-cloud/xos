@@ -19,6 +19,7 @@ ratelimit_enabled=0
 omf_enabled=0
 mail_support_address=support@localhost
 nova_enabled=True
+logfile=/var/log/planetstack.log
 
 [nova]
 admin_user=admin@domain.com
@@ -31,3 +32,4 @@ default_security_group=default
 
 [observer]
 dependency_graph=/opt/planetstack/model-deps
+logfile=/var/log/planetstack_backend.log
