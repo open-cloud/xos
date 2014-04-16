@@ -275,7 +275,7 @@ def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
         for node in site.nodeList:
             node.sliverCount = 0
             for sliver in node.slivers.all():
-                 if sliver.slice.name == slice.name:
+                 if sliver.slice.id == slice.id:
                      node.sliverCount = node.sliverCount +1
 
     # Allocate slivers to nodes
