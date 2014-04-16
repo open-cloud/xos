@@ -29,6 +29,9 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             network_deploy_lookup[network_deployment.network].append(network_deployment.deployment)
 
         for network in Network.objects.filter():
+            # ignore networks that have
+            # template.visibility = private and template.translation = none
+            if network.template.visibility == 'private' and network.template.translation == 'none':                                  continue
             expected_deployments = slice_deploy_lookup[network.owner]
             for expected_deployment in expected_deployments:
                 if network not in network_deploy_lookup or \
