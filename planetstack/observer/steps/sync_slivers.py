@@ -5,7 +5,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from core.models.slice import SlicePrivilege, SliceDeployments
-from core.models.network import Network, NetworkDeployments
+from core.models.network import Network, NetworkSlice, NetworkDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -37,15 +37,21 @@ class SyncSlivers(OpenStackSyncStep):
             if sliver.slice.creator.public_key:
                 pubkeys.append(sliver.slice.creator.public_key) 
             # netowrks
-            #nics = self.get_requested_networks(sliver.slice, sliver.node.deployment)
+            # include all networks available to the slice and/or associated network templates
             nics = []
-            networks = Network.objects.filter(owner=sliver.slice)
+            networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]   
             network_deployments = NetworkDeployments.objects.filter(network__in=networks, 
                                                                     deployment=sliver.node.deployment)
+            # Gather private networks first. This includes networks with a template that has
+            # visibility = private and translation = none
+            for network_deployment in network_deployments:
+                if network_deployment.network.template.visibility == 'private' and \
+                   network_deployment.network.template.translation == 'none': 
+                    nics.append({'net-id': network_deployment.net_id})
+    
+            # now include network template
             network_templates = [network.template.sharedNetworkName for network in networks \
                                  if network.template.sharedNetworkName]
-            nics = [{'net-id': nd.net_id} for nd in network_deployments]
-            # include network template
             for net in driver.shell.quantum.list_networks()['networks']:
                 if net['name'] in network_templates: 
                     nics.append({'net-id': net['id']}) 
