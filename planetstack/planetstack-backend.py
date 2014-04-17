@@ -17,10 +17,10 @@ def daemon():
     devnull = os.open(os.devnull, os.O_RDWR)
     os.dup2(devnull, 0)
     # xxx fixme - this is just to make sure that nothing gets stupidly lost - should use devnull
-    logdir=os.path.dirname(config.observer.logfile)
+    logdir=os.path.dirname(config.observer_logfile)
     # when installed in standalone we might not have httpd installed
     if not os.path.isdir(logdir): os.mkdir(logdir)
-    crashlog = os.open('%s'%config.observer.logfile, os.O_RDWR | os.O_APPEND | os.O_CREAT, 0644)
+    crashlog = os.open('%s'%config.observer_logfile, os.O_RDWR | os.O_APPEND | os.O_CREAT, 0644)
     os.dup2(crashlog, 1)
     os.dup2(crashlog, 2)
 
