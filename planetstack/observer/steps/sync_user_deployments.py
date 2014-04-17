@@ -96,5 +96,3 @@ class SyncUserDeployments(OpenStackSyncStep):
         #    user_driver.create_keypair(**key_fields)
 
         user_deployment.save()
-        user = User.objects.get(id=user_deployment.user.id)
-        user.save()
