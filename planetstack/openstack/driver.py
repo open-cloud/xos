@@ -418,8 +418,8 @@ class OpenStackDriver:
             security_group = self.config.nova_default_security_group
 
         files = {}
-        if pubkeys:
-            files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
+        #if pubkeys:
+        #    files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
         hints = {}
         availability_zone = None
         if hostname:
@@ -430,7 +430,7 @@ class OpenStackDriver:
                                             flavor=flavor.id,
                                             image=image_id,
                                             security_group = security_group,
-                                            files = files,
+                                            #files = files,
                                             scheduler_hints=hints,
                                             availability_zone=availability_zone,
                                             nics=nics,
