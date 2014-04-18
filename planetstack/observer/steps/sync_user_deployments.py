@@ -29,7 +29,6 @@ class SyncUserDeployments(OpenStackSyncStep):
         for user_deployment in UserDeployments.objects.all():
             user_deploy_lookup[user_deployment.user].append(user_deployment.deployment)
        
-        user_deployments = []
         all_deployments = Deployment.objects.filter() 
         for user in User.objects.all():
             if user.is_admin:
@@ -45,13 +44,14 @@ class SyncUserDeployments(OpenStackSyncStep):
                   expected_deployment not in user_deploy_lookup[user]: 
                     # add new record
                     ud = UserDeployments(user=user, deployment=expected_deployment)
-                    user_deployments.append(ud)
+                    ud.save()
+                    #user_deployments.append(ud)
                 #else:
                 #    # update existing record
                 #    ud = UserDeployments.objects.get(user=user, deployment=expected_deployment)
                 #    user_deployments.append(ud)
 
-        return user_deployments
+        return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
@@ -96,5 +96,3 @@ class SyncUserDeployments(OpenStackSyncStep):
         #    user_driver.create_keypair(**key_fields)
 
         user_deployment.save()
-        user = User.objects.get(id=user_deployment.user.id)
-        user.save()
