@@ -86,7 +86,8 @@ def getTenantSliceInfo(user, tableFormat = False):
     tenantSliceDetails['image']=userSliceTableFormatter(getImageInfo(user))
     tenantSliceDetails['network']=userSliceTableFormatter(getNetworkInfo(user))
     tenantSliceDetails['deploymentSites']=userSliceTableFormatter(getDeploymentSites())
-    tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo());
+    tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo())
+    tenantSliceDetails['mountDataSets'] = userSliceTableFormatter(getMountDataSets())
     return tenantSliceDetails
 
 
@@ -108,7 +109,8 @@ def getTenantInfo(user):
                 print "equal",sliver.node.site.name
                 sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
                 sliceImage = sliver.image.name
-       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver})
+       numSites = len(sliceSite)
+       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver})
     return userSliceInfo
 
 def getTenantSitesInfo():
@@ -133,11 +135,20 @@ def getServiceClassInfo(user):
     return sliceInfo
 
 def getImageInfo(user):
-    imageList = Image.objects.all()
+    #imageList = Image.objects.all()
+    imageList = ['Fedora 16 LXC rev 1.3','Hadoop','MPI']
     imageInfo = []
     for imageEntry in imageList:
-          imageInfo.append({'Image':imageEntry.name})
+          #imageInfo.append({'Image':imageEntry.name})
+          imageInfo.append({'Image':imageEntry})
     return imageInfo
+
+def getMountDataSets():
+        dataSetList = ['GenBank','LSST','LHC','NOAA','Measurement Lab','Common Crawl']
+        dataSetInfo = []
+        for entry in dataSetList:
+                dataSetInfo.append({'DataSet':entry})
+        return dataSetInfo
 
 def getNetworkInfo(user):
    #networkList = Network.objects.all()
@@ -328,26 +339,34 @@ def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
 
 def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
     sitesChanged = {}
-
+    sliverList ={}
     if siteList:
         siteNames = [site.name for site in siteList]
     else:
         siteNames = None
 
     for sliver in slice.slivers.all():
-        if (count <= 0):
-            break
+        if(not siteNames) or (sliver.node.site.name in siteNames):
+                node = sliver.node
+                sliverList[sliver.name]=node.name
 
-        node = sliver.node
-        if (not siteNames) or (node.site.name in siteNames):
-            print "deleting sliver", sliver, "at node", node.name, "of site", node.site.name
-            if not noAct:
-                sliver.delete()
-            count = count -1
-
+    for key in sliverList:
+        if count>0:
+            sliver = Sliver.objects.filter(name=key)
+            sliver.delete()
+            print "deleting sliver",sliverList[key],"at node",sliver.node.name
+            count=count-1
             sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) - 1
 
     return sitesChanged
+
+class TenantDeleteSliceView(View):
+        def post(self,request):
+                sliceName = request.POST.get("sliceName",None)
+                slice = Slice.objects.get(name=sliceName)
+                print slice, slice.id
+                sliceToDel=Slice(name=sliceName, id=slice.id)
+                sliceToDel.delete()
 
 class TenantAddOrRemoveSliverView(View):
     """ Add or remove slivers from a Slice
