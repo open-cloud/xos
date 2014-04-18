@@ -268,7 +268,7 @@ class OpenStackDriver:
                                  'network_id': network_id,
                                  'ip_version': ip_version,
                                  'cidr': cidr_ip,
-                                 'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
+                                 #'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
                                  'allocation_pools': allocation_pools}}
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
             self.add_external_route(subnet)
