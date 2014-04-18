@@ -69,8 +69,8 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             network_deployment.net_id = os_network['id']
 
             # create router
-            router = self.driver.create_router(network_name)
-            network_deployment.router_id = router['id']
+            #router = self.driver.create_router(network_name)
+            #network_deployment.router_id = router['id']
 
             # create subnet
             next_subnet = self.get_next_subnet(deployment=network_deployment.deployment.name)
@@ -87,9 +87,9 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             network_deployment.subnet = cidr
             network_deployment.subnet_id = subnet['id']
             # add subnet as interface to slice's router
-            self.driver.add_router_interface(router['id'], subnet['id'])
+            #self.driver.add_router_interface(router['id'], subnet['id'])
             # add external route
-            self.driver.add_external_route(subnet)
+            #self.driver.add_external_route(subnet)
             logger.info("created private subnet (%s) for network: %s" % (cidr, network_deployment.network))
         else:
             (network_deployment.subnet_id, network_deployment.subnet) = self.driver.get_network_subnet(network_deployment.net_id)
