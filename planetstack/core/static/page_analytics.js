@@ -49,7 +49,7 @@ function updatePageAnalyticsData(summaryData) {
 
 function updatePageAnalytics() {
     $.ajax({
-    url : '/analytics/bigquery/?avg=%cpu&count=%hostname' + getObjectQuery(),
+    url : '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=1' + getObjectQuery(),
     dataType : 'json',
     type : 'GET',
     success: function(newData)
@@ -74,7 +74,7 @@ function updatePageBandwidthData(summaryData) {
 
 function updatePageBandwidth() {
     $.ajax({
-    url : '/analytics/bigquery/?computed=%bytes_sent/%elapsed' + getObjectQuery(),
+    url : '/analytics/bigquery/?computed=%bytes_sent/%elapsed&cached=1' + getObjectQuery(),
     dataType : 'json',
     type : 'GET',
     success: function(newData)
