@@ -106,7 +106,6 @@ def getTenantInfo(user):
             numSliver +=sliver.numberCores
            # sliceSite[sliver.deploymentNetwork.name] =sliceSite.get(sliver.deploymentNetwork.name,0) + 1
 	    if sliver.node.site.name in BLESSED_SITES:
-                print "equal",sliver.node.site.name
                 sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
                 sliceImage = sliver.image.name
        numSites = len(sliceSite)
