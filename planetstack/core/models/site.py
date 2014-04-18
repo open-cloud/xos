@@ -10,7 +10,6 @@ class Site(PlCoreBase):
     """
         A logical grouping of Nodes that are co-located at the same geographic location, which also typically corresponds to the Nodes' location in the physical network.
     """
-    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
     name = models.CharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")

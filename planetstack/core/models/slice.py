@@ -14,16 +14,12 @@ from core.models import Deployment
 # Create your models here.
 
 class Slice(PlCoreBase):
-    tenant_id = models.CharField(max_length=200, help_text="Keystone tenant id")
     name = models.CharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     omf_friendly = models.BooleanField()
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
-    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
-    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
-    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     imagePreference = models.CharField(default="abc",null=True, blank=True, max_length=256)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
 
@@ -97,7 +93,6 @@ class SliceDeployments(PlCoreBase):
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
-    keyname = models.CharField(null=True, blank=True, max_length=256, help_text="Nova keypair name")
 
     def __unicode__(self):  return u'%s %s'  % (self.slice, self.deployment)
 

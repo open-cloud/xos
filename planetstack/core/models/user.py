@@ -58,8 +58,6 @@ class User(AbstractBaseUser):
 
     username = models.CharField(max_length=255, default="Something" )
 
-
-    kuser_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
 
