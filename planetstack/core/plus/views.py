@@ -24,7 +24,7 @@ if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
 else:
     sys.path.append("/opt/planetstack/hpc_wizard")
 import hpc_wizard
-from planetstack_analytics import DoPlanetStackAnalytics
+from planetstack_analytics import DoPlanetStackAnalytics, PlanetStackAnalytics
 
 class DashboardWelcomeView(TemplateView):
     template_name = 'admin/dashboard/welcome.html'
@@ -192,13 +192,32 @@ def getSliceInfo(user):
     return userSliceInfo
 
 def getCDNOperatorData(randomizeData = False):
-    return hpc_wizard.get_hpc_wizard().get_sites_for_view()
+    bq = PlanetStackAnalytics()
 
-def getPageSummary(request):
-    slice = request.GET.get('slice', None)
-    site = request.GET.get('site', None)
-    node = request.GET.get('node', None)
+    #hpc_sliceNames = bq.service_to_sliceNames("HPC Service")
 
+    rows = bq.get_cached_query_results(bq.compose_latest_query())
+
+    #rows = [x for x in rows if x.get("slice","") in hpc_sliceNames]
+
+    rows = bq.postprocess_results(rows, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"])
+
+    bq.merge_datamodel_sites(rows)
+
+    new_rows = {}
+    for row in rows:
+        new_row = {"lat": float(row.get("lat", 0)),
+               "long": float(row.get("long", 0)),
+               "health": 0,
+               "numNodes": int(row.get("numNodes",0)),
+               "numHPCSlivers": int(row.get("count_hostname", 0)),
+               "siteUrl": str(row.get("url", "")),
+               "hot": float(row.get("hotness", 0.0)),
+               "bandwidth": row.get("sum_computed_bytes_sent_div_elapsed",0),
+               "load": int(float(row.get("max_avg_cpu", row.get("max_cpu",0))))}
+        new_rows[str(row["site"])] = new_row
+
+    return new_rows
 
 class SimulatorView(View):
     def get(self, request, **kwargs):
@@ -276,7 +295,7 @@ def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
             node.sliverCount = 0
             for sliver in node.slivers.all():
                  if sliver.slice.id == slice.id:
-                     node.sliverCount = node.sliverCount +1
+                     node.sliverCount = node.sliverCount + 1
 
     # Allocate slivers to nodes
     # for now, assume we want to allocate all slivers from the same site
@@ -395,7 +414,22 @@ class TenantPickSitesView(View):
 
 class DashboardSummaryAjaxView(View):
     def get(self, request, **kwargs):
-        return HttpResponse(json.dumps(hpc_wizard.get_hpc_wizard().get_summary_for_view()), mimetype='application/javascript')
+        def avg(x):
+            return float(sum(x))/len(x)
+
+        sites = getCDNOperatorData().values()
+
+        sites = [site for site in sites if site["numHPCSlivers"]>0]
+
+        total_slivers = sum( [site["numHPCSlivers"] for site in sites] )
+        total_bandwidth = sum( [site["bandwidth"] for site in sites] )
+        average_cpu = int(avg( [site["load"] for site in sites] ))
+
+        result= {"total_slivers": total_slivers,
+                "total_bandwidth": total_bandwidth,
+                "average_cpu": average_cpu}
+
+        return HttpResponse(json.dumps(result), mimetype='application/javascript')
 
 class DashboardAddOrRemoveSliverView(View):
     # TODO: deprecate this view in favor of using TenantAddOrRemoveSliverView
