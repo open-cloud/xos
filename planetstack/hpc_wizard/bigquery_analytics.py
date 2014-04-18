@@ -40,6 +40,15 @@ HOUR_MS = 60*60*1000
 mappings = {}
 reverse_mappings = {}
 
+def to_number(s):
+   try:
+       if "." in str(s):
+           return float(s)
+       else:
+           return int(s)
+   except:
+       return 0
+
 class MappingException(Exception):
     pass
 
@@ -107,6 +116,88 @@ class BigQueryAnalytics:
                 result.append(this_result)
 
         return result
+
+    """ Filter_results, groupby_results, do_computed_fields, and postprocess_results
+        are all used for postprocessing queries. The idea is to do one query that
+        includes the ungrouped and unfiltered data, and cache it for multiple
+        consumers who will filter and group it as necessary.
+
+        TODO: Find a more generalized source for these sorts operations. Perhaps
+        put the results in SQLite and then run SQL queries against it.
+    """
+
+    def filter_results(self, rows, name, value):
+        result = [row for row in rows if row.get(name)==value]
+        return result
+
+    def groupby_results(self, rows, groupBy=[], sum=[], count=[], avg=[], maxi=[]):
+        new_rows = {}
+        for row in rows:
+            groupby_key = [row.get(k, None) for k in groupBy]
+
+            if str(groupby_key) not in new_rows:
+                new_row = {}
+                for k in groupBy:
+                    new_row[k] = row.get(k, None)
+
+                new_rows[str(groupby_key)] = new_row
+            else:
+                new_row = new_rows[str(groupby_key)]
+
+            for k in sum:
+                new_row["sum_" + k] = new_row.get("sum_" + k, 0) + to_number(row.get(k,0))
+
+            for k in avg:
+                new_row["avg_" + k] = new_row.get("avg_" + k, 0) + to_number(row.get(k,0))
+                new_row["avg_base_" + k] = new_row.get("avg_base_"+k,0) + 1
+
+            for k in maxi:
+                new_row["max_" + k] = max(new_row.get("max_" + k, 0), to_number(row.get(k,0)))
+
+            for k in count:
+                new_row["count_" + k] = new_row.get("count_" + k, 0) + 1
+
+        for row in new_rows.values():
+            for k in avg:
+                row["avg_" + k] = float(row["avg_" + k]) / row["avg_base_" + k]
+                del row["avg_base_" + k]
+
+        return new_rows.values()
+
+    def do_computed_fields(self, rows, computed=[]):
+        computedFieldNames=[]
+        for row in rows:
+            for k in computed:
+                if "/" in k:
+                    parts = k.split("/")
+                    computedFieldName = "computed_" + parts[0].replace("%","")+"_div_"+parts[1].replace("%","")
+                    try:
+                        row[computedFieldName] = to_number(row[parts[0]]) / to_number(row[parts[1]])
+                    except:
+                        pass
+
+                    if computedFieldName not in computedFieldNames:
+                        computedFieldNames.append(computedFieldName)
+        return (computedFieldNames, rows)
+
+    def postprocess_results(self, rows, filter={}, groupBy=[], sum=[], count=[], avg=[], computed=[], maxi=[], maxDeltaTime=None):
+        sum = [x.replace("%","") for x in sum]
+        count = [x.replace("%","") for x in count]
+        avg = [x.replace("%","") for x in avg]
+        computed = [x.replace("%","") for x in computed]
+        maxi = [x.replace("%","") for x in maxi]
+
+        for (k,v) in filter.items():
+            rows = self.filter_results(rows, k, v)
+
+        if maxDeltaTime is not None:
+            maxTime = max([float(row["time"]) for row in rows])
+            rows = [row for row in rows if float(row["time"])>=maxTime-maxDeltaTime]
+
+        (computedFieldNames, rows) = self.do_computed_fields(rows, computed)
+        sum = sum + computedFieldNames
+        rows = self.groupby_results(rows, groupBy, sum, count, avg, maxi)
+        return rows
 
     def remap(self, match):
         if not self.tableName in mappings:
