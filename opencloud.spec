@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.7
+Version: 1.0.8
 Release: 1
 License: GPL+
 Group: Development/Tools
@@ -53,9 +53,11 @@ easy_install google_api_python_client
 
 wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
 
-rm -f /usr/share/GeoIP/GeoLiteCity*
-wget -P /usr/share/GeoIP http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-gzip -d /usr/share/GeoIP/GeoLiteCity*.gz
+if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
+   rm -f /usr/share/GeoIP/GeoLiteCity.*
+   wget -P /usr/share/GeoIP http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+   gzip -d /usr/share/GeoIP/GeoLiteCity*.gz
+fi
 
 %install
 rm -rf %{buildroot}

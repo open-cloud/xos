@@ -4,7 +4,6 @@ VERSION = $(shell rpm -q --specfile $(SPECFILE) --qf '%{VERSION}\n' | head -n 1)
 RELEASE = $(shell rpm -q --specfile $(SPECFILE) --qf '%{RELEASE}\n' | head -n 1)
 
 UPLOAD_SLICE=princeton_planetstack
-UPLOAD_HOST=node36.princeton.vicci.org
 
 PWD = $(shell pwd)
 
@@ -36,6 +35,9 @@ clean:
 	rm -rf build
 
 install: $(NAME)-$(VERSION)-$(RELEASE).rpm
+ifndef UPLOAD_HOST
+	$(error please specify UPLOAD_HOST=<hostname> on make command line)
+endif
 	scp $(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm $(UPLOAD_SLICE)@$(UPLOAD_HOST):/root/
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) yum -y install gcc graphviz-devel graphviz-python postgresql postgresql-server python-pip python-psycopg2 libxslt-devel python-httplib2 GeoIP
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) rpm --install --upgrade --replacepkgs /root/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm   
