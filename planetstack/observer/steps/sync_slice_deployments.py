@@ -89,41 +89,6 @@ class SyncSliceDeployments(OpenStackSyncStep):
                                                           tenant=tenant.name, 
                                                           deployment=slice_deployment.deployment.name)
 
-                # create a public key for the slice creator
-                if deployment_user.user.public_key:
-                    keyname = deployment_user.user.email.lower().replace('@', 'AT').replace('.', '') +\
-                              slice_deployment.slice.name
-                    slice_deployment.keyname = keyname 
-                    key_fields =  {'name': keyname,
-                                   'public_key': deployment_user.user.public_key} 
-                    client_driver.create_keypair(**key_fields)
-
-                # create network
-                #network = client_driver.create_network(slice_deployment.slice.name)
-                #slice_deployment.network_id = network['id']
-
-                # create router
-                #router = client_driver.create_router(slice_deployment.slice.name)
-                #slice_deployment.router_id = router['id']
-
-                # create subnet for slice's private network
-                #next_subnet = self.get_next_subnet(deployment=slice_deployment.deployment.name)
-                #cidr = str(next_subnet.cidr)
-                #ip_version = next_subnet.version
-                #start = str(next_subnet[2])
-                #end = str(next_subnet[-2]) 
-                #subnet = client_driver.create_subnet(name=slice_deployment.slice.name,
-                #                                   network_id = network['id'],
-                #                                   cidr_ip = cidr,
-                #                                   ip_version = ip_version,
-                #                                   start = start,
-                #                                   end = end)
-                #slice_deployment.subnet_id = subnet['id']
-                # add subnet as interface to slice's router
-                #client_driver.add_router_interface(router['id'], subnet['id'])
-                # add external route
-                #client_driver.add_external_route(subnet)
-
 
         if slice_deployment.id and slice_deployment.tenant_id:
             driver = self.driver.admin_driver(deployment=slice_deployment.deployment.name)

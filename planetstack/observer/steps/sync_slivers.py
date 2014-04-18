@@ -67,7 +67,15 @@ class SyncSlivers(OpenStackSyncStep):
                     image_id = image['id']
                     
             # look up key name at the deployment
+            # create/fetch keypair
             keyname = None
+            if sliver.creator.public_key:
+                keyname = sliver.creator.email.lower().replace('@', 'AT').replace('.', '') +\
+                          sliver.slice.name
+                key_fields =  {'name': keyname,
+                               'public_key': sliver.creator.public_key}
+                driver.create_keypair(**key_fields)       
+ 
             slice_deployments = SliceDeployments.objects.filter(slice = sliver.slice, 
                                                                deployment = sliver.deploymentNetwork)
             for slice_deployment in slice_deployments:
