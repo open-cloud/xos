@@ -351,11 +351,11 @@ def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
 
     for key in sliverList:
         if count>0:
-            sliver = Sliver.objects.filter(name=key)
+            sliver = Sliver.objects.filter(name=key)[0]
             sliver.delete()
             print "deleting sliver",sliverList[key],"at node",sliver.node.name
             count=count-1
-            sitesChanged[node.site.name] = sitesChanged.get(node.site.name,0) - 1
+            sitesChanged[sliver.node.site.name] = sitesChanged.get(sliver.node.site.name,0) - 1
 
     return sitesChanged
 
