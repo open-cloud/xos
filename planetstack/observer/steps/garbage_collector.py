@@ -21,7 +21,7 @@ class GarbageCollector(OpenStackSyncStep):
             #self.gc_tenants()
             #self.gc_users()
             #self.gc_user_tenant_roles()
-            #self.gc_slivers()
+            self.gc_slivers()
             #self.gc_sliver_ips()
             #self.gc_external_routes()
             pass 
@@ -184,6 +184,8 @@ class GarbageCollector(OpenStackSyncStep):
             sliver_dict[sliver.instance_id] = sliver
 
         for tenant in self.driver.shell.keystone.tenants.list():
+            if tenant.name in ['admin', 'services']:
+                continue
             # delete sliver that don't have a sliver record
             tenant_driver = self.driver.client_driver(tenant=tenant.name, deployment=sliver.node.deployment)
             for instance in tenant_driver.nova.servers.list():
