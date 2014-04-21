@@ -311,18 +311,19 @@ class PlanetStackAnalytics(BigQueryAnalytics):
             table = {}
             table["cols"] = self.schema_to_cols(bq_result["schema"])
             rows = []
-            for row in bq_result["rows"]:
-                rowcols = []
-                for (colnum,col) in enumerate(row["f"]):
-                    if (colnum==0):
-                        dt = datetime.datetime.fromtimestamp(float(col["v"]))
-                        rowcols.append({"v": 'new Date("%s")' % dt.isoformat()})
-                    else:
-                        try:
-                            rowcols.append({"v": float(col["v"])})
-                        except:
-                            rowcols.append({"v": col["v"]})
-                rows.append({"c": rowcols})
+            if "rows" in bq_result:
+                for row in bq_result["rows"]:
+                    rowcols = []
+                    for (colnum,col) in enumerate(row["f"]):
+                        if (colnum==0):
+                            dt = datetime.datetime.fromtimestamp(float(col["v"]))
+                            rowcols.append({"v": 'new Date("%s")' % dt.isoformat()})
+                        else:
+                            try:
+                                rowcols.append({"v": float(col["v"])})
+                            except:
+                                rowcols.append({"v": col["v"]})
+                    rows.append({"c": rowcols})
             table["rows"] = rows
 
             if tqx:
