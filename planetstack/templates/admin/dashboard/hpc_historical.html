@@ -1,327 +1,301 @@
 
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
-	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/hpc_historical.css">
     <script type="text/javascript">
 		google.load('visualization', '1', {'packages' : ['controls','table','corechart','geochart']});
     </script>
-	
+
     <script type="text/javascript">
-var queryString = encodeURIComponent("SELECT MINUTE(time) as Time, city, s8 as Node, REGEXP_REPLACE(s8,r'node[0-9]+\.(.*)\.vicci\.org',r'\\1') as Site, AVG(i0) as Cpu, AVG(i1) as Requests FROM [vicci.demoevents] WHERE i0 is not null AND s8 contains 'vicci.org' and not city IN ('princeton','Unknown') and city is not null GROUP BY Time,city,Site,Node ORDER BY Time;");
-			var serverPart = "http://cloud-scrutiny.appspot.com/command?action=send_query&force=ColumnChart&q="
-			var dataSourceUrl = serverPart + queryString;
-			var query;
 
-			var options = {
-	   width: 600,
-	   height: 400,
-	   showRowNumber: false,
-	   pages:true,
-       numRows:9,
-	   backgroundColor: "black"
-			};
+     var options = {
+         width: 600,
+         height: 400,
+         showRowNumber: false,
+         pages: true,
+         numRows: 9,
+         backgroundColor: "black"
+     };
 
-google.setOnLoadCallback(function() { sendAndDraw(dataSourceUrl); });
+     // ask django for a data source URL to use for the graphs
 
-function showNodeAgg(dt) {
-		var tab = new google.visualization.ChartWrapper({
-          'chartType': 'Table',
-          'containerId': 'chart3',
-          'options': {
-            'width': 300,
-            'height': 300,
-            'title': 'Network-wide usage',
-			'page': 'enable',
-			'pageSize': 10
-          },
-          'view': {'columns': [0, 1, 2]}
-        });
+     function updateDataSourceUrl() {
+         var sliceName = $("#historical_slicename :selected").text();
+         var queryString = "/analytics/bigquery/?sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
 
-        tab.setDataTable(dt);
-        tab.draw();
-}
+         $.ajax({
+             url: queryString,
+             dataType: 'json',
+             type: 'GET',
+             success: function (newData) {
+                 sendAndDraw(newData["dataSourceUrl"])
+             }
+         });
+     }
 
-function showSiteTimeAgg(dt) {
-		var lineChart = new google.visualization.ChartWrapper({
-          'chartType': 'LineChart',
-          'containerId': 'chart4',
-          'options': {
-            'width': 300,
-            'height': 300,
-            'title': 'Network-wide usage',
-			'pages': true,
-			'numRows': 9
-          },
-          'view': {'columns': [0, 1, 2]}
-        });
-        lineChart.setDataTable(dt);
-        lineChart.draw();
-		/*
-		var scatterChart = new google.visualization.ChartWrapper({
-          'chartType': 'ScatterChart',
-          'containerId': 'chart5',
-          'options': {
-            'width': 300,
-            'height': 300,
-          },
-          // from the 'data' DataTable.
-          'view': {'columns': [1, 2]}
-        });
-		scatterChart.setDataTable(dt);
-		scatterChart.draw();*/
-}
-function showSiteAgg(dt) {
-		var barChart = new google.visualization.ChartWrapper({
-          'chartType': 'ColumnChart',
-          'containerId': 'chart1',
-          'options': {
-            'width': 300,
-            'height': 300,
-            'title': 'Site-wise usage',
-			'pages': true,
-			'numRows': 9
-          },
-          // Instruct the piechart to use colums 0 (Name) and 3 (Donuts Eaten)
-          // from the 'data' DataTable.
-          'view': {'columns': [1, 2, 3]}
-        });
-        barChart.setDataTable(dt);
-        barChart.draw();
-		var geoChart = new google.visualization.ChartWrapper({
-          'chartType': 'GeoChart',
-          'containerId': 'chart2',
-          'options': {
-            'width': 300,
-            'height': 300,
-			'displayMode': 'markers',
-			'region':'021',
-            'title': 'Usage map',
-        	colorAxis: {colors: ['green', 'purple', 'red']}
-          },
-          // Instruct the piechart to use colums 0 (Name) and 3 (Donuts Eaten)
-          // from the 'data' DataTable.
-          'view': {'columns': [0, 2,3]}
-        });
-		geoChart.setDataTable(dt);
-		geoChart.draw();
-	
-		var histogram = new google.visualization.ChartWrapper({
-          'chartType': 'Histogram',
-          'containerId': 'chart6',
-          'options': {
-            'width': 300,
-            'height': 300,
-          },
-		  'title': 'Sites by load',
-          // Instruct the piechart to use colums 0 (Name) and 3 (Donuts Eaten)
-          // from the 'data' DataTable.
-          'view': {'columns': [1, 2]}
-        });
-		histogram.setDataTable(dt);
-		histogram.draw();
-		
-}
+     TIME_COL = 0;
+     BANDWIDTH_COL = 2;
+     CPU_COL = 1;
+     CITY_COL = 3;
+     NODE_COL = 4;
+     SITE_COL = 5;
 
-function handleResponse(response) {
-var supportedClasses = {
-		'Table':google.visualization.Table,
-		'LineChart':google.visualization.LineChart,
-		'ScatterChart':google.visualization.ScatterChart,
-		'ColumnChart':google.visualization.ColumnChart,
-		'GeoChart':google.visualization.GeoChart,
-		'PieChart':google.visualization.PieChart,
-		'Histogram':google.visualization.Histogram
-	};
+     google.setOnLoadCallback(function () {
+         $('#historical_slicename').change(function()
+         {
+             updateDataSourceUrl();
+         });
 
-	/*var slider2 = new google.visualization.ControlWrapper({
-    'controlType': 'NumberRangeFilter',
-    'containerId': 'control3',
-    'options': {
-      'filterColumnLabel': 'Cpu',
-      minValue: 0,
-      maxValue: 100,
-	  ui: { ticks: 10}
-    }
-  });*/
+         updateDataSourceUrl();
+     });
 
-  var timeSlider = new google.visualization.ControlWrapper({
-    'controlType': 'NumberRangeFilter',
-    'containerId': 'control1',
-    'options': {
-      'filterColumnLabel': 'Time',
-	  ui: { ticks: 10}
-    }
-  });
+     function showSiteTimeAgg(dt) {
+         var lineChart = new google.visualization.ChartWrapper({
+             'chartType': 'LineChart',
+             'containerId': 'chart-site-time',
+             'options': {
+                 'width': 320,
+                 'height': 300,
+                 'title': 'Network-wide usage',
+                 'pages': true,
+                 'numRows': 9
+             },
+             'view': {
+                 'columns': [0, 1, 2]
+             }
+         });
+         lineChart.setDataTable(dt);
+         lineChart.draw();
+     }
 
-  // Define a bar chart
-  var barChart = new google.visualization.ChartWrapper({
-    'chartType': 'BarChart',
-    'containerId': 'chart1',
-    'options': {
-      'width': 400,
-      'height': 300,
-      'hAxis': {'minValue': 0, 'maxValue': 60},
-      'chartArea': {top: 0, right: 0, bottom: 0}
-    }
-  });
+     function showSiteAgg(dt) {
+         var barChart = new google.visualization.ChartWrapper({
+             'chartType': 'ColumnChart',
+             'containerId': 'chart-site-agg',
+             'options': {
+                 'width': 670,
+                 'height': 300,
+                 'title': 'Site-wise usage',
+                 'pages': true,
+                 'numRows': 9
+             },
+             'view': {
+                 'columns': [1, 2, 3]
+             }
+         });
+         barChart.setDataTable(dt);
+         barChart.draw();
+         var geoChart = new google.visualization.ChartWrapper({
+             'chartType': 'GeoChart',
+             'containerId': 'chart-geo',
+             'options': {
+                 'width': 320,
+                 'height': 300,
+                 'displayMode': 'markers',
+                 'region': '021',
+                 'title': 'Usage map',
+                 colorAxis: {
+                     colors: ['green', 'purple', 'red']
+                 }
+             },
+             'view': {
+                 'columns': [0, 2, 3]
+             }
+         });
+         geoChart.setDataTable(dt);
+         geoChart.draw();
 
-	var categoryPicker = new google.visualization.ControlWrapper({
-          'controlType': 'CategoryFilter',
-          'allowMultiple': true,
-          'containerId': 'control2',
-          'options': {
-            'filterColumnLabel': 'Site',
-            'ui': {
-            'labelStacking': 'vertical',
-              'allowTyping': false
-            }
-          }
-        });
-	//var container = document.getElementById('datatable');
-	//var table = new google.visualization.LineChart(container);
-	//var table = new google.visualization.ColumnChart(container);
+/*         var histogram = new google.visualization.ChartWrapper({
+             'chartType': 'Histogram',
+             'containerId': 'chart-histo',
+             'options': {
+                 'width': 300,
+                 'height': 300,
+             },
+             'title': 'Sites by load',
+             'view': {
+                 'columns': [1, 2]
+             }
+         });
+         histogram.setDataTable(dt);
+         histogram.draw();  */
 
-	var proxy = new google.visualization.ChartWrapper({
-          'chartType': 'Table',
-          'containerId': 'chart7',
-          'options': {
-            'width': 800,
-            'height': 300,
-			pageSize:5,
-			page:'enable',
-            'legend': 'none',
-            'title': 'Nodes'
-          },
-          // Instruct the piechart to use colums 0 (Name) and 3 (Donuts Eaten)
-          // from the 'data' DataTable.
-          'view': {'columns': [0,1,2,3,4,5]}
-        });
+     }
 
-	function core_sum(arr) {
-		var ret = 0;
-		for (var i = 0; i < arr.length; i++) {
-			ret+=arr[i]/1000;
-		}
-		return ret;
-	}
+     function handleResponse(response) {
+         var timeSlider = new google.visualization.ControlWrapper({
+             'controlType': 'DateRangeFilter',
+             'containerId': 'control1',
+             'options': {
+                 'filterColumnLabel': 'Time',
+                 ui: {
+                     ticks: 10,
+                     step: "minute"
+                 }
+             }
+         });
 
-	function scaled_sum(arr) {
-		var ret = 0;
-		for (var i = 0; i < arr.length; i++) {
-			ret+=arr[i]/1000;
-		}
-		return ret;
-	}
+         var categoryPicker = new google.visualization.ControlWrapper({
+             'controlType': 'CategoryFilter',
+             'allowMultiple': true,
+             'containerId': 'control2',
+             'options': {
+                 'filterColumnLabel': 'site',
+                 'ui': {
+                     'labelStacking': 'vertical',
+                     'allowTyping': false
+                 }
+             }
+         });
 
-	function count_uniq(arr) {
-		var counts = {};
-		var ret = 0;
-		console.log('Starting ret '+ret);
-		for (var i = 0; i < arr.length; i++) {
-				if (!counts[arr[i]]) ret+=1;
-			    counts[arr[i]] = 1;
-		}
-		return ret;
-	}	
-	google.visualization.events.addListener(proxy, 'ready', function () {
-        // 0 - time 1 - city 2 - node 3 - site 4 - cpu 5 - bytes
-        var dt = proxy.getDataTable();
-		var groupedData1 = google.visualization.data.group(dt, [0], [{
-            column: 4,
-            type: 'number',
-            label: dt.getColumnLabel(4),
-            aggregation: google.visualization.data.sum
-        },{
-			column: 5,
-            type: 'number',
-            label: dt.getColumnLabel(5),
-            aggregation: google.visualization.data.sum
-		}]);
+         var proxy = new google.visualization.ChartWrapper({
+             'chartType': 'Table',
+             'containerId': 'chart7',
+             'options': {
+                 'width': 800,
+                 'height': 300,
+                 pageSize: 5,
+                 page: 'enable',
+                 'legend': 'none',
+                 'title': 'Nodes'
+             },
+             'view': {
+                 'columns': [0, 1, 2, 3, 4, 5]
+             }
+         });
 
-        showSiteTimeAgg(groupedData1);
-    });
+         function avg_bandwidth(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]*8.0/1024.0/1024.0/1024.0;
+                }
+                if (arr.length==0) {
+                    return 0;
+                }
+                return ret/arr.length;
+         }
 
-	/*google.visualization.events.addListener(proxy, 'ready', function () {
-        // 0 - time 1 - city 2 - node 3 - site 4 - cpu 5 - bytes
-        var dt = proxy.getDataTable();
-        var groupedData0 = google.visualization.data.group(dt, [2], [{
-            column: 4,
-            type: 'number',
-            label: dt.getColumnLabel(4),
-            aggregation: google.visualization.data.sum
-        },{
-			column: 5,
-            type: 'number',
-            label: dt.getColumnLabel(5),
-            aggregation: google.visualization.data.sum
-		}]);
-        // after grouping, the data will be sorted by column 0, then 1, then 2
-        // if you want a different order, you have to re-sort
-		showNodeAgg(groupedData0);
-		});*/
+         function sum_bytes_sent_as_bw(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]*8.0/1024.0/1024.0/1024.0;
+                }
+                return ret/60.0;
+         }
 
-	google.visualization.events.addListener(proxy, 'ready', function () {
-        // 0 - time 1 - city 2 - node 3 - site 4 - cpu 5 - bytes
-        var dt = proxy.getDataTable();
-        var groupedData0 = google.visualization.data.group(dt, [1,3], [{
-            column: 4,
-            type: 'number',
-            label: 'Cores',
-            aggregation: core_sum
-        },{
-			column: 5,
-            type: 'number',
-            label: dt.getColumnLabel(5),
-            aggregation: scaled_sum
-		}]);
-        // after grouping, the data will be sorted by column 0, then 1, then 2
-        // if you want a different order, you have to re-sort
-		showSiteAgg(groupedData0);
-            });
+         function sum_bytes_sent_as_GB(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]/1024.0/1024.0/1024.0;
+                }
+                return ret;
+         }
 
-	data = response.getDataTable();
-	new google.visualization.Dashboard(document.getElementById('dashboard')).
-            // Establish bindings, declaring the both the slider and the category
-            // picker will drive both charts.
-            bind([categoryPicker,timeSlider], [proxy]).
-            // Draw the entire dashboard.
-            draw(data);
+         function fixDate2(unixDate) {
+             // not completely sure why we have to do this, as the data was in
+             // javascript Date() objects to start with. If we don't do it,
+             // then the horizontal axis will be blank.
+             return new Date(unixDate);
+         }
 
-}
-function sendAndDraw(queryString) {
-	query = new google.visualization.Query(queryString)
-	query && query.abort();
-	query.send(function(response) {handleResponse(response);});
-}
-      
+         var format0dp = new google.visualization.NumberFormat({fractionDigits:0});
+         var format2dp = new google.visualization.NumberFormat({fractionDigits:2});
+
+         // Create a group for charts that will have a horizontal axis that is
+         // time.
+
+         google.visualization.events.addListener(proxy, 'ready', function () {
+             var dt = proxy.getDataTable();
+             var groupedData1 = google.visualization.data.group(dt, [{
+                 column: TIME_COL,
+                 type: 'datetime',
+                 modifier: fixDate2,
+             }], [{
+                 column: CPU_COL,
+                 type: 'number',
+                 label: "avg cpu",
+                 aggregation: google.visualization.data.avg
+             }, {
+                 column: BANDWIDTH_COL,
+                 type: 'number',
+                 label: "Gbps",
+                 aggregation: sum_bytes_sent_as_bw
+             }]);
+
+             format0dp.format(groupedData1,1);
+             format2dp.format(groupedData1,2);
+
+             showSiteTimeAgg(groupedData1);
+         });
+
+         // Create a group for charts that will have a horizontal axis that is
+         // city or site.
+
+         google.visualization.events.addListener(proxy, 'ready', function () {
+             var dt = proxy.getDataTable();
+             var groupedData0 = google.visualization.data.group(dt, [CITY_COL, SITE_COL], [{
+                 column: CPU_COL,
+                 type: 'number',
+                 label: 'avg cpu',
+                 aggregation: google.visualization.data.avg
+             }, {
+                 column: BANDWIDTH_COL,
+                 type: 'number',
+                 label: "GB sent",
+                 aggregation: sum_bytes_sent_as_GB
+             }]);
+
+             format0dp.format(groupedData0,2);
+             format2dp.format(groupedData0,3);
+
+             showSiteAgg(groupedData0);
+         });
+
+         data = response.getDataTable();
+         new google.visualization.Dashboard(document.getElementById('dashboard')).
+         // Establish bindings, declaring the both the slider and the category
+         // picker will drive both charts.
+         bind([categoryPicker, timeSlider], [proxy]).
+         // Draw the entire dashboard.
+         draw(data);
+
+     }
+
+     function sendAndDraw(queryString) {
+         query = new google.visualization.Query(queryString)
+         query && query.abort();
+         query.send(function (response) {
+             handleResponse(response);
+         });
+     }
 
     </script>
-    <div id="dashboard" class="container">
-		<div class="row">
-			<div class="col-md-8">
+    <div id="dashboard" class="graph_container">
+                <div class="row">
+                        <span><b>Slice Name:</b></span>
+                        <span><select id="historical_slicename">
+                        {% for slice in userSliceInfo %}
+                           <option value="{{ slice.slicename }}">{{ slice.slicename }}</option>
+                        {% endfor %}
+                        </select></span>
+                </div>
+		<div class="row" dstyle="background-color:red">
+			<div class="col-md-12">
 				<div class="col-md-4" id="control2"></div>
 				<div class="col-md-4" id="control1"></div>
 				<!--<div class="col-md-4" id="control3"></div>-->
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-8">
-				<div class="col-md-4" id="chart1">
+		<div class="row" dstyle="background-color:green">
+			<div class="col-md-12">
+				<div class="col-md-fullgraph" id="chart-site-agg" dstyle="background-color:pink">
 				</div>
-				<div class="col-md-4" id="chart2">
-				</div>
-				<!--
-				<div class="col-md-4" id="chart3">
-				</div>-->
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-8">
-				<div class="col-md-4" id="chart4">
+		<div class="row" dstyle="background-color:blue">
+			<div class="col-md-12">
+				<div class="col-md-halfgraph" id="chart-site-time" dstyle="background-color:orange">
 				</div>
-				<!--
-				<div class="col-md-4" id="chart5">
-				</div>-->
-				<div class="col-md-4" id="chart6">
+				<div class="col-md-halfgraph" id="chart-geo" dstyle="background-color:yellow">
 				</div>
 			</div>
 		</div>
