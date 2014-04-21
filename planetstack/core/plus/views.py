@@ -210,7 +210,7 @@ def getCDNOperatorData(randomizeData = False):
 
     #rows = [x for x in rows if x.get("slice","") in hpc_sliceNames]
 
-    rows = bq.postprocess_results(rows, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"])
+    rows = bq.postprocess_results(rows, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
 
     bq.merge_datamodel_sites(rows)
 
