@@ -316,7 +316,7 @@ def get_hpc_wizard():
 
     if (glo_hpc_wizard is None):
         glo_hpc_wizard = HpcWizard()
-        glo_hpc_wizard.initialize_statistics()
+#        glo_hpc_wizard.initialize_statistics()
 
     return glo_hpc_wizard
 
