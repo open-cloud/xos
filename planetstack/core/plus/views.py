@@ -212,7 +212,7 @@ def getCDNOperatorData(randomizeData = False):
 
     rows = bq.postprocess_results(rows, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
 
-    bq.merge_datamodel_sites(rows)
+    bq.merge_datamodel_sites(rows, slice="HyperCache")
 
     new_rows = {}
     for row in rows:
@@ -220,7 +220,8 @@ def getCDNOperatorData(randomizeData = False):
                "long": float(row.get("long", 0)),
                "health": 0,
                "numNodes": int(row.get("numNodes",0)),
-               "numHPCSlivers": int(row.get("count_hostname", 0)),
+               "activeHPCSlivers": int(row.get("count_hostname", 0)),
+               "numHPCSlivers": int(row.get("allocated_slivers", 0)),
                "siteUrl": str(row.get("url", "")),
                "hot": float(row.get("hotness", 0.0)),
                "bandwidth": row.get("sum_computed_bytes_sent_div_elapsed",0),

@@ -196,10 +196,17 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
             return ("text/html", new_result)
 
-    def merge_datamodel_sites(self, rows):
+    def merge_datamodel_sites(self, rows, slice=None):
         """ For a query that included "site" in its groupby, merge in the
             opencloud site information.
         """
+
+        if slice:
+            try:
+                slice = Slice.objects.get(name=slice)
+            except:
+                slice = None
+
         for row in rows:
             sitename = row["site"]
             try:
@@ -208,10 +215,17 @@ class PlanetStackAnalytics(BigQueryAnalytics):
                 # we didn't find it in the data model
                 continue
 
+            allocated_slivers = 0
+            if model_site and slice:
+                for sliver in slice.slivers.all():
+                    if sliver.node.site == model_site:
+                        allocated_slivers = allocated_slivers + 1
+
             row["lat"] = float(model_site.location.latitude)
             row["long"] = float(model_site.location.longitude)
             row["url"] = model_site.site_url
             row["numNodes"] = model_site.nodes.count()
+            row["allocated_slivers"] = allocated_slivers
 
             max_cpu = row.get("max_avg_cpu", row.get("max_cpu",0))
             cpu=float(max_cpu)/100.0
