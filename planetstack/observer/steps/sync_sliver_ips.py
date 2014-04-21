@@ -24,5 +24,6 @@ class SyncSliverIps(OpenStackSyncStep):
         if not ips:
             return
         sliver.ip = ips[0]['addr']
-        sliver.save()
-        logger.info("saved sliver ip: %s %s" % (sliver, ips[0]))
+        if sliver.ip:
+            sliver.save()
+            logger.info("saved sliver ip: %s %s" % (sliver, ips[0]))
