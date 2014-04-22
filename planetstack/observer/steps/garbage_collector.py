@@ -9,7 +9,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from deployment_auth import deployment_auth
 from core.models import *
 
-logger = Logger(level=logging.INFO)
+logger = Logger(logfile='/var/log/observer.log', level=logging.INFO)
 
 class GarbageCollector(OpenStackSyncStep):
     requested_interval = 86400
@@ -17,45 +17,66 @@ class GarbageCollector(OpenStackSyncStep):
 
     def call(self, **args):
         try:
-            #self.gc_roles()
+            self.gc_networks()
+            #self.gc_user_tenant_roles()
             #self.gc_tenants()
             #self.gc_users()
-            #self.gc_user_tenant_roles()
             self.gc_slivers()
             #self.gc_sliver_ips()
-            #self.gc_external_routes()
             pass 
         except:
-            traceback.print_exc() 
+            traceback.print_exc()
 
-    def gc_roles(self):
+    def gc_networks(self):
         """
-         all role that don't already exist in keystone. Remove keystone roles that
-        don't exist in planetstack
-        """
-        # sync all roles that don't already in keystone  
-        keystone_roles = self.driver.shell.keystone.roles.findall()
-        keystone_role_names = [kr.name for kr in keystone_roles]
-        pending_roles = Role.objects.all()
-        pending_role_names = [r.role_type for r in pending_roles] 
-        # don't delete roles for now 
+        Remove all neutron networks that do not exist in the planetstack db.
         """ 
-        # delete keystone roles that don't exist in planetstack
-        for keystone_role in keystone_roles:
-            if keystone_role.name == 'admin':
+        # some networks cannot be deleted
+        system_networks = ['nat-net','private-admin']
+        for network_template in NetworkTemplate.objects.all():
+            if network_template.sharedNetworkName and \
+              network_template.sharedNetworkName not in system_networks:
+                system_networks.append(network_template.sharedNetworkName)
+
+        networks = Network.objects.filter(enacted__isnull=False)
+        networks_dict = {}
+        for network in networks:
+            networks_dict[network.name] = network  
+
+        # some deployments are at the same url. Keep track of the urls we've visited
+        # to make sure we aren't making redundant calls
+        completed_urls = []
+        for deployment in deployment_auth:
+            # skip deployments that we've already processed
+            if deployment_auth[deployment]['url'] in completed_urls:
                 continue
-            if keystone_role.name not in pending_role_names:
-                try:
-                    self.driver.delete_role({id: keystone_role.id})
-                except:
-                    traceback.print_exc()
-        """
+            try:
+                driver = self.driver.admin_driver(deployment=deployment)
+                neutron_networks = driver.shell.quantum.list_networks()['networks']
+                for neutron_network in neutron_networks:
+                    # skip system networks
+                    if neutron_network['name'] in system_networks:
+                        continue         
+                    if neutron_network['name'] not in networks_dict:
+                        try:
+                            logger.info("GarbageCollector: deleting network %s" % neutron_network['name'])
+                            for subnet_id in neutron_network['subnets']:
+                                driver.delete_subnet(subnet_id)
+                            driver.delete_network(neutron_network['id'])
+                        except:
+                            logger.log_exc("GarbageCollector: delete network %s failed" % neutron_network['name'])
+            except:
+                logger.log_exc("GarbageCollector: Error at deployment %s" % deployment)
+                                
+            completed_urls.append(deployment_auth[deployment]['url']) 
 
     def gc_tenants(self):
         """
         Remove sites and slices that no don't exist in openstack db if they 
         have an enacted time (enacted != None).
         """ 
+        # some tenants cannot be deleted
+        system_tenants = ['admin','service', 'invisible_to_admin']
         # get all sites that where enacted != null. We can assume these sites
         # have previously been synced and need to be checed for deletion.
         sites = Site.objects.filter(enacted__isnull=False)
@@ -71,27 +92,36 @@ class GarbageCollector(OpenStackSyncStep):
             slice_dict[slice.name] = slice
 
         # delete keystone tenants that don't have a site record
+        # some deployments are at the same url. Keep track of the urls we've visited
+        # to make sure we aren't making redundant calls
+        completed_urls = []
         for deployment in deployment_auth:
+            # skip deployments that we've already processed
+            if deployment_auth[deployment]['url'] in completed_urls:
+                continue
+
             driver = self.driver.admin_driver(deployment=deployment)
             tenants = driver.shell.keystone.tenants.findall()
-
-            system_tenants = ['admin','service', 'invisible_to_admin']
             for tenant in tenants:
                 if tenant.name in system_tenants: 
                     continue
                 if tenant.name not in site_dict and tenant.name not in slice_dict:
                     try:
+                        logger.info("GarbageCollector: deleting tenant: %s" % (tenant))
                         driver.delete_tenant(tenant.id)
-                        logger.info("deleted tenant: %s" % (tenant))
                     except:
-                        logger.log_exc("delete tenant failed: %s" % tenant)
-
+                        logger.log_exc("GarbageCollector: delete tenant failed: %s" % tenant)
+            completed_urls.append(deployment_auth[deployment]['url'])
 
     def gc_users(self):
         """
         Remove users that do not exist in openstack db if they have an 
         enacted time (enacted != None).
         """ 
+        # some users cannot be deleted
+        system_users = ['admin', 'nova', 'quantum', 'neutron' 'glance', \
+                        'cinder', 'swift', 'service', 'demo']
+    
         # get all users that where enacted != null. We can assume these users
         # have previously been synced and need to be checed for deletion.
         users = User.objects.filter(enacted__isnull=False)
@@ -100,8 +130,14 @@ class GarbageCollector(OpenStackSyncStep):
             user_dict[user.kuser_id] = user
 
         # delete keystone users that don't have a user record
-        system_users = ['admin', 'nova', 'quantum', 'glance', 'cinder', 'swift', 'service', 'demo']
+        # some deployments are at the same url. Keep track of the urls we've visited
+        # to make sure we aren't making redundant calls
+        completed_urls = []
         for deployment in deployment_auth:
+            # skip deployments that we've already processed
+            if deployment_auth[deployment]['url'] in completed_urls:
+                continue
+
             driver = self.driver.admin_driver(deployment=deployment)
             users = driver.shell.keystone.users.findall()
             for user in users:
@@ -109,11 +145,11 @@ class GarbageCollector(OpenStackSyncStep):
                     continue
                 if user.id not in user_dict:
                     try:
+                        logger.info("GarbageCollector: deleting user: %s" % user)
                         self.driver.delete_user(user.id)
-                        logger.info("deleted user: %s" % user)
                     except:
-                        logger.log_exc("delete user failed: %s" % user)
-                    
+                        logger.log_exc("GarbageCollector: delete user failed: %s" % user)
+            completed_urls.append(deployment_auth[deployment]['url'])          
 
     def gc_user_tenant_roles(self):
         """
@@ -126,7 +162,10 @@ class GarbageCollector(OpenStackSyncStep):
             user_tenant_roles[(site_priv.user.kuser_id, site_priv.site.tenant_id)].append(site_priv.role.role)
         for slice_memb in SlicePrivilege.objects.filter(enacted__isnull=False):
             user_tenant_roles[(slice_memb.user.kuser_id, slice_memb.slice.tenant_id)].append(slice_memb.role.role)  
- 
+
+        # some deployments are at the same url. Keep track of the urls we've visited
+        # to make sure we aren't making redundant calls
+        completed_urls = [] 
         # Some user tenant role aren't stored in planetstack but they must be preserved. 
         # Role that fall in this category are
         # 1. Never remove a user's role that their home site
@@ -134,6 +173,10 @@ class GarbageCollector(OpenStackSyncStep):
         # Keep track of all roles that must be preserved.     
         users = User.objects.all()
         for deployment in deployment_auth:
+            # skip deployments that we've already processed
+            if deployment_auth[deployment]['url'] in completed_urls:
+                continue
+
             driver = self.driver.admin_driver(deployment=deployment)
             tenants = driver.shell.keystone.tenants.list() 
             for user in users:
@@ -161,15 +204,16 @@ class GarbageCollector(OpenStackSyncStep):
                         k_user_roles =  driver.shell.keystone.roles.roles_for_user(k_user, tenant)
                         for k_user_role in k_user_roles:
                             if k_user_role.role_id not in user_tenant_role_ids: 
-                                driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant) 
-                                logger.info("removed user role %s for %s at %s" % \
+                                logger.info("GarbageCollector: removing user role %s for %s at %s" % \
                                            (k_user_role, k_user.username, tenant.name))
+                                driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant) 
                     else:
                         # remove all roles the user has at the tenant. 
                         for k_user_role in k_user_roles:
-                            driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant) 
-                            logger.info("removed user role %s for %s at %s" % \
+                            logger.info("GarbageCollector: removing user role %s for %s at %s" % \
                                        (k_user_role, k_user.username, tenant.name))
+                            driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant)
+            completed_urls.append(deployment_auth[deployment]['url']) 
  
     def gc_slivers(self):
         """
@@ -183,18 +227,32 @@ class GarbageCollector(OpenStackSyncStep):
         for sliver in slivers:
             sliver_dict[sliver.instance_id] = sliver
 
-        for tenant in self.driver.shell.keystone.tenants.list():
-            if tenant.name in ['admin', 'services']:
+        
+        # some deployments are at the same url. Keep track of the urls we've visited
+        # to make sure we aren't making redundant calls
+        completed_urls = []
+        for deployment in deployment_auth:
+            # skip deployments that we've already processed
+            if deployment_auth[deployment]['url'] in completed_urls:
                 continue
-            # delete sliver that don't have a sliver record
-            tenant_driver = self.driver.client_driver(tenant=tenant.name, deployment=sliver.node.deployment)
-            for instance in tenant_driver.nova.servers.list():
-                if instance.uuid not in sliver_dict:
-                    try:
-                        tenant_driver.destroy_instance(instance.uuid)
-                        logger.info("destroyed sliver: %s" % (instance))
-                    except:
-                        logger.log_exc("destroy sliver failed: %s" % instance)
+
+            try:
+                driver = self.driver.admin_driver(deployment=deployment)
+                for tenant in driver.shell.keystone.tenants.list():
+                    if tenant.name in ['admin', 'services']:
+                        continue
+                    # delete sliver that don't have a sliver record
+                    tenant_driver = self.driver.client_driver(tenant=tenant.name, deployment=deployment)
+                    for instance in tenant_driver.shell.nova.servers.list():
+                        if instance.id not in sliver_dict:
+                            try:
+                                logger.info("GarbageCollector: destroying sliver: %s %s" % (instance, instance.id))
+                                tenant_driver.destroy_instance(instance.id)
+                            except:
+                                logger.log_exc("GarbageCollector: destroy sliver failed: %s" % instance)
+            except:
+                logger.log_exc("GarbageCollector: Error at deployment %s" % deployment) 
+            completed_urls.append(deployment_auth[deployment]['url'])
                
 
     def gc_sliver_ips(self):
@@ -216,9 +274,6 @@ class GarbageCollector(OpenStackSyncStep):
                 sliver.ip = ips[0]['addr']
                 sliver.save()
                 logger.info("updated sliver ip: %s %s" % (sliver, ips[0]))
-
-    def gc_external_routes(self):
-        pass
 
     def gc_nodes(self):
          # collect local nodes
