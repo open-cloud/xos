@@ -22,7 +22,8 @@ class Slice(PlCoreBase):
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     imagePreference = models.CharField(default="abc",null=True, blank=True, max_length=256)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
-
+    network = models.CharField(null=True, blank=True, max_length=256)
+    mountDataSets = models.CharField(null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
 
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=ServiceClass.get_default)
