@@ -7,13 +7,14 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
 from core.models.slice import *
+from core.models.slice import Sliver
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
 class SyncNetworkDeployments(OpenStackSyncStep):
     requested_interval = 0 
-    provides=[NetworkDeployments]
+    provides=[Networ, NetworkDeployments, Sliver]
     
     def fetch_pending(self):
         # network deployments are not visible to users. We must ensure

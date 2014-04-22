@@ -76,13 +76,6 @@ class SyncSlivers(OpenStackSyncStep):
                                'public_key': sliver.creator.public_key}
                 driver.create_keypair(**key_fields)       
  
-            slice_deployments = SliceDeployments.objects.filter(slice = sliver.slice, 
-                                                               deployment = sliver.deploymentNetwork)
-            for slice_deployment in slice_deployments:
-                if slice_deployment.keyname:
-                    keyname = slice_deployment.keyname
-                    break 
- 
             instance = driver.spawn_instance(name=sliver.name,
                                 key_name = keyname,
                                 image_id = image_id,
