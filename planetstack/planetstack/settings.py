@@ -3,6 +3,8 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 # Django settings for planetstack project.
 from config import Config
 config = Config()
+
+GEOIP_PATH = "/usr/share/GeoIP"
  
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

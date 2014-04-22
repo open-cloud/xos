@@ -63,15 +63,41 @@ class TenantCreateSlice(View):
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
-        print sliceName
+        network = request.POST.get("network","0")
+        mountDataSets = request.POST.get("mountDataSets","0")
         if (actionToDo == "add"):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
            #image = Image.objects.get(name=imageName)
-           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=imageName)
+           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=imageName,mountDataSets=mountDataSets,network=network)
            newSlice.save()
         return newSlice
 
+class TenantUpdateSlice(View):
+    def post(self, request, *args, **kwargs):
+        sliceName = request.POST.get("sliceName", "0")
+        serviceClass = request.POST.get("serviceClass", "0")
+        imageName = request.POST.get("imageName", "0")
+        actionToDo = request.POST.get("actionToDo", "0")
+        network = request.POST.get("network","0")
+        slice = Slice.objects.filter(name = sliceName)
+        abc = ServiceClass.objects.get(name=serviceClass)
+        if (actionToDo == "update"):
+        #       print getattr(slice,'serviceClass',abc)
+                setattr(slice,'serviceClass',abc)
+        #fields = {'serviceClass':ServiceClass.objects.get(name=serviceClass),
+         #         'imagePreference':imageName,
+          #        'network':network
+           #      }
+        #update_slice(sliceName,**fields)
+        return HttpResponse("Slice updated")
+
+def  update_slice(sliceName,**fields):
+         slice = Slice.objects.filter(name = sliceName)
+         for (k,v) in fields.items():
+                setattr(slice, k, v)
+                slice.save()
+         return slice
 
 def getTenantSliceInfo(user, tableFormat = False):
     tenantSliceDetails = {}
@@ -99,17 +125,21 @@ def getTenantInfo(user):
        slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
        sliceServiceClass = entry.serviceClass.name
        preferredImage =  entry.imagePreference
+       sliceDataSet = entry.mountDataSets
+       sliceNetwork = entry.network
        numSliver = 0
        sliceImage=""
        sliceSite = {}
+       sliceNode = {}
+       sliceInstance= {}
        for sliver in slice.slivers.all():
-            numSliver +=sliver.numberCores
-           # sliceSite[sliver.deploymentNetwork.name] =sliceSite.get(sliver.deploymentNetwork.name,0) + 1
 	    if sliver.node.site.name in BLESSED_SITES:
                 sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
                 sliceImage = sliver.image.name
+                sliceNode[sliver.instance_name] = sliver.name
+       numSliver = sum(sliceSite.values())
        numSites = len(sliceSite)
-       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver})
+       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'sliceDataSet':sliceDataSet,'sliceNetwork':sliceNetwork, 'instanceNodePair':sliceNode})
     return userSliceInfo
 
 def getTenantSitesInfo():
@@ -143,7 +173,7 @@ def getImageInfo(user):
     return imageInfo
 
 def getMountDataSets():
-        dataSetList = ['GenBank','LSST','LHC','NOAA','Measurement Lab','Common Crawl']
+        dataSetList = ['------','GenBank','LSST','LHC','NOAA','Measurement Lab','Common Crawl']
         dataSetInfo = []
         for entry in dataSetList:
                 dataSetInfo.append({'DataSet':entry})
@@ -208,9 +238,10 @@ def getCDNOperatorData(randomizeData = False, wait=True):
 
     rows = bq.get_cached_query_results(bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"]), wait)
 
-    # if wait==False, then we could have no rows yet
+    # wait=False on the first time the Dashboard is opened. This means we might
+    # not have any rows yet. The dashboard code polls every 30 seconds, so it
+    # will eventually pick them up.
 
-    stats_rows = {}
     if rows:
         rows = bq.postprocess_results(rows, filter={"slice": HPC_SLICE_NAME}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
 
@@ -218,6 +249,8 @@ def getCDNOperatorData(randomizeData = False, wait=True):
         stats_rows = {}
         for row in rows:
             stats_rows[row["site"]] = row
+    else:
+        stats_rows = {}
 
     slice = Slice.objects.get(name=HPC_SLICE_NAME)
     slice_slivers = list(slice.slivers.all())
