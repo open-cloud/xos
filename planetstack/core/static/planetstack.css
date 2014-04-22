@@ -1028,7 +1028,6 @@ div.chartContainer
    padding-bottom: 0.7%;
 }
 
-
 /***********TENANT VIEW*************/
 
 #image-dropdown,#slice-image-value,#adv-slice-image-value{
@@ -1046,31 +1045,35 @@ div.chartContainer
 #slice-name-value,#adv-slice-name-value{
    margin-left: 2%;
 }
-
+#adv-dataset-dropdown{
+margin-left: 3%;
+}
 #advanced-tenant,#basic-tenant,#sliver-btn,#save-btn{
   float:right;
 }
+ #delete-slice-btn,#download-details{
+	margin-left:1%;
+}
 
-#sliver-btn,#save-btn,#create-slice-btn{
+#sliver-btn,#save-btn,#create-slice-btn,#delete-slice-btn,#download-details{
   margin-top:1%;
 }
 
-
-.ui-widget input{
+.tenantDialog.ui-widget input{
         border-radius: 0px !important;
-margin: 1.5% 0 0 5% !important;
-height: 20px !important;
-width: 100px !important;
+margin: 0 0 0 5% !important;
+height: 15px !important;
+width: 164px !important;
 }
 
-.ui-dialog-buttonset .ui-button{
+.tenantDialog .ui-dialog-buttonset .ui-button{
 border-radius: 0 !important;
 background-color: grey !important;
 font-weight: bold !important;
 font-size: 0.9em; !important
 }
 
-.ui-dialog-titlebar{
+.tenantDialog .ui-dialog-titlebar{
 border-radius: 0 !important;
 background-color: grey !important;
 }
@@ -1079,32 +1082,38 @@ background-color: grey !important;
    margin-bottom:3%;
 }
 
-.create-slice-row label{
+.create-slice-row label, .tenantDialog label{
    margin-right:1%;
+   float:left;
 }
 
 .create-slice-row select{
    height:24px;
    width: 196px;
    font-size: 0.9em !important;
-
 }
 
-#new-slice-name{
-     width: 194px !important;
-     margin-left: 16% !important;
+.tenant-create-slice{
+	float:right;
+	margin-right: 10% !important;
 }
 
-#new-site-name{
-    margin-left: 20%;
+#delete-slice{
+float: right;
 }
 
-#new-image{
-  margin-left: 15%;
-}
-
-#tooltip{
+#tooltip,#adv-tooltip,#basic-tooltip{
 font-size:0.7em;
 color:red;
 display:none;
+}
+
+#tenantSliceDataWrapper {
+	padding: 1% 0;
+}
+
+#advancedTenantSliceDataWrapper .help-inline{
+	font-size: 11px;
+	color: #999;
+	padding-bottom: 1%;
 }
