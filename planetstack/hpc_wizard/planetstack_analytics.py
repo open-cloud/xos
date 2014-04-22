@@ -38,8 +38,9 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return [slice.name for slice in slices]
 
-    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents", latest=False):
-        tablePart = "[%s.%s@-3600000--1]" % ("vicci", tableName)
+    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents", latest=False, max_age=60*60):
+        max_age = max_age * 1000
+        tablePart = "[%s.%s@-%d--1]" % ("vicci", tableName, max_age)
 
         fields = []
         fieldNames = []
@@ -256,13 +257,16 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return base_query
 
-    def get_cached_query_results(self, q):
+    def get_cached_query_results(self, q, wait=True):
         global glo_cached_queries
 
         if q in glo_cached_queries:
             if (time.time() - glo_cached_queries[q]["time"]) <= 60:
                 print "using cached query"
                 return glo_cached_queries[q]["rows"]
+
+        if not wait:
+            return None
 
         print "refreshing cached query"
         result = self.run_query(q)
@@ -389,23 +393,25 @@ def DoPlanetStackAnalytics(request):
 def main():
     bq = PlanetStackAnalytics()
 
-    q = bq.compose_latest_query()
+    q = bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"])
     results = bq.run_query(q)
 
-    results = bq.postprocess_results(results,
-                                     #filter={"site": "Princeton"},
-                                     groupBy=["site"],
-                                     computed=["bytes_sent/elapsed"],
-                                     sum=["bytes_sent", "computed_bytes_sent_div_elapsed"], avg=["cpu"],
-                                     maxDeltaTime=60)
+    #results = bq.postprocess_results(results,
+    #                                 filter={"slice": "HyperCache"},
+    #                                 groupBy=["site"],
+    #                                 computed=["bytes_sent/elapsed"],
+    #                                 sum=["bytes_sent", "computed_bytes_sent_div_elapsed"], avg=["cpu"],
+    #                                 maxDeltaTime=60)
+
+    results = bq.postprocess_results(results, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time", "site"], maxDeltaTime=80)
 
     bq.dump_table(results)
+
+    sys.exit(0)
 
     q=bq.compose_query(sum=["%bytes_sent"], avg=["%cpu"], latest=True, groupBy=["Time", "%site"])
     print q
     bq.dump_table(bq.run_query(q))
-
-    sys.exit(0)
 
     q=bq.compose_query(avg=["%cpu","%bandwidth"], count=["%hostname"], slice="HyperCache")
     print q

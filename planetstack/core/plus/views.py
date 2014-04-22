@@ -24,7 +24,7 @@ if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
 else:
     sys.path.append("/opt/planetstack/hpc_wizard")
 import hpc_wizard
-from planetstack_analytics import DoPlanetStackAnalytics, PlanetStackAnalytics
+from planetstack_analytics import DoPlanetStackAnalytics, PlanetStackAnalytics, RED_LOAD, BLUE_LOAD
 
 class DashboardWelcomeView(TemplateView):
     template_name = 'admin/dashboard/welcome.html'
@@ -53,7 +53,7 @@ def getUserSliceInfo(user, tableFormat = False):
             userDetails['userSliceInfo'] = userSliceTableFormatter(userSliceData)
         else:
             userDetails['userSliceInfo'] = userSliceData
-        userDetails['cdnData'] = getCDNOperatorData();
+        userDetails['cdnData'] = getCDNOperatorData(wait=False);
 #        pprint( userDetails)
         return userDetails
 
@@ -201,32 +201,66 @@ def getSliceInfo(user):
 
     return userSliceInfo
 
-def getCDNOperatorData(randomizeData = False):
+def getCDNOperatorData(randomizeData = False, wait=True):
+    HPC_SLICE_NAME = "HyperCache"
+
     bq = PlanetStackAnalytics()
 
-    #hpc_sliceNames = bq.service_to_sliceNames("HPC Service")
+    rows = bq.get_cached_query_results(bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"]), wait)
 
-    rows = bq.get_cached_query_results(bq.compose_latest_query())
+    # if wait==False, then we could have no rows yet
 
-    #rows = [x for x in rows if x.get("slice","") in hpc_sliceNames]
+    stats_rows = {}
+    if rows:
+        rows = bq.postprocess_results(rows, filter={"slice": HPC_SLICE_NAME}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
 
-    rows = bq.postprocess_results(rows, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
+        # dictionaryize the statistics rows by site name
+        stats_rows = {}
+        for row in rows:
+            stats_rows[row["site"]] = row
 
-    bq.merge_datamodel_sites(rows, slice="HyperCache")
+    slice = Slice.objects.get(name=HPC_SLICE_NAME)
+    slice_slivers = list(slice.slivers.all())
 
     new_rows = {}
-    for row in rows:
-        new_row = {"lat": float(row.get("lat", 0)),
-               "long": float(row.get("long", 0)),
+    for site in Site.objects.all():
+        # compute number of slivers allocated in the data model
+        allocated_slivers = 0
+        for sliver in slice_slivers:
+            if sliver.node.site == site:
+                allocated_slivers = allocated_slivers + 1
+
+        stats_row = stats_rows.get(site.name,{})
+
+        max_cpu = stats_row.get("max_avg_cpu", stats_row.get("max_cpu",0))
+        cpu=float(max_cpu)/100.0
+        hotness = max(0.0, ((cpu*RED_LOAD) - BLUE_LOAD)/(RED_LOAD-BLUE_LOAD))
+
+        # format it to what that CDN Operations View is expecting
+        new_row = {"lat": float(site.location.longitude),
+               "long": float(site.location.longitude),
+               "lat": float(site.location.latitude),
                "health": 0,
-               "numNodes": int(row.get("numNodes",0)),
-               "activeHPCSlivers": int(row.get("count_hostname", 0)),
-               "numHPCSlivers": int(row.get("allocated_slivers", 0)),
-               "siteUrl": str(row.get("url", "")),
-               "hot": float(row.get("hotness", 0.0)),
-               "bandwidth": row.get("sum_computed_bytes_sent_div_elapsed",0),
-               "load": int(float(row.get("max_avg_cpu", row.get("max_cpu",0))))}
-        new_rows[str(row["site"])] = new_row
+               "numNodes": int(site.nodes.count()),
+               "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),         # measured number of slivers, from bigquery statistics
+               "numHPCSlivers": allocated_slivers,                              # allocated number of slivers, from data model
+               "siteUrl": str(site.site_url),
+               "bandwidth": stats_row.get("sum_computed_bytes_sent_div_elapsed",0),
+               "load": max_cpu,
+               "hot": float(hotness)}
+        new_rows[str(site.name)] = new_row
+
+    # get rid of sites with 0 slivers that overlap other sites with >0 slivers
+    for (k,v) in new_rows.items():
+        bad=False
+        if v["numHPCSlivers"]==0:
+            for v2 in new_rows.values():
+                if (v!=v2) and (v2["numHPCSlivers"]>=0):
+                    d = haversine(v["lat"],v["long"],v2["lat"],v2["long"])
+                    if d<100:
+                         bad=True
+            if bad:
+                del new_rows[k]
 
     return new_rows
 
@@ -255,6 +289,20 @@ class TenantViewData(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
 
+def haversine(site_lat, site_lon, lat, lon):
+    site_lat = float(site_lat)
+    site_lon = float(site_lon)
+    lat = float(lat)
+    lon = float(lon)
+    d=0
+    if lat and lon and site_lat and site_lon:
+        R = 6378.1
+        a = math.sin( math.radians((lat - site_lat)/2.0) )**2 + math.cos( math.radians(lat) )*math.cos( math.radians(site_lat) )*(math.sin( math.radians((lon - site_lon)/2.0 ) )**2)
+        c = 2 * math.atan2( math.sqrt(a), math.sqrt(1 - a) )
+        d = R * c
+
+    return d
+
 def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
     # try to pick a site we're already using
     has_slivers_here=False
@@ -264,16 +312,7 @@ def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
                 has_slivers_here=True
 
     # Haversine method
-    d = 0
-    site_lat = site.location.latitude
-    site_lon = site.location.longitude
-    if lat and lon and site_lat and site_lon:
-        site_lat = float(site_lat)
-        site_lon = float(site_lon)
-        R = 6378.1
-        a = math.sin( math.radians((lat - site_lat)/2.0) )**2 + math.cos( math.radians(lat) )*math.cos( math.radians(site_lat) )*(math.sin( math.radians((lon - site_lon)/2.0 ) )**2)
-        c = 2 * math.atan2( math.sqrt(a), math.sqrt(1 - a) )
-        d = R * c
+    d = haversine(site.location.latitude, site.location.longitude, lat, lon)
 
     return (-has_slivers_here, d)
 
