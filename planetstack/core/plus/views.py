@@ -138,7 +138,7 @@ def getTenantInfo(user):
 	    if sliver.node.site.name in BLESSED_SITES:
                 sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
                 sliceImage = sliver.image.name
-                sliceNode[str(sliver)] = sliver.name
+                sliceNode[str(sliver)] = sliver.node.name
        numSliver = sum(sliceSite.values())
        numSites = len(sliceSite)
        userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'sliceDataSet':sliceDataSet,'sliceNetwork':sliceNetwork, 'instanceNodePair':sliceNode})
