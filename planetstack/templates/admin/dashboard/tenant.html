@@ -126,7 +126,7 @@
 					var sliceInfo;
 					for (row in rows){
 						if(rows[row]['sliceName']==value){
-							sliceInfo = "Slice Name: "+rows[row]['sliceName']+"\nNumber of Slivers: "+rows[row]['numOfSlivers']+"\nService Level: "+rows[row]['sliceServiceClass']+"\nImage: "+rows[row]['sliceImage']+"\n";	
+							sliceInfo = "Slice Name: "+rows[row]['sliceName']+"\nNumber of Slivers: "+rows[row]['numOfSlivers']+"\nService Level: "+rows[row]['sliceServiceClass']+"\nImage: "+rows[row]['preferredImage']+"\n";	
 						for (instanceNodePairs in rows[row]['instanceNodePair']){
 							sliceInfo += instanceNodePairs+"@"+rows[row]['instanceNodePair'][instanceNodePairs]+"\n";
 						}
