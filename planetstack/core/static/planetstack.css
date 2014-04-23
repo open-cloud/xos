@@ -1125,3 +1125,7 @@ display:none;
 	clear:both;
 	margin-right: 1%;
 }
+
+#advNumOfSlivers{
+        margin-right: 1% !important;
+}
