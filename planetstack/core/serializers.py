@@ -125,6 +125,8 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
                   'router_id',
                   'subnet_id',
                   'imagePreference',
+		  'network',
+		  'mountDataSets',
                   'site',
                   'slivers',
                   'updated',

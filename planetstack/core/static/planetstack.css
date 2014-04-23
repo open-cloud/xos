@@ -1061,9 +1061,10 @@ margin-left: 3%;
 
 .tenantDialog.ui-widget input{
         border-radius: 0px !important;
-margin: 0 0 0 5% !important;
-height: 15px !important;
-width: 164px !important;
+	height: 12px !important;
+	width: 180px !important;
+	margin-right: 10% !important;
+	float: right;
 }
 
 .tenantDialog .ui-dialog-buttonset .ui-button{
@@ -1079,7 +1080,9 @@ background-color: grey !important;
 }
 
 .create-slice-row{
-   margin-bottom:3%;
+	margin-bottom: 4%;
+	clear: both;
+	height: 25px;
 }
 
 .create-slice-row label, .tenantDialog label{
@@ -1116,4 +1119,9 @@ display:none;
 	font-size: 11px;
 	color: #999;
 	padding-bottom: 1%;
+}
+
+.create-slice-row label{
+	clear:both;
+	margin-right: 1%;
 }

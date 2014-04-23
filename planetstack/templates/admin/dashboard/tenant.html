@@ -23,7 +23,7 @@
 		<fieldset>
 			<div class="create-slice-row">
 				<label for="new-slice-name">Name</label>
-				<input type="text" name="new-slice-name" id="new-slice-name" class="text tenant-create-slice">
+				<input type="text" name="new-slice-name" id="new-slice-name">
 			</div>
 			<div class="create-slice-row">
 				<label for="new-service-class">Service Class</label>
@@ -43,7 +43,7 @@
                         </div>
 			<div class="create-slice-row">
                                 <label for="number-of-slivers">Number Of Slivers</label>
-                                <input type="text" name="number-of-slivers" id="number-of-slivers" class="text tenant-create-slice">
+                                <input type="text" name="number-of-slivers" id="number-of-slivers">
                         </div>
 			<div id=tooltip>Slice Name cannot be empty</div>
 		</fieldset>
@@ -281,6 +281,7 @@
 								serviceClass: $("#adv-service-level-dropdown").val(),
 								imageName: $("#adv-image-dropdown").val(),
 								network: $("#adv-network-dropdown").val(),
+								dataSet: $("#adv-dataset-dropdown").val(),
                                                                 actionToDo: "update",
                                                                 csrfmiddlewaretoken: "{{ csrf_token }}", // < here
                                                                 state: "inactive"
@@ -378,8 +379,8 @@
 				$('<div class="btn btn-high btn-info" id="download-details">Download Slice Details</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-5").css("display", "none");
-				$("#advanced-tenant").click(function () {
-					var value = $("#advTenantSliceDropDown").val();
+				$("#advanced-tenant").unbind().click(function () {
+					var value = $("#tenantSliceDropDown").val();
 					advShowSliceData(data,value);
                                                 $("#tenantSliceDataWrapper").css("display","none");
                                                 $("#advancedTenantSliceDataWrapper").css("display","block");
@@ -388,9 +389,6 @@
                                                 $("#sliver-btn").toggle();
                                                 $("#save-btn").toggle();
 
-				//$("#advTenantSliceDropDown").val(selectedValue);
-				//advShowSliceData(data);
-				//editSliverAdv();
 			});
 			$("#sliver-btn").click(function () {
 				$("#numOfSlivers").empty();
@@ -398,7 +396,7 @@
 				$("#dialog-form").dialog({
 					autoOpen: false,
 					height: 200,
-					width: 350,
+					width: 400,
 					modal: true,
 					dialogClass: "tenantDialog",
 					buttons: {

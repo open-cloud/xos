@@ -68,10 +68,10 @@ class TenantCreateSlice(View):
         if (actionToDo == "add"):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
-           #image = Image.objects.get(name=imageName)
-           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=imageName,mountDataSets=mountDataSets,network=network)
+           image = Image.objects.get(name=imageName)
+           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=image,mountDataSets=mountDataSets,network=network)
            newSlice.save()
-        return newSlice
+        return HttpResponse("Slice created")
 
 class TenantUpdateSlice(View):
     def post(self, request, *args, **kwargs):
@@ -80,16 +80,18 @@ class TenantUpdateSlice(View):
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
         network = request.POST.get("network","0")
-        slice = Slice.objects.filter(name = sliceName)
-        abc = ServiceClass.objects.get(name=serviceClass)
-        if (actionToDo == "update"):
-        #       print getattr(slice,'serviceClass',abc)
-                setattr(slice,'serviceClass',abc)
-        #fields = {'serviceClass':ServiceClass.objects.get(name=serviceClass),
-         #         'imagePreference':imageName,
-          #        'network':network
-           #      }
-        #update_slice(sliceName,**fields)
+        dataSet = request.POST.get("dataSet","0")
+        slice = Slice.objects.all()
+        for entry in slice:
+                serviceClass = ServiceClass.objects.get(name=serviceClass)
+                if(entry.name==sliceName):
+                         if (actionToDo == "update"):
+                                setattr(entry,'serviceClass',serviceClass)
+                                setattr(entry,'imagePreference',imageName)
+                                setattr(entry,'network',network)
+                                setattr(entry,'mountDataSets',dataSet)
+                                entry.save()
+                                break
         return HttpResponse("Slice updated")
 
 def  update_slice(sliceName,**fields):
@@ -164,12 +166,12 @@ def getServiceClassInfo(user):
     return sliceInfo
 
 def getImageInfo(user):
-    #imageList = Image.objects.all()
-    imageList = ['Fedora 16 LXC rev 1.3','Hadoop','MPI']
+    imageList = Image.objects.all()
+    #imageList = ['Fedora 16 LXC rev 1.3','Hadoop','MPI']
     imageInfo = []
     for imageEntry in imageList:
-          #imageInfo.append({'Image':imageEntry.name})
-          imageInfo.append({'Image':imageEntry})
+          imageInfo.append({'Image':imageEntry.name})
+          #imageInfo.append({'Image':imageEntry})
     return imageInfo
 
 def getMountDataSets():
@@ -323,12 +325,12 @@ class TenantViewData(View):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
 
 def haversine(site_lat, site_lon, lat, lon):
-    site_lat = float(site_lat)
-    site_lon = float(site_lon)
-    lat = float(lat)
-    lon = float(lon)
     d=0
     if lat and lon and site_lat and site_lon:
+        site_lat = float(site_lat)
+        site_lon = float(site_lon)
+        lat = float(lat)
+        lon = float(lon)
         R = 6378.1
         a = math.sin( math.radians((lat - site_lat)/2.0) )**2 + math.cos( math.radians(lat) )*math.cos( math.radians(site_lat) )*(math.sin( math.radians((lon - site_lon)/2.0 ) )**2)
         c = 2 * math.atan2( math.sqrt(a), math.sqrt(1 - a) )
@@ -439,6 +441,7 @@ class TenantDeleteSliceView(View):
                 print slice, slice.id
                 sliceToDel=Slice(name=sliceName, id=slice.id)
                 sliceToDel.delete()
+                return HttpResponse("Slice deleted")
 
 class TenantAddOrRemoveSliverView(View):
     """ Add or remove slivers from a Slice
