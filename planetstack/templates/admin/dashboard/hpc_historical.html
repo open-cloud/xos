@@ -21,6 +21,13 @@
      function updateDataSourceUrl() {
          var sliceName = $("#historical_slicename :selected").text();
          var queryString = "/analytics/bigquery/?timeBucket=600&maxAge=86400&sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
+         var loadingDiv = '<div class="loading">Loading ...</div>';
+
+         $( "#control1").html("");
+         $( "#control2").html("");
+         $( "#chart-site-agg" ).html(loadingDiv);
+         $( "#chart-site-time" ).html("");
+         $( "#chart-geo" ).html("");
 
          $.ajax({
              url: queryString,
@@ -103,22 +110,6 @@
          });
          geoChart.setDataTable(dt);
          geoChart.draw();
-
-/*         var histogram = new google.visualization.ChartWrapper({
-             'chartType': 'Histogram',
-             'containerId': 'chart-histo',
-             'options': {
-                 'width': 300,
-                 'height': 300,
-             },
-             'title': 'Sites by load',
-             'view': {
-                 'columns': [1, 2]
-             }
-         });
-         histogram.setDataTable(dt);
-         histogram.draw();  */
-
      }
 
      function handleResponse(response) {
