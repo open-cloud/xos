@@ -38,9 +38,9 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return [slice.name for slice in slices]
 
-    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents", latest=False, max_age=60*60):
-        max_age = max_age * 1000
-        tablePart = "[%s.%s@-%d--1]" % ("vicci", tableName, max_age)
+    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents", latest=False, maxAge=60*60):
+        maxAge = maxAge * 1000
+        tablePart = "[%s.%s@-%d--1]" % ("vicci", tableName, maxAge)
 
         fields = []
         fieldNames = []
@@ -286,7 +286,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         format = req.GET.get("format", "json_dicts")
 
-        timeField = req.GET.get("timeBucket", "60")
+        timeBucket = int(req.GET.get("timeBucket", 60))
         avg = self.get_list_from_req(req, "avg")
         sum = self.get_list_from_req(req, "sum")
         count = self.get_list_from_req(req, "count")
@@ -297,9 +297,11 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         maxRows = req.GET.get("maxRows", None)
         mergeDataModelSites = req.GET.get("mergeDataModelSites", None)
 
+        maxAge = int(req.GET.get("maxAge", 60*60))
+
         cached = req.GET.get("cached", None)
 
-        q = self.compose_query(slice, site, node, service, timeField, avg, sum, count, computed, [], groupBy, orderBy)
+        q = self.compose_query(slice, site, node, service, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
 
         print q
 

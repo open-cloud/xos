@@ -20,7 +20,7 @@
 
      function updateDataSourceUrl() {
          var sliceName = $("#historical_slicename :selected").text();
-         var queryString = "/analytics/bigquery/?sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
+         var queryString = "/analytics/bigquery/?timeBucket=600&maxAge=86400&sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
 
          $.ajax({
              url: queryString,
