@@ -245,7 +245,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
     # will eventually pick them up.
 
     if rows:
-        rows = bq.postprocess_results(rows, filter={"slice": HPC_SLICE_NAME}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
+        rows = bq.postprocess_results(rows, filter={"event": "hpc_heartbeat"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time","site"], maxDeltaTime=80)
 
         # dictionaryize the statistics rows by site name
         stats_rows = {}
