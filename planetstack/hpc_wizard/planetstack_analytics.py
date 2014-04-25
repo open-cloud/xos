@@ -14,6 +14,7 @@ else:
     sys.path.append("/opt/planetstack")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+from django.conf import settings
 from django import db
 from django.db import connection
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice, Service
@@ -24,7 +25,10 @@ RED_LOAD=15000000
 glo_cached_queries = {}
 
 class PlanetStackAnalytics(BigQueryAnalytics):
-    def __init__(self, tableName="demoevents"):
+    def __init__(self, tableName=None):
+        if not tableName:
+            tableName = settings.BIGQUERY_TABLE
+
         BigQueryAnalytics.__init__(self, tableName)
 
     def service_to_sliceNames(self, serviceName):
@@ -38,7 +42,10 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return [slice.name for slice in slices]
 
-    def compose_query(self, slice=None, site=None, node=None, service=None, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName="demoevents", latest=False, maxAge=60*60):
+    def compose_query(self, slice=None, site=None, node=None, service=None, event="libvirt_heartbeat", timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName=None, latest=False, maxAge=60*60):
+        if tableName is None:
+            tableName = self.tableName
+
         maxAge = maxAge * 1000
         tablePart = "[%s.%s@-%d--1]" % ("vicci", tableName, maxAge)
 
@@ -98,6 +105,8 @@ class PlanetStackAnalytics(BigQueryAnalytics):
             where.append("%%site='%s'" % site)
         if node:
             where.append("%%hostname='%s'" % node)
+        if event:
+            where.append("event='%s'" % event)
         if service:
             sliceNames = self.service_to_sliceNames(service)
             if sliceNames:
@@ -283,6 +292,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         site = req.GET.get("site", None)
         node = req.GET.get("node", None)
         service = req.GET.get("service", None)
+        event = req.GET.get("event", "libvirt_heartbeat")
 
         format = req.GET.get("format", "json_dicts")
 
@@ -301,7 +311,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         cached = req.GET.get("cached", None)
 
-        q = self.compose_query(slice, site, node, service, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
+        q = self.compose_query(slice, site, node, service, event, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
 
         print q
 
@@ -373,6 +383,8 @@ class PlanetStackAnalytics(BigQueryAnalytics):
                     filter["site"] = site
                 if node:
                     filter["hostname"] = node
+                if event:
+                    filter["event"] = event
 
                 result = self.postprocess_results(results, filter=filter, sum=sum, count=count, avg=avg, computed=computed, maxDeltaTime=120, groupBy=["doesnotexist"])
             else:
@@ -393,7 +405,7 @@ def DoPlanetStackAnalytics(request):
     return result
 
 def main():
-    bq = PlanetStackAnalytics()
+    bq = PlanetStackAnalytics(tableName="demoevents")
 
     q = bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"])
     results = bq.run_query(q)
