@@ -1,8 +1,8 @@
-function getObjectQuery() {
-    var selectedNodeTxt = $('.currentOriginalNode').text();
+function getObjectAndEventQuery() {
+    var selectedNodeTxt = $('#currentOriginalNode').text();
     selectedNodeTxt = selectedNodeTxt.trim();
     selectedNodeTxt = selectedNodeTxt.split(' ').join('');//selectedNodeTxt.replace(" ", "")
-    var parentNodeTxt = $('.selectedMainNav').text();
+    var parentNodeTxt = $('#selectedMainNav').text();
     parentNodeTxt = parentNodeTxt.replace("/\n","");
     parentNodeTxt = parentNodeTxt.replace("»","");
     parentNodeTxt = parentNodeTxt.trim();
@@ -11,13 +11,13 @@ function getObjectQuery() {
     }
 
     if (parentNodeTxt == "Slice") {
-        return "&slice=" + selectedNodeTxt;
+        return "&event=libvirt_heartbeat&slice=" + selectedNodeTxt;
     } else if (parentNodeTxt == "Site") {
-        return "&site=" + selectedNodeTxt;
+        return "&event=node_heartbeat&site=" + selectedNodeTxt;
     } else if (parentNodeTxt == "Node") {
-        return "&node=" + selectedNodeTxt;
+        return "&event=node_heartbeat&node=" + selectedNodeTxt;
     } else {
-        return "";
+        return "&event=node_heartbeat";
     }
 }
 
@@ -48,8 +48,10 @@ function updatePageAnalyticsData(summaryData) {
 }
 
 function updatePageAnalytics() {
+    var url= '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=1' + getObjectAndEventQuery();
+    console.log(url);
     $.ajax({
-    url : '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=1' + getObjectQuery(),
+    url: url,
     dataType : 'json',
     type : 'GET',
     success: function(newData)
@@ -73,8 +75,10 @@ function updatePageBandwidthData(summaryData) {
 }
 
 function updatePageBandwidth() {
+    var url='/analytics/bigquery/?computed=%bytes_sent/%elapsed&cached=1' + getObjectAndEventQuery();
+
     $.ajax({
-    url : '/analytics/bigquery/?computed=%bytes_sent/%elapsed&cached=1' + getObjectQuery(),
+    url : url,
     dataType : 'json',
     type : 'GET',
     success: function(newData)
