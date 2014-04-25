@@ -115,24 +115,7 @@
             {% if not is_popup %}
             <div id=openCloudTopPage>
             {% include "/opt/planetstack/templates/admin/newminidashboard.html" %}
-
-<!--            <div id="minDashboard">
-                <div class="hide">{{ app_label|capfirst|escape }}</div> 
-                <div class="hide selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div> 
-                <div class="hide currentOriginalNode">{{ original|truncatewords:"18" }}</div>
-
-
-               <label class="nodetextbox nodesLabel" style="display: none;" > </label>
-              <label class="nodelabel nodesValue" style="display: none;" ></label>
-                <span class="nodesCnt hide"></span>
-              <label class="nodetextbox cpuLabel" style="display: none;" ></label>
-              <label class="nodelabel cpuValue" style="display: none;" ></label>
-                <span class="cpuCnt hide"></span>
-            <label class="nodetextbox bandwidthLabel" style="display: none;" ></label>
-              <label class="nodelabel bandwidthValue" style="width:60px;display: none;"></label>
-                <span class="bandUsage hide"></span>
-            </div> -->
-            </div> 
+            </div>
 
               {% block breadcrumbs %}
                 <ul class="breadcrumb"> 
