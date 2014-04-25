@@ -263,17 +263,21 @@ class OpenStackDriver:
                 subnet = snet
 
         if not subnet:
+            # HACK: Add metadata route -- Neutron does not reliably supply this
+            metadata_ip = cidr_ip.replace("0/24", "3")
+
             allocation_pools = [{'start': start, 'end': end}]
             subnet = {'subnet': {'name': name,
                                  'network_id': network_id,
                                  'ip_version': ip_version,
                                  'cidr': cidr_ip,
                                  #'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
+                                 'host_routes': [{'destination':'169.254.169.254/32','nexthop':metadata_ip}]
+                                 'gateway_ip': None,
                                  'allocation_pools': allocation_pools}}
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
-            self.add_external_route(subnet)
-        # TODO: Add route to external network
-        # e.g. #  route add -net 10.0.3.0/24 dev br-ex gw 10.100.0.5 
+            # self.add_external_route(subnet)
+
         return subnet
 
     def update_subnet(self, id, fields):
