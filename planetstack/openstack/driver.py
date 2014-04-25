@@ -272,7 +272,7 @@ class OpenStackDriver:
                                  'ip_version': ip_version,
                                  'cidr': cidr_ip,
                                  #'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
-                                 'host_routes': [{'destination':'169.254.169.254/32','nexthop':metadata_ip}]
+                                 'host_routes': [{'destination':'169.254.169.254/32','nexthop':metadata_ip}],
                                  'gateway_ip': None,
                                  'allocation_pools': allocation_pools}}
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
