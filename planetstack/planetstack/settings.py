@@ -240,3 +240,5 @@ LOGGING = {
         },
     }
 }
+
+BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
