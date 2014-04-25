@@ -71,6 +71,11 @@ class BigQueryAnalytics:
 		raise Exception('Error accessing register allocations: %d'%resp.status_code)
 
     def run_query_raw(self, query):
+        try:
+            file("/tmp/query_log","a").write("query %s\n" % query)
+        except:
+            pass
+
         p = re.compile('%[a-zA-z_]*')
 
         try:
@@ -78,6 +83,11 @@ class BigQueryAnalytics:
         except MappingException:
             self.reload_mapping()
             query = p.sub(self.remap, query)
+
+        try:
+            file("/tmp/query_log","a").write("remapped query %s\n" % query)
+        except:
+            pass
 
 	storage = Storage('/opt/planetstack/hpc_wizard/bigquery_credentials.dat')
  	credentials = storage.get()
@@ -155,12 +165,20 @@ class BigQueryAnalytics:
                 new_row["max_" + k] = max(new_row.get("max_" + k, 0), to_number(row.get(k,0)))
 
             for k in count:
-                new_row["count_" + k] = new_row.get("count_" + k, 0) + 1
+                v = row.get(k,None)
+                dl = new_row["distinct_" + k] = new_row.get("distinct_" + k, [])
+                if (v not in dl):
+                    dl.append(v)
+
+                #new_row["count_" + k] = new_row.get("count_" + k, 0) + 1
 
         for row in new_rows.values():
             for k in avg:
                 row["avg_" + k] = float(row["avg_" + k]) / row["avg_base_" + k]
                 del row["avg_base_" + k]
+
+            for k in count:
+                new_row["count_" + k] = len(new_row.get("distinct_" + k, []))
 
         return new_rows.values()
 
@@ -190,9 +208,10 @@ class BigQueryAnalytics:
         for (k,v) in filter.items():
             rows = self.filter_results(rows, k, v)
 
-        if maxDeltaTime is not None:
-            maxTime = max([float(row["time"]) for row in rows])
-            rows = [row for row in rows if float(row["time"])>=maxTime-maxDeltaTime]
+        if rows:
+            if maxDeltaTime is not None:
+                maxTime = max([float(row["time"]) for row in rows])
+                rows = [row for row in rows if float(row["time"])>=maxTime-maxDeltaTime]
 
         (computedFieldNames, rows) = self.do_computed_fields(rows, computed)
         sum = sum + computedFieldNames
