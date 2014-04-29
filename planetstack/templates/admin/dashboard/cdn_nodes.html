@@ -1,6 +1,15 @@
 <div id="tabs-6">
+<div class="row">
+        <span><b>Content Provider:</b></span>
+        <span><select id="cdn-node-data-slicename">
+        <option value="all">all</option>
+        {% for cp in cdnContentProviders %}
+           <option value="{{ cp.account }}">{{ cp.name }}</option>
+        {% endfor %}
+        </select></span>
 </div>
-
+<div id="cdn-node-table"></div>
+</div>
 <script>
 
 function domain_name_sort(a,b) {
@@ -22,7 +31,7 @@ jQuery.fn.dataTableExt.oSort['domain-name-desc']  = function(a,b) {
 };
 
 function updateCDNNodeData(data) {
-    $('#tabs-6').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_cdn_nodes"></table>' );
+    $('#cdn-node-table').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_cdn_nodes"></table>' );
     var actualEntries = [];
 
     var rows = data.rows;
