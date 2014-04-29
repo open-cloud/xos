@@ -39,11 +39,7 @@ function updateCDNNodeData(data) {
             hit_ratio = 0;
         }
 
-        if (elapsed > 0) {
-            Mbps = parseInt( (bytes_sent * 8.0 / 1024.0 / 1024.0 ) / elapsed );
-        } else {
-            Mbps = 0;
-        }
+        Mbps = parseInt(rows[row]['sum_computed_bytes_sent_div_elapsed'] * 8.0 / 1024.0 / 1024.0);
 
         if (healthy>0) {
             healthyStr = "ok";
@@ -67,7 +63,7 @@ function updateCDNNodeData(data) {
 }
 
 function updateCDNNodes() {
-    var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&groupBy=@hostname&cached=1&cachedGroupBy=@hostname';
+    var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&computed=@bytes_sent/@elapsed&groupBy=@hostname&cached=1&cachedGroupBy=@hostname';
     console.log(url);
     $.ajax({
     url: url,
