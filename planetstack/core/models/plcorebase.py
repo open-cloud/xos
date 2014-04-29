@@ -26,6 +26,8 @@ class PlCoreBase(models.Model):
     created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
     updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
+    backend_status = models.CharField(max_length=140,
+                                      default="Ok")
 
     class Meta:
         abstract = True
