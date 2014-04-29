@@ -8,6 +8,7 @@ import datetime
 from pprint import pprint
 import json
 from core.models import *
+from hpc.models import ContentProvider
 from operator import attrgetter
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseServerError
@@ -36,16 +37,11 @@ class DashboardWelcomeView(TemplateView):
 
         context['userSliceInfo'] = userDetails['userSliceInfo']
         context['cdnData'] = userDetails['cdnData']
+        context['cdnContentProviders'] = userDetails['cdnContentProviders']
         return self.render_to_response(context=context)
 
 def getUserSliceInfo(user, tableFormat = False):
         userDetails = {}
-#        try:
-# //           site = Site.objects.filter(id=user.site.id)
-#  //      except:
-#   //         site = Site.objects.filter(name="Princeton")
-#    //    userDetails['sitename'] = site[0].name
-#     //   userDetails['siteid'] = site[0].id
 
         userSliceData = getSliceInfo(user)
         if (tableFormat):
@@ -53,8 +49,8 @@ def getUserSliceInfo(user, tableFormat = False):
             userDetails['userSliceInfo'] = userSliceTableFormatter(userSliceData)
         else:
             userDetails['userSliceInfo'] = userSliceData
-        userDetails['cdnData'] = getCDNOperatorData(wait=False);
-#        pprint( userDetails)
+        userDetails['cdnData'] = getCDNOperatorData(wait=False)
+        userDetails['cdnContentProviders'] = getCDNContentProviderData()
         return userDetails
 
 class TenantCreateSlice(View):
@@ -233,6 +229,15 @@ def getSliceInfo(user):
 
     return userSliceInfo
 
+def getCDNContentProviderData():
+    cps = []
+    for dm_cp in ContentProvider.objects.all():
+        cp = {"name": dm_cp.name,
+              "account": dm_cp.account}
+        cps.append(cp)
+
+    return cps
+
 def getCDNOperatorData(randomizeData = False, wait=True):
     HPC_SLICE_NAME = "HyperCache"
 
@@ -277,7 +282,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
                "lat": float(site.location.latitude),
                "health": 0,
                "numNodes": int(site.nodes.count()),
-               "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),         # measured number of slivers, from bigquery statistics
+               "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),     # measured number of slivers, from bigquery statistics
                "numHPCSlivers": allocated_slivers,                              # allocated number of slivers, from data model
                "siteUrl": str(site.site_url),
                "bandwidth": stats_row.get("sum_computed_bytes_sent_div_elapsed",0),
