@@ -28,6 +28,7 @@ class PlCoreBase(models.Model):
     enacted = models.DateTimeField(null=True, default=None)
     backend_status = models.CharField(max_length=140,
                                       default="Provisioning in progress")
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
