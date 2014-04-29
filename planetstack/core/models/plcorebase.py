@@ -18,6 +18,8 @@ except:
     def notify_observer(*args, **kwargs):
         pass
 
+# This manager will be inherited by all subclasses because
+# the core model is abstract.
 class PlCoreBaseManager(models.Manager):
     def get_query_set(self):
         return super(PlCoreBaseManager, self).get_query_set().filter(deleted=False)
@@ -34,6 +36,8 @@ class PlCoreBase(models.Model):
     deleted = models.BooleanField(default=False)
 
     class Meta:
+        # Changing abstract to False would require the managers of subclasses of
+        # PlCoreBase to be customized individually.
         abstract = True
         app_label = "core"
 
