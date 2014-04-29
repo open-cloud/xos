@@ -18,11 +18,14 @@ except:
     def notify_observer(*args, **kwargs):
         pass
 
-class PlCoreBase(models.Model):
+class PlCoreBaseManager(models.Manager):
+    def get_query_set(self):
+        return super(PlCoreBaseManager, self).get_query_set().filter(deleted=False)
 
     # default values for created and updated are only there to keep evolution
     # from failing.
-
+class PlCoreBase(models.Model):
+    objects = PlCoreBaseManager()
     created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
     updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
