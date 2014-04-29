@@ -4,7 +4,6 @@ from datetime import datetime
 from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
-from observer.error_mapper import error_mapper
 
 logger = Logger(level=logging.INFO)
 

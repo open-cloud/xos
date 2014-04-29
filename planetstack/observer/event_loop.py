@@ -19,6 +19,7 @@ from planetstack.config import Config
 from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
+from observer.error_mapper import error_mapper
 
 debug_mode = False
 
@@ -41,7 +42,6 @@ class PlanetStackObserver:
 		self.load_sync_step_modules()
 		self.load_sync_steps()
 		self.event_cond = threading.Condition()
-
 
 		self.driver_kind = getattr(Config(), "observer_driver", "openstack")
 		if self.driver_kind=="openstack":
@@ -212,6 +212,9 @@ class PlanetStackObserver:
 
 		while True:
 			try:
+				error_map_file = getattr(Config(), "error_map_path", "/opt/planetstack/error_map.txt")
+				error_mapper = ErrorMapper(error_map_file)
+
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
 				self.wait_for_event(timeout=30)
@@ -227,7 +230,7 @@ class PlanetStackObserver:
 					step = self.step_lookup[S]
 					start_time=time.time()
 					
-					sync_step = step(driver=self.driver)
+					sync_step = step(driver=self.driver,error_map=error_mapper)
 					sync_step.__name__ = step.__name__
 					sync_step.dependencies = []
 					try:
@@ -271,11 +274,11 @@ class PlanetStackObserver:
 								failed_step_objects.update(failed_objects)
 							self.update_run_time(sync_step)
 						except Exception,e:
-							logging.error('Model step failed. This seems like a misconfiguration or bug: %r',e)
+							logging.error('Model step failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
 							logger.log_exc(e)
 							failed_steps.append(S)
 				self.save_run_times()
 			except Exception, e:
-				logging.error('Core error. This seems like a misconfiguration or bug: %r',e)
+				logging.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
 				logger.log_exc("Exception in observer run loop")
 				traceback.print_exc()
