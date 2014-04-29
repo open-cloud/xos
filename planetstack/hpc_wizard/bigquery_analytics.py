@@ -204,6 +204,7 @@ class BigQueryAnalytics:
         avg = [x.replace("%","") for x in avg]
         computed = [x.replace("%","") for x in computed]
         maxi = [x.replace("%","") for x in maxi]
+        groupBy = [x.replace("%","") for x in groupBy]
 
         for (k,v) in filter.items():
             rows = self.filter_results(rows, k, v)
