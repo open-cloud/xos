@@ -3,6 +3,8 @@ import base64
 from datetime import datetime
 from planetstack.config import Config
 from util.logger import Logger, logging
+from observer.steps import *
+from observer.error_mapper import error_mapper
 
 logger = Logger(level=logging.INFO)
 
@@ -33,6 +35,8 @@ class SyncStep:
         """
         dependencies = []
         self.driver = args.get('driver')
+        self.error_map = args.get('error_map')
+
         try:
             self.soft_deadline = int(self.get_prop('soft_deadline_seconds'))
         except:
@@ -60,8 +64,15 @@ class SyncStep:
                 self.sync_record(o)
                 o.enacted = datetime.now() # Is this the same timezone? XXX
                 o.save(update_fields=['enacted'])
-            except:
-                logger.log_exc("sync step %s failed!" % self.__name__)
+            except Exception,e:
+                try:
+                    o.backend_status = self.error_map.map(str(e))
+                except:
+                    o.backend_status = str(e)
+
+                o.save(update_fields=['backend_status'])
+
+                logger.log_exc("sync step failed!")
                 failed.append(o)
 
         return failed
