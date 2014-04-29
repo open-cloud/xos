@@ -62,6 +62,7 @@ class SyncStep:
                     self.check_dependencies(o,f) # Raises exception if failed
                 self.sync_record(o)
                 o.enacted = datetime.now() # Is this the same timezone? XXX
+                o.backend_status = "OK") 
                 o.save(update_fields=['enacted'])
             except Exception,e:
                 try:
