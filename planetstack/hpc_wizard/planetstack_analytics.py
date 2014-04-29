@@ -247,7 +247,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         """
 
         if not fieldNames:
-            fieldNames = ["%hostname", "%bytes_sent", "time", "event", "%site", "%elapsed", "%slice", "%cpu"]
+            fieldNames = ["%hostname", "%bytes_sent", "%bytes_hit", "%healthy", "time", "event", "%site", "%elapsed", "%slice", "%cpu"]
 
         fields = ["table1.%s AS %s" % (x,x) for x in fieldNames]
         fields = ", ".join(fields)
@@ -310,6 +310,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         maxAge = int(req.GET.get("maxAge", 60*60))
 
         cached = req.GET.get("cached", None)
+        cachedGroupBy = self.get_list_from_req(req, "cachedGroupBy", ["doesnotexist"])
 
         q = self.compose_query(slice, site, node, service, event, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
 
@@ -386,7 +387,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
                 if event:
                     filter["event"] = event
 
-                result = self.postprocess_results(results, filter=filter, sum=sum, count=count, avg=avg, computed=computed, maxDeltaTime=120, groupBy=["doesnotexist"])
+                result = self.postprocess_results(results, filter=filter, sum=sum, count=count, avg=avg, computed=computed, maxDeltaTime=120, groupBy=cachedGroupBy)
             else:
                 result = self.run_query(q)
 
