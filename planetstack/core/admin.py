@@ -641,9 +641,9 @@ class SliceForm(forms.ModelForm):
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
-    fieldList = ['name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url']
+    fieldList = ['name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
-    list_display = ('name', 'site','serviceClass', 'slice_url')
+    list_display = ('name', 'site','serviceClass', 'slice_url', 'max_slivers')
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
     user_readonly_fields = fieldList

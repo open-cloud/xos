@@ -61,6 +61,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
         next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
         return next_network
 
+
     def sync_record(self, slice_deployment):
         logger.info("sync'ing slice deployment %s" % slice_deployment)
         if not slice_deployment.tenant_id:
@@ -91,9 +92,16 @@ class SyncSliceDeployments(OpenStackSyncStep):
 
 
         if slice_deployment.id and slice_deployment.tenant_id:
+            # update existing tenant
             driver = self.driver.admin_driver(deployment=slice_deployment.deployment.name)
             driver.update_tenant(slice_deployment.tenant_id,
                                  description=slice_deployment.slice.description,
-                                 enabled=slice_deployment.slice.enabled)   
+                                 enabled=slice_deployment.slice.enabled)  
+
+        if slice_deployment.tenant_id:
+            # update slice/tenant quota
+            driver = self.driver.client_driver(deployment=slice_deployment.deployment.name,
+                                              tenant=slice_deployment.slice.name)
+            driver.shell.nova.quotas.update(tenant_id=slice_deployment.tenant_id, instances=int(slice_deployment.slice.max_slivers)) 
 
         slice_deployment.save()
