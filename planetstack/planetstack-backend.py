@@ -29,6 +29,10 @@ def main():
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
     parser.add_argument('-d', '--daemon', dest='daemon', action='store_true', default=False, 
                         help='Run as daemon.')
+    # smbaker: util/config.py parses sys.argv[] directly to get config file name; include the option here to avoid
+    #   throwing unrecognized argument exceptions
+    parser.add_argument('-C', '--config', dest='config_file', action='store', default="/opt/planetstack/plstackapi_config",
+                        help='Name of config file.')
     args = parser.parse_args()
        
     if args.daemon: daemon()
