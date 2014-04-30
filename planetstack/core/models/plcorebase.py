@@ -72,7 +72,8 @@ class PlCoreBase(models.Model):
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
-        if (observer_disabled):
+        purge = kwds.get('purge',True)
+        if (observer_disabled or purge):
             super(PlCoreBase, self).delete(*args, **kwargs)
         else:
             self.deleted = True
