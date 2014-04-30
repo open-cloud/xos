@@ -54,16 +54,20 @@ class SyncStep:
             if (peer_object.pk==failed.pk):
                 raise FailedDependency
 
-    def call(self, failed=[]):
-        pending = self.fetch_pending()
+    def call(self, failed=[], deletion=False):
+        pending = self.fetch_pending(deletion)
         for o in pending:
             try:
                 for f in failed:
                     self.check_dependencies(o,f) # Raises exception if failed
-                self.sync_record(o)
-                o.enacted = datetime.now() # Is this the same timezone? XXX
-                o.backend_status = "OK"
-                o.save(update_fields=['enacted'])
+                if (deletion):
+                    self.delete_record(o)
+                    o.delete(purge=True)
+                else:
+                    self.sync_record(o)
+                    o.enacted = datetime.now() # Is this the same timezone? XXX
+                    o.backend_status = "OK"
+                    o.save(update_fields=['enacted'])
             except Exception,e:
                 try:
                     o.backend_status = self.error_map.map(str(e))
