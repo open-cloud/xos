@@ -72,20 +72,17 @@ class PlCoreBase(models.Model):
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
-        pk = self.pk
-        model_dict = model_to_dict(self)
-        for (k,v) in model_dict.items():
-            # things like datetime are not JSON serializable
-            model_dict[k] = str(v)
+        if (observer_disabled):
+            super(PlCoreBase, self).delete(*args, **kwargs)
+        else:
+            self.deleted = True
+            self.enacted=None
+            self.save(update_fields=['enacted','deleted'])
 
-        super(PlCoreBase, self).delete(*args, **kwds)
-
-        # This is a no-op if observer_disabled is set
-        notify_observer(model=self, delete=True, pk=pk, model_dict=model_dict)
 
     def save(self, *args, **kwargs):
         super(PlCoreBase, self).save(*args, **kwargs)
-        
+
         # This is a no-op if observer_disabled is set
         notify_observer()
 
