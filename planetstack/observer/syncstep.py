@@ -43,7 +43,7 @@ class SyncStep:
 
         return
 
-    def fetch_pending(self):
+    def fetch_pending(self, deletion=False):
         return []
         #return Sliver.objects.filter(ip=None)
     
