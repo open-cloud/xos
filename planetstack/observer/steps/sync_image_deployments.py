@@ -32,13 +32,22 @@ class SyncImageDeployments(OpenStackSyncStep):
                       
     def sync_record(self, image_deployment):
         driver = self.driver.admin_driver(deployment=image_deployment.deployment.name)
-        image = {
-            'name': image_deployment.image.name,
-            'is_public': True,
-            'disk_format': 'raw', 
-            'container_format': 'bare',
-            'file': image_deployment.image.path, 
-        }  
-        glance_image = driver.shell.glance.add_image(image)  
-        image_deployment.glance_image_id = glance_image['id']
+        images = driver.shell.glance.get_images()
+        glance_image = None
+        for image in images:
+            if image['name'] == image_deployment.image.name:
+                glance_image = image
+                break
+        if glance_image:
+            image_deployment.glance_image_id = glance_image['id']
+        elif image_deployment.image.path:
+            glance_image = driver.shell.glanceclient.images.create(name=image_deployment.image.name,
+                                                                   is_public=True,
+                                                                   disk_format='raw',
+                                                                   container_format='bare')
+            glance_image.update(data=open(image_deployment.image.path, 'rb'))
+ 
+            if not glance_image or not glance_image.get('id'): 
+                raise Exception, "Add image failed at deployment %s" % image_deployment.deployment.name
+            image_deployment.glance_image_id = glance_image['id']
         image_deployment.save()
