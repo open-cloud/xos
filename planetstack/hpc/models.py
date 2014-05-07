@@ -28,6 +28,10 @@ class ContentProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
 
+    # legacy vicci content providers already have names.
+    CP_TO_ACCOUNT = {"ON.LAB": "onlabcp",
+                     "Syndicate": "syndicatecp"}
+
     content_provider_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=254)
     enabled = models.BooleanField(default=True)
@@ -38,6 +42,10 @@ class ContentProvider(PlCoreBase):
     users = models.ManyToManyField(User)
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    @property
+    def account(self):
+        return self.CP_TO_ACCOUNT.get(self.name, self.name)
 
 class OriginServer(PlCoreBase):
     class Meta:
