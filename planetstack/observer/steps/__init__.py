@@ -12,4 +12,5 @@ from .sync_users import SyncUsers
 from .sync_roles import SyncRoles
 from .sync_nodes import SyncNodes
 from .sync_images import SyncImages
+from .sync_image_deployments import SyncImageDeployments
 from .garbage_collector import GarbageCollector
