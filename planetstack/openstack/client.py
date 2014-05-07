@@ -1,6 +1,8 @@
+import urlparse
 try:
     from keystoneclient.v2_0 import client as keystone_client
     from glance import client as glance_client
+    import glanceclient
     from novaclient.v1_1 import client as nova_client
     from quantumclient.v2_0 import client as quantum_client
     from nova.db.sqlalchemy import api as nova_db_api 
@@ -123,6 +125,16 @@ class GlanceClient(Client):
     def __getattr__(self, name):
         return getattr(self.client, name)
 
+class GlanceClientNew(Client):
+    def __init__(self, version, endpoint, token, *args, **kwds):
+        Client.__init__(self, *args, **kwds)
+        if has_openstack:
+            self.client = glanceclient.Client(version, endpoint=endpoint, token=token)
+
+    @require_enabled
+    def __getattr__(self, name):
+        return getattr(self.client, name)        
+
 class NovaClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
@@ -187,11 +199,17 @@ class OpenStackClient:
     def __init__ ( self, *args, **kwds) :
         # instantiate managers
         self.keystone = KeystoneClient(*args, **kwds)
+        url_parsed = urlparse.urlparse(self.keystone.url)
+        hostname = url_parsed.netloc.split(':')[0]
+        token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
         self.keystone_db = KeystoneDB()
         self.glance = GlanceClient(*args, **kwds)
+        
+        self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id)
         self.nova = NovaClient(*args, **kwds)
         self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
+    
 
     @require_enabled
     def connect(self, *args, **kwds):
