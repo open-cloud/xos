@@ -726,7 +726,7 @@ class ImageAdmin(PlanetStackBaseAdmin):
 
     inlines = [SliverInline]
     
-    user_readonly_fields = ['image_id', 'name', 'disk_format', 'container_format']
+    user_readonly_fields = ['name', 'disk_format', 'container_format']
     user_readonly_inlines = [SliverROInline]
     
 class NodeForm(forms.ModelForm):
