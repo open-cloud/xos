@@ -46,8 +46,5 @@ class SyncImageDeployments(OpenStackSyncStep):
                                                                    disk_format='raw',
                                                                    container_format='bare')
             glance_image.update(data=open(image_deployment.image.path, 'rb'))
- 
-            if not glance_image or not glance_image.get('id'): 
-                raise Exception, "Add image failed at deployment %s" % image_deployment.deployment.name
-            image_deployment.glance_image_id = glance_image['id']
+            image_deployment.glance_image_id = glance_image.id
         image_deployment.save()
