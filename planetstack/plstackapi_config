@@ -31,5 +31,6 @@ default_flavor=m1.small
 default_security_group=default
 
 [observer]
+images_directory=/opt/planetstack/images
 dependency_graph=/opt/planetstack/model-deps
 logfile=/var/log/planetstack_backend.log
