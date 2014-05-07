@@ -21,6 +21,7 @@ class SyncNodes(OpenStackSyncStep):
 
         # fetch all nodes from each deployment 
         deployments = Deployment.objects.all()
+        new_nodes = []
         for deployment in deployments:
             driver = self.driver.admin_driver(deployment=deployment.name)
             compute_nodes = driver.shell.nova.hypervisors.list()
