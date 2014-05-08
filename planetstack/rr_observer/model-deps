@@ -1,0 +1,12 @@
+{
+    "ServiceMap": [
+        "Slice"
+    ], 
+    "Slice": [
+        "Site", 
+        "Service"
+    ], 
+    "User": [
+        "Site"
+    ]
+}

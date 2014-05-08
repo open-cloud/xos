@@ -1,0 +1,13 @@
+---
+# This playbook contains plays to delete configuration files from dnsredir slice
+- name: delete  maps.d directory ( and deletes all intermeadiate directories )
+  #copy: src={{src_dnsredir}}/{{name}}.d dest={{dst_dnsredir_confdir}}
+  file: path={{dst_dnsredir_confdir}}/{{name}}.d/maps.d state=absent
+ 
+- name: delete config directory
+  file: path={{dst_dnsredir_confdir}}/{{name}}.d/ state=absent
+ 
+- name: copy dnsredir config file
+  file: path={{dst_dnsredir_conf}}/{{name}}.conf state=absent
+  notify: restart dnsredir
+

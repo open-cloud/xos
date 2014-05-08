@@ -1,0 +1,6 @@
+---
+# Variables listed here are applicable to all host groups
+
+src_dnsredir: ../../../../temp_config/dnsredir
+dst_dnsredir_conf: /etc/dnsredir/conf.d/
+dst_dnsredir_confdir: /etc/dnsredir

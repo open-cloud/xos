@@ -1,0 +1,9 @@
+---
+# This playbook contains plays to copy configurations to destination
+- name: copy dnsdemux config files
+  copy: src={{src_dnsdemux}}/{{name}}.conf dest={{dst_dnsdemux_conf}}/{{name}}.conf
+  notify: restart dnsdemux
+
+#- name: Start the dnsdemux service
+  #service: name=dnsdemux state=started enabled=true
+

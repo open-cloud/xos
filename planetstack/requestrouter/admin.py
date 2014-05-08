@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, SliceROInline,ServiceAttrAsTabROInline, ReadOnlyAwareAdmin
 
 class RequestRouterServiceAdmin(SingletonAdmin):
     model = RequestRouterService
@@ -20,18 +20,21 @@ class RequestRouterServiceAdmin(SingletonAdmin):
     fieldsets = [(None, {'fields': ['name','enabled','versionNumber', 'description','behindNat','defaultTTL','defaultAction','lastResortAction','maxAnswers'], 'classes':['suit-tab suit-tab-general']})]
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
+    user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
     suit_form_tabs =(('general', 'Request Router Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
 
-class ServiceMapAdmin(SingletonAdmin):
+class ServiceMapAdmin(ReadOnlyAwareAdmin):
     model = ServiceMap
     verbose_name = "Service Map"
     verbose_name_plural = "Service Map"
     list_display = ("name", "owner", "slice", "prefix")
-    #readonly_fields = ["name"]
+    fieldsets = [(None, {'fields': ['name','owner','slice', 'prefix','siteMap','accessMap'], 'classes':['suit-tab suit-tab-general']})]
 
+    suit_form_tabs =(('general', 'Service Map Details'),
+    )
 
 admin.site.register(RequestRouterService, RequestRouterServiceAdmin)
 admin.site.register(ServiceMap, ServiceMapAdmin)
