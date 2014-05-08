@@ -69,9 +69,6 @@
         "location": "37.4294,-122.17200000000003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            5
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -90,9 +87,6 @@
         "location": "47.6531,-122.31299999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            6
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -111,9 +105,6 @@
         "location": "40.3502,-74.6524", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            7
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -132,9 +123,6 @@
         "location": "33.7772,-84.39760000000001", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            8
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -153,9 +141,6 @@
         "location": "49.14,6.588999999999942", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            9
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -174,9 +159,6 @@
         "location": "33.0075,-84.0038", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -195,9 +177,6 @@
         "location": "41.0085,-87.0065", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -216,9 +195,6 @@
         "location": "29.0077,-95.0037", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -237,9 +213,6 @@
         "location": "39.0012,-94.0063", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -258,9 +231,6 @@
         "location": "33.2505,-117.503", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -279,9 +249,6 @@
         "location": "40.72,-73.99", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -300,9 +267,6 @@
         "location": "40.7659,-111.844", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -321,9 +285,6 @@
         "location": "47.6531,-122.313", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -342,9 +303,6 @@
         "location": "38.009,-77.0003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -363,14 +321,6 @@
         "location": "37.452955,-122.18176599999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            5, 
-            6, 
-            7, 
-            8, 
-            9, 
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -389,9 +339,6 @@
         "location": "1.33544,103.88999999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -410,7 +357,6 @@
         "location": "32.2333,-110.94799999999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -513,6 +459,258 @@
         "enacted": null, 
         "name": "Internet2", 
         "created": "2013-04-03T22:57:23.015Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.453Z", 
+        "created": "2014-05-07T23:52:01.453Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 5, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.455Z", 
+        "created": "2014-05-07T23:52:01.455Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.456Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 7, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 8, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.457Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 9, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.458Z", 
+        "created": "2014-05-07T23:52:01.458Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:00:37.305Z", 
+        "created": "2014-05-08T00:00:37.305Z", 
+        "tenant_id": null, 
+        "site": 23, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:18.181Z", 
+        "created": "2014-05-08T00:01:18.181Z", 
+        "tenant_id": null, 
+        "site": 21, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:29.768Z", 
+        "created": "2014-05-08T00:01:29.768Z", 
+        "tenant_id": null, 
+        "site": 20, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 10, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:52.173Z", 
+        "created": "2014-05-08T00:01:52.173Z", 
+        "tenant_id": null, 
+        "site": 19, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 11, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:03.435Z", 
+        "created": "2014-05-08T00:02:03.435Z", 
+        "tenant_id": null, 
+        "site": 18, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 12, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:16.038Z", 
+        "created": "2014-05-08T00:02:16.038Z", 
+        "tenant_id": null, 
+        "site": 17, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 13, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:33.626Z", 
+        "created": "2014-05-08T00:02:33.626Z", 
+        "tenant_id": null, 
+        "site": 16, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 14, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:46.549Z", 
+        "created": "2014-05-08T00:02:46.549Z", 
+        "tenant_id": null, 
+        "site": 15, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 15, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:01.445Z", 
+        "created": "2014-05-08T00:03:01.445Z", 
+        "tenant_id": null, 
+        "site": 14, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 16, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:18.238Z", 
+        "created": "2014-05-08T00:03:18.238Z", 
+        "tenant_id": null, 
+        "site": 13, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 17, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:32.156Z", 
+        "created": "2014-05-08T00:03:32.156Z", 
+        "tenant_id": null, 
+        "site": 12, 
+        "deployment": 9, 
+        "enacted": null
+    }
+},
+{
+    "pk": 18, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:45.449Z", 
+        "created": "2014-05-08T00:03:45.448Z", 
+        "tenant_id": null, 
+        "site": 11, 
+        "deployment": 8, 
+        "enacted": null
+    }
+},
+{
+    "pk": 19, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:59.510Z", 
+        "created": "2014-05-08T00:03:59.510Z", 
+        "tenant_id": null, 
+        "site": 10, 
+        "deployment": 7, 
+        "enacted": null
+    }
+},
+{
+    "pk": 20, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:12.516Z", 
+        "created": "2014-05-08T00:04:12.516Z", 
+        "tenant_id": null, 
+        "site": 9, 
+        "deployment": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 21, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:25.576Z", 
+        "created": "2014-05-08T00:04:25.576Z", 
+        "tenant_id": null, 
+        "site": 8, 
+        "deployment": 5, 
+        "enacted": null
     }
 },
 {
