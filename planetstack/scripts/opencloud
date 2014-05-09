@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-    echo usage: $0 "[initdb | resetdb ]"
+    echo usage: $0 "[initdb | createdb | dropdb | syncdb | runserver | resetdb | dumpdata]"
     exit
 fi
 
@@ -33,9 +33,13 @@ function syncdb {
     python /opt/planetstack/manage.py syncdb --noinput
 }
 function runserver {
-#    python manage.py runserver 128.95.1.128:8000
     echo "Starting OpenCloud Service on $HOSTNAME:8000"
     python manage.py runserver  $HOSTNAME:8000&
+}
+
+function dumpdata {
+    echo "Saving off OpenCloud data to /opt/planetstack/initial_data.json. Please compare against /opt/planetstack/core/fixtures/initial_data.json to be sure of replacing these changes as the default initialization values."
+    python manage.py dumpdata core hpc syndicate requestrouter --indent 4 > /opt/planetstack/initial_data.json
 }
 
 COMMAND=$1
@@ -59,4 +63,6 @@ fi
 if [ "$COMMAND" = "runserver" ]; then
     runserver
 fi
-
+if [ "$COMMAND" = "dumpdata" ]; then
+    dumpdata
+fi
