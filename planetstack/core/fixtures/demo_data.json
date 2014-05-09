@@ -62,7 +62,6 @@
         "updated": "2013-12-17T18:00:47.910Z", 
         "name": "Stanford", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.stanford.edu/", 
@@ -70,9 +69,6 @@
         "location": "37.4294,-122.17200000000003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            5
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -84,7 +80,6 @@
         "updated": "2013-12-17T18:00:38.431Z", 
         "name": "Washington", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "https://www.washington.edu/", 
@@ -92,9 +87,6 @@
         "location": "47.6531,-122.31299999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            6
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -106,7 +98,6 @@
         "updated": "2013-12-17T18:00:28.495Z", 
         "name": "Princeton", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://princeton.edu/", 
@@ -114,9 +105,6 @@
         "location": "40.3502,-74.6524", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            7
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -128,7 +116,6 @@
         "updated": "2013-12-17T18:00:18.964Z", 
         "name": "GeorgiaTech", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.gatech.edu/", 
@@ -136,9 +123,6 @@
         "location": "33.7772,-84.39760000000001", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            8
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -150,7 +134,6 @@
         "updated": "2013-12-17T18:00:07.704Z", 
         "name": "MaxPlanck", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.mpi-sws.mpg.de/", 
@@ -158,9 +141,6 @@
         "location": "49.14,6.588999999999942", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            9
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -172,7 +152,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Atlanta", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -180,9 +159,6 @@
         "location": "33.0075,-84.0038", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -194,7 +170,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Chicago", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -202,9 +177,6 @@
         "location": "41.0085,-87.0065", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -216,7 +188,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Houston", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -224,9 +195,6 @@
         "location": "29.0077,-95.0037", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -238,7 +206,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Kansas City", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -246,9 +213,6 @@
         "location": "39.0012,-94.0063", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -260,7 +224,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Los Angeles", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -268,9 +231,6 @@
         "location": "33.2505,-117.503", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -282,7 +242,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 New York", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -290,9 +249,6 @@
         "location": "40.72,-73.99", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -304,7 +260,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Salt Lake City", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -312,9 +267,6 @@
         "location": "40.7659,-111.844", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -326,7 +278,6 @@
         "updated": "2014-03-22T06:27:07.824Z", 
         "name": "I2 Seattle", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu/", 
@@ -334,9 +285,6 @@
         "location": "47.6531,-122.31299999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -348,7 +296,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Washington DC", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -356,9 +303,6 @@
         "location": "38.009,-77.0003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -370,7 +314,6 @@
         "updated": "2013-12-17T17:30:14.491Z", 
         "name": "ON.Lab", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.onlab.us/", 
@@ -378,14 +321,6 @@
         "location": "37.452955,-122.18176599999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10, 
-            5, 
-            7, 
-            6, 
-            9, 
-            8
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -397,7 +332,6 @@
         "updated": "2013-12-17T18:21:43.870Z", 
         "name": "I2 Singapore", 
         "created": "2013-12-17T17:08:49.669Z", 
-        "tenant_id": null, 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu/", 
@@ -405,9 +339,6 @@
         "location": "1.33544,103.88999999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -419,7 +350,6 @@
         "updated": "2013-12-17T18:08:01.373Z", 
         "name": "Arizona", 
         "created": "2013-12-17T18:07:14.190Z", 
-        "tenant_id": null, 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.cs.arizona.edu/", 
@@ -427,7 +357,6 @@
         "location": "32.2333,-110.94799999999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [], 
         "abbreviated_name": "", 
         "enacted": null
     }
@@ -440,36 +369,6 @@
         "enacted": null, 
         "role": "pi", 
         "created": "2013-12-17T18:08:54.842Z"
-    }
-},
-{
-    "pk": 2, 
-    "model": "core.siterole", 
-    "fields": {
-        "updated": "2014-05-07T22:12:14.075Z", 
-        "enacted": null, 
-        "role": "admin", 
-        "created": "2014-05-07T22:12:14.075Z"
-    }
-},
-{
-    "pk": 3, 
-    "model": "core.siterole", 
-    "fields": {
-        "updated": "2014-05-07T22:12:31.217Z", 
-        "enacted": null, 
-        "role": "tech", 
-        "created": "2014-05-07T22:12:31.217Z"
-    }
-},
-{
-    "pk": 4, 
-    "model": "core.siterole", 
-    "fields": {
-        "updated": "2014-05-07T22:12:40.195Z", 
-        "enacted": null, 
-        "role": "billing", 
-        "created": "2014-05-07T22:12:40.195Z"
     }
 },
 {
@@ -533,24 +432,14 @@
     }
 },
 {
-    "pk": 11, 
-    "model": "core.deployment", 
-    "fields": {
-        "updated": "2014-03-27T20:32:40.358Z", 
-        "enacted": null, 
-        "name": "Enterprise", 
-        "created": "2014-03-27T20:31:26.778Z"
-    }
-},
-{
     "pk": 1, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:11:27.274Z", 
-        "created": "2014-03-27T22:11:27.274Z", 
+        "updated": "2014-05-07T23:52:01.453Z", 
+        "created": "2014-05-07T23:52:01.453Z", 
         "tenant_id": null, 
-        "site": 24, 
-        "deployment": 11, 
+        "site": 22, 
+        "deployment": 5, 
         "enacted": null
     }
 },
@@ -558,11 +447,11 @@
     "pk": 2, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:11:58.164Z", 
-        "created": "2014-03-27T22:11:58.164Z", 
+        "updated": "2014-05-07T23:52:01.455Z", 
+        "created": "2014-05-07T23:52:01.455Z", 
         "tenant_id": null, 
-        "site": 12, 
-        "deployment": 9, 
+        "site": 22, 
+        "deployment": 6, 
         "enacted": null
     }
 },
@@ -570,11 +459,11 @@
     "pk": 3, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:12:21.384Z", 
-        "created": "2014-03-27T22:12:21.384Z", 
+        "updated": "2014-05-07T23:52:01.456Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
         "tenant_id": null, 
-        "site": 23, 
-        "deployment": 10, 
+        "site": 22, 
+        "deployment": 7, 
         "enacted": null
     }
 },
@@ -582,11 +471,11 @@
     "pk": 4, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:12:38.291Z", 
-        "created": "2014-03-27T22:12:38.291Z", 
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
         "tenant_id": null, 
         "site": 22, 
-        "deployment": 11, 
+        "deployment": 8, 
         "enacted": null
     }
 },
@@ -594,11 +483,11 @@
     "pk": 5, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:12:52.927Z", 
-        "created": "2014-03-27T22:12:52.927Z", 
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.457Z", 
         "tenant_id": null, 
-        "site": 21, 
-        "deployment": 10, 
+        "site": 22, 
+        "deployment": 9, 
         "enacted": null
     }
 },
@@ -606,10 +495,10 @@
     "pk": 6, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:13:10.352Z", 
-        "created": "2014-03-27T22:13:10.352Z", 
+        "updated": "2014-05-07T23:52:01.458Z", 
+        "created": "2014-05-07T23:52:01.458Z", 
         "tenant_id": null, 
-        "site": 20, 
+        "site": 22, 
         "deployment": 10, 
         "enacted": null
     }
@@ -618,10 +507,10 @@
     "pk": 7, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:13:22.767Z", 
-        "created": "2014-03-27T22:13:22.766Z", 
+        "updated": "2014-05-08T00:00:37.305Z", 
+        "created": "2014-05-08T00:00:37.305Z", 
         "tenant_id": null, 
-        "site": 19, 
+        "site": 23, 
         "deployment": 10, 
         "enacted": null
     }
@@ -630,10 +519,10 @@
     "pk": 8, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:13:36.387Z", 
-        "created": "2014-03-27T22:13:36.387Z", 
+        "updated": "2014-05-08T00:01:18.181Z", 
+        "created": "2014-05-08T00:01:18.181Z", 
         "tenant_id": null, 
-        "site": 18, 
+        "site": 21, 
         "deployment": 10, 
         "enacted": null
     }
@@ -642,10 +531,10 @@
     "pk": 9, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:13:47.977Z", 
-        "created": "2014-03-27T22:13:47.977Z", 
+        "updated": "2014-05-08T00:01:29.768Z", 
+        "created": "2014-05-08T00:01:29.768Z", 
         "tenant_id": null, 
-        "site": 17, 
+        "site": 20, 
         "deployment": 10, 
         "enacted": null
     }
@@ -654,10 +543,10 @@
     "pk": 10, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:13:58.582Z", 
-        "created": "2014-03-27T22:13:58.582Z", 
+        "updated": "2014-05-08T00:01:52.173Z", 
+        "created": "2014-05-08T00:01:52.173Z", 
         "tenant_id": null, 
-        "site": 16, 
+        "site": 19, 
         "deployment": 10, 
         "enacted": null
     }
@@ -666,10 +555,10 @@
     "pk": 11, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:14:10.076Z", 
-        "created": "2014-03-27T22:14:10.076Z", 
+        "updated": "2014-05-08T00:02:03.435Z", 
+        "created": "2014-05-08T00:02:03.435Z", 
         "tenant_id": null, 
-        "site": 15, 
+        "site": 18, 
         "deployment": 10, 
         "enacted": null
     }
@@ -678,10 +567,10 @@
     "pk": 12, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:14:19.402Z", 
-        "created": "2014-03-27T22:14:19.402Z", 
+        "updated": "2014-05-08T00:02:16.038Z", 
+        "created": "2014-05-08T00:02:16.038Z", 
         "tenant_id": null, 
-        "site": 14, 
+        "site": 17, 
         "deployment": 10, 
         "enacted": null
     }
@@ -690,10 +579,10 @@
     "pk": 13, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:14:30.679Z", 
-        "created": "2014-03-27T22:14:30.678Z", 
+        "updated": "2014-05-08T00:02:33.626Z", 
+        "created": "2014-05-08T00:02:33.626Z", 
         "tenant_id": null, 
-        "site": 13, 
+        "site": 16, 
         "deployment": 10, 
         "enacted": null
     }
@@ -702,11 +591,11 @@
     "pk": 14, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:14:45.825Z", 
-        "created": "2014-03-27T22:14:45.825Z", 
+        "updated": "2014-05-08T00:02:46.549Z", 
+        "created": "2014-05-08T00:02:46.549Z", 
         "tenant_id": null, 
-        "site": 11, 
-        "deployment": 8, 
+        "site": 15, 
+        "deployment": 10, 
         "enacted": null
     }
 },
@@ -714,11 +603,11 @@
     "pk": 15, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:14:57.565Z", 
-        "created": "2014-03-27T22:14:57.565Z", 
+        "updated": "2014-05-08T00:03:01.445Z", 
+        "created": "2014-05-08T00:03:01.445Z", 
         "tenant_id": null, 
-        "site": 10, 
-        "deployment": 7, 
+        "site": 14, 
+        "deployment": 10, 
         "enacted": null
     }
 },
@@ -726,11 +615,11 @@
     "pk": 16, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:15:11.592Z", 
-        "created": "2014-03-27T22:15:11.592Z", 
+        "updated": "2014-05-08T00:03:18.238Z", 
+        "created": "2014-05-08T00:03:18.238Z", 
         "tenant_id": null, 
-        "site": 9, 
-        "deployment": 6, 
+        "site": 13, 
+        "deployment": 10, 
         "enacted": null
     }
 },
@@ -738,8 +627,56 @@
     "pk": 17, 
     "model": "core.sitedeployments", 
     "fields": {
-        "updated": "2014-03-27T22:15:23.766Z", 
-        "created": "2014-03-27T22:15:23.766Z", 
+        "updated": "2014-05-08T00:03:32.156Z", 
+        "created": "2014-05-08T00:03:32.156Z", 
+        "tenant_id": null, 
+        "site": 12, 
+        "deployment": 9, 
+        "enacted": null
+    }
+},
+{
+    "pk": 18, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:45.449Z", 
+        "created": "2014-05-08T00:03:45.448Z", 
+        "tenant_id": null, 
+        "site": 11, 
+        "deployment": 8, 
+        "enacted": null
+    }
+},
+{
+    "pk": 19, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:59.510Z", 
+        "created": "2014-05-08T00:03:59.510Z", 
+        "tenant_id": null, 
+        "site": 10, 
+        "deployment": 7, 
+        "enacted": null
+    }
+},
+{
+    "pk": 20, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:12.516Z", 
+        "created": "2014-05-08T00:04:12.516Z", 
+        "tenant_id": null, 
+        "site": 9, 
+        "deployment": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 21, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:25.576Z", 
+        "created": "2014-05-08T00:04:25.576Z", 
         "tenant_id": null, 
         "site": 8, 
         "deployment": 5, 
@@ -761,9 +698,8 @@
         "is_active": true, 
         "site": null, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2014-05-07T22:10:40.073Z", 
+        "last_login": "2014-03-23T13:57:56.529Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$v5qKhIyhSQ2N$V8vh2mkqYdjQib6d2jBkpwV57eMBfhd/9eiXqaDLUWg=", 
@@ -786,7 +722,6 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-14T03:21:24.872Z", 
         "timezone": "America/New_York", 
@@ -811,7 +746,6 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-04T20:46:15.904Z", 
         "timezone": "America/New_York", 
@@ -836,7 +770,6 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-18T21:47:08.698Z", 
         "timezone": "America/New_York", 
@@ -861,7 +794,6 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-17T16:21:46.493Z", 
         "timezone": "America/New_York", 
@@ -886,9 +818,8 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2013-09-22T21:48:01.047Z", 
+        "last_login": "2014-05-09T02:08:32.840Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -911,9 +842,8 @@
         "is_active": true, 
         "site": 22, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2014-03-23T23:19:35.597Z", 
+        "last_login": "2014-05-09T16:27:05.692Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$EOrqG6KzVO8z$4jSJMN/35PKPmJkDEHjAY1c/mDpBfoW1U8XAfk1eDLk=", 
@@ -936,9 +866,8 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
-        "last_login": "2014-03-22T06:16:59.266Z", 
+        "last_login": "2014-05-09T16:16:38.852Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -961,7 +890,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -986,7 +914,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -1011,7 +938,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -1036,7 +962,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -1061,7 +986,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -1086,7 +1010,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-19T00:59:55.668Z", 
         "timezone": "America/New_York", 
@@ -1111,63 +1034,12 @@
         "is_active": true, 
         "site": 24, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-17T18:08:01.356Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "!", 
         "email": "jhh@cs.arizona.edu", 
-        "enacted": null
-    }
-},
-{
-    "pk": 16, 
-    "model": "core.user", 
-    "fields": {
-        "username": "ayaka@onlab.us", 
-        "public_key": "", 
-        "updated": "2014-03-27T21:20:58.151Z", 
-        "is_readonly": false, 
-        "firstname": "Ayaka", 
-        "user_url": null, 
-        "lastname": "Koshibe", 
-        "created": "2014-03-27T21:20:58.151Z", 
-        "is_active": true, 
-        "site": null, 
-        "phone": "", 
-        "kuser_id": null, 
-        "is_staff": true, 
-        "last_login": "2014-03-27T21:20:57.960Z", 
-        "timezone": "America/New_York", 
-        "is_admin": true, 
-        "password": "pbkdf2_sha256$10000$QhTyK7jMRCya$JCPA1SbY+aNjoa2MVqu9/rOHxdKdoQSna3EuJ10x9ac=", 
-        "email": "ayaka@onlab.us", 
-        "enacted": null
-    }
-},
-{
-    "pk": 17, 
-    "model": "core.user", 
-    "fields": {
-        "username": "amisha@onlab.us", 
-        "public_key": "", 
-        "updated": "2014-03-27T21:56:42.868Z", 
-        "is_readonly": false, 
-        "firstname": "Amisha", 
-        "user_url": null, 
-        "lastname": "Bahl", 
-        "created": "2014-03-27T21:56:24.661Z", 
-        "is_active": true, 
-        "site": 22, 
-        "phone": "", 
-        "kuser_id": null, 
-        "is_staff": true, 
-        "last_login": "2014-04-15T21:26:38.878Z", 
-        "timezone": "America/New_York", 
-        "is_admin": true, 
-        "password": "pbkdf2_sha256$10000$QL6aOPpPyvB1$qBO7ymfOSPQdM8/zoVjzAnbU0ui1uoGzdJvqK7F/F5c=", 
-        "email": "amisha@onlab.us", 
         "enacted": null
     }
 },
@@ -1244,6 +1116,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1265,6 +1138,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1286,6 +1160,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 8, 
         "enacted": null
@@ -1307,6 +1182,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 8, 
         "enacted": null
@@ -1328,6 +1204,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1349,6 +1226,7 @@
         "site": 24, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1370,6 +1248,7 @@
         "site": 24, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1391,6 +1270,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1412,6 +1292,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -1433,6 +1314,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
+        "max_slivers": 10, 
         "mountDataSets": "GenBank", 
         "creator": 1, 
         "enacted": null
@@ -2175,46 +2057,7 @@
         "created": "2013-12-09T14:26:56.787Z", 
         "container_format": "bare", 
         "disk_format": "raw", 
-        "image_id": "d4bdbba2-6883-4232-863a-202fd4c56c21", 
-        "enacted": null
-    }
-},
-{
-    "pk": 2, 
-    "model": "core.image", 
-    "fields": {
-        "updated": "2014-04-23T04:07:34.728Z", 
-        "name": "Ubuntu 12.04 LTS", 
-        "created": "2014-04-23T04:07:34.728Z", 
-        "container_format": "bare", 
-        "disk_format": "raw", 
-        "image_id": "abcd", 
-        "enacted": null
-    }
-},
-{
-    "pk": 3, 
-    "model": "core.image", 
-    "fields": {
-        "updated": "2014-04-23T04:08:17.939Z", 
-        "name": "Hadoop 2.4.0", 
-        "created": "2014-04-23T04:08:17.939Z", 
-        "container_format": "bare", 
-        "disk_format": "raw", 
-        "image_id": "abcd2", 
-        "enacted": null
-    }
-},
-{
-    "pk": 4, 
-    "model": "core.image", 
-    "fields": {
-        "updated": "2014-04-23T04:08:42.895Z", 
-        "name": "MPI 1.8", 
-        "created": "2014-04-23T04:08:42.895Z", 
-        "container_format": "bare", 
-        "disk_format": "raw", 
-        "image_id": "abcd3", 
+        "path": null, 
         "enacted": null
     }
 },
@@ -8502,386 +8345,6 @@
     }
 },
 {
-    "pk": 335, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 755, 
-        "instance_name": null, 
-        "updated": "2014-03-24T11:45:24.223Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "opencloud3.sing.internet2.edu", 
-        "created": "2014-03-24T11:45:24.223Z", 
-        "ip": "198.71.44.85", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 336, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 752, 
-        "instance_name": null, 
-        "updated": "2014-03-25T17:55:24.368Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "opencloud0.sing.internet2.edu", 
-        "created": "2014-03-25T17:55:24.368Z", 
-        "ip": "198.71.44.82", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 337, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 664, 
-        "instance_name": null, 
-        "updated": "2014-03-25T22:16:06.386Z", 
-        "slice": 4, 
-        "deploymentNetwork": 9, 
-        "name": "node1.mpisws.vicci.org", 
-        "created": "2014-03-25T22:16:06.386Z", 
-        "ip": "141.39.220.11", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 338, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 594, 
-        "instance_name": null, 
-        "updated": "2014-03-26T16:50:27.515Z", 
-        "slice": 4, 
-        "deploymentNetwork": 8, 
-        "name": "node1.gt.vicci.org", 
-        "created": "2014-03-26T16:50:27.515Z", 
-        "ip": "130.207.98.10", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 339, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 665, 
-        "instance_name": null, 
-        "updated": "2014-03-26T21:16:18.505Z", 
-        "slice": 4, 
-        "deploymentNetwork": 9, 
-        "name": "node2.mpisws.vicci.org", 
-        "created": "2014-03-26T21:16:18.505Z", 
-        "ip": "141.39.220.12", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 340, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 666, 
-        "instance_name": null, 
-        "updated": "2014-03-26T22:53:58.624Z", 
-        "slice": 4, 
-        "deploymentNetwork": 9, 
-        "name": "node3.mpisws.vicci.org", 
-        "created": "2014-03-26T22:53:58.624Z", 
-        "ip": "141.39.220.13", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 341, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 740, 
-        "instance_name": null, 
-        "updated": "2014-04-02T17:09:46.428Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "node1.kans.internet2.vini-veritas.net", 
-        "created": "2014-04-02T17:09:46.428Z", 
-        "ip": "64.57.18.50", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 342, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 384, 
-        "instance_name": null, 
-        "updated": "2014-04-02T17:10:01.294Z", 
-        "slice": 4, 
-        "deploymentNetwork": 5, 
-        "name": "node1.stanford.vicci.org", 
-        "created": "2014-04-02T17:10:01.294Z", 
-        "ip": "171.67.92.139", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 343, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 741, 
-        "instance_name": null, 
-        "updated": "2014-04-02T17:22:50.776Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "node2.kans.internet2.vini-veritas.net", 
-        "created": "2014-04-02T17:22:50.775Z", 
-        "ip": "64.57.18.51", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 345, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 746, 
-        "instance_name": null, 
-        "updated": "2014-04-03T22:56:00.465Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "node1.salt.internet2.vini-veritas.net", 
-        "created": "2014-04-03T22:56:00.465Z", 
-        "ip": "64.57.18.98", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 349, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 520, 
-        "instance_name": null, 
-        "updated": "2014-04-21T07:57:52.892Z", 
-        "slice": 4, 
-        "deploymentNetwork": 6, 
-        "name": "node67.washington.vicci.org", 
-        "created": "2014-04-21T07:57:52.892Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 353, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 519, 
-        "instance_name": null, 
-        "updated": "2014-04-21T08:23:57.230Z", 
-        "slice": 4, 
-        "deploymentNetwork": 6, 
-        "name": "node66.washington.vicci.org", 
-        "created": "2014-04-21T08:23:57.230Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 398, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 741, 
-        "instance_name": null, 
-        "updated": "2014-04-23T23:53:06.812Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "node2.kans.internet2.vini-veritas.net", 
-        "created": "2014-04-23T23:53:06.812Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 14, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 399, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 740, 
-        "instance_name": null, 
-        "updated": "2014-04-23T23:53:12.113Z", 
-        "slice": 4, 
-        "deploymentNetwork": 10, 
-        "name": "node1.kans.internet2.vini-veritas.net", 
-        "created": "2014-04-23T23:53:12.113Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 14, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 400, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 593, 
-        "instance_name": null, 
-        "updated": "2014-04-24T03:33:25.790Z", 
-        "slice": 4, 
-        "deploymentNetwork": 7, 
-        "name": "node70.princeton.vicci.org", 
-        "created": "2014-04-24T03:33:25.790Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 401, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 592, 
-        "instance_name": null, 
-        "updated": "2014-04-24T03:36:29.678Z", 
-        "slice": 4, 
-        "deploymentNetwork": 7, 
-        "name": "node69.princeton.vicci.org", 
-        "created": "2014-04-24T03:36:29.678Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 402, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 591, 
-        "instance_name": null, 
-        "updated": "2014-04-24T03:37:11.175Z", 
-        "slice": 4, 
-        "deploymentNetwork": 7, 
-        "name": "node68.princeton.vicci.org", 
-        "created": "2014-04-24T03:37:11.174Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 403, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 663, 
-        "instance_name": null, 
-        "updated": "2014-04-24T03:38:29.495Z", 
-        "slice": 6, 
-        "deploymentNetwork": 8, 
-        "name": "node70.gt.vicci.org", 
-        "created": "2014-04-24T03:38:29.495Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 404, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 662, 
-        "instance_name": null, 
-        "updated": "2014-04-24T03:38:29.553Z", 
-        "slice": 6, 
-        "deploymentNetwork": 8, 
-        "name": "node69.gt.vicci.org", 
-        "created": "2014-04-24T03:38:29.553Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 406, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 522, 
-        "instance_name": null, 
-        "updated": "2014-04-24T05:30:29.653Z", 
-        "slice": 4, 
-        "deploymentNetwork": 6, 
-        "name": "node69.washington.vicci.org", 
-        "created": "2014-04-24T05:30:29.653Z", 
-        "ip": null, 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
     "pk": 1, 
     "model": "core.reservation", 
     "fields": {
@@ -9571,8 +9034,8 @@
         "created": "2013-12-18T22:24:19.109Z", 
         "permitAllSlices": false, 
         "permittedSlices": [
-            8, 
-            6
+            6, 
+            8
         ], 
         "labels": "", 
         "guaranteedBandwidth": 0, 
