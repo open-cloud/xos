@@ -7,14 +7,14 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
 from core.models.slice import *
-from core.models.slice import Sliver
+from core.models.sliver import Sliver
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
 class SyncNetworkDeployments(OpenStackSyncStep):
     requested_interval = 0 
-    provides=[Networ, NetworkDeployments, Sliver]
+    provides=[Network, NetworkDeployments, Sliver]
     
     def fetch_pending(self):
         # network deployments are not visible to users. We must ensure
@@ -31,9 +31,9 @@ class SyncNetworkDeployments(OpenStackSyncStep):
 
         for network in Network.objects.filter():
             # ignore networks that have
-            # template.visibility = private and template.translation = none
+            # template.visibility = private and translation = none
             if network.template.visibility == 'private' and not network.template.translation == 'none':
-                continue
+                continue				
             expected_deployments = slice_deploy_lookup[network.owner]
             for expected_deployment in expected_deployments:
                 if network not in network_deploy_lookup or \
