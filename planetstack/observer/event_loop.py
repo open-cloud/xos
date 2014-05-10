@@ -16,7 +16,7 @@ from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
-from observer.steps import *
+#from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
 
