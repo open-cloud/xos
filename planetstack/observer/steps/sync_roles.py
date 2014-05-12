@@ -6,7 +6,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.role import Role
 from core.models.site import SiteRole
 from core.models.slice import SliceRole
-from core.models.deployment import DeploymentRole
+from core.models.deployment import Deployment, DeploymentRole
 
 class SyncRoles(OpenStackSyncStep):
     provides=[Role]
@@ -31,7 +31,8 @@ class SyncRoles(OpenStackSyncStep):
     def sync_record(self, role):
         if not role.enacted:
             deployments = Deployment.objects.all()
-            for deployment in deployments:
+       	    for deployment in deployments:
                 driver = self.driver.admin_driver(deployment=deployment.name)
                 driver.create_role(role.role)
-            role.save()    
+            role.save()
+    

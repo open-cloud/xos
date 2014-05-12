@@ -41,10 +41,20 @@ class SyncImageDeployments(OpenStackSyncStep):
         if glance_image:
             image_deployment.glance_image_id = glance_image['id']
         elif image_deployment.image.path:
+            image = {
+                'name': image_deployment.image.name,
+                'is_public': True,
+                'disk_format': 'raw', 
+                'container_format': 'bare',
+                'file': image_deployment.image.path, 
+            }  
             glance_image = driver.shell.glanceclient.images.create(name=image_deployment.image.name,
                                                                    is_public=True,
                                                                    disk_format='raw',
                                                                    container_format='bare')
             glance_image.update(data=open(image_deployment.image.path, 'rb'))
-            image_deployment.glance_image_id = glance_image.id
+ 
+            if not glance_image or not glance_image.get('id'): 
+                raise Exception, "Add image failed at deployment %s" % image_deployment.deployment.name
+            image_deployment.glance_image_id = glance_image['id']
         image_deployment.save()
