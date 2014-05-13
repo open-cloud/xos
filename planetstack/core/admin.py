@@ -810,6 +810,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
+            if isinstance(inline, SliverInline):
+                inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
     #def save_model(self, request, obj, form, change):
     #    # update openstack connection to use this site/tenant
