@@ -57,6 +57,13 @@ class EventSender:
                 kwargs["uuid"] = str(uuid.uuid1())
 		self.fofum.fire(json.dumps(kwargs))
 
+	def random_client_id(self):
+		try:
+			return self.client_id
+		except AttributeError:
+			self.client_id = base64.urlsafe_b64encode(os.urandom(12))
+			return self.client_id
+
 class EventListener:
 	def __init__(self,wake_up=None):
 		self.handler = EventHandler()
