@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.8
+Version: 1.0.10
 Release: 1
 License: GPL+
 Group: Development/Tools
@@ -65,7 +65,7 @@ mkdir -p  %{buildroot}
 install -d %{buildroot}/opt/planetstack
 
 # in builddir
-cp -rp /opt/plstackapi/planetstack %{buildroot}/opt/.
+cp -rp ./planetstack %{buildroot}/opt/.
 
 find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g"  > %{_tmppath}/tmp-filelist
 

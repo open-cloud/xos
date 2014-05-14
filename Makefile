@@ -11,7 +11,7 @@ dist rpm: $(NAME)-$(VERSION)-$(RELEASE).rpm
 
 $(NAME)-$(VERSION).tar.gz:
 	mkdir -p $(NAME)-$(VERSION)
-	rsync -av --exclude=.svn --exclude=.git --exclude=*.tar.gz --exclude=__history --exclude=$(NAME)-$(VERSION)/ ./ $(NAME)-$(VERSION)
+	rsync -av --exclude=.svn --exclude=.git --exclude=*.tar.gz --exclude=*.rpm --exclude=__history --exclude=$(NAME)-$(VERSION)/ ./ $(NAME)-$(VERSION)
 	tar -czf $@ $(NAME)-$(VERSION)
 	rm -fr $(NAME)-$(VERSION)
 
@@ -40,7 +40,7 @@ ifndef UPLOAD_HOST
 endif
 	scp $(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm $(UPLOAD_SLICE)@$(UPLOAD_HOST):/root/
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) yum -y install gcc graphviz-devel graphviz-python postgresql postgresql-server python-pip python-psycopg2 libxslt-devel python-httplib2 GeoIP
-	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) rpm --install --upgrade --replacepkgs /root/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm   
+	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) rpm --install --upgrade --replacefiles --replacepkgs /root/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm   
 	scp /opt/planetstack/hpc_wizard/bigquery_credentials.dat /opt/planetstack/hpc_wizard/client_secrets.json $(UPLOAD_SLICE)@$(UPLOAD_HOST):/opt/planetstack/hpc_wizard/ 
 
 .PHONY: dist
