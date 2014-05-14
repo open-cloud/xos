@@ -10,6 +10,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from openstack.manager import OpenStackManager
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
+slice_name_map = {}
+
 def ps_id_to_pl_id(x):
     # Since we don't want the PlanetStack object IDs to conflict with existing
     # PlanetLab object IDs in the CMI, just add 100000 to the PlanetStack object
@@ -20,11 +22,14 @@ def pl_id_to_ps_id(x):
     return x - 100000
 
 def pl_slice_id(slice):
-    if slice.name == "princeton_vcoblitz":
+    if slice.name.startswith("princeton_vcoblitz"):
         # 70 is the slice id of princeton_vcoblitz on vicci
         return 70
     else:
         return ps_id_to_pl_id(slice.id)
+
+def ps_slicename_to_pl_slicename(x):
+    return slice_name_map.get(x,x)
 
 def filter_fields(src, fields):
     dest = {}
@@ -51,7 +56,7 @@ def GetSlices(filter={}):
                  "slice_tag_ids": [],
                  "peer_id": None,
                  "site_id": ps_id_to_pl_id(ps_slice.site_id),
-                 "name": ps_slice.name}
+                 "name": ps_slicename_to_pl_slicename(ps_slice.name)}
 
                  # creator_person_id, person_ids, expires, created
 
@@ -159,12 +164,30 @@ def GetInterfaces(slicename, node_ids):
                 interfaces.append(interface)
     return interfaces
 
+def find_multi_slicename(orig_slicename):
+    """
+         Because we sometimes have issues deleting a slice in planetstack and
+         creating a new one, allow us to use a prefix match, that way someone
+         can put a version number of the end of the slicename
+    """
+    global slice_name_map
+    slices = Slice.objects.filter()
+    for slice in slices:
+        if slice.name.startswith(orig_slicename):
+            slice_name_map[slice.name] = orig_slicename
+            return slice.name
+
+    return orig_slicename
+
+
 def GetConfiguration(name):
     slicename = name["name"]
     if "node_id" in name:
         node_id = name["node_id"]
     else:
         node_id = 0
+
+    slicename = find_multi_slicename(slicename)
 
     node_sliver_tags = GetTags(slicename, node_id)
 
@@ -215,11 +238,13 @@ def GetConfiguration(name):
             'nodes': nodes}
 
 if __name__ == '__main__':
+    find_multi_slicename("princeton_vcoblitz")  # set up the mapping for princeton_vcoblitz2 -> princeton_vcoblitz
+
     slices = GetSlices()
     nodes = GetNodes()
 
     if ("-d" in sys.argv):
-        config = GetConfiguration({"name": "princeton_coblitz"})
+        config = GetConfiguration({"name": "princeton_vcoblitz"})
         print config
         print slices
         print nodes
