@@ -72,8 +72,17 @@ function updateCDNNodeData(data) {
 }
 
 function updateCDNNodes() {
-    var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&computed=@bytes_sent/@elapsed&groupBy=@hostname&cached=1&cachedGroupBy=@hostname';
+    var contentProvider = $("#cdn-node-data-slicename").val();
+
+    var filterPart = ""
+    if ((contentProvider!="") && (contentProvider!="all")) {
+         filterPart = "&cp=" + contentProvider
+    }
+
+    var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&computed=@bytes_sent/@elapsed&groupBy=@hostname&cached=hpc&cachedGroupBy=@hostname' + filterPart;
+
     console.log(url);
+
     $.ajax({
     url: url,
     dataType : 'json',
@@ -86,5 +95,14 @@ function updateCDNNodes() {
     setTimeout(updateCDNNodes, 30000);
 }
 
-setTimeout(updateCDNNodes, 5000);
+google.setOnLoadCallback(function () {
+    $('#cdn-node-data-slicename').change(function()
+    {
+        updateCDNNodes();
+    });
+
+    updateCDNNodes();
+});
+
+//setTimeout(updateCDNNodes, 5000);
 </script>
