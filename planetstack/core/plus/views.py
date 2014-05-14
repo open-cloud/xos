@@ -243,7 +243,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
 
     bq = PlanetStackAnalytics()
 
-    rows = bq.get_cached_query_results(bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"]), wait)      # why did we need %slice ??
+    rows = bq.get_cached_query_results(bq.compose_cached_query(), wait)
 
     # wait=False on the first time the Dashboard is opened. This means we might
     # not have any rows yet. The dashboard code polls every 30 seconds, so it
