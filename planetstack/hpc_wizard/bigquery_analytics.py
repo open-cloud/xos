@@ -216,7 +216,8 @@ class BigQueryAnalytics:
 
         (computedFieldNames, rows) = self.do_computed_fields(rows, computed)
         sum = sum + computedFieldNames
-        rows = self.groupby_results(rows, groupBy, sum, count, avg, maxi)
+        if groupBy:
+            rows = self.groupby_results(rows, groupBy, sum, count, avg, maxi)
         return rows
 
     def remap(self, match):

@@ -1,7 +1,4 @@
-function getObjectAndEventQuery() {
-    var selectedNodeTxt = $('#currentOriginalNode').text();
-    selectedNodeTxt = selectedNodeTxt.trim();
-    selectedNodeTxt = selectedNodeTxt.split(' ').join('');//selectedNodeTxt.replace(" ", "")
+function getPageKind() {
     var parentNodeTxt = $('#selectedMainNav').text();
     parentNodeTxt = parentNodeTxt.replace("/\n","");
     parentNodeTxt = parentNodeTxt.replace("»","");
@@ -9,15 +6,23 @@ function getObjectAndEventQuery() {
     if (parentNodeTxt.length > 0 && parentNodeTxt.charAt(parentNodeTxt.length-1)=='s') {
             parentNodeTxt = parentNodeTxt.substring(0, parentNodeTxt.length-1);
     }
+    return parentNodeTxt;
+}
+
+function getObjectQuery() {
+    var selectedNodeTxt = $('#currentOriginalNode').text();
+    selectedNodeTxt = selectedNodeTxt.trim();
+    selectedNodeTxt = selectedNodeTxt.split(' ').join('');//selectedNodeTxt.replace(" ", "")
+    parentNodeTxt = getPageKind();
 
     if (parentNodeTxt == "Slice") {
-        return "&event=libvirt_heartbeat&slice=" + selectedNodeTxt;
+        return "&slice=" + selectedNodeTxt;
     } else if (parentNodeTxt == "Site") {
-        return "&event=node_heartbeat&site=" + selectedNodeTxt;
+        return "&site=" + selectedNodeTxt;
     } else if (parentNodeTxt == "Node") {
-        return "&event=node_heartbeat&node=" + selectedNodeTxt;
+        return "&node=" + selectedNodeTxt;
     } else {
-        return "&event=node_heartbeat";
+        return "";
     }
 }
 
@@ -48,7 +53,7 @@ function updatePageAnalyticsData(summaryData) {
 }
 
 function updatePageAnalytics() {
-    var url= '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=1' + getObjectAndEventQuery();
+    var url= '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=default' + getObjectQuery();
     console.log(url);
     $.ajax({
     url: url,
@@ -75,7 +80,11 @@ function updatePageBandwidthData(summaryData) {
 }
 
 function updatePageBandwidth() {
-    var url='/analytics/bigquery/?computed=%bytes_sent/%elapsed&cached=1' + getObjectAndEventQuery();
+    var url='/analytics/bigquery/?computed=%bytes_sent/%elapsed&cached=default' + getObjectQuery();
+
+    if (getPageKind()!="Slice") {
+        url = url + "&event=node_heartbeat";
+    }
 
     $.ajax({
     url : url,

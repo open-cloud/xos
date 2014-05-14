@@ -42,7 +42,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         return [slice.name for slice in slices]
 
-    def compose_query(self, slice=None, site=None, node=None, service=None, event="libvirt_heartbeat", timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName=None, latest=False, maxAge=60*60):
+    def compose_query(self, filter={}, timeBucket="60", avg=[], sum=[], count=[], computed=[], val=[], groupBy=["Time"], orderBy=["Time"], tableName=None, latest=False, maxAge=60*60):
         if tableName is None:
             tableName = self.tableName
 
@@ -99,16 +99,16 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         where = []
 
-        if slice:
-            where.append("%%slice='%s'" % slice)
-        if site:
-            where.append("%%site='%s'" % site)
-        if node:
-            where.append("%%hostname='%s'" % node)
-        if event:
-            where.append("event='%s'" % event)
-        if service:
-            sliceNames = self.service_to_sliceNames(service)
+        if filter.get("slice",None):
+            where.append("%%slice='%s'" % filter["slice"])
+        if filter.get("site",None):
+            where.append("%%site='%s'" % filter["site"])
+        if filter.get("node",None):
+            where.append("%%hostname='%s'" % filter["node"])
+        if filter.get("event",None):
+            where.append("event='%s'" % filter["event"])
+        if filter.get("service",None):
+            sliceNames = self.service_to_sliceNames(filter["service"])
             if sliceNames:
                 where.append("(" + " OR ".join(["%%slice='%s'" % sliceName for sliceName in sliceNames]) +")")
 
@@ -241,13 +241,29 @@ class PlanetStackAnalytics(BigQueryAnalytics):
             cpu=float(max_cpu)/100.0
             row["hotness"] = max(0.0, ((cpu*RED_LOAD) - BLUE_LOAD)/(RED_LOAD-BLUE_LOAD))
 
-    def compose_latest_query(self, fieldNames=None, groupByFields=["%hostname", "event"]):
+    def compose_cached_query(self, querySpec='default'):
         """ Compose a query that returns the 'most recent' row for each (hostname, event)
             pair.
+
+            Note that groupByFields cannot contain any values that are 'Null' or those
+            rows will be excluded. For example, if groupByFields includes cp, then
+            there will be no libvirt_event rows, since libvirt_event does not have
+            cp.
+
+            This means we can't really have 'one query to rule them'. Settle on
+            having a couple of different queries, and have the caller specify
+            which one he wants.
         """
 
-        if not fieldNames:
-            fieldNames = ["%hostname", "%bytes_sent", "%bytes_hit", "%healthy", "time", "event", "%site", "%elapsed", "%slice", "%cpu"]
+        fieldNames = ["%hostname", "%bytes_sent", "%bytes_hit", "%healthy", "time", "event", "%site", "%elapsed", "%cpu"]
+
+        if querySpec=="default":
+            groupByFields = ["%hostname", "event"]
+        elif (querySpec=="hpc"):
+            fieldNames.append("%cp")
+            groupByFields = ["%hostname", "event", "%cp"]
+        else:
+            raise ValueError("Unknown queryspec %s" % querySpec)
 
         fields = ["table1.%s AS %s" % (x,x) for x in fieldNames]
         fields = ", ".join(fields)
@@ -293,6 +309,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         node = req.GET.get("node", None)
         service = req.GET.get("service", None)
         event = req.GET.get("event", "libvirt_heartbeat")
+        cp = req.GET.get("cp", None)
 
         format = req.GET.get("format", "json_dicts")
 
@@ -312,7 +329,19 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         cached = req.GET.get("cached", None)
         cachedGroupBy = self.get_list_from_req(req, "cachedGroupBy", ["doesnotexist"])
 
-        q = self.compose_query(slice, site, node, service, event, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
+        filter={}
+        if slice:
+            filter["slice"] = slice
+        if site:
+            filter["site"] = site
+        if node:
+            filter["hostname"] = node
+        if event:
+            filter["event"] = event
+        if cp:
+            filter["cp"] = cp
+
+        q = self.compose_query(filter, timeBucket, avg, sum, count, computed, [], groupBy, orderBy, maxAge=maxAge)
 
         print q
 
@@ -375,17 +404,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
         else:
             if cached:
-                results = self.get_cached_query_results(self.compose_latest_query())
-
-                filter={}
-                if slice:
-                    filter["slice"] = slice
-                if site:
-                    filter["site"] = site
-                if node:
-                    filter["hostname"] = node
-                if event:
-                    filter["event"] = event
+                results = self.get_cached_query_results(self.compose_cached_query(cached))
 
                 result = self.postprocess_results(results, filter=filter, sum=sum, count=count, avg=avg, computed=computed, maxDeltaTime=120, groupBy=cachedGroupBy)
             else:
@@ -408,7 +427,7 @@ def DoPlanetStackAnalytics(request):
 def main():
     bq = PlanetStackAnalytics(tableName="demoevents")
 
-    q = bq.compose_latest_query(groupByFields=["%hostname", "event", "%slice"])
+    q = bq.compose_cached_query()
     results = bq.run_query(q)
 
     #results = bq.postprocess_results(results,
@@ -418,7 +437,9 @@ def main():
     #                                 sum=["bytes_sent", "computed_bytes_sent_div_elapsed"], avg=["cpu"],
     #                                 maxDeltaTime=60)
 
-    results = bq.postprocess_results(results, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time", "site"], maxDeltaTime=80)
+    #results = bq.postprocess_results(results, filter={"slice": "HyperCache"}, maxi=["cpu"], count=["hostname"], computed=["bytes_sent/elapsed"], groupBy=["Time", "site"], maxDeltaTime=80)
+
+    results = bq.postprocess_results(results,filter={"event": "libvirt_heartbeat"}, avg=["cpu"], count=["hostname"], groupBy=["doesnotexist"])
 
     bq.dump_table(results)
 
