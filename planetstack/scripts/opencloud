@@ -45,6 +45,10 @@ function syncdb {
     echo "Syncing OpenCloud services..."
     python /opt/planetstack/manage.py syncdb --noinput
 }
+function evolvedb {
+    echo "Syncing OpenCloud services..."
+    python /opt/planetstack/manage.py evolve --hint --execute --noinput
+}
 function stopserver {
     echo "Stopping any running OpenCloud Service(s)"
     pkill -f "python.*runserver"
@@ -63,6 +67,12 @@ function dumpdata {
         echo "FAILED to create $FN"
         exit
     fi
+    SIZE=$(du -k "$FN" | cut -f 1)
+    if [[ $SIZE -lt 9 ]]; then
+        echo "Dumpdata was empty. Deleting and aborting"
+        rm $FN
+        exit
+    fi
     rm -f $BACKUP_DIR/dumpdata-latest.json
     ln -s $FN $BACKUP_DIR/dumpdata-latest.json
 }
@@ -74,32 +84,46 @@ if [ "$COMMAND" = "initdb" ]; then
     ensure_postgres_running
     createdb
     syncdb
-    runserver
 fi
-if [ "$COMMAND" = "upgradedb" ]; then
+if [ "$COMMAND" = "repairdb" ]; then
     stopserver
     ensure_postgres_running
     dumpdata
-    # TODO: This is where we would run migration scripts to upgrade the
+    # TODO: This is where we could run migration scripts to upgrade the
     #   dumped data to the new models.
     mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
     cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
     dropdb
     createdb
     syncdb
-    runserver
+fi
+if [ "$COMMAND" = "restoredb" ]; then
+    if [[ ! -f $BACKUP_DIR/dumpdata-latest.json ]]; then
+       echo There is no dumpdata to restore
+       exit
+    fi
+    stopserver
+    ensure_postgres_running
+    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "evolvedb" ]; then
+    stopserver
+    ensure_postgres_running
+    evolvedb
 fi
 if [ "$COMMAND" = "resetdb" ]; then
     stopserver
     dropdb
     createdb
     syncdb
-    runserver
 fi
 if [ "$COMMAND" = "syncdb" ]; then
     stopserver
     syncdb
-    runserver
 fi
 if [ "$COMMAND" = "runserver" ]; then
     stopserver
