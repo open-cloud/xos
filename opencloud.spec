@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
 Version: 1.0.10
-Release: 3
+Release: 4
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -72,13 +72,15 @@ install -d %{buildroot}/opt/planetstack
 # in builddir
 cp -rp ./planetstack %{buildroot}/opt/.
 
-find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g"  > %{_tmppath}/tmp-filelist
+find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
+cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
 
 %clean
 rm -rf %{buildroot}
 
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
+%config /opt/planetstack/plstackapi_config
 
 %post
 if [ "$1" == 1 ] ; then
