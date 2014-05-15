@@ -59,6 +59,11 @@ if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
    gzip -d /usr/share/GeoIP/GeoLiteCity*.gz
 fi
 
+if [ "$1" == 2 ] ; then
+    echo "UPGRADE - saving current state"
+    /opt/planetstack/scripts/opencloud dumpdata
+fi
+
 %install
 rm -rf %{buildroot}
 mkdir -p  %{buildroot}
@@ -74,12 +79,6 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
-
-%pre
-if [ "$1" == 2 ] ; then
-    echo "UPGRADE - saving current state"
-    /opt/planetstack/scripts/opencloud dumpdata
-fi
 
 %post
 if [ "$1" == 1 ] ; then
