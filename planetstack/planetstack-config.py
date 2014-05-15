@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sys
 from planetstack.config import Config
 

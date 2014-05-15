@@ -54,8 +54,9 @@ function stopserver {
     pkill -f "python.*runserver"
 }
 function runserver {
-    echo "Starting OpenCloud Service on $HOSTNAME:8000"
-    python manage.py runserver  $HOSTNAME:8000&
+    PUBLIC_HOSTNAME=`/opt/planetstack/planetstack-config.py get server_hostname $HOSTNAME`
+    echo "Starting OpenCloud Service on $PUBLIC_HOSTNAME:8000"
+    python manage.py runserver  $PUBLIC_HOSTNAME:8000&
 }
 
 function dumpdata {
