@@ -517,6 +517,8 @@ class TenantPickSitesView(View):
 class DashboardSummaryAjaxView(View):
     def get(self, request, **kwargs):
         def avg(x):
+            if len(x)==0:
+                return 0
             return float(sum(x))/len(x)
 
         sites = getCDNOperatorData().values()
