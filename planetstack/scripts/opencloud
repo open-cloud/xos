@@ -5,24 +5,37 @@ if [ -z "$1" ]; then
     exit
 fi
 
+BACKUP_DIR=/opt/planetstack_backups
+
 cd /opt/planetstack
 
-function initdb {
-    #Figure out if the script is running on Fedora 16 or 17
-    if grep 16 /etc/fedora-release;  then
+function ensure_postgres_running {
+    # "sudo -u postgres pg_ctl -D /var/lib/postgres/data status" doesn't work
+    # right on Vicci, so let's try to detect it by seeing if the port is
+    # being listened on
+
+    netstat -nl | grep -i ":5432 "
+    if [[ $? == 0 ]]; then
+        echo "Postgres is already running"
+        return
+    fi
+
+    /sbin/service postgresql initdb
+    /sbin/service postgresql start
+    /sbin/chkconfig postgresql on
+
+    netstat -nl | grep -i ":5432 "
+    if [[ $? != 0 ]]; then
+        # it's still not running
+        echo "Trying fallback mechanism to start Postgres"
         sudo -u postgres initdb -D /var/lib/pgsql/data/
         sudo -u postgres pg_ctl -D /var/lib/pgsql/data -l logfile start
-    else
-        #Try normal Fedora 17 commands
-        echo "Trying Fedora 17 commands" > /dev/stdout
-        /sbin/service postgresql initdb
-        /sbin/service postgresql start
-        /sbin/chkconfig postgresql on
     fi
+
 }
 function createdb {
     echo "Creating OpenCloud database..."
-    sudo -u postgres createdb planetstack 
+    sudo -u postgres createdb planetstack
 }
 function dropdb {
     echo "Dropping OpenCloud database..."
@@ -32,36 +45,68 @@ function syncdb {
     echo "Syncing OpenCloud services..."
     python /opt/planetstack/manage.py syncdb --noinput
 }
+function stopserver {
+    echo "Stopping any running OpenCloud Service(s)"
+    pkill -f "python.*runserver"
+}
 function runserver {
     echo "Starting OpenCloud Service on $HOSTNAME:8000"
     python manage.py runserver  $HOSTNAME:8000&
 }
 
 function dumpdata {
-    echo "Saving off OpenCloud data to /opt/planetstack/initial_data.json. Please compare against /opt/planetstack/core/fixtures/initial_data.json to be sure of replacing these changes as the default initialization values."
-    python manage.py dumpdata core hpc syndicate requestrouter --indent 4 > /opt/planetstack/initial_data.json
+    mkdir -p $BACKUP_DIR
+    FN="$BACKUP_DIR/dumpdata-`date +%Y-%m-%d_%H:%M:%S`.json"
+    echo "Saving data to $FN"
+    python manage.py dumpdata core hpc syndicate requestrouter --indent 4 > $FN
+    if [[ ! -f $FN ]]; then
+        echo "FAILED to create $FN"
+        exit
+    fi
+    rm -f $BACKUP_DIR/dumpdata-latest.json
+    ln -s $FN $BACKUP_DIR/dumpdata-latest.json
 }
 
 COMMAND=$1
 
 if [ "$COMMAND" = "initdb" ]; then
-    initdb
+    stopserver
+    ensure_postgres_running
+    createdb
+    syncdb
+    runserver
+fi
+if [ "$COMMAND" = "upgradedb" ]; then
+    stopserver
+    ensure_postgres_running
+    dumpdata
+    # TODO: This is where we would run migration scripts to upgrade the
+    #   dumped data to the new models.
+    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    dropdb
     createdb
     syncdb
     runserver
 fi
 if [ "$COMMAND" = "resetdb" ]; then
+    stopserver
     dropdb
     createdb
     syncdb
     runserver
 fi
 if [ "$COMMAND" = "syncdb" ]; then
+    stopserver
     syncdb
     runserver
 fi
 if [ "$COMMAND" = "runserver" ]; then
+    stopserver
     runserver
+fi
+if [ "$COMMAND" = "stopserver" ]; then
+    stopserver
 fi
 if [ "$COMMAND" = "dumpdata" ]; then
     dumpdata
