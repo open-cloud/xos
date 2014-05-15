@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
 Version: 1.0.10
-Release: 1
+Release: 2
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -75,12 +75,26 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
 
+%pre
+if [ "$1" == 2 ] ; then
+    echo "UPGRADE - saving current state"
+    /opt/planetstack/scripts/opencloud dumpdata
+fi
+
 %post
-/opt/planetstack/scripts/opencloud initdb
+if [ "$1" == 1 ] ; then
+    echo "NEW INSTALL - initializing database"
+    /opt/planetstack/scripts/opencloud initdb
+else
+    echo "UPGRADE - doing evolution"
+    /opt/planetstack/scripts/opencloud evolvedb
+fi
+# start the server
+/opt/planetstack/scripts/opencloud runserver
 
 %preun
 if [ "$1" = 0 ] ; then
-    echo "doing preuninstall"
+    echo "UNINSTALL - destroying planetstack"
     rm -rf /opt/planetstack
 fi
 
