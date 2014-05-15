@@ -43,5 +43,11 @@ endif
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) rpm --install --upgrade --replacefiles --replacepkgs /root/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm   
 	scp /opt/planetstack/hpc_wizard/bigquery_credentials.dat /opt/planetstack/hpc_wizard/client_secrets.json $(UPLOAD_SLICE)@$(UPLOAD_HOST):/opt/planetstack/hpc_wizard/ 
 
+install-keys:
+ifndef UPLOAD_HOST
+	$(error please specify UPLOAD_HOST=<hostname> on make command line)
+endif
+	scp /opt/planetstack/hpc_wizard/bigquery_credentials.dat /opt/planetstack/hpc_wizard/client_secrets.json $(UPLOAD_SLICE)@$(UPLOAD_HOST):/opt/planetstack/hpc_wizard/
+
 .PHONY: dist
 
