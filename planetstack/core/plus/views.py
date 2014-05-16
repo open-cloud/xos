@@ -7,6 +7,7 @@ from django.views.generic import TemplateView, View
 import datetime
 from pprint import pprint
 import json
+from syndicate.models import *
 from core.models import *
 from hpc.models import ContentProvider
 from operator import attrgetter
@@ -59,13 +60,13 @@ class TenantCreateSlice(View):
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
-        network = request.POST.get("network","0")
+        #network = request.POST.get("network","0")
         mountDataSets = request.POST.get("mountDataSets","0")
         if (actionToDo == "add"):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
            image = Image.objects.get(name=imageName)
-           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=image,mountDataSets=mountDataSets,network=network)
+           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=image,mountDataSets=mountDataSets)
            newSlice.save()
         return HttpResponse("Slice created")
 
@@ -75,7 +76,7 @@ class TenantUpdateSlice(View):
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
-        network = request.POST.get("network","0")
+        #network = request.POST.get("network","0")
         dataSet = request.POST.get("dataSet","0")
         slice = Slice.objects.all()
         for entry in slice:
@@ -84,18 +85,11 @@ class TenantUpdateSlice(View):
                          if (actionToDo == "update"):
                                 setattr(entry,'serviceClass',serviceClass)
                                 setattr(entry,'imagePreference',imageName)
-                                setattr(entry,'network',network)
+                                #setattr(entry,'network',network)
                                 setattr(entry,'mountDataSets',dataSet)
                                 entry.save()
                                 break
         return HttpResponse("Slice updated")
-
-def  update_slice(sliceName,**fields):
-         slice = Slice.objects.filter(name = sliceName)
-         for (k,v) in fields.items():
-                setattr(slice, k, v)
-                slice.save()
-         return slice
 
 def getTenantSliceInfo(user, tableFormat = False):
     tenantSliceDetails = {}
@@ -108,12 +102,12 @@ def getTenantSliceInfo(user, tableFormat = False):
        tenantSliceDetails['userSliceInfo'] = tenantSliceData
     tenantSliceDetails['sliceServiceClass']=userSliceTableFormatter(tenantServiceClassData)
     tenantSliceDetails['image']=userSliceTableFormatter(getImageInfo(user))
-    tenantSliceDetails['network']=userSliceTableFormatter(getNetworkInfo(user))
+    #tenantSliceDetails['network']=userSliceTableFormatter(getNetworkInfo(user))
     tenantSliceDetails['deploymentSites']=userSliceTableFormatter(getDeploymentSites())
     tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo())
     tenantSliceDetails['mountDataSets'] = userSliceTableFormatter(getMountDataSets())
+    tenantSliceDetails['publicKey'] = getPublicKey(user)
     return tenantSliceDetails
-
 
 def getTenantInfo(user):
     slices =Slice.objects.all()
@@ -124,7 +118,7 @@ def getTenantInfo(user):
        sliceServiceClass = entry.serviceClass.name
        preferredImage =  entry.imagePreference
        sliceDataSet = entry.mountDataSets
-       sliceNetwork = entry.network
+       #sliceNetwork = entry.network
        numSliver = 0
        sliceImage=""
        sliceSite = {}
@@ -137,7 +131,7 @@ def getTenantInfo(user):
                 sliceNode[str(sliver)] = sliver.node.name
        numSliver = sum(sliceSite.values())
        numSites = len(sliceSite)
-       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'sliceDataSet':sliceDataSet,'sliceNetwork':sliceNetwork, 'instanceNodePair':sliceNode})
+       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'sliceDataSet':sliceDataSet,'instanceNodePair':sliceNode})
     return userSliceInfo
 
 def getTenantSitesInfo():
@@ -153,6 +147,13 @@ def userSliceTableFormatter(data):
                      'rows' : data
                     }
     return formattedData
+
+def getPublicKey(user):
+	users=User.objects.all()
+        for key in users:
+        	if (str(key.email)==str(user)):
+                    	sshKey = key.public_key
+        return sshKey
 
 def getServiceClassInfo(user):
     serviceClassList = ServiceClass.objects.all()
@@ -170,11 +171,58 @@ def getImageInfo(user):
           #imageInfo.append({'Image':imageEntry})
     return imageInfo
 
+def createPrivateVolume(user, sliceName):
+    caps = Volume.CAP_READ_DATA | Volume.CAP_WRITE_DATA | Volume.CAP_HOST_DATA
+    getattr(Volume.default_gateway_caps,"read data") | \
+           getattr(Volume.default_gateway_caps,"write data") | \
+           getattr(Volume.default_gateway_caps,"host files")
+    v = Volume(name="private_" + sliceName, owner_id=user, description="private volume for %s" % sliceName, blocksize=61440, private=True, archive=False, default_gateway_caps = caps)
+    v.save()
+
+SYNDICATE_REPLICATE_PORTNUM = 1025
+
+def get_free_port():
+    inuse={}
+    inuse[SYNDICATE_REPLICATE_PORTNUM] = True
+    for vs in VolumeSlice.objects.all():
+        inuse[vs.peer_portnum]=True
+        inuse[vs.replicate_portnum]=True
+    for network in Network.objects.all():
+        network_ports = [x.strip() for x in network.ports.split(",")]
+        for network_port in network_ports:
+            try:
+                inuse[int(network_port)] = True
+            except:
+                # in case someone has put a malformed port number in the list
+                pass
+    for i in range(1025, 65535):
+        if not inuse.get(i,False):
+            return i
+    return False
+
+def mountVolume(sliceName, volumeName, readWrite):
+    slice = Slice.objects.get(name=sliceName)
+    volume = Volume.objects.get(name=volumeName)
+    # choose some unused port numbers
+    flags = Volume.CAP_READ_DATA
+    if readWrite:
+        flags = flags | Volume.CAP_WRITE_DATA
+    vs = VolumeSlice(volume_id = volume, slice_id = slice, gateway_caps=flags, peer_portnum = get_free_port(), replicate_portnum = SYNDICATE_REPLICATE_PORTNUM)
+    vs.save()
+
+def hasPrivateVolume(sliceName):
+     slice = Slice.objects.get(name=sliceName)
+     for vs in VolumeSlice.objects.filter(slice_id=slice):
+         if vs.volume_id.private:
+             return True
+     return False
+
 def getMountDataSets():
-        dataSetList = ['------','GenBank','LSST','LHC','NOAA','Measurement Lab','Common Crawl']
-        dataSetInfo = []
-        for entry in dataSetList:
-                dataSetInfo.append({'DataSet':entry})
+        dataSetInfo=[]
+        for volume in Volume.objects.all():
+            if not volume.private:
+                dataSetInfo.append({'DataSet': volume.name})
+
         return dataSetInfo
 
 def getNetworkInfo(user):
@@ -306,6 +354,11 @@ def getCDNOperatorData(randomizeData = False, wait=True):
                 del new_rows[k]
 
     return new_rows
+
+def getPageSummary(request):
+    slice = request.GET.get('slice', None)
+    site = request.GET.get('site', None)
+    node = request.GET.get('node', None)
 
 class SimulatorView(View):
     def get(self, request, **kwargs):
@@ -446,7 +499,7 @@ class TenantDeleteSliceView(View):
         def post(self,request):
                 sliceName = request.POST.get("sliceName",None)
                 slice = Slice.objects.get(name=sliceName)
-                print slice, slice.id
+                #print slice, slice.id
                 sliceToDel=Slice(name=sliceName, id=slice.id)
                 sliceToDel.delete()
                 return HttpResponse("Slice deleted")

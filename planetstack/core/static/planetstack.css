@@ -1034,7 +1034,7 @@ div.chartContainer
  margin-left: 5%;
 }
 
-#network-dropdown,#adv-network-dropdown{
+#network-dropdown,#adv-network-dropdown,#adv-network-value{
  margin-left: 3.7%;
 }
 
@@ -1128,4 +1128,17 @@ display:none;
 
 #advNumOfSlivers{
         margin-right: 1% !important;
+}
+
+#private-vol-checkbox{
+margin: 0 0 1% 1%;
+}
+
+.public-key-warning{
+text-align: center;
+display:none;
+}
+
+#private-vol{
+margin-right: 15% !important;
 }

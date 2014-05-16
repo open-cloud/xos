@@ -35,8 +35,12 @@
 			</div>
 			<div class="create-slice-row">
                                 <label for="new-network">Network</label>
-                                <select id="new-network" class="tenant-create-slice"></select>
+				<input type="text" name="new-network" id="new-network">
                         </div>
+			<div class="create-slice-row">
+				<label for="private-vol">Include Private Vol</label>
+				<input type="checkbox" name="checkbox" id="private-vol" value="value">
+			</div>
 			<div class="create-slice-row">
                                 <label for="mount-data-sets">Data Sets</label>
                                 <select id="mount-data-sets" class="tenant-create-slice"></select>
@@ -66,23 +70,20 @@
 	</script>
 	<script>
 	$(document).ready(function () {
-		function showSliceData(data,value) {
-			var imageData = data['image']['rows'];
-			var networkData = data['network']['rows'];
+		function showSliceData(rows,imageData,serviceLevelData,siteRows,dataSet,value) {
 			$("#service-level-value").empty();
 			$("#slice-image-value").empty();
 			$("#tenantSiteTable").empty();
 			$('#tenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="tenantSiteTableData"></table>');
 			$("#tenantSliceDropDown").val(value);
-			var rows = data['userSliceInfo']['rows'];
 			var siteNames = [];
 			var sliverCount;
 			for (row in rows) {
 				if (rows[row]['sliceName'] == value) {
 					sliceImageData = rows[row]['preferredImage'];
 					$("#slice-image-value").html(sliceImageData);
-					serviceLevelData = rows[row]['sliceServiceClass'];
-					$("#service-level-value").html(serviceLevelData);
+					serviceLevelDataBasic = rows[row]['sliceServiceClass'];
+					$("#service-level-value").html(serviceLevelDataBasic);
 					var innerRows = rows[row]['sliceSite'];
 					for (innerRow in innerRows) {
 						sliverCount = innerRows[innerRow];
@@ -103,18 +104,16 @@
 						"sTitle": "Allocated",
 						sClass: "alignCenter"
 					}
-					//{ "sTitle": "Allocated" , sClass: "alignCenter"},
-					//{ "sTitle": "Desired" , sClass: "alignCenter"},
 				]
 			});
 				$('#tenantSliceDropDown').on('change', function () {
 					var value = $("#tenantSliceDropDown").val();
 	//alert(value);
-					checkForBasicAdvView(value, data);
+					checkForBasicAdvView(value,rows,imageData,serviceLevelData,siteRows,dataSet);
 				});
 		}
 
-		function downloadSliceInfo(data,value){
+		function downloadSliceInfo(rows,imageData,serviceLevelData,siteRows,dataSet,value){
 			 $("#download-details").unbind().click(function(){
                                                 function download(filename, text) {
     						var sliceDetails = document.createElement('a');
@@ -122,7 +121,6 @@
     						sliceDetails.setAttribute('download', filename);
     						sliceDetails.click();
 					}
-					var rows = data['userSliceInfo']['rows'];
 					var sliceInfo;
 					for (row in rows){
 						if(rows[row]['sliceName']==value){
@@ -140,8 +138,9 @@
 				var allocatedSlivers = parseInt($(this).parent().siblings(".allocated").html());
 				var td = $(this).parent().siblings(".allocated");
 				var pos = oTable.fnGetPosition(td[0]);
+				$("#numOfSlivers").val("");;
+				$("#advNumOfSlivers").val("");;
 				$("#adv-tooltip").css("display", "none");
-				$("#numOfSlivers").empty();
 				$("#adv-dialog-form").dialog({
 					autoOpen: false,
 					height: 200,
@@ -151,21 +150,15 @@
 					buttons: {
 						"Add": function () {
 							allocatedSlivers += parseInt($("#advNumOfSlivers").val());
-							//if (!(parseInt($("#numOfSlivers").val()))) {
 								$("#adv-tooltip").css("display", "block");
-							//} else {
 								$(this).dialog("close");
 								td.html(allocatedSlivers);
-							//}
 						},
 						"Remove": function () {
 							allocatedSlivers -= parseInt($("#advNumOfSlivers").val());
-						//	if (!(parseInt($("#numOfSlivers").val()))) {
 								$("#adv-tooltip").css("display", "block");
-						//	} else {
 								$(this).dialog("close");
 								td.html(allocatedSlivers);
-						//	}
 						}
 					}
 				});
@@ -173,23 +166,15 @@
 			});
 		}
 
-		function advShowSliceData(data,value) {
-			var serviceLevelData = data['sliceServiceClass']['rows'];
-			var imageData = data['image']['rows'];
-			var networkData = data['network']['rows'];
-			var siteRows = data['sites']['rows'];
-			var dataSet = data['mountDataSets']['rows'];
+		function advShowSliceData(rows,imageData,serviceLevelData,siteRows,dataSet,value) {
 			$("#adv-service-level-value").empty();
 			$("#adv-slice-image-value").empty();
 			$("#adv-slice-data-set-value").empty();
-			$("#adv-slice-network-value").empty();
 			$("#advTenantSliceDropDown").val(value);
 			$("<select></select>").attr('id', 'adv-service-level-dropdown').appendTo('#adv-service-level-value');
 			$("<select></select>").attr('id', 'adv-image-dropdown').appendTo('#adv-slice-image-value');
-			$("<select></select>").attr('id', 'adv-network-dropdown').appendTo('#adv-slice-network-value');
 			$("<select></select>").attr('id', 'adv-dataset-dropdown').appendTo('#adv-slice-data-set-value');
 			$('#advTenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="advTenantSiteTableData"></table>');
-			var rows = data['userSliceInfo']['rows'];
 			var siteNames = [];
 			var sliverCount;
 			var tableData = {};
@@ -198,9 +183,6 @@
                         }
                         for (row in imageData) {
                                 $("#adv-image-dropdown").append("<option>" + imageData[row]['Image'] + "</option>");
-                        }
-                        for (row in networkData) {
-                                $("#adv-network-dropdown").append("<option>" + networkData[row]['Network'] + "</option>");
                         }
                         for (row in dataSet) {
                                 $("#adv-dataset-dropdown").append("<option>" + dataSet[row]['DataSet'] + "</option>");
@@ -212,7 +194,6 @@
 					$("#adv-service-level-dropdown").val(rows[row]['sliceServiceClass']);
 					$("#adv-image-dropdown").val(rows[row]['preferredImage']);
 					$("#adv-dataset-dropdown").val(rows[row]['sliceDataSet']);
-					$("#adv-network-dropdown").val(rows[row]['sliceNetwork']);
 					for (innerRow in innerRows) {
 						tableData[innerRow] = innerRows[innerRow];
 					}
@@ -249,8 +230,8 @@
 							},
 							type: 'POST',
 							complete: function () {
-                                                                //oTable.fnReloadAjax();
-								location.reload();
+								//location.reload();
+								
                                                         }
 						});
 					} else if (newTableData[newRow] < tableData[newRow]) {
@@ -267,8 +248,7 @@
 							},
 							type: 'POST',
 							complete: function () {
-                                                               // oTable.fnReloadAjax();
-								location.reload();
+								//location.reload();
                                                         }
 						});
 					}
@@ -280,7 +260,6 @@
                                                                 sliceName: $("#advTenantSliceDropDown").val(),
 								serviceClass: $("#adv-service-level-dropdown").val(),
 								imageName: $("#adv-image-dropdown").val(),
-								network: $("#adv-network-dropdown").val(),
 								dataSet: $("#adv-dataset-dropdown").val(),
                                                                 actionToDo: "update",
                                                                 csrfmiddlewaretoken: "{{ csrf_token }}", // < here
@@ -288,8 +267,8 @@
                                                         },
                                                         type: 'POST',
                                                         complete: function () {
-                                                                //oTable.fnReloadAjax();
-                                                                location.reload();
+								$("#tabs-5").empty();
+                                                                initTenant();    //location.reload();
                                                         }
                                                 });
 
@@ -315,20 +294,17 @@
 			});
 			editSliverAdv();
 				$('#advTenantSliceDropDown').on('change', function () {
-	var selectedValue = $("#advTenantSliceDropDown").val();
-	//alert(selectedValue);
-					checkForBasicAdvView(selectedValue, data);
-					//editSliverAdv();
+					var selectedValue = $("#advTenantSliceDropDown").val();
+					checkForBasicAdvView(selectedValue, rows,imageData,serviceLevelData,siteRows,dataSet);
 				});
 		}
 
-		function checkForBasicAdvView(value, data) {
-			var rows = data['userSliceInfo']['rows'];
+		function checkForBasicAdvView(value, rows,imageData,serviceLevelData,siteRows,dataSet) {
 			for (row in rows) {
 				if (rows[row]['sliceName'] == value) {
 					if (rows[row]['numOfSites'] > 1) {
-						advShowSliceData(data,value);
-						downloadSliceInfo(data,value);
+						advShowSliceData(rows,imageData,serviceLevelData,siteRows,dataSet,value);
+						downloadSliceInfo(rows,imageData,serviceLevelData,siteRows,dataSet,value);
 						$("#tenantSliceDataWrapper").css("display","none");
 						$("#advancedTenantSliceDataWrapper").css("display","block");
 						$("#advTenantSiteTable").css("display","block");
@@ -337,9 +313,8 @@
 						$("#save-btn").css("display","block");
 						break;
 					} else if(rows[row]['numOfSites'] <= 1){
-						showSliceData(data,value);
-						downloadSliceInfo(data,value);
-						//editSliverAdv();
+						showSliceData(rows,imageData,serviceLevelData,siteRows,dataSet,value);
+						downloadSliceInfo(rows,imageData,serviceLevelData,siteRows,dataSet,value);
 						$("#tenantSliceDataWrapper").css("display","block");
 						$("#advancedTenantSliceDataWrapper").css("display","none");
 						$("#advTenantSiteTable").css("display","none");
@@ -352,15 +327,14 @@
 			}
 		}
 
-		function UserSliceTable(data) {
+		function UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet) {
 				//Add check for #dynamicusersliceinfo_filter label-> input having focus here
-				var rows = data['userSliceInfo']['rows'];
 				$("<div></div>").attr('id', 'tenantSliceDataWrapper').appendTo('#tabs-5');
 				$("<div></div>").attr('id', 'advancedTenantSliceDataWrapper').appendTo('#tabs-5');
 				var sliceData = '';
-				sliceData += '<div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
+				sliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
 				var advSliceData = '';
-				advSliceData += '<div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing slivers</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing slivers</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <span id="adv-slice-network-value"> </span>  <span class="help-inline">Changes are potentially disruptive to existing slivers</span></span></div><div class="tenant-row"><span class="summary-attr"><b>Data Sets:</b> <span id="adv-slice-data-set-value"> </span>  </span></div>';
+				advSliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing slivers</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing slivers</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <input type="text" name="adv-network-value" id="adv-network-value"> <span class="help-inline">List of port ranges(if any) e.g. 1021-1026,1029</span><br></div><div class="tenant-row"><span class="summary-attr"><b>Data Sets:</b> <span id="adv-slice-data-set-value"> </span>  <input type="checkbox" name="checkbox" id="private-vol-checkbox" value="value"><span class="help-inline">Include Private Volume</span></span></div>';
 				$('#tenantSliceDataWrapper').append(sliceData).css("display", "none");
 				$('#advancedTenantSliceDataWrapper').append(advSliceData);
 				$("#advancedTenantSliceDataWrapper").css("display", "none");
@@ -381,7 +355,7 @@
 				$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-5").css("display", "none");
 				$("#advanced-tenant").unbind().click(function () {
 					var value = $("#tenantSliceDropDown").val();
-					advShowSliceData(data,value);
+					advShowSliceData(rows,imageData,serviceLevelData,siteRows,dataSet,value);
                                                 $("#tenantSliceDataWrapper").css("display","none");
                                                 $("#advancedTenantSliceDataWrapper").css("display","block");
                                                 $("#advTenantSiteTable").css("display","block");
@@ -391,7 +365,6 @@
 
 			});
 			$("#sliver-btn").click(function () {
-				$("#numOfSlivers").empty();
 				$("#basic-tooltip").css("display", "none");
 				$("#dialog-form").dialog({
 					autoOpen: false,
@@ -420,8 +393,9 @@
 										return true;
 									}
 								},
-								complete: function () {
+								success: function () {
 									location.reload();
+$("#dialog-form").dialog("close");
 								}
 							});
 						},
@@ -445,8 +419,10 @@
 										return true;
 									}
 								},
-								complete: function () {
-									location.reload();
+								success: function () {
+$("#dialog-form").dialog("close");								
+location.reload();
+
 								}
 							});
 						}
@@ -455,10 +431,6 @@
 				$("#dialog-form").dialog("open");
 			});
 			$("#create-slice-btn").unbind().click(function () {
-				var serviceLevelData = data['sliceServiceClass']['rows'];
-				var imageData = data['image']['rows'];
-				var dataSet = data['mountDataSets']['rows'];
-				var networkData = data['network']['rows'];
 				$("#new-service-class").empty();
 				$("#new-image").empty();
 				$("#mount-data-sets").empty();
@@ -471,9 +443,6 @@
 				}
 				for (row in dataSet) {
                                         $("#mount-data-sets").append("<option>" + dataSet[row]['DataSet'] + "</option>");
-                                }
-				for (row in networkData) {
-                                        $("#new-network").append("<option>" + networkData[row]['Network'] + "</option>");
                                 }
 				var nameOfSlice = $("#new-slice-name").val();
 				var nameOfServiceClass = $("#new-service-class").val();
@@ -540,7 +509,6 @@
 				$("#create-slice-form").dialog("open");
 			});
 			$("#delete-slice-btn").unbind().click(function () {
-				var rows = data['userSliceInfo']['rows'];
 				$("#delete-slice").empty();
 				for (row in rows) {
 					$("#delete-slice").append("<option>" + rows[row]['sliceName'] + "</option>");
@@ -583,9 +551,18 @@
 			url: '/tenantview',
 			dataType: 'json',
 			success: function (data) {
-				UserSliceTable(data);
+				var rows = data['userSliceInfo']['rows'];
+				var imageData = data['image']['rows'];
+				//var networkData = data['network']['rows'];
+				var serviceLevelData = data['sliceServiceClass']['rows'];
+				var siteRows = data['sites']['rows'];
+				var dataSet = data['mountDataSets']['rows'];
+				UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet);
+				if(!(data['publicKey'])){
+					$(".public-key-warning").css("display","block");
+				}
 				var value = $("#tenantSliceDropDown").val();
-				checkForBasicAdvView(value, data);
+				checkForBasicAdvView(value,rows,imageData,serviceLevelData,siteRows,dataSet);
 				$("#tooltip").css("display", "none");
 				$("#basic-tooltip").css("display", "none");
 				$("#adv-tooltip").css("display", "none");
