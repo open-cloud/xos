@@ -11,6 +11,7 @@ from syndicate.models import *
 from core.models import *
 from hpc.models import ContentProvider
 from operator import attrgetter
+from django import template
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseServerError
 from django.core import urlresolvers
@@ -40,6 +41,34 @@ class DashboardWelcomeView(TemplateView):
         context['cdnData'] = userDetails['cdnData']
         context['cdnContentProviders'] = userDetails['cdnContentProviders']
         return self.render_to_response(context=context)
+
+class DashboardView(TemplateView):
+    head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
+       {% load admin_static %}
+       {% block content %}
+    """
+
+    tail_template = r"{% endblock %}"
+
+    def get(self, request, name="hpc_historical", *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        t = template.Template(self.head_template + open("/opt/planetstack/templates/admin/dashboard/%s.html" % name, "r").read() + self.tail_template)
+
+        userDetails = getUserSliceInfo(request.user)
+        #context['site'] = userDetails['site']
+
+        context['userSliceInfo'] = userDetails['userSliceInfo']
+        context['cdnData'] = userDetails['cdnData']
+        context['cdnContentProviders'] = userDetails['cdnContentProviders']
+
+        response_kwargs = {}
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(
+            request = request,
+            template = t,
+            context = context,
+            **response_kwargs)
 
 def getUserSliceInfo(user, tableFormat = False):
         userDetails = {}
