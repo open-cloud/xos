@@ -1,7 +1,8 @@
 {% extends "admin/base.html" %}
 {% load admin_static %}
 
-{% block content %}
+{% block extrahead %}
+
 <link rel="stylesheet"  href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css">
 <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
 <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css">
@@ -19,7 +20,7 @@
 <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
 <script src="{% static 'js/Leaflet.MakiMarkers.js' %}" > </script>
-  
+
 <script>
   $(function() {
     $( "#hometabs" ).tabs({active: 0, //event: "mouseover"
@@ -69,6 +70,9 @@ function confirmDialog(title,msg) {
 
   </script>
 
+{% endblock %}
+
+{% block content %}
 <!-- <div id="hometabs" class="inner-center-column ui-tabs ui-widget ui-widget-content ui-corner-all"> -->
 <div id="hometabs" >
   <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
