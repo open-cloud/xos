@@ -53,7 +53,15 @@ class DashboardView(TemplateView):
     def get(self, request, name="hpc_historical", *args, **kwargs):
         context = self.get_context_data(**kwargs)
 
-        t = template.Template(self.head_template + open("/opt/planetstack/templates/admin/dashboard/%s.html" % name, "r").read() + self.tail_template)
+        head_template = self.head_template
+        tail_template = self.tail_template
+
+        if (name=="tenant"):
+            # quick fix for tenant view
+            head_template = head_template + '<div id="tabs-5"></div>'
+
+
+        t = template.Template(head_template + open("/opt/planetstack/templates/admin/dashboard/%s.html" % name, "r").read() + self.tail_template)
 
         userDetails = getUserSliceInfo(request.user)
         #context['site'] = userDetails['site']
