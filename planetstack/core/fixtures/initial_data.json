@@ -72,7 +72,7 @@
         "url": "cdn_nodes", 
         "updated": "2014-05-20T00:33:52.101Z", 
         "enacted": null, 
-        "name": "CDN Nodes", 
+        "name": "template:CDN Nodes", 
         "created": "2014-05-20T00:33:52.101Z"
     }
 },
