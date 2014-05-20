@@ -1,5 +1,82 @@
 [
 {
+    "pk": 1, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:developer", 
+        "updated": "2014-05-19T22:11:11.408Z", 
+        "enacted": null, 
+        "name": "Developer", 
+        "created": "2014-05-19T22:11:11.408Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:cdnoperations", 
+        "updated": "2014-05-19T22:11:32.782Z", 
+        "enacted": null, 
+        "name": "CDN Operations", 
+        "created": "2014-05-19T22:11:32.781Z"
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:tenant", 
+        "updated": "2014-05-19T22:11:46.731Z", 
+        "enacted": null, 
+        "name": "Tenant", 
+        "created": "2014-05-19T22:11:46.731Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:hpc_historical", 
+        "updated": "2014-05-19T22:11:59.956Z", 
+        "enacted": null, 
+        "name": "Historical", 
+        "created": "2014-05-19T22:11:59.956Z"
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:customize", 
+        "updated": "2014-05-20T00:32:44.462Z", 
+        "enacted": null, 
+        "name": "Customize", 
+        "created": "2014-05-20T00:32:44.462Z"
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:slice_interactions", 
+        "updated": "2014-05-20T00:33:32.454Z", 
+        "enacted": null, 
+        "name": "Slice Interactions", 
+        "created": "2014-05-20T00:33:32.454Z"
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "cdn_nodes", 
+        "updated": "2014-05-20T00:33:52.101Z", 
+        "enacted": null, 
+        "name": "CDN Nodes", 
+        "created": "2014-05-20T00:33:52.101Z"
+    }
+},
+{
     "pk": 3, 
     "model": "core.service", 
     "fields": {
