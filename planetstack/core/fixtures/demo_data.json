@@ -1365,6 +1365,28 @@
     }
 },
 {
+    "pk": 16, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-05-20T17:55:00.621Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "Analytics", 
+        "service": null, 
+        "created": "2014-05-20T17:54:07.100Z", 
+        "slice_url": "", 
+        "description": "Analytics ", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 22, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "creator": 8, 
+        "enacted": null
+    }
+},
+{
     "pk": 1, 
     "model": "core.slicerole", 
     "fields": {
@@ -3191,6 +3213,19 @@
         "updated": "2013-12-09T14:26:56.787Z", 
         "name": "Fedora 16 LXC rev 1.3", 
         "created": "2013-12-09T14:26:56.787Z", 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-05-20T17:52:10.076Z", 
+        "name": "Hadoop 2.4.0", 
+        "created": "2014-05-20T17:52:10.076Z", 
         "container_format": "bare", 
         "disk_format": "raw", 
         "path": null, 
@@ -9761,6 +9796,25 @@
         "image": 1, 
         "creator": 7, 
         "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 345, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 535, 
+        "instance_name": null, 
+        "updated": "2014-05-20T17:55:00.654Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "Analytics", 
+        "created": "2014-05-20T17:55:00.654Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 8, 
+        "numberCores": 0, 
         "instance_id": null, 
         "enacted": null
     }
