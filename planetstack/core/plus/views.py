@@ -726,11 +726,10 @@ class DashboardCustomize(View):
     def post(self, request, *args, **kwargs):
         dashboards = request.POST.get("dashboards", None)
         if not dashboards:
-            return HttpResponse("no data")
-
-        dashboards = [x.strip() for x in dashboards.split(",")]
-
-        dashboards = [DashboardView.objects.get(name=x) for x in dashboards]
+            dashboards=[]
+        else:
+            dashboards = [x.strip() for x in dashboards.split(",")]
+            dashboards = [DashboardView.objects.get(name=x) for x in dashboards]
 
         request.user.dashboardViews.all().delete()
 
