@@ -1142,3 +1142,11 @@ display:none;
 #private-vol{
 margin-right: 15% !important;
 }
+
+.customize_row {
+  display: table;
+}
+.customize_column {
+  display: table-cell;
+  padding: 10px;
+}

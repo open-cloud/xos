@@ -12,17 +12,19 @@ class AdminMixin(object):
     def get_urls(self):
         """Add our dashboard view to the admin urlconf. Deleted the default index."""
         from django.conf.urls import patterns, url
-        from views import DashboardView, DashboardWelcomeView, DashboardAjaxView, SimulatorView, DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView,TenantUpdateSlice
+        from views import DashboardCustomize, DashboardDynamicView, DashboardWelcomeView, DashboardAjaxView, SimulatorView, DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView,TenantUpdateSlice
 
         urls = super(AdminMixin, self).get_urls()
         del urls[0]
         custom_url = patterns('',
-               url(r'^$', self.admin_view(DashboardWelcomeView.as_view()),
+               url(r'^$', self.admin_view(DashboardDynamicView.as_view()),
                     name="index"),
                url(r'^test/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="test"),
-               url(r'^dashboard/(?P<name>\w+)/$', self.admin_view(DashboardView.as_view()),
+               url(r'^dashboard/(?P<name>\w+)/$', self.admin_view(DashboardDynamicView.as_view()),
                     name="dashboard"),
+	       url(r'^customize/$', self.admin_view(DashboardCustomize.as_view()),
+                    name="customize"),
                url(r'^hpcdashuserslices/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="hpcdashuserslices"),
                url(r'^hpcdashboard/', self.admin_view(DashboardAjaxView.as_view()),        # DEPRECATED

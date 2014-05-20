@@ -17,6 +17,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.core import urlresolvers
 from django.contrib.gis.geoip import GeoIP
 from ipware.ip import get_ip
+from operator import itemgetter, attrgetter
 import traceback
 import socket
 
@@ -34,15 +35,10 @@ class DashboardWelcomeView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        userDetails = getUserSliceInfo(request.user)
-        #context['site'] = userDetails['site']
-
-        context['userSliceInfo'] = userDetails['userSliceInfo']
-        context['cdnData'] = userDetails['cdnData']
-        context['cdnContentProviders'] = userDetails['cdnContentProviders']
+        context = getDashboardContext(request.user, context)
         return self.render_to_response(context=context)
 
-class DashboardView(TemplateView):
+class DashboardDynamicView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
        {% load admin_static %}
        {% block content %}
@@ -50,25 +46,56 @@ class DashboardView(TemplateView):
 
     tail_template = r"{% endblock %}"
 
-    def get(self, request, name="hpc_historical", *args, **kwargs):
+    def get(self, request, name="root", *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        context = getDashboardContext(request.user, context)
 
+        if name=="root":
+            return self.multiDashboardView(request, context)
+        else:
+            return self.singleDashboardView(request, name, context)
+
+    def readDashboard(self, fn):
+        try:
+            template= open("/opt/planetstack/templates/admin/dashboard/%s.html" % fn, "r").read()
+            if (fn=="tenant"):
+                template = '<div id="tabs-5"></div>' + template
+            return template
+        except:
+            return "failed to open %s" % fn
+
+    def multiDashboardView(self, request, context):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        if (name=="tenant"):
-            # quick fix for tenant view
-            head_template = head_template + '<div id="tabs-5"></div>'
+        body = """
+         <div id="hometabs" >
+         <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
+        """
 
+        dashboards = request.user.get_dashboards()
 
-        t = template.Template(head_template + open("/opt/planetstack/templates/admin/dashboard/%s.html" % name, "r").read() + self.tail_template)
+        # customize is a special dashboard they always get
+        customize = DashboardView.objects.filter(name="Customize")
+        if customize:
+            dashboards.append(customize[0])
 
-        userDetails = getUserSliceInfo(request.user)
-        #context['site'] = userDetails['site']
+        for i,view in enumerate(dashboards):
+            body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name)
 
-        context['userSliceInfo'] = userDetails['userSliceInfo']
-        context['cdnData'] = userDetails['cdnData']
-        context['cdnContentProviders'] = userDetails['cdnContentProviders']
+        body = body + "</ul>\n"
+
+        for i,view in enumerate(dashboards):
+            url = view.url
+            body = body + '<div id="dashtab-%d">\n' % i
+            if url.startswith("template:"):
+                fn = url[9:]
+                body = body + self.readDashboard(fn)
+            body = body + '</div>\n'
+
+        body=body+"</div>\n"
+
+        t = template.Template(head_template + body + self.tail_template)
 
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
@@ -78,18 +105,50 @@ class DashboardView(TemplateView):
             context = context,
             **response_kwargs)
 
-def getUserSliceInfo(user, tableFormat = False):
-        userDetails = {}
+    def singleDashboardView(self, request, name, context):
+        head_template = self.head_template
+        tail_template = self.tail_template
+
+        t = template.Template(head_template + self.readDashboard(fn) + self.tail_template)
+
+        response_kwargs = {}
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(
+            request = request,
+            template = t,
+            context = context,
+            **response_kwargs)
+
+def getDashboardContext(user, context={}, tableFormat = False):
+        context = {}
 
         userSliceData = getSliceInfo(user)
         if (tableFormat):
-#            pprint("*******      GET USER SLICE INFO")
-            userDetails['userSliceInfo'] = userSliceTableFormatter(userSliceData)
+            context['userSliceInfo'] = userSliceTableFormatter(userSliceData)
         else:
-            userDetails['userSliceInfo'] = userSliceData
-        userDetails['cdnData'] = getCDNOperatorData(wait=False)
-        userDetails['cdnContentProviders'] = getCDNContentProviderData()
-        return userDetails
+            context['userSliceInfo'] = userSliceData
+        context['cdnData'] = getCDNOperatorData(wait=False)
+        context['cdnContentProviders'] = getCDNContentProviderData()
+
+        (dashboards, unusedDashboards)= getDashboards(user)
+        unusedDashboards=[x for x in unusedDashboards if x!="Customize"]
+        context['dashboards'] = dashboards
+        context['unusedDashboards'] = unusedDashboards
+
+        return context
+
+def getDashboards(user):
+    #dashboards = sorted(list(user.dashboardViews.all()), key=attrgetter('order'))
+    dashboards = user.get_dashboards()
+
+    dashboard_names = [d.name for d in dashboards]
+
+    unused_dashboard_names = []
+    for dashboardView in DashboardView.objects.all():
+        if not dashboardView.name in dashboard_names:
+            unused_dashboard_names.append(dashboardView.name)
+
+    return (dashboard_names, unused_dashboard_names)
 
 class TenantCreateSlice(View):
     def post(self, request, *args, **kwargs):
@@ -416,7 +475,7 @@ class SimulatorView(View):
 
 class DashboardUserSiteView(View):
     def get(self, request, **kwargs):
-        return HttpResponse(json.dumps(getUserSliceInfo(request.user, True)), mimetype='application/javascript')
+        return HttpResponse(json.dumps(getDashboardContext(request.user, tableFormat=True)), mimetype='application/javascript')
 
 class TenantViewData(View):
     def get(self, request, **kwargs):
@@ -654,7 +713,7 @@ class DashboardAnalyticsAjaxView(View):
         if (name == "hpcSummary"):
             return HttpResponse(json.dumps(hpc_wizard.get_hpc_wizard().get_summary_for_view()), mimetype='application/javascript')
         elif (name == "hpcUserSite"):
-            return HttpResponse(json.dumps(getUserSliceInfo(request.user, True)), mimetype='application/javascript')
+            return HttpResponse(json.dumps(getDashboardContext(request.user, tableFormat=True)), mimetype='application/javascript')
         elif (name == "hpcMap"):
             return HttpResponse(json.dumps(getCDNOperatorData(True)), mimetype='application/javascript')
         elif (name == "bigquery"):
@@ -662,4 +721,22 @@ class DashboardAnalyticsAjaxView(View):
             return HttpResponse(data, mimetype=mimetype)
         else:
             return HttpResponse(json.dumps("Unknown"), mimetype='application/javascript')
+
+class DashboardCustomize(View):
+    def post(self, request, *args, **kwargs):
+        dashboards = request.POST.get("dashboards", None)
+        if not dashboards:
+            return HttpResponse("no data")
+
+        dashboards = [x.strip() for x in dashboards.split(",")]
+
+        dashboards = [DashboardView.objects.get(name=x) for x in dashboards]
+
+        request.user.dashboardViews.all().delete()
+
+        for i,dashboard in enumerate(dashboards):
+            udbv = UserDashboardView(user=request.user, dashboardView=dashboard, order=i)
+            udbv.save()
+
+        return HttpResponse("updated")
 

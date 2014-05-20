@@ -874,6 +874,12 @@ class UserChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
+class UserDashboardViewInline(PlStackTabularInline):
+    model = UserDashboardView
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-dashboards'
+    fields = ['user', 'dashboardView', 'order']
+
 class UserAdmin(UserAdmin):
     class Meta:
         app_label = "core"
@@ -888,7 +894,7 @@ class UserAdmin(UserAdmin):
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
     #list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
-    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline]
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline,UserDashboardViewInline]
 
     fieldListLoginDetails = ['email','site','password','is_readonly','is_amin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
@@ -896,6 +902,7 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         ('Login Details', {'fields': ['email', 'site','password', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
+        #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
@@ -911,7 +918,12 @@ class UserAdmin(UserAdmin):
     user_readonly_fields = fieldListLoginDetails
     user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline]
 
-    suit_form_tabs =(('general','Login Details'),('contact','Contact Information'),('sliceprivileges','Slice Privileges'),('siteprivileges','Site Privileges'),('deploymentprivileges','Deployment Privileges'))
+    suit_form_tabs =(('general','Login Details'),
+                     ('contact','Contact Information'),
+                     ('sliceprivileges','Slice Privileges'),
+                     ('siteprivileges','Site Privileges'),
+                     ('deploymentprivileges','Deployment Privileges'),
+                     ('dashboards','Dashboard Views'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -956,7 +968,13 @@ class UserAdmin(UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
+class DashboardViewAdmin(PlanetStackBaseAdmin):
+    fieldsets = [('Dashboard View Details',
+                   {'fields': ['name', 'url'],
+                    'classes': ['suit-tab suit-tab-general']})
+               ]
 
+    suit_form_tabs =(('general','Dashboard View Details'),)
 
 class ServiceResourceROInline(ReadOnlyTabularInline):
     model = ServiceResource
@@ -1378,4 +1396,5 @@ if True:
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
+    admin.site.register(DashboardView, DashboardViewAdmin)
 

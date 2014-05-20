@@ -3,10 +3,11 @@ import datetime
 from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
-from core.models import PlCoreBase,Site
+from core.models import PlCoreBase,Site, DashboardView
 from core.models.deployment import Deployment
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
+from operator import itemgetter, attrgetter
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -77,6 +78,8 @@ class User(AbstractBaseUser):
 
     timezone = TimeZoneField()
 
+    dashboards = models.ManyToManyField('DashboardView', through='UserDashboardView', blank=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -112,6 +115,20 @@ class User(AbstractBaseUser):
 
     def is_superuser(self):
         return False
+
+    def get_dashboards(self):
+        DEFAULT_DASHBOARDS=["Tenant"]
+
+        dashboards = sorted(list(self.dashboardViews.all()), key=attrgetter('order'))
+        dashboards = [x.dashboardView for x in dashboards]
+
+        if not dashboards:
+            for dashboardName in DEFAULT_DASHBOARDS:
+                dbv = DashboardView.objects.filter(name=dashboardName)
+                if dbv:
+                    dashboards.append(dbv[0])
+
+        return dashboards
 
 #    def get_roles(self):
 #        from core.models.site import SitePrivilege
@@ -163,4 +180,9 @@ class UserDeployments(PlCoreBase):
         else:
             users = Users.select_by_user(user)
             qs = Usereployments.objects.filter(user__in=slices)
-        return qs 
+        return qs
+
+class UserDashboardView(PlCoreBase):
+     user = models.ForeignKey(User, related_name="dashboardViews")
+     dashboardView = models.ForeignKey(DashboardView, related_name="dashboardViews")
+     order = models.IntegerField(default=0)

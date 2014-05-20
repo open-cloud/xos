@@ -8,7 +8,8 @@ from .tag import Tag
 from .role import Role
 #from .deployment import Deployment
 from .site import Site,Deployment, DeploymentRole, DeploymentPrivilege, SiteDeployments
-from .user import User, UserDeployments
+from .dashboard import DashboardView
+from .user import User, UserDeployments, UserDashboardView
 from .serviceclass import ServiceClass
 from .slice import Slice, SliceDeployments
 from .site import SitePrivilege, SiteDeployments
@@ -29,3 +30,4 @@ from .reservation import ReservedResource
 from .reservation import Reservation
 from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, NetworkTemplate, Router, NetworkSlice, NetworkDeployments
 from .billing import Account, Invoice, Charge, UsableObject, Payment
+
