@@ -59,7 +59,12 @@ class DashboardDynamicView(TemplateView):
         try:
             template= open("/opt/planetstack/templates/admin/dashboard/%s.html" % fn, "r").read()
             if (fn=="tenant"):
+                # fix for tenant view - it writes html to a div called tabs-5
                 template = '<div id="tabs-5"></div>' + template
+            if (fn=="slice_interactions"):
+                # fix for slice_interactions - it gives its container div a 40px
+                # margin, and then positions it's header at -40px
+                template = '<style>#tabs-4 { margin: 40px; font-size: 24px; font-weight: bold;} </style><div id="tabs-4">' + template + '</div>'
             return template
         except:
             return "failed to open %s" % fn
