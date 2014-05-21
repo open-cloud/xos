@@ -65,6 +65,8 @@ $(document).ready(function() {
         });
     });
     $('#btn-save').bind('click', function() {
+         $( "#btn-save").unbind()
+         $( "#btn-save" ).html("<div class='loading'>Saving ...</div>");
          var items=[];
          $("#select-to option").each(function() { items.push($(this).val()); });
          $.ajax({
