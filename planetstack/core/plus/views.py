@@ -64,7 +64,7 @@ class DashboardDynamicView(TemplateView):
             if (fn=="slice_interactions"):
                 # fix for slice_interactions - it gives its container div a 40px
                 # margin, and then positions it's header at -40px
-                template = '<style>#tabs-4 { margin: 40px; font-size: 24px; font-weight: bold;} </style><div id="tabs-4">' + template + '</div>'
+                template = '<div id="tabs-4">' + template + '</div>'
             return template
         except:
             return "failed to open %s" % fn
