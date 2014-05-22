@@ -65,7 +65,6 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
         request.readonly = True
         return super(ReadOnlyAwareAdmin, self).change_view(request, object_id, extra_context=extra_context)
 
-
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
 
@@ -499,13 +498,17 @@ class DeploymentAdminForm(forms.ModelForm):
 
       return deployment
 
+class DeploymentAdminROForm(DeploymentAdminForm):
+    def save(self, commit=True):
+        raise PermissionDenied
+
 class SiteAssocInline(PlStackTabularInline):
     model = Site.deployments.through
     extra = 0
     suit_classes = 'suit-tab suit-tab-sites'
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
-    form = DeploymentAdminForm
+    #form = DeploymentAdminForm
     model = Deployment
     fieldList = ['name','sites']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
@@ -515,6 +518,13 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ['name']
 
     suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'))
+
+    def get_form(self, request, obj=None, **kwargs):
+        if request.user.isReadOnlyUser():
+            kwargs["form"] = DeploymentAdminROForm
+        else:
+            kwargs["form"] = DeploymentAdminForm
+        return super(DeploymentAdmin,self).get_form(request, obj, **kwargs)
 
 class ServiceAttrAsTabROInline(ReadOnlyTabularInline):
     model = ServiceAttribute
