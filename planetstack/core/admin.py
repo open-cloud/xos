@@ -880,6 +880,12 @@ class UserDashboardViewInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-dashboards'
     fields = ['user', 'dashboardView', 'order']
 
+class UserDashboardViewROInline(ReadOnlyTabularInline):
+    model = UserDashboardView
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-dashboards'
+    fields = ['user', 'dashboardView', 'order']
+
 class UserAdmin(UserAdmin):
     class Meta:
         app_label = "core"
@@ -916,7 +922,7 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ()
 
     user_readonly_fields = fieldListLoginDetails
-    user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline]
+    user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline,UserDashboardViewROInline]
 
     suit_form_tabs =(('general','Login Details'),
                      ('contact','Contact Information'),
