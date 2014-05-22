@@ -62,6 +62,29 @@ function confirmDialog(title,msg) {
     return def.promise();
 }
 
+function errorDialog(title,msg) {
+    var dialog = $('<div>'+msg+'</div>');
+    var def = $.Deferred();
+
+    $(dialog).dialog({
+        resizable: false,
+        title: title,
+        autoOpen: true,
+        modal: true,
+        dialogClass: "dashboard-hpc-sliver",
+        buttons: {
+            'OK': function() {
+                def.resolve();
+                log.debug("Chose to add a sliver");
+                $( this ).dialog( "close" );
+            },
+        },
+        close: {
+        }
+    });
+    return def.promise();
+}
+
 </script>
 {% endblock %}
 
