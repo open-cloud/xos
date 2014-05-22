@@ -96,16 +96,12 @@ $('#map-us').on('click', '#remHPCSliver', function() {
                csrfmiddlewaretoken: "{{ csrf_token }}",   // < here
                state:"inactive" },
         type : 'POST',
-        //success: function(response)
-        //{
-         //   alert("Successfully posted request to REMOVE sliver");
-        //},
-        complete:function(){
+        success:function(){
             confirmDialog("Info","Removed an HPC Sliver from Site ");
         },
-        //error:function (xhr, textStatus, thrownError){
-         //   alert("Could not request to remove HPC Sliver");
-        //}
+        error:function (xhr, textStatus, thrownError){
+            errorDialog("Error", textStatus + " " + xhr.responseText);
+        }
     });
 });
 
@@ -121,17 +117,12 @@ $('#map-us').on('click', '#addHPCSliver', function() {
         type : 'POST',
         success: function(response)
         {
-            //alert("Successfully posted request to add sliver");
-        },
-        complete:function()
-        {
             confirmDialog("Info","Added an HPC Sliver to Site ");
         },
-        //error:function (xhr, textStatus, thrownError){
-         //   alert("error doing something");
-        //}
+        error:function (xhr, textStatus, thrownError){
+            errorDialog("Error", textStatus + " " + xhr.responseText);
+        }
     });
-  //  confirmDialog("Add HPC Slivers","Add some HPC Slivers to site " + $(this).data('site'));
 });
 
 function getIcon(numNodes, numHPCSlivers, currentBW, hot) {

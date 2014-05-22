@@ -699,6 +699,9 @@ class DashboardAddOrRemoveSliverView(View):
         siteList = [Site.objects.get(name=siteName)]
         slice = Slice.objects.get(name="HyperCache")
 
+        if request.user.isReadOnlyUser():
+            return HttpResponseForbidden("User is in read-only mode")
+
         if (actionToDo == "add"):
             user_ip = request.GET.get("ip", get_ip(request))
             slice_increase_slivers(request.user, user_ip, siteList, slice, 1)
@@ -707,7 +710,7 @@ class DashboardAddOrRemoveSliverView(View):
 
         print '*' * 50
         print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Sliver'
-        return HttpResponse('This is POST request ')
+        return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
 
 class DashboardAjaxView(View):
     def get(self, request, **kwargs):
