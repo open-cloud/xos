@@ -13,7 +13,7 @@ from hpc.models import ContentProvider
 from operator import attrgetter
 from django import template
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
 from django.core import urlresolvers
 from django.contrib.gis.geoip import GeoIP
 from ipware.ip import get_ip
@@ -729,6 +729,9 @@ class DashboardAnalyticsAjaxView(View):
 
 class DashboardCustomize(View):
     def post(self, request, *args, **kwargs):
+        if request.user.isReadOnlyUser():
+            return HttpResponseForbidden("User is in read-only mode")
+
         dashboards = request.POST.get("dashboards", None)
         if not dashboards:
             dashboards=[]
@@ -742,5 +745,5 @@ class DashboardCustomize(View):
             udbv = UserDashboardView(user=request.user, dashboardView=dashboard, order=i)
             udbv.save()
 
-        return HttpResponse("updated")
+        return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
 
