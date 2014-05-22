@@ -466,7 +466,7 @@ class DeploymentAdminForm(forms.ModelForm):
       super(DeploymentAdminForm, self).__init__(*args, **kwargs)
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = self.instance.sitedeployments_set.all()
+        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
 
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
@@ -475,7 +475,26 @@ class DeploymentAdminForm(forms.ModelForm):
         deployment.save()
 
       if deployment.pk:
-        deployment.sites = self.cleaned_data['sites']
+        # save_m2m() doesn't seem to work with 'through' relations. So we
+        #    create/destroy the through models ourselves. There has to be
+        #    a better way...
+
+        sites = self.cleaned_data['sites']
+
+        existing_sites = []
+        for sdp in list(deployment.sitedeployments_set.all()):
+            if sdp.site not in sites:
+                #print "deleting site", sdp.site
+                sdp.delete()
+            else:
+                existing_sites.append(sdp.site)
+
+        for site in sites:
+            if site not in existing_sites:
+                #print "adding site", site
+                sdp = SiteDeployments(site=site, deployment=deployment)
+                sdp.save()
+
         self.save_m2m()
 
       return deployment
