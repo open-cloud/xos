@@ -21,6 +21,8 @@ class CassandraServiceAdmin(SingletonAdmin):
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
     user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
+    user_readonly_fields = ["name", "enabled", "versionNumber", "description", "clusterSize", "replicationFactor"]
+
     suit_form_tabs =(('general', 'Cassandra Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
