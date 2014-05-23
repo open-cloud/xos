@@ -20,7 +20,9 @@ class RequestRouterServiceAdmin(SingletonAdmin):
     fieldsets = [(None, {'fields': ['name','enabled','versionNumber', 'description','behindNat','defaultTTL','defaultAction','lastResortAction','maxAnswers'], 'classes':['suit-tab suit-tab-general']})]
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
+    user_readonly_fields = ["name", "enabled", "versionNumber", "description", "behindNat", "defaultTTL", "defaultAction", "lastResortAction", "maxAnswers"]
     user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
+
     suit_form_tabs =(('general', 'Request Router Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
@@ -32,6 +34,8 @@ class ServiceMapAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "Service Map"
     list_display = ("name", "owner", "slice", "prefix")
     fieldsets = [(None, {'fields': ['name','owner','slice', 'prefix','siteMap','accessMap'], 'classes':['suit-tab suit-tab-general']})]
+
+    user_readonly_fields = ["name", "owner", "slice", "prefix", "siteMap", "accessMap"]
 
     suit_form_tabs =(('general', 'Service Map Details'),
     )
