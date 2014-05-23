@@ -983,8 +983,18 @@ class UserAdmin(UserAdmin):
     def change_view(self,request,object_id, extra_context=None):
 
         if self.__user_is_readonly(request):
+            if not hasattr(self, "readonly_save"):
+                # save the original readonly fields
+                self.readonly_save = self.readonly_fields
+                self.inlines_save = self.inlines
             self.readonly_fields=self.user_readonly_fields
             self.inlines = self.user_readonly_inlines
+        else:
+            if hasattr(self, "readonly_save"):
+                # restore the original readonly fields
+                self.readonly_fields = self.readonly_save
+                self.inlines = self.inlines_save
+
         try:
             return super(UserAdmin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
