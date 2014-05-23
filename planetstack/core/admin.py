@@ -317,13 +317,13 @@ class DeploymentPrivilegeROInline(ReadOnlyTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role']
+    fields = ['user','role','deployment']
 
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role']
+    fields = ['user','role','deployment']
 
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
@@ -949,7 +949,7 @@ class UserAdmin(UserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-    user_readonly_fields = fieldListLoginDetails
+    user_readonly_fields = fieldListLoginDetails + fieldListContactInfo
     user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline,UserDashboardViewROInline]
 
     suit_form_tabs =(('general','Login Details'),
