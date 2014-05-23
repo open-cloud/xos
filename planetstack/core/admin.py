@@ -356,7 +356,7 @@ class SiteDeploymentROInline(ReadOnlyTabularInline):
     model = SiteDeployments
     #model = Site.deployments.through
     extra = 0
-    suit_classes = 'suit-tab suit-tab-sitedeployments'
+    suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['deployment','site']
 
 class SiteDeploymentInline(PlStackTabularInline):
@@ -577,7 +577,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
     search_fields = ['name']
 
     def queryset(self, request):
-        #print dir(UserInline)
         return Site.select_by_user(request.user)
 
     def get_formsets(self, request, obj=None):
