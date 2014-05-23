@@ -161,15 +161,32 @@ class TenantCreateSlice(View):
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
-        #network = request.POST.get("network","0")
+        networkPorts = request.POST.get("network","0")
         mountDataSets = request.POST.get("mountDataSets","0")
+        privateVolume = request.POST.get("privateVolume","0")
         if (actionToDo == "add"):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
            image = Image.objects.get(name=imageName)
            newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=image,mountDataSets=mountDataSets)
            newSlice.save()
+	   privateTemplate="Private"
+	   publicTemplate="Public shared IPv4"
+	   privateNetworkName = sliceName+"-"+privateTemplate
+	   publicNetworkName = sliceName+"-"+publicTemplate
+	   slice=Slice.objects.get(name=sliceName)
+	   addNetwork(privateNetworkName,privateTemplate,slice)
+	   addNetwork(publicNetworkName,publicTemplate,slice)
+	   addOrModifyPorts(networkPorts,sliceName)
+	   if privateVolume=="true":
+	   	privateVolForSlice(request.user,sliceName)
         return HttpResponse("Slice created")
+
+def privateVolForSlice(user,sliceName):
+	if not hasPrivateVolume(sliceName):
+	   volumeName=createPrivateVolume(user,sliceName)
+	   readWrite="true"
+	   mountVolume(sliceName,volumeName,readWrite)
 
 class TenantUpdateSlice(View):
     def post(self, request, *args, **kwargs):
@@ -177,8 +194,9 @@ class TenantUpdateSlice(View):
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
         actionToDo = request.POST.get("actionToDo", "0")
-        #network = request.POST.get("network","0")
+        networkPorts = request.POST.get("networkPorts","0")
         dataSet = request.POST.get("dataSet","0")
+        privateVolume = request.POST.get("privateVolume","0")
         slice = Slice.objects.all()
         for entry in slice:
                 serviceClass = ServiceClass.objects.get(name=serviceClass)
@@ -186,11 +204,38 @@ class TenantUpdateSlice(View):
                          if (actionToDo == "update"):
                                 setattr(entry,'serviceClass',serviceClass)
                                 setattr(entry,'imagePreference',imageName)
-                                #setattr(entry,'network',network)
                                 setattr(entry,'mountDataSets',dataSet)
                                 entry.save()
                                 break
+	addOrModifyPorts(networkPorts,sliceName)
+	if privateVolume=="true":
+                privateVolForSlice(request.user,sliceName)
         return HttpResponse("Slice updated")
+
+def addNetwork(name,template,sliceName):
+	networkTemplate=NetworkTemplate.objects.get(name=template)
+	newNetwork = Network(name = name,
+                              template = networkTemplate,
+                              owner = sliceName)
+        newNetwork.save()
+	addNetworkSlice(newNetwork,sliceName)
+
+def addNetworkSlice(networkSlice,sliceName):
+	newNetworkSlice=NetworkSlice(network =networkSlice,
+				     slice=sliceName)
+	newNetworkSlice.save()
+
+def addOrModifyPorts(networkPorts,sliceName):
+	networkList = Network.objects.all()
+        networkInfo = []
+        if networkPorts:
+           for networkEntry in networkList:
+               networkSlices = networkEntry.slices.all()
+               for slice in networkSlices:
+                   if slice.name==sliceName:
+                          if networkEntry.template.name=="Public shared IPv4":
+                             setattr(networkEntry,'ports',networkPorts)
+                             networkEntry.save()
 
 def getTenantSliceInfo(user, tableFormat = False):
     tenantSliceDetails = {}
@@ -203,7 +248,6 @@ def getTenantSliceInfo(user, tableFormat = False):
        tenantSliceDetails['userSliceInfo'] = tenantSliceData
     tenantSliceDetails['sliceServiceClass']=userSliceTableFormatter(tenantServiceClassData)
     tenantSliceDetails['image']=userSliceTableFormatter(getImageInfo(user))
-    #tenantSliceDetails['network']=userSliceTableFormatter(getNetworkInfo(user))
     tenantSliceDetails['deploymentSites']=userSliceTableFormatter(getDeploymentSites())
     tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo())
     tenantSliceDetails['mountDataSets'] = userSliceTableFormatter(getMountDataSets())
@@ -218,13 +262,14 @@ def getTenantInfo(user):
        slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
        sliceServiceClass = entry.serviceClass.name
        preferredImage =  entry.imagePreference
-       sliceDataSet = entry.mountDataSets
-       #sliceNetwork = entry.network
+       #sliceDataSet = entry.mountDataSets
+       sliceNetwork = {}
        numSliver = 0
        sliceImage=""
        sliceSite = {}
        sliceNode = {}
        sliceInstance= {}
+       #createPrivateVolume(user,sliceName)
        for sliver in slice.slivers.all():
 	    if sliver.node.site.name in BLESSED_SITES:
                 sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
@@ -232,7 +277,7 @@ def getTenantInfo(user):
                 sliceNode[str(sliver)] = sliver.node.name
        numSliver = sum(sliceSite.values())
        numSites = len(sliceSite)
-       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'sliceDataSet':sliceDataSet,'instanceNodePair':sliceNode})
+       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'instanceNodePair':sliceNode})
     return userSliceInfo
 
 def getTenantSitesInfo():
@@ -279,6 +324,7 @@ def createPrivateVolume(user, sliceName):
            getattr(Volume.default_gateway_caps,"host files")
     v = Volume(name="private_" + sliceName, owner_id=user, description="private volume for %s" % sliceName, blocksize=61440, private=True, archive=False, default_gateway_caps = caps)
     v.save()
+    return v
 
 SYNDICATE_REPLICATE_PORTNUM = 1025
 
@@ -289,6 +335,8 @@ def get_free_port():
         inuse[vs.peer_portnum]=True
         inuse[vs.replicate_portnum]=True
     for network in Network.objects.all():
+        if not network_ports:
+            continue
         network_ports = [x.strip() for x in network.ports.split(",")]
         for network_port in network_ports:
             try:
@@ -325,15 +373,6 @@ def getMountDataSets():
                 dataSetInfo.append({'DataSet': volume.name})
 
         return dataSetInfo
-
-def getNetworkInfo(user):
-   #networkList = Network.objects.all()
-    networkList = ['Private Only','Private and Publicly Routable']
-    networkInfo = []
-    for networkEntry in networkList:
-          #networkInfo.append({'Network':networkEntry.name})
-          networkInfo.append({'Network':networkEntry})
-    return networkInfo
 
 def getDeploymentSites():
     deploymentList = Deployment.objects.all()

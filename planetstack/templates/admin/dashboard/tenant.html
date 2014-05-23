@@ -34,7 +34,7 @@
 				<select id="new-image" class="tenant-create-slice"></select>
 			</div>
 			<div class="create-slice-row">
-                                <label for="new-network">Network</label>
+                                <label for="new-network">Network Ports</label>
 				<input type="text" name="new-network" id="new-network">
                         </div>
 			<div class="create-slice-row">
@@ -261,6 +261,8 @@
 								serviceClass: $("#adv-service-level-dropdown").val(),
 								imageName: $("#adv-image-dropdown").val(),
 								dataSet: $("#adv-dataset-dropdown").val(),
+								networkPorts:  $("#adv-network-value").val(),
+								privateVolume: $("#private-vol-checkbox").is(":checked"),
                                                                 actionToDo: "update",
                                                                 csrfmiddlewaretoken: "{{ csrf_token }}", // < here
                                                                 state: "inactive"
@@ -462,7 +464,8 @@ location.reload();
 									sliceName: $("#new-slice-name").val(),
 									serviceClass: nameOfServiceClass,
 									imageName: $("#new-image").val(),
-//									network: $("#new-network").val(),
+									network: $("#new-network").val(),
+									privateVolume: $("#private-vol").is(":checked"),
 									mountDataSets: $("#mount-data-sets").val(),
 									actionToDo: "add",
 									csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
