@@ -1,3 +1,4 @@
+import datetime
 import os
 from django.db import models
 from django.forms.models import model_to_dict
@@ -13,13 +14,16 @@ except:
     traceback.print_exc()
 
     # guard against something failing
-    def notify_observer():
+    def notify_observer(*args, **kwargs):
         pass
 
 class PlCoreBase(models.Model):
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    # default values for created and updated are only there to keep evolution
+    # from failing.
+
+    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
+    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
 
     class Meta:
