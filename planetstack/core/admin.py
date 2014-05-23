@@ -48,12 +48,15 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
                 # save the original readonly fields
                 self.readonly_save = self.readonly_fields
                 self.inlines_save = self.inlines
-            self.readonly_fields=self.user_readonly_fields
-            self.inlines = self.user_readonly_inlines
+            if hasattr(self, "user_readonly_fields"):
+                self.readonly_fields=self.user_readonly_fields
+            if hasattr(self, "user_readonly_inlines"):
+                self.inlines = self.user_readonly_inlines
         else:
             if hasattr(self, "readonly_save"):
                 # restore the original readonly fields
                 self.readonly_fields = self.readonly_save
+            if hasattr(self, "inlines_save"):
                 self.inlines = self.inlines_save
 
         try:
@@ -68,8 +71,11 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
 
-class SingletonAdmin (admin.ModelAdmin):
+class SingletonAdmin (ReadOnlyAwareAdmin):
     def has_add_permission(self, request):
+        if not super(SingletonAdmin, self).has_add_permission(request):
+            return False
+
         num_objects = self.model.objects.count()
         if num_objects >= 1:
             return False
