@@ -504,6 +504,16 @@
     }
 },
 {
+    "pk": 11, 
+    "model": "core.deployment", 
+    "fields": {
+        "updated": "2014-05-22T22:49:27.623Z", 
+        "enacted": null, 
+        "name": "Amazon EC2", 
+        "created": "2014-05-22T22:49:27.623Z"
+    }
+},
+{
     "pk": 1, 
     "model": "core.sitedeployments", 
     "fields": {
@@ -757,6 +767,83 @@
 },
 {
     "pk": 1, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:developer", 
+        "updated": "2014-05-19T22:11:11.408Z", 
+        "enacted": null, 
+        "name": "Developer", 
+        "created": "2014-05-19T22:11:11.408Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:cdnoperations", 
+        "updated": "2014-05-19T22:11:32.782Z", 
+        "enacted": null, 
+        "name": "CDN Operations", 
+        "created": "2014-05-19T22:11:32.781Z"
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:tenant", 
+        "updated": "2014-05-19T22:11:46.731Z", 
+        "enacted": null, 
+        "name": "Tenant", 
+        "created": "2014-05-19T22:11:46.731Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:hpc_historical", 
+        "updated": "2014-05-19T22:11:59.956Z", 
+        "enacted": null, 
+        "name": "Historical", 
+        "created": "2014-05-19T22:11:59.956Z"
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:customize", 
+        "updated": "2014-05-20T00:32:44.462Z", 
+        "enacted": null, 
+        "name": "Customize", 
+        "created": "2014-05-20T00:32:44.462Z"
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:slice_interactions", 
+        "updated": "2014-05-20T00:33:32.454Z", 
+        "enacted": null, 
+        "name": "Slice Interactions", 
+        "created": "2014-05-20T00:33:32.454Z"
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "cdn_nodes", 
+        "updated": "2014-05-20T00:33:52.101Z", 
+        "enacted": null, 
+        "name": "template:CDN Nodes", 
+        "created": "2014-05-20T00:33:52.101Z"
+    }
+},
+{
+    "pk": 1, 
     "model": "core.user", 
     "fields": {
         "username": "padmin@vicci.org", 
@@ -939,7 +1026,7 @@
         "site": 22, 
         "phone": null, 
         "is_staff": true, 
-        "last_login": "2014-05-20T18:55:19.598Z", 
+        "last_login": "2014-05-23T21:57:09.941Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -1073,7 +1160,7 @@
     "fields": {
         "username": "demo@onlab.us", 
         "public_key": "", 
-        "updated": "2013-12-06T11:25:52.457Z", 
+        "updated": "2014-05-23T22:03:14.065Z", 
         "is_readonly": true, 
         "firstname": "Demo", 
         "user_url": null, 
@@ -1083,7 +1170,7 @@
         "site": 22, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2013-12-19T00:59:55.668Z", 
+        "last_login": "2014-05-23T22:03:56.256Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$jaLSTW2ksHEN$HDpjDKieFDjMvtV5wbF/ow3zfq8EqcFtNXLfuo+150s=", 
@@ -1112,6 +1199,66 @@
         "is_admin": true, 
         "password": "!", 
         "email": "jhh@cs.arizona.edu", 
+        "enacted": null
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-23T22:03:14.097Z", 
+        "created": "2014-05-23T22:03:14.097Z", 
+        "dashboardView": 1, 
+        "user": 14, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-23T22:03:14.102Z", 
+        "created": "2014-05-23T22:03:14.102Z", 
+        "dashboardView": 2, 
+        "user": 14, 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-23T22:03:14.106Z", 
+        "created": "2014-05-23T22:03:14.106Z", 
+        "dashboardView": 4, 
+        "user": 14, 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-23T22:03:14.110Z", 
+        "created": "2014-05-23T22:03:14.110Z", 
+        "dashboardView": 6, 
+        "user": 14, 
+        "order": 3, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-23T22:03:14.115Z", 
+        "created": "2014-05-23T22:03:14.115Z", 
+        "dashboardView": 3, 
+        "user": 14, 
+        "order": 4, 
         "enacted": null
     }
 },
@@ -1396,8 +1543,8 @@
     "pk": 16, 
     "model": "core.slice", 
     "fields": {
-        "updated": "2014-05-20T17:55:00.621Z", 
-        "imagePreference": "Ubuntu 12.04 LTS", 
+        "updated": "2014-05-20T23:46:20.205Z", 
+        "imagePreference": "Hadoop 2.4.0", 
         "name": "Analytics", 
         "service": null, 
         "created": "2014-05-20T17:54:07.100Z", 
@@ -9869,6 +10016,329 @@
         "image": 1, 
         "creator": 8, 
         "numberCores": 0, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 346, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 384, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.304Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node1.stanford.vicci.org", 
+        "created": "2014-05-20T23:45:35.304Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 347, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 454, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.322Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node1.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.322Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 348, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 385, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.397Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node2.stanford.vicci.org", 
+        "created": "2014-05-20T23:45:35.397Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 349, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 455, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.436Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node2.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.436Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 350, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 524, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.461Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "node1.princeton.vicci.org", 
+        "created": "2014-05-20T23:45:35.461Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 351, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 386, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.472Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node3.stanford.vicci.org", 
+        "created": "2014-05-20T23:45:35.472Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 352, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 456, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.508Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node3.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.508Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 353, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 525, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.565Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "node2.princeton.vicci.org", 
+        "created": "2014-05-20T23:45:35.565Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 354, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 457, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.707Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node4.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.706Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 355, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 526, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.812Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "node3.princeton.vicci.org", 
+        "created": "2014-05-20T23:45:35.812Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 356, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 458, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.860Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node5.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.860Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 357, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 527, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.887Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "node4.princeton.vicci.org", 
+        "created": "2014-05-20T23:45:35.887Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 358, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 459, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.926Z", 
+        "slice": 16, 
+        "deploymentNetwork": 6, 
+        "name": "node6.washington.vicci.org", 
+        "created": "2014-05-20T23:45:35.926Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 359, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 528, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:45:35.961Z", 
+        "slice": 16, 
+        "deploymentNetwork": 7, 
+        "name": "node5.princeton.vicci.org", 
+        "created": "2014-05-20T23:45:35.961Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 360, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 387, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:46:01.919Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node4.stanford.vicci.org", 
+        "created": "2014-05-20T23:46:01.919Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 361, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 388, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:46:01.987Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node5.stanford.vicci.org", 
+        "created": "2014-05-20T23:46:01.987Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 362, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 389, 
+        "instance_name": null, 
+        "updated": "2014-05-20T23:46:02.054Z", 
+        "slice": 16, 
+        "deploymentNetwork": 5, 
+        "name": "node6.stanford.vicci.org", 
+        "created": "2014-05-20T23:46:02.054Z", 
+        "ip": null, 
+        "image": 2, 
+        "creator": 7, 
+        "numberCores": 1, 
         "instance_id": null, 
         "enacted": null
     }
@@ -50129,17 +50599,17 @@
     }
 },
 {
-    "pk": 13, 
-    "model": "nagios.nagiosservice", 
-    "fields": {}
-},
-{
     "pk": 11, 
     "model": "cassandra.cassandraservice", 
     "fields": {
         "clusterSize": 1, 
         "replicationFactor": 1
     }
+},
+{
+    "pk": 13, 
+    "model": "nagios.nagiosservice", 
+    "fields": {}
 },
 {
     "pk": 12, 
