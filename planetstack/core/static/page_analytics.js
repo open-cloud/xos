@@ -67,8 +67,6 @@ function updatePageAnalytics() {
     setTimeout(updatePageAnalytics, 30000);
 }
 
-setTimeout(updatePageAnalytics, 5000);
-
 // ----------------------------------------------------------------------------
 // bandwidth
 
@@ -98,5 +96,8 @@ function updatePageBandwidth() {
     setTimeout(updatePageBandwidth, 30000);
 }
 
-setTimeout(updatePageBandwidth, 5000);
+$( document ).ready(function() {
+    updatePageAnalytics();
+    updatePageBandwidth();
+});
 
