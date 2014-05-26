@@ -50587,6 +50587,86 @@
     }
 },
 {
+    "pk": 3, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-23T18:52:00.782Z", 
+        "description": "LSST dataset", 
+        "created": "2014-05-23T18:52:00.782Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "3", 
+        "private": false, 
+        "name": "LSST", 
+        "enacted": null, 
+        "archive": true, 
+        "owner_id": 1
+    }
+},
+{
+    "pk": 4, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-23T18:52:53.617Z", 
+        "description": "LHC dataset", 
+        "created": "2014-05-23T18:52:53.617Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "3", 
+        "private": false, 
+        "name": "LHC", 
+        "enacted": null, 
+        "archive": true, 
+        "owner_id": 1
+    }
+},
+{
+    "pk": 5, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-23T18:53:20.349Z", 
+        "description": "NOAA dataset", 
+        "created": "2014-05-23T18:53:20.349Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "3", 
+        "private": false, 
+        "name": "NOAA", 
+        "enacted": null, 
+        "archive": true, 
+        "owner_id": 1
+    }
+},
+{
+    "pk": 6, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-23T18:53:56.495Z", 
+        "description": "Measurement Lab dataset", 
+        "created": "2014-05-23T18:53:56.495Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "3", 
+        "private": false, 
+        "name": "Measurement Lab", 
+        "enacted": null, 
+        "archive": true, 
+        "owner_id": 1
+    }
+},
+{
+    "pk": 7, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-23T18:54:35.691Z", 
+        "description": "Common Crawl dataset", 
+        "created": "2014-05-23T18:54:35.691Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "3", 
+        "private": false, 
+        "name": "Common Crawl", 
+        "enacted": null, 
+        "archive": true, 
+        "owner_id": 1
+    }
+},
+{
     "pk": 1, 
     "model": "syndicate.volumeaccessright", 
     "fields": {
