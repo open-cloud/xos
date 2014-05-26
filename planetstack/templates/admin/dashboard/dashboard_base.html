@@ -75,7 +75,6 @@ function errorDialog(title,msg) {
         buttons: {
             'OK': function() {
                 def.resolve();
-                log.debug("Chose to add a sliver");
                 $( this ).dialog( "close" );
             },
         },
