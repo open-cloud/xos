@@ -835,10 +835,10 @@
     "pk": 7, 
     "model": "core.dashboardview", 
     "fields": {
-        "url": "cdn_nodes", 
-        "updated": "2014-05-20T00:33:52.101Z", 
+        "url": "template:cdn_nodes", 
+        "updated": "2014-05-26T23:12:15.410Z", 
         "enacted": null, 
-        "name": "template:CDN Nodes", 
+        "name": "CDN Nodes", 
         "created": "2014-05-20T00:33:52.101Z"
     }
 },
@@ -1026,7 +1026,7 @@
         "site": 22, 
         "phone": null, 
         "is_staff": true, 
-        "last_login": "2014-05-23T21:57:09.941Z", 
+        "last_login": "2014-05-26T23:11:54.353Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -1259,6 +1259,30 @@
         "dashboardView": 3, 
         "user": 14, 
         "order": 4, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-26T23:12:24.855Z", 
+        "created": "2014-05-26T23:12:24.855Z", 
+        "dashboardView": 3, 
+        "user": 8, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-26T23:12:24.895Z", 
+        "created": "2014-05-26T23:12:24.895Z", 
+        "dashboardView": 7, 
+        "user": 8, 
+        "order": 1, 
         "enacted": null
     }
 },
