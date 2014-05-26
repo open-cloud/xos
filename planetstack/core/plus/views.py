@@ -157,6 +157,9 @@ def getDashboards(user):
 
 class TenantCreateSlice(View):
     def post(self, request, *args, **kwargs):
+        if request.user.isReadOnlyUser():
+            return HttpResponseForbidden("User is in read-only mode")
+
         sliceName = request.POST.get("sliceName", "0")
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
@@ -190,6 +193,9 @@ def privateVolForSlice(user,sliceName):
 
 class TenantUpdateSlice(View):
     def post(self, request, *args, **kwargs):
+        if request.user.isReadOnlyUser():
+            return HttpResponseForbidden("User is in read-only mode")
+
         sliceName = request.POST.get("sliceName", "0")
         serviceClass = request.POST.get("serviceClass", "0")
         imageName = request.POST.get("imageName", "0")
@@ -637,6 +643,8 @@ def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
 
 class TenantDeleteSliceView(View):
         def post(self,request):
+                if request.user.isReadOnlyUser():
+                    return HttpResponseForbidden("User is in read-only mode")
                 sliceName = request.POST.get("sliceName",None)
                 slice = Slice.objects.get(name=sliceName)
                 #print slice, slice.id
