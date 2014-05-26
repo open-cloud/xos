@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
@@ -9,7 +10,7 @@ try:
     # This is a no-op if observer_disabled is set to 1 in the config file
     from observer import *
 except:
-    print "import of observer failed! printing traceback and disabling observer:"
+    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback
     traceback.print_exc()
 
