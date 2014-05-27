@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
 from django.core import urlresolvers
 from django.contrib.gis.geoip import GeoIP
+from django.db.models import Q
 from ipware.ip import get_ip
 from operator import itemgetter, attrgetter
 import traceback
@@ -61,10 +62,6 @@ class DashboardDynamicView(TemplateView):
             if (fn=="tenant"):
                 # fix for tenant view - it writes html to a div called tabs-5
                 template = '<div id="tabs-5"></div>' + template
-            if (fn=="slice_interactions"):
-                # fix for slice_interactions - it gives its container div a 40px
-                # margin, and then positions it's header at -40px
-                template = '<div id="tabs-4">' + template + '</div>'
             return template
         except:
             return "failed to open %s" % fn
@@ -114,7 +111,7 @@ class DashboardDynamicView(TemplateView):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        t = template.Template(head_template + self.readDashboard(fn) + self.tail_template)
+        t = template.Template(head_template + self.readDashboard(name) + self.tail_template)
 
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
@@ -341,7 +338,7 @@ def get_free_port():
         inuse[vs.peer_portnum]=True
         inuse[vs.replicate_portnum]=True
     for network in Network.objects.all():
-        if not network_ports:
+        if not network.ports:
             continue
         network_ports = [x.strip() for x in network.ports.split(",")]
         for network_port in network_ports:
@@ -796,4 +793,115 @@ class DashboardCustomize(View):
             udbv.save()
 
         return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
+
+class DashboardSliceInteractions(View):
+    def get(self, request, name="users", **kwargs):
+        colors = ["#005586", "#6ebe49", "orange", "#707170", "#00c4b3", "#077767", "dodgerblue", "#a79b94", "#c4e76a", "red"]
+
+        groups = []
+        matrix = []
+        slices = list(Slice.objects.all())
+
+        slices = [x for x in slices if not self.isEmpty(x,name)]
+
+        for i,slice in enumerate(slices):
+            groups.append({"name": slice.name, "color": colors[i%len(colors)]})
+            matrix.append(self.buildMatrix(slice, slices, name))
+
+        result = {"groups": groups, "matrix": matrix}
+
+        if name=="users":
+            result["title"] = "Slice interactions by user privilege"
+            result["objectName"] = "users"
+        elif name=="networks":
+            result["title"] = "Slice interactions by network membership"
+            result["objectName"] = "networks"
+        elif name=="sites":
+            result["title"] = "Slice interactions by site ownership"
+            result["objectName"] = "sites"
+        elif name=="sliver_sites":
+            result["title"] = "Slice interactions by sliver sites"
+            result["objectName"] = "sites"
+        elif name=="sliver_nodes":
+            result["title"] = "Slice interactions by sliver nodes"
+            result["objectName"] = "nodes"
+
+        return HttpResponse(json.dumps(result), mimetype='application/javascript')
+
+    def buildMatrix(self, slice, slices, name):
+        row = []
+        for otherSlice in slices:
+            if (otherSlice == slice):
+                row.append(self.getCount(slice, name))
+            else:
+                row.append(self.getInCommon(slice, otherSlice, name))
+        return row
+
+    def other_slice_sites(self, slice):
+        ids=[]
+        for sliver in Sliver.objects.all():
+            if sliver.slice!=slice:
+                if sliver.node.site.id not in ids:
+                    ids.append(sliver.node.site.id)
+        return ids
+
+    def other_slice_nodes(self, slice):
+        ids=[]
+        for sliver in Sliver.objects.all():
+            if sliver.slice!=slice:
+                if sliver.node.id not in ids:
+                    ids.append(sliver.node.id)
+        return ids
+
+    def getIds(self, slice, name, onlySelf=False):
+        ids=[]
+        if name=="users":
+            for sp in slice.slice_privileges.all():
+                if (not onlySelf) or (len(sp.user.slice_privileges.all())==1):
+                    if sp.user.id not in ids:
+                        ids.append(sp.user.id)
+        elif name=="networks":
+            for sp in slice.networkslice_set.all():
+                if (not onlySelf) or (len(sp.network.networkslice_set.all())==1):
+                    if sp.network.id not in ids:
+                        ids.append(sp.network.id)
+        elif name=="sites":
+            ids = [slice.site.id]
+        elif name=="sliver_sites":
+            for sp in slice.slivers.all():
+                 if sp.node.site.id not in ids:
+                     ids.append(sp.node.site.id)
+            if onlySelf:
+                other_slice_sites = self.other_slice_sites(slice)
+                ids = [x for x in ids if x not in other_slice_sites]
+        elif name=="sliver_nodes":
+            for sp in slice.slivers.all():
+                 if sp.node.id not in ids:
+                     ids.append(sp.node.id)
+            if onlySelf:
+                other_slice_nodes = self.other_slice_nodes(slice)
+                ids = [x for x in ids if x not in other_slice_nodes]
+
+        return ids
+
+    def inCommonIds(self, ids1, ids2):
+        count = 0
+        for id in ids1:
+            if id in ids2:
+                count+=1
+        return count
+
+    def getCount(self, slice, name):
+        if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
+            return len(self.getIds(slice,name,onlySelf=True))
+
+    def getInCommon(self, slice, otherSlice, name):
+        if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
+            slice_ids = self.getIds(slice,name)
+            otherSlice_ids = self.getIds(otherSlice,name)
+            return self.inCommonIds(slice_ids, otherSlice_ids)
+
+    def isEmpty(self, slice, name):
+        if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
+            return (len(self.getIds(slice,name)) == 0)
 

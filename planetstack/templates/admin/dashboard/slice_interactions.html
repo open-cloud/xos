@@ -2,7 +2,6 @@
 <style>
 #slice_interaction_chart_placeholder {
     text-align: center;
-    margin: -40px 20px 20px 0px;
     color:#fff;
     position: relative;
     height: 100%;
@@ -61,33 +60,34 @@ button:disabled {
     color:red;
     background-color: lightyellow;
 }
-#sliceEngagementTitle {
-    margin-top: -50px;
-    margin-left: -40px;
-
+.sliceinteractions_column {
+  display: table-cell;
+  padding: 10px;
+}
+#interactions_function {
+  width: 125px;
 }
 
 </style>
-<h3 id="sliceEngagementTitle"> Involvement between Slices by User Engagement</h3>
+
+<div class="row">
+    <div class="sliceinteractions_column">
+    <select id="interactions_function">
+        <option value="networks">networks</option>
+        <option value="users">users</option>
+        <option value="owner sites">sites</option>
+        <option value="sliver_sites">sliver_sites</option>
+        <option value="sliver_nodes">sliver_nodes</option>
+    </select>
+    </div>
+    <div class="sliceinteractions_column">
+    <h3 id="sliceEngagementTitle">Slice Interactions</h3>
+    </div>
+</div>
+
 <div id="slice_interaction_chart_placeholder"></div>
 
 <script>
-    
-  /*  d3.json(datasetURL, function(error, matrix) {
-
-    if (error) {alert("Error reading file: ", error.statusText); return; }
-    
-    */
-    actualData =  [[2, 2, 2, 2, 2, 2, 2, 1, 2, 1],
- [2, 7, 3, 7, 7, 3, 2, 2, 7, 2],
- [2, 3, 4, 3, 4, 2, 2, 2, 3, 2],
- [2, 7, 3, 7, 7, 3, 2, 2, 7, 2],
- [2, 7, 4, 7, 15, 3, 2, 6, 7, 6],
- [2, 3, 2, 3, 3, 3, 2, 1, 3, 1],
- [2, 2, 2, 2, 2, 2, 2, 1, 2, 1],
- [1, 2, 2, 2, 6, 1, 1, 6, 2, 6],
- [2, 7, 3, 7, 7, 3, 2, 2, 7, 2],
- [1, 2, 2, 2, 6, 1, 1, 6, 2, 6]];
 
 // Chord Diagram for showing Collaboration between users found in an anchor query
 // Collaboration View
@@ -98,23 +98,9 @@ var width = 600,
     outerRadius = Math.min(width, height) / 2 - 100,
     innerRadius = outerRadius - 18;
 
-var dataset = "#allinfo";
-//string url for the initial data set
-//would usually be a file path url, here it is the id
-//selector for the <pre> element storing the data
-
 //create number formatting functions
 var formatPercent = d3.format("%");
 var numberWithCommas = d3.format("0,f");
-
-//create the arc path data generator for the groups
-var arc = d3.svg.arc()
-    .innerRadius(innerRadius)
-    .outerRadius(outerRadius);
-
-//create the chord path data generator for the chords
-var path = d3.svg.chord()
-    .radius(innerRadius);
 
 //define the default chord layout parameters
 //within a function that returns a new layout object;
@@ -122,56 +108,64 @@ var path = d3.svg.chord()
 //that are the same except for the data.
 function getDefaultLayout() {
     return d3.layout.chord()
-//    .padding(0.03)
     .sortSubgroups(d3.descending)
     .sortChords(d3.ascending);
-}  
+}
 var last_layout; //store layout between updates
-var users = [{"color": "#005586", "name": "Owl"}, {"color": "#6ebe49", "name": "DnsDemux"}, {"color": "orange", "name": "Infrastructure"}, {"color": "#707170", "name": "HyperCache"}, {"color": "#00c4b3", "name": "Syndicate"}, {"color": "#077767", "name": "Hadoop"}, {"color": "dodgerblue", "name": "Stork"}, {"color": "#a79b94", "name": "test2"}, {"color": "#c4e76a", "name": "DnsRedir"}, {"color": "red", "name": "test"}];
+var g;
+var arc;
+var path;
 
-/*** Initialize the visualization ***/
-var g = d3.select("#slice_interaction_chart_placeholder").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-    .append("g")
-        .attr("id", "circle")
-        .attr("transform", 
-              "translate(" + width / 2 + "," + height / 2 + ")");
-//the entire graphic will be drawn within this <g> element,
-//so all coordinates will be relative to the center of the circle
+function init_visualization() {
+    arc = d3.svg.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
 
-g.append("circle")
-    .attr("r", outerRadius);
-//this circle is set in CSS to be transparent but to respond to mouse events
-//It will ensure that the <g> responds to all mouse events within
-//the area, even after chords are faded out.
-
-/*** Read in the neighbourhoods data and update with initial data matrix ***/
-//normally this would be done with file-reading functions
-//d3.csv and d3.json and callbacks, 
-//instead we're using the string-parsing functions
-//d3.csv.parse and JSON.parse, both of which return the data,
-//no callbacks required.
+    path = d3.svg.chord()
+        .radius(innerRadius);
 
 
-    updateChords(dataset); 
-    //call the update method with the default dataset
-    
-//} ); //end of d3.csv function
+    /*** Initialize the visualization ***/
+    g = d3.select("#slice_interaction_chart_placeholder").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+        .append("g")
+            .attr("id", "circle")
+            .attr("transform",
+                  "translate(" + width / 2 + "," + height / 2 + ")");
+    //the entire graphic will be drawn within this <g> element,
+    //so all coordinates will be relative to the center of the circle
+
+    g.append("circle")
+        .attr("r", outerRadius);
+}
+
+$( document ).ready(function() {
+    init_visualization();
+    $('#interactions_function').change(function() {
+         updateInteractions();
+     });
+    updateInteractions();
+});
+
+function updateInteractions() {
+ $( "#sliceEngagementTitle" ).html("<h3>Loading...</h3>");
+ $.ajax({
+    url : "/admin/sliceinteractions/" + $("#interactions_function :selected").text() + "/",
+    dataType : 'json',
+    type : 'GET',
+    success: function(newData)
+    {
+        $( "#sliceEngagementTitle" ).html("<h3>" + newData["title"] + "</h3>");
+        updateChords(newData["groups"], newData["matrix"], newData["objectName"])
+    }
+   });
+}
 
 
 /* Create OR update a chord layout from a data matrix */
-function updateChords( datasetURL ) {
-    
-  /*  d3.json(datasetURL, function(error, matrix) {
+function updateChords( users, matrix, objectName ) {
 
-    if (error) {alert("Error reading file: ", error.statusText); return; }
-    
-    */
-    //var matrix = JSON.parse( d3.select(datasetURL).text() );
-    var matrix = actualData;
-        // instead of d3.json
-    
     /* Compute chord layout. */
     layout = getDefaultLayout(); //create a new layout object
     layout.matrix(matrix);
@@ -189,7 +183,7 @@ function updateChords( datasetURL ) {
             .duration(1500)
             .attr("opacity", 0)
             .remove(); //remove after transitions are complete
-    
+
     var newGroups = groupG.enter().append("g")
         .attr("class", "group");
     //the enter selection is stored in a variable so we can
@@ -202,7 +196,7 @@ function updateChords( datasetURL ) {
     //Update the (tooltip) title text based on the data
     groupG.select("title")
         .text(function(d, i) {
-            return "Slice (" + users[i].name + 
+            return "Slice (" + users[i].name +
                 ") "
                 ;
         });
@@ -277,19 +271,19 @@ function updateChords( datasetURL ) {
         .text(function(d) {
             if (users[d.target.index].name !== users[d.source.index].name) {
                 return [numberWithCommas(d.source.value),
-                        " users in common between \n",
+                        " " + objectName + " in common between \n",
                         users[d.source.index].name,
                         " and ",
                         users[d.target.index].name,
                         "\n"
-                        ].join(""); 
+                        ].join("");
                     //joining an array of many strings is faster than
-                    //repeated calls to the '+' operator, 
+                    //repeated calls to the '+' operator,
                     //and makes for neater code!
-            } 
+            }
             else { //source and target are the same
-                return numberWithCommas(d.source.value) 
-                    + " users are only in Slice (" 
+                return numberWithCommas(d.source.value)
+                    + " " + objectName + " are only in Slice ("
                     + users[d.source.index].name + ")";
             }
         });
@@ -331,7 +325,7 @@ function updateChords( datasetURL ) {
             chordPaths.classed("fade", false);
     });
     */
-    
+
     last_layout = layout; //save for next update
     
 //  }); //end of d3.json
@@ -416,6 +410,8 @@ function chordTween(oldLayout) {
         }
         else {
             //create a zero-width chord object
+/*          XXX SMBAKER: the code commented out below was causing an error,
+                  so I replaced it with the following code from stacktrace
             if (oldLayout) {
                 var oldGroups = oldLayout.groups().filter(function(group) {
                         return ( (group.index == d.source.index) ||
@@ -426,7 +422,7 @@ function chordTween(oldLayout) {
                     //the OR in target is in case source and target are equal
                     //in the data, in which case only one group will pass the
                     //filter function
-                
+
                 if (d.source.index != old.source.index ){
                     //swap source and target to match the new data
                     old = {
@@ -436,12 +432,21 @@ function chordTween(oldLayout) {
                 }
             }
             else old = d;
-                
+
             var emptyChord = {
                 source: { startAngle: old.source.startAngle,
                          endAngle: old.source.startAngle},
                 target: { startAngle: old.target.startAngle,
                          endAngle: old.target.startAngle}
+            };
+            tween = d3.interpolate( emptyChord, d );*/
+
+            //create a zero-width chord object
+            var emptyChord = {
+                source: { startAngle: d.source.startAngle,
+                         endAngle: d.source.startAngle},
+                target: { startAngle: d.target.startAngle,
+                         endAngle: d.target.startAngle}
             };
             tween = d3.interpolate( emptyChord, d );
         }
