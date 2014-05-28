@@ -305,6 +305,16 @@ function updateChords( users, matrix, objectName ) {
         //.transition().duration(100).attr("opacity", 1) //reset opacity
     ;
 
+    // XXX SMBAKER: The way the text was added with newGroups, it's only
+    //   computed when a node is created. This is a problem if we redraw the
+    //   graph with a different set of nodes, because the old labels will
+    //   stick. So, I added this, which *seems* to cause the labels to be
+    //   recomputed.
+    groupG.selectAll("text")
+        .text(function (d) {
+            return users[d.index].name;
+        });
+
     //add the mouseover/fade out behaviour to the groups
     //this is reset on every update, so it will use the latest
     //chordPaths selection
@@ -325,6 +335,12 @@ function updateChords( users, matrix, objectName ) {
             chordPaths.classed("fade", false);
     });
     */
+
+    // XXX smbaker: there's a bug where if you hilight a slice of the chord
+    //   graph, and then update the data, the freshly drawn graph is missing
+    //   some of the chords. Flipping the fade bit seems to fix that.
+    chordPaths.classed("fade", true);
+    chordPaths.classed("fade", false);
 
     last_layout = layout; //save for next update
     
