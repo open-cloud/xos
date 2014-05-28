@@ -9659,28 +9659,12 @@
     "model": "core.networktemplate", 
     "fields": {
         "guaranteedBandwidth": 0, 
-        "description": "Connect a sliver to the public network using dedicated public IPv4 address", 
+        "description": "Connect a sliver to the public network using a dedicated public IPv4 address",
         "created": "2013-12-09T14:15:16.899Z", 
-        "sharedNetworkName": "", 
+        "sharedNetworkName": "ext-net",
         "updated": "2013-12-09T14:15:16.899Z", 
         "visibility": "private", 
-        "name": "dedicated-public-IPv4", 
-        "translation": "none", 
-        "sharedNetworkId": "", 
-        "enacted": null
-    }
-},
-{
-    "pk": 2, 
-    "model": "core.networktemplate", 
-    "fields": {
-        "guaranteedBandwidth": 0, 
-        "description": "For PlanetLab compatibility: connect to the public network by sharing the node's public IP address.", 
-        "created": "2013-12-09T14:16:12.358Z", 
-        "sharedNetworkName": "", 
-        "updated": "2013-12-09T14:16:12.358Z", 
-        "visibility": "public", 
-        "name": "planetlab-legacy", 
+        "name": "Public dedicated IPv4",
         "translation": "none", 
         "sharedNetworkId": "", 
         "enacted": null
@@ -9691,14 +9675,14 @@
     "model": "core.networktemplate", 
     "fields": {
         "guaranteedBandwidth": 0, 
-        "description": "Connect a sliver to the public network via NAT", 
+        "description": "Connect a sliver to the public network via NAT",
         "created": "2013-12-09T14:17:29.551Z", 
         "sharedNetworkName": "nat-net", 
         "updated": "2013-12-09T14:17:29.551Z", 
         "visibility": "private", 
-        "name": "private-IPv4-plus-NAT", 
+        "name": "Public shared IPv4",
         "translation": "NAT", 
-        "sharedNetworkId": "51d641ba-9e1e-46f5-8069-bf4a929f851f", 
+        "sharedNetworkId": "",
         "enacted": null
     }
 },
@@ -9712,7 +9696,7 @@
         "sharedNetworkName": "", 
         "updated": "2013-12-09T14:18:02.336Z", 
         "visibility": "private", 
-        "name": "private-virtual", 
+        "name": "Private",
         "translation": "none", 
         "sharedNetworkId": "", 
         "enacted": null
