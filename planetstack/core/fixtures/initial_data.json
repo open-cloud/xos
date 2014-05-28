@@ -9675,7 +9675,7 @@
     "model": "core.networktemplate", 
     "fields": {
         "guaranteedBandwidth": 0, 
-        "description": "Connect a sliver to the public network via NAT",
+        "description": "Connect a sliver to the public network via NAT, with port forwarding",
         "created": "2013-12-09T14:17:29.551Z", 
         "sharedNetworkName": "nat-net", 
         "updated": "2013-12-09T14:17:29.551Z", 
