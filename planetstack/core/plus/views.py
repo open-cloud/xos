@@ -802,11 +802,14 @@ class DashboardSliceInteractions(View):
         matrix = []
         slices = list(Slice.objects.all())
 
-        slices = [x for x in slices if not self.isEmpty(x,name)]
+        ids_by_slice = self.build_id_list(slices, name)
+
+        slices = [x for x in slices if (len(ids_by_slice[x])>0)]
 
         for i,slice in enumerate(slices):
             groups.append({"name": slice.name, "color": colors[i%len(colors)]})
-            matrix.append(self.buildMatrix(slice, slices, name))
+            row=self.buildMatrix(slice, slices, name, ids_by_slice)
+            matrix.append(row)
 
         result = {"groups": groups, "matrix": matrix}
 
@@ -828,41 +831,48 @@ class DashboardSliceInteractions(View):
 
         return HttpResponse(json.dumps(result), mimetype='application/javascript')
 
-    def buildMatrix(self, slice, slices, name):
+    def build_id_list(self, slices, name):
+        ids_by_slice = {}
+        for slice in slices:
+            # build up a list of object ids that are used by each slice
+            ids_by_slice[slice] = self.getIds(slice, name)
+
+        return ids_by_slice
+
+    def buildMatrix(self, slice, slices, name, ids_by_slice):
+        not_only_my_ids = []
+
+        # build up a list of object ids that are used by other slices
+        for otherSlice in ids_by_slice.keys():
+            if (slice != otherSlice):
+                for id in ids_by_slice[otherSlice]:
+                    if not id in not_only_my_ids:
+                        not_only_my_ids.append(id)
+
+        # build up a list of ids that are used only by the slice, and not
+        # shared with any other slice
+        only_my_ids = []
+        for id in ids_by_slice[slice]:
+             if id not in not_only_my_ids:
+                  only_my_ids.append(id)
+
         row = []
-        for otherSlice in slices:
+        for otherSlice in ids_by_slice.keys():
             if (otherSlice == slice):
-                row.append(self.getCount(slice, name))
+                row.append(len(only_my_ids))
             else:
-                row.append(self.getInCommon(slice, otherSlice, name))
+                row.append(self.inCommonIds(ids_by_slice[slice], ids_by_slice[otherSlice]))
+
         return row
 
-    def other_slice_sites(self, slice):
-        ids=[]
-        for sliver in Sliver.objects.all():
-            if sliver.slice!=slice:
-                if sliver.node.site.id not in ids:
-                    ids.append(sliver.node.site.id)
-        return ids
-
-    def other_slice_nodes(self, slice):
-        ids=[]
-        for sliver in Sliver.objects.all():
-            if sliver.slice!=slice:
-                if sliver.node.id not in ids:
-                    ids.append(sliver.node.id)
-        return ids
-
-    def getIds(self, slice, name, onlySelf=False):
+    def getIds(self, slice, name):
         ids=[]
         if name=="users":
             for sp in slice.slice_privileges.all():
-                if (not onlySelf) or (len(sp.user.slice_privileges.all())==1):
                     if sp.user.id not in ids:
                         ids.append(sp.user.id)
         elif name=="networks":
             for sp in slice.networkslice_set.all():
-                if (not onlySelf) or (len(sp.network.networkslice_set.all())==1):
                     if sp.network.id not in ids:
                         ids.append(sp.network.id)
         elif name=="sites":
@@ -871,17 +881,10 @@ class DashboardSliceInteractions(View):
             for sp in slice.slivers.all():
                  if sp.node.site.id not in ids:
                      ids.append(sp.node.site.id)
-            if onlySelf:
-                other_slice_sites = self.other_slice_sites(slice)
-                ids = [x for x in ids if x not in other_slice_sites]
         elif name=="sliver_nodes":
             for sp in slice.slivers.all():
                  if sp.node.id not in ids:
                      ids.append(sp.node.id)
-            if onlySelf:
-                other_slice_nodes = self.other_slice_nodes(slice)
-                ids = [x for x in ids if x not in other_slice_nodes]
-
         return ids
 
     def inCommonIds(self, ids1, ids2):
@@ -890,16 +893,6 @@ class DashboardSliceInteractions(View):
             if id in ids2:
                 count+=1
         return count
-
-    def getCount(self, slice, name):
-        if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
-            return len(self.getIds(slice,name,onlySelf=True))
-
-    def getInCommon(self, slice, otherSlice, name):
-        if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
-            slice_ids = self.getIds(slice,name)
-            otherSlice_ids = self.getIds(otherSlice,name)
-            return self.inCommonIds(slice_ids, otherSlice_ids)
 
     def isEmpty(self, slice, name):
         if (name in ["users", "networks", "sites", "sliver_nodes", "sliver_sites"]):
