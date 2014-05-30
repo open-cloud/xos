@@ -18,10 +18,11 @@ from core.views.slivers import SliverList, SliverDetail
 from core.views.tags import TagList, TagDetail
 from core.views.users import UserList, UserDetail
 from core.views.legacyapi import LegacyXMLRPC
+#from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from core.api_root import api_root
 from rest_framework import generics
-from core.plus.sites import SitePlus
+from core.dashboard.sites import SitePlus
 from django.http import HttpResponseRedirect
 
 admin.site = SitePlus()
@@ -46,7 +47,7 @@ urlpatterns = patterns('',
     #url(r'^profile/home', 'core.views.home'),
 
     url(r'^plstackapi/$', api_root),
-    
+
     url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
     url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
 
@@ -94,6 +95,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserDetail.as_view(), name='user-detail'),
 
     url(r'^legacyapi/$', 'core.views.legacyapi.LegacyXMLRPC', name='xmlrpc'),
+
+#    url(r'^analytics/(?P<name>\w+)/$', AnalyticsAjaxView.as_view(), name="analytics"),
 
     url(r'^files/', redirect_to_apache),
 
