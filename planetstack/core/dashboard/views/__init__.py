@@ -1,0 +1,9 @@
+from home import DashboardWelcomeView, DashboardDynamicView
+from tenant import TenantCreateSlice, TenantUpdateSlice, TenantDeleteSliceView, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantViewData
+from simulator import SimulatorView
+from cdn import DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardAjaxView
+from analytics import DashboardAnalyticsAjaxView
+from customize import DashboardCustomize
+from interactions import DashboardSliceInteractions
+from test import DashboardUserSiteView
+
