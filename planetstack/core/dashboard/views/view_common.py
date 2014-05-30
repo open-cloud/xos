@@ -23,7 +23,6 @@ if os.path.exists("/home/smbaker/projects/vicci/cdn/bigquery"):
     sys.path.append("/home/smbaker/projects/vicci/cdn/bigquery")
 else:
     sys.path.append("/opt/planetstack/hpc_wizard")
-import hpc_wizard
 from planetstack_analytics import DoPlanetStackAnalytics, PlanetStackAnalytics, RED_LOAD, BLUE_LOAD
 
 def getDashboardContext(user, context={}, tableFormat = False):
