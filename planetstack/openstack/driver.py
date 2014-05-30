@@ -413,7 +413,7 @@ class OpenStackDriver:
 
         return (subnet_id, subnet)
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None):
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None):
         flavor_name = self.config.nova_default_flavor
         flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
@@ -439,7 +439,8 @@ class OpenStackDriver:
                                             availability_zone=availability_zone,
                                             nics=nics,
                                             networks=nics,
-                                            meta=metadata)
+                                            meta=metadata,
+                                            userdata=userdata)
         return server
 
     def destroy_instance(self, id):

@@ -25,6 +25,7 @@ class Sliver(PlCoreBase):
     deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
     tags = generic.GenericRelation(Tag)
+    userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
     def __unicode__(self):
         if self.instance_name:
