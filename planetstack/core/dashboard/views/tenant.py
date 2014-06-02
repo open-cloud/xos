@@ -31,7 +31,7 @@ class TenantCreateSlice(View):
 	   addOrModifyPorts(networkPorts,sliceName)
 	   if privateVolume=="true":
 	   	privateVolForSlice(request.user,sliceName)
-        return HttpResponse("Slice created")
+        return HttpResponse(json.dumps("Slice created"), mimetype='application/javascript')
 
 def privateVolForSlice(user,sliceName):
 	if not hasPrivateVolume(sliceName):
@@ -64,7 +64,7 @@ class TenantUpdateSlice(View):
 	addOrModifyPorts(networkPorts,sliceName)
 	if privateVolume=="true":
                 privateVolForSlice(request.user,sliceName)
-        return HttpResponse("Slice updated")
+        return HttpResponse(json.dumps("Slice updated"), mimetype='application/javascript')
 
 def addNetwork(name,template,sliceName):
 	networkTemplate=NetworkTemplate.objects.get(name=template)
@@ -237,7 +237,7 @@ class TenantDeleteSliceView(View):
                 #print slice, slice.id
                 sliceToDel=Slice(name=sliceName, id=slice.id)
                 sliceToDel.delete()
-                return HttpResponse("Slice deleted")
+                return HttpResponse(json.dumps("Slice deleted"), mimetype='application/javascript')
 
 class TenantAddOrRemoveSliverView(View):
     """ Add or remove slivers from a Slice
