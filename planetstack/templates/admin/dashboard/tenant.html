@@ -268,10 +268,14 @@
                                                                 state: "inactive"
                                                         },
                                                         type: 'POST',
-                                                        complete: function () {
+                                                        success: function () {
 								$("#tabs-5").empty();
                                                                 initTenant();    //location.reload();
-                                                        }
+                                                        },
+							  error:function (xhr, textStatus, thrownError){
+         							   errorDialog("Error:", textStatus + " " + xhr.responseText);
+        						}
+							
                                                 });
 
 			});
@@ -481,8 +485,7 @@ location.reload();
 										return true;
 									}
 								},
-								success: function (response) {},
-								complete: function () {
+								success: function () {
 									location.reload();
 								}
 							});
@@ -498,7 +501,7 @@ location.reload();
                                                                 },
 								async: false,
                                                                 type: 'POST',
-                                                                complete: function () {
+                                                                success: function () {
                                                                         location.reload();
                                                                 }
                                                         });
@@ -533,10 +536,12 @@ location.reload();
 									state: "inactive"
 								},
 								type: 'POST',
-								success: function (response) {},
-								complete: function () {
+								success: function () {
 									location.reload();
-								}
+								},
+                                                          error:function (xhr, textStatus, thrownError){
+                                                                   errorDialog("Error:", textStatus + " " + xhr.responseText);
+                                                        }
 							});
 						},
 						Cancel: function () {
