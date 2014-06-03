@@ -54,7 +54,6 @@ function updatePageAnalyticsData(summaryData) {
 
 function updatePageAnalytics() {
     var url= '/analytics/bigquery/?avg=%cpu&count=%hostname&cached=default' + getObjectQuery();
-    console.log(url);
     $.ajax({
     url: url,
     dataType : 'json',

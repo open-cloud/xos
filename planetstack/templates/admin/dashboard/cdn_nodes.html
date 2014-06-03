@@ -81,8 +81,6 @@ function updateCDNNodes() {
 
     var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&computed=@bytes_sent/@elapsed&groupBy=@hostname&cached=hpc&cachedGroupBy=@hostname' + filterPart;
 
-    console.log(url);
-
     $.ajax({
     url: url,
     dataType : 'json',
