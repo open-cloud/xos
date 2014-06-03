@@ -52,6 +52,7 @@ class VolumeAccessRightInline(PlStackTabularInline):
     formfield_overrides = {
         BitField: {'widget': BitFieldCheckboxSelectMultiple}
     }
+    fields = ('owner_id', 'gateway_caps')
 
 class VolumeInline(PlStackTabularInline):
     model = Volume

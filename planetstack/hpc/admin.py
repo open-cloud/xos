@@ -32,16 +32,22 @@ class CDNPrefixInline(PlStackTabularInline):
     model = CDNPrefix
     extra = 0
     suit_classes = 'suit-tab suit-tab-prefixes'
+    fields = ('cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
+    readonly_fields = ('cdn_prefix_id',)
 
 class CDNPrefixROInline(ReadOnlyTabularInline):
     model = CDNPrefix
     extra = 0
     suit_classes = 'suit-tab suit-tab-prefixes'
+    fields = ('cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
+    readonly_fields = ('cdn_prefix_id',)
 
 class ContentProviderInline(PlStackTabularInline):
     model = ContentProvider
     extra = 0
     suit_classes = 'suit-tab suit-tab-cps'
+    fields = ('content_provider_id', 'name', 'enabled')
+    readonly_fields = ('content_provider_id',)
 
 class ContentProviderROInline(ReadOnlyTabularInline):
     model = ContentProvider
@@ -51,7 +57,9 @@ class ContentProviderROInline(ReadOnlyTabularInline):
 class OriginServerAdmin(ReadOnlyAwareAdmin):
     list_display = ('url','protocol','redirects','contentProvider','authenticated','enabled' )
 
-    user_readonly_fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description','redirects','authenticated' )
+    fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description' )
+    readonly_fields = ('origin_server_id',)
+    user_readonly_fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description')
 
 class ContentProviderForm(forms.ModelForm):
     class Meta:
@@ -92,6 +100,7 @@ class CDNPrefixForm(forms.ModelForm):
 class CDNPrefixAdmin(ReadOnlyAwareAdmin):
     form = CDNPrefixForm
     list_display = ['prefix','contentProvider']
+    fields = ['prefix', 'contentProvider', 'cdn_prefix_id', 'description', 'defaultOriginServer', 'enabled']
     user_readonly_fields = ['prefix','contentProvider', "cdn_prefix_id", "description", "defaultOriginServer", "enabled"]
 
 class SiteMapAdmin(ReadOnlyAwareAdmin):
