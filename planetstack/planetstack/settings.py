@@ -144,8 +144,8 @@ INSTALLED_APPS = (
     'hpc',
     'requestrouter',
     'cassandra',
-#    'kairos',
-#    'nagios',
+    'kairos',
+    'nagios',
     'syndicate',
     'geoposition',
 )
