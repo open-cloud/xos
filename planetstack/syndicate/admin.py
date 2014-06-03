@@ -148,7 +148,7 @@ class VolumeAdmin(ReadOnlyAwareAdmin):
     model = Volume
    
     def get_readonly_fields(self, request, obj=None ):
-       always_readonly = []
+       always_readonly = list(super(VolumeAdmin, self).get_readonly_fields(request, obj))
        if obj == None:
           # all fields are editable on add
           return always_readonly
