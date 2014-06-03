@@ -660,9 +660,6 @@ height: 84.5%;
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
 }
 #wrap {
-    background: url("../img/bg_left_white.gif") repeat-y scroll left top rgba(0, 0, 0, 0);
-}
-#wrap {
     height: auto !important;
     margin: 0 auto -60px;
     min-height: 100%;
