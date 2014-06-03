@@ -13,7 +13,7 @@ from .user import User, UserDeployments, UserDashboardView
 from .serviceclass import ServiceClass
 from .slice import Slice, SliceDeployments
 from .site import SitePrivilege, SiteDeployments
-from .image import Image
+from .image import Image, ImageDeployments
 from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole
