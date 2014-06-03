@@ -19,11 +19,11 @@ class SyncImages(OpenStackSyncStep):
 
         images = Image.objects.all()
         image_names = [image.name for image in images]
-     
+
         for image_name in available_images:
-            #remove file extension 
+            #remove file extension
             clean_name = ".".join(image_name.split('.')[:-1])
-            if image_name not in image_names:
+            if clean_name not in image_names:
                 image = Image(name=clean_name,
                               disk_format='raw',
                               container_format='bare', 
