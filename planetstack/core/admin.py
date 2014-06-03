@@ -422,6 +422,16 @@ class SliceNetworkInline(PlStackTabularInline):
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
     suit_classes = 'suit-tab suit-tab-slicenetworks'
+    fields = ['network']
+
+class ImageDeploymentsInline(PlStackTabularInline):
+    model = ImageDeployments
+    extra = 0
+    verbose_name = "Image Deployments"
+    verbose_name_plural = "Image Deployments"
+    suit_classes = 'suit-tab suit-tab-imagedeployments'
+    fields = ['deployment', 'glance_image_id']
+    readonly_fields = ['deployment', 'glance_image_id']
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -756,9 +766,9 @@ class ImageAdmin(PlanetStackBaseAdmin):
                     'classes': ['suit-tab suit-tab-general']})
                ]
 
-    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'))
+    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
-    inlines = [SliverInline]
+    inlines = [SliverInline, ImageDeploymentsInline]
     
     user_readonly_fields = ['name', 'disk_format', 'container_format']
     user_readonly_inlines = [SliverROInline]
