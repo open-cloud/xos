@@ -240,9 +240,10 @@ class PlanetStackObserver:
                     self.check_schedule(sync_step) # dont run sync_network_routes if time since last run < 1 hour
                     should_run = True
                 except StepNotReady:
-                    logging.info('Step not ready: %s'%sync_step.__name__)
+                    logger.info('Step not ready: %s'%sync_step.__name__)
                     failed_steps.append(sync_step)
                 except:
+                    logger.info('Exception when checking schedule: %s'%sync_step.__name__)
                     failed_steps.append(sync_step)
 
                 if (should_run):
@@ -262,6 +263,7 @@ class PlanetStackObserver:
                             failed_step_objects.update(failed_objects)
                         self.update_run_time(sync_step)
                     except:
+                        logger.log_exc('Failure in step: %s'%sync_step.__name__)
                         failed_steps.append(S)
             self.save_run_times()
         except:
