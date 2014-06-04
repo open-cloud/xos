@@ -12,6 +12,10 @@ class ManyToManyField_NoSyncdb(models.ManyToManyField):
 
 class Deployment(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
+    admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
+    admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
+    admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to") 
+    auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
 #    sites = ManyToManyField_NoSyncdb('Site', through=Site.deployments.through, blank=True)
 
     def __unicode__(self):  return u'%s' % (self.name)

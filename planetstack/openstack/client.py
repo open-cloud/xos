@@ -15,7 +15,6 @@ except:
     has_openstack = False
 
 from planetstack.config import Config
-from deployment_auth import deployment_auth
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):
@@ -44,21 +43,12 @@ def parse_novarc(filename):
 class Client:
     def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, admin=True, *args, **kwds):
         
-            
-        if not deployment or deployment not in deployment_auth:
-            auth = deployment_auth['default']
-        else:
-            auth = deployment_auth[deployment]
-            
         self.has_openstack = has_openstack
-
-        self.url = auth['url']
+        self.url = deployment.auth_url
         if admin:
-            self.username = auth['user']
-            self.password = auth['password']
-            self.tenant = auth['tenant']
-            self.endpoint = auth['endpoint']
-            self.token = auth['token']  
+            self.username = deployment.admin_user
+            self.password = deployment.admin_password
+            self.tenant = deployment.admin_tenant
         else:
             self.username = None
             self.password = None
@@ -98,9 +88,7 @@ class KeystoneClient(Client):
             self.client = keystone_client.Client(username=self.username,
                                                  password=self.password,
                                                  tenant_name=self.tenant,
-                                                 auth_url=self.url,
-                                                 endpoint=self.endpoint,
-                                                 token=self.token
+                                                 auth_url=self.url
                                                 )
 
     @require_enabled
