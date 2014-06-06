@@ -116,13 +116,15 @@ class Deployment(PlCoreBase):
 
         return False
 
-    def select_by_acl(self, user):
-        acl = self.get_acl()
-        result = []
+    @staticmethod
+    def select_by_acl(user):
+        ids = []
         for deployment in Deployment.objects.all():
+            acl = deployment.get_acl()
             if acl.test(user):
-                result.append(deployment)
-        return result
+                ids.append(deployment.id)
+
+        return Deployment.objects.filter(id__in=ids)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
