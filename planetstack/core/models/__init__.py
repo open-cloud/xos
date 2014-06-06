@@ -6,7 +6,6 @@ from .service import Service
 from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
-#from .deployment import Deployment
 from .site import Site,Deployment, DeploymentRole, DeploymentPrivilege, SiteDeployments
 from .dashboard import DashboardView
 from .user import User, UserDeployments, UserDashboardView
@@ -20,8 +19,6 @@ from .slice import SliceRole
 from .slice import SlicePrivilege
 from .site import SiteRole
 from .site import SitePrivilege
-#from .deployment import DeploymentRole
-#from .deployment import DeploymentPrivilege
 from .planetstack import PlanetStackRole
 from .planetstack import PlanetStackPrivilege
 from .slicetag import SliceTag
