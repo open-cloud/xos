@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.openstacksyncstep import OpenStackSyncStep
-from deployment_auth import deployment_auth
+from core.models.deployment import Deployment
 from core.models import *
 
 logger = Logger(logfile='/var/log/observer.log', level=logging.INFO)
@@ -46,9 +46,9 @@ class GarbageCollector(OpenStackSyncStep):
         # some deployments are at the same url. Keep track of the urls we've visited
         # to make sure we aren't making redundant calls
         completed_urls = []
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             # skip deployments that we've already processed
-            if deployment_auth[deployment]['url'] in completed_urls:
+            if deployment.auth_url in completed_urls:
                 continue
             try:
                 driver = self.driver.admin_driver(deployment=deployment)
@@ -68,7 +68,7 @@ class GarbageCollector(OpenStackSyncStep):
             except:
                 logger.log_exc("GarbageCollector: Error at deployment %s" % deployment)
                                 
-            completed_urls.append(deployment_auth[deployment]['url']) 
+            completed_urls.append(deployment.auth_url) 
 
     def gc_tenants(self):
         """
@@ -95,9 +95,9 @@ class GarbageCollector(OpenStackSyncStep):
         # some deployments are at the same url. Keep track of the urls we've visited
         # to make sure we aren't making redundant calls
         completed_urls = []
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             # skip deployments that we've already processed
-            if deployment_auth[deployment]['url'] in completed_urls:
+            if deployment.auth_url in completed_urls:
                 continue
 
             driver = self.driver.admin_driver(deployment=deployment)
@@ -111,7 +111,7 @@ class GarbageCollector(OpenStackSyncStep):
                         driver.delete_tenant(tenant.id)
                     except:
                         logger.log_exc("GarbageCollector: delete tenant failed: %s" % tenant)
-            completed_urls.append(deployment_auth[deployment]['url'])
+            completed_urls.append(deployment.auth_url)
 
     def gc_users(self):
         """
@@ -133,9 +133,9 @@ class GarbageCollector(OpenStackSyncStep):
         # some deployments are at the same url. Keep track of the urls we've visited
         # to make sure we aren't making redundant calls
         completed_urls = []
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             # skip deployments that we've already processed
-            if deployment_auth[deployment]['url'] in completed_urls:
+            if deployment.auth_url in completed_urls:
                 continue
 
             driver = self.driver.admin_driver(deployment=deployment)
@@ -149,7 +149,7 @@ class GarbageCollector(OpenStackSyncStep):
                         self.driver.delete_user(user.id)
                     except:
                         logger.log_exc("GarbageCollector: delete user failed: %s" % user)
-            completed_urls.append(deployment_auth[deployment]['url'])          
+            completed_urls.append(deployment.auth_url)          
 
     def gc_user_tenant_roles(self):
         """
@@ -172,9 +172,9 @@ class GarbageCollector(OpenStackSyncStep):
         # 2. Never remove a user's role at a slice they've created.
         # Keep track of all roles that must be preserved.     
         users = User.objects.all()
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             # skip deployments that we've already processed
-            if deployment_auth[deployment]['url'] in completed_urls:
+            if deployment.auth_url in completed_urls:
                 continue
 
             driver = self.driver.admin_driver(deployment=deployment)
@@ -213,7 +213,7 @@ class GarbageCollector(OpenStackSyncStep):
                             logger.info("GarbageCollector: removing user role %s for %s at %s" % \
                                        (k_user_role, k_user.username, tenant.name))
                             driver.shell.keyston.remove_user_role(k_user, k_user_role, tenant)
-            completed_urls.append(deployment_auth[deployment]['url']) 
+            completed_urls.append(deployment.auth_url) 
  
     def gc_slivers(self):
         """
@@ -231,9 +231,9 @@ class GarbageCollector(OpenStackSyncStep):
         # some deployments are at the same url. Keep track of the urls we've visited
         # to make sure we aren't making redundant calls
         completed_urls = []
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             # skip deployments that we've already processed
-            if deployment_auth[deployment]['url'] in completed_urls:
+            if deployment.auth_url in completed_urls:
                 continue
 
             try:
@@ -252,7 +252,7 @@ class GarbageCollector(OpenStackSyncStep):
                                 logger.log_exc("GarbageCollector: destroy sliver failed: %s" % instance)
             except:
                 logger.log_exc("GarbageCollector: Error at deployment %s" % deployment) 
-            completed_urls.append(deployment_auth[deployment]['url'])
+            completed_urls.append(deployment.auth_url)
                
 
     def gc_sliver_ips(self):
@@ -284,7 +284,7 @@ class GarbageCollector(OpenStackSyncStep):
 
         # collect nova nodes:
         compute_nodes_dict = {}
-        for deployment in deployment_auth:
+        for deployment in Deployment.objets.all():
             driver = self.driver.admin_driver(deployment=deployment) 
             compute_nodes = driver.nova.hypervisors.list()
             for compute_node in compute_nodes:
@@ -303,7 +303,7 @@ class GarbageCollector(OpenStackSyncStep):
 
         # collect glance images
         glance_images_dict = {}
-        for deployment in deployment_auth:
+        for deployment in Deployment.objects.all():
             driver = self.driver.admin_driver(deployment=deployment)
             glance_images = driver.shell.glance.get_images()
             for glance_image in glance_images:

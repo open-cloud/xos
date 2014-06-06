@@ -19,7 +19,7 @@ setup(name='planetstack',
       description='PlanetStack',
       scripts=['planetstack/planetstack-backend.py'],
       data_files=[
-        ('/etc/planetstack/', ['planetstack/plstackapi_config', 'planetstack/deployment_auth.py']),
+        ('/etc/planetstack/', ['planetstack/plstackapi_config']),
         ('/lib/systemd/system/', ['planetstack/redhat/planetstack-backend.service']),
         ])
 

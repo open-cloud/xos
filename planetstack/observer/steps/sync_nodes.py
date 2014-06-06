@@ -25,13 +25,14 @@ class SyncNodes(OpenStackSyncStep):
         for deployment in deployments:
             driver = self.driver.admin_driver(deployment=deployment.name)
             compute_nodes = driver.shell.nova.hypervisors.list()
-            if compute_node.hypervisor_hostname not in node_hostnames:
-                # XX TODO:figure out how to correctly identify a node's site.
-                # XX pick a random site to add the node to for now
-                site_index = random.randint(0, len(sites))
-                node = Node(name=compute_node.hypervisor_hostname,
-                            site=sites[site_index], deployment=deployment)
-                new_nodes.append(node)
+            for compute_node in compute_nodes:
+                if compute_node.hypervisor_hostname not in node_hostnames:
+                    # XX TODO:figure out how to correctly identify a node's site.
+                    # XX pick a random site to add the node to for now
+                    site_index = random.randint(0, len(sites))
+                    node = Node(name=compute_node.hypervisor_hostname,
+                                site=sites[site_index], deployment=deployment)
+                    new_nodes.append(node)
 
         return new_nodes    
                  

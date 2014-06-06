@@ -30,7 +30,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         for sliver in slivers:
             slivers_by_instance_id[sliver.instance_id] = sliver
 
-        driver = self.driver.admin_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
+        driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
         ports = driver.shell.quantum.list_ports()["ports"]
         for port in ports:
             if port["id"] in networkSlivers_by_port:
