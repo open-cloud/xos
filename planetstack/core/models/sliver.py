@@ -37,13 +37,16 @@ class Sliver(PlCoreBase):
         else:
             return u'unsaved-sliver'
 
-
     def save(self, *args, **kwds):
         if not self.name:
             self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
         self.deploymentNetwork = self.node.deployment
+
+        if not self.deploymentNetwork.test_acl(slice=self.slice):
+            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.deploymentNetwork.name, self.slice.name))
+
         super(Sliver, self).save(*args, **kwds)
 
     def can_update(self, user):

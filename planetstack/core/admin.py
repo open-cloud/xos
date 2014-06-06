@@ -478,7 +478,10 @@ class DeploymentAdminForm(forms.ModelForm):
         model = Deployment
 
     def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
       super(DeploymentAdminForm, self).__init__(*args, **kwargs)
+
+      self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
         self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
@@ -524,9 +527,8 @@ class SiteAssocInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-sites'
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
-    #form = DeploymentAdminForm
     model = Deployment
-    fieldList = ['name','sites']
+    fieldList = ['name','sites', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline]
 
@@ -540,7 +542,16 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
             kwargs["form"] = DeploymentAdminROForm
         else:
             kwargs["form"] = DeploymentAdminForm
-        return super(DeploymentAdmin,self).get_form(request, obj, **kwargs)
+        adminForm = super(DeploymentAdmin,self).get_form(request, obj, **kwargs)
+
+        # from stackexchange: pass the request object into the form
+
+        class AdminFormMetaClass(adminForm):
+           def __new__(cls, *args, **kwargs):
+               kwargs['request'] = request
+               return adminForm(*args, **kwargs)
+
+        return AdminFormMetaClass
 
 class ServiceAttrAsTabROInline(ReadOnlyTabularInline):
     model = ServiceAttribute

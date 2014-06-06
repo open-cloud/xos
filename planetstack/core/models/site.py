@@ -1,10 +1,10 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-#from core.models import Deployment
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
+from core.acl import AccessControlList
 
 class Site(PlCoreBase):
     """
@@ -83,7 +83,42 @@ class SitePrivilege(PlCoreBase):
 
 class Deployment(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
-    #sites = models.ManyToManyField('Site', through='SiteDeployments', blank=True)
+
+    # smbaker: the default of 'allow all' is intended for evolutions of existing
+    #    deployments. When new deployments are created via the GUI, they are
+    #    given a default of 'allow site <site_of_creator>'
+    accessControl = models.TextField(max_length=200, blank=False, null=False, default="allow all",
+                                     help_text="Access control list that specifies which sites/users may use nodes in this deployment")
+
+    def get_acl(self):
+        return AccessControlList(self.accessControl)
+
+    def test_acl(self, slice=None, user=None):
+        potential_users=[]
+
+        if user:
+            potential_users.append(user)
+
+        if slice:
+            potential_users.append(slice.creator)
+            for priv in slice.slice_privileges.all():
+                if priv.user not in potential_users:
+                    potential_users.append(priv.user)
+
+        acl = self.get_acl()
+        for user in potential_users:
+            if acl.test(user) == "allow":
+                return True
+
+        return False
+
+    def select_by_acl(self, user):
+        acl = self.get_acl()
+        result = []
+        for deployment in Deployment.objects.all():
+            if acl.test(user):
+                result.append(deployment)
+        return result
 
     def __unicode__(self):  return u'%s' % (self.name)
 
