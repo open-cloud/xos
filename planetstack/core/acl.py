@@ -1,5 +1,22 @@
 from fnmatch import fnmatch
 
+"""
+    A General-purpose ACL mechanism.
+
+    [allow | deny] <type_of_object> <text_pattern>
+
+    "allow all" and "deny all" are shorthand for allowing or denying all objects.
+    Lines are executed from top to bottom until a match was found, typical
+    iptables style. An implicit 'deny all' exists at the bottom of the list.
+
+    For example,
+    allow site Max Planck Institute
+    deny site Arizona
+    allow region US
+    deny user scott@onlab.us
+    allow user *@onlab.us
+"""
+
 class AccessControlList:
     def __init__(self, aclText=None):
         self.rules = []
@@ -42,17 +59,20 @@ class AccessControlList:
             lines.append( " ".join(rule) )
         return ";\n".join(lines)
 
-    def test(self, user):
+    def test(self, user, site=None):
         for rule in self.rules:
             if self.match_rule(rule, user):
                 return rule[0]
         return "deny"
 
-    def match_rule(self, rule, user):
+    def match_rule(self, rule, user, site=None):
         (action, object, pattern) = rule
 
+        if (site==None):
+            site = user.site
+
         if (object == "site"):
-            if fnmatch(user.site.name, pattern):
+            if fnmatch(site.name, pattern):
                 return True
         elif (object == "user"):
             if fnmatch(user.email, pattern):
@@ -64,6 +84,8 @@ class AccessControlList:
 
 
 if __name__ == '__main__':
+    # self-test
+
     class fakesite:
         def __init__(self, siteName):
             self.name = siteName

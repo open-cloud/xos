@@ -232,10 +232,10 @@ class SliverInline(PlStackTabularInline):
         return Sliver.select_by_user(request.user)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
         if db_field.name == 'deploymentNetwork':
-           kwargs['queryset'] = Deployment.select_by_user(request.user)
+           kwargs['queryset'] = Deployment.select_by_acl(request.user)
+
+        field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
         return field
 
