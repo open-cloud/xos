@@ -218,18 +218,26 @@ class NetworkLookerUpper:
 
 class SliverROInline(ReadOnlyTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     suit_classes = 'suit-tab suit-tab-slivers'
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     extra = 0
     readonly_fields = ['ip', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
 
     def queryset(self, request):
         return Sliver.select_by_user(request.user)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        if db_field.name == 'deploymentNetwork':
+           kwargs['queryset'] = Deployment.select_by_user(request.user)
+
+        return field
 
 # Note this is breaking in the admin.py when trying to use an inline to add a node/image 
 #    def _declared_fieldsets(self):
