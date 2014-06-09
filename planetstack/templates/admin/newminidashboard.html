@@ -46,7 +46,6 @@ $( "#miniDashNodeCount" ).click(function() {
     $( "#nodeCountGraph" ).html(loadingDiv);
     $( "#nodeCountDialog" ).dialog("open");
     var options = {"title": "Node Count", "vAxis": {"title": "Number of Nodes", "minValue": 0, "maxValue": 250}};
-    console.log(window.pageAnalyticsUrl);
     renderChart(true,"#nodeCountDialog", "#nodeCountGraph", window.pageAnalyticsUrl, 0, 2, google.visualization.data.sum, options);
     });
 
