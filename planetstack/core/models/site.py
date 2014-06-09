@@ -121,7 +121,7 @@ class Deployment(PlCoreBase):
         ids = []
         for deployment in Deployment.objects.all():
             acl = deployment.get_acl()
-            if acl.test(user):
+            if acl.test(user) == "allow":
                 ids.append(deployment.id)
 
         return Deployment.objects.filter(id__in=ids)
