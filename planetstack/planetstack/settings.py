@@ -154,6 +154,7 @@ INSTALLED_APPS = (
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
+    'core.context_processors.planetstack',
 )
 
 # Django Suit configuration example
@@ -249,3 +250,5 @@ LOGGING = {
 }
 
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
+
+DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)

@@ -1,3 +1,5 @@
+{% if not DISABLE_MINIDASHBOARD %}
+
 <div id="newMiniDashboard">
     <div class="hide" id="selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
     <div class="hide" id="currentOriginalNode">{{ original|truncatewords:"18" }}</div>
@@ -66,3 +68,4 @@ $( "#miniDashAvgLoad" ).click(function() {
 
 </script>
 
+{% endif %}
