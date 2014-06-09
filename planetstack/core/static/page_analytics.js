@@ -58,12 +58,15 @@ function updatePageAnalytics() {
     url: url,
     dataType : 'json',
     type : 'GET',
-    success: function(newData)
-    {
+    success: function(newData) {
         updatePageAnalyticsData(newData);
+        setTimeout(updatePageAnalytics, 30000);
+    },
+    error: function() {
+        console.log("error retrieving statistics; retry in 5 seconds");
+        setTimeout(updatePageBandwidth, 5000);
     }
 });
-    setTimeout(updatePageAnalytics, 30000);
 }
 
 // ----------------------------------------------------------------------------
@@ -87,12 +90,15 @@ function updatePageBandwidth() {
     url : url,
     dataType : 'json',
     type : 'GET',
-    success: function(newData)
-    {
+    success: function(newData) {
         updatePageBandwidthData(newData);
+        setTimeout(updatePageBandwidth, 30000);
+    },
+    error: function() {
+        console.log("error retrieving statistics; retry in 5 seconds")
+        setTimeout(updatePageBandwidth, 5000);
     }
 });
-    setTimeout(updatePageBandwidth, 30000);
 }
 
 $( document ).ready(function() {
