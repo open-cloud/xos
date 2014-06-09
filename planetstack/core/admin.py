@@ -319,13 +319,13 @@ class NodeROInline(ReadOnlyTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment']
+    fields = ['name','deployment','site']
 
 class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment']
+    fields = ['name','deployment','site']
 
 class DeploymentPrivilegeROInline(ReadOnlyTabularInline):
     model = DeploymentPrivilege
