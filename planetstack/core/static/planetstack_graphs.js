@@ -10,11 +10,13 @@ function renderChart(newStyle, dialog, container, dataSourceUrl, yColumn, xColum
         $('.modal-body').scrollTop(0);
     }
 
-    console.log(dataSourceUrl);
+    startQuery(container, dataSourceUrl, yColumn, xColumn, aggFunc, options)
+}
 
+function startQuery(container, dataSourceUrl, yColumn, xColumn, aggFunc, options) {
     var query = new google.visualization.Query(dataSourceUrl);
     query && query.abort();
-    query.send(function(response) {handleResponse_psg(container, response, yColumn, xColumn, aggFunc, options);});
+    query.send(function(response) {handleResponse_psg(container, dataSourceUrl, response, yColumn, xColumn, aggFunc, options);});
 }
 
 // NOTE: appended _psg to showLine() and handleResponse() to prevent conflict
@@ -66,7 +68,7 @@ function fixDate2(unixDate) {
     return new Date(unixDate);
 }
 
-function handleResponse_psg(container, response, yColumn, xColumn, aggFunc, options) {
+function handleResponse_psg(container, dataSourceUrl, response, yColumn, xColumn, aggFunc, options) {
     var supportedClasses = {
                     'Table':google.visualization.Table,
                     'LineChart':google.visualization.LineChart,
@@ -75,6 +77,12 @@ function handleResponse_psg(container, response, yColumn, xColumn, aggFunc, opti
                     'GeoChart':google.visualization.GeoChart,
                     'PieChart':google.visualization.PieChart,
                     'Histogram':google.visualization.Histogram};
+
+    if (response.isError()) {
+        #console.log("retry chart");
+        setTimeout(function () { startQuery(container, dataSourceUrl, yColumn, xColumn, aggFunc, options) }, 5000);
+        return
+    }
 
     var proxy = new google.visualization.ChartWrapper({
       'chartType': 'Table',
@@ -113,15 +121,4 @@ function handleResponse_psg(container, response, yColumn, xColumn, aggFunc, opti
     proxy.draw();
 }
 
-$('.nodesLabel, .nodesValue').click(function() {
-        renderChart(false,"#chartsModal", "#graph", window.pageAnalyticsUrl, 0, "Number of Nodes", 2, "Node Count", google.visualization.data.sum);
-});
 
-$('.cpuLabel, .cpuValue').click(function() {
-        var jsonData = window.pageAnalyticsData;
-        renderChart(false,"#chartsModal", "#graph", window.pageAnalyticsUrl, 0, "Average CPU", 1, "Average CPU", google.visualization.data.sum);
-});
-$('.bandwidthLabel, .bandwidthValue').click(function() {
-        var jsonData = window.pageBandData;
-        renderChart(false,"#chartsModal", "#graph", window.pageBandUrl, 0, "Total Bandwidth (Gbps)", 1, "Total Bandwidth", agg_bandwidth);
-});
