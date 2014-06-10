@@ -478,6 +478,7 @@ class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
+        help_text="Select which sites are allowed to host nodes in this deployment",
         widget=FilteredSelectMultiple(
             verbose_name=('Sites'), is_stacked=False
         )
