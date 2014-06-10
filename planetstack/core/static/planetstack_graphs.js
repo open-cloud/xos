@@ -31,8 +31,6 @@ function agg_bandwidth(arr) {
 }
 
 function showLine_psg(container, dt, options) {
-    console.log("showline_psg");
-
     var base_options = {
             'width': 520,
             'height': 300,
@@ -111,8 +109,6 @@ function handleResponse_psg(container, dataSourceUrl, response, yColumn, xColumn
             label: dt.getColumnLabel(xColumn),
             aggregation: aggFunc}]);
 
-        console.log(groupedData1.getColumnRange(0))
-        console.log(groupedData1.getColumnRange(1))
         showLine_psg(container, groupedData1, options);
     });
 
