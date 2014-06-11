@@ -15,20 +15,24 @@ class SyncImageDeployments(OpenStackSyncStep):
     requested_interval=0
 
     def fetch_pending(self):
-        # ensure images are available across all deployments
-        image_deployments = ImageDeployments.objects.all()
-        image_deploy_lookup = defaultdict(list)
-        for image_deployment in image_deployments:
-            image_deploy_lookup[image_deployment.image].append(image_deployment.deployment)
+         # smbaker: commented out automatic creation of ImageDeployments as
+         #    as they will now be configured in GUI. Not sure if this is
+         #    sufficient.
 
-        all_deployments = Deployment.objects.all()
-        for image in Image.objects.all():
-            expected_deployments = all_deployments
-            for expected_deployment in expected_deployments:
-                if image not in image_deploy_lookup or \
-                  expected_deployment not in image_deploy_lookup[image]:
-                    id = ImageDeployments(image=image, deployment=expected_deployment)
-                    id.save()
+#        # ensure images are available across all deployments
+#        image_deployments = ImageDeployments.objects.all()
+#        image_deploy_lookup = defaultdict(list)
+#        for image_deployment in image_deployments:
+#            image_deploy_lookup[image_deployment.image].append(image_deployment.deployment)
+#
+#        all_deployments = Deployment.objects.all()
+#        for image in Image.objects.all():
+#            expected_deployments = all_deployments
+#            for expected_deployment in expected_deployments:
+#                if image not in image_deploy_lookup or \
+#                  expected_deployment not in image_deploy_lookup[image]:
+#                    id = ImageDeployments(image=image, deployment=expected_deployment)
+#                    id.save()
 
         # now we return all images that need to be enacted
         return ImageDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))

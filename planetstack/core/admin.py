@@ -432,14 +432,22 @@ class SliceNetworkInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-slicenetworks'
     fields = ['network']
 
+class ImageDeploymentsROInline(ReadOnlyTabularInline):
+    model = ImageDeployments
+    extra = 0
+    verbose_name = "Image Deployments"
+    verbose_name_plural = "Image Deployments"
+    suit_classes = 'suit-tab suit-tab-imagedeployments'
+    fields = ['image', 'deployment', 'glance_image_id']
+
 class ImageDeploymentsInline(PlStackTabularInline):
     model = ImageDeployments
     extra = 0
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
     suit_classes = 'suit-tab suit-tab-imagedeployments'
-    fields = ['deployment', 'glance_image_id']
-    readonly_fields = ['deployment', 'glance_image_id']
+    fields = ['image', 'deployment', 'glance_image_id']
+    readonly_fields = ['glance_image_id']
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -539,12 +547,12 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
     fieldList = ['name','sites', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
 
-    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline]
+    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline,ImageDeploymentsROInline]
     user_readonly_fields = ['name']
 
-    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'))
+    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
@@ -789,9 +797,9 @@ class ImageAdmin(PlanetStackBaseAdmin):
     suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
     inlines = [SliverInline, ImageDeploymentsInline]
-    
+
     user_readonly_fields = ['name', 'disk_format', 'container_format']
-    user_readonly_inlines = [SliverROInline]
+    user_readonly_inlines = [SliverROInline, ImageDeploymentsROInline]
     
 class NodeForm(forms.ModelForm):
     class Meta:
