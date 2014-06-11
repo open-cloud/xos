@@ -6,6 +6,7 @@ import json
 import httplib2
 import threading
 import os
+import sys
 import time
 import traceback
 
@@ -28,10 +29,12 @@ PROJECT_NUMBER = '549187599759'
 try:
     FLOW = flow_from_clientsecrets('/opt/planetstack/hpc_wizard/client_secrets.json',
                                    scope='https://www.googleapis.com/auth/bigquery')
+    BIGQUERY_AVAILABLE = True
 except:
-    print "exception while initializing bigquery flow"
+    print >> sys.stderr, "exception while initializing bigquery flow"
     traceback.print_exc()
     FLOW = None
+    BIGQUERY_AVAILABLE = False
 
 MINUTE_MS = 60*1000
 HOUR_MS = 60*60*1000
@@ -93,7 +96,7 @@ class BigQueryAnalytics:
  	credentials = storage.get()
 
 	if credentials is None or credentials.invalid:
-		credentials = run(FLOW, storage)
+            credentials = run(FLOW, storage)
 
 	http = httplib2.Http()
 	http = credentials.authorize(http)
@@ -111,6 +114,10 @@ class BigQueryAnalytics:
             field["name"] = reverse_mappings[self.tableName].get(field["name"], field["name"])
 
     def run_query(self, query):
+        if not BIGQUERY_AVAILABLE:
+            print >> sys.stderr, "bigquery_analytics: bigquery flow is not available. returning empty result."
+            return []
+
         response = self.run_query_raw(query)
 
         fieldNames = []
