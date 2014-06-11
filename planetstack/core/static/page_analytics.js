@@ -44,13 +44,20 @@ function updatePageAnalyticsData(summaryData) {
     window.pageAnalyticsUrl = summaryData["dataSourceUrl"];
     lastRow = summaryData.rows.length-1;
 
+    if (summaryData.msg) {
+        $("#minidashStatus").text(summaryData.msg).show();
+    } else {
+        $("#minidashStatus").text("").hide();
+    }
+
     if (summaryData.rows.length <= 0) {
         //console.log("no data received from page analytics ajax")
         return;
     }
 
-    setPageStatInt(".nodesLabel", ".nodesValue", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
-    setPageStatInt(".cpuLabel", ".cpuValue", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
+    //Old minidashboard
+    //setPageStatInt(".nodesLabel", ".nodesValue", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
+    //setPageStatInt(".cpuLabel", ".cpuValue", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
 
     //New miniDashboard
     setPageStatInt("#miniDashNodeCountLabel", "#miniDashNodeCount", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
@@ -86,7 +93,10 @@ function updatePageBandwidthData(summaryData) {
         return;
     }
 
-    setPageStatFloat(".bandwidthLabel", ".bandwidthValue", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
+    //Old minidashboard
+    //setPageStatFloat(".bandwidthLabel", ".bandwidthValue", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
+
+    //New minidashboard
     setPageStatFloat("#miniDashBandwidthLabel", "#miniDashBandwidth", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
 }
 

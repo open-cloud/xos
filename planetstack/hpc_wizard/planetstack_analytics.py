@@ -1,4 +1,4 @@
-from bigquery_analytics import BigQueryAnalytics
+from bigquery_analytics import BigQueryAnalytics, BIGQUERY_AVAILABLE
 import datetime
 import re
 import os
@@ -180,8 +180,13 @@ class PlanetStackAnalytics(BigQueryAnalytics):
         return value.split(",")
 
     def format_result(self, format, result, query, dataSourceUrl):
+        if not BIGQUERY_AVAILABLE:
+            msg = "BigQuery Statistics Unavaiable"
+        else:
+            msg = None
+
         if (format == "json_dicts"):
-            result = {"query": query, "rows": result, "dataSourceUrl": dataSourceUrl}
+            result = {"query": query, "rows": result, "dataSourceUrl": dataSourceUrl, "msg": msg}
             return ("application/javascript", json.dumps(result))
 
         elif (format == "json_arrays"):
@@ -191,7 +196,7 @@ class PlanetStackAnalytics(BigQueryAnalytics):
                 for key in sorted(row.keys()):
                     new_row.append(row[key])
                 new_result.append(new_row)
-                new_result = {"query": query, "rows": new_result}
+                new_result = {"query": query, "rows": new_result, "msg": msg}
             return ("application/javascript", json.dumps(new_result))
 
         elif (format == "html_table"):
