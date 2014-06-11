@@ -491,6 +491,14 @@ class DeploymentAdminForm(forms.ModelForm):
             verbose_name=('Sites'), is_stacked=False
         )
     )
+    images = forms.ModelMultipleChoiceField(
+        queryset=Image.objects.all(),
+        required=False,
+        help_text="Select which images should be deployed on this deployment",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Images'), is_stacked=False
+        )
+    )
     class Meta:
         model = Deployment
 
@@ -502,6 +510,42 @@ class DeploymentAdminForm(forms.ModelForm):
 
       if self.instance and self.instance.pk:
         self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
+        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+
+    def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
+        """ helper function for handling m2m relations from the MultipleChoiceField
+
+            this_obj: the source object we want to link from
+
+            selected_objs: a list of destination objects we want to link to
+
+            all_relations: the full set of relations involving this_obj, including ones we don't want
+
+            relation_class: the class that implements the relation from source to dest
+
+            local_attrname: field name representing this_obj in relation_class
+
+            foreign_attrname: field name representing selected_objs in relation_class
+
+            This function will remove all newobjclass relations from this_obj
+            that are not contained in selected_objs, and add any relations that
+            are in selected_objs but don't exist in the data model yet.
+        """
+
+        existing_dest_objs = []
+        for relation in list(all_relations):
+            if getattr(relation, foreign_attrname) not in selected_objs:
+                #print "deleting site", sdp.site
+                relation.delete()
+            else:
+                existing_dest_objs.append(getattr(relation, foreign_attrname))
+
+        for dest_obj in selected_objs:
+            if dest_obj not in existing_dest_objs:
+                #print "adding site", site
+                kwargs = {foreign_attrname: dest_obj, local_attrname: this_obj}
+                relation = relation_class(**kwargs)
+                relation.save()
 
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
@@ -514,21 +558,8 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        sites = self.cleaned_data['sites']
-
-        existing_sites = []
-        for sdp in list(deployment.sitedeployments_set.all()):
-            if sdp.site not in sites:
-                #print "deleting site", sdp.site
-                sdp.delete()
-            else:
-                existing_sites.append(sdp.site)
-
-        for site in sites:
-            if site not in existing_sites:
-                #print "adding site", site
-                sdp = SiteDeployments(site=site, deployment=deployment)
-                sdp.save()
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
 
         self.save_m2m()
 
@@ -545,14 +576,14 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['name','sites', 'accessControl']
+    fieldList = ['name','sites', 'images', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
 
-    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline,ImageDeploymentsROInline]
+    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline] # ,ImageDeploymentsROInline]
     user_readonly_fields = ['name']
 
-    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
+    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags')) # ,('imagedeployments','Images'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
