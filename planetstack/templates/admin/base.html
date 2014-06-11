@@ -1,4 +1,4 @@
-{% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
+﻿{% load admin_static %}{% load suit_tags %}{% load url from future %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
   <title>{% block title %}  {%if title %} {{ title }} | {% endif %} {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
@@ -9,7 +9,12 @@
   {% block extrastyle %}{% endblock %}
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>{% endif %}
   <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-  <script src="{% static 'suit/js/jquery-1.8.3.min.js' %}"></script>
+  <script src="{% static 'suit/js/jquery-1.9.1.min.js' %}"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
+
+
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
   <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
@@ -18,7 +23,6 @@
   {% block blockbots %}
     <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
   <link rel="shortcut icon" href="{% static 'favicon.png' %}">
-
 </head>
 {% load i18n %}
 
@@ -31,19 +35,13 @@
   {% block container %}
     <div id="container">
 
+             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
       {% block header %}
         {% if not is_popup %}
           <!-- Header -->
           <div id="header" class="header">
             
             <div id="branding">
-              <table width="100%">
-                <tr>
-                  <td width="70%">
-             <!-- <a href="{% url 'admin:index' %}"><h1 id="site-name">{% block branding %}{{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</h1></a>-->
-             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img src="{% static 'open-cloud-themed.png' %}"/></h1></a>
-             </td>
-              <td width="30%">
                   {% block quick-search %}
                 {% with 'SEARCH_URL'|suit_conf as search_url %}
                   {% if search_url %}
@@ -55,9 +53,6 @@
                   {% endif %}
                 {% endwith %}
               {% endblock %}
-                 </td>
-               </tr>
-             </table>
             </div>
           
             {% block header_time %}
@@ -88,9 +83,7 @@
             {% if user.is_active and user.is_staff %}
               <div id="user-tools">
                 {% trans 'Welcome,' %}
-                <strong>
-                  {% filter force_escape %}
-                    {% firstof user.first_name user.username %}{% endfilter %}</strong>.
+                <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">{{user.email}}</a>
                 <span class="user-links">
                 {% block userlinks %}
                   {% url 'django-admindocs-docroot' as docsroot %}
@@ -121,6 +114,10 @@
           <div id="suit-center" class="suit-column">
 
             {% if not is_popup %}
+            <div id=openCloudTopPage>
+            {% include "/opt/planetstack/templates/admin/newminidashboard.html" %}
+            </div>
+
               {% block breadcrumbs %}
                 <ul class="breadcrumb"> 
                   <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
@@ -133,12 +130,6 @@
                     </li>
                 </ul>
               {% endblock %}
-               <label class="nodetextbox" >Active Nodes: </label>
-              <label class="nodelabel" >37</label>
-              <label class="nodetextbox">CPU Utilization: </label>
-              <label class="nodelabel" >12%</label>
-            <label class="nodetextbox">Bytes Transferred:</label>     
-              <label class="nodelabel" style="width:60px;">4321GB</label>
             {% endif %}
 
             {% block messages %}
@@ -171,6 +162,7 @@
               {% endblock %}
             </div>
             <!-- END Content -->
+          <span class="clearfix"></span>
           </div>
         {% endblock %}
 
@@ -209,11 +201,11 @@
         {% endblock %}
       </div>
 
-      <div class="copyright">
+      <!-- <div class="copyright">
         {% block copyright %}
           Copyright &copy; 2013 DjangoSuit.com<br>Developed by <a href="http://djangosuit.com" target="_blank">DjangoSuit.com</a>
         {% endblock %}
-      </div>
+      </div> -->
 
       <div class="branding">{% block footer_branding %}
         {% with 'ADMIN_NAME'|suit_conf as admin_name %}
@@ -230,7 +222,56 @@
 
   <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'suit/js/suit.js' %}"></script>
-  {% block extrajs %}{% endblock %}
+  <script src="{% static 'page_analytics.js' %}"></script>
+  <script type="text/javascript" src="//www.google.com/jsapi"></script>
+  <script src="{% static 'planetstack_graphs.js' %}"></script>
+  <!-- src="{% static 'planetstack_graphs_old.js' %}" -->
 
+  {% block extrajs %}{% endblock %}
+<script src="http://d3js.org/d3.v3.js"></script>
+	<div class="modal fade hide" id="chartsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <!--<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">OpenCloud</h4>
+	      </div>-->
+	      <div class="modal-body" style="overflow-y:hidden; overflow-x:hidden;">
+		<div class="chartContainer">
+			<div class="row">
+				<div class=" padding">
+				</div>
+			</div>
+
+			<div class="row">
+				<div class=" heading">
+					<p id="chartHeading" class="heading">OpenCloud</p>	
+				</div>
+			</div>
+			<div class="row">
+				<div class="padding"></div>
+				<div class="padding"></div>
+			</div>
+			<div class="row">
+				<div id="graph" class="graph">
+				</div>
+			</div>
+		</div>
+                <div id="graph_work" style="display:none"></div>
+	      </div>
+	      <!--<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>-->
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+<script>
+
+
+
+
+</script>
 </body>
 </html>

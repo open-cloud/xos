@@ -4,6 +4,8 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from config import Config
 config = Config()
 
+GEOIP_PATH = "/usr/share/GeoIP"
+ 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -59,12 +61,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/var/www/html/files/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
+MEDIA_URL = '/files/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -141,6 +143,9 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'requestrouter',
+    'cassandra',
+    'kairos',
+    'nagios',
     'syndicate',
     'geoposition',
 )
@@ -149,6 +154,7 @@ INSTALLED_APPS = (
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
+    'core.context_processors.planetstack',
 )
 
 # Django Suit configuration example
@@ -195,9 +201,13 @@ SUIT_CONFIG = {
         {'label': 'Sites', 'icon':'icon-site', 'url': '/admin/core/site/'},
         {'label': 'Slices', 'icon':'icon-slice', 'url': '/admin/core/slice/'},
         {'label': 'Users', 'icon':'icon-user', 'url': '/admin/core/user/'},
-        {'label': 'Request Routing', 'icon':'icon-cog', 'app': 'requestrouter'},
+        {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
         {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
         {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate'},
+        {'label': 'Cassandra', 'icon':'icon-cog', 'app': 'cassandra'},
+#        {'label': 'KairosDB', 'icon':'icon-cog', 'app': 'kairos'},
+#        {'label': 'Nagios', 'icon':'icon-cog', 'app': 'nagios'},
+
         #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
     #     'sites',
     #     {'app': 'auth', 'icon':'icon-lock', 'models': ('user', 'group')},
@@ -238,3 +248,7 @@ LOGGING = {
         },
     }
 }
+
+BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
+
+DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)

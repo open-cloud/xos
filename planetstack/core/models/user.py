@@ -2,9 +2,12 @@ import os
 import datetime
 from collections import defaultdict
 from django.db import models
-from core.models import PlCoreBase,Site
+from django.db.models import F, Q
+from core.models import PlCoreBase,Site, DashboardView
+from core.models.deployment import Deployment
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
+from operator import itemgetter, attrgetter
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -56,8 +59,6 @@ class User(AbstractBaseUser):
 
     username = models.CharField(max_length=255, default="Something" )
 
-
-    kuser_id = models.CharField(null=True, blank=True, help_text="keystone user id", max_length=200) 
     firstname = models.CharField(help_text="person's given name", max_length=200)
     lastname = models.CharField(help_text="person's surname", max_length=200)
 
@@ -76,6 +77,8 @@ class User(AbstractBaseUser):
     enacted = models.DateTimeField(null=True, default=None)
 
     timezone = TimeZoneField()
+
+    dashboards = models.ManyToManyField('DashboardView', through='UserDashboardView', blank=True)
 
     objects = UserManager()
 
@@ -113,6 +116,20 @@ class User(AbstractBaseUser):
     def is_superuser(self):
         return False
 
+    def get_dashboards(self):
+        DEFAULT_DASHBOARDS=["Tenant"]
+
+        dashboards = sorted(list(self.dashboardViews.all()), key=attrgetter('order'))
+        dashboards = [x.dashboardView for x in dashboards]
+
+        if not dashboards:
+            for dashboardName in DEFAULT_DASHBOARDS:
+                dbv = DashboardView.objects.filter(name=dashboardName)
+                if dbv:
+                    dashboards.append(dbv[0])
+
+        return dashboards
+
 #    def get_roles(self):
 #        from core.models.site import SitePrivilege
 #        from core.models.slice import SliceMembership
@@ -130,4 +147,42 @@ class User(AbstractBaseUser):
         if not self.id:
             self.set_password(self.password)    
         self.username = self.email
-        super(User, self).save(*args, **kwds)   
+        super(User, self).save(*args, **kwds)  
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = User.objects.all()
+        else:
+            # can see all users at any site where this user has pi role
+            from core.models.site import SitePrivilege
+            site_privs = SitePrivilege.objects.filter(user=user)
+            sites = [sp.site for sp in site_privs if sp.role.role == 'pi']
+            # get site privs of users at these sites
+            site_privs = SitePrivilege.objects.filter(site__in=sites)
+            user_ids = [sp.user.id for sp in site_privs] + [user.id] 
+            qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
+        return qs            
+
+             
+    
+class UserDeployments(PlCoreBase):
+    user = models.ForeignKey(User)
+    deployment = models.ForeignKey(Deployment)
+    kuser_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
+
+    def __unicode__(self):  return u'%s %s' % (self.user, self.deployment.name)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = UserDeployments.objects.all()
+        else:
+            users = Users.select_by_user(user)
+            qs = Usereployments.objects.filter(user__in=slices)
+        return qs
+
+class UserDashboardView(PlCoreBase):
+     user = models.ForeignKey(User, related_name="dashboardViews")
+     dashboardView = models.ForeignKey(DashboardView, related_name="dashboardViews")
+     order = models.IntegerField(default=0)

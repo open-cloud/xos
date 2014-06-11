@@ -13,15 +13,39 @@ from fofum import Fofum
 import json
 import traceback
 
-# decorator that marks dispatachable event methods	  
+random_client_id=None
+def get_random_client_id():
+    global random_client_id
+
+    if (random_client_id is None) and os.path.exists("/opt/planetstack/random_client_id"):
+        # try to use the last one we used, if we saved it
+        try:
+            random_client_id = open("/opt/planetstack/random_client_id","r").readline().strip()
+            print "get_random_client_id: loaded %s" % random_client_id
+        except:
+            print "get_random_client_id: failed to read /opt/planetstack/random_client_id"
+
+    if random_client_id is None:
+        random_client_id = base64.urlsafe_b64encode(os.urandom(12))
+        print "get_random_client_id: generated new id %s" % random_client_id
+
+        # try to save it for later (XXX: could race with another client here)
+        try:
+            open("/opt/planetstack/random_client_id","w").write("%s\n" % random_client_id)
+        except:
+            print "get_random_client_id: failed to write /opt/planetstack/random_client_id"
+
+    return random_client_id
+
+# decorator that marks dispatachable event methods
 def event(func):
 	setattr(func, 'event', func.__name__)
-	return func			
+	return func
 
 class EventHandler:
 	# This code is currently not in use.
 	def __init__(self):
-		pass 
+		pass
 
 	@staticmethod
 	def get_events():
@@ -36,7 +60,7 @@ class EventHandler:
 		if hasattr(self, event):
 			return getattr(self, event)(*args, **kwds)
 			
-		
+
 class EventSender:
 	def __init__(self,user=None,clientid=None):
 		try:
@@ -47,8 +71,8 @@ class EventSender:
 		try:
 			clid = Config().feefie_client_id
 		except:
-			clid = self.random_client_id()
-			
+			clid = get_random_client_id()
+                        print "EventSender: no feefie_client_id configured. Using random id %s" % clid
 
 		self.fofum = Fofum(user=user)
 		self.fofum.make(clid)
@@ -116,13 +140,6 @@ class EventListener:
 		if (not deletion and self.wake_up):
 			self.wake_up()
 
-	def random_client_id(self):
-		try:
-			return self.client_id
-		except AttributeError:
-			self.client_id = base64.urlsafe_b64encode(os.urandom(12))
-			return self.client_id
-
 	def run(self):
 		# This is our unique client id, to be used when firing and receiving events
 		# It needs to be generated once and placed in the config file
@@ -135,7 +152,8 @@ class EventListener:
 		try:
 			clid = Config().feefie_client_id
 		except:
-			clid = self.random_client_id()
+			clid = get_random_client_id()
+                        print "EventListener: no feefie_client_id configured. Using random id %s" % clid
 
 		f = Fofum(user=user)
 		

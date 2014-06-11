@@ -1,0 +1,71 @@
+{% if not DISABLE_MINIDASHBOARD %}
+
+<div id="newMiniDashboard">
+    <div class="hide" id="selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
+    <div class="hide" id="currentOriginalNode">{{ original|truncatewords:"18" }}</div>
+    <div class="hide" id="minidashStatus"></div>
+    <div class="miniDashPair">
+        <button type="button" name="nodeCount" id="miniDashNodeCount" class="minidashbutton">--</button>
+        <label for="nodeCount" id="miniDashNodeCountLabel">Active Nodes</label>
+    </div>
+    <div class="miniDashPair">
+        <button type="button" name="avgLoad" id="miniDashAvgLoad" class="minidashbutton">--</button>
+        <label for="avgLoad" id="miniDashAvgLoadLabel">Average Load</label>
+    </div>
+    <div class="miniDashPair">
+        <button type="button" name="bandwidth" id="miniDashBandwidth" class="minidashbutton">--</button>
+        <label for="bandwidth" id="miniDashBandwidthLabel">Bandwidth</label>
+    </div>
+    <div class="endDashPair">
+    </div>
+</div>
+
+<div id="nodeCountDialog" class="miniDashModal" > 
+<div id="nodeCountGraph" ></div>
+</div>
+
+<div id="bandwidthDialog" class="miniDashModal" > 
+<div id="bandwidthGraph" ></div>
+</div>
+
+<div id="avgLoadDialog" class="miniDashModal" > 
+<div id="avgLoadGraph" ></div>
+</div>
+
+<script>
+/** If the analytics have already been set -- read them in on page load **/
+if (typeof window != "undefined") {
+    if (typeof window.pageAnalyticsData != "undefined") {
+        updatePageAnalyticsData(window.pageAnalyticsData);
+    }
+}
+
+var loadingDiv = '<div class="loading">Loading ...</div>';
+
+$( "#nodeCountDialog" ).dialog({ title: "OpenCloud Node Count", modal: true, position: ['middle', 40], resizable: true, autoOpen: false, width: 527, height: 400});
+$( "#miniDashNodeCount" ).click(function() {
+    $( "#nodeCountGraph" ).html(loadingDiv);
+    $( "#nodeCountDialog" ).dialog("open");
+    var options = {"title": "Node Count", "vAxis": {"title": "Number of Nodes", "minValue": 0, "maxValue": 250}};
+    renderChart(true,"#nodeCountDialog", "#nodeCountGraph", window.pageAnalyticsUrl, 0, 2, google.visualization.data.sum, options);
+    });
+
+$( "#bandwidthDialog" ).dialog({ title: "OpenCloud Bandwidth", modal: true, position: ['middle', 40], resizable: true, autoOpen: false, width: 527, height: 400});
+$( "#miniDashBandwidth" ).click(function() {
+    $("#bandwidthGraph").html(loadingDiv);
+    $( "#bandwidthDialog" ).dialog("open");
+    var options = {"title": "Total Bandwidth", "vAxis": {"title": "Total Bandwidth (Gbps)"}};
+    renderChart(true,"#bandwidthDialog", "#bandwidthGraph", window.pageBandwidthUrl, 0, 1, agg_bandwidth, options);
+    });
+
+$( "#avgLoadDialog" ).dialog({ title: "OpenCloud Average Load", modal: true, position: ['middle', 40], resizable: true, autoOpen: false, width: 527, height: 400});
+$( "#miniDashAvgLoad" ).click(function() {
+    $("#avgLoadGraph").html(loadingDiv);
+    $( "#avgLoadDialog" ).dialog("open");
+    var options = {"title": "Average CPU Utilization", "vAxis": {"title": "CPU Utilization (%)"}};
+    renderChart(true,"#avgLoadDialog", "#avgLoadGraph", window.pageAnalyticsUrl, 0, 1, google.visualization.data.sum, options);
+    });
+
+</script>
+
+{% endif %}

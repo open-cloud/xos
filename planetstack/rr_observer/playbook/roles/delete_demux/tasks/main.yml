@@ -1,0 +1,5 @@
+---
+# This playbook contains plays to delete configuration files from dnsdemux slice
+- name: delete dnsdemux config files
+  file: path={{dst_dnsdemux_conf}}/{{name}}.conf state=absent
+  notify: restart dnsdemux

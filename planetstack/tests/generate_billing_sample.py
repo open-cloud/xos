@@ -1,8 +1,5 @@
 """
-    Basic Sliver Test
-
-    1) Create a slice1
-    2) Create sliver1 on slice1
+    Generates billing sample data
 """
 
 import datetime
@@ -13,6 +10,10 @@ import json
 import random
 import sys
 import time
+
+# The granularity at which the charge collection system collects charges. Once
+# per hour makes for a very slow UI, so I upped it to once per 8 hours.
+CHARGE_HOURS = 8
 
 MINUTE_SECONDS = 60
 HOUR_SECONDS = MINUTE_SECONDS * 60
@@ -86,11 +87,15 @@ def generate_payments(account):
              payment = Payment(account=account, amount=invoice.amount, date=payment_time)
              payment.save()
 
+print "deleting old stuff"
+
 delete_all(Invoice)
 delete_all(Charge)
 delete_all(Payment)
 delete_all(Account)
 delete_all(UsableObject)
+
+print "creating accounts"
 
 for site in Site.objects.all():
     # only create accounts for sites where some slices exist
@@ -98,22 +103,26 @@ for site in Site.objects.all():
         account = Account(site=site)
         account.save()
 
+print "generating charges"
+
 for slice in Slice.objects.all():
     site = slice.site
     account = site.accounts.all()[0]
     serviceClass =slice.serviceClass
 
-    if not (slice.name in ["DnsRedir", "DnsDemux", "HyperCache"]):
+    if not (slice.name in ["DnsRedir", "DnsDemux", "HyperCache", "Hadoop", "Owl", "Stork", "Syndicate", "test-slice-1", "test-slice-2", "test", "test2"]):
         continue
+
+    print "   generating charges for", slice.name
 
     now = int(time.time())/HOUR_SECONDS*HOUR_SECONDS
 
     charge_kind=None
     for resource in slice.serviceClass.resources.all():
-        if resource.name == "cpu.cores":
+        if resource.name == "numberCores":
             charge_kind = "reservation"
             cost = resource.cost
-        elif (resource.name == "cycles") or (resource.name == "Cycles"):
+        elif (charge_kind==None) and (resource.name == "cycles") or (resource.name == "Cycles"):
             charge_kind = "besteffort"
             cost = resource.cost
 
@@ -121,15 +130,17 @@ for slice in Slice.objects.all():
         print "failed to find resource for", slice.serviceClass
         continue
 
-    for sliver in slice.slivers.all():
+    for sliver in slice.slivers.all()[:4]:    # only do up to 4 slivers; it's way too much data otherwise
         hostname = sliver.node.name
-        for i in range(now-MONTH_SECONDS, now, HOUR_SECONDS):
+        for i in range(now-MONTH_SECONDS, now, CHARGE_HOURS*HOUR_SECONDS):
             if charge_kind == "besteffort":
-                core_hours = random.randint(1,60)/100.0
+                core_hours = random.randint(20,60)/100.0
             else:
                 core_hours = 1
 
-            amount = core_hours * cost
+            core_hours = core_hours * CHARGE_HOURS
+
+            amount = float(core_hours * cost) / 100.0
 
             object = get_usable_object(hostname)
 
@@ -137,6 +148,8 @@ for slice in Slice.objects.all():
 
             charge = Charge(account=account, slice=slice, kind=charge_kind, state="pending", date=date, object=object, coreHours=core_hours, amount=amount)
             charge.save()
+
+print "doing invoices and payments"
 
 for account in Account.objects.all():
     generate_invoices(account)

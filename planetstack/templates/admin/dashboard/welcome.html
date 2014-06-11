@@ -1,25 +1,31 @@
-{% extends "admin/base.html" %}
+{% extends "admin/dashboard/dashboard_base.html" %}
 {% load admin_static %}
 
 {% block content %}
-<h1>Welcome <a href="core/user/{{user.id}}">{{user.email}}</a> from Site: <a href="core/site/{{site.id}}">{{site}}</a></h1>
-<table class="table table-striped table-bordered table-hover table-condensed">
-<thead><tr>
-<th class="sortable">Slices</th><th class="sortable">Privilege</th>
-<th class="sortable">Reservations</th>
-</tr></thead>
-{% for entry in userSliceInfo %}
-<tr><td> <a href="core/slice/{{entry.slice.id}}">{{entry.slice.name}}</a><br>
-</td><td>{{entry.role}}</td>
-{% if entry.reservations %}
-<td><a href="core/slice/{{entry.slice.id}}/#reservations">
-{% for resSlot in entry.reservations.1 %}
-{{resSlot}} <br>
-{% endfor %}
-</a></td></tr>
-{% else %}
-<td></td></tr>
-{% endif %}
-{% endfor %}
-</table>
+<!-- <div id="hometabs" class="inner-center-column ui-tabs ui-widget ui-widget-content ui-corner-all"> -->
+<div id="hometabs" >
+  <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
+    <li><a href="#tabs-1">Developer View</a></li>
+    <li><a href="#tabs-2">CDN Operations </a></li>
+    <li><a href="#tabs-3">Historical</a></li>
+    <li><a href="#tabs-4">Slice Interactions</a></li>
+    <li><a href="#tabs-5">Tenant</a></li>
+  </ul>
+<div id="tabs-1">
+{% include "/opt/planetstack/templates/admin/dashboard/developer.html" %}
+</div>
+<div id="tabs-2">
+{% include "/opt/planetstack/templates/admin/dashboard/cdnoperations.html" %}
+</div>
+<div id="tabs-3">
+{% include "/opt/planetstack/templates/admin/dashboard/hpc_historical.html" %}
+</div>
+<div id="tabs-4">
+{% include "/opt/planetstack/templates/admin/dashboard/slice_interactions.html" %}
+</div>
+<div id="tabs-5">
+{% include "/opt/planetstack/templates/admin/dashboard/tenant.html" %}
+</div>
+</div>
+
 {% endblock %}

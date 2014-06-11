@@ -16,8 +16,9 @@ from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
 from planetstack.config import Config
-from observer.steps import *
+#from observer.steps import *
 from syncstep import SyncStep
+from toposort import toposort
 
 debug_mode = False
 
@@ -25,52 +26,6 @@ logger = Logger(level=logging.INFO)
 
 class StepNotReady(Exception):
     pass
-
-def toposort(g, steps=None):
-    if (not steps):
-        keys = set(g.keys())
-        values = set({})
-        for v in g.values():
-            values=values | set(v)
-        
-        steps=list(keys|values)
-    reverse = {}
-
-    for k,v in g.items():
-        for rk in v:
-            try:
-                reverse[rk].append(k)
-            except:
-                reverse[rk]=k
-
-    sources = []
-    for k,v in g.items():
-        if not reverse.has_key(k):
-            sources.append(k)
-
-
-    for k,v in reverse.iteritems():
-        if (not v):
-            sources.append(k)
-
-    order = []
-    marked = []
-
-    while sources:
-        n = sources.pop()
-        try:
-            for m in g[n]:
-                if m not in marked:
-                    sources.append(m)
-                    marked.append(m)
-        except KeyError:
-            pass
-        if (n in steps):
-            order.append(n)
-
-    order.reverse()
-    order.extend(set(steps)-set(order))
-    return order
 
 class NoOpDriver:
     def __init__(self):
@@ -95,6 +50,7 @@ class PlanetStackObserver:
             self.driver = NoOpDriver()
 
     def wait_for_event(self, timeout):
+        logger.info('Waiting for event')
         self.event_cond.acquire()
         self.event_cond.wait(timeout)
         self.event_cond.release()
@@ -166,7 +122,8 @@ class PlanetStackObserver:
                             for dest in provides_dict[m]:
                                 # no deps, pass
                                 try:
-                                    step_graph[source].append(dest)
+                                    if (dest not in step_graph[source]):
+                                        step_graph[source].append(dest)
                                 except:
                                     step_graph[source]=[dest]
                         except KeyError:
@@ -248,73 +205,91 @@ class PlanetStackObserver:
             if (failed_step in step.dependencies):
                 raise StepNotReady
 
-    def run(self):
-        if not self.driver.enabled:
-            return
-        if (self.driver_kind=="openstack") and (not self.driver.has_openstack):
-            return
 
-        while True:
-            try:
-                logger.info('Waiting for event')
-                tBeforeWait = time.time()
-                self.wait_for_event(timeout=30)
-                logger.info('Observer woke up')
+    def run_steps(self):
+        try:
+            logger.info('Observer run steps')
 
-                # Set of whole steps that failed
-                failed_steps = []
+            # Set of whole steps that failed
+            failed_steps = []
 
-                # Set of individual objects within steps that failed
-                failed_step_objects = set()
+            # Set of individual objects within steps that failed
+            failed_step_objects = set()
 
-                for S in self.ordered_steps:
-                    step = self.step_lookup[S]
-                    start_time=time.time()
+            for S in self.ordered_steps:
+                step = self.step_lookup[S]
+                start_time=time.time()
+                
+                sync_step = step(driver=self.driver)
+                sync_step.__name__ = step.__name__
+                sync_step.dependencies = []
+                try:
+                    mlist = sync_step.provides
                     
-                    sync_step = step(driver=self.driver)
-                    sync_step.__name__ = step.__name__
-                    sync_step.dependencies = []
-                    try:
-                        mlist = sync_step.provides
-                        
-                        for m in mlist:
-                            sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
-                    except KeyError:
-                        pass
-                    sync_step.debug_mode = debug_mode
+                    for m in mlist:
+                        sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
+                except KeyError:
+                    pass
+                sync_step.debug_mode = debug_mode
 
-                    should_run = False
+                should_run = False
+                try:
+                    # Various checks that decide whether
+                    # this step runs or not
+                    self.check_class_dependency(sync_step, failed_steps) # dont run Slices if Sites failed
+                    self.check_schedule(sync_step) # dont run sync_network_routes if time since last run < 1 hour
+                    should_run = True
+                except StepNotReady:
+                    logger.info('Step not ready: %s'%sync_step.__name__)
+                    failed_steps.append(sync_step)
+                except:
+                    logger.info('Exception when checking schedule: %s'%sync_step.__name__)
+                    failed_steps.append(sync_step)
+
+                if (should_run):
                     try:
-                        # Various checks that decide whether
-                        # this step runs or not
-                        self.check_class_dependency(sync_step, failed_steps) # dont run Slices if Sites failed
-                        self.check_schedule(sync_step) # dont run sync_network_routes if time since last run < 1 hour
-                        should_run = True
-                    except StepNotReady:
-                        logging.info('Step not ready: %s'%sync_step.__name__)
-                        failed_steps.append(sync_step)
+                        duration=time.time() - start_time
+
+                        logger.info('Executing step %s' % sync_step.__name__)
+
+                        # ********* This is the actual sync step
+                        #import pdb
+                        #pdb.set_trace()
+                        failed_objects = sync_step(failed=list(failed_step_objects))
+
+
+                        self.check_duration(sync_step, duration)
+                        if failed_objects:
+                            failed_step_objects.update(failed_objects)
+                        self.update_run_time(sync_step)
                     except:
-                        failed_steps.append(sync_step)
+                        logger.log_exc('Failure in step: %s'%sync_step.__name__)
+                        failed_steps.append(S)
+            self.save_run_times()
+        except:
+            logger.log_exc("Exception in observer run loop")
+            traceback.print_exc()
 
-                    if (should_run):
-                        try:
-                            duration=time.time() - start_time
+    def run(self):
+        try:
+            logger.info('Observer start run loop')
+            if not self.driver.enabled:
+                return
+            if (self.driver_kind=="openstack") and (not self.driver.has_openstack):
+                return
 
-                            logger.info('Executing step %s' % sync_step.__name__)
+            while True:
+                try:  
+                    self.wait_for_event(timeout=30)       
+                except: 
+                    logger.log_exc("Exception in observer wait for event") 
+                    traceback.print_exc()
 
-                            # ********* This is the actual sync step
-                            #import pdb
-                            #pdb.set_trace()
-                            failed_objects = sync_step(failed=list(failed_step_objects))
-
-
-                            self.check_duration(sync_step, duration)
-                            if failed_objects:
-                                failed_step_objects.update(failed_objects)
-                            self.update_run_time(sync_step)
-                        except:
-                            failed_steps.append(S)
-                self.save_run_times()
-            except:
-                logger.log_exc("Exception in observer run loop")
-                traceback.print_exc()
+                try: 
+                    self.run_steps()            
+                except: 
+                    logger.log_exc("Exception in observer run steps")
+                    traceback.print_exc()
+        except:
+            logger.log_exc("Exception in observer run loop")
+            traceback.print_exc()

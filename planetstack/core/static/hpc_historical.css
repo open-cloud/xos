@@ -1,0 +1,50 @@
+.row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.row:before,
+.row:after {
+  display: table;
+  content: " ";
+}
+
+.row:after {
+  clear: both;
+}
+
+.row:before,
+.row:after {
+  display: table;
+  content: " ";
+}
+
+.row:after {
+  clear: both;
+}
+
+.graph_container {
+  width: 800px;
+}
+
+.col-md-halfgraph,
+.col-md-fullgraph {
+  position: relative;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.col-md-halfgraph,
+.col-md-fullgraph {
+  float: left;
+}
+.col-md-halfgraph {
+  width: 350px;
+}
+.col-md-fullgraph {
+  width: 700px;
+}
+.col-md-12 {
+  width: 100%;
+}

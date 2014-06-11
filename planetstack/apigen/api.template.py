@@ -59,9 +59,39 @@ serializerLookUp = {
 class {{ object.camel }}List(generics.ListCreateAPIView):
     queryset = {{ object.camel }}.objects.select_related.all()
     serializer_class = {{ object.camel }}Serializer
+    
+    def get_queryset(self):
+        return {{ object.camel }}.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = {{ object.camel }}().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
     queryset = {{ object.camel }}.objects.select_related.all()
     serializer_class = {{ object.camel }}Serializer
+    
+    def get_queryset(self):
+        return {{ object.camel }}.select_by_user(self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.can_update(request.user):
+            return super({{ object.camel }}Detail, self).update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.can_update(request.user):
+            return super({{ object.camel }}Detail, self).destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+     
 
 {% endfor %}

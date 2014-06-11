@@ -24,8 +24,9 @@ if (not observer_disabled):
             print "Exception in Observer. This should not disrupt the front end. %s"%str(e)
 
 else:
-    def notify_observer(model=None, delete=False):
-#        if (print_once):
-#            print "The observer is disabled"
-#            print_once = False
+    def notify_observer(model=None, delete=False, pk=None, model_dict={}):
+        global print_once
+        if (print_once):
+            print "The observer is disabled"
+            print_once = False
         return

@@ -1,0 +1,93 @@
+<form>
+    <div class="customize_row">
+    <div class="customize_column">
+    <div>Available Dashboard Views</div>
+    <select name="selectfrom" id="select-from" multiple size="5">
+        {% for cp in unusedDashboards %}
+           <option value="{{ cp }}">{{ cp }}</option>
+        {% endfor %}
+    </select>
+    </div>
+    <div class="customize_column">
+    <br>
+    <div class="btn btn-success" id="customize-btn-add">Add &raquo;</div><br><br>
+    <div class="btn btn-success" id="customize-btn-remove">&laquo; Remove</div>
+    </div>
+    <div class="customize_column">
+    <div>Selected Dashboard Views</div>
+    <select name="selectto" id="select-to" multiple size="5">
+        {% for cp in dashboards %}
+           <option value="{{ cp }}">{{ cp }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <div class="btn btn-high btn-info" id="customize-btn-save">Save</div>
+    <div style="display: none" id="customize-msg-saving">Saving...</div>
+    </div>
+    <div class="customize_column">
+    <br>
+    <div class="btn btn-success" id="customize-btn-up">Up</div><br><br>
+    <div class="btn btn-success" id="customize-btn-down">Down</div>
+    </div>
+    </div>
+</form>
+
+<script>
+$(document).ready(function() {
+    $('#customize-btn-add').click(function(){
+        $('#select-from option:selected').each( function() {
+                $('#select-to').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+    $('#customize-btn-remove').click(function(){
+        $('#select-to option:selected').each( function() {
+            $('#select-from').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $(this).remove();
+        });
+    });
+    $('#customize-btn-up').bind('click', function() {
+        $('#select-to option:selected').each( function() {
+            var newPos = $('#select-to option').index(this) - 1;
+            if (newPos > -1) {
+                $('#select-to option').eq(newPos).before("<option value='"+$(this).val()+"' selected='selected'>"+$(this).text()+"</option>");
+                $(this).remove();
+            }
+        });
+    });
+    $('#customize-btn-down').bind('click', function() {
+        var countOptions = $('#select-to option').size();
+        $('#select-to option:selected').each( function() {
+            var newPos = $('#select-to option').index(this) + 1;
+            if (newPos < countOptions) {
+                $('#select-to option').eq(newPos).after("<option value='"+$(this).val()+"' selected='selected'>"+$(this).text()+"</option>");
+                $(this).remove();
+            }
+        });
+    });
+    $('#customize-btn-save').bind('click', function() {
+         $("#customize-btn-save").hide();
+         $("#customize-msg-saving").show();
+         var items=[];
+         $("#select-to option").each(function() { items.push($(this).val()); });
+         $.ajax({
+                url: '/customize/',
+                dataType: 'json',
+                data: {
+                        dashboards: items.join(","),
+  		        csrfmiddlewaretoken: "{{ csrf_token }}" // < here
+                },
+                type: 'POST',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    errorDialog("Error", textStatus + " " + jqXHR.responseText);
+                    $("#customize-btn-save").show();
+                    $("#customize-msg-saving").hide();
+                },
+                success: function () {
+                        location.reload();
+                }
+        });
+    });
+});
+</script>
+

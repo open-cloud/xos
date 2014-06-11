@@ -1,0 +1,138 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo usage: $0 "[initdb | createdb | dropdb | syncdb | runserver | resetdb | dumpdata]"
+    exit
+fi
+
+BACKUP_DIR=/opt/planetstack_backups
+
+cd /opt/planetstack
+
+function ensure_postgres_running {
+    # "sudo -u postgres pg_ctl -D /var/lib/postgres/data status" doesn't work
+    # right on Vicci, so let's try to detect it by seeing if the port is
+    # being listened on
+
+    netstat -nl | grep -i ":5432 "
+    if [[ $? == 0 ]]; then
+        echo "Postgres is already running"
+        return
+    fi
+
+    /sbin/service postgresql initdb
+    /sbin/service postgresql start
+    /sbin/chkconfig postgresql on
+
+    netstat -nl | grep -i ":5432 "
+    if [[ $? != 0 ]]; then
+        # it's still not running
+        echo "Trying fallback mechanism to start Postgres"
+        sudo -u postgres initdb -D /var/lib/pgsql/data/
+        sudo -u postgres pg_ctl -D /var/lib/pgsql/data -l logfile start
+    fi
+
+}
+function createdb {
+    echo "Creating OpenCloud database..."
+    sudo -u postgres createdb planetstack
+}
+function dropdb {
+    echo "Dropping OpenCloud database..."
+    sudo -u postgres dropdb planetstack
+}
+function syncdb {
+    echo "Syncing OpenCloud services..."
+    python /opt/planetstack/manage.py syncdb --noinput
+}
+function evolvedb {
+    echo "Syncing OpenCloud services..."
+    python /opt/planetstack/manage.py evolve --hint --execute --noinput
+}
+function stopserver {
+    echo "Stopping any running OpenCloud Service(s)"
+    pkill -f "python.*runserver"
+}
+function runserver {
+    PUBLIC_HOSTNAME=`/opt/planetstack/planetstack-config.py get server_hostname $HOSTNAME`
+    echo "Starting OpenCloud Service on $PUBLIC_HOSTNAME:8000"
+    python manage.py runserver  $PUBLIC_HOSTNAME:8000&
+}
+
+function dumpdata {
+    mkdir -p $BACKUP_DIR
+    FN="$BACKUP_DIR/dumpdata-`date +%Y-%m-%d_%H:%M:%S`.json"
+    echo "Saving data to $FN"
+    python manage.py dumpdata core hpc syndicate requestrouter --indent 4 > $FN
+    if [[ ! -f $FN ]]; then
+        echo "FAILED to create $FN"
+        exit
+    fi
+    SIZE=$(du -k "$FN" | cut -f 1)
+    if [[ $SIZE -lt 9 ]]; then
+        echo "Dumpdata was empty. Deleting and aborting"
+        rm $FN
+        exit
+    fi
+    rm -f $BACKUP_DIR/dumpdata-latest.json
+    ln -s $FN $BACKUP_DIR/dumpdata-latest.json
+}
+
+COMMAND=$1
+
+if [ "$COMMAND" = "initdb" ]; then
+    stopserver
+    ensure_postgres_running
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "repairdb" ]; then
+    stopserver
+    ensure_postgres_running
+    dumpdata
+    # TODO: This is where we could run migration scripts to upgrade the
+    #   dumped data to the new models.
+    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "restoredb" ]; then
+    if [[ ! -f $BACKUP_DIR/dumpdata-latest.json ]]; then
+       echo There is no dumpdata to restore
+       exit
+    fi
+    stopserver
+    ensure_postgres_running
+    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "evolvedb" ]; then
+    stopserver
+    ensure_postgres_running
+    evolvedb
+fi
+if [ "$COMMAND" = "resetdb" ]; then
+    stopserver
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "syncdb" ]; then
+    stopserver
+    syncdb
+fi
+if [ "$COMMAND" = "runserver" ]; then
+    stopserver
+    runserver
+fi
+if [ "$COMMAND" = "stopserver" ]; then
+    stopserver
+fi
+if [ "$COMMAND" = "dumpdata" ]; then
+    dumpdata
+fi

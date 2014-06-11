@@ -1,15 +1,30 @@
+import datetime
 import os
+import sys
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
-# This is a no-op if observer_disabled is set to 1 in the config file
-from observer import *
+
+try:
+    # This is a no-op if observer_disabled is set to 1 in the config file
+    from observer import *
+except:
+    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
+    import traceback
+    traceback.print_exc()
+
+    # guard against something failing
+    def notify_observer(*args, **kwargs):
+        pass
 
 class PlCoreBase(models.Model):
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    # default values for created and updated are only there to keep evolution
+    # from failing.
+
+    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
+    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
 
     class Meta:
@@ -38,6 +53,13 @@ class PlCoreBase(models.Model):
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        return False
+
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         pk = self.pk
@@ -58,6 +80,14 @@ class PlCoreBase(models.Model):
         notify_observer()
 
         self.__initial = self._dict
+
+    def save_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            self.save(*args, **kwds)
+
+    def delete_by_user(self, user, *args, **kwds):
+        if self.can_update(user):
+            self.delete(*args, **kwds)
 
     @property
     def _dict(self):

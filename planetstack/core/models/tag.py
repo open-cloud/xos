@@ -22,3 +22,12 @@ class Tag(PlCoreBase):
     def __unicode__(self):
         return self.name
 
+
+    def can_update(self, user):
+        if user.is_admin:
+            return True
+        return False
+
+    @staticmethod
+    def select_by_user(user):
+        return Tag.objects.all()

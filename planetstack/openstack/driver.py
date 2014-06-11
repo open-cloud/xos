@@ -12,44 +12,48 @@ manager_enabled = Config().api_nova_enabled
 
 class OpenStackDriver:
 
-    def __init__(self, config = None, client=None): 
+    def __init__(self, config = None, client=None, deployment=None):
         if config:
             self.config = Config(config)
         else:
-            self.config = Config() 
+            self.config = Config()
 
-        self.admin_client = OpenStackClient()
+        self.admin_client = OpenStackClient(deployment=deployment)
         self.admin_user = self.admin_client.keystone.users.find(name=self.admin_client.keystone.username)
 
         if client:
             self.shell = client
         else:
-            self.shell = OpenStackClient()
+            self.shell = OpenStackClient(deployment=deployment)
 
         self.enabled = manager_enabled
         self.has_openstack = has_openstack
 
-    def client_driver(self, caller=None, tenant=None):
+    def client_driver(self, caller=None, tenant=None, deployment=None):
         if caller:
             auth = {'username': caller.email,
                     'password': hashlib.md5(caller.password).hexdigest()[:6],
                     'tenant': tenant}
-            client = OpenStackClient(**auth)
+            client = OpenStackClient(deployment=deployment, **auth)
         else:
-            client = OpenStackClient(tenant=tenant)
-        driver = OpenStackDriver(client=client)
+            client = OpenStackClient(tenant=tenant, deployment=deployment)
+
+        driver = OpenStackDriver(client=client, deployment=deployment)
         return driver
 
-    def admin_driver(self, tenant=None):
-        client = OpenStackClient(tenant=tenant)
-        driver = OpenStackDriver(client=client) 
+    def admin_driver(self, tenant=None, deployment=None):
+        client = OpenStackClient(tenant=tenant, deployment=deployment)
+        driver = OpenStackDriver(client=client, deployment=deployment)
+        return driver    
 
     def create_role(self, name):
         roles = self.shell.keystone.roles.findall(name=name)
-        if not roles:
+        roles_title = self.shell.keystone.roles.findall(name=name.title())
+        roles_found = roles + roles_title
+        if not roles_found:
             role = self.shell.keystone.roles.create(name)
         else:
-            role = roles[0]
+            role = roles_found[0]
         return role
 
     def delete_role(self, filter):
@@ -109,12 +113,27 @@ class OpenStackDriver:
             for key in keys:
                 self.shell.nova.keypairs.delete(key)
             self.shell.keystone.users.delete(user)
-        return 1 
+        return 1
+
+    def get_admin_role(self):
+        role = None
+        for admin_role_name in ['admin', 'Admin']:
+            roles = self.shell.keystone.roles.findall(name=admin_role_name)
+            if roles:
+                role = roles[0]
+                break
+        return role 
 
     def add_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(name=role_name)
+        # admin role can be lowercase or title. Look for both
+        role = None
+        if role_name.lower() == 'admin':
+            role = self.get_admin_role()
+        else:
+            # look up non admin role or force exception when admin role isnt found 
+            role = self.shell.keystone.roles.find(name=role_name)                   
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
@@ -129,7 +148,13 @@ class OpenStackDriver:
     def delete_user_role(self, kuser_id, tenant_id, role_name):
         user = self.shell.keystone.users.find(id=kuser_id)
         tenant = self.shell.keystone.tenants.find(id=tenant_id)
-        role = self.shell.keystone.roles.find(name=role_name)
+        # admin role can be lowercase or title. Look for both
+        role = None
+        if role_name.lower() == 'admin':
+            role = self.get_admin_role()
+        else:
+            # look up non admin role or force exception when admin role isnt found
+            role = self.shell.keystone.roles.find(name=role_name)
 
         role_found = False
         user_roles = user.list_roles(tenant.id)
@@ -238,17 +263,21 @@ class OpenStackDriver:
                 subnet = snet
 
         if not subnet:
+            # HACK: Add metadata route -- Neutron does not reliably supply this
+            metadata_ip = cidr_ip.replace("0/24", "3")
+
             allocation_pools = [{'start': start, 'end': end}]
             subnet = {'subnet': {'name': name,
                                  'network_id': network_id,
                                  'ip_version': ip_version,
                                  'cidr': cidr_ip,
-                                 'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
+                                 #'dns_nameservers': ['8.8.8.8', '8.8.4.4'],
+                                 'host_routes': [{'destination':'169.254.169.254/32','nexthop':metadata_ip}],
+                                 'gateway_ip': None,
                                  'allocation_pools': allocation_pools}}
             subnet = self.shell.quantum.create_subnet(subnet)['subnet']
-            self.add_external_route(subnet)
-        # TODO: Add route to external network
-        # e.g. #  route add -net 10.0.3.0/24 dev br-ex gw 10.100.0.5 
+            # self.add_external_route(subnet)
+
         return subnet
 
     def update_subnet(self, id, fields):
@@ -384,7 +413,7 @@ class OpenStackDriver:
 
         return (subnet_id, subnet)
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None):
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None):
         flavor_name = self.config.nova_default_flavor
         flavor = self.shell.nova.flavors.find(name=flavor_name)
         #if not image:
@@ -393,24 +422,25 @@ class OpenStackDriver:
             security_group = self.config.nova_default_security_group
 
         files = {}
-        if pubkeys:
-            files['/root/.ssh/authorized_keys'] = "\n".join(pubkeys)
-
+        #if pubkeys:
+        #    files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
         hints = {}
         availability_zone = None
         if hostname:
-            availability_zone = 'nova:%s' % hostname
+            availability_zone = 'nova:%s' % hostname.split('.')[0]
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
                                             flavor=flavor.id,
                                             image=image_id,
                                             security_group = security_group,
-                                            files=files,
+                                            #files = files,
                                             scheduler_hints=hints,
                                             availability_zone=availability_zone,
                                             nics=nics,
-                                            meta=metadata)
+                                            networks=nics,
+                                            meta=metadata,
+                                            userdata=userdata)
         return server
 
     def destroy_instance(self, id):

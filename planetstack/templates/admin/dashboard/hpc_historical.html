@@ -1,0 +1,303 @@
+
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <link rel="stylesheet" href="/static/hpc_historical.css">
+    <script type="text/javascript">
+		google.load('visualization', '1', {'packages' : ['controls','table','corechart','geochart']});
+    </script>
+
+    <script type="text/javascript">
+
+     var options = {
+         width: 600,
+         height: 400,
+         showRowNumber: false,
+         pages: true,
+         numRows: 9,
+         backgroundColor: "black"
+     };
+
+     // ask django for a data source URL to use for the graphs
+
+     function updateDataSourceUrl() {
+         var sliceName = $("#historical_slicename :selected").text();
+         var queryString = "/analytics/bigquery/?timeBucket=600&maxAge=86400&sum=@bytes_sent&avg=@cpu&groupBy=Time,city,@hostname,@site&slice=" + sliceName;
+
+         $( "#control1").html("");
+         $( "#control2").html("");
+         $( "#chart-site-agg" ).html("<div class='loading'>Loading ...</div>");
+         $( "#chart-site-time" ).html("");
+         $( "#chart-geo" ).html("");
+
+         $.ajax({
+             url: queryString,
+             dataType: 'json',
+             type: 'GET',
+             success: function (newData) {
+                 sendAndDraw(newData["dataSourceUrl"])
+             }
+         });
+     }
+
+     TIME_COL = 0;
+     BANDWIDTH_COL = 2;
+     CPU_COL = 1;
+     CITY_COL = 3;
+     NODE_COL = 4;
+     SITE_COL = 5;
+
+     google.setOnLoadCallback(function () {
+         $('#historical_slicename').change(function()
+         {
+             updateDataSourceUrl();
+         });
+
+         updateDataSourceUrl();
+     });
+
+     function showSiteTimeAgg(dt) {
+         var lineChart = new google.visualization.ChartWrapper({
+             'chartType': 'LineChart',
+             'containerId': 'chart-site-time',
+             'options': {
+                 'width': 320,
+                 'height': 300,
+                 'title': 'Network-wide usage',
+                 'pages': true,
+                 'numRows': 9
+             },
+             'view': {
+                 'columns': [0, 1, 2]
+             }
+         });
+         lineChart.setDataTable(dt);
+         lineChart.draw();
+     }
+
+     function showSiteAgg(dt) {
+         var barChart = new google.visualization.ChartWrapper({
+             'chartType': 'ColumnChart',
+             'containerId': 'chart-site-agg',
+             'options': {
+                 'width': 670,
+                 'height': 300,
+                 'title': 'Site-wise usage',
+                 'pages': true,
+                 'numRows': 9
+             },
+             'view': {
+                 'columns': [1, 2, 3]
+             }
+         });
+         barChart.setDataTable(dt);
+         barChart.draw();
+         var geoChart = new google.visualization.ChartWrapper({
+             'chartType': 'GeoChart',
+             'containerId': 'chart-geo',
+             'options': {
+                 'width': 320,
+                 'height': 300,
+                 'displayMode': 'markers',
+                 'region': '021',
+                 'title': 'Usage map',
+                 colorAxis: {
+                     colors: ['green', 'purple', 'red']
+                 }
+             },
+             'view': {
+                 'columns': [0, 2, 3]
+             }
+         });
+         geoChart.setDataTable(dt);
+         geoChart.draw();
+     }
+
+     function handleResponse(response) {
+         var timeSlider = new google.visualization.ControlWrapper({
+             'controlType': 'DateRangeFilter',
+             'containerId': 'control1',
+             'options': {
+                 'filterColumnLabel': 'Time',
+                 ui: {
+                     ticks: 10,
+                     step: "minute"
+                 }
+             }
+         });
+
+         var categoryPicker = new google.visualization.ControlWrapper({
+             'controlType': 'CategoryFilter',
+             'allowMultiple': true,
+             'containerId': 'control2',
+             'options': {
+                 'filterColumnLabel': 'site',
+                 'ui': {
+                     'labelStacking': 'vertical',
+                     'allowTyping': false
+                 }
+             }
+         });
+
+         var proxy = new google.visualization.ChartWrapper({
+             'chartType': 'Table',
+             'containerId': 'chart7',
+             'options': {
+                 'width': 800,
+                 'height': 300,
+                 pageSize: 5,
+                 page: 'enable',
+                 'legend': 'none',
+                 'title': 'Nodes'
+             },
+             'view': {
+                 'columns': [0, 1, 2, 3, 4, 5]
+             }
+         });
+
+         function avg_bandwidth(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]*8.0/1024.0/1024.0/1024.0;
+                }
+                if (arr.length==0) {
+                    return 0;
+                }
+                return ret/arr.length;
+         }
+
+         function sum_bytes_sent_as_bw(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]*8.0/1024.0/1024.0/1024.0;
+                }
+                return ret/60.0;
+         }
+
+         function sum_bytes_sent_as_GB(arr) {
+                var ret = 0;
+                for (var i = 0; i < arr.length; i++) {
+                        ret+=arr[i]/1024.0/1024.0/1024.0;
+                }
+                return ret;
+         }
+
+         function fixDate2(unixDate) {
+             // not completely sure why we have to do this, as the data was in
+             // javascript Date() objects to start with. If we don't do it,
+             // then the horizontal axis will be blank.
+             return new Date(unixDate);
+         }
+
+         var format0dp = new google.visualization.NumberFormat({fractionDigits:0});
+         var format2dp = new google.visualization.NumberFormat({fractionDigits:2});
+
+         if (response.isError()) {
+             $( "#chart-site-agg" ).html("<div class='loading'>Error while fetching data.</div>");
+             return;
+         }
+
+         if (response.getDataTable().getNumberOfRows() == 0) {
+             $( "#chart-site-agg" ).html("<div class='loading'>No data for this slice.</div>");
+             return;
+         }
+
+         // Create a group for charts that will have a horizontal axis that is
+         // time.
+
+         google.visualization.events.addListener(proxy, 'ready', function () {
+             var dt = proxy.getDataTable();
+             var groupedData1 = google.visualization.data.group(dt, [{
+                 column: TIME_COL,
+                 type: 'datetime',
+                 modifier: fixDate2,
+             }], [{
+                 column: CPU_COL,
+                 type: 'number',
+                 label: "avg cpu",
+                 aggregation: google.visualization.data.avg
+             }, {
+                 column: BANDWIDTH_COL,
+                 type: 'number',
+                 label: "Gbps",
+                 aggregation: sum_bytes_sent_as_bw
+             }]);
+
+             format0dp.format(groupedData1,1);
+             format2dp.format(groupedData1,2);
+
+             showSiteTimeAgg(groupedData1);
+         });
+
+         // Create a group for charts that will have a horizontal axis that is
+         // city or site.
+
+         google.visualization.events.addListener(proxy, 'ready', function () {
+             var dt = proxy.getDataTable();
+             var groupedData0 = google.visualization.data.group(dt, [CITY_COL, SITE_COL], [{
+                 column: CPU_COL,
+                 type: 'number',
+                 label: 'avg cpu',
+                 aggregation: google.visualization.data.avg
+             }, {
+                 column: BANDWIDTH_COL,
+                 type: 'number',
+                 label: "GB sent",
+                 aggregation: sum_bytes_sent_as_GB
+             }]);
+
+             format0dp.format(groupedData0,2);
+             format2dp.format(groupedData0,3);
+
+             showSiteAgg(groupedData0);
+         });
+
+         data = response.getDataTable();
+         new google.visualization.Dashboard(document.getElementById('dashboard')).
+         // Establish bindings, declaring the both the slider and the category
+         // picker will drive both charts.
+         bind([categoryPicker, timeSlider], [proxy]).
+         // Draw the entire dashboard.
+         draw(data);
+
+     }
+
+     function sendAndDraw(queryString) {
+         query = new google.visualization.Query(queryString)
+         query && query.abort();
+         query.send(function (response) {
+             handleResponse(response);
+         });
+     }
+
+    </script>
+    <div id="dashboard" class="graph_container">
+                <div class="row">
+                        <span><b>Slice Name:</b></span>
+                        <span><select id="historical_slicename">
+                        {% for slice in userSliceInfo %}
+                           <option value="{{ slice.slicename }}">{{ slice.slicename }}</option>
+                        {% endfor %}
+                        </select></span>
+                </div>
+		<div class="row" dstyle="background-color:red">
+			<div class="col-md-12">
+				<div class="col-md-4" id="control2"></div>
+				<div class="col-md-4" id="control1"></div>
+				<!--<div class="col-md-4" id="control3"></div>-->
+			</div>
+		</div>
+		<div class="row" dstyle="background-color:green">
+			<div class="col-md-12">
+				<div class="col-md-fullgraph" id="chart-site-agg" dstyle="background-color:pink">
+				</div>
+			</div>
+		</div>
+		<div class="row" dstyle="background-color:blue">
+			<div class="col-md-12">
+				<div class="col-md-halfgraph" id="chart-site-time" dstyle="background-color:orange">
+				</div>
+				<div class="col-md-halfgraph" id="chart-geo" dstyle="background-color:yellow">
+				</div>
+			</div>
+		</div>
+    </div>
+	<div id="chart7" style="display:none"></div>

@@ -51,10 +51,12 @@
   <div class="submit-row">
     <input type="submit" class="btn btn-info" value="{% trans 'SIGN IN' %}" />
   </div>
+{% url 'django-admindocs-docroot' as docsroot %}
+                  {% if docsroot %}
+<div class="createAccountLink"><a href="{{ docsroot }}">{% trans 'Request a new Account' %}</a></div>
 
-<div class="forgotLink"><a href="{{ password_reset_url }}">{% trans 'Forgot password?' %}</a></div><div class="createAccountLink"><a href="#">{% trans 'Create an Account' %}</a></div>
+                  {% endif %}
 </form>
-
 <script type="text/javascript">
 document.getElementById('id_username').focus()
 </script>

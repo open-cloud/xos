@@ -1,0 +1,106 @@
+<div id="tabs-6">
+<div class="row">
+        <span><b>Content Provider:</b></span>
+        <span><select id="cdn-node-data-slicename">
+        <option value="all">all</option>
+        {% for cp in cdnContentProviders %}
+           <option value="{{ cp.account }}">{{ cp.name }}</option>
+        {% endfor %}
+        </select></span>
+</div>
+<div id="cdn-node-table"></div>
+</div>
+<script>
+
+function domain_name_sort(a,b) {
+        parts_a = a.split(".");
+        parts_b = b.split(".");
+        parts_a = parts_a.reverse();
+        parts_b = parts_b.reverse();
+        a = parts_a.join(".");
+        b = parts_b.join(".");
+	return ((a < b) ? -1 : ((a > b) ?  1 : 0));
+}
+
+jQuery.fn.dataTableExt.oSort['domain-name-asc']  = function(a,b) {
+    return domain_name_sort(a,b);
+};
+
+jQuery.fn.dataTableExt.oSort['domain-name-desc']  = function(a,b) {
+    retuirn -domain_name_sort(a,b);
+};
+
+function updateCDNNodeData(data) {
+    $('#cdn-node-table').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_cdn_nodes"></table>' );
+    var actualEntries = [];
+
+    var rows = data.rows;
+    for (row in rows) {
+        hostname = rows[row]['hostname'];
+        bytes_sent = rows[row]['sum_bytes_sent'];
+        bytes_hit = rows[row]['sum_bytes_hit'];
+        elapsed = rows[row]['sum_elapsed'];
+        healthy = rows[row]['sum_healthy'];
+
+        if (bytes_sent > 0) {
+            hit_ratio = parseInt( bytes_hit * 100.0 / bytes_sent );
+        } else {
+            hit_ratio = 0;
+        }
+
+        Mbps = parseInt(rows[row]['sum_computed_bytes_sent_div_elapsed'] * 8.0 / 1024.0 / 1024.0);
+
+        if (healthy>0) {
+            healthyStr = "ok";
+        } else {
+            healthyStr = "bad";
+        }
+
+        actualEntries.push([hostname, healthyStr, Mbps, hit_ratio]);
+    }
+    oTable = $('#dynamic_cdn_nodes').dataTable( {
+        "bJQueryUI": true,
+        "aaData":  actualEntries,
+        "bStateSave": true,
+        "aoColumns": [
+            { "sTitle": "Hostname", sType: "domain-name" },
+            { "sTitle": "Healthy" },
+            { "sTitle": "Mbps" , sClass: "alignCenter"},
+            { "sTitle": "Hit Ratio" , sClass: "alignCenter"},
+        ],
+    } );
+}
+
+function updateCDNNodes() {
+    var contentProvider = $("#cdn-node-data-slicename").val();
+
+    var filterPart = ""
+    if ((contentProvider!="") && (contentProvider!="all")) {
+         filterPart = "&cp=" + contentProvider
+    }
+
+    var url= '/analytics/bigquery/?event=hpc_heartbeat&sum=@bytes_sent,@bytes_hit,@healthy,@elapsed&computed=@bytes_sent/@elapsed&groupBy=@hostname&cached=hpc&cachedGroupBy=@hostname' + filterPart;
+
+    $.ajax({
+    url: url,
+    dataType : 'json',
+    type : 'GET',
+    success: function(newData)
+    {
+        updateCDNNodeData(newData);
+    }
+});
+    setTimeout(updateCDNNodes, 30000);
+}
+
+google.setOnLoadCallback(function () {
+    $('#cdn-node-data-slicename').change(function()
+    {
+        updateCDNNodes();
+    });
+
+    updateCDNNodes();
+});
+
+//setTimeout(updateCDNNodes, 5000);
+</script>
