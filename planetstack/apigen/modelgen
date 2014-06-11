@@ -2,10 +2,13 @@
 
 import os
 import pdb
+import copy
 import sys
 import json
 import re
 from django.template import Context, Template
+
+blacklist = ['SingletonModel','PlCoreBase']
 
 # Django set up
 
@@ -27,7 +30,7 @@ g = globals()
 def enum_classes():
 	model_classes = []
 	for c in g.values():
-		if type(c)==type(PlCoreBase):
+		if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
 			model_classes.append(c)
 	return model_classes
 
@@ -40,17 +43,21 @@ class GenObj(object):
 		self.model = m
 		self.props = []
 		self.refs = []
+		self.plural_name = None
 
 	def plural(self):
-		name = str(self)
-		if (name.endswith('s')):
-			return name+'es'
+		if (self.plural_name):
+			return self.plural_name
 		else:
-			return name+'s'
+			name = str(self)
+			if (name.endswith('s')):
+				return name+'es'
+			else:
+				return name+'s'
 
 	def camel(self):
 		name = str(self.model.__name__)
-		return name.title()
+		return name
 		
 class Generator(dict):
 	def all(self):
@@ -67,13 +74,31 @@ class Generator(dict):
 
 	def compute_links(self):
 		for obj in self.values():
+			#if (str(obj)=='network'):
+			#	pdb.set_trace()
 			fields = obj.model._meta.fields
 			for f in fields:
-				if type(f)==ForeignKey and f.name in self.keys():
-					refobj = self[f.name]
-					obj.refs.append(refobj)
+				if (f and f.rel):
+					to_name = str(f.rel.to)
+				else:
+					to_name = None
+
+				if type(f)==ForeignKey and to_name and to_name in self.keys():
+					refobj = self[f.to_name]
+
+					if (str(obj)=='slice' and f.to_name=='networks'):
+						obj.refs.append(refobj)
+					related_name = f.related_query_name()
+					if (related_name!='+' and related_name.lower()!=str(obj).lower()):
+						cobj = copy.deepcopy(obj)
+						cobj.multi = True
+						cobj.plural_name = related_name
+						#if (str(refobj)=='slice' and related_name=='networks'):
+						#	pdb.set_trace()
+						refobj.refs.append(cobj)
 				else:
 					obj.props.append(f.name)
+
 			m2m = obj.model._meta.many_to_many
 			for f in m2m:
 				try:
@@ -81,10 +106,28 @@ class Generator(dict):
 				except:
 					related_model_name = f.m2m_db_table().rsplit('_',1)[-1]
 
+				related_name = f.related_query_name()
 				if related_model_name in self.keys():
+			#		pdb.set_trace()
 					refobj = self[related_model_name]
-					obj.multi=True
-					refobj.refs.append(obj)
+					cobj = copy.deepcopy(obj)
+					cobj.multi=True
+					refobj.refs.append(cobj)
+				
+				if (related_name!='+' and related_name.lower()!=str(obj).lower()):
+					cobj = copy.deepcopy(obj)
+					cobj.multi = True
+					cobj.plural_name = related_name
+
+					#if (str(refobj)=='slice' and related_name=='networks'):
+					#	pdb.set_trace()
+					refobj.refs.append(cobj)
+
+					#if (related_name=='networks'):
+						#pdb.set_trace()
+						#print str(refobj)
+
+
 
 			
 def main():

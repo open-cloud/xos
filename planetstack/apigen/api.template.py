@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
+from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 
@@ -38,12 +39,12 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	{% if ref.multi %}
 	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
 	{% else %}
-	{{ ref }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+	{{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
 	{% endif %}
 	{% endfor %}
 	class Meta:
-		model = {{ object }}
-		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %})
+		model = {{ object.camel }}
+		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 {% endfor %}
 
 serializerLookUp = { 
@@ -57,7 +58,7 @@ serializerLookUp = {
 {% for object in generator.all %}
 
 class {{ object.camel }}List(generics.ListCreateAPIView):
-    queryset = {{ object.camel }}.objects.select_related.all()
+    queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
     
     def get_queryset(self):
@@ -73,7 +74,7 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = {{ object.camel }}.objects.select_related.all()
+    queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
     
     def get_queryset(self):
