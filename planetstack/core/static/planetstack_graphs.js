@@ -77,7 +77,7 @@ function handleResponse_psg(container, dataSourceUrl, response, yColumn, xColumn
                     'Histogram':google.visualization.Histogram};
 
     if (response.isError()) {
-        #console.log("retry chart");
+        //console.log("retry chart");
         setTimeout(function () { startQuery(container, dataSourceUrl, yColumn, xColumn, aggFunc, options) }, 5000);
         return
     }

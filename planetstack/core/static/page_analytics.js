@@ -44,6 +44,11 @@ function updatePageAnalyticsData(summaryData) {
     window.pageAnalyticsUrl = summaryData["dataSourceUrl"];
     lastRow = summaryData.rows.length-1;
 
+    if (summaryData.rows.length <= 0) {
+        //console.log("no data received from page analytics ajax")
+        return;
+    }
+
     setPageStatInt(".nodesLabel", ".nodesValue", "Node Count", "", summaryData.rows[lastRow]["count_hostname"]);
     setPageStatInt(".cpuLabel", ".cpuValue", "Avg Load", "%", summaryData.rows[lastRow]["avg_cpu"]);
 
@@ -75,6 +80,12 @@ function updatePageAnalytics() {
 function updatePageBandwidthData(summaryData) {
     window.pageBandwidthUrl = summaryData["dataSourceUrl"];
     lastRow = summaryData.rows.length-1;
+
+    if (summaryData.rows.length <= 0) {
+        //console.log("no data received from page bandwidth ajax")
+        return;
+    }
+
     setPageStatFloat(".bandwidthLabel", ".bandwidthValue", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
     setPageStatFloat("#miniDashBandwidthLabel", "#miniDashBandwidth", "Bandwidth", " Gbps", summaryData.rows[lastRow]["sum_computed_bytes_sent_div_elapsed"]*8.0/1024/1024/1024,2);
 }
