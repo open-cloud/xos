@@ -14,3 +14,8 @@ class Node(PlCoreBase):
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    @staticmethod
+    def select_by_user(user):
+        qs = Node.objects.all()
+        return qs
