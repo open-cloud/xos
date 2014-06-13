@@ -2,25 +2,13 @@ from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-from core.views.deployments import DeploymentList, DeploymentDetail
-from core.views.images import ImageList, ImageDetail
-from core.views.nodes import NodeList, NodeDetail
-from core.views.projects import ProjectList, ProjectDetail
-from core.views.reservations import ReservationList, ReservationDetail
-from core.views.roles import RoleList, RoleDetail
-from core.views.serviceclasses import ServiceClassList, ServiceClassDetail
-from core.views.serviceresources import ServiceResourceList, ServiceResourceDetail
-from core.views.sites import SiteList, SiteDetail
-from core.views.site_privileges import SitePrivilegeList, SitePrivilegeDetail
-from core.views.slices import SliceList, SliceDetail
-from core.views.slice_privileges import SlicePrivilegeList, SlicePrivilegeDetail
-from core.views.slivers import SliverList, SliverDetail
-from core.views.tags import TagList, TagDetail
-from genapi import UserList, UserDetail
+
+# This is the generated API
+from genapi import *
+
 from core.views.legacyapi import LegacyXMLRPC
 #from core.views.analytics import AnalyticsAjaxView
 from core.models import *
-from core.api_root import api_root
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
 from django.http import HttpResponseRedirect
@@ -78,8 +66,13 @@ urlpatterns = patterns('',
     url(r'^plstackapi/sites/$', SiteList.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteDetail.as_view(), name='site-detail'),
 
-    url(r'^plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
+	url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
+	url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
+	
+	url(r'^plstackapi/services/$', SliceList.as_view(), name='service-list'),
+    url(r'^plstackapi/services/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='service-detail'),
 
+    url(r'^plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
     url(r'^plstackapi/slices/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='slice-detail'),
 
     url(r'^plstackapi/slice_memberships/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
