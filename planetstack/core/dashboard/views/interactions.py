@@ -35,7 +35,7 @@ class DashboardSliceInteractions(View):
             result["title"] = "Slice interactions by sliver nodes"
             result["objectName"] = "nodes"
 
-        return HttpResponse(json.dumps(result), mimetype='application/javascript')
+        return HttpResponse(json.dumps(result), content_type='application/javascript')
 
     def build_id_list(self, slices, name):
         ids_by_slice = {}

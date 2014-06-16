@@ -19,7 +19,7 @@ class DashboardSummaryAjaxView(View):
                 "total_bandwidth": total_bandwidth,
                 "average_cpu": average_cpu}
 
-        return HttpResponse(json.dumps(result), mimetype='application/javascript')
+        return HttpResponse(json.dumps(result), content_type='application/javascript')
 
 class DashboardAddOrRemoveSliverView(View):
     # TODO: deprecate this view in favor of using TenantAddOrRemoveSliverView
@@ -42,8 +42,8 @@ class DashboardAddOrRemoveSliverView(View):
 
         print '*' * 50
         print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Sliver'
-        return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
+        return HttpResponse(json.dumps("Success"), content_type='application/javascript')
 
 class DashboardAjaxView(View):
     def get(self, request, **kwargs):
-        return HttpResponse(json.dumps(getCDNOperatorData(True)), mimetype='application/javascript')
+        return HttpResponse(json.dumps(getCDNOperatorData(True)), content_type='application/javascript')

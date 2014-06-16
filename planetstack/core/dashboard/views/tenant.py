@@ -31,7 +31,7 @@ class TenantCreateSlice(View):
 	   addOrModifyPorts(networkPorts,sliceName)
 	   if privateVolume=="true":
 	   	privateVolForSlice(request.user,sliceName)
-        return HttpResponse(json.dumps("Slice created"), mimetype='application/javascript')
+        return HttpResponse(json.dumps("Slice created"), content_type='application/javascript')
 
 def privateVolForSlice(user,sliceName):
 	if not hasPrivateVolume(sliceName):
@@ -64,7 +64,7 @@ class TenantUpdateSlice(View):
 	addOrModifyPorts(networkPorts,sliceName)
 	if privateVolume=="true":
                 privateVolForSlice(request.user,sliceName)
-        return HttpResponse(json.dumps("Slice updated"), mimetype='application/javascript')
+        return HttpResponse(json.dumps("Slice updated"), content_type='application/javascript')
 
 def addNetwork(name,template,sliceName):
 	networkTemplate=NetworkTemplate.objects.get(name=template)
@@ -237,7 +237,7 @@ class TenantDeleteSliceView(View):
                 #print slice, slice.id
                 sliceToDel=Slice(name=sliceName, id=slice.id)
                 sliceToDel.delete()
-                return HttpResponse(json.dumps("Slice deleted"), mimetype='application/javascript')
+                return HttpResponse(json.dumps("Slice deleted"), content_type='application/javascript')
 
 class TenantAddOrRemoveSliverView(View):
     """ Add or remove slivers from a Slice
@@ -283,7 +283,7 @@ class TenantAddOrRemoveSliverView(View):
         else:
             return HttpResponseServerError("Unknown actionToDo %s" % actionToDo)
 
-        return HttpResponse(json.dumps(sitesChanged), mimetype='application/javascript')
+        return HttpResponse(json.dumps(sitesChanged), content_type='application/javascript')
 
     def get(self, request, *args, **kwargs):
         request.POST = request.GET
@@ -300,7 +300,7 @@ class TenantPickSitesView(View):
         ip = request.GET.get("ip", get_ip(request))
         sites = tenant_pick_sites(request.user, user_ip=ip, count=0, slice=slice)
         sites = [x.name for x in sites]
-        return HttpResponse(json.dumps(sites), mimetype='application/javascript')
+        return HttpResponse(json.dumps(sites), content_type='application/javascript')
 
 def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
     # try to pick a site we're already using
@@ -336,4 +336,4 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
 
 class TenantViewData(View):
     def get(self, request, **kwargs):
-        return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), mimetype='application/javascript')
+        return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), content_type='application/javascript')

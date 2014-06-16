@@ -18,5 +18,5 @@ class DashboardCustomize(View):
             udbv = UserDashboardView(user=request.user, dashboardView=dashboard, order=i)
             udbv.save()
 
-        return HttpResponse(json.dumps("Success"), mimetype='application/javascript')
+        return HttpResponse(json.dumps("Success"), content_type='application/javascript')
 
