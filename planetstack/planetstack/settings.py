@@ -1,4 +1,5 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from django import VERSION as DJANGO_VERSION
 
 # Django settings for planetstack project.
 from config import Config
@@ -122,7 +123,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/opt/planetstack/templates"
+    "/opt/planetstack/templates",
 )
 
 INSTALLED_APPS = (
@@ -150,6 +151,12 @@ INSTALLED_APPS = (
     'geoposition',
 )
 
+if DJANGO_VERSION[1]>=7:
+    # if django >= 1.7, then remove evolution and change the admin module
+    INSTALLED_APPS = list(INSTALLED_APPS)
+    INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
+    INSTALLED_APPS.remove('django_evolution')
+    INSTALLED_APPS = tuple(INSTALLED_APPS)
 
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
