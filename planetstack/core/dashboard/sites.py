@@ -17,9 +17,14 @@ class AdminMixin(object):
                           TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
                           TenantUpdateSlice, DashboardSliceInteractions
 
+        from views import view_urls
+
         urls = super(AdminMixin, self).get_urls()
         del urls[0]
-        custom_url = patterns('',
+
+        # these ones are for the views that were written before we implemented
+        # the ability to get the url from the View class.
+        dashboard_urls = [
                url(r'^$', self.admin_view(DashboardDynamicView.as_view()),
                     name="index"),
                url(r'^test/', self.admin_view(DashboardUserSiteView.as_view()),
@@ -54,9 +59,13 @@ class AdminMixin(object):
                     name="picksites"),
 	       url(r'^tenantdeleteslice/$', self.admin_view(TenantDeleteSliceView.as_view()),
                     name="tenantdeleteslice")
-        )
+        ]
 
-        return custom_url + urls
+        # these ones are for the views that have a "url" member in the class
+        for (view_url, view_classname, view_class) in view_urls:
+            dashboard_urls.append( url(view_url, self.admin_view(view_class.as_view()), name=view_classname.lower()))
+
+        return dashboard_urls + urls
 
 
 class SitePlus(AdminMixin, AdminSite):
