@@ -15,8 +15,7 @@
 #terminal input {
   width: 875px;
   margin: 1px 0 1px 10px;
-  border: 1px dotted;
-  border-color:#808080;
+  border: none;
   display: inline;
   padding: 2px;
   background: black;
@@ -24,6 +23,10 @@
   font-size: 18px;
   font-family: Monaco, monospace;
   border-radius:0;
+}
+
+#terminal input:focus {
+  box-shadow:none;
 }
 
 #terminal p {

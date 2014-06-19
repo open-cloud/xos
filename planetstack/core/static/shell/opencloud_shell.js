@@ -338,6 +338,8 @@ function startTerminal() {
   $("#terminal_help1").show();
   $("#terminal_help2").show();
   $("#terminal_wait").hide();
+
+  $("#terminal").bind('click', function() { $(".readLine.active").focus(); });
 };
 
 $(document).ready(function() {
