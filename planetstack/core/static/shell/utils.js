@@ -4,7 +4,9 @@
 // Licensed under the MIT licence.
 // http://www.opensource.org/licenses/mit-license.php
 
-Array.prototype.include = function(value) {
+// extending array like this is breaking datatables
+
+/*Array.prototype.include = function(value) {
   for(var i=0; i < this.length; i++) {
     if(this[i] == value) {
       return this[i];
@@ -15,6 +17,15 @@ Array.prototype.include = function(value) {
 
 Array.prototype.empty = function() {
   return (this.length == 0);
+};*/
+
+function ArrayInclude(arr,value) {
+  for(var i=0; i < arr.length; i++) {
+    if(arr[i] == value) {
+      return arr[i];
+    }
+  }
+  return false;
 };
 
 Function.prototype.bind = function() {

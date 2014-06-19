@@ -15,7 +15,8 @@
 #terminal input {
   width: 875px;
   margin: 1px 0 1px 10px;
-  border: none;
+  border: 1px dotted;
+  border-color:#808080;
   display: inline;
   padding: 2px;
   background: black;

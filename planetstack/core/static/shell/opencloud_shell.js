@@ -303,7 +303,7 @@ MongoHandler.prototype = {
   },
 
   _getCommand: function(tokens) {
-    if(tokens[0] && MongoKeywords.include((tokens[0].value + '').toLowerCase())) {
+    if(tokens[0] && ArrayInclude(MongoKeywords,(tokens[0].value + '').toLowerCase())) {
       switch(tokens[0].value.toLowerCase()) {
         case 'help':
           return this._help;
