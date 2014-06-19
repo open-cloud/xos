@@ -77,6 +77,28 @@
     }
 },
 {
+    "pk": 8, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "http://nagiosadmin:letmein@node52.princeton.vicci.org:8088/nagios/cgi-bin/status.cgi?host=all", 
+        "updated": "2014-06-18T00:00:43.149Z", 
+        "enacted": null, 
+        "name": "nagios", 
+        "created": "2014-06-18T00:00:43.149Z"
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:shell", 
+        "updated": "2014-06-19T01:34:07.897Z", 
+        "enacted": null, 
+        "name": "shell", 
+        "created": "2014-06-19T01:34:07.897Z"
+    }
+},
+{
     "pk": 3, 
     "model": "core.service", 
     "fields": {
