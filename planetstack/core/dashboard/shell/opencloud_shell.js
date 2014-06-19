@@ -95,7 +95,7 @@ ReadLine.prototype = {
   },
 
   insertResponse: function(response) {
-    if(response.length < 3) {
+    if((response.length < 1) || (response=='"donotprintme"')) {
       this.activeLine.parent().append("<p class='response'></p>");
     }
     else {
@@ -116,7 +116,7 @@ var MongoHandler = function() {
   this._rawCommand     = "";
   this._commandStack   = 0;
   this._tutorialPtr    = 0;
-  this._tutorialMax    = 10;
+  this._tutorialMax    = 2;
 
   this._mongo          = {};
   this._mongo.test     = [];
@@ -128,7 +128,7 @@ MongoHandler.prototype = {
   _process: function(inputString, errorCheck) {
     this._rawCommand += ' ' + inputString;
 
-//    try {
+    try {
       inputString += '  '; // fixes certain bugs with the tokenizer.
       var tokens    = inputString.tokens();
       var mongoFunc = this._getCommand(tokens);
@@ -142,19 +142,22 @@ MongoHandler.prototype = {
       else {
         return this._evaluator(tokens);
       }
-//    }
+    }
 
-//    catch(err) {
-//        this._resetCurrentCommand();
-//        return {stack: 0, result: "JS Error: " + err};
-//    }
+    catch(err) {
+        this._resetCurrentCommand();
+        console.trace();
+        return {stack: 0, result: "JS Error: " + err};
+    }
   },
 
   // Calls eval on the input string when ready.
   _evaluator: function(tokens) {
+    isAssignment = tokens.length>=2 && tokens[0].type=="name" && tokens[1].type=="operator" && tokens[1].value=="=";
+
     this._currentCommand += " " + this._massageTokens(tokens);
     if(this._shouldEvaluateCommand(tokens))  {
-        db = "scott";
+        opencloud = new OpenCloud();
         print = this.print;
 
         // So this eval statement is the heart of the REPL.
@@ -165,8 +168,11 @@ MongoHandler.prototype = {
           result = $htmlFormat(result);
         }
         this._resetCurrentCommand();
-        console.log(result);
-        return {stack: this._commandStack, result: result};
+        if (isAssignment) {
+            return {stack: this._commandStack, result: ""};
+        } else {
+            return {stack: this._commandStack, result: result};
+        }
       }
 
     else {
@@ -233,8 +239,8 @@ MongoHandler.prototype = {
   // print output to the screen, e.g., in a loop
   // TODO: remove dependency here
   print: function() {
-   $('.readLine.active').parent().append('<p>' + arguments[0] + '</p>');
-   return "";
+   $('.readLine.active').parent().append('<p>' + JSON.stringify(arguments[0]) + '</p>');
+   return "donotprintme";
   },
 
   /* MongoDB     */
@@ -242,7 +248,57 @@ MongoHandler.prototype = {
 
   // help command
   _help: function() {
-      return PTAG('HELP');
+      return PTAG('HELP') +
+             PTAG('opencloud.slices.listAll()       get all slices');
+
+  },
+
+  _tutorial: function() {
+    this._tutorialPtr = 0;
+    return PTAG("This is a self-guided tutorial on the OpenCloud shell.") +
+           PTAG("The tutorial is simple, more or less a few basic commands to try.") +
+           PTAG("To go directly to any part tutorial, enter one of the commands t0, t1, t2...t10") +
+           PTAG("Otherwise, use 'next' and 'back'. Start by typing 'next' and pressing enter.");
+  },
+
+  // go to the next step in the tutorial.
+  _next: function() {
+    if(this._tutorialPtr < this._tutorialMax) {
+      return this['_t' + (this._tutorialPtr + 1)]();
+    }
+    else {
+      return "You've reached the end of the tutorial. To go to the beginning, type 'tutorial'";
+    }
+  },
+
+  // go to the previous step in the tutorial.
+  _back: function() {
+    if(this._tutorialPtr > 1) {
+      return this['_t' + (this._tutorialPtr - 1)]();
+    }
+    else {
+      return this._tutorial();
+    }
+  },
+
+  _t1: function() {
+    this._tutorialPtr = 1;
+    return PTAG('1. JavaScript Shell') +
+           PTAG('The first thing to notice is that the MongoDB shell is JavaScript-based.') +
+           PTAG('So you can do things like:') +
+           PTAG('  a = 5; ') +
+           PTAG('  a * 10; ') +
+           PTAG('  print(a); ') +
+           PTAG("  for(i=0; i<10; i++) { print('hello'); }; ") +
+           PTAG("Try a few JS commands; when you're ready to move on, enter 'next'");
+
+  },
+
+  _t2: function() {
+    this._tutorialPtr = 2;
+    return PTAG('2. List some slices') +
+           PTAG('Type this:') +
+           PTAG('    opencloud.slices.listAll();');
 
   },
 
@@ -251,18 +307,39 @@ MongoHandler.prototype = {
       switch(tokens[0].value.toLowerCase()) {
         case 'help':
           return this._help;
+
+        case 'tutorial':
+          return this._tutorial;
+        case 'next':
+          return this._next;
+        case 'back':
+          return this._back;
+        case 't0':
+          return this._tutorial;
+        case 't1':
+          return this._t1;
+        case 't2':
+          return this._t2;
       }
     }
   }
 };
 
 $htmlFormat = function(obj) {
-  return tojson(obj, ' ', ' ', true);
+  result=tojson(obj, ' ', ' ', true);
+  return result;
 }
 
-$(document).ready(function() {
+function startTerminal() {
   var mongo       = new MongoHandler();
   var terminal    = new ReadLine({htmlForInput: DefaultInputHtml,
                                   handler: mongo._process,
                                   scoper: mongo});
+  $("#terminal_help1").show();
+  $("#terminal_help2").show();
+  $("#terminal_wait").hide();
+};
+
+$(document).ready(function() {
+    updateOpenCloud(onLoaded = startTerminal);
 });

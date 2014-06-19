@@ -25,7 +25,7 @@ var UpArrowKeyCode   = 38;
 var DownArrowKeyCode = 40;
 
 var PTAG = function(str) {
-  return "<pre>" + str + "</pre>";
+  return '<pre class="terminal_help">' + str + '</pre>';
 }
 
 var BR = function() {
@@ -36,4 +36,4 @@ var JavascriptKeywords = ['abstract', 'boolean', 'break', 'byte', 'case', 'catch
 
 var JavascriptClassNames = ['Array', 'String', 'Object']
 
-var MongoKeywords = ['help'];
+var MongoKeywords = ['help','tutorial','next','back','t0','t1','t2'];

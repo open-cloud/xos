@@ -350,16 +350,20 @@ tojsonObject = function( x, indent , nolint , html){
       var lineEnding = nolint ? " " : "\n";
       var tabSpace = nolint ? "" : "\t";
     }
-    
+
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
-    if (!indent) 
+    if (!indent)
         indent = "";
-    
+
+    if ( x.hasOwnProperty("__str__")) {
+        return x.__str__();
+    }
+
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
         return x.tojson(indent,nolint,html);
     }
-    
+
     if ( typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
         return x.constructor.tojson( x, indent , nolint, html );
     }
@@ -368,12 +372,12 @@ tojsonObject = function( x, indent , nolint , html){
         return "{ $maxKey : 1 }";
     if ( x.toString() == "[object MinKey]" )
         return "{ $minKey : 1 }";
-    
+
     var s = "{" + lineEnding;
 
     // push one level of indent
     indent += tabSpace;
-    
+
     var total = 0;
     for ( var k in x ) total++;
     if ( total == 0 ) {
@@ -385,7 +389,6 @@ tojsonObject = function( x, indent , nolint , html){
         keys = x._simpleKeys();
     var num = 1;
     for ( var k in keys ){
-        
         var val = x[k];
 
         s += indent + "\"" + k + "\" : " + tojson( val, indent , nolint );

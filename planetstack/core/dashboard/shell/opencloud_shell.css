@@ -22,13 +22,24 @@
   color: #45FF17;
   font-size: 18px;
   font-family: Monaco, monospace;
+  border-radius:0;
 }
 
-#terminal p, #terminal pre {
+#terminal p {
   margin: 2px;
   color: #45FF17;
   font-size: 18px;
   font-family: Monaco, serif;
+}
+
+.terminal_help {
+  margin: 2px;
+  color: #45FF17;
+  font-size: 18px;
+  font-family: Monaco, serif;
+  background:black;
+  padding:0;
+  line-height:normal;
 }
 
 #terminal a {
