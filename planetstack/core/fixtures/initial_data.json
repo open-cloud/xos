@@ -69,10 +69,10 @@
     "pk": 7, 
     "model": "core.dashboardview", 
     "fields": {
-        "url": "cdn_nodes", 
+        "url": "template:cdn_nodes", 
         "updated": "2014-05-20T00:33:52.101Z", 
         "enacted": null, 
-        "name": "template:CDN Nodes", 
+        "name": "CDN Nodes", 
         "created": "2014-05-20T00:33:52.101Z"
     }
 },
