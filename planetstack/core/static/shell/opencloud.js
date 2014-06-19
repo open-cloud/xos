@@ -24,12 +24,46 @@ function updateOpenCloud(onLoaded) {
     });
 }
 
-function Slices() {
-    this.listAll = function() { return opencloud_data["slices"] }
-    this.__str__ = function() { return '["listAll"]'; }
+function OpenCloudModel(name) {
+    this.all = function() { return opencloud_data[name]; };
+
+    this.match = function(filterDict,obj) {
+                   for (var k in filterDict) {
+                       if (obj[k] == filterDict[k]) {
+                           return true;
+                       }
+                   }
+                   return false;
+                 };
+
+    this.filter = function(filterDict) {
+                   result = []
+                   all_objs = this.all()
+                   for (var k in all_objs) {
+                        obj = all_objs[k];
+                        if (this.match(filterDict, obj)) {
+                            result.push(obj);
+                        }
+                   }
+                   return result;
+                 };
+
+    this.get = function(filterDict) {
+                   return this.filter(filterDict)[0];
+                 };
+
+    this.__str__ = function() { return '["all", "filter", "get"]' };
 }
 
+//function Slices() {
+//    this.listAll = function() { return opencloud_data["slices"] }
+//    this.__str__ = function() { return '["listAll"]'; }
+//}
+
 function OpenCloud() {
-    this.slices = new Slices()
-    this.__str__ = function() { return '["slices"]'; }
+    this.slices = new OpenCloudModel("slices");
+    this.slivers = new OpenCloudModel("slivers");
+    this.nodes = new OpenCloudModel("nodes");
+    this.sites = new OpenCloudModel("sites");
+    this.__str__ = function() { return '["slices", "slivers", "nodes", "sites"]'; }
 };

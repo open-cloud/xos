@@ -116,7 +116,7 @@ var MongoHandler = function() {
   this._rawCommand     = "";
   this._commandStack   = 0;
   this._tutorialPtr    = 0;
-  this._tutorialMax    = 2;
+  this._tutorialMax    = 4;
 
   this._mongo          = {};
   this._mongo.test     = [];
@@ -249,7 +249,11 @@ MongoHandler.prototype = {
   // help command
   _help: function() {
       return PTAG('HELP') +
-             PTAG('opencloud.slices.listAll()       get all slices');
+             PTAG('opencloud                                 list opencloud API object types') +
+             PTAG('opencloud.slices                          list methods to can call on slices') +
+             PTAG('opencloud.slices.all()                    get all slices') +
+             PTAG('opencloud.slices.filter({key: "value"})   filter using dictionary') +
+             PTAG('opencloud.slices.get({key: "value"}))     get using dictionary')
 
   },
 
@@ -296,9 +300,30 @@ MongoHandler.prototype = {
 
   _t2: function() {
     this._tutorialPtr = 2;
-    return PTAG('2. List some slices') +
-           PTAG('Type this:') +
-           PTAG('    opencloud.slices.listAll();');
+    return PTAG('2. List some objects') +
+           PTAG('Try these:') +
+           PTAG('    opencloud.slices.all();') +
+           PTAG('    opencloud.slivers.all();') +
+           PTAG('    opencloud.sites.all();') +
+           PTAG('    opencloud.nodes.all();');
+
+  },
+
+  _t3: function() {
+    this._tutorialPtr = 3;
+    return PTAG('3. Filter some objects') +
+           PTAG('Try these:') +
+           PTAG('    opencloud.slices.get({name: "HyperCache"});');
+           PTAG('    opencloud.nodes.filter({site_id: opencloud.sites.get({name: "Princeton"})["id"]});');
+
+  },
+
+  _t4: function() {
+    this._tutorialPtr = 4;
+    return PTAG('4. Available OpenCloud objects and methods') +
+           PTAG('Try these:') +
+           PTAG('    opencloud;') +
+           PTAG('    opencloud.nodes;');
 
   },
 
@@ -320,6 +345,10 @@ MongoHandler.prototype = {
           return this._t1;
         case 't2':
           return this._t2;
+        case 't3':
+          return this._t3;
+        case 't4':
+          return this._t4;
       }
     }
   }
