@@ -25,7 +25,7 @@ class DashboardDynamicView(TemplateView):
         else:
             return self.singleDashboardView(request, name, context)
 
-    def readDashboard(self, fn):
+    def readTemplate(self, fn):
         try:
             template= open("/opt/planetstack/templates/admin/dashboard/%s.html" % fn, "r").read()
             if (fn=="tenant"):
@@ -34,6 +34,13 @@ class DashboardDynamicView(TemplateView):
             return template
         except:
             return "failed to open %s" % fn
+
+    def embedDashboard(self, url):
+        if url.startswith("template:"):
+            fn = url[9:]
+            return self.readTemplate(fn)
+        elif url.startswith("http"):
+            return '<iframe src="%s" width="100%%" height="100%%" style="min-height: 1024px;" frameBorder="0"></iframe>' % url
 
     def multiDashboardView(self, request, context):
         head_template = self.head_template
@@ -59,9 +66,7 @@ class DashboardDynamicView(TemplateView):
         for i,view in enumerate(dashboards):
             url = view.url
             body = body + '<div id="dashtab-%d">\n' % i
-            if url.startswith("template:"):
-                fn = url[9:]
-                body = body + self.readDashboard(fn)
+            body = body + self.embedDashboard(url)
             body = body + '</div>\n'
 
         body=body+"</div>\n"
@@ -80,7 +85,7 @@ class DashboardDynamicView(TemplateView):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        t = template.Template(head_template + self.readDashboard(name) + self.tail_template)
+        t = template.Template(head_template + self.readTemplate(name) + self.tail_template)
 
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
