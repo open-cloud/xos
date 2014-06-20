@@ -36,11 +36,26 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/$', api_root),
 
+    url(r'^plstackapi/dashboardviews/$', DashboardViewList.as_view(), name='dashboardview-list'),
+    url(r'^plstackapi/dashboardview/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name='dashboardview-detail'),
+
+    url(r'^plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
+    url(r'^plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name='payment-detail'),
+
+    url(r'^plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
+    url(r'^plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name='charge-detail'),
+
+    url(r'^plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
+    url(r'^plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name='account-detail'),
+
     url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
     url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
 
     url(r'^plstackapi/images/$', ImageList.as_view(), name='image-list'),
     url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageDetail.as_view(), name='image-detail'),
+
+    url(r'^plstackapi/networkparametertypes/$', NodeList.as_view(), name='node-list'),
+    url(r'^plstackapi/networkparametertypes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeDetail.as_view(), name='node-detail'),
 
     url(r'^plstackapi/nodes/$', NodeList.as_view(), name='node-list'),
     url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeDetail.as_view(), name='node-detail'),
@@ -66,10 +81,19 @@ urlpatterns = patterns('',
     url(r'^plstackapi/sites/$', SiteList.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteDetail.as_view(), name='site-detail'),
 
-	url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
-	url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
-	
-	url(r'^plstackapi/services/$', SliceList.as_view(), name='service-list'),
+    url(r'^plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
+    url(r'^plstackapi/accounts/(?P<pk>[a-zA-Z0-9_\-]+)/$', AccountDetail.as_view(), name='account-detail'),
+
+    url(r'^plstackapi/networktemplates/$', NetworkSliceList.as_view(), name='networkslice-list'),
+    url(r'^plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliceDetail.as_view(), name='networkslice-detail'),
+
+    url(r'^plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
+    url(r'^plstackapi/networkslices/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliceDetail.as_view(), name='networkslice-detail'),
+
+    url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
+    url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
+    
+    url(r'^plstackapi/services/$', SliceList.as_view(), name='service-list'),
     url(r'^plstackapi/services/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='service-detail'),
 
     url(r'^plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
