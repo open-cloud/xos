@@ -447,70 +447,105 @@
     "pk": 5, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "US-Stanford", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 6, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "US-Washington", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 7, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "US-Princeton", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 8, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "US-GeorgiaTech", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 9, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "EU-MaxPlanck", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 10, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2013-04-03T22:57:23.015Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "Internet2", 
-        "created": "2013-04-03T22:57:23.015Z"
+        "created": "2013-04-03T22:57:23.015Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
     "pk": 11, 
     "model": "core.deployment", 
     "fields": {
+        "accessControl": "allow all", 
         "updated": "2014-05-22T22:49:27.623Z", 
-        "enacted": null, 
+        "admin_user": null, 
         "name": "Amazon EC2", 
-        "created": "2014-05-22T22:49:27.623Z"
+        "created": "2014-05-22T22:49:27.623Z", 
+        "auth_url": null, 
+        "admin_password": null, 
+        "admin_tenant": null, 
+        "enacted": null
     }
 },
 {
@@ -843,6 +878,28 @@
     }
 },
 {
+    "pk": 8, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "http://nagiosadmin:letmein@node52.princeton.vicci.org:8088/nagios/cgi-bin/status.cgi?host=all", 
+        "updated": "2014-06-18T00:00:43.149Z", 
+        "enacted": null, 
+        "name": "nagios", 
+        "created": "2014-06-18T00:00:43.149Z"
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.dashboardview", 
+    "fields": {
+        "url": "template:shell", 
+        "updated": "2014-06-19T01:34:07.897Z", 
+        "enacted": null, 
+        "name": "shell", 
+        "created": "2014-06-19T01:34:07.897Z"
+    }
+},
+{
     "pk": 1, 
     "model": "core.user", 
     "fields": {
@@ -858,7 +915,7 @@
         "site": null, 
         "phone": null, 
         "is_staff": true, 
-        "last_login": "2014-03-23T13:57:56.529Z", 
+        "last_login": "2014-06-17T11:07:08.691Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$v5qKhIyhSQ2N$V8vh2mkqYdjQib6d2jBkpwV57eMBfhd/9eiXqaDLUWg=", 
@@ -930,7 +987,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-05-12T19:20:28.533Z", 
+        "last_login": "2014-05-28T14:02:29.996Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -954,7 +1011,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-05-09T18:41:01.026Z", 
+        "last_login": "2014-05-28T01:03:05.136Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -978,7 +1035,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-05-09T02:08:32.840Z", 
+        "last_login": "2014-05-29T21:59:40.654Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -991,8 +1048,8 @@
     "model": "core.user", 
     "fields": {
         "username": "llp@onlab.us", 
-        "public_key": "", 
-        "updated": "2014-03-23T23:11:22.436Z", 
+        "public_key": "xxx", 
+        "updated": "2014-05-27T01:55:57.760Z", 
         "is_readonly": false, 
         "firstname": "Larry", 
         "user_url": null, 
@@ -1002,7 +1059,7 @@
         "site": 22, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-05-10T15:19:58.401Z", 
+        "last_login": "2014-06-06T15:40:08.702Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$EOrqG6KzVO8z$4jSJMN/35PKPmJkDEHjAY1c/mDpBfoW1U8XAfk1eDLk=", 
@@ -1026,7 +1083,7 @@
         "site": 22, 
         "phone": null, 
         "is_staff": true, 
-        "last_login": "2014-05-26T23:11:54.353Z", 
+        "last_login": "2014-06-19T23:53:48.423Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -1160,7 +1217,7 @@
     "fields": {
         "username": "demo@onlab.us", 
         "public_key": "", 
-        "updated": "2014-05-23T22:03:14.065Z", 
+        "updated": "2014-05-29T22:27:54.841Z", 
         "is_readonly": true, 
         "firstname": "Demo", 
         "user_url": null, 
@@ -1170,7 +1227,7 @@
         "site": 22, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-05-23T22:03:56.256Z", 
+        "last_login": "2014-06-18T08:35:13.300Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$jaLSTW2ksHEN$HDpjDKieFDjMvtV5wbF/ow3zfq8EqcFtNXLfuo+150s=", 
@@ -1203,14 +1260,38 @@
     }
 },
 {
+    "pk": 16, 
+    "model": "core.user", 
+    "fields": {
+        "username": "parichar@akamai.com", 
+        "public_key": "", 
+        "updated": "2014-05-27T15:18:09.991Z", 
+        "is_readonly": false, 
+        "firstname": "Patrick", 
+        "user_url": null, 
+        "lastname": "Richardson", 
+        "created": "2014-05-27T15:17:26.928Z", 
+        "is_active": true, 
+        "site": 22, 
+        "phone": "", 
+        "is_staff": true, 
+        "last_login": "2014-05-27T15:25:28.998Z", 
+        "timezone": "America/New_York", 
+        "is_admin": true, 
+        "password": "pbkdf2_sha256$10000$mEYJIb6cxVqC$cA/LHCpZdYPGvnSs9wCHrgyyenBrK8Y/diHBKhFOnO0=", 
+        "email": "parichar@akamai.com", 
+        "enacted": null
+    }
+},
+{
     "pk": 1, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-23T22:03:14.097Z", 
+        "updated": "2014-05-29T22:27:54.890Z", 
         "created": "2014-05-23T22:03:14.097Z", 
         "dashboardView": 1, 
         "user": 14, 
-        "order": 0, 
+        "order": 1, 
         "enacted": null
     }
 },
@@ -1218,11 +1299,11 @@
     "pk": 2, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-23T22:03:14.102Z", 
+        "updated": "2014-05-29T22:27:54.910Z", 
         "created": "2014-05-23T22:03:14.102Z", 
         "dashboardView": 2, 
         "user": 14, 
-        "order": 1, 
+        "order": 2, 
         "enacted": null
     }
 },
@@ -1230,11 +1311,11 @@
     "pk": 3, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-23T22:03:14.106Z", 
+        "updated": "2014-05-29T22:27:54.919Z", 
         "created": "2014-05-23T22:03:14.106Z", 
         "dashboardView": 4, 
         "user": 14, 
-        "order": 2, 
+        "order": 3, 
         "enacted": null
     }
 },
@@ -1242,11 +1323,11 @@
     "pk": 4, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-23T22:03:14.110Z", 
+        "updated": "2014-05-29T22:27:54.927Z", 
         "created": "2014-05-23T22:03:14.110Z", 
         "dashboardView": 6, 
         "user": 14, 
-        "order": 3, 
+        "order": 4, 
         "enacted": null
     }
 },
@@ -1254,20 +1335,140 @@
     "pk": 5, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-23T22:03:14.115Z", 
+        "updated": "2014-05-29T22:27:54.936Z", 
         "created": "2014-05-23T22:03:14.115Z", 
         "dashboardView": 3, 
         "user": 14, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 24, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-27T15:31:48.271Z", 
+        "created": "2014-05-27T15:31:48.271Z", 
+        "dashboardView": 3, 
+        "user": 16, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 25, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-27T15:31:48.316Z", 
+        "created": "2014-05-27T15:31:48.316Z", 
+        "dashboardView": 2, 
+        "user": 16, 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 26, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-27T15:31:48.366Z", 
+        "created": "2014-05-27T15:31:48.366Z", 
+        "dashboardView": 7, 
+        "user": 16, 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 36, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-31T00:22:19.941Z", 
+        "created": "2014-05-31T00:22:19.941Z", 
+        "dashboardView": 3, 
+        "user": 7, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 37, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-31T00:22:19.987Z", 
+        "created": "2014-05-31T00:22:19.987Z", 
+        "dashboardView": 1, 
+        "user": 7, 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 38, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-31T00:22:20.028Z", 
+        "created": "2014-05-31T00:22:20.028Z", 
+        "dashboardView": 2, 
+        "user": 7, 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 39, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-31T00:22:20.069Z", 
+        "created": "2014-05-31T00:22:20.069Z", 
+        "dashboardView": 7, 
+        "user": 7, 
+        "order": 3, 
+        "enacted": null
+    }
+},
+{
+    "pk": 40, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-05-31T00:22:20.111Z", 
+        "created": "2014-05-31T00:22:20.111Z", 
+        "dashboardView": 4, 
+        "user": 7, 
         "order": 4, 
         "enacted": null
     }
 },
 {
-    "pk": 6, 
+    "pk": 41, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-26T23:12:24.855Z", 
-        "created": "2014-05-26T23:12:24.855Z", 
+        "updated": "2014-06-17T11:07:32.639Z", 
+        "created": "2014-06-17T11:07:32.639Z", 
+        "dashboardView": 3, 
+        "user": 1, 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 42, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-17T11:07:32.776Z", 
+        "created": "2014-06-17T11:07:32.776Z", 
+        "dashboardView": 6, 
+        "user": 1, 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 43, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:01.961Z", 
+        "created": "2014-06-19T23:54:01.961Z", 
         "dashboardView": 3, 
         "user": 8, 
         "order": 0, 
@@ -1275,14 +1476,86 @@
     }
 },
 {
-    "pk": 7, 
+    "pk": 44, 
     "model": "core.userdashboardview", 
     "fields": {
-        "updated": "2014-05-26T23:12:24.895Z", 
-        "created": "2014-05-26T23:12:24.895Z", 
+        "updated": "2014-06-19T23:54:02.007Z", 
+        "created": "2014-06-19T23:54:02.006Z", 
         "dashboardView": 7, 
         "user": 8, 
         "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 45, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.056Z", 
+        "created": "2014-06-19T23:54:02.056Z", 
+        "dashboardView": 6, 
+        "user": 8, 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 46, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.106Z", 
+        "created": "2014-06-19T23:54:02.106Z", 
+        "dashboardView": 4, 
+        "user": 8, 
+        "order": 3, 
+        "enacted": null
+    }
+},
+{
+    "pk": 47, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.156Z", 
+        "created": "2014-06-19T23:54:02.156Z", 
+        "dashboardView": 1, 
+        "user": 8, 
+        "order": 4, 
+        "enacted": null
+    }
+},
+{
+    "pk": 48, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.207Z", 
+        "created": "2014-06-19T23:54:02.207Z", 
+        "dashboardView": 2, 
+        "user": 8, 
+        "order": 5, 
+        "enacted": null
+    }
+},
+{
+    "pk": 49, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.248Z", 
+        "created": "2014-06-19T23:54:02.248Z", 
+        "dashboardView": 8, 
+        "user": 8, 
+        "order": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 50, 
+    "model": "core.userdashboardview", 
+    "fields": {
+        "updated": "2014-06-19T23:54:02.349Z", 
+        "created": "2014-06-19T23:54:02.349Z", 
+        "dashboardView": 9, 
+        "user": 8, 
+        "order": 7, 
         "enacted": null
     }
 },
@@ -1567,7 +1840,7 @@
     "pk": 16, 
     "model": "core.slice", 
     "fields": {
-        "updated": "2014-05-20T23:46:20.205Z", 
+        "updated": "2014-05-27T14:05:40.950Z", 
         "imagePreference": "Hadoop 2.4.0", 
         "name": "Analytics", 
         "service": null, 
@@ -1580,7 +1853,7 @@
         "omf_friendly": false, 
         "network": "Private Only", 
         "max_slivers": 10, 
-        "mountDataSets": "GenBank", 
+        "mountDataSets": "GenBank-11-2013", 
         "creator": 8, 
         "enacted": null
     }
@@ -8027,6 +8300,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8046,6 +8320,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8065,6 +8340,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8084,6 +8360,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8103,25 +8380,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 45, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 624, 
-        "instance_name": "instance-000003ed", 
-        "updated": "2013-12-12T17:55:32.544Z", 
-        "slice": 4, 
-        "deploymentNetwork": 8, 
-        "name": "node31.gt.vicci.org", 
-        "created": "2013-12-12T17:55:32.544Z", 
-        "ip": "130.207.98.40", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8141,6 +8400,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8160,6 +8420,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8179,6 +8440,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8198,6 +8460,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8217,6 +8480,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8236,6 +8500,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8255,6 +8520,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8274,6 +8540,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8293,6 +8560,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8312,44 +8580,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 56, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 559, 
-        "instance_name": "instance-000003f8", 
-        "updated": "2013-12-12T17:55:32.726Z", 
-        "slice": 4, 
-        "deploymentNetwork": 7, 
-        "name": "node36.princeton.vicci.org", 
-        "created": "2013-12-12T17:55:32.726Z", 
-        "ip": "128.112.171.90", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 57, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 560, 
-        "instance_name": "instance-000003f9", 
-        "updated": "2013-12-12T17:55:32.743Z", 
-        "slice": 4, 
-        "deploymentNetwork": 7, 
-        "name": "node37.princeton.vicci.org", 
-        "created": "2013-12-12T17:55:32.743Z", 
-        "ip": "128.112.171.92", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8369,6 +8600,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8388,6 +8620,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8407,6 +8640,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8426,6 +8660,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8445,6 +8680,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8464,6 +8700,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8483,6 +8720,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8502,6 +8740,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8521,6 +8760,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8540,6 +8780,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8559,6 +8800,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8578,6 +8820,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8597,6 +8840,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8616,6 +8860,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8635,6 +8880,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8654,44 +8900,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 74, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 468, 
-        "instance_name": "instance-0000040a", 
-        "updated": "2013-12-12T17:55:33.025Z", 
-        "slice": 4, 
-        "deploymentNetwork": 6, 
-        "name": "node15.washington.vicci.org", 
-        "created": "2013-12-12T17:55:33.025Z", 
-        "ip": "128.95.1.120", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 75, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 469, 
-        "instance_name": "instance-0000040b", 
-        "updated": "2013-12-12T17:55:33.041Z", 
-        "slice": 4, 
-        "deploymentNetwork": 6, 
-        "name": "node16.washington.vicci.org", 
-        "created": "2013-12-12T17:55:33.041Z", 
-        "ip": "128.95.1.121", 
-        "image": 1, 
-        "creator": 8, 
-        "numberCores": 1, 
-        "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8711,6 +8920,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8730,6 +8940,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8749,6 +8960,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8768,6 +8980,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8787,6 +9000,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8806,6 +9020,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8825,6 +9040,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8844,6 +9060,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8863,6 +9080,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8882,6 +9100,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8901,6 +9120,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8920,6 +9140,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8939,6 +9160,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8958,6 +9180,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8977,6 +9200,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -8996,6 +9220,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9015,6 +9240,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9034,6 +9260,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9053,6 +9280,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9072,6 +9300,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9091,6 +9320,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9110,6 +9340,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9129,6 +9360,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9148,6 +9380,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9167,6 +9400,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9186,6 +9420,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9205,6 +9440,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9224,6 +9460,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9243,6 +9480,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9262,6 +9500,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9281,6 +9520,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9300,6 +9540,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9319,6 +9560,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9338,6 +9580,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9357,6 +9600,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9376,6 +9620,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9395,6 +9640,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9414,6 +9660,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9433,6 +9680,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9452,6 +9700,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9471,6 +9720,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9490,6 +9740,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9509,6 +9760,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9528,6 +9780,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9547,6 +9800,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9566,6 +9820,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9585,6 +9840,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9604,6 +9860,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9623,6 +9880,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9642,6 +9900,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9661,6 +9920,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9680,6 +9940,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9699,6 +9960,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9718,6 +9980,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9737,6 +10000,7 @@
         "creator": 8, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9756,6 +10020,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9775,6 +10040,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9794,6 +10060,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9813,6 +10080,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9832,6 +10100,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9851,6 +10120,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9870,6 +10140,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9889,6 +10160,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9908,6 +10180,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9927,6 +10200,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9946,6 +10220,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9965,6 +10240,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -9984,6 +10260,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10003,6 +10280,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10022,6 +10300,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10041,6 +10320,7 @@
         "creator": 8, 
         "numberCores": 0, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10060,6 +10340,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10079,6 +10360,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10098,6 +10380,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10117,6 +10400,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10136,6 +10420,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10155,6 +10440,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10174,6 +10460,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10193,6 +10480,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10212,6 +10500,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10231,6 +10520,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10250,6 +10540,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10269,6 +10560,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10288,6 +10580,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10307,6 +10600,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10326,6 +10620,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10345,6 +10640,7 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10364,6 +10660,187 @@
         "creator": 7, 
         "numberCores": 1, 
         "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 363, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 663, 
+        "instance_name": null, 
+        "updated": "2014-05-27T15:29:38.516Z", 
+        "slice": 4, 
+        "deploymentNetwork": 8, 
+        "name": "node70.gt.vicci.org", 
+        "created": "2014-05-27T15:29:38.516Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 365, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 661, 
+        "instance_name": null, 
+        "updated": "2014-05-27T15:30:14.655Z", 
+        "slice": 4, 
+        "deploymentNetwork": 8, 
+        "name": "node68.gt.vicci.org", 
+        "created": "2014-05-27T15:30:14.655Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 366, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 593, 
+        "instance_name": null, 
+        "updated": "2014-05-28T10:01:53.533Z", 
+        "slice": 4, 
+        "deploymentNetwork": 7, 
+        "name": "node70.princeton.vicci.org", 
+        "created": "2014-05-28T10:01:53.533Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 368, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 453, 
+        "instance_name": null, 
+        "updated": "2014-05-28T12:15:02.758Z", 
+        "slice": 4, 
+        "deploymentNetwork": 5, 
+        "name": "node70.stanford.vicci.org", 
+        "created": "2014-05-28T12:15:02.758Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 369, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 452, 
+        "instance_name": null, 
+        "updated": "2014-05-28T12:15:49.381Z", 
+        "slice": 4, 
+        "deploymentNetwork": 5, 
+        "name": "node69.stanford.vicci.org", 
+        "created": "2014-05-28T12:15:49.381Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 370, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 660, 
+        "instance_name": null, 
+        "updated": "2014-05-28T12:44:22.130Z", 
+        "slice": 4, 
+        "deploymentNetwork": 8, 
+        "name": "node67.gt.vicci.org", 
+        "created": "2014-05-28T12:44:22.130Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 371, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 523, 
+        "instance_name": null, 
+        "updated": "2014-05-28T12:51:19.616Z", 
+        "slice": 4, 
+        "deploymentNetwork": 6, 
+        "name": "node70.washington.vicci.org", 
+        "created": "2014-05-28T12:51:19.616Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 16, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 372, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 522, 
+        "instance_name": null, 
+        "updated": "2014-05-29T17:07:47.912Z", 
+        "slice": 4, 
+        "deploymentNetwork": 6, 
+        "name": "node69.washington.vicci.org", 
+        "created": "2014-05-29T17:07:47.912Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 8, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 373, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 733, 
+        "instance_name": null, 
+        "updated": "2014-06-04T00:34:59.093Z", 
+        "slice": 4, 
+        "deploymentNetwork": 9, 
+        "name": "node70.mpisws.vicci.org", 
+        "created": "2014-06-04T00:34:59.093Z", 
+        "ip": null, 
+        "image": 1, 
+        "creator": 7, 
+        "numberCores": 1, 
+        "instance_id": null, 
+        "userData": null, 
         "enacted": null
     }
 },
@@ -10543,11 +11020,11 @@
         "description": "Connect a sliver to the public network via NAT, with port forwarding", 
         "created": "2013-12-09T14:17:29.551Z", 
         "sharedNetworkName": "nat-net", 
-        "updated": "2014-05-12T19:22:45.473Z", 
+        "updated": "2014-05-28T14:03:07.786Z", 
         "visibility": "private", 
         "name": "Public shared IPv4", 
         "translation": "NAT", 
-        "sharedNetworkId": "51d641ba-9e1e-46f5-8069-bf4a929f851f", 
+        "sharedNetworkId": "", 
         "enacted": "2014-05-12T19:23:54Z"
     }
 },
@@ -50691,6 +51168,38 @@
     }
 },
 {
+    "pk": 8, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-27T14:05:41.026Z", 
+        "description": "private volume for Analytics", 
+        "created": "2014-05-27T14:05:41.025Z", 
+        "blocksize": 61440, 
+        "default_gateway_caps": "7", 
+        "private": true, 
+        "name": "private_Analytics", 
+        "enacted": null, 
+        "archive": false, 
+        "owner_id": 7
+    }
+},
+{
+    "pk": 9, 
+    "model": "syndicate.volume", 
+    "fields": {
+        "updated": "2014-05-29T22:00:50.320Z", 
+        "description": "This is the bio5 demo volume", 
+        "created": "2014-05-29T22:00:25.032Z", 
+        "blocksize": 102400, 
+        "default_gateway_caps": "7", 
+        "private": true, 
+        "name": "demo-bio5", 
+        "enacted": null, 
+        "archive": false, 
+        "owner_id": 6
+    }
+},
+{
     "pk": 1, 
     "model": "syndicate.volumeaccessright", 
     "fields": {
@@ -50703,22 +51212,34 @@
     }
 },
 {
-    "pk": 11, 
-    "model": "cassandra.cassandraservice", 
+    "pk": 1, 
+    "model": "syndicate.volumeslice", 
     "fields": {
-        "clusterSize": 1, 
-        "replicationFactor": 1
+        "updated": "2014-05-27T14:05:41.084Z", 
+        "slice_id": 16, 
+        "created": "2014-05-27T14:05:41.084Z", 
+        "peer_portnum": 1026, 
+        "gateway_caps": "3", 
+        "volume_id": 8, 
+        "replicate_portnum": 1025, 
+        "credentials_blob": null, 
+        "enacted": null
     }
 },
 {
-    "pk": 13, 
-    "model": "nagios.nagiosservice", 
-    "fields": {}
-},
-{
-    "pk": 12, 
-    "model": "kairos.kairosdbservice", 
-    "fields": {}
+    "pk": 2, 
+    "model": "syndicate.volumeslice", 
+    "fields": {
+        "updated": "2014-05-29T22:00:50.340Z", 
+        "slice_id": 14, 
+        "created": "2014-05-29T22:00:50.340Z", 
+        "peer_portnum": 4444, 
+        "gateway_caps": "7", 
+        "volume_id": 9, 
+        "replicate_portnum": 5555, 
+        "credentials_blob": null, 
+        "enacted": null
+    }
 },
 {
     "pk": 1, 
