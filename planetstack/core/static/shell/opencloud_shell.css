@@ -3,11 +3,11 @@
   margin:50px auto 50px auto;
   border: 1px solid black;
   height: 400px;
-  background: black;
+  background: #002b36;
   overflow: scroll;
 }
 
-#terminal div.line {
+#terminal div.terminal_line {
   width: 940px;
   margin-bottom: 5px;
 }
@@ -18,10 +18,10 @@
   border: none;
   display: inline;
   padding: 2px;
-  background: black;
-  color: #45FF17;
-  font-size: 18px;
-  font-family: Monaco, monospace;
+  background: #002b36;
+  color: #839496;
+  font-size: 15px;
+  font-family: Menlo, Monaco, 'Andale Mono', 'lucida console', 'Courier New', monospace;
   border-radius:0;
 }
 
@@ -31,17 +31,17 @@
 
 #terminal p {
   margin: 2px;
-  color: #45FF17;
-  font-size: 18px;
-  font-family: Monaco, serif;
+  color: #839496;
+  font-size: 15px;
+  font-family: Menlo, Monaco, 'Andale Mono', 'lucida console', 'Courier New', monospace;
 }
 
 .terminal_help {
   margin: 2px;
-  color: #45FF17;
-  font-size: 18px;
-  font-family: Monaco, serif;
-  background:black;
+  color: #839496;
+  font-size: 15px;
+  font-family: Menlo, Monaco, 'Andale Mono', 'lucida console', 'Courier New', monospace;
+  background: #002b36;
   padding:0;
   line-height:normal;
 }
@@ -51,7 +51,7 @@
 }
 
 #terminal span.prompt {
-  color: #45FF17;
+  color: #839496;
   font-size: 16px;
   margin-left: 2px;
 }

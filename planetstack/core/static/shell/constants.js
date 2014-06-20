@@ -14,7 +14,7 @@ var DefaultInputHtml = function(stack) {
         linePrompt += "<span class='prompt'>.</span>";
       }
     }
-    return "<div class='line'>" +
+    return "<div class='terminal_line'>" +
            linePrompt +
            "<input type='text' class='readLine active' />" +
            "</div>";
