@@ -55,3 +55,31 @@
   font-size: 16px;
   margin-left: 2px;
 }
+
+/* an experiment with syntax hilighting */
+
+.terminal_string {
+    /*color:green; */
+    color:#859900;
+}
+
+.terminal_number {
+    /*color:darkorange;*/
+    color:#d33682;
+}
+
+.terminal_boolean {
+    /*color:blue;*/
+    color:#7777A0;
+}
+
+.terminal_null {
+    /*color:magenta;*/
+    color:#A000A0;
+}
+
+.terminal_key {
+    /*color:red;*/
+    color:#268bd2;
+}
+
