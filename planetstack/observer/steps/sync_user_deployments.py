@@ -6,7 +6,8 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import SiteDeployments, Deployment
-from core.models.user import User, UserDeployments
+from core.models.user import User
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)

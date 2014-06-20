@@ -3,8 +3,7 @@ import base64
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import *
-from core.models.user import User, UserDeployments    
+from core.models import User, UserDeployments, SitePrivilege, SiteDeployments   
 
 class SyncSitePrivileges(OpenStackSyncStep):
     requested_interval=0

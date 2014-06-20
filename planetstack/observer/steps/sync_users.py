@@ -4,7 +4,8 @@ import hashlib
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.user import User, UserDeployments
+from core.models.user import User
+from core.models.userdeployments import  UserDeployments
 
 class SyncUsers(OpenStackSyncStep):
     provides=[User]
