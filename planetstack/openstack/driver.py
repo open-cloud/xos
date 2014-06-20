@@ -24,23 +24,30 @@ class OpenStackDriver:
 
         self.enabled = manager_enabled
         self.has_openstack = has_openstack
+        self.deployment = None
+        self.admin_user = None
 
     def client_driver(self, caller=None, tenant=None, deployment=None):
+        admin_driver = self.admin_driver(tenant=tenant, deployment=deployment)
         if caller:
             auth = {'username': caller.email,
                     'password': hashlib.md5(caller.password).hexdigest()[:6],
                     'tenant': tenant}
-            client = OpenStackClient(deployment=deployment, **auth)
+            client = OpenStackClient(deployment=admin_driver.deployment, **auth)
         else:
-            client = OpenStackClient(tenant=tenant, deployment=deployment)
+            client = OpenStackClient(tenant=tenant, deployment=admin_driver.deployment)
 
         driver = OpenStackDriver(client=client)
+        driver.admin_user = admin_driver.admin_user
+        driver.deployment = admin_driver.deployment
         return driver
 
     def admin_driver(self, tenant=None, deployment=None):
         deployment = Deployment.objects.get(name=deployment)
         client = OpenStackClient(tenant=tenant, deployment=deployment)
         driver = OpenStackDriver(client=client)
+        driver.admin_user = client.keystone.users.find(name=deployment.admin_user)
+        driver.deployment = deployment
         return driver    
 
     def create_role(self, name):

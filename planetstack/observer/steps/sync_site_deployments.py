@@ -21,7 +21,7 @@ class SyncSiteDeployments(OpenStackSyncStep):
             site_deployment.tenant_id = tenant.id
             site_deployment.save()
         elif site_deployment.site.id and site_deployment.tenant_id:
-            driver = self.driver.admin_driver(deployment=site_deployment.name)
+            driver = self.driver.admin_driver(deployment=site_deployment.deployment.name)
             driver.update_tenant(site_deployment.tenant_id,
                                  description=site_deployment.site.name,
                                  enabled=site_deployment.site.enabled)
