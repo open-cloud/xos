@@ -1,6 +1,7 @@
 import commands
 import hashlib
 from planetstack.config import Config
+from core.models import Deployment
 
 try:
     from openstack.client import OpenStackClient
@@ -12,19 +13,14 @@ manager_enabled = Config().api_nova_enabled
 
 class OpenStackDriver:
 
-    def __init__(self, config = None, client=None, deployment=None):
+    def __init__(self, config = None, client=None):
         if config:
             self.config = Config(config)
         else:
             self.config = Config()
 
-        self.admin_client = OpenStackClient(deployment=deployment)
-        self.admin_user = self.admin_client.keystone.users.find(name=self.admin_client.keystone.username)
-
         if client:
             self.shell = client
-        else:
-            self.shell = OpenStackClient(deployment=deployment)
 
         self.enabled = manager_enabled
         self.has_openstack = has_openstack
@@ -38,12 +34,13 @@ class OpenStackDriver:
         else:
             client = OpenStackClient(tenant=tenant, deployment=deployment)
 
-        driver = OpenStackDriver(client=client, deployment=deployment)
+        driver = OpenStackDriver(client=client)
         return driver
 
     def admin_driver(self, tenant=None, deployment=None):
+        deployment = Deployment.objects.get(name=deployment)
         client = OpenStackClient(tenant=tenant, deployment=deployment)
-        driver = OpenStackDriver(client=client, deployment=deployment)
+        driver = OpenStackDriver(client=client)
         return driver    
 
     def create_role(self, name):
