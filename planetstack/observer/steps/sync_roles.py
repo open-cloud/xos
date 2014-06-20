@@ -4,9 +4,8 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.role import Role
-from core.models.site import SiteRole
+from core.models.site import SiteRole, Deployment, DeploymentRole
 from core.models.slice import SliceRole
-from core.models.deployment import Deployment, DeploymentRole
 
 class SyncRoles(OpenStackSyncStep):
     provides=[Role]

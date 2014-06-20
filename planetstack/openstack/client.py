@@ -42,7 +42,7 @@ def parse_novarc(filename):
 
 class Client:
     def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, admin=True, *args, **kwds):
-        
+       
         self.has_openstack = has_openstack
         self.url = deployment.auth_url
         if admin:
@@ -193,7 +193,7 @@ class OpenStackClient:
         self.keystone_db = KeystoneDB()
         self.glance = GlanceClient(*args, **kwds)
         
-        self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id)
+        self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)

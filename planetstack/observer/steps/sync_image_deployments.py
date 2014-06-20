@@ -4,8 +4,8 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.deployment import Deployment
-from core.models.image import Image, ImageDeployments
+from core.models import Deployment
+from core.models import Image, ImageDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)

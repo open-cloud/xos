@@ -6,8 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.node import Node
-from core.models.deployment import Deployment
-from core.models.site import Site
+from core.models.site import Site, Deployment
 
 class SyncNodes(OpenStackSyncStep):
     provides=[Node]
