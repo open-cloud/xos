@@ -95,7 +95,7 @@ ReadLine.prototype = {
   },
 
   insertResponse: function(response) {
-    if((response.length < 1) || (response=='"donotprintme"')) {
+    if((response.length < 1) || (response=='"donotprintme"') || (response=='donotprintme')) {
       this.activeLine.parent().append("<p class='response'></p>");
     }
     else {
