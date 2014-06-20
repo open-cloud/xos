@@ -354,8 +354,39 @@ MongoHandler.prototype = {
   }
 };
 
+function replaceAll(find, replace, str) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
+/* stackoverflow: http://stackoverflow.com/questions/4810841/how-can-i-pretty-print-json-using-javascript */
+function syntaxHighlight(json) {
+    if ( json.hasOwnProperty("__str__")) {
+        return syntaxHighlight(json.__str__());
+    }
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, "\t");
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'terminal_number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'terminal_key';
+            } else {
+                cls = 'terminal_string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'terminal_boolean';
+        } else if (/null/.test(match)) {
+            cls = 'terminal_null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
 $htmlFormat = function(obj) {
-  result=tojson(obj, ' ', ' ', true);
+  //JSON.stringify(obj,undefined,2)
+  result=replaceAll("\t","&nbsp;",replaceAll("\n","<br>",syntaxHighlight(obj))); //tojson(obj, ' ', ' ', true);
   return result;
 }
 
