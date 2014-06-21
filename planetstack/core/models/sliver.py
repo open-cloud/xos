@@ -44,8 +44,9 @@ class Sliver(PlCoreBase):
             self.creator = self.caller
         self.deploymentNetwork = self.node.deployment
 
-        if not self.deploymentNetwork.test_acl(slice=self.slice):
-            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.deploymentNetwork.name, self.slice.name))
+# XXX smbaker - disabled for now, was causing fault in tenant view create slice
+#        if not self.deploymentNetwork.test_acl(slice=self.slice):
+#            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.deploymentNetwork.name, self.slice.name))
 
         super(Sliver, self).save(*args, **kwds)
 
