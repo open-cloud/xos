@@ -3242,6 +3242,225 @@
     }
 },
 {
+    "pk": 2, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-04-23T04:10:59.634Z", 
+        "name": "Ubuntu 12.04 LTS", 
+        "created": "2014-04-23T04:10:59.634Z", 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-04-23T04:11:24.968Z", 
+        "name": "Hadoop 2.4.0", 
+        "created": "2014-04-23T04:11:24.968Z", 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-04-23T04:11:37.141Z", 
+        "name": "MPI 1.8", 
+        "created": "2014-04-23T04:11:37.141Z", 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:49:59.394Z", 
+        "created": "2014-06-21T00:49:59.394Z", 
+        "image": 2, 
+        "deployment": 8, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:49:59.405Z", 
+        "created": "2014-06-21T00:49:59.405Z", 
+        "image": 3, 
+        "deployment": 8, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:49:59.406Z", 
+        "created": "2014-06-21T00:49:59.406Z", 
+        "image": 4, 
+        "deployment": 8, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:09.813Z", 
+        "created": "2014-06-21T00:50:09.813Z", 
+        "image": 2, 
+        "deployment": 9, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:09.815Z", 
+        "created": "2014-06-21T00:50:09.815Z", 
+        "image": 3, 
+        "deployment": 9, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:09.816Z", 
+        "created": "2014-06-21T00:50:09.816Z", 
+        "image": 4, 
+        "deployment": 9, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:22.646Z", 
+        "created": "2014-06-21T00:50:22.646Z", 
+        "image": 2, 
+        "deployment": 7, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:22.648Z", 
+        "created": "2014-06-21T00:50:22.648Z", 
+        "image": 3, 
+        "deployment": 7, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:22.649Z", 
+        "created": "2014-06-21T00:50:22.649Z", 
+        "image": 4, 
+        "deployment": 7, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 10, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:35.460Z", 
+        "created": "2014-06-21T00:50:35.460Z", 
+        "image": 2, 
+        "deployment": 6, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 11, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:35.461Z", 
+        "created": "2014-06-21T00:50:35.461Z", 
+        "image": 3, 
+        "deployment": 6, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 12, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:35.462Z", 
+        "created": "2014-06-21T00:50:35.462Z", 
+        "image": 4, 
+        "deployment": 6, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 13, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:47.991Z", 
+        "created": "2014-06-21T00:50:47.991Z", 
+        "image": 2, 
+        "deployment": 5, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 14, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:47.993Z", 
+        "created": "2014-06-21T00:50:47.993Z", 
+        "image": 3, 
+        "deployment": 5, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 15, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-06-21T00:50:47.994Z", 
+        "created": "2014-06-21T00:50:47.994Z", 
+        "image": 4, 
+        "deployment": 5, 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
     "pk": 384, 
     "model": "core.node", 
     "fields": {
