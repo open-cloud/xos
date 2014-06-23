@@ -157,13 +157,15 @@ MongoHandler.prototype = {
 
     this._currentCommand += " " + this._massageTokens(tokens);
     if(this._shouldEvaluateCommand(tokens))  {
-        opencloud = new OpenCloud();
+        xos = new OpenCloud();
         print = this.print;
 
         // So this eval statement is the heart of the REPL.
         var result = eval(this._currentCommand.trim());
         if(result === undefined) {
           throw('result is undefined');
+        } else if (typeof(result) === 'function') {
+          throw('result is a function. did you mean to call it?');
         } else {
           result = $htmlFormat(result);
         }
@@ -249,17 +251,17 @@ MongoHandler.prototype = {
   // help command
   _help: function() {
       return PTAG('HELP') +
-             PTAG('opencloud                                 list opencloud API object types') +
-             PTAG('opencloud.slices                          list methods to can call on slices') +
-             PTAG('opencloud.slices.all()                    get all slices') +
-             PTAG('opencloud.slices.filter({key: "value"})   filter using dictionary') +
-             PTAG('opencloud.slices.get({key: "value"}))     get using dictionary')
+             PTAG('xos                                 list xos API object types') +
+             PTAG('xos.slices                          list methods to can call on slices') +
+             PTAG('xos.slices.all()                    get all slices') +
+             PTAG('xos.slices.filter({key: "value"})   filter using dictionary') +
+             PTAG('xos.slices.get({key: "value"})      get using dictionary')
 
   },
 
   _tutorial: function() {
     this._tutorialPtr = 0;
-    return PTAG("This is a self-guided tutorial on the OpenCloud shell.") +
+    return PTAG("This is a self-guided tutorial on the xos shell.") +
            PTAG("The tutorial is simple, more or less a few basic commands to try.") +
            PTAG("To go directly to any part tutorial, enter one of the commands t0, t1, t2...t10") +
            PTAG("Otherwise, use 'next' and 'back'. Start by typing 'next' and pressing enter.");
@@ -302,10 +304,10 @@ MongoHandler.prototype = {
     this._tutorialPtr = 2;
     return PTAG('2. List some objects') +
            PTAG('Try these:') +
-           PTAG('    opencloud.slices.all();') +
-           PTAG('    opencloud.slivers.all();') +
-           PTAG('    opencloud.sites.all();') +
-           PTAG('    opencloud.nodes.all();');
+           PTAG('    xos.slices.all();') +
+           PTAG('    xos.slivers.all();') +
+           PTAG('    xos.sites.all();') +
+           PTAG('    xos.nodes.all();');
 
   },
 
@@ -313,17 +315,17 @@ MongoHandler.prototype = {
     this._tutorialPtr = 3;
     return PTAG('3. Filter some objects') +
            PTAG('Try these:') +
-           PTAG('    opencloud.slices.get({name: "HyperCache"});');
-           PTAG('    opencloud.nodes.filter({site_id: opencloud.sites.get({name: "Princeton"})["id"]});');
+           PTAG('    xos.slices.get({name: "HyperCache"});');
+           PTAG('    xos.nodes.filter({site_id: xos.sites.get({name: "Princeton"})["id"]});');
 
   },
 
   _t4: function() {
     this._tutorialPtr = 4;
-    return PTAG('4. Available OpenCloud objects and methods') +
+    return PTAG('4. Available xos objects and methods') +
            PTAG('Try these:') +
-           PTAG('    opencloud;') +
-           PTAG('    opencloud.nodes;');
+           PTAG('    xos;') +
+           PTAG('    xos.nodes;');
 
   },
 
