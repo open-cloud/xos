@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.10
-Release: 4
+Version: 1.0.20
+Release: 1
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ requires: GeoIP
 # Empty section.
 
 %pre
-pip-python install django==1.5
+#pip-python install django==1.5
 pip-python install djangorestframework
 pip-python install markdown  # Markdown support for the browseable API.
 pip-python install pyyaml    # YAML content-type support.
@@ -60,8 +60,10 @@ if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
 fi
 
 if [ "$1" == 2 ] ; then
-    echo "UPGRADE - saving current state"
-    /opt/planetstack/scripts/opencloud dumpdata
+    if [[ -e /opt/planetstack/scripts/opencloud ]]; then
+        echo "UPGRADE - saving current state"
+        /opt/planetstack/scripts/opencloud dumpdata
+    fi
 fi
 
 %install
@@ -81,6 +83,7 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
 %config /opt/planetstack/plstackapi_config
+%config /opt/planetstack/deployment_auth.py
 
 %post
 if [ "$1" == 1 ] ; then
