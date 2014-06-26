@@ -141,10 +141,16 @@ def getCDNOperatorData(randomizeData = False, wait=True):
         cpu=float(max_cpu)/100.0
         hotness = max(0.0, ((cpu*RED_LOAD) - BLUE_LOAD)/(RED_LOAD-BLUE_LOAD))
 
+        try:
+           lat=float(site.location.longitude)
+           long=float(site.location.longitude)
+        except:
+           lat=0
+           long=0
+
         # format it to what that CDN Operations View is expecting
-        new_row = {"lat": float(site.location.longitude),
-               "long": float(site.location.longitude),
-               "lat": float(site.location.latitude),
+        new_row = {"lat": lat,
+               "long": long,
                "health": 0,
                "numNodes": int(site.nodes.count()),
                "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),     # measured number of slivers, from bigquery statistics
