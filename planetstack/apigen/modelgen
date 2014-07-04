@@ -113,7 +113,11 @@ class Generator(dict):
 					cobj = copy.deepcopy(obj)
 					cobj.multi=True
 					refobj.refs.append(cobj)
-				
+
+                                # deal with upgradeFrom_rel_+
+                                if (related_name.endswith("+")):
+                                    continue
+
 				if (related_name!='+' and related_name.lower()!=str(obj).lower()):
 					cobj = copy.deepcopy(obj)
 					cobj.multi = True
