@@ -45,6 +45,21 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = {{ object.camel }}
 		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+
+class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	{% for ref in object.refs %}
+	{% if ref.multi %}
+	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+	{% else %}
+	{{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
+	{% endif %}
+	{% endfor %}
+	class Meta:
+		model = {{ object.camel }}
+		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+
+
 {% endfor %}
 
 serializerLookUp = { 
@@ -60,6 +75,15 @@ serializerLookUp = {
 class {{ object.camel }}List(generics.ListCreateAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
+    id_serializer_class = {{ object.camel }}IdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
     
     def get_queryset(self):
         return {{ object.camel }}.select_by_user(self.request.user)
