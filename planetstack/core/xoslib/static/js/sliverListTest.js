@@ -110,7 +110,7 @@ window.Router = Backbone.Router.extend({
 $(function(){
     window.app = window.app || {};
     app.router = new Router();
-    app.slivers = XOSLib.slivers; //new XOSLib.slivers();
+    app.slivers = xos.slivers; //new XOSLib.slivers();
     app.list = new ListApp({
         el: $("#app"),
         collection: app.slivers

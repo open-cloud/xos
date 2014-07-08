@@ -1,4 +1,5 @@
 SLIVER_API = "/plstackapi/slivers/";
+SLICE_API = "/plstackapi/slices/";
 
 XOSModel = Backbone.Model.extend({
     /* from backbone-tastypie.js */
@@ -93,6 +94,11 @@ function xoslib() {
     this.sliverCollection = XOSCollection.extend({ urlRoot: SLIVER_API,
                                                    model: this.sliver});
     this.slivers = new this.sliverCollection();
+
+    this.slice = XOSModel.extend({ urlRoot: SLICE_API });
+    this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
+                                                   model: this.slice});
+    this.slices = new this.sliceCollection();
 };
 
-XOSLib = new xoslib();
+xos = new xoslib();
