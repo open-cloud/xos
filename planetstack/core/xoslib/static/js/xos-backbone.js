@@ -1,6 +1,34 @@
 SLIVER_API = "/plstackapi/slivers/";
 
+XOSModel = Backbone.Model.extend({
+    /* from backbone-tastypie.js */
+    idAttribute: 'resource_uri',
+
+    /* from backbone-tastypie.js */
+    url: function() {
+		// Use the id if possible
+		var url = this.id;
+
+		// If there's no idAttribute, try to have the collection construct a url. Fallback to 'urlRoot'.
+		if ( !url ) {
+			url = this.collection && ( _.isFunction( this.collection.url ) ? this.collection.url() : this.collection.url );
+                        console.log(url);
+			url = url || this.urlRoot;
+		}
+
+		url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
+
+                url && ( url += "?no_hyperlinks=1" );
+
+		return url;
+	},
+});
+
 XOSCollection = Backbone.Collection.extend({
+    objects: function() {
+                return this.models.map(function(element) { return element.attributes; });
+             },
+
     maybeFetch: function(options){
             // Helper function to fetch only if this collection has not been fetched before.
         if(this._fetched){
@@ -32,18 +60,39 @@ XOSCollection = Backbone.Collection.extend({
             return;
         }
 
-        model = new Sliver({
+        model = new this.model({
             resource_uri: id
         });
 
         model.fetch(options);
-    }
+    },
+
+    /* from backbone-tastypie.js */
+    url: function( models ) {
+		var url = this.urlRoot || ( models && models.length && models[0].urlRoot );
+		url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
+
+		// Build a url to retrieve a set of models. This assume the last part of each model's idAttribute
+		// (set to 'resource_uri') contains the model's id.
+		if ( models && models.length ) {
+			var ids = _.map( models, function( model ) {
+					var parts = _.compact( model.id.split('/') );
+					return parts[ parts.length - 1 ];
+				});
+			url += 'set/' + ids.join(';') + '/';
+		}
+
+                url && ( url += "?no_hyperlinks=1" );
+
+		return url;
+	},
 });
 
 function xoslib() {
-    this.sliver = Backbone.Model.extend({ urlRoot: SLIVER_API });
-    this.slivers = XOSCollection.extend({ urlRoot: SLIVER_API,
-                                    model: this.sliver});
+    this.sliver = XOSModel.extend({ urlRoot: SLIVER_API });
+    this.sliverCollection = XOSCollection.extend({ urlRoot: SLIVER_API,
+                                                   model: this.sliver});
+    this.slivers = new this.sliverCollection();
 };
 
 XOSLib = new xoslib();

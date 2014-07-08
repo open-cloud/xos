@@ -2,7 +2,7 @@
 
 window.SliverView = Backbone.View.extend({
     tagName: 'li',
-    className: 'XOSLib.sliver',
+    className: 'sliver',
 
     events: {
         'click .permalink': 'navigate'
@@ -40,32 +40,6 @@ window.DetailApp = Backbone.View.extend({
     }
 });
 
-window.InputView = Backbone.View.extend({
-    events: {
-        'click .sliver': 'createSliver',
-        'keypress #message': 'createOnEnter'
-    },
-
-    createOnEnter: function(e){
-        if((e.keyCode || e.which) == 13){
-            this.createSliver();
-            e.preventDefault();
-        }
-
-    },
-
-    createSliver: function(){
-        var message = this.$('#message').val();
-        if(message){
-            this.collection.create({
-                message: message
-            });
-            this.$('#message').val('');
-        }
-    }
-
-});
-
 window.ListView = Backbone.View.extend({
     initialize: function(){
         _.bindAll(this, 'addOne', 'addAll');
@@ -82,7 +56,7 @@ window.ListView = Backbone.View.extend({
 
     addOne: function(sliver){
         var view = new SliverView({
-            model: XOSLib.sliver
+            model: sliver
         });
         $(this.el).prepend(view.render().el);
         this.views.push(view);
@@ -104,6 +78,7 @@ window.ListApp = Backbone.View.extend({
 
     render: function(){
         console.log("listApp.render");
+        console.log(this.collection);
         $(this.el).html(ich.listApp({}));
         var list = new ListView({
             collection: this.collection,
@@ -111,10 +86,6 @@ window.ListApp = Backbone.View.extend({
         });
         list.addAll();
         list.bind('all', this.rethrow, this);
-        new InputView({
-            collection: this.collection,
-            el: this.$('#input')
-        });
     }
 });
 
@@ -139,7 +110,7 @@ window.Router = Backbone.Router.extend({
 $(function(){
     window.app = window.app || {};
     app.router = new Router();
-    app.slivers = new XOSLib.slivers();
+    app.slivers = XOSLib.slivers; //new XOSLib.slivers();
     app.list = new ListApp({
         el: $("#app"),
         collection: app.slivers
@@ -148,13 +119,11 @@ $(function(){
         el: $("#app")
     });
     app.router.bind('route:list', function(){
-        console.log("Router:list2");
         app.slivers.maybeFetch({
             success: _.bind(app.list.render, app.list)
         });
     });
     app.router.bind('route:detail', function(id){
-        console.log("Router:detail2");
         app.slivers.getOrFetch(app.slivers.urlRoot + id + '/', {
             success: function(model){
                 app.detail.model = model;
