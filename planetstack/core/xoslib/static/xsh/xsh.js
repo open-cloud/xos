@@ -251,10 +251,8 @@ MongoHandler.prototype = {
   _help: function() {
       return PTAG('HELP') +
              PTAG('xos                                 list xos API object types') +
-             PTAG('xos.slices                          list methods to can call on slices') +
-             PTAG('xos.slices.all()                    get all slices') +
-             PTAG('xos.slices.filter({key: "value"})   filter using dictionary') +
-             PTAG('xos.slices.get({key: "value"})      get using dictionary')
+             PTAG('xos.slices.fetch()                  fetch slices from the server') +
+             PTAG('xos.slices                          get the slices that were fetched');
 
   },
 
@@ -303,16 +301,21 @@ MongoHandler.prototype = {
     this._tutorialPtr = 2;
     return PTAG('2. The API is asynchronous') +
            PTAG('Try these:') +
+           PTAG('    xos.slices.models;') +
+           PTAG('    // the above should have printed empty list') +
            PTAG('    xos.slices.fetch();') +
            PTAG('    // wait a second or two...') +
-           PTAG('    xos.slices.objects();');
+           PTAG('    xos.slices.models;');
 
   },
 
   _t3: function() {
     this._tutorialPtr = 3;
-    return PTAG('3. Filter some objects') +
-           PTAG('Try these:');
+    return PTAG('3. Responding to events') +
+           PTAG('Try these:') +
+           PTAG('    xos.slices.fetch();') +
+           PTAG('    tmp=xos.slices.on("change", function() { alert("woot!"); });') +
+           PTAG('    xos.slices.models[0].set("description", "somerandomtext");');
 
   },
 
