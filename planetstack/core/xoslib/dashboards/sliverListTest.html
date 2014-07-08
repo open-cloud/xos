@@ -1,0 +1,26 @@
+{% load mustache %}
+{% load straight_include %}
+
+<script src="{{ STATIC_URL }}/js/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone-min.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone-tastypie.js"></script>
+<script src="{{ STATIC_URL }}/js/ICanHaz.min.js"></script>
+
+<script src="{{ STATIC_URL }}/js/xos-backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/sliverListTest.js"></script>
+
+<script type="text/html" id="sliverTemplate">
+  {% straight_include "mustache/sliverTemplate.mustache" %}
+</script>
+
+<script type="text/html" id="listApp">
+  {% straight_include "mustache/listApp.mustache" %}
+</script>
+
+<script type="text/html" id="detailApp">
+  {% straight_include "mustache/detailApp.mustache" %}
+</script>
+
+<div id="app">
+  {% mustache "mustache/listApp" %}
+</div>

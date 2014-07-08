@@ -1,0 +1,7 @@
+Add to the following in settings.py
+
+    STATICFILES_DIRS=
+	"/opt/planetstack/core/xoslib/static/",
+
+    TEMPLATE_DIRS=
+        "/opt/planetstack/xoslib/templates",
