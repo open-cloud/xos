@@ -1,5 +1,9 @@
 SLIVER_API = "/plstackapi/slivers/";
 SLICE_API = "/plstackapi/slices/";
+NODE_API = "/plstackapi/nodes/";
+SITE_API = "/plstackapi/sites/";
+USER_API = "/plstackapi/users/";
+DEPLOYMENT_API = "/plstackapi/deployments";
 
 XOSModel = Backbone.Model.extend({
     /* from backbone-tastypie.js */
@@ -99,6 +103,27 @@ function xoslib() {
     this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
                                                    model: this.slice});
     this.slices = new this.sliceCollection();
+
+    this.node = XOSModel.extend({ urlRoot: NODE_API });
+    this.nodeCollection = XOSCollection.extend({ urlRoot: NODE_API,
+                                                   model: this.node});
+    this.nodes = new this.nodeCollection();
+
+    this.site = XOSModel.extend({ urlRoot: SITE_API });
+    this.siteCollection = XOSCollection.extend({ urlRoot: SITE_API,
+                                                   model: this.site});
+    this.sites = new this.siteCollection();
+
+    this.user = XOSModel.extend({ urlRoot: USER_API });
+    this.userCollection = XOSCollection.extend({ urlRoot: USER_API,
+                                                   model: this.user});
+    this.users = new this.userCollection();
+
+    this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API });
+    this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
+                                                       model: this.deployment});
+    this.deployments = new this.deploymentCollection();
 };
 
 xos = new xoslib();
+
