@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from syndicate.models import *
+from syndicate_storage.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
@@ -12,14 +12,12 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ReadOnlyTabularInline,ReadOnlyAwareAdmin,SingletonAdmin,SliceInline,ServiceAttrAsTabInline,PlanetStackBaseAdmin, PlStackTabularInline,SliceROInline,ServiceAttrAsTabROInline
 from suit.widgets import LinkedSelect
-from bitfield import BitField
-from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 class SyndicateServiceAdmin(SingletonAdmin,ReadOnlyAwareAdmin):
     model = SyndicateService
-    verbose_name = "Syndicate Service"
-    verbose_name_plural = "Syndicate Service"
+    verbose_name = "Syndicate Storage"
+    verbose_name_plural = "Syndicate Storage"
     list_display = ("name","enabled")
     fieldsets = [(None, {'fields': ['name','enabled','versionNumber', 'description',], 'classes':['suit-tab suit-tab-general']})]
     inlines = [SliceInline,ServiceAttrAsTabInline]
@@ -27,7 +25,7 @@ class SyndicateServiceAdmin(SingletonAdmin,ReadOnlyAwareAdmin):
     user_readonly_fields = ['name','enabled','versionNumber','description']
     user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
 
-    suit_form_tabs =(('general', 'Syndicate Service Details'),
+    suit_form_tabs =(('general', 'Syndicate Storage Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
@@ -37,34 +35,18 @@ class VolumeAccessRightForUserROInline(ReadOnlyTabularInline):
     model = VolumeAccessRight
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeAccessRights'
-    fields = ['volume','gateway_caps']
+    fields = ['volume','cap_read_data', 'cap_write_data', 'cap_host_data']
 
 class VolumeAccessRightROInline(ReadOnlyTabularInline):
     model = VolumeAccessRight
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeAccessRights'
-    fields = ['owner_id','gateway_caps']
+    fields = ['owner_id','cap_read_data', 'cap_write_data', 'cap_host_data']
 
 class VolumeAccessRightInline(PlStackTabularInline):
     model = VolumeAccessRight
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeAccessRights'
-    formfield_overrides = {
-        BitField: {'widget': BitFieldCheckboxSelectMultiple}
-    }
-    fields = ('owner_id', 'gateway_caps')
-
-class VolumeInline(PlStackTabularInline):
-    model = Volume
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumes'
-    fields = ['name', 'owner_id']
-
-class VolumeROInline(ReadOnlyTabularInline):
-    model = Volume
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumes'
-    fields = ['name', 'owner_id']
 
 
 class VolumeSliceFormSet( forms.models.BaseInlineFormSet ):
@@ -94,29 +76,29 @@ class VolumeSliceFormSet( forms.models.BaseInlineFormSet ):
                     cleaned_data = form.cleaned_data
             except AttributeError:
                 continue
-
+             
             # verify that the ports haven't changed 
             volume_pk = cleaned_data['volume_id'].pk
             slice_pk = cleaned_data['slice_id'].pk
            
-            if not cleaned_data.has_key('peer_portnum'):
-                raise ValidationError("Missing client peer-to-peer cache port number")
+            if not cleaned_data.has_key('UG_portnum'):
+                raise ValidationError("Missing UG port number")
 
-            if not cleaned_data.has_key('replicate_portnum'):
-                raise ValidationError("Missing replication service port number")
+            if not cleaned_data.has_key('RG_portnum'):
+                raise ValidationError("Missing RG port number")
 
-            rc1, old_peer_port = VolumeSliceFormSet.verify_unchanged( volume_pk, slice_pk, 'peer_portnum', cleaned_data['peer_portnum'] )
-            rc2, old_replicate_port = VolumeSliceFormSet.verify_unchanged( volume_pk, slice_pk, 'replicate_portnum', cleaned_data['replicate_portnum'] )
+            rc1, old_peer_port = VolumeSliceFormSet.verify_unchanged( volume_pk, slice_pk, 'UG_portnum', cleaned_data['UG_portnum'] )
+            rc2, old_replicate_port = VolumeSliceFormSet.verify_unchanged( volume_pk, slice_pk, 'RG_portnum', cleaned_data['RG_portnum'] )
 
             err1str = ""
             err2str = ""
             if not rc1:
-                err1str = "change %s back to %s" % (cleaned_data['peer_portnum'], old_peer_port)
+                err1str = "change %s back to %s" % (cleaned_data['UG_portnum'], old_peer_port)
             if not rc2:
-                err2str = " and change %s back to %s" % (cleaned_data['replicate_portnum'], old_replicate_port )
+                err2str = " and change %s back to %s" % (cleaned_data['RG_portnum'], old_replicate_port )
 
             if not rc1 or not rc2:
-                raise ValidationError("Port numbers cannot be changed once they are set. Please %s %s" % (err1str, err2str))
+                raise ValidationError("At this time, port numbers cannot be changed once they are set. Please %s %s" % (err1str, err2str))
             
             
 
@@ -124,8 +106,7 @@ class VolumeSliceInline(PlStackTabularInline):
     model = VolumeSlice
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeSlices'
-    fields = ['volume_id', 'slice_id', 'gateway_caps', 'peer_portnum', 'replicate_portnum']
-    formfield_overrides = { BitField: {'widget': BitFieldCheckboxSelectMultiple},}
+    fields = ['volume_id', 'slice_id', 'cap_read_data', 'cap_write_data', 'cap_host_data', 'UG_portnum', 'RG_portnum']
 
     formset = VolumeSliceFormSet
     
@@ -136,19 +117,18 @@ class VolumeSliceROInline(ReadOnlyTabularInline):
     model = VolumeSlice
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeSlices'
-    fields = ['volume_id', 'slice_id', 'gateway_caps', 'peer_portnum', 'replicate_portnum']
-    formfield_overrides = { BitField: {'widget': BitFieldCheckboxSelectMultiple},}
+    fields = ['volume_id', 'slice_id', 'cap_read_data', 'cap_write_data', 'cap_host_data', 'UG_portnum', 'RG_portnum']
 
     formset = VolumeSliceFormSet
 
     readonly_fields = ['credentials_blob']
-
+    
 
 class VolumeAdmin(ReadOnlyAwareAdmin):
     model = Volume
    
     def get_readonly_fields(self, request, obj=None ):
-       always_readonly = list(super(VolumeAdmin, self).get_readonly_fields(request, obj))
+       always_readonly = []
        if obj == None:
           # all fields are editable on add
           return always_readonly
@@ -160,29 +140,27 @@ class VolumeAdmin(ReadOnlyAwareAdmin):
 
     list_display = ['name', 'owner_id']
 
-    formfield_overrides = { BitField: {'widget': BitFieldCheckboxSelectMultiple},}
+    detailsFieldList = ['name', 'owner_id', 'description','blocksize', 'private','archive', 'cap_read_data', 'cap_write_data', 'cap_host_data' ]
 
-    #detailsFieldList = ['name', 'owner_id', 'description','file_quota','blocksize', 'private','archive', 'default_gateway_caps' ]
-    detailsFieldList = ['name', 'owner_id', 'description','blocksize', 'private','archive', 'default_gateway_caps' ]
-    
     fieldsets = [
         (None, {'fields': detailsFieldList, 'classes':['suit-tab suit-tab-general']}),
-        #(None, {'fields': keyList, 'classes':['suit-tab suit-tab-volumeKeys']}),
     ]
 
     inlines = [VolumeAccessRightInline, VolumeSliceInline]
 
-    user_readonly_fields = ['name','owner_id','description','blocksize','private','default_gateway_caps']
+    user_readonly_fields = ['name','owner_id','description','blocksize','private', 'archive', 'cap_read_data', 'cap_write_data', 'cap_host_data']
     
     user_readonly_inlines = [VolumeAccessRightROInline, VolumeSliceROInline]
 
     suit_form_tabs =(('general', 'Volume Details'),
-                     #('volumeKeys', 'Access Keys'),
                      ('volumeSlices', 'Slices'),
-                     ('volumeAccessRights', 'Volume Access Rights'),
-    )
+                     ('volumeAccessRights', 'Volume Access Rights'))
     
-
+    def queryset(self, request):
+       # only show volumes that are public, or owned by the caller 
+       return Volume.select_by_user(request.user)
+    
+    
 # left panel:
 admin.site.register(SyndicateService, SyndicateServiceAdmin)
 admin.site.register(Volume, VolumeAdmin)
