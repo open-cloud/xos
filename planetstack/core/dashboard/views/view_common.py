@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, View
 import datetime
 from pprint import pprint
 import json
-from syndicate.models import *
+from syndicate_storage.models import *
 from core.models import *
 from hpc.models import ContentProvider
 from operator import attrgetter

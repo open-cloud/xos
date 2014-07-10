@@ -49951,7 +49951,7 @@
 },
 {
     "pk": 5, 
-    "model": "syndicate.syndicateservice", 
+    "model": "syndicate_storage.syndicateservice", 
     "fields": {}
 },
 {
