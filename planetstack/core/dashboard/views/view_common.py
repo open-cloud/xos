@@ -218,24 +218,18 @@ def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
 
 def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
     sitesChanged = {}
-    sliverList ={}
     if siteList:
         siteNames = [site.name for site in siteList]
     else:
         siteNames = None
 
-    for sliver in slice.slivers.all():
-        if(not siteNames) or (sliver.node.site.name in siteNames):
-                node = sliver.node
-                sliverList[sliver.name]=node.name
-
-    for key in sliverList:
+    for sliver in list(slice.slivers.all()):
         if count>0:
-            sliver = Sliver.objects.filter(name=key)[0]
-            sliver.delete()
-            print "deleting sliver",sliverList[key],"at node",sliver.node.name
-            count=count-1
-            sitesChanged[sliver.node.site.name] = sitesChanged.get(sliver.node.site.name,0) - 1
+            if(not siteNames) or (sliver.node.site.name in siteNames):
+                sliver.delete()
+                print "deleting sliver",sliver.name,"at node",sliver.node.name
+                count=count-1
+                sitesChanged[sliver.node.site.name] = sitesChanged.get(sliver.node.site.name,0) - 1
 
     return sitesChanged
 
