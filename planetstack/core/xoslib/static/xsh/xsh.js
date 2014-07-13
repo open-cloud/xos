@@ -299,7 +299,7 @@ MongoHandler.prototype = {
 
   _t2: function() {
     this._tutorialPtr = 2;
-    return PTAG('2. The API is asynchronous') +
+    return PTAG('2. Reading from the server is asynchronous') +
            PTAG('Try these:') +
            PTAG('    xos.slices.models;') +
            PTAG('    // the above should have printed empty list') +
@@ -323,8 +323,8 @@ MongoHandler.prototype = {
     this._tutorialPtr = 4;
     return PTAG('4. Available xos objects and methods') +
            PTAG('Try these:') +
-           PTAG('    xos;') +
-           PTAG('    xos.slices;');
+           PTAG('    xos.listObjects();') +
+           PTAG('    xos.slices.listMethods();');
 
   },
 

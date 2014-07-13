@@ -7,19 +7,24 @@ DEPLOYMENT_API = "/plstackapi/deployments";
 
 XOSModel = Backbone.Model.extend({
     /* from backbone-tastypie.js */
-    idAttribute: 'resource_uri',
+    //idAttribute: 'resource_uri',
 
     /* from backbone-tastypie.js */
     url: function() {
-		// Use the id if possible
-		var url = this.id;
+                var url = this.attributes.resource_uri;
 
-		// If there's no idAttribute, try to have the collection construct a url. Fallback to 'urlRoot'.
-		if ( !url ) {
-			url = this.collection && ( _.isFunction( this.collection.url ) ? this.collection.url() : this.collection.url );
-                        console.log(url);
-			url = url || this.urlRoot;
+                if (!url) {
+                    url = this.urlRoot + this.id;
+                }
+
+                if (!url) {
+                    // XXX I'm not sure this does anything useful
+   		    url = ( _.isFunction( this.collection.url ) ? this.collection.url() : this.collection.url );
+  		    url = url || this.urlRoot;
 		}
+
+                // remove any existing query parameters
+                url && ( url.indexOf("?") > -1 ) && ( url = url.split("?")[0] );
 
 		url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
 
@@ -27,6 +32,16 @@ XOSModel = Backbone.Model.extend({
 
 		return url;
 	},
+
+        listMethods: function() {
+            var res = [];
+            for(var m in this) {
+                if(typeof this[m] == "function") {
+                    res.push(m)
+                }
+            }
+            return res;
+        }
 });
 
 XOSCollection = Backbone.Collection.extend({
@@ -91,6 +106,16 @@ XOSCollection = Backbone.Collection.extend({
 
 		return url;
 	},
+
+        listMethods: function() {
+            var res = [];
+            for(var m in this) {
+                if(typeof this[m] == "function") {
+                    res.push(m)
+                }
+            }
+            return res;
+        }
 });
 
 function xoslib() {
@@ -123,6 +148,8 @@ function xoslib() {
     this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
                                                        model: this.deployment});
     this.deployments = new this.deploymentCollection();
+
+    this.listObjects = function() { return ["slivers", "slices", "nodes", "sites", "users", "deployments"]; };
 };
 
 xos = new xoslib();

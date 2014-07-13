@@ -1,0 +1,29 @@
+<script src="{{ STATIC_URL }}/js/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone.wreqr.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone.babysitter.js"></script>
+<script src="{{ STATIC_URL }}/js/backbone.marionette.js"></script>
+
+<script src="{{ STATIC_URL }}/js/xos-backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/xosDeveloper.js"></script>
+
+<div id="developerView">
+</div>
+
+<script type="text/template" id="developer-slicetable-template">
+  <thead>
+    <tr class='header'>
+      <th>Slice</th>
+      <th>Privilege</th>
+      <th>Number of Slivers</th>
+      <th>Number of Sites</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</script>
+
+<script type="text/template" id="developer-slicedetail-template">
+  <td><%= name %></td>
+</script>
+
