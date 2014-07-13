@@ -81,6 +81,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = ( "/opt/planetstack/core/static/",
+                     "/opt/planetstack/core/xoslib/static/",
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -124,6 +125,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     "/opt/planetstack/templates",
+    "/opt/planetstack/core/xoslib/templates",    
 )
 
 INSTALLED_APPS = (
