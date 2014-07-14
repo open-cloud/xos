@@ -51,6 +51,34 @@ XOSCollection = Backbone.Collection.extend({
                 return this.models.map(function(element) { return element.attributes; });
              },
 
+    initialize: function(){
+      this.sortVar = 'name';
+      this.sortOrder = 'asc';
+    },
+
+    simpleComparator: function( model ){
+      parts=this.sortVar.split(".");
+      result = model.get(parts[0]);
+      for (index=1; index<parts.length; ++index) {
+          result=result[parts[index]];
+      }
+      return result;
+    },
+
+    comparator: function (left, right) {
+        var l = this.simpleComparator(left);
+        var r = this.simpleComparator(right);
+
+        if (l === void 0) return -1;
+        if (r === void 0) return 1;
+
+        if (this.sortOrder=="desc") {
+            return l < r ? 1 : l > r ? -1 : 0;
+        } else {
+            return l < r ? -1 : l > r ? 1 : 0;
+        }
+    },
+
     startPolling: function() {
         if (!this._polling) {
             collection=this;
