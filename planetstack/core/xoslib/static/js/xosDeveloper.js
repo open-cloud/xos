@@ -12,7 +12,7 @@ DeveloperApp.SliceDetailView = Marionette.ItemView.extend({
 
 DeveloperApp.SliceListView = Marionette.CompositeView.extend({
   tagName: "table",
-  className: "table table-bordered",
+  className: "table table-bordered table-striped",
   template: "#developer-slicetable-template",
   childView: DeveloperApp.SliceDetailView,
   childViewContainer: "tbody",
@@ -27,7 +27,16 @@ DeveloperApp.SliceListView = Marionette.CompositeView.extend({
       this.collection.sortVar = fieldName;
       this.collection.sortOrder = order;
       this.collection.sort();
-  }
+  },
+
+  attachHtml: function(compositeView, childView, index) {
+      // The REST API will let admin users see everything. For the developer
+      // view we still want to hide slices we are not members of.
+      if (childView.model.get("sliceInfo").roles.length == 0) {
+          return;
+      }
+      DeveloperApp.SliceListView.__super__.attachHtml(compositeView, childView, index);
+  },
 });
 
 DeveloperApp.on("start", function() {
