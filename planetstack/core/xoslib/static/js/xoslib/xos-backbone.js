@@ -5,6 +5,8 @@ SITE_API = "/plstackapi/sites/";
 USER_API = "/plstackapi/users/";
 DEPLOYMENT_API = "/plstackapi/deployments";
 
+SLICEPLUS_API = "/xoslib/slicesplus/";
+
 XOSModel = Backbone.Model.extend({
     /* from backbone-tastypie.js */
     //idAttribute: 'resource_uri',
@@ -119,6 +121,7 @@ XOSCollection = Backbone.Collection.extend({
 });
 
 function xoslib() {
+    // basic REST
     this.sliver = XOSModel.extend({ urlRoot: SLIVER_API });
     this.sliverCollection = XOSCollection.extend({ urlRoot: SLIVER_API,
                                                    model: this.sliver});
@@ -148,6 +151,12 @@ function xoslib() {
     this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
                                                        model: this.deployment});
     this.deployments = new this.deploymentCollection();
+
+    // enhanced REST
+    this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API });
+    this.slicePlusCollection = XOSCollection.extend({ urlRoot: SLICEPLUS_API,
+                                                      model: this.slicePlus});
+    this.slicesPlus = new this.slicePlusCollection();
 
     this.listObjects = function() { return ["slivers", "slices", "nodes", "sites", "users", "deployments"]; };
 };

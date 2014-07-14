@@ -10,20 +10,30 @@ DeveloperApp.SliceDetailView = Marionette.ItemView.extend({
   className: 'developer_slicedetail'
 });
 
+/*
 DeveloperApp.SliceListView = Marionette.CollectionView.extend({
+  tagName: "table",
+  className: "table table-hover",
+  template: "#developer-slicetable-template",
+  childView: DeveloperApp.SliceDetailView,
+});
+*/
+
+DeveloperApp.SliceListView = Marionette.CompositeView.extend({
   tagName: "table",
   className: "table-striped table-bordered",
   template: "#developer-slicetable-template",
   childView: DeveloperApp.SliceDetailView,
+  childViewContainer: "tbody",
 });
 
 DeveloperApp.on("start", function() {
   var developerSliceListView = new DeveloperApp.SliceListView({
-    collection: xos.slices
+    collection: xos.slicesPlus
   });
   console.log(developerSliceListView);
   DeveloperApp.mainRegion.show(developerSliceListView);
-  xos.slices.fetch();
+  xos.slicesPlus.fetch();
 });
 
 $(document).ready(function(){

@@ -37,9 +37,9 @@ try:
 
     for view_url in view_urls:
         if view_url[0] == "list":
-           urlpatterns.append(url(r'^xoslib/' + view_url[1] + '/$',  view_url[3].as_view(), name=view_url[1]+'list'))
+           urlpatterns.append(url(r'^' + view_url[1] + '/$',  view_url[3].as_view(), name=view_url[1]+'list'))
         elif view_url[0] == "detail":
-           urlpatterns.append(url(r'^xoslib/' + view_url[1] + '/(?P<pk>[a-zA-Z0-9\-]+)/$',  view_url[3].as_view(), name=view_url[1]+'list'))
+           urlpatterns.append(url(r'^' + view_url[1] + '/(?P<pk>[a-zA-Z0-9\-]+)/$',  view_url[3].as_view(), name=view_url[1]+'detail'))
 
 finally:
     sys.path = sys_path_save

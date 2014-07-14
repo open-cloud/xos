@@ -13,7 +13,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer):
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
 
         def getSliceInfo(self, slice):
-            return slice.getSliceInfo()
+            return slice.getSliceInfo(user=self.context['request'].user)
 
         networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
         availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
@@ -25,6 +25,9 @@ class SlicePlusIdSerializer(serializers.ModelSerializer):
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
+
+    method_kind = "list"
+    method_name = "slicesplus"
 
     def get_queryset(self):
         return SlicePlus.select_by_user(self.request.user)
@@ -40,6 +43,9 @@ class SlicePlusList(generics.ListCreateAPIView):
 class SlicePlusDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
+
+    method_kind = "detail"
+    method_name = "slicesplus"
 
     def get_queryset(self):
         return SlicePlus.select_by_user(self.request.user)

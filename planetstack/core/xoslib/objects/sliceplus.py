@@ -27,12 +27,9 @@ class SlicePlus(Slice):
 
     @staticmethod
     def select_by_user(user):
-        print "XX"
         if user.is_admin:
             qs = SlicePlus.objects.all()
         else:
             slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
             qs = SlicePlus.objects.filter(id__in=slice_ids)
-        print qs
-        print qs.all()
         return qs
