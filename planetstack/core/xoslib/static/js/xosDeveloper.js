@@ -12,7 +12,7 @@ DeveloperApp.SliceDetailView = Marionette.ItemView.extend({
 
 DeveloperApp.SliceListView = Marionette.CompositeView.extend({
   tagName: "table",
-  className: "table-striped table-bordered",
+  className: "table table-bordered",
   template: "#developer-slicetable-template",
   childView: DeveloperApp.SliceDetailView,
   childViewContainer: "tbody",

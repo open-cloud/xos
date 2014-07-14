@@ -7,12 +7,14 @@
 <script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
 <script src="{{ STATIC_URL }}/js/xosDeveloper.js"></script>
 
+<link rel="stylesheet" type="text/css" href="{% static 'css/xosDeveloper.css' %}" media="all">
+
 <div id="developerView">
 </div>
 
 <script type="text/template" id="developer-slicetable-template">
   <thead>
-    <tr class='header'>
+    <tr class="developer-header">
       <th>Slice <span class="sort" id="sort-asc-name">&#9650;</span><span class="sort" id="sort-desc-name">&#9660;</span></th>
       <th>Privilege<span class="sort" id="sort-asc-sliceInfo.roles">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.roles">&#9660;</span></th>
       <th>Number of Slivers<span class="sort" id="sort-asc-sliceInfo.sliverCount">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.sliverCount">&#9660;</span></th>
