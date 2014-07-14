@@ -33,7 +33,7 @@ DeveloperApp.on("start", function() {
   });
   console.log(developerSliceListView);
   DeveloperApp.mainRegion.show(developerSliceListView);
-  xos.slicesPlus.fetch();
+  xos.slicesPlus.startPolling(); //fetch();
 });
 
 $(document).ready(function(){

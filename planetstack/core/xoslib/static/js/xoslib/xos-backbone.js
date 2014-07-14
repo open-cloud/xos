@@ -51,6 +51,15 @@ XOSCollection = Backbone.Collection.extend({
                 return this.models.map(function(element) { return element.attributes; });
              },
 
+    startPolling: function() {
+        if (!this._polling) {
+            collection=this;
+            setInterval(function() { console.log(collection); collection.fetch(); }, 10000);
+            this._polling=true;
+            this.fetch();
+        }
+    },
+
     maybeFetch: function(options){
             // Helper function to fetch only if this collection has not been fetched before.
         if(this._fetched){
