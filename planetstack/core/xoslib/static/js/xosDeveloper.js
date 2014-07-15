@@ -19,6 +19,10 @@ DeveloperApp.SliceListView = Marionette.CompositeView.extend({
 
   events: {"click .sort": "changeSort"},
 
+  initialize: function() {
+      this.listenTo(this.collection, 'change', this._renderChildren);
+  },
+
   changeSort: function(e) {
       parts=$(e.currentTarget).attr("id").split('-');
       order=parts[1];
