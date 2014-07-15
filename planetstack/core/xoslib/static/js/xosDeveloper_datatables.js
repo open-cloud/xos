@@ -37,9 +37,9 @@
 }
 
 $(document).ready(function(){
-    xos.slicesPlus.on("change", function() { console.log("change"); updateSliceTable(xos.slicesPlus); });
-    xos.slicesPlus.on("remove", function() { console.log("sort"); updateSliceTable(xos.slicesPlus); });
-    xos.slicesPlus.on("sort", function() { console.log("sort"); updateSliceTable(xos.slicesPlus); });
+    xos.slicesPlus.on("change", function() { /*console.log("change");*/ updateSliceTable(xos.slicesPlus); });
+    xos.slicesPlus.on("remove", function() { /*console.log("sort");*/ updateSliceTable(xos.slicesPlus); });
+    xos.slicesPlus.on("sort", function() { /*console.log("sort");*/ updateSliceTable(xos.slicesPlus); });
 
     xos.slicesPlus.startPolling();
 });
