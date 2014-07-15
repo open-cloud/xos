@@ -1,0 +1,13 @@
+<!-- /opt/planetstack/templates/admin/dashboard/helloworld.html -->
+<div>Hello, {{ user.firstname }} {{ user.lastname }}.</div>
+<div>This is the hello world view. The value of foobar is {{ foobar }}.</div>
+<div id="dynamicTableOfInterestingThings"></div>
+<p>Type a new description for the the first slice in the collection:</p>
+<input type="text" name="newDescription" id="newDescription">
+<input type="button" name="submitNewDescription" value="submit new description"  id="submitNewDescription">
+
+<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
+
+<script src="{{ STATIC_URL }}/js/helloworld.js"></script>
