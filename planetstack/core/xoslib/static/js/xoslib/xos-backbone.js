@@ -82,7 +82,7 @@ XOSCollection = Backbone.Collection.extend({
     startPolling: function() {
         if (!this._polling) {
             collection=this;
-            setInterval(function() { console.log(collection); collection.fetch(); }, 10000);
+            setInterval(function() { collection.fetch(); }, 10000);
             this._polling=true;
             this.fetch();
         }
