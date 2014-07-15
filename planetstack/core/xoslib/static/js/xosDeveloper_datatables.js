@@ -12,9 +12,14 @@
         row = data.models[rowkey];
         slicename = row.get("name");
         sliceid = row.get("id");
-        role = row.get("sliceInfo").roles[0] || "";
+        role = row.get("sliceInfo").roles[0];
         slivercount = row.get("sliceInfo").sliverCount;
         sitecount = row.get("sliceInfo").siteCount;
+
+        if (! role) {
+            continue;
+        }
+
         actualEntries.push(['<a href="/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
                             role, slivercount, sitecount]);
     }
