@@ -1,9 +1,21 @@
+/* This is a demo of using xoslib with Marionette
+
+   The main window is split into two halves. The left half has a CollectionView
+   (SliceListView) that lists all slices the user has access to. The right half
+   has an ItemView (SliceDetailView) that allows the user to edit the
+   name and description of a slice, as well as a <Save> button to save it.
+*/
+
 SliceEditorApp = new Marionette.Application();
 
 SliceEditorApp.addRegions({
   sliceList: "#sliceEditorList",
   sliceDetail: "#sliceEditorDetail",
 });
+
+/* SliceListItemView: This is the item view that is used by SliceListView to
+   display slice names.
+*/
 
 SliceEditorApp.SliceListItemView = Marionette.ItemView.extend({
   template: "#sliceeditor-listitem-template",
@@ -22,6 +34,10 @@ SliceEditorApp.SliceListItemView = Marionette.ItemView.extend({
             }
         }
 
+        /* create a new SliceDetailView and set the sliceDetail region to
+           display it.
+        */
+
         var sliceDetailView = new SliceEditorApp.SliceDetailView({
             model: this.model,
         });
@@ -29,14 +45,18 @@ SliceEditorApp.SliceListItemView = Marionette.ItemView.extend({
   },
 });
 
+/* SliceListView: This displays a list of slice names.
+*/
+
 SliceEditorApp.SliceListView = Marionette.CollectionView.extend({
   tagName: "ul",
   childView: SliceEditorApp.SliceListItemView,
 
-  modelEvents: {"sync": "render"},
-
   initialize: function() {
-      this.dirty = false;
+      /* CollectionViews don't automatically listen for change events, but we
+         want to, so we pick up changes from the DetailView, and we pick up
+         changes from the server.
+      */
       this.listenTo(this.collection, 'change', this._renderChildren);
   },
 
@@ -50,12 +70,19 @@ SliceEditorApp.SliceListView = Marionette.CollectionView.extend({
   },
 });
 
+/* SliceDetailView: Display the slice and allow it to be edited */
+
 SliceEditorApp.SliceDetailView = Marionette.ItemView.extend({
     template: "#sliceeditor-sliceedit-template",
     tagName: 'div',
 
     events: {"click button.js-submit": "submitClicked",
              "change input": "inputChanged"},
+
+    /* inputChanged is watching the onChange events of the input controls. We
+       do this to track when this view is 'dirty', so we can throw up a warning
+       if the user tries to change his slices without saving first.
+    */
 
     inputChanged: function(e) {
         this.dirty = true;

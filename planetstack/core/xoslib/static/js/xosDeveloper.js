@@ -1,4 +1,10 @@
-DeveloperApp = new Marionette.Application();
+/* This is an example that uses xoslib + marionette to display the developer
+   view.
+
+   For an example that uses xoslib + datatables, see xosDeveloper_datatables.js
+*/
+
+DeveloperApp = new Marionette.Application();
 
 DeveloperApp.addRegions({
   mainRegion: "#developerView"
