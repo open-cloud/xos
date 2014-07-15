@@ -48,6 +48,8 @@ class DashboardDynamicView(TemplateView):
             return self.readTemplate(fn)
         elif url.startswith("http"):
             return '<iframe src="%s" width="100%%" height="100%%" style="min-height: 1024px;" frameBorder="0"></iframe>' % url
+        else:
+            return "don't know how to load dashboard %s" % url
 
     def multiDashboardView(self, request, context):
         head_template = self.head_template
