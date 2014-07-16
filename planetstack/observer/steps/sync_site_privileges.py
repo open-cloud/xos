@@ -13,11 +13,6 @@ class SyncSitePrivileges(OpenStackSyncStep):
         return SitePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, site_priv):
-        if site_priv.user.kuser_id and site_priv.site.tenant_id:
-            self.driver.add_user_role(site_priv.user.kuser_id,
-                                      site_priv.site.tenant_id,
-                                      site_priv.role.role) 
-
         # sync site privileges at all site deployments
         site_deployments = SiteDeployments.objects.filter(site=site_priv.site)
         for site_deployment in site_deployments:

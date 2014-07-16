@@ -1,0 +1,3 @@
+.sliceeditor-listitem { cursor: pointer; color: blue; }
+
+.sliceeditor-listitem:hover { font-weight: bold; }

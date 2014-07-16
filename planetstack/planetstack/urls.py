@@ -12,6 +12,7 @@ from core.models import *
 from rest_framework import generics
 from core.dashboard.sites import SitePlus
 from django.http import HttpResponseRedirect
+#from core.xoslib import XOSLibDataView
 
 admin.site = SitePlus()
 admin.autodiscover()
@@ -33,6 +34,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(admin.site.urls)),
     #url(r'^profile/home', 'core.views.home'),
+
+#    url(r'^admin/xoslib/(?P<name>\w+)/$', XOSLibDataView.as_view(), name="xoslib"),
 
     url(r'^plstackapi/$', api_root),
 
@@ -119,5 +122,7 @@ urlpatterns = patterns('',
 
     #Adding in rest_framework urls
     url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
-    
+
+    # XOSLib rest methods
+    url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),    
 )

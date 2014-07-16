@@ -26,14 +26,21 @@ class DashboardDynamicView(TemplateView):
             return self.singleDashboardView(request, name, context)
 
     def readTemplate(self, fn):
-        try:
-            template= open("/opt/planetstack/templates/admin/dashboard/%s.html" % fn, "r").read()
-            if (fn=="tenant"):
-                # fix for tenant view - it writes html to a div called tabs-5
-                template = '<div id="tabs-5"></div>' + template
-            return template
-        except:
-            return "failed to open %s" % fn
+        TEMPLATE_DIRS = ["/opt/planetstack/templates/admin/dashboard/",
+                         "/opt/planetstack/core/xoslib/dashboards/"]
+
+        for template_dir in TEMPLATE_DIRS:
+            pathname = os.path.join(template_dir, fn) + ".html"
+            if os.path.exists(pathname):
+                break
+        else:
+            return "failed to find %s in %s" % (fn, TEMPLATE_DIRS)
+
+        template= open(pathname, "r").read()
+        if (fn=="tenant"):
+            # fix for tenant view - it writes html to a div called tabs-5
+            template = '<div id="tabs-5"></div>' + template
+        return template
 
     def embedDashboard(self, url):
         if url.startswith("template:"):
@@ -41,6 +48,8 @@ class DashboardDynamicView(TemplateView):
             return self.readTemplate(fn)
         elif url.startswith("http"):
             return '<iframe src="%s" width="100%%" height="100%%" style="min-height: 1024px;" frameBorder="0"></iframe>' % url
+        else:
+            return "don't know how to load dashboard %s" % url
 
     def multiDashboardView(self, request, context):
         head_template = self.head_template

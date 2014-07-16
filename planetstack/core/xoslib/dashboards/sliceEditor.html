@@ -1,0 +1,40 @@
+<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.syphon.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.wreqr.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.babysitter.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.marionette.js"></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/sliceEditor.css' %}" media="all">
+
+<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/sliceEditor.js"></script>
+
+<p>This is a demo of modifying objects using xoslib. Pick a slice in the list on
+the left. Then edit any of it's fields on the right, and press the (save)
+button.</p>
+
+<table class="table table-bordered"><tr><td valign=top>
+<div id="sliceEditorList">
+</div>
+</td>
+<td valign=top>
+<div id="sliceEditorDetail">
+</div>
+</td></tr></table>
+
+<script type="text/template" id="sliceeditor-listitem-template">
+  <%= name %>
+</script>
+
+<script type="text/template" id="sliceeditor-sliceedit-template">
+  <form>
+  <table>
+  <tr><td>Slice Name:</td><td><input type="text" name="name" value="<%= name %>" id="foo"></td></tr>
+  <tr><td>Description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+
+</script>
+

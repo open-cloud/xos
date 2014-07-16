@@ -142,7 +142,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
         hotness = max(0.0, ((cpu*RED_LOAD) - BLUE_LOAD)/(RED_LOAD-BLUE_LOAD))
 
         try:
-           lat=float(site.location.longitude)
+           lat=float(site.location.latitude)
            long=float(site.location.longitude)
         except:
            lat=0

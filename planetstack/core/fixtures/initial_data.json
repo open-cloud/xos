@@ -91,10 +91,10 @@
     "pk": 9, 
     "model": "core.dashboardview", 
     "fields": {
-        "url": "template:shell", 
+        "url": "template:xsh", 
         "updated": "2014-06-19T01:34:07.897Z", 
         "enacted": null, 
-        "name": "shell", 
+        "name": "xsh", 
         "created": "2014-06-19T01:34:07.897Z"
     }
 },
