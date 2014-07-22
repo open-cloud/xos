@@ -239,7 +239,7 @@ class PlanetStackObserver:
 
 				# Two passes. One for sync, the other for deletion.
 				for deletion in (False,True):
-					logger.info('Creation pass...')
+					logger.info('Deletion=%r...'%deletion)
 					# Set of whole steps that failed
 					failed_steps = []
 
