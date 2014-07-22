@@ -71,7 +71,7 @@ class EventSender:
             clid = Config().feefie_client_id
         except:
             clid = get_random_client_id()
-                        print "EventSender: no feefie_client_id configured. Using random id %s" % clid
+            print "EventSender: no feefie_client_id configured. Using random id %s" % clid
 
         self.fofum = Fofum(user=user)
         self.fofum.make(clid)
@@ -84,7 +84,6 @@ class EventListener:
     def __init__(self,wake_up=None):
         self.handler = EventHandler()
         self.wake_up = wake_up
-
 
     def handle_event(self, payload):
         payload_dict = json.loads(payload)
