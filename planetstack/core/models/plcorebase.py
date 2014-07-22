@@ -20,14 +20,22 @@ except:
 
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
+class PlCoreBaseDeletionManager(models.Manager):
+    def get_query_set(self):
+        return super(PlCoreBaseDeletedManager, self).get_query_set().filter(deleted=True)
+
+# This manager will be inherited by all subclasses because
+# the core model is abstract.
 class PlCoreBaseManager(models.Manager):
     def get_query_set(self):
         return super(PlCoreBaseManager, self).get_query_set().filter(deleted=False)
 
-    # default values for created and updated are only there to keep evolution
-    # from failing.
 class PlCoreBase(models.Model):
     objects = PlCoreBaseManager()
+    deleted_objects = PlCoreBaseDeletionManager()
+
+    # default values for created and updated are only there to keep evolution
+    # from failing.
     created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
     updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
