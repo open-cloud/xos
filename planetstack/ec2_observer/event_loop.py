@@ -269,7 +269,7 @@ class PlanetStackObserver:
 							# Various checks that decide whether
 							# this step runs or not
 							self.check_class_dependency(sync_step, failed_steps) # dont run Slices if Sites failed
-							self.check_schedule(sync_step,deletion) # dont run sync_network_routes if time since last run < 1 hour
+							self.check_schedule(sync_step, deletion) # dont run sync_network_routes if time since last run < 1 hour
 							should_run = True
 						except StepNotReady:
 							logging.info('Step not ready: %s'%sync_step.__name__)
