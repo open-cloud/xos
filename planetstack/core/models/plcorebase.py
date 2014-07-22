@@ -87,6 +87,7 @@ class PlCoreBase(models.Model):
             pass
             
         if (purge):
+            del kwds['purge']
             super(PlCoreBase, self).delete(*args, **kwds)
         else:
             self.deleted = True
