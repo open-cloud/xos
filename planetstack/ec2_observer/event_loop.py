@@ -295,10 +295,7 @@ class PlanetStackObserver:
 								if failed_objects:
 									failed_step_objects.update(failed_objects)
 
-								if (not deletion):
-									self.update_run_time(sync_step)
-								else:
-									self.update_deletion_run_time(sync_step)
+								self.update_run_time(sync_step,deletion)
 							except Exception,e:
 								logging.error('Model step failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
 								logger.log_exc(e)
