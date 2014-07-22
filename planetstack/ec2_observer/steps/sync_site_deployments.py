@@ -12,6 +12,9 @@ class SyncSiteDeployments(SyncStep):
 	provides=[SiteDeployments]
 
 	def fetch_pending(self, deletion):
+        if (deletion):
+            return []
+
 		zone_ret = aws_run('ec2 describe-availability-zones')
 		zones = zone_ret['AvailabilityZones']
 		available_sites = [zone['ZoneName'] for zone in zones]

@@ -16,6 +16,9 @@ class SyncUsers(SyncStep):
 	requested_interval=0
 
 	def fetch_pending(self, deletion):
+        if (deletion):
+            return []
+
 		users = User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 		if (users):
 			key_sig = aws_run('ec2 describe-key-pairs')

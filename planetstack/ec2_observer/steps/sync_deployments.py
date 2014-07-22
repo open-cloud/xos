@@ -10,6 +10,9 @@ class SyncDeployments(SyncStep):
     provides=[Deployment]
 
     def fetch_pending(self,deletion):
+        if (deletion):
+            return []
+
         deployments = Deployment.objects.filter(Q(name="Amazon EC2"))
         if (not deployments):
             deployments = [Deployment(name="Amazon EC2")]

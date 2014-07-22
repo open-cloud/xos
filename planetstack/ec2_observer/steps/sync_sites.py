@@ -12,6 +12,8 @@ class SyncSites(SyncStep):
 	requested_interval=3600
 
 	def fetch_pending(self, deletion):
+        if (deletion):
+            return []
 
 		deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
 		current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))

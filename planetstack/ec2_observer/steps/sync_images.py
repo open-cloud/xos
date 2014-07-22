@@ -12,6 +12,9 @@ class SyncImages(SyncStep):
     requested_interval=3600
 
     def fetch_pending(self,deletion):
+        if (deletion):
+            return []
+
         images = Image.objects.all()
         image_names = [image.name for image in images]
        
