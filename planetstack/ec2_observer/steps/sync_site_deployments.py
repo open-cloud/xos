@@ -2,27 +2,46 @@ import os
 import base64
 from django.db.models import F, Q
 from planetstack.config import Config
-from observer.openstacksyncstep import OpenStackSyncStep
+from ec2_observer.syncstep import SyncStep
 from core.models.site import *
+from ec2_observer.awslib import *
+import pdb
 
-class SyncSiteDeployments(OpenStackSyncStep):
-    requested_interval=0
-    provides=[Site, SiteDeployments]
+class SyncSiteDeployments(SyncStep):
+	requested_interval=86400
+	provides=[SiteDeployments]
 
-    def fetch_pending(self):
-        return SiteDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+	def fetch_pending(self, deletion):
+		zone_ret = aws_run('ec2 describe-availability-zones')
+		zones = zone_ret['AvailabilityZones']
+		available_sites = [zone['ZoneName'] for zone in zones]
 
-    def sync_record(self, site_deployment):
-        if not site_deployment.tenant_id:
-            driver = self.driver.admin_driver(deployment=site_deployment.deployment.name)
-            tenant = driver.create_tenant(tenant_name=site_deployment.site.login_base,
-                                               description=site_deployment.site.name,
-                                               enabled=site_deployment.site.enabled)
-            site_deployment.tenant_id = tenant.id
-            site_deployment.save()
-        elif site_deployment.site.id and site_deployment.tenant_id:
-            driver = self.driver.admin_driver(deployment=site_deployment.name)
-            driver.update_tenant(site_deployment.tenant_id,
-                                 description=site_deployment.site.name,
-                                 enabled=site_deployment.site.enabled)
-            
+		current_sites = []
+		for s in available_sites:
+			site = Site.objects.filter(Q(name=s))
+			if (site):
+				current_sites.append(site[0])
+
+		# OK not to catch exception
+		# The syncstep should catch it
+		# At any rate, we should not run if there are no deployments
+		deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
+		current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))
+		site_dict = {}
+
+		for sd in current_site_deployments:
+			site_dict[sd.site]=sd
+
+		updated_site_deployments = []
+		for site in current_sites:
+			try:
+				site_record = site_dict[site]
+			except KeyError:
+				sd = SiteDeployments(site=site,deployment=deployment,tenant_id=base64.urlsafe_b64encode(os.urandom(12)))
+				updated_site_deployments.append(sd)
+
+		return updated_site_deployments
+
+
+	def sync_record(self, site_deployment):
+		site_deployment.save()

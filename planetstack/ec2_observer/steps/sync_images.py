@@ -2,30 +2,59 @@ import os
 import base64
 from django.db.models import F, Q
 from planetstack.config import Config
-from observer.syncstep import SyncStep
+from ec2_observer.syncstep import SyncStep
 from core.models.image import Image
-from awslib import *
+from ec2_observer.awslib import *
 
-class SyncImages(OpenStackSyncStep):
+
+class SyncImages(SyncStep):
     provides=[Image]
     requested_interval=3600
 
-    def fetch_pending(self):
+    def fetch_pending(self,deletion):
         images = Image.objects.all()
         image_names = [image.name for image in images]
        
         new_images = []
 
-		aws_images = aws_run('ec2 describe-images')
+        try:
+            aws_images = json.loads(open('/opt/planetstack/aws-images').read())
+        except:
+            aws_images = aws_run('ec2 describe-images --owner 099720109477')
+            open('/opt/planetstack/aws-images','w').write(json.dumps(aws_images))
 
+        
+
+        aws_images=aws_images['Images']
+        aws_images=filter(lambda x:x['ImageType']=='machine',aws_images)[:50]
+
+        names = set([])
         for aws_image in aws_images:
-            if aws_image not in image_names:
-                image = Image(image_id=image_id,
-                              name=aws_image['name'],
-                              disk_format='XXX'
-                              container_format='XXX'
-                new_images.append(image)   
- 
+            desc_ok = True
+
+            try:
+                desc = aws_image['Description']
+            except:
+                try:
+                    desc = aws_image['ImageLocation']
+                except:
+                    desc_ok = False
+            
+            if (desc_ok):
+                try:
+                    desc_ok =  desc and desc not in names and desc not in image_names and '14.04' in desc
+                except KeyError:
+                    desc_ok = False
+
+            if desc_ok and aws_image['ImageType']=='machine':
+                image = Image(disk_format=aws_image['ImageLocation'],
+                                name=desc,
+                                container_format=aws_image['Hypervisor'],
+                                path=aws_image['ImageId'])
+                new_images.append(image)
+                names.add(image.name)
+
+        #print new_images
         return new_images
 
     def sync_record(self, image):
