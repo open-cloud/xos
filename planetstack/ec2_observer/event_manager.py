@@ -84,58 +84,11 @@ class EventListener:
     def __init__(self,wake_up=None):
         self.handler = EventHandler()
         self.wake_up = wake_up
-        self.deleters = {}
-        self.load_deleter_modules()
-
-    def load_deleter_modules(self, deleter_dir=None):
-        if deleter_dir is None:
-            if hasattr(Config(), "observer_deleters_dir"):
-                deleter_dir = Config().observer_deleters_dir
-            else:
-                deleter_dir = "/opt/planetstack/observer/deleters"
-
-        for fn in os.listdir(deleter_dir):
-            pathname = os.path.join(deleter_dir,fn)
-            if os.path.isfile(pathname) and fn.endswith(".py") and (fn!="__init__.py"):
-                module = imp.load_source(fn[:-3],pathname)
-                for classname in dir(module):
-                    c = getattr(module, classname, None)
-
-                    # make sure 'c' is a descendent of Deleter and has a
-                    # provides field (this eliminates the abstract base classes
-                    # since they don't have a provides)
-
-                    if inspect.isclass(c) and issubclass(c, Deleter) and hasattr(c,"model") and c.model!=None:
-                        modelName = c.model
-                        if not modelName in self.deleters:
-                            self.deleters[modelName] = []
-                        if not (c in self.deleters[modelName]):
-                            self.deleters[modelName].append(c)
-        print 'loaded deleters: %s' % ",".join(self.deleters.keys())
-
 
     def handle_event(self, payload):
         payload_dict = json.loads(payload)
 
-        try:
-            deletion = payload_dict.get('delete_flag', False)
-            if (deletion):
-                model = payload_dict['model']
-                pk = payload_dict['pk']
-                model_dict = payload_dict['model_dict']
-
-                for deleter in self.deleters[model]:
-                    try:
-                        deleter()(pk, model_dict)
-                    except:
-                        # something is silently eating these
-                        # exceptions...
-                        traceback.print_exc()
-                        raise
-        except:
-            deletion = False
-
-        if (not deletion and self.wake_up):
+        if (self.wake_up):
             self.wake_up()
 
     def run(self):
