@@ -11,9 +11,6 @@ from operator import itemgetter, attrgetter
 
 # Create your models here.
 class UserManager(BaseUserManager):
-    def get_query_set(self):
-        return super(UserManager, self).get_query_set().filter(deleted=False)
-
     def create_user(self, email, firstname, lastname, password=None):
         """
         Creates and saves a User with the given email, date of
@@ -47,6 +44,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class DeletedUserManager(UserManager):
+    def get_query_set(self):
+        return super(UserManager, self).get_query_set().filter(deleted=True)
 
 class User(AbstractBaseUser):
 
@@ -87,6 +87,7 @@ class User(AbstractBaseUser):
     dashboards = models.ManyToManyField('DashboardView', through='UserDashboardView', blank=True)
 
     objects = UserManager()
+    deleted_objects = DeletedUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['firstname', 'lastname']
@@ -101,6 +102,21 @@ class User(AbstractBaseUser):
     def get_short_name(self):
         # The user is identified by their email address
         return self.email
+
+    def delete(self, *args, **kwds):
+        # so we have something to give the observer
+        purge = kwds.get('purge',False)
+        try:
+            purge = purge or observer_disabled
+        except NameError:
+            pass
+            
+        if (purge):
+            super(User, self).delete(*args, **kwds)
+        else:
+            self.deleted = True
+            self.enacted=None
+            self.save(update_fields=['enacted','deleted'])
 
     @property
     def keyname(self):
