@@ -22,7 +22,7 @@ except:
 # the core model is abstract.
 class PlCoreBaseDeletionManager(models.Manager):
     def get_query_set(self):
-        return super(PlCoreBaseDeletedManager, self).get_query_set().filter(deleted=True)
+        return super(PlCoreBaseDeletionManager, self).get_query_set().filter(deleted=True)
 
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
