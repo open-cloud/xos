@@ -19,6 +19,6 @@ class Backend:
             event_manager = EventListener(wake_up=observer.wake_up)
             event_manager_thread = threading.Thread(target=event_manager.run)
             event_manager_thread.start()
-        except:
+        except Exception,e:
             logger.log_exc("Exception in child thread")
 
