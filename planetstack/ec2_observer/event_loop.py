@@ -19,7 +19,7 @@ from planetstack.config import Config
 from ec2_observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
-from ec2_observer.error_mapper import error_mapper
+from ec2_observer.error_mapper import *
 
 debug_mode = False
 
