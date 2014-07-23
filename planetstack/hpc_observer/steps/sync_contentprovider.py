@@ -24,9 +24,6 @@ class SyncContentProvider(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
-    def fetch_pending(self):
-        return ContentProvider.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, cp):
         logger.info("sync'ing content provider %s" % str(cp))
         account_name = self.make_account_name(cp.name)
@@ -49,3 +46,7 @@ class SyncContentProvider(SyncStep, HpcLibrary):
             self.client.onev.Update("ContentProvider", cp.content_provider_id, cp_dict)
 
         cp.save()
+
+    def call(self, m):
+        self.client.onev.Delete("ContentProvider", m.content_provider_id)
+
