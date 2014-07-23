@@ -24,9 +24,6 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
-    def fetch_pending(self):
-        return ServiceProvider.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, sp):
         logger.info("sync'ing service provider %s" % str(sp))
         account_name = self.make_account_name(sp.name)
@@ -39,3 +36,7 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
             self.client.onev.Update("ServiceProvider", sp.service_provider_id, sp_dict)
 
         sp.save()
+
+    def delete_record(self, m):
+        print "XXX delete service provider", m
+        self.client.onev.Delete("ServiceProvider", m.service_provider_id)
