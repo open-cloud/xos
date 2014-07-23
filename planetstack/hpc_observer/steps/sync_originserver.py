@@ -24,9 +24,6 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
-    def fetch_pending(self):
-        return OriginServer.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, ors):
         logger.info("sync'ing origin server %s" % str(ors))
 
@@ -56,3 +53,6 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         self.client.cob.UpdateContent(ors.origin_server_id, {"url": url})
 
         ors.save()
+
+    def delete(self, m):
+        self.client.onev.Delete("OriginServer", m.origin_server_id)
