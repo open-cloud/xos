@@ -8,36 +8,36 @@ from ec2_observer.awslib import *
 import pdb
 
 class SyncSites(SyncStep):
-	provides=[Site]
-	requested_interval=3600
+    provides=[Site]
+    requested_interval=3600
 
-	def fetch_pending(self, deletion):
+    def fetch_pending(self, deletion):
         if (deletion):
             return []
 
-		deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
-		current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))
+        deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
+        current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))
 
-		zone_ret = aws_run('ec2 describe-availability-zones')
-		zones = zone_ret['AvailabilityZones']
+        zone_ret = aws_run('ec2 describe-availability-zones')
+        zones = zone_ret['AvailabilityZones']
 
-		available_sites = [zone['ZoneName'] for zone in zones]
-		site_names = [sd.site.name for sd in current_site_deployments]
+        available_sites = [zone['ZoneName'] for zone in zones]
+        site_names = [sd.site.name for sd in current_site_deployments]
 
-		new_site_names = list(set(available_sites) - set(site_names))
+        new_site_names = list(set(available_sites) - set(site_names))
 
-		new_sites = []
-		for s in new_site_names:
-			site = Site(name=s,
-						login_base=s,
-						site_url="www.amazon.com",
-						enabled=True,
-						is_public=True,
-						abbreviated_name=s)
-			new_sites.append(site)
-		
-		return new_sites
+        new_sites = []
+        for s in new_site_names:
+            site = Site(name=s,
+                        login_base=s,
+                        site_url="www.amazon.com",
+                        enabled=True,
+                        is_public=True,
+                        abbreviated_name=s)
+            new_sites.append(site)
+        
+        return new_sites
 
-	def sync_record(self, site):
-		site.save()
+    def sync_record(self, site):
+        site.save()
 
