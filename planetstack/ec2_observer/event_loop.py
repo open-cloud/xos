@@ -98,7 +98,7 @@ class PlanetStackObserver:
 			# This contains dependencies between backend records
 			self.backend_dependency_graph = json.loads(open(backend_path).read())
 		except Exception,e:
-			logger.info('Backend dependency graph not loaded')
+			logger.info('Backend dependency graph not loaded: %s'%str(e))
 			# We can work without a backend graph
 			self.backend_dependency_graph = {}
 
