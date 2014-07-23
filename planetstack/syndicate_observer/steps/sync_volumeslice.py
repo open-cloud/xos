@@ -48,9 +48,6 @@ class SyncVolumeSlice(SyncStep):
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
 
-    def fetch_pending(self):
-        return VolumeSlice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, vs):
         
         logger.info("Sync VolumeSlice for (%s, %s)" % (vs.volume_id.name, vs.slice_id.name))
@@ -132,6 +129,10 @@ class SyncVolumeSlice(SyncStep):
             raise e
         
         return True
+    
+    # This method will simply cause the object to be purged from OpenCloud
+    def delete_record(self, volume_slice):
+        pass
 
 
 if __name__ == "__main__":
