@@ -23,4 +23,3 @@ class SyncNetworks(OpenStackSyncStep):
             except Exeption,e:
                 logger.log_exc("Failed to delete network deployment %s" % network_deployment)
                 raise e
-        network.delete()

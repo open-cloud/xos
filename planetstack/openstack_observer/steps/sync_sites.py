@@ -17,4 +17,3 @@ class SyncSites(OpenStackSyncStep):
         site_deployment_deleter = SiteDeploymentDeleter()
         for site_deployment in site_deployments:
             site_deployment_deleter(site_deployment.id)
-        site.delete()
