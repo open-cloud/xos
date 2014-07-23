@@ -11,11 +11,13 @@ class SyncUsers(OpenStackSyncStep):
     provides=[User]
     requested_interval=0
 
-    def fetch_pending(self):
-        return User.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, user):
         for user_deployment in UserDeployments.objects.filter(user=user):
             # bump the 'updated' field so user account are updated across 
             # deployments.
             user_deployment.save()
+
+    def delete_record(self, user):
+        user_deployment_deleter = UserDeploymentDeleter()
+        for user_deployment in UserDeployments.objects.filter(user=user):
+            user_deployment_deleter(user_deployment.id)
