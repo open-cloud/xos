@@ -12,12 +12,6 @@ class SyncNetworks(OpenStackSyncStep):
     provides=[Network]
     requested_interval = 0
 
-    def fetch_pending(self, deleted):
-        if (not deleted):
-            objs = Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-        else:
-            objs = Network.deleted_objects.all()
-
     def sync_record(self, network):
         network.save()
 
