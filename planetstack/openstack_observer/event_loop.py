@@ -19,7 +19,7 @@ from planetstack.config import Config
 from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
-from ec2_observer.error_mapper import *
+from observer.error_mapper import *
 
 debug_mode = False
 
@@ -234,7 +234,7 @@ class PlanetStackObserver:
 
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
-				self.wait_for_event(timeout=5)
+				self.wait_for_event(timeout=30)
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.

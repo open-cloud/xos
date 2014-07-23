@@ -234,7 +234,7 @@ class PlanetStackObserver:
 
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
-				self.wait_for_event(timeout=5)
+				self.wait_for_event(timeout=30)
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.
