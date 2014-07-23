@@ -14,9 +14,6 @@ class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
 
-    def fetch_pending(self):
-        return Sliver.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, sliver):
         logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
         metadata_update = {}
@@ -89,3 +86,9 @@ class SyncSlivers(OpenStackSyncStep):
         if sliver.instance_id and metadata_update:
             driver.update_instance_metadata(sliver.instance_id, metadata_update)
 
+    def delete_record(self, sliver):
+        if sliver.instance_id:
+            driver = self.driver.client_driver(caller=sliver.creator, 
+                                               tenant=sliver.slice.name,
+                                               deployment=sliver.deploymentNetwork.name)
+            driver.destroy_instance(sliver.instance_id)
