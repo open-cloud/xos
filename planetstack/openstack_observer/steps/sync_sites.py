@@ -9,9 +9,12 @@ class SyncSites(OpenStackSyncStep):
     provides=[Site]
     requested_interval=0
 
-    def fetch_pending(self):
-        return Site.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, site):
         site.save()
 
+    def delete_record(self, site):
+        site_deployments = SiteDeployments.objects.filter(site=site)
+        site_deployment_deleter = SiteDeploymentDeleter()
+        for site_deployment in site_deployments:
+            site_deployment_deleter(site_deployment.id)
+        site.delete()
