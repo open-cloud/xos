@@ -48,14 +48,6 @@ class SyncVolume(SyncStep):
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
 
-    def fetch_pending(self):
-        try:
-            ret = Volume.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-            return ret
-        except Exception, e:
-            traceback.print_exc()
-            return None
-
     def sync_record(self, volume):
         """
         Synchronize a Volume record with Syndicate.
@@ -110,6 +102,16 @@ class SyncVolume(SyncStep):
                 raise e
                     
         return True
+    
+    def delete_record(self, volume):
+        try:
+            volume_name = volume.name
+            syndicatelib.ensure_volume_absent( volume_name )
+        except Exception, e:
+            traceback.print_exc()
+            logger.exception("Failed to erase volume '%s'" % volume_name)
+            raise e
+
 
 
 
