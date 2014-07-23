@@ -47,9 +47,6 @@ class SyncVolumeAccessRight(SyncStep):
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
 
-    def fetch_pending(self):
-        return VolumeAccessRight.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, vac):
         
         syndicate_caps = "UNKNOWN"  # for exception handling
@@ -92,6 +89,11 @@ class SyncVolumeAccessRight(SyncStep):
             raise e
 
         return True
+    
+    # Jude: this will simply go on to purge the object from
+    # OpenCloud. The previous 'deleter' version was a no-op also.
+    def delete_record(self, obj):
+        pass
 
 
 if __name__ == "__main__":
