@@ -19,7 +19,7 @@ from planetstack.config import Config
 from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
-from observer.error_mapper import error_mapper
+from ec2_observer.error_mapper import *
 
 debug_mode = False
 
@@ -234,12 +234,12 @@ class PlanetStackObserver:
 
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
-				self.wait_for_event(timeout=30)
+				self.wait_for_event(timeout=5)
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.
 				for deletion in (False,True):
-					logger.info('Creation pass...')
+					logger.info('Deletion=%r...'%deletion)
 					# Set of whole steps that failed
 					failed_steps = []
 
@@ -269,7 +269,7 @@ class PlanetStackObserver:
 							# Various checks that decide whether
 							# this step runs or not
 							self.check_class_dependency(sync_step, failed_steps) # dont run Slices if Sites failed
-							self.check_schedule(sync_step,deletion) # dont run sync_network_routes if time since last run < 1 hour
+							self.check_schedule(sync_step, deletion) # dont run sync_network_routes if time since last run < 1 hour
 							should_run = True
 						except StepNotReady:
 							logging.info('Step not ready: %s'%sync_step.__name__)
@@ -295,10 +295,7 @@ class PlanetStackObserver:
 								if failed_objects:
 									failed_step_objects.update(failed_objects)
 
-								if (not deletion):
-									self.update_run_time(sync_step)
-								else:
-									self.update_deletion_run_time(sync_step)
+								self.update_run_time(sync_step,deletion)
 							except Exception,e:
 								logging.error('Model step failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
 								logger.log_exc(e)
