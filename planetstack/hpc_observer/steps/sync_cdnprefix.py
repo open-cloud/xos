@@ -24,9 +24,6 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
-    def fetch_pending(self):
-        return CDNPrefix.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
     def sync_record(self, cp):
         logger.info("sync'ing cdn prefix %s" % str(cp))
 
@@ -46,3 +43,6 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
             self.client.onev.Update("CDNPrefix", cp.cdn_prefix_id, cp_dict)
 
         cp.save()
+
+    def delete_record(self, m):
+        self.client.onev.Delete("CDNPrefix", m.cdn_prefix_id)
