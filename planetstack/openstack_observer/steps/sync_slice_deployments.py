@@ -16,32 +16,35 @@ class SyncSliceDeployments(OpenStackSyncStep):
     provides=[SliceDeployments]
     requested_interval=0
 
-    def fetch_pending(self):
-        # slice deployments are not visible to users. We must ensure
-        # slices are deployed at all deploymets available to their site.
-        site_deployments = SiteDeployments.objects.all()
-        site_deploy_lookup = defaultdict(list)
-        for site_deployment in site_deployments:
-            site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
-        
-        slice_deployments = SliceDeployments.objects.all()
-        slice_deploy_lookup = defaultdict(list)
-        for slice_deployment in slice_deployments:
-            slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
-        
-        all_deployments = Deployment.objects.all() 
-        for slice in Slice.objects.all():
-            # slices are added to all deployments for now
-            expected_deployments = all_deployments
-            #expected_deployments = site_deploy_lookup[slice.site]
-            for expected_deployment in expected_deployments:
-                if slice not in slice_deploy_lookup or \
-                   expected_deployment not in slice_deploy_lookup[slice]:
-                    sd = SliceDeployments(slice=slice, deployment=expected_deployment)
-                    sd.save()
+    def fetch_pending(self, deleted):
+        if (deleted):
+            return SliceDeployments.deleted_objects.all()
+        else:
+            # slice deployments are not visible to users. We must ensure
+            # slices are deployed at all deploymets available to their site.
+            site_deployments = SiteDeployments.objects.all()
+            site_deploy_lookup = defaultdict(list)
+            for site_deployment in site_deployments:
+                site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
+            
+            slice_deployments = SliceDeployments.objects.all()
+            slice_deploy_lookup = defaultdict(list)
+            for slice_deployment in slice_deployments:
+                slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
+            
+            all_deployments = Deployment.objects.all() 
+            for slice in Slice.objects.all():
+                # slices are added to all deployments for now
+                expected_deployments = all_deployments
+                #expected_deployments = site_deploy_lookup[slice.site]
+                for expected_deployment in expected_deployments:
+                    if slice not in slice_deploy_lookup or \
+                       expected_deployment not in slice_deploy_lookup[slice]:
+                        sd = SliceDeployments(slice=slice, deployment=expected_deployment)
+                        sd.save()
 
-        # now we can return all slice deployments that need to be enacted   
-        return SliceDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            # now we can return all slice deployments that need to be enacted   
+            return SliceDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def get_next_subnet(self, deployment=None):
         # limit ourself to 10.0.x.x for now
@@ -103,3 +106,30 @@ class SyncSliceDeployments(OpenStackSyncStep):
             driver.shell.nova.quotas.update(tenant_id=slice_deployment.tenant_id, instances=int(slice_deployment.slice.max_slivers)) 
 
         slice_deployment.save()
+
+
+    def delete_record(self, slice_deployment):
+        user = User.objects.get(id=slice_deployment.slice.creator.id)
+        driver = OpenStackDriver().admin_driver(deployment=slice_deployment.deployment.name)
+        client_driver = driver.client_driver(caller=user,
+                                             tenant=slice_deployment.slice.name,
+                                             deployment=slice_deployment.deployment.name)
+
+        if slice_deployment.router_id and slice_deployment.subnet_id:
+            client_driver.delete_router_interface(slice_deployment.router_id, slice_deployment.subnet_id)
+        if slice_deployment.subnet_id:
+            client_driver.delete_subnet(slice_deployment.subnet_id)
+        if slice_deployment.router_id:    
+            client_driver.delete_router(slice_deployment.router_id)
+        if slice_deployment.network_id:
+            client_driver.delete_network(slice_deployment.network_id)
+        if slice_deployment.tenant_id:
+            driver.delete_tenant(slice_deployment.tenant_id)
+        # delete external route
+        #subnet = None
+        #subnets = client_driver.shell.quantum.list_subnets()['subnets']
+        #for snet in subnets:
+        #    if snet['id'] == slice_deployment.subnet_id:
+        #        subnet = snet
+        #if subnet:
+        #    driver.delete_external_route(subnet)
