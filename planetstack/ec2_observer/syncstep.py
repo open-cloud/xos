@@ -44,12 +44,22 @@ class SyncStep:
         return
 
     def fetch_pending(self, deletion=False):
-        return []
+        # This is the most common implementation of fetch_pending
+        # Steps should override it if they have their own logic
+        # for figuring out what objects are outstanding.
+        main_obj = self.provides[0]
+        if (not deleted):
+            objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        else:
+            objs = main_obj.deleted_objects.all()
+
+        return objs
         #return Sliver.objects.filter(ip=None)
     
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
-            peer_object = getattr(obj, dep.lower())
+            peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
+            peer_object = getattr(obj, peer_name)
             if (peer_object.pk==failed.pk):
                 raise FailedDependency
 
