@@ -12,9 +12,21 @@ class SyncNetworks(OpenStackSyncStep):
     provides=[Network]
     requested_interval = 0
 
-    def fetch_pending(self):
-        return Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+    def fetch_pending(self, deleted):
+        if (not deleted):
+            objs = Network.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        else:
+            objs = Network.deleted_objects.all()
 
     def sync_record(self, network):
         network.save()
 
+    def delete_record(self, network):
+        network_deployment_deleter = NetworkDeploymentDeleter()
+        for network_deployment in NetworkDeployments.objects.filter(network=network):
+            try:
+                network_deployment_deleter(network_deployment.id)    
+            except Exeption,e:
+                logger.log_exc("Failed to delete network deployment %s" % network_deployment)
+                raise e
+        network.delete()
