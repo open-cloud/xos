@@ -13,7 +13,10 @@ class SyncSliceMemberships(OpenStackSyncStep):
     requested_interval=0
     provides=[SlicePrivilege]
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Deleting site memberships is not supported yet
+        if (deleted):
+            return []
         return SlicePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, slice_memb):

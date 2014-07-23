@@ -14,7 +14,9 @@ class SyncImageDeployments(OpenStackSyncStep):
     provides=[ImageDeployments]
     requested_interval=0
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        if (deleted):
+            return []
          # smbaker: commented out automatic creation of ImageDeployments as
          #    as they will now be configured in GUI. Not sure if this is
          #    sufficient.

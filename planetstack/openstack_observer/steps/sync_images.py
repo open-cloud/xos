@@ -9,7 +9,12 @@ class SyncImages(OpenStackSyncStep):
     provides=[Image]
     requested_interval=0
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Images come from the back end
+        # You can't delete them
+        if (deleted):
+            return []
+
         # get list of images on disk
         images_path = Config().observer_images_directory 
         available_images = {}

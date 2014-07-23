@@ -9,7 +9,11 @@ class SyncSitePrivileges(OpenStackSyncStep):
     requested_interval=0
     provides=[SitePrivilege]
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Deleting site privileges is not supported yet
+        if (deleted):
+            return []
+
         return SitePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, site_priv):

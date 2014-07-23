@@ -9,7 +9,10 @@ class SyncSliverIps(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Not supported yet
+        if (deleted):
+            return []
         slivers = Sliver.objects.filter(ip=None)
         return slivers
 

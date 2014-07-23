@@ -11,7 +11,11 @@ class SyncRoles(OpenStackSyncStep):
     provides=[Role]
     requested_interval=0
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Deleting roles is not supported yet
+        if (deleted):
+            return []
+
         site_roles = SiteRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         slice_roles = SliceRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         deployment_roles = DeploymentRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))

@@ -12,7 +12,12 @@ class SyncNodes(OpenStackSyncStep):
     provides=[Node]
     requested_interval=0
 
-    def fetch_pending(self):
+    def fetch_pending(self, deleted):
+        # Nodes come from the back end
+        # You can't delete them
+        if (deleted):
+            return []
+
         # collect local nodes
         sites = Site.objects.all()
         nodes = Node.objects.all()
