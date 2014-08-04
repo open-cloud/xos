@@ -60,7 +60,10 @@ class SyncStep:
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
             peer_object = getattr(obj, peer_name)
-            if (peer_object.pk==failed.pk):
+            
+            # peer_object can be None, and if so there
+            # is no object-level dependency
+            if (peer_object and peer_object.pk==failed.pk):
                 raise FailedDependency
 
     def call(self, failed=[], deletion=False):
