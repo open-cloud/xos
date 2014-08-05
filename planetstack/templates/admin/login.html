@@ -4,7 +4,10 @@
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/static/suit/bootstrap/css/bootstrap.min.css" media="all"/>
 <link rel="stylesheet" type="text/css" href="{% static "planetstack.css" %}" />
+<script src="{% static 'suit/js/jquery-1.9.1.min.js' %}"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 {% endblock %}
+
 
 {% block bodyclass %}login{% endblock %}
 
@@ -42,22 +45,108 @@
     <input type="hidden" name="this_is_the_login_form" value="1" />
     <input type="hidden" name="next" value="{{ next }}" />
   </div>
-  {% url 'admin_password_reset' as password_reset_url %}
-  {% if password_reset_url %}
-  <div class="password-reset-link">
-    <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
-  </div>
-  {% endif %}
   <div class="submit-row">
     <input type="submit" class="btn btn-info" value="{% trans 'SIGN IN' %}" />
   </div>
-{% url 'django-admindocs-docroot' as docsroot %}
-                  {% if docsroot %}
-<div class="createAccountLink"><a href="{{ docsroot }}">{% trans 'Request a new Account' %}</a></div>
-
-                  {% endif %}
+        <div id="requestAccountLink">{% trans 'Request a new Account' %}</div>
 </form>
+
+<div id="request-account-form" title="Request an Account" style="display: none;">
+	<form>
+		<fieldset>
+			<div class="request-form-row">
+				<label for="request-first-name">First Name</label>
+				<input type="text" name="request-first-name" id="request-first-name">
+			</div>
+			 <div class="request-form-row">
+                                <label for="request-last-name">Last Name</label>
+                                <input type="text" name="request-last-name" id="request-last-name">
+                        </div>
+			 <div class="request-form-row">
+                                <label for="request-email">Email</label>
+                                <input type="text" name="request-email" id="request-email">
+                        </div>
+			 <div class="request-form-row">
+                                <label for="request-site-name">Site</label><br>
+				<select id="request-site-name" name="request-site-name">
+   					 <option>---------</option>
+   					 <option>Stanford</option>
+    					 <option>Washington</option>
+    					 <option>Princeton</option>
+    					 <option>GeorgiaTech</option>
+    					 <option>MaxPlanck</option>
+    					 <option>I2 Atlanta</option>
+    					 <option>I2 Chicago</option>
+    					 <option>I2 Houston</option>
+   					 <option>I2 Kansas City</option>
+    					 <option>I2 Los Angeles</option>
+    					 <option>I2 New York</option>
+    					 <option>I2 Salt Lake City</option>
+    					 <option>I2 Seattle</option>
+    					 <option>I2 Washington DC</option>
+    					 <option>ON.Lab</option>
+    					 <option>I2 Singapore</option>
+    					 <option>Arizona</option>
+				</select>
+                        </div>
+			<div class="submit-row">
+    				<input id ="request-signup" class="btn btn-info" value="SIGN UP">
+  			</div>
+		</fieldset>
+	</form>
+</div>
+</div>
+</div>
+
+
 <script type="text/javascript">
+$(function() {
+	initRequest();
+});
+function initRequest(){
+	$.ajax({
+			url: '/tenantview',
+			dataType: 'json',
+			success: function (data) {
+				var sites = data['sitesToBeRequested'];
+				console.log(sites);
+				for (site in sites){
+					$("#request-site-name").append("<option>" + site + "</option>");
+				}
+			}
+		});
+}
+$("#requestAccountLink").unbind().click(function(){
+	$("#request-account-form").dialog({
+					autoOpen: false,
+					modal: true,
+					dialogClass: "requestDialog",
+				});
+				$("#request-account-form").dialog("open");
+})
+$("#request-signup").unbind().click(function(){
+							$.ajax({
+								url: '/requestaccess/',
+								dataType: 'json',
+								data: {
+									email: $("#request-email").val(),
+									firstname: $("#request-first-name").val(),
+									lastname: $("#request-last-name").val(),
+									site: $("#request-site-name").val(),
+									csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
+									state: "inactive"
+								},
+								async: false,
+								type: 'POST',
+								success: function () {
+									$("#request-account-form").dialog("close");	
+									alert("Your request has been submitted");							
+								},
+								error:function (xhr, textStatus, thrownError){
+         							   alert("Error:", textStatus + " " + xhr.responseText);
+        						        }
+							});
+})
 document.getElementById('id_username').focus()
 </script>
 </div>

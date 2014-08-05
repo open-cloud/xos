@@ -496,13 +496,13 @@ padding-left: 8px;
 display:none;
 }
 
-.login #content-main form input[type=text]{
+.login #content-main form input[type=text], .requestDialog.ui-widget input{
 width: 94%;
 padding:4px 6px;
 border-radius: 0px;
 height: 30px;
-background-color: #E5E5E5;
-background-image: url('name.png');
+background-color: rgb(250, 255, 189);
+/*background-image: url('name.png');*/
 background-repeat: no-repeat;
 background-position: 95%;
 font-size: 12px;
@@ -671,11 +671,18 @@ height: 84.5%;
 	float: left;
 }
 
-.createAccountLink {
+#request-account-form{
+	display:none;
+}
+
+#requestAccountLink {
 	width: 55%;
 	text-align: right;
 	float: left;
-	
+	padding-left: 21%;
+	cursor: pointer;
+	color: #448CCA;
+	text-decoration: underline;	
 }
 
 .login .btn-info {
@@ -1031,6 +1038,15 @@ div.chartContainer
  margin-left: 5%;
 }
 
+
+#adv-slice-image-value{
+margin-right: 0.5%;
+}
+
+#adv-network-value {
+margin-right: 0.3%;
+}
+
 #network-dropdown,#adv-network-dropdown,#adv-network-value{
  margin-left: 3.7%;
 }
@@ -1043,16 +1059,16 @@ div.chartContainer
    margin-left: 2%;
 }
 #adv-dataset-dropdown{
-margin-left: 3%;
+margin-left: 3.7%;
 }
 #advanced-tenant,#basic-tenant,#sliver-btn,#save-btn{
   float:right;
 }
- #delete-slice-btn,#download-details{
+ #delete-slice-btn,#download-details,#add-user-btn{
 	margin-left:1%;
 }
 
-#sliver-btn,#save-btn,#create-slice-btn,#delete-slice-btn,#download-details{
+#sliver-btn,#save-btn,#create-slice-btn,#delete-slice-btn,#add-user-btn,#download-details{
   margin-top:1%;
 }
 
@@ -1139,11 +1155,63 @@ display:none;
 #private-vol{
 margin-right: 15% !important;
 }
-
 .customize_row {
   display: table;
 }
 .customize_column {
   display: table-cell;
   padding: 10px;
+}
+
+.request-form-row{
+padding:1% 8%;
+}
+
+.requestDialog{
+background-color: white;
+border-radius: 8px;
+width: 30% !important;
+height: 40% !important;
+margin-top: -16%;
+top: -103.703125px !important;
+}
+
+.request-form-row label{
+	float: left;
+}
+
+
+.requestDialog .ui-dialog-buttonset .ui-button{
+border-radius: 0 !important;
+background-color: grey !important;
+font-weight: bold !important;
+font-size: 0.9em; !important
+}
+
+.requestDialog .ui-dialog-titlebar-close{
+float:right;
+}
+
+#request-signup{
+height: 40px !important;
+margin: 0 14%;
+float: left;
+background-color: #448CCA;
+background-image: none;
+width: 70% !important;
+}
+
+.requestDialog .ui-dialog-titlebar{
+border-radius: 0 !important;
+height: 25px;
+padding-top: 2%;
+}
+
+.requestDialog #ui-id-1{
+padding-left: 28%;
+font-size: medium;
+}
+
+#request-site-name{
+	width: 98%;
 }
