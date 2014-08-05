@@ -70,6 +70,7 @@ fi
 rm -rf %{buildroot}
 mkdir -p  %{buildroot}
 install -d %{buildroot}/opt/planetstack
+install -d %{buildroot}/etc/init.d
 
 # in builddir
 cp -rp ./planetstack %{buildroot}/opt/.
@@ -77,6 +78,7 @@ cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
 
 find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
 cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
+echo /etc/init.d/plstackobserver > %{_tmppath}/tmp-filelist
 
 %clean
 rm -rf %{buildroot}
