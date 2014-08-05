@@ -69,24 +69,12 @@
 			 <div class="request-form-row">
                                 <label for="request-site-name">Site</label><br>
 				<select id="request-site-name" name="request-site-name">
-   					 <option>---------</option>
-   					 <option>Stanford</option>
-    					 <option>Washington</option>
-    					 <option>Princeton</option>
-    					 <option>GeorgiaTech</option>
-    					 <option>MaxPlanck</option>
-    					 <option>I2 Atlanta</option>
-    					 <option>I2 Chicago</option>
-    					 <option>I2 Houston</option>
-   					 <option>I2 Kansas City</option>
-    					 <option>I2 Los Angeles</option>
-    					 <option>I2 New York</option>
-    					 <option>I2 Salt Lake City</option>
-    					 <option>I2 Seattle</option>
-    					 <option>I2 Washington DC</option>
-    					 <option>ON.Lab</option>
-    					 <option>I2 Singapore</option>
-    					 <option>Arizona</option>
+                                    <option>---------</option>
+                                    {% for site in sites %}
+                                        {% if site.allowNewUsers %}
+                                            <option>{{ site.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
 				</select>
                         </div>
 			<div class="submit-row">
