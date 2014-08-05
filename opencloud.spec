@@ -73,7 +73,7 @@ install -d %{buildroot}/opt/planetstack
 
 # in builddir
 cp -rp ./planetstack %{buildroot}/opt/.
-cp opencloud-initscript %{buildroot}/etc/init.d
+cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
 
 find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
 cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
