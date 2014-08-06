@@ -501,6 +501,16 @@
     }
 },
 {
+    "pk": 5,
+    "model": "core.siterole",
+    "fields": {
+        "updated": "2014-04-22T11:34:39.770Z",
+        "enacted": null,
+        "role": "default",
+        "created": "2014-04-22T11:34:39.770Z"
+    }
+},
+{
     "pk": 5, 
     "model": "core.deployment", 
     "fields": {

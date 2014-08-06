@@ -234,6 +234,13 @@ class SliverInline(PlStackTabularInline):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deploymentNetwork':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
+           # the inscrutable jquery selector below says:
+           #     find the closest parent "tr" to the current element
+           #     then find the child with class "field-node"
+           #     then find the child with that is a select
+           #     then return its id
+           kwargs['widget'] = forms.Select(attrs={'onChange': "update_nodes(this, $($(this).closest('tr')[0]).find('.field-node select')[0].id)"})
+           #kwargs['widget'] = forms.Select(attrs={'onChange': "console.log($($($(this).closest('tr')[0]).children('.field-node')[0]).children('select')[0].id);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -759,6 +766,19 @@ class SliceAdmin(PlanetStackBaseAdmin):
         ('tags','Tags'),
         ('reservations','Reservations'),
     )
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        #deployment_nodes = {}
+        #for node in Node.objects.all():
+        #    deployment_nodes[node.deployment.id] = get(deployment_nodes, node.deployment.id, []).append( (node.id, node.name) )
+
+        deployment_nodes = []
+        for node in Node.objects.all():
+            deployment_nodes.append( (node.deployment.id, node.id, node.name) )
+
+        context["deployment_nodes"] = deployment_nodes
+
+        return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':

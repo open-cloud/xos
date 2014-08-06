@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# observer       Starts and stops Observer daemon
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+[ -f /etc/sysconfig/plstackobserver ] && . /etc/sysconfig/plstackobserver
+
+
+plstackobserver=${NODEMANAGER-"python /opt/planetstack/planetstack-backend.py -d"}
+prog="OpenCloud Observer"
+pidfile=${PIDFILE-/var/run/plstackobserver.pid}
+
+RETVAL=0
+
+function start() {
+    action $"Starting $prog: " daemon --pidfile=$pidfile --check=plstackobserver $plstackobserver "$@"
+}
+
+function stop() {
+    action $"Stopping $prog: " killproc -p $pidfile plstackobserver
+}
+
+case "$1" in
+    start)
+	start $options
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status -p $pidfile plstackobserver
+	RETVAL=$?
+	;;
+    restart|reload)
+	shift
+	stop
+	start $options "$@"
+	;;
+    condrestart)
+	shift
+	[ -f ${pidfile} ] && { stop; start $options "$@"; }
+	;;
+    restartverbose)
+	shift
+	stop
+	$plstackobserver $verboseoptions "$@"
+	;;
+    restartdebug)
+	shift
+	stop
+	echo "Restarting with $debugoptions $@ .."
+	$plstackobserver $debugoptions "$@"
+	;;
+    *)
+	echo $"Usage: $0 {start|stop|status|restart|condrestart|restartdebug [-d]}"
+	exit 1
+	;;
+esac
+
+exit $RETVAL
