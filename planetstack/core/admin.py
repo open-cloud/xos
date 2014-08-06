@@ -239,7 +239,7 @@ class SliverInline(PlStackTabularInline):
            #     then find the child with class "field-node"
            #     then find the child with that is a select
            #     then return its id
-           kwargs['widget'] = forms.Select(attrs={'onChange': "update_nodes(this, $($($(this).closest('tr')[0]).children('.field-node')[0]).children('select')[0].id);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "update_nodes(this, $($(this).closest('tr')[0]).find('.field-node select')[0].id)"})
            #kwargs['widget'] = forms.Select(attrs={'onChange': "console.log($($($(this).closest('tr')[0]).children('.field-node')[0]).children('select')[0].id);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
