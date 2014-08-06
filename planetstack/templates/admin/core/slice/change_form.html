@@ -1,0 +1,12 @@
+{% extends 'admin/change_form.html' %}
+{% block extrahead %} 
+{{ block.super }} 
+<script>
+deployment_nodes = [
+{% for dn in deployment_nodes %}
+   [{{ dn.0 }}, {{ dn.1 }} , "{{ dn.2 }}"],
+{% endfor %}
+];
+</script>
+{% endblock %}
+

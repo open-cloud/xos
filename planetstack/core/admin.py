@@ -760,6 +760,19 @@ class SliceAdmin(PlanetStackBaseAdmin):
         ('reservations','Reservations'),
     )
 
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        #deployment_nodes = {}
+        #for node in Node.objects.all():
+        #    deployment_nodes[node.deployment.id] = get(deployment_nodes, node.deployment.id, []).append( (node.id, node.name) )
+
+        deployment_nodes = []
+        for node in Node.objects.all():
+            deployment_nodes.append( (node.deployment.id, node.id, node.name) )
+
+        context["deployment_nodes"] = deployment_nodes
+
+        return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user)
