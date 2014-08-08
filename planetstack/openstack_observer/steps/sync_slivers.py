@@ -14,6 +14,10 @@ class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
 
+    def get_userdata(self, sliver):
+        userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n' % (sliver.slice.name, sliver.node.name)
+        return userdata
+
     def sync_record(self, sliver):
         logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
         metadata_update = {}
@@ -72,13 +76,17 @@ class SyncSlivers(OpenStackSyncStep):
                                'public_key': sliver.creator.public_key}
                 driver.create_keypair(**key_fields)
 
+            userData = self.get_userdata(sliver)
+            if sliver.userData:
+                userData = sliver.userData
+
             instance = driver.spawn_instance(name=sliver.name,
                                 key_name = keyname,
                                 image_id = image_id,
                                 hostname = sliver.node.name,
                                 pubkeys = pubkeys,
                                 nics = nics,
-                                userdata = sliver.userData )
+                                userdata = userData )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
             sliver.save()    
