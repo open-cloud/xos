@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.22
-Release: 2
+Version: 1.0.23
+Release: 0
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -73,12 +73,26 @@ install -d %{buildroot}/opt/planetstack
 install -d %{buildroot}/etc/init.d
 
 # in builddir
-cp -rp ./planetstack %{buildroot}/opt/.
+
+
+# don't copy symbolic links (they are handled in %post)
+rsync -rptgoD ./planetstack %{buildroot}/opt/.  
 cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
 
 find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
+echo /etc/init.d/plstackobserver >> %{_tmppath}/tmp-filelist
+
+# remove config files from the file list (see %config below)
+cat > %{_tmppath}/config-files << "EOF"
+/opt/planetstack/plstackapi_config
+/opt/planetstack/deployment_auth.py
+EOF
+
+sort %{_tmppath}/tmp-filelist > %{_tmppath}/tmp-filelist.sorted
+sort %{_tmppath}/config-files > %{_tmppath}/config-files.sorted
+comm -13 %{_tmppath}/config-files.sorted %{_tmppath}/tmp-filelist.sorted > %{_tmppath}/tmp-filelist
+
 cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
-echo /etc/init.d/plstackobserver > %{_tmppath}/tmp-filelist
 
 %clean
 rm -rf %{buildroot}
@@ -89,6 +103,9 @@ rm -rf %{buildroot}
 %config /opt/planetstack/deployment_auth.py
 
 %post
+ln -s ec2_observer /opt/planetstack/observer
+ln -s config-opencloud.py /opt/planetstack/syndicate_observer/syndicatelib_config/config.py
+
 if [ "$1" == 1 ] ; then
     echo "NEW INSTALL - initializing database"
     /opt/planetstack/scripts/opencloud initdb
