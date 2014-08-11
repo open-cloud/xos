@@ -32,6 +32,10 @@ class Slice(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    @property
+    def slicename(self):
+        return "%s_%s" % (self.site.login_base, self.name)
+
     def save(self, *args, **kwds):
         if self.serviceClass is None:
             # We allowed None=True for serviceClass because Django evolution
