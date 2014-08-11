@@ -826,14 +826,14 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
         auth = request.session.get('auth', {})
-        auth['tenant'] = obj.slice.name
+        auth['tenant'] = obj.slice.slicename
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.save()
 
     def delete_model(self, request, obj):
         # update openstack connection to use this site/tenant
         auth = request.session.get('auth', {})
-        auth['tenant'] = obj.slice.name
+        auth['tenant'] = obj.slice.slicename
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
 
