@@ -1,0 +1,15 @@
+#! /bin/bash
+
+# Demonstrates using get_instance_name to ssh to an instance at a hostname
+# Call this script with one argument, the name of the node you want to ssh
+
+# fill in all ow the following wiht your info
+
+$USERNAME=my_username
+$PASSWORD=my_password
+$SLICENAME=my_slice
+$KEY=pathname_to_my_ssh_key
+$PROGRAM=/home/smbaker/projects/vicci/plstackapi/planetstack/tools/get_instance_name.py
+
+INSTANCE_NAME=`python $PROGRAM $USERNAME $PASSWORD $1 $SLICENAME`
+ssh-agent bash -c "ssh-add $KEY; ssh -A $INSTANCE_NAME@$1"
