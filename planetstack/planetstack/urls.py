@@ -93,6 +93,9 @@ urlpatterns = patterns('',
     url(r'^plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
     url(r'^plstackapi/networkslices/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliceDetail.as_view(), name='networkslice-detail'),
 
+    url(r'^plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
+    url(r'^plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliverDetail.as_view(), name='networksliver-detail'),
+
     url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
     url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
     
