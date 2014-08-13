@@ -12,14 +12,9 @@ class SyncNetworkSlivers(OpenStackSyncStep):
     requested_interval = 0 # 3600
     provides=[NetworkSliver]
 
-    # XXX smbaker: Note that this sync_step only functions for private networks.
     #     The way it works is to enumerate the all of the ports that quantum
     #     has, and then work backward from each port's network-id to determine
     #     which Network is associated from the port.
-    #
-    #     There's a bug somewhere in NetworkDeployment where NAT and Dedicated
-    #     networks are not getting assigned the correct network IDs. This means
-    #     we can't reverse map them.
 
     def call(self, **args):
         networkSlivers = NetworkSliver.objects.all()
