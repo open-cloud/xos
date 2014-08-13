@@ -87,8 +87,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
     url(r'^plstackapi/accounts/(?P<pk>[a-zA-Z0-9_\-]+)/$', AccountDetail.as_view(), name='account-detail'),
 
-    url(r'^plstackapi/networktemplates/$', NetworkSliceList.as_view(), name='networkslice-list'),
-    url(r'^plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliceDetail.as_view(), name='networkslice-detail'),
+    url(r'^plstackapi/networktemplates/$', NetworkTemplateList.as_view(), name='networktemplate-list'),
+    url(r'^plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkTemplateDetail.as_view(), name='networktemplate-detail'),
 
     url(r'^plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
     url(r'^plstackapi/networkslices/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliceDetail.as_view(), name='networkslice-detail'),
