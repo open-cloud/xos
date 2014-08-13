@@ -23,6 +23,10 @@ class NetworkTemplate(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    @staticmethod
+    def select_by_user(user):
+        return NetworkTemplate.objects.all()
+
 class Network(PlCoreBase):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
@@ -69,8 +73,8 @@ class NetworkDeployments(PlCoreBase):
     deployment = models.ForeignKey(Deployment)
     net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
-    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id") 
-    subnet = models.CharField(max_length=32, blank=True)    
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+    subnet = models.CharField(max_length=32, blank=True)
        
     def can_update(self, user):
         return user.is_admin
@@ -83,7 +87,7 @@ class NetworkDeployments(PlCoreBase):
             slices = Slice.select_by_user(user)
             networks = Network.objects.filter(owner__in=slices)
             qs = NetworkDeployments.objects.filter(network__in=networks)
-        return qs      
+        return qs
 
 class NetworkSlice(PlCoreBase):
     # This object exists solely so we can implement the permission check when
