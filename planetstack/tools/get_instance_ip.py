@@ -12,6 +12,7 @@ REST_API="http://alpha.opencloud.us:8000/plstackapi/"
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
 SLIVERS_API = REST_API + "slivers/"
+NETWORKSLIVERS_API = REST_API + "networkslivers/"
 
 opencloud_auth=("demo@onlab.us", "demo")
 
@@ -63,7 +64,29 @@ def main():
 
     # return the last one in the list (i.e. the newest one)
 
-    print slivers[-1]["ip"]
+    sliver_id = slivers[-1]["id"]
+
+    r = requests.get(NETWORKSLIVERS_API + "?sliver=%s" % sliver_id, auth=opencloud_auth)
+
+    networkSlivers = r.json()
+    ips = [x["ip"] for x in networkSlivers]
+
+    # XXX kinda hackish -- assumes private ips start with "10." and nat start with "172."
+
+    # print a public IP if there is one
+    for ip in ips:
+       if (not ip.startswith("10")) and (not ip.startswith("172")):
+           print ip
+           return
+
+    # otherwise print a privat ip
+    for ip in ips:
+       if (not ip.startswith("172")):
+           print ip
+           return
+
+    # otherwise just print the first one
+    print ips[0]
 
 if __name__ == "__main__":
     main()
