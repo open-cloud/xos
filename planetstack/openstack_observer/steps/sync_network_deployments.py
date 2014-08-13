@@ -13,20 +13,20 @@ from util.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 class SyncNetworkDeployments(OpenStackSyncStep):
-    requested_interval = 0 
+    requested_interval = 0
     provides=[Network, NetworkDeployments, Sliver]
-    
+
     def fetch_pending(self, deleted):
         if (deleted):
             return NetworkDeployments.deleted_objects.all()
         else:
             # network deployments are not visible to users. We must ensure
-            # networks are deployed at all deploymets available to their slices. 
+            # networks are deployed at all deploymets available to their slices.
             slice_deployments = SliceDeployments.objects.all()
             slice_deploy_lookup = defaultdict(list)
             for slice_deployment in slice_deployments:
                 slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
-            
+
             network_deployments = NetworkDeployments.objects.all()
             network_deploy_lookup = defaultdict(list)
             for network_deployment in network_deployments:
@@ -36,7 +36,7 @@ class SyncNetworkDeployments(OpenStackSyncStep):
                 # ignore networks that have
                 # template.visibility = private and translation = none
                 if network.template.visibility == 'private' and not network.template.translation == 'none':
-                    continue				
+                    continue
                 expected_deployments = slice_deploy_lookup[network.owner]
                 for expected_deployment in expected_deployments:
                     if network not in network_deploy_lookup or \
@@ -62,8 +62,19 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         return next_network
 
     def save_network_deployment(self, network_deployment):
-        if not network_deployment.network_id and network_deployment.network.template.sharedNetworkName:
-            network_deployment.network_id = network_deployment.network.template.sharedNetworkId
+        if not network_deployment.net_id and network_deployment.network.template.sharedNetworkName:
+            # It's a shared network, try to find the shared network id
+
+            quantum_networks = self.driver.shell.quantum.list_networks(name=network_deployment.network.template.sharedNetworkName)["networks"]
+            if quantum_networks:
+                logger.info("set shared network id %s" % quantum_networks[0]["id"])
+                network_deployment.net_id = quantum_networks[0]["id"]
+            else:
+                logger.info("failed to find shared network id for deployment")
+                return
+
+        # At this point, it must be a private network, so create it if it does
+        # not exist.
 
         if not network_deployment.net_id:
             network_name = network_deployment.network.name
@@ -95,9 +106,22 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             # add external route
             #self.driver.add_external_route(subnet)
             logger.info("created private subnet (%s) for network: %s" % (cidr, network_deployment.network))
-        else:
+
+        # Now, figure out the subnet and subnet_id for the network. This works
+        # for both private and shared networks.
+
+        if (not network_deployment.subnet_id) or (not network_deployment.subnet):
             (network_deployment.subnet_id, network_deployment.subnet) = self.driver.get_network_subnet(network_deployment.net_id)
             logger.info("sync'ed subnet (%s) for network: %s" % (network_deployment.subnet, network_deployment.network))
+
+        if (not network_deployment.subnet):
+            # this will generate a non-null database constraint error
+            #   ... which in turn leads to transaction errors
+            # it's probably caused by networks that no longer exist at the
+            # quantum level.
+
+            logger.info("null subnet for network %s, skipping save" % network_deployment.network)
+            return
 
         network_deployment.save()
 
@@ -106,7 +130,7 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             try:
                 # update manager context
                 real_driver = self.driver
-                self.driver = self.driver.client_driver(caller=network_deployment.network.owner.creator, 
+                self.driver = self.driver.client_driver(caller=network_deployment.network.owner.creator,
                                                         tenant=network_deployment.network.owner.name,
                                                         deployment=network_deployment.deployment.name)
                 self.save_network_deployment(network_deployment)
@@ -114,10 +138,10 @@ class SyncNetworkDeployments(OpenStackSyncStep):
                 logger.info("saved network deployment: %s" % (network_deployment))
             except Exception,e:
                 logger.log_exc("save network deployment failed: %s" % network_deployment)
-                raise e            
-        
-          
-    def delete_record(self, network_deployment): 
+                raise e
+
+
+    def delete_record(self, network_deployment):
         driver = OpenStackDriver().client_driver(caller=network_deployment.network.owner.creator,
                                                  tenant=network_deployment.network.owner.name,
                                                  deployment=network_deployment.deployment.name)
