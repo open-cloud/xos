@@ -4,12 +4,24 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
+from util.logger import Logger, logging
+
+logger = Logger(level=logging.INFO)
 
 class SyncNetworkSlivers(OpenStackSyncStep):
-    requested_interval = 3600
+    requested_interval = 0 # 3600
     provides=[NetworkSliver]
 
-    def call(self, failed=[]):
+    # XXX smbaker: Note that this sync_step only functions for private networks.
+    #     The way it works is to enumerate the all of the ports that quantum
+    #     has, and then work backward from each port's network-id to determine
+    #     which Network is associated from the port.
+    #
+    #     There's a bug somewhere in NetworkDeployment where NAT and Dedicated
+    #     networks are not getting assigned the correct network IDs. This means
+    #     we can't reverse map them.
+
+    def call(self, **args):
         networkSlivers = NetworkSliver.objects.all()
         networkSlivers_by_id = {}
         networkSlivers_by_port = {}
@@ -20,7 +32,12 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         networks = Network.objects.all()
         networks_by_id = {}
         for network in networks:
-            networks_by_id[network.network_id] = network
+            for nd in network.networkdeployments_set.all():
+                networks_by_id[nd.net_id] = network
+
+        #logger.info("networks_by_id = ")
+        #for (network_id, network) in networks_by_id.items():
+        #    logger.info("   %s: %s" % (network_id, network.name))
 
         slivers = Sliver.objects.all()
         slivers_by_instance_id = {}
@@ -30,26 +47,32 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
         ports = driver.shell.quantum.list_ports()["ports"]
         for port in ports:
+            #logger.info("port %s" % str(port))
             if port["id"] in networkSlivers_by_port:
                 # we already have it
-                print "already accounted for port", port["id"]
+                #logger.info("already accounted for port %s" % port["id"])
                 continue
 
             if port["device_owner"] != "compute:nova":
                 # we only want the ports that connect to instances
-                continue
-
-            network = networks_by_id.get(port['network_id'], None)
-            if not network:
-                #print "no network for port", port["id"], "network", port["network_id"]
+                #logger.info("port %s is not a compute port, it is a %s" % (port["id"], port["device_owner"]))
                 continue
 
             sliver = slivers_by_instance_id.get(port['device_id'], None)
             if not sliver:
-                print "no sliver for port", port["id"], "device_id", port['device_id']
+                logger.info("no sliver for port %s device_id %s" % (port["id"], port['device_id']))
                 continue
 
-            if network.template.sharedNetworkId is not None:
+            network = networks_by_id.get(port['network_id'], None)
+            if not network:
+                logger.info("no network for port %s network %s" % (port["id"], port["network_id"]))
+
+                # we know it's associated with a sliver, but we don't know
+                # which network it is part of.
+
+                continue
+
+            if network.template.sharedNetworkName:
                 # If it's a shared network template, then more than one network
                 # object maps to the quantum network. We have to do a whole bunch
                 # of extra work to find the right one.
@@ -61,18 +84,19 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                         network = candidate_network
 
                 if not network:
-                    print "failed to find the correct network for a shared template for port", port["id"], "network", port["network_id"]
+                    logger.info("failed to find the correct network for a shared template for port %s network %s" % (port["id"], port["network_id"]))
                     continue
 
             if not port["fixed_ips"]:
-                print "port", port["id"], "has no fixed_ips"
+                logger.info("port %s has no fixed_ips" % port["id"])
                 continue
 
-#             print "XXX", port
+            ip=port["fixed_ips"][0]["ip_address"]
+            logger.info("creating NetworkSliver (%s, %s, %s, %s)" % (str(network), str(sliver), ip, str(port["id"])))
 
             ns = NetworkSliver(network=network,
                                sliver=sliver,
-                               ip=port["fixed_ips"][0]["ip_address"],
+                               ip=ip,
                                port_id=port["id"])
             ns.save()
 
