@@ -607,11 +607,22 @@ class OVSNeutronPluginV2(db_base_plugin_v2.NeutronDbPluginV2,
             if entry['l4_protocol'] not in valid_protocols:
                 msg = _("nat:forward_ports: invalid protocol (only tcp and udp allowed)")
                 raise q_exc.InvalidInput(error_message=msg)
-            try:
-                l4_port = int(entry['l4_port'])
-            except:
-                msg = _("nat:forward_ports: l4_port must be an integer")
-                raise q_exc.InvalidInput(error_message=msg)
+
+            l4_port = entry['l4_port']
+            if ":" in l4_port:
+                try:
+                    (first, last) = l4_port.split(":")
+                    first = int(first)
+                    last = int(last)
+                except:
+                    msg = _("nat:forward_ports: l4_port range must be integer:integer")
+                    raise q_exc.InvalidInput(error_message=msg)
+            else:
+                try:
+                    l4_port = int(l4_port)
+                except:
+                    msg = _("nat:forward_ports: l4_port must be an integer")
+                    raise q_exc.InvalidInput(error_message=msg)
 
         return forward_ports
 
