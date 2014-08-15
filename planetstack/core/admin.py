@@ -1317,23 +1317,24 @@ class RouterInline(PlStackTabularInline):
     verbose_name = "Router"
     suit_classes = 'suit-tab suit-tab-routers'
 
-class NetworkParameterROInline(ReadOnlyTabularInline):
+class NetworkParameterROInline(generic.GenericTabularInline):
     model = NetworkParameter
-    extra = 1
+    extra = 0
     verbose_name_plural = "Parameters"
     verbose_name = "Parameter"
     suit_classes = 'suit-tab suit-tab-netparams'
-    fields = ['parameter', 'value', 'content_type', 'object_id', 'content_object']
+    fields = ['parameter', 'value']
 
 class NetworkParameterInline(generic.GenericTabularInline):
     model = NetworkParameter
-    extra = 1
+    extra = 0
     verbose_name_plural = "Parameters"
     verbose_name = "Parameter"
     suit_classes = 'suit-tab suit-tab-netparams'
+    fields = ['parameter', 'value']
 
 class NetworkSliversROInline(ReadOnlyTabularInline):
-    fields = ['network', 'sliver', 'ip', 'port_id']
+    fields = ['network', 'sliver', 'ip']
     model = NetworkSliver
     extra = 0
     verbose_name_plural = "Slivers"
@@ -1341,6 +1342,7 @@ class NetworkSliversROInline(ReadOnlyTabularInline):
     suit_classes = 'suit-tab suit-tab-networkslivers'
 
 class NetworkSliversInline(PlStackTabularInline):
+    fields = ['network','sliver','ip']
     readonly_fields = ("ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
@@ -1364,6 +1366,7 @@ class NetworkSlicesInline(PlStackTabularInline):
     verbose_name_plural = "Slices"
     verbose_name = "Slice"
     suit_classes = 'suit-tab suit-tab-networkslices'
+    fields = ['network','slice']
 
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("name", "subnet", "ports", "labels")
