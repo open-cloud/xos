@@ -1021,15 +1021,14 @@ class UserAdmin(UserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
-    #list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline,UserDashboardViewInline]
 
-    fieldListLoginDetails = ['email','site','password','is_readonly','is_amin','public_key']
+    fieldListLoginDetails = ['email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
-        ('Login Details', {'fields': ['email', 'site','password', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
+        ('Login Details', {'fields': ['email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
