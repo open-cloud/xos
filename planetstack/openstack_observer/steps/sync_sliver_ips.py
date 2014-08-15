@@ -6,11 +6,15 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from util.logger import Logger, logging
 
+logger = Logger(level=logging.INFO)
+
 class SyncSliverIps(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
 
     def fetch_pending(self, deleted):
+        return [] # XXX smbaker - disabling this sync_step, since sliver.ip is obsoleted by sync_network_slivers()
+
         # Not supported yet
         if (deleted):
             return []
