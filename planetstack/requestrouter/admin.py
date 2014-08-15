@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, SliceROInline,ServiceAttrAsTabROInline, ReadOnlyAwareAdmin
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin
 
 class RequestRouterServiceAdmin(SingletonAdmin):
     model = RequestRouterService
@@ -21,7 +21,6 @@ class RequestRouterServiceAdmin(SingletonAdmin):
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description", "behindNat", "defaultTTL", "defaultAction", "lastResortAction", "maxAnswers"]
-    user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
 
     suit_form_tabs =(('general', 'Request Router Service Details'),
         ('slices','Slices'),

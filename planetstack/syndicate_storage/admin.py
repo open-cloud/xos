@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ReadOnlyTabularInline,ReadOnlyAwareAdmin,SingletonAdmin,SliceInline,ServiceAttrAsTabInline,PlanetStackBaseAdmin, PlStackTabularInline,SliceROInline,ServiceAttrAsTabROInline
+from core.admin import ReadOnlyAwareAdmin,SingletonAdmin,SliceInline,ServiceAttrAsTabInline,PlanetStackBaseAdmin, PlStackTabularInline
 from suit.widgets import LinkedSelect
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
@@ -23,25 +23,12 @@ class SyndicateServiceAdmin(SingletonAdmin,ReadOnlyAwareAdmin):
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
     user_readonly_fields = ['name','enabled','versionNumber','description']
-    user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
 
     suit_form_tabs =(('general', 'Syndicate Storage Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
 
-
-class VolumeAccessRightForUserROInline(ReadOnlyTabularInline):
-    model = VolumeAccessRight
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumeAccessRights'
-    fields = ['volume','cap_read_data', 'cap_write_data', 'cap_host_data']
-
-class VolumeAccessRightROInline(ReadOnlyTabularInline):
-    model = VolumeAccessRight
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumeAccessRights'
-    fields = ['owner_id','cap_read_data', 'cap_write_data', 'cap_host_data']
 
 class VolumeAccessRightInline(PlStackTabularInline):
     model = VolumeAccessRight
@@ -113,17 +100,6 @@ class VolumeSliceInline(PlStackTabularInline):
     readonly_fields = ['credentials_blob']
  
 
-class VolumeSliceROInline(ReadOnlyTabularInline):
-    model = VolumeSlice
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-volumeSlices'
-    fields = ['volume_id', 'slice_id', 'cap_read_data', 'cap_write_data', 'cap_host_data', 'UG_portnum', 'RG_portnum']
-
-    formset = VolumeSliceFormSet
-
-    readonly_fields = ['credentials_blob']
-    
-
 class VolumeAdmin(ReadOnlyAwareAdmin):
     model = Volume
    
@@ -150,8 +126,6 @@ class VolumeAdmin(ReadOnlyAwareAdmin):
 
     user_readonly_fields = ['name','owner_id','description','blocksize','private', 'archive', 'cap_read_data', 'cap_write_data', 'cap_host_data']
     
-    user_readonly_inlines = [VolumeAccessRightROInline, VolumeSliceROInline]
-
     suit_form_tabs =(('general', 'Volume Details'),
                      ('volumeSlices', 'Slices'),
                      ('volumeAccessRights', 'Volume Access Rights'))

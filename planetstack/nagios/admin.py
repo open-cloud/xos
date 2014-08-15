@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, SliceROInline,ServiceAttrAsTabROInline, ReadOnlyAwareAdmin
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin
 
 class KairosDBServiceAdmin(SingletonAdmin):
     model = KairosDBService
@@ -20,7 +20,6 @@ class KairosDBServiceAdmin(SingletonAdmin):
     fieldsets = [(None, {'fields': ['name','enabled','versionNumber', 'description'], 'classes':['suit-tab suit-tab-general']})]
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
-    user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
     suit_form_tabs =(('general', 'KairosDB Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),

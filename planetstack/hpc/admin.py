@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, SliceROInline,ServiceAttrAsTabROInline, ReadOnlyAwareAdmin, PlStackTabularInline, ReadOnlyTabularInline
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, PlStackTabularInline
 
 class HpcServiceAdmin(SingletonAdmin):
     model = HpcService
@@ -21,7 +21,6 @@ class HpcServiceAdmin(SingletonAdmin):
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
-    user_readonly_inlines = [SliceROInline, ServiceAttrAsTabROInline]
 
     suit_form_tabs =(('general', 'HPC Service Details'),
         ('slices','Slices'),
@@ -35,24 +34,12 @@ class CDNPrefixInline(PlStackTabularInline):
     fields = ('cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
     readonly_fields = ('cdn_prefix_id',)
 
-class CDNPrefixROInline(ReadOnlyTabularInline):
-    model = CDNPrefix
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-prefixes'
-    fields = ('cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
-    readonly_fields = ('cdn_prefix_id',)
-
 class ContentProviderInline(PlStackTabularInline):
     model = ContentProvider
     extra = 0
     suit_classes = 'suit-tab suit-tab-cps'
     fields = ('content_provider_id', 'name', 'enabled')
     readonly_fields = ('content_provider_id',)
-
-class ContentProviderROInline(ReadOnlyTabularInline):
-    model = ContentProvider
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-cps'
 
 class OriginServerAdmin(ReadOnlyAwareAdmin):
     list_display = ('url','protocol','redirects','contentProvider','authenticated','enabled' )
@@ -75,7 +62,6 @@ class ContentProviderAdmin(ReadOnlyAwareAdmin):
     inlines = [CDNPrefixInline]
 
     user_readonly_fields = ('name','description','enabled','serviceProvider','users')
-    user_readonly_inlines = [CDNPrefixROInline]
 
     suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'))
 
@@ -86,7 +72,6 @@ class ServiceProviderAdmin(ReadOnlyAwareAdmin):
 #, ('Content Providers', {'fields':['contentProviders'],'classes':['suit-tab suit-tab-cps']})]
 
     user_readonly_fields = ('name', 'description', 'enabled')
-    user_readonly_inlines = [ContentProviderROInline]
 
     suit_form_tabs = (('general','Details'),('cps','Content Providers'))
     inlines = [ContentProviderInline]

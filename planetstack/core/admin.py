@@ -150,20 +150,28 @@ class PlStackTabularInline(admin.TabularInline):
     selflink.allow_tags = True
     selflink.short_description = "Details"
 
-class ReadOnlyTabularInline(PlStackTabularInline):
-    can_delete = False
+    def has_add_permission(self, request):
+        return not request.user.isReadOnlyUser()
 
     def get_readonly_fields(self, request, obj=None):
-        return self.fields
+        readonly_fields = list(self.readonly_fields)[:]
+        if request.user.isReadOnlyUser():
+            for field in self.fields:
+                if not field in readonly_fields:
+                    readonly_fields.append(field)
+        return readonly_fields
 
+class PlStackGenericTabularInline(generic.GenericTabularInline):
     def has_add_permission(self, request):
-        return False
+        return not request.user.isReadOnlyUser()
 
-class ReservationROInline(ReadOnlyTabularInline):
-    model = Reservation
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-reservations'
-    fields = ['startTime','slice','duration']
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(self.readonly_fields)[:]
+        if request.user.isReadOnlyUser():
+            for field in self.fields:
+                if not field in readonly_fields:
+                    readonly_fields.append(field)
+        return readonly_fields
 
 class ReservationInline(PlStackTabularInline):
     model = Reservation
@@ -173,21 +181,7 @@ class ReservationInline(PlStackTabularInline):
     def queryset(self, request):
         return Reservation.select_by_user(request.user)
 
-class TagROInline(generic.GenericTabularInline):
-    model = Tag
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-tags'
-    can_delete = False
-    fields = ['service', 'name', 'value']
-
-    def get_readonly_fields(self, request, obj=None):
-        return self.fields
-
-    def has_add_permission(self, request):
-        return False
-
-
-class TagInline(generic.GenericTabularInline):
+class TagInline(PlStackGenericTabularInline):
     model = Tag
     extra = 0
     suit_classes = 'suit-tab suit-tab-tags'
@@ -228,11 +222,6 @@ class NetworkLookerUpper:
         if network_name not in NetworkLookerUpper.byNetworkName:
             NetworkLookerUpper.byNetworkName[network_name] = NetworkLookerUpper(network_name)
         return NetworkLookerUpper.byNetworkName[network_name]
-
-class SliverROInline(ReadOnlyTabularInline):
-    model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
-    suit_classes = 'suit-tab suit-tab-slivers'
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
@@ -294,12 +283,6 @@ class SliverInline(PlStackTabularInline):
         return [(None, {'fields': fields})]
 """
 
-class SiteROInline(ReadOnlyTabularInline):
-    model = Site
-    extra = 0
-    fields = ['name', 'login_base', 'site_url', 'enabled']
-    suit_classes = 'suit-tab suit-tab-sites'
-
 class SiteInline(PlStackTabularInline):
     model = Site
     extra = 0
@@ -307,12 +290,6 @@ class SiteInline(PlStackTabularInline):
 
     def queryset(self, request):
         return Site.select_by_user(request.user)
-
-class UserROInline(ReadOnlyTabularInline):
-    model = User
-    fields = ['email', 'firstname', 'lastname']
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-users'
 
 class UserInline(PlStackTabularInline):
     model = User
@@ -323,11 +300,6 @@ class UserInline(PlStackTabularInline):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
-class SliceROInline(ReadOnlyTabularInline):
-    model = Slice
-    suit_classes = 'suit-tab suit-tab-slices'
-    fields = ['name','site', 'serviceClass', 'service']
-
 class SliceInline(PlStackTabularInline):
     model = Slice
     fields = ['name','site', 'serviceClass', 'service']
@@ -337,23 +309,11 @@ class SliceInline(PlStackTabularInline):
     def queryset(self, request):
         return Slice.select_by_user(request.user)
 
-class NodeROInline(ReadOnlyTabularInline):
-    model = Node
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment','site']
-
 class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
     fields = ['name','deployment','site']
-
-class DeploymentPrivilegeROInline(ReadOnlyTabularInline):
-    model = DeploymentPrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role','deployment']
 
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
@@ -363,13 +323,6 @@ class DeploymentPrivilegeInline(PlStackTabularInline):
 
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
-
-#CLEANUP DOUBLE SitePrivilegeInline
-class SitePrivilegeROInline(ReadOnlyTabularInline):
-    model = SitePrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-siteprivileges'
-    fields = ['user','site', 'role']
 
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
@@ -387,13 +340,6 @@ class SitePrivilegeInline(PlStackTabularInline):
 
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
-
-class SiteDeploymentROInline(ReadOnlyTabularInline):
-    model = SiteDeployments
-    #model = Site.deployments.through
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-deployments'
-    fields = ['deployment','site']
 
 class SiteDeploymentInline(PlStackTabularInline):
     model = SiteDeployments
@@ -414,12 +360,6 @@ class SiteDeploymentInline(PlStackTabularInline):
         return SiteDeployments.select_by_user(request.user)
 
 
-class SlicePrivilegeROInline(ReadOnlyTabularInline):
-    model = SlicePrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-sliceprivileges'
-    fields = ['user', 'slice', 'role']
-
 class SlicePrivilegeInline(PlStackTabularInline):
     model = SlicePrivilege
     suit_classes = 'suit-tab suit-tab-sliceprivileges'
@@ -437,14 +377,6 @@ class SlicePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SlicePrivilege.select_by_user(request.user)
 
-class SliceNetworkROInline(ReadOnlyTabularInline):
-    model = Network.slices.through
-    extra = 0
-    verbose_name = "Network Connection"
-    verbose_name_plural = "Network Connections"
-    suit_classes = 'suit-tab suit-tab-slicenetworks'
-    fields = ['network']
-
 class SliceNetworkInline(PlStackTabularInline):
     model = Network.slices.through
     selflink_fieldname = "network"
@@ -453,14 +385,6 @@ class SliceNetworkInline(PlStackTabularInline):
     verbose_name_plural = "Network Connections"
     suit_classes = 'suit-tab suit-tab-slicenetworks'
     fields = ['network']
-
-class ImageDeploymentsROInline(ReadOnlyTabularInline):
-    model = ImageDeployments
-    extra = 0
-    verbose_name = "Image Deployments"
-    verbose_name_plural = "Image Deployments"
-    suit_classes = 'suit-tab suit-tab-imagedeployments'
-    fields = ['image', 'deployment', 'glance_image_id']
 
 class ImageDeploymentsInline(PlStackTabularInline):
     model = ImageDeployments
@@ -602,7 +526,6 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
 
-    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline] # ,ImageDeploymentsROInline]
     user_readonly_fields = ['name']
 
     suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags')) # ,('imagedeployments','Images'))
@@ -623,12 +546,6 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
         return AdminFormMetaClass
 
-class ServiceAttrAsTabROInline(ReadOnlyTabularInline):
-    model = ServiceAttribute
-    fields = ['name','value']
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-serviceattrs'
-
 class ServiceAttrAsTabInline(PlStackTabularInline):
     model = ServiceAttribute
     fields = ['name','value']
@@ -642,7 +559,6 @@ class ServiceAdmin(PlanetStackBaseAdmin):
     inlines = [ServiceAttrAsTabInline,SliceInline]
 
     user_readonly_fields = fieldList
-    user_readonly_inlines = [ServiceAttrAsTabROInline,SliceROInline]
 
     suit_form_tabs =(('general', 'Service Details'),
         ('slices','Slices'),
@@ -666,7 +582,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
     readonly_fields = ['accountLink']
 
     user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
-    user_readonly_inlines = [SliceROInline,UserROInline,TagROInline, NodeROInline, SitePrivilegeROInline,SiteDeploymentROInline]
 
     list_display = ('name', 'login_base','site_url', 'enabled')
     filter_horizontal = ('deployments',)
@@ -772,7 +687,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
     user_readonly_fields = fieldList
-    user_readonly_inlines = [SlicePrivilegeROInline,SliverROInline,TagROInline, ReservationROInline, SliceNetworkROInline]
 
     suit_form_tabs =(('general', 'Slice Details'),
         ('slicenetworks','Networks'),
@@ -865,8 +779,7 @@ class ImageAdmin(PlanetStackBaseAdmin):
     inlines = [SliverInline, ImageDeploymentsInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
-    user_readonly_inlines = [SliverROInline, ImageDeploymentsROInline]
-    
+
 class NodeForm(forms.ModelForm):
     class Meta:
         widgets = {
@@ -921,7 +834,6 @@ class SliverAdmin(PlanetStackBaseAdmin):
     inlines = [TagInline]
 
     user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image']
-    user_readonly_inlines = [TagROInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -1018,12 +930,6 @@ class UserDashboardViewInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-dashboards'
     fields = ['user', 'dashboardView', 'order']
 
-class UserDashboardViewROInline(ReadOnlyTabularInline):
-    model = UserDashboardView
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-dashboards'
-    fields = ['user', 'dashboardView', 'order']
-
 class UserAdmin(UserAdmin):
     class Meta:
         app_label = "core"
@@ -1059,7 +965,6 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ()
 
     user_readonly_fields = fieldListLoginDetails + fieldListContactInfo
-    user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline,UserDashboardViewROInline]
 
     suit_form_tabs =(('general','Login Details'),
                      ('contact','Contact Information'),
@@ -1096,8 +1001,10 @@ class UserAdmin(UserAdmin):
                 # save the original readonly fields
                 self.readonly_save = self.readonly_fields
                 self.inlines_save = self.inlines
-            self.readonly_fields=self.user_readonly_fields
-            self.inlines = self.user_readonly_inlines
+            if hasattr(self, "user_readonly_fields"):
+                self.readonly_fields=self.user_readonly_fields
+            if hasattr(self, "user_readonly_inlines"):
+                self.inlines = self.user_readonly_inlines
         else:
             if hasattr(self, "readonly_save"):
                 # restore the original readonly fields
@@ -1129,11 +1036,6 @@ class DashboardViewAdmin(PlanetStackBaseAdmin):
 
     suit_form_tabs =(('general','Dashboard View Details'),)
 
-class ServiceResourceROInline(ReadOnlyTabularInline):
-    model = ServiceResource
-    extra = 0
-    fields = ['serviceClass', 'name', 'maxUnitsDeployment', 'maxUnitsNode', 'maxDuration', 'bucketInRate', 'bucketMaxSize', 'cost', 'calendarReservable']
-
 class ServiceResourceInline(PlStackTabularInline):
     model = ServiceResource
     extra = 0
@@ -1144,12 +1046,6 @@ class ServiceClassAdmin(PlanetStackBaseAdmin):
 
     user_readonly_fields = ['name', 'commitment', 'membershipFee']
     user_readonly_inlines = []
-
-class ReservedResourceROInline(ReadOnlyTabularInline):
-    model = ReservedResource
-    extra = 0
-    fields = ['sliver', 'resource','quantity','reservationSet']
-    suit_classes = 'suit-tab suit-tab-reservedresources'
 
 class ReservedResourceInline(PlStackTabularInline):
     model = ReservedResource
@@ -1239,7 +1135,6 @@ class ReservationAdmin(PlanetStackBaseAdmin):
     suit_form_tabs = (('general','Reservation Details'), ('reservedresources','Reserved Resources'))
 
     inlines = [ReservedResourceInline]
-    user_readonly_inlines = [ReservedResourceROInline]
     user_readonly_fields = fieldList
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -1301,15 +1196,6 @@ class RouterAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ['name']
     user_readonly_inlines = []
 
-class RouterROInline(ReadOnlyTabularInline):
-    model = Router.networks.through
-    extra = 0
-    verbose_name_plural = "Routers"
-    verbose_name = "Router"
-    suit_classes = 'suit-tab suit-tab-routers'
-
-    fields = ['name', 'owner', 'permittedNetworks', 'networks']
-
 class RouterInline(PlStackTabularInline):
     model = Router.networks.through
     extra = 0
@@ -1317,29 +1203,13 @@ class RouterInline(PlStackTabularInline):
     verbose_name = "Router"
     suit_classes = 'suit-tab suit-tab-routers'
 
-class NetworkParameterROInline(generic.GenericTabularInline):
+class NetworkParameterInline(PlStackGenericTabularInline):
     model = NetworkParameter
     extra = 0
     verbose_name_plural = "Parameters"
     verbose_name = "Parameter"
     suit_classes = 'suit-tab suit-tab-netparams'
     fields = ['parameter', 'value']
-
-class NetworkParameterInline(generic.GenericTabularInline):
-    model = NetworkParameter
-    extra = 0
-    verbose_name_plural = "Parameters"
-    verbose_name = "Parameter"
-    suit_classes = 'suit-tab suit-tab-netparams'
-    fields = ['parameter', 'value']
-
-class NetworkSliversROInline(ReadOnlyTabularInline):
-    fields = ['network', 'sliver', 'ip']
-    model = NetworkSliver
-    extra = 0
-    verbose_name_plural = "Slivers"
-    verbose_name = "Sliver"
-    suit_classes = 'suit-tab suit-tab-networkslivers'
 
 class NetworkSliversInline(PlStackTabularInline):
     fields = ['network','sliver','ip']
@@ -1350,14 +1220,6 @@ class NetworkSliversInline(PlStackTabularInline):
     verbose_name_plural = "Slivers"
     verbose_name = "Sliver"
     suit_classes = 'suit-tab suit-tab-networkslivers'
-
-class NetworkSlicesROInline(ReadOnlyTabularInline):
-    model = NetworkSlice
-    extra = 0
-    verbose_name_plural = "Slices"
-    verbose_name = "Slice"
-    suit_classes = 'suit-tab suit-tab-networkslices'
-    fields = ['network','slice']
 
 class NetworkSlicesInline(PlStackTabularInline):
     model = NetworkSlice
@@ -1378,7 +1240,6 @@ class NetworkAdmin(PlanetStackBaseAdmin):
         (None, {'fields': ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
 
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
-    user_readonly_inlines = [NetworkParameterROInline, NetworkSliversROInline, NetworkSlicesROInline, RouterROInline]
 
     suit_form_tabs =(
         ('general','Network Details'),
