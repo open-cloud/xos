@@ -53,6 +53,21 @@ class Sliver(PlCoreBase):
     def can_update(self, user):
         return self.slice.can_update(user)
 
+    def all_ips(self):
+        ips={}
+        for ns in self.networksliver_set.all():
+           ips[ns.network.name] = ns.ip
+        return ips
+
+    def all_ips_string(self):
+        result = []
+        ips = self.all_ips()
+        for key in sorted(ips.keys()):
+            #result.append("%s = %s" % (key, ips[key]))
+            result.append(ips[key])
+        return ", ".join(result)
+    all_ips_string.short_description = "addresses"
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:

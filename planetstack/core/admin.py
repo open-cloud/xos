@@ -201,6 +201,8 @@ class NetworkLookerUpper:
         the ip address for that network.
     """
 
+    byNetworkName = {}    # class variable
+
     def __init__(self, name):
         self.short_description = name
         self.__name__ = name
@@ -216,6 +218,17 @@ class NetworkLookerUpper:
     def __str__(self):
         return self.network_name
 
+    @staticmethod
+    def get(network_name):
+        """ We want to make sure we alwars return the same NetworkLookerUpper
+            because sometimes django will cause them to be instantiated multiple
+            times (and we don't want different ones in form.fields vs
+            SliverInline.readonly_fields).
+        """
+        if network_name not in NetworkLookerUpper.byNetworkName:
+            NetworkLookerUpper.byNetworkName[network_name] = NetworkLookerUpper(network_name)
+        return NetworkLookerUpper.byNetworkName[network_name]
+
 class SliverROInline(ReadOnlyTabularInline):
     model = Sliver
     fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
@@ -223,9 +236,9 @@ class SliverROInline(ReadOnlyTabularInline):
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
+    fields = ['all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     extra = 0
-    readonly_fields = ['ip', 'instance_name']
+    readonly_fields = ['all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
 
     def queryset(self, request):
@@ -246,43 +259,45 @@ class SliverInline(PlStackTabularInline):
 
         return field
 
-# Note this is breaking in the admin.py when trying to use an inline to add a node/image 
-#    def _declared_fieldsets(self):
-#        # Return None so django will call get_fieldsets and we can insert our
-#        # dynamic fields
-#        return None
-#
-#    def get_readonly_fields(self, request, obj=None):
-#        readonly_fields = super(SliverInline, self).get_readonly_fields(request, obj)
-#
-#        # Lookup the networks that are bound to the slivers, and add those
-#        # network names to the list of readonly fields.
-#
-#        for sliver in obj.slivers.all():
-#            for nbs in sliver.networksliver_set.all():
-#                if nbs.ip:
-#                    network_name = nbs.network.name
-#                    if network_name not in [str(x) for x in readonly_fields]:
-#                        readonly_fields.append(NetworkLookerUpper(network_name))
-#
-#        return readonly_fields
-#
-#    def get_fieldsets(self, request, obj=None):
-#        form = self.get_formset(request, obj).form
-#        # fields = the read/write files + the read-only fields
-#        fields = self.fields
-#        for fieldName in self.get_readonly_fields(request,obj):
-#            if not fieldName in fields:
-#                fields.append(fieldName)
-#
-#        return [(None, {'fields': fields})]
+"""
+    SMBAKER: This is the old code that implemented each network type as a
+    separate column in the sliver table.
 
-    
+    def _declared_fieldsets(self):
+        # Return None so django will call get_fieldsets and we can insert our
+        # dynamic fields
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super(SliverInline, self).get_readonly_fields(request, obj))
+
+        # Lookup the networks that are bound to the slivers, and add those
+        # network names to the list of readonly fields.
+
+        for sliver in obj.slivers.all():
+            for nbs in sliver.networksliver_set.all():
+                if nbs.ip:
+                    network_name = nbs.network.name
+                    if network_name not in [str(x) for x in readonly_fields]:
+                        readonly_fields.append(NetworkLookerUpper.get(network_name))
+
+        return readonly_fields
+
+    def get_fieldsets(self, request, obj=None):
+        form = self.get_formset(request, obj).form
+        # fields = the read/write files + the read-only fields
+        fields = list(self.fields)
+        for fieldName in self.get_readonly_fields(request,obj):
+            if not fieldName in fields:
+                fields.append(fieldName)
+
+        return [(None, {'fields': fields})]
+"""
 
 class SiteROInline(ReadOnlyTabularInline):
     model = Site
     extra = 0
-    fields = ['name', 'login_base', 'site_url', 'enabled'] 
+    fields = ['name', 'login_base', 'site_url', 'enabled']
     suit_classes = 'suit-tab suit-tab-sites'
 
 class SiteInline(PlStackTabularInline):
