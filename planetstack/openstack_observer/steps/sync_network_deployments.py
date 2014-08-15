@@ -33,10 +33,6 @@ class SyncNetworkDeployments(OpenStackSyncStep):
                 network_deploy_lookup[network_deployment.network].append(network_deployment.deployment)
 
             for network in Network.objects.filter():
-                # ignore networks that have
-                # template.visibility = private and translation = none
-                if network.template.visibility == 'private' and not network.template.translation == 'none':
-                    continue
                 expected_deployments = slice_deploy_lookup[network.owner]
                 for expected_deployment in expected_deployments:
                     if network not in network_deploy_lookup or \
@@ -62,7 +58,7 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         return next_network
 
     def save_network_deployment(self, network_deployment):
-        if not network_deployment.net_id and network_deployment.network.template.sharedNetworkName:
+        if (not network_deployment.net_id) and network_deployment.network.template.sharedNetworkName:
             # It's a shared network, try to find the shared network id
 
             quantum_networks = self.driver.shell.quantum.list_networks(name=network_deployment.network.template.sharedNetworkName)["networks"]
