@@ -57,6 +57,52 @@ class Network(PlCoreBase):
     def can_update(self, user):
         return self.owner.can_update(user)
 
+    @property
+    def nat_list(self):
+        """ Support a list of ports in the format "protocol:port, protocol:port, ..."
+            examples:
+                tcp 123
+                tcp 123:133
+                tcp 123, tcp 124, tcp 125, udp 201, udp 202
+
+            User can put either a "/" or a " " between protocol and ports
+            Port ranges can be specified with "-" or ":"
+        """
+        nats = []
+        if self.ports:
+            parts = self.ports.split(",")
+            for part in parts:
+                part = part.strip()
+                if "/" in part:
+                    (protocol, ports) = part.split("/",1)
+                elif " " in part:
+                    (protocol, ports) = part.split(None,1)
+                else:
+                    raise TypeError('malformed port specifier %s, format example: "tcp 123, tcp 201:206, udp 333"' % part)
+
+                protocol = protocol.strip()
+                ports = ports.strip()
+
+                if not (protocol in ["udp", "tcp"]):
+                    raise TypeError('unknown protocol %s' % protocol)
+
+                if "-" in ports:
+                    (first, last) = ports.split("-")
+                    first = int(first.strip())
+                    last = int(last.strip())
+                    portStr = "%d:%d" % (first, last)
+                elif ":" in ports:
+                    (first, last) = ports.split(":")
+                    first = int(first.strip())
+                    last = int(last.strip())
+                    portStr = "%d:%d" % (first, last)
+                else:
+                    portStr = "%d" % int(ports)
+
+                nats.append( {"l4_protocol": protocol, "l4_port": portStr} )
+
+        return nats
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -69,7 +115,7 @@ class Network(PlCoreBase):
 
 class NetworkDeployments(PlCoreBase):
     # Stores the openstack ids at various deployments
-    network = models.ForeignKey(Network)    
+    network = models.ForeignKey(Network)
     deployment = models.ForeignKey(Deployment)
     net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")

@@ -39,8 +39,23 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         for sliver in slivers:
             slivers_by_instance_id[sliver.instance_id] = sliver
 
-        driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.node.deployment.name)
-        ports = driver.shell.quantum.list_ports()["ports"]
+        # Get all ports in all deployments
+
+        ports_by_id = {}
+        for deployment in Deployment.objects.all():
+            if not deployment.admin_tenant:
+                logger.info("deployment %s has no admin_tenant" % deployment.name)
+                continue
+            try:
+                driver = self.driver.admin_driver(deployment=deployment.name)
+                ports = driver.shell.quantum.list_ports()["ports"]
+            except:
+                logger.log_exc("failed to get ports from deployment %s" % deployment.name)
+                continue
+
+            for port in ports:
+                ports_by_id[port["id"]] = port
+
         for port in ports:
             #logger.info("port %s" % str(port))
             if port["id"] in networkSlivers_by_port:
@@ -94,6 +109,42 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                                ip=ip,
                                port_id=port["id"])
             ns.save()
+
+        # Now, handle port forwarding
+        # We get the list of NetworkSlivers again, since we might have just
+        # added a few. Then, for each one of them we find it's quantum port and
+        # make sure quantum's nat:forward_ports argument is the same.
+
+        for networkSliver in NetworkSliver.objects.all():
+            try:
+                nat_list = networkSliver.network.nat_list
+            except (TypeError, ValueError), e:
+                logger.info("Failed to decode nat_list: %s" % str(e))
+                continue
+
+            if not networkSliver.port_id:
+                continue
+
+            neutron_port = ports_by_id.get(networkSliver.port_id, None)
+            if not neutron_port:
+                continue
+
+            neutron_nat_list = neutron_port.get("nat:forward_ports", None)
+            if not neutron_nat_list:
+                # make sure that None and the empty set are treated identically
+                neutron_nat_list = []
+
+            if (neutron_nat_list != nat_list):
+                logger.info("Setting nat:forward_ports for port %s network %s sliver %s to %s" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
+                try:
+                    driver = self.driver.client_driver(caller=networkSliver.sliver.creator, tenant=networkSliver.sliver.slice.name, deployment=networkSliver.sliver.node.deployment.name)
+                    driver.shell.quantum.update_port(networkSliver.port_id, {"port": {"nat:forward_ports": nat_list}})
+                except:
+                    logger.log_exc("failed to update port with nat_list %s" % str(nat_list))
+                    continue
+            else:
+                #logger.info("port %s network %s sliver %s nat %s is already set" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
+                pass
 
     def delete_record(self, network_sliver):
         # Nothing to do, this is an OpenCloud object
