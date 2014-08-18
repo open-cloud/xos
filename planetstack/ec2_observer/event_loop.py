@@ -238,7 +238,7 @@ class PlanetStackObserver:
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.
-				for deletion in (False,True):
+				for deletion in [False,True]:
 					logger.info('Deletion=%r...'%deletion)
 					# Set of whole steps that failed
 					failed_steps = []
