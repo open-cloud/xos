@@ -6,6 +6,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice, SliceDeployments
 from util.logger import Logger, logging
+from observer.steps.sync_slice_deployments import *
 
 logger = Logger(level=logging.INFO)
 
@@ -20,10 +21,10 @@ class SyncSlices(OpenStackSyncStep):
             slice_deployment.save()    
 
     def delete_record(self, slice):
-        slice_deployment_deleter = SliceDeploymentDeleter()
+        slice_deployment_deleter = SyncSliceDeployments().delete_record
         for slice_deployment in SliceDeployments.objects.filter(slice=slice):
             try:
-                slice_deployment_deleter(slice_deployment.id)
+                slice_deployment_deleter(slice_deployment)
             except Exception,e:
                 logger.log_exc("Failed to delete slice_deployment %s" % slice_deployment) 
                 raise e
