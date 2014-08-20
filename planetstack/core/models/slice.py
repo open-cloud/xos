@@ -53,7 +53,7 @@ class Slice(PlCoreBase):
             return True
         slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
         for slice_priv in slice_privs:
-            if slice_priv.role.role == 'admin':
+            if slice_priv.role.role in ['admin', 'pi'] :
                 return True
         return False
 
