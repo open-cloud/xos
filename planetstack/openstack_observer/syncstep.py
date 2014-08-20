@@ -4,6 +4,7 @@ from datetime import datetime
 from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
+from django.db.models import F, Q
 
 logger = Logger(level=logging.INFO)
 
@@ -48,7 +49,7 @@ class SyncStep:
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
         main_obj = self.provides[0]
-        if (not deleted):
+        if (not deletion):
             objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         else:
             objs = main_obj.deleted_objects.all()
