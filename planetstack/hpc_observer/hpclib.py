@@ -84,7 +84,7 @@ class HpcLibrary:
             if not ("_" in name):
                 continue
 
-            if "coblitz" in name:
+            if ("coblitz" in name) or ("hpc" in name):
                 slicenames["coblitz"] = name
                 slicehosts["coblitz"] = [sliver.node.name for sliver in slice.slivers.all()]
             elif "cmi" in name:
