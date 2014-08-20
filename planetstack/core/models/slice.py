@@ -2,6 +2,7 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Site
+from core.models.site import SitePrivilege
 from core.models import User
 from core.models import Role
 from core.models import Deployment
@@ -51,10 +52,17 @@ class Slice(PlCoreBase):
             return False
         if user.is_admin:
             return True
+        # slice admins can update
         slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
         for slice_priv in slice_privs:
-            if slice_priv.role.role in ['admin', 'pi'] :
+            if slice_priv.role.role == 'admin':
                 return True
+        # site pis can update
+        site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
+        for site_priv in site_privs:
+            if site_priv.role.role == 'pi':
+                return True
+ 
         return False
 
     @staticmethod
