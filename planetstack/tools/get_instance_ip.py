@@ -59,7 +59,7 @@ def main():
 
     # get (instance_name, ip) pairs for instances with names and ips
 
-    slivers = [x for x in slivers if x["instance_name"] and x["ip"]]
+    slivers = [x for x in slivers if x["instance_name"]]
     slivers = sorted(slivers, key = lambda sliver: sliver["instance_name"])
 
     # return the last one in the list (i.e. the newest one)
