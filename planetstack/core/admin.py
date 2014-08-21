@@ -16,13 +16,39 @@ from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
 
-import django_evolution 
+import django_evolution
+
+class PlainTextWidget(forms.HiddenInput):
+    input_type = 'hidden'
+
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
+
+class BackendStatusIconWidget(forms.Widget):
+    def render(self, name, value, attrs=None):
+        if value == "Provisioning in progress":
+            icon = "/static/admin/img/icon_clock.gif"
+        else:
+            icon = "/static/admin/img/icon_error.gif"
+
+        return mark_safe('<div title="%s"><img src="%s"></div>' % (value, icon))
+
+class BackendStatusFullWidget(forms.Widget):
+    def render(self, name, value, attrs=None):
+        if value == "Provisioning in progress":
+            icon = "/static/admin/img/icon_clock.gif"
+        else:
+            icon = "/static/admin/img/icon_error.gif"
+
+        return mark_safe('<img src="%s"> %s' % (icon, value))
 
 class ReadOnlyAwareAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         return (not self.__user_is_readonly(request))
- 
+
     def has_delete_permission(self, request, obj=None):
         return (not self.__user_is_readonly(request))
 
@@ -70,6 +96,17 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if (db_field.name == 'backend_status'):
+            kwargs['widget'] = BackendStatusFullWidget(attrs={"title": "foo"})
+        result =  super(ReadOnlyAwareAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+        if (db_field.name == 'backend_status'):
+            result.required = False
+
+        return result
+
 
 class SingletonAdmin (ReadOnlyAwareAdmin):
     def has_add_permission(self, request):
@@ -161,6 +198,18 @@ class PlStackTabularInline(admin.TabularInline):
                     readonly_fields.append(field)
         return readonly_fields
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if (db_field.name == 'backend_status'):
+            kwargs['widget'] = BackendStatusIconWidget()
+
+        result = super(PlStackTabularInline, self).formfield_for_dbfield(db_field, **kwargs)
+
+        if (db_field.name == 'backend_status'):
+            result.label = ""
+            result.required = False
+
+        return result
+
 class PlStackGenericTabularInline(generic.GenericTabularInline):
     def has_add_permission(self, request):
         return not request.user.isReadOnlyUser()
@@ -177,7 +226,7 @@ class ReservationInline(PlStackTabularInline):
     model = Reservation
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservations'
-        
+
     def queryset(self, request):
         return Reservation.select_by_user(request.user)
 
@@ -225,7 +274,7 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
+    fields = ['backend_status', 'all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     extra = 0
     readonly_fields = ['all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -293,7 +342,7 @@ class SiteInline(PlStackTabularInline):
 
 class UserInline(PlStackTabularInline):
     model = User
-    fields = ['email', 'firstname', 'lastname']
+    fields = ['backend_status', 'email', 'firstname', 'lastname']
     extra = 0
     suit_classes = 'suit-tab suit-tab-users'
 
@@ -302,7 +351,7 @@ class UserInline(PlStackTabularInline):
 
 class SliceInline(PlStackTabularInline):
     model = Slice
-    fields = ['name','site', 'serviceClass', 'service']
+    fields = ['backend_status', 'name', 'site', 'serviceClass', 'service']
     extra = 0
     suit_classes = 'suit-tab suit-tab-slices'
 
@@ -313,13 +362,13 @@ class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment','site']
+    fields = ['backend_status', 'name','deployment','site']
 
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role','deployment']
+    fields = ['backend_status', 'user','role','deployment']
 
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
@@ -328,7 +377,7 @@ class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-siteprivileges'
-    fields = ['user','site', 'role']
+    fields = ['backend_status', 'user','site', 'role']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -343,10 +392,9 @@ class SitePrivilegeInline(PlStackTabularInline):
 
 class SiteDeploymentInline(PlStackTabularInline):
     model = SiteDeployments
-    #model = Site.deployments.through
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
-    fields = ['deployment','site']
+    fields = ['backend_status', 'deployment','site']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -364,13 +412,13 @@ class SlicePrivilegeInline(PlStackTabularInline):
     model = SlicePrivilege
     suit_classes = 'suit-tab suit-tab-sliceprivileges'
     extra = 0
-    fields = ('user', 'slice','role')
+    fields = ('backend_status', 'user', 'slice', 'role')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
-           kwargs['queryset'] = Slice.select_by_user(request.user) 
+           kwargs['queryset'] = Slice.select_by_user(request.user)
         if db_field.name == 'user':
-           kwargs['queryset'] = User.select_by_user(request.user) 
+           kwargs['queryset'] = User.select_by_user(request.user)
 
         return super(SlicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -384,7 +432,7 @@ class SliceNetworkInline(PlStackTabularInline):
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
     suit_classes = 'suit-tab suit-tab-slicenetworks'
-    fields = ['network']
+    fields = ['backend_status', 'network']
 
 class ImageDeploymentsInline(PlStackTabularInline):
     model = ImageDeployments
@@ -392,20 +440,12 @@ class ImageDeploymentsInline(PlStackTabularInline):
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
     suit_classes = 'suit-tab suit-tab-imagedeployments'
-    fields = ['image', 'deployment', 'glance_image_id']
+    fields = ['backend_status', 'image', 'deployment', 'glance_image_id']
     readonly_fields = ['glance_image_id']
-
-class PlainTextWidget(forms.HiddenInput):
-    input_type = 'hidden'
-
-    def render(self, name, value, attrs=None):
-        if value is None:
-            value = ''
-        return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
 
 class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
     save_on_top = False
-    
+
     def save_model(self, request, obj, form, change):
         obj.caller = request.user
         # update openstack connection to use this site/tenant
@@ -522,7 +562,7 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['name','sites', 'images', 'accessControl']
+    fieldList = ['backend_status', 'name', 'sites', 'images', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
 
@@ -554,7 +594,7 @@ class ServiceAttrAsTabInline(PlStackTabularInline):
 
 class ServiceAdmin(PlanetStackBaseAdmin):
     list_display = ("name","description","versionNumber","enabled","published")
-    fieldList = ["name","description","versionNumber","enabled","published"]
+    fieldList = ["backend_status","name","description","versionNumber","enabled","published"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline]
 
@@ -566,7 +606,7 @@ class ServiceAdmin(PlanetStackBaseAdmin):
     )
 
 class SiteAdmin(PlanetStackBaseAdmin):
-    fieldList = ['name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
+    fieldList = ['backend_status', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
@@ -576,7 +616,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
         ('siteprivileges','Privileges'),
         ('deployments','Deployments'),
         ('slices','Slices'),
-        ('nodes','Nodes'), 
+        ('nodes','Nodes'),
         ('tags','Tags'),
     )
     readonly_fields = ['accountLink']
@@ -629,7 +669,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
         
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
-    fieldList = ['user', 'site', 'role']
+    fieldList = ['backend_status', 'user', 'site', 'role']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['collapse']})
     ]
@@ -676,12 +716,12 @@ class SliceForm(forms.ModelForm):
     class Meta:
         model = Slice
         widgets = {
-            'service': LinkedSelect 
+            'service': LinkedSelect
         }
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
-    fieldList = ['name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
+    fieldList = ['backend_status', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     list_display = ('name', 'site','serviceClass', 'slice_url', 'max_slivers')
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
@@ -731,7 +771,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
 
 class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['user', 'slice', 'role']})
+        (None, {'fields': ['backend_status', 'user', 'slice', 'role']})
     ]
     list_display = ('user', 'slice', 'role')
 
@@ -769,8 +809,8 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
 
 class ImageAdmin(PlanetStackBaseAdmin):
 
-    fieldsets = [('Image Details', 
-                   {'fields': ['name', 'disk_format', 'container_format'], 
+    fieldsets = [('Image Details',
+                   {'fields': ['backend_status', 'name', 'disk_format', 'container_format'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
 
@@ -793,7 +833,7 @@ class NodeAdmin(PlanetStackBaseAdmin):
     list_filter = ('deployment',)
 
     inlines = [TagInline,SliverInline]
-    fieldsets = [('Node Details', {'fields': ['name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
+    fieldsets = [('Node Details', {'fields': ['backend_status', 'name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
 
     user_readonly_fields = ['name','site','deployment']
     user_readonly_inlines = [TagInline,SliverInline]
@@ -823,7 +863,7 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
 
@@ -842,7 +882,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
         return super(SliverAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        # admins can see all slivers. Users can only see slivers of 
+        # admins can see all slivers. Users can only see slivers of
         # the slices they belong to.
         return Sliver.select_by_user(request.user)
 
@@ -850,11 +890,11 @@ class SliverAdmin(PlanetStackBaseAdmin):
     def get_formsets(self, request, obj=None):
         # make some fields read only if we are updating an existing record
         if obj == None:
-            #self.readonly_fields = ('ip', 'instance_name') 
-            self.readonly_fields = () 
+            #self.readonly_fields = ('ip', 'instance_name')
+            self.readonly_fields = ()
         else:
-            self.readonly_fields = () 
-            #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key') 
+            self.readonly_fields = ()
+            #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key')
 
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
@@ -949,7 +989,7 @@ class UserAdmin(UserAdmin):
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
-        ('Login Details', {'fields': ['email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
+        ('Login Details', {'fields': ['backend_status', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
@@ -1028,9 +1068,19 @@ class UserAdmin(UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if (db_field.name == 'backend_status'):
+            kwargs['widget'] = BackendStatusFullWidget(attrs={"title": "foo"})
+        result =  super(UserAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+        if (db_field.name == 'backend_status'):
+            result.required = False
+
+        return result
+
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',
-                   {'fields': ['name', 'url'],
+                   {'fields': ['backend_status', 'name', 'url'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
 
@@ -1041,7 +1091,7 @@ class ServiceResourceInline(PlStackTabularInline):
     extra = 0
 
 class ServiceClassAdmin(PlanetStackBaseAdmin):
-    list_display = ('name', 'commitment', 'membershipFee')
+    list_display = ('backend_status', 'name', 'commitment', 'membershipFee')
     inlines = [ServiceResourceInline]
 
     user_readonly_fields = ['name', 'commitment', 'membershipFee']
@@ -1127,7 +1177,7 @@ class ReservationAddRefreshForm(ReservationAddForm):
         return False
 
 class ReservationAdmin(PlanetStackBaseAdmin):
-    fieldList = ['slice', 'startTime', 'duration']
+    fieldList = ['backend_status', 'slice', 'startTime', 'duration']
     fieldsets = [('Reservation Details', {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     list_display = ('startTime', 'duration')
     form = ReservationAddForm
@@ -1209,10 +1259,10 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     verbose_name_plural = "Parameters"
     verbose_name = "Parameter"
     suit_classes = 'suit-tab suit-tab-netparams'
-    fields = ['parameter', 'value']
+    fields = ['backend_status', 'parameter', 'value']
 
 class NetworkSliversInline(PlStackTabularInline):
-    fields = ['network','sliver','ip']
+    fields = ['backend_status', 'network','sliver','ip']
     readonly_fields = ("ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
@@ -1228,7 +1278,7 @@ class NetworkSlicesInline(PlStackTabularInline):
     verbose_name_plural = "Slices"
     verbose_name = "Slice"
     suit_classes = 'suit-tab suit-tab-networkslices'
-    fields = ['network','slice']
+    fields = ['backend_status', 'network','slice']
 
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("name", "subnet", "ports", "labels")
@@ -1237,7 +1287,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
 
     fieldsets = [
-        (None, {'fields': ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['backend_status', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
 
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
 
