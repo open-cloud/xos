@@ -18,7 +18,8 @@ class HpcServiceAdmin(SingletonAdmin):
     verbose_name_plural = "HPC Service"
     list_display = ("backend_status_icon", "name","enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status', 'name','enabled','versionNumber', 'description'], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description'], 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
@@ -32,22 +33,22 @@ class CDNPrefixInline(PlStackTabularInline):
     model = CDNPrefix
     extra = 0
     suit_classes = 'suit-tab suit-tab-prefixes'
-    fields = ('backend_status', 'cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
-    readonly_fields = ('cdn_prefix_id',)
+    fields = ('backend_status_icon', 'cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
+    readonly_fields = ('backend_status_icon', 'cdn_prefix_id',)
 
 class ContentProviderInline(PlStackTabularInline):
     model = ContentProvider
     extra = 0
     suit_classes = 'suit-tab suit-tab-cps'
-    fields = ('backend_status', 'content_provider_id', 'name', 'enabled')
-    readonly_fields = ('content_provider_id',)
+    fields = ('backend_status_icon', 'content_provider_id', 'name', 'enabled')
+    readonly_fields = ('backend_status_icon', 'content_provider_id',)
 
 class OriginServerAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'url','protocol','redirects','contentProvider','authenticated','enabled' )
     list_display_links = ('backend_status_icon', 'url', )
 
-    fields = ('backend_status', 'url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description' )
-    readonly_fields = ('origin_server_id',)
+    fields = ('backend_status_text', 'url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description' )
+    readonly_fields = ('backend_status_text', 'origin_server_id',)
     user_readonly_fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description')
 
 class ContentProviderForm(forms.ModelForm):
@@ -60,7 +61,8 @@ class ContentProviderAdmin(ReadOnlyAwareAdmin):
     form = ContentProviderForm
     list_display = ('backend_status_icon', 'name','description','enabled' )
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [ (None, {'fields': ['backend_status', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', )
 
     inlines = [CDNPrefixInline]
 
@@ -72,9 +74,10 @@ class ServiceProviderAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [
-        (None, {'fields': ['backend_status', 'name','description','enabled'], 'classes':['suit-tab suit-tab-general']})]
+        (None, {'fields': ['backend_status_text', 'name','description','enabled'], 'classes':['suit-tab suit-tab-general']})]
 #, ('Content Providers', {'fields':['contentProviders'],'classes':['suit-tab suit-tab-cps']})]
 
+    readonly_fields = ('backend_status_text', )
     user_readonly_fields = ('name', 'description', 'enabled')
 
     suit_form_tabs = (('general','Details'),('cps','Content Providers'))
@@ -90,7 +93,8 @@ class CDNPrefixAdmin(ReadOnlyAwareAdmin):
     form = CDNPrefixForm
     list_display = ['backend_status_icon', 'prefix','contentProvider']
     list_display_links = ('backend_status_icon', 'prefix', )
-    fields = ['backend_status', 'prefix', 'contentProvider', 'cdn_prefix_id', 'description', 'defaultOriginServer', 'enabled']
+    fields = ['backend_status_text', 'prefix', 'contentProvider', 'cdn_prefix_id', 'description', 'defaultOriginServer', 'enabled']
+    readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['prefix','contentProvider', "cdn_prefix_id", "description", "defaultOriginServer", "enabled"]
 
 class SiteMapAdmin(ReadOnlyAwareAdmin):
@@ -99,7 +103,8 @@ class SiteMapAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "Site Map"
     list_display = ("backend_status_icon", "name", "contentProvider", "serviceProvider")
     list_display_links = ('backend_status_icon', 'name', )
-    user_readonly_fields = ('backend_status', "name", "contentProvider", "serviceProvider", "description", "map")
+    user_readonly_fields = ('backend_status_text', "name", "contentProvider", "serviceProvider", "description", "map")
+    readonly_fields = ('backend_status_text', )
 
 class AccessMapAdmin(ReadOnlyAwareAdmin):
     model = AccessMap
@@ -107,7 +112,8 @@ class AccessMapAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "Access Map"
     list_display = ("backend_status_icon", "name", "contentProvider")
     list_display_links = ('backend_status_icon', 'name', )
-    user_readonly_fields = ('backend_status', "name", "contentProvider", "description", "map")
+    user_readonly_fields = ('backend_status_text', "name", "contentProvider", "description", "map")
+    readonly_fields = ('backend_status_text', )
 
 admin.site.register(ServiceProvider, ServiceProviderAdmin)
 admin.site.register(ContentProvider, ContentProviderAdmin)

@@ -18,13 +18,22 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 
 import django_evolution
 
-def backend_icon(value):
-        if value == "":
-            return ""
-        elif value == "Provisioning in progress":
-            return '<img src="/static/admin/img/icon_clock.gif">'
+def backend_icon(obj): # backend_status, enacted, updated):
+    #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
+    if (obj.enacted is not None) and obj.enacted >= obj.updated:
+        return '<img src="/static/admin/img/icon_success.gif">'
+    else:
+        if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
+            return '<div title="%s"><img src="/static/admin/img/icon_clock.gif"></div>' % obj.backend_status
         else:
-            return '<img src="/static/admin/img/icon_error.gif">'
+            return '<div title="%s"><img src="/static/admin/img/icon_error.gif"></div>' % obj.backend_status
+
+def backend_text(obj):
+    icon = backend_icon(obj)
+    if (obj.enacted is not None) and obj.enacted >= obj.updated:
+        return "%s %s" % (icon, "successfully enacted") # enacted on %s" % str(obj.enacted))
+    else:
+        return "%s %s" % (icon, obj.backend_status)
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -33,14 +42,6 @@ class PlainTextWidget(forms.HiddenInput):
         if value is None:
             value = ''
         return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
-
-class BackendStatusIconWidget(forms.Widget):
-    def render(self, name, value, attrs=None):
-        return mark_safe('<div title="%s">%s</div>' % (value, backend_icon(value)))
-
-class BackendStatusFullWidget(forms.Widget):
-    def render(self, name, value, attrs=None):
-        return mark_safe('%s %s' % (backend_icon(value), value))
 
 class ReadOnlyAwareAdmin(admin.ModelAdmin):
 
@@ -95,22 +96,11 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if (db_field.name == 'backend_status'):
-            kwargs['widget'] = BackendStatusFullWidget(attrs={"title": "foo"})
-        result =  super(ReadOnlyAwareAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-
-        if (db_field.name == 'backend_status'):
-            result.required = False
-
-        return result
+    def backend_status_text(self, obj):
+        return mark_safe(backend_text(obj))
 
     def backend_status_icon(self, obj):
-        if hasattr(obj, 'backend_status'):
-            value = obj.backend_status
-            return mark_safe('<div title="%s">%s</div>' % (value, backend_icon(value)))
-        else:
-            return ""
+        return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
 
 
@@ -204,17 +194,9 @@ class PlStackTabularInline(admin.TabularInline):
                     readonly_fields.append(field)
         return readonly_fields
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if (db_field.name == 'backend_status'):
-            kwargs['widget'] = BackendStatusIconWidget()
-
-        result = super(PlStackTabularInline, self).formfield_for_dbfield(db_field, **kwargs)
-
-        if (db_field.name == 'backend_status'):
-            result.label = ""
-            result.required = False
-
-        return result
+    def backend_status_icon(self, obj):
+        return mark_safe(backend_icon(obj))
+    backend_status_icon.short_description = ""
 
 class PlStackGenericTabularInline(generic.GenericTabularInline):
     def has_add_permission(self, request):
@@ -227,6 +209,10 @@ class PlStackGenericTabularInline(generic.GenericTabularInline):
                 if not field in readonly_fields:
                     readonly_fields.append(field)
         return readonly_fields
+
+    def backend_status_icon(self, obj):
+        return mark_safe(backend_icon(obj))
+    backend_status_icon.short_description = ""
 
 class ReservationInline(PlStackTabularInline):
     model = Reservation
@@ -280,9 +266,9 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status', 'all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     extra = 0
-    readonly_fields = ['all_ips_string', 'instance_name']
+    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
 
     def queryset(self, request):
@@ -348,7 +334,8 @@ class SiteInline(PlStackTabularInline):
 
 class UserInline(PlStackTabularInline):
     model = User
-    fields = ['backend_status', 'email', 'firstname', 'lastname']
+    fields = ['backend_status_icon', 'email', 'firstname', 'lastname']
+    readonly_fields = ('backend_status_icon', )
     extra = 0
     suit_classes = 'suit-tab suit-tab-users'
 
@@ -357,7 +344,8 @@ class UserInline(PlStackTabularInline):
 
 class SliceInline(PlStackTabularInline):
     model = Slice
-    fields = ['backend_status', 'name', 'site', 'serviceClass', 'service']
+    fields = ['backend_status_icon', 'name', 'site', 'serviceClass', 'service']
+    readonly_fields = ('backend_status_icon', )
     extra = 0
     suit_classes = 'suit-tab suit-tab-slices'
 
@@ -368,13 +356,15 @@ class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['backend_status', 'name','deployment','site']
+    fields = ['backend_status_icon', 'name','deployment','site']
+    readonly_fields = ('backend_status_icon', )
 
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['backend_status', 'user','role','deployment']
+    fields = ['backend_status_icon', 'user','role','deployment']
+    readonly_fields = ('backend_status_icon', )
 
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
@@ -383,7 +373,8 @@ class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-siteprivileges'
-    fields = ['backend_status', 'user','site', 'role']
+    fields = ['backend_status_icon', 'user','site', 'role']
+    readonly_fields = ('backend_status_icon', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -400,7 +391,8 @@ class SiteDeploymentInline(PlStackTabularInline):
     model = SiteDeployments
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
-    fields = ['backend_status', 'deployment','site']
+    fields = ['backend_status_icon', 'deployment','site']
+    readonly_fields = ('backend_status_icon', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -418,7 +410,8 @@ class SlicePrivilegeInline(PlStackTabularInline):
     model = SlicePrivilege
     suit_classes = 'suit-tab suit-tab-sliceprivileges'
     extra = 0
-    fields = ('backend_status', 'user', 'slice', 'role')
+    fields = ('backend_status_icon', 'user', 'slice', 'role')
+    readonly_fields = ('backend_status_icon', )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -438,7 +431,8 @@ class SliceNetworkInline(PlStackTabularInline):
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
     suit_classes = 'suit-tab suit-tab-slicenetworks'
-    fields = ['backend_status', 'network']
+    fields = ['backend_status_icon', 'network']
+    readonly_fields = ('backend_status_icon', )
 
 class ImageDeploymentsInline(PlStackTabularInline):
     model = ImageDeployments
@@ -446,8 +440,8 @@ class ImageDeploymentsInline(PlStackTabularInline):
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
     suit_classes = 'suit-tab suit-tab-imagedeployments'
-    fields = ['backend_status', 'image', 'deployment', 'glance_image_id']
-    readonly_fields = ['glance_image_id']
+    fields = ['backend_status_icon', 'image', 'deployment', 'glance_image_id']
+    readonly_fields = ['backend_status_icon', 'glance_image_id']
 
 class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
     save_on_top = False
@@ -568,11 +562,12 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status', 'name', 'sites', 'images', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
+    readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name']
 
@@ -603,9 +598,10 @@ class ServiceAttrAsTabInline(PlStackTabularInline):
 class ServiceAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon","name","description","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status","name","description","versionNumber","enabled","published"]
+    fieldList = ["backend_status_text","name","description","versionNumber","enabled","published"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline]
+    readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
 
@@ -615,7 +611,7 @@ class ServiceAdmin(PlanetStackBaseAdmin):
     )
 
 class SiteAdmin(PlanetStackBaseAdmin):
-    fieldList = ['backend_status', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
+    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
@@ -628,7 +624,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
         ('nodes','Nodes'),
         ('tags','Tags'),
     )
-    readonly_fields = ['accountLink']
+    readonly_fields = ['backend_status_text', 'accountLink']
 
     user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
 
@@ -679,10 +675,11 @@ class SiteAdmin(PlanetStackBaseAdmin):
         
 
 class SitePrivilegeAdmin(PlanetStackBaseAdmin):
-    fieldList = ['backend_status', 'user', 'site', 'role']
+    fieldList = ['backend_status_text', 'user', 'site', 'role']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['collapse']})
     ]
+    readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'user', 'site', 'role')
     list_display_links = list_display
     user_readonly_fields = fieldList
@@ -732,8 +729,9 @@ class SliceForm(forms.ModelForm):
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
+    fieldList = ['backend_status_text', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
+    readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
@@ -764,7 +762,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user)
-                
+
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
@@ -783,8 +781,9 @@ class SliceAdmin(PlanetStackBaseAdmin):
 
 class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
-        (None, {'fields': ['backend_status', 'user', 'slice', 'role']})
+        (None, {'fields': ['backend_status_text', 'user', 'slice', 'role']})
     ]
+    readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'user', 'slice', 'role')
     list_display_links = list_display
 
@@ -823,9 +822,10 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
 class ImageAdmin(PlanetStackBaseAdmin):
 
     fieldsets = [('Image Details',
-                   {'fields': ['backend_status', 'name', 'disk_format', 'container_format'],
+                   {'fields': ['backend_status_text', 'name', 'disk_format', 'container_format'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
+    readonly_fields = ('backend_status_text', )
 
     suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
@@ -850,7 +850,8 @@ class NodeAdmin(PlanetStackBaseAdmin):
     list_filter = ('deployment',)
 
     inlines = [TagInline,SliverInline]
-    fieldsets = [('Node Details', {'fields': ['backend_status', 'name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
+    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
+    readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name','site','deployment']
     user_readonly_inlines = [TagInline,SliverInline]
@@ -881,8 +882,9 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
+    readonly_fields = ('backend_status_text', )
     list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
     list_display_links = ('backend_status_icon', 'ip',)
 
@@ -910,9 +912,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
         # make some fields read only if we are updating an existing record
         if obj == None:
             #self.readonly_fields = ('ip', 'instance_name')
-            self.readonly_fields = ()
+            self.readonly_fields = ('backend_status_text')
         else:
-            self.readonly_fields = ()
+            self.readonly_fields = ('backend_status_text')
             #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key')
 
         for inline in self.get_inline_instances(request, obj):
@@ -1008,7 +1010,7 @@ class UserAdmin(UserAdmin):
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
-        ('Login Details', {'fields': ['backend_status', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
+        ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
@@ -1019,6 +1021,7 @@ class UserAdmin(UserAdmin):
             'fields': ('email', 'firstname', 'lastname', 'is_readonly', 'phone', 'public_key','password1', 'password2')}
         ),
     )
+    readonly_fields = ('backend_status_text', )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
@@ -1087,21 +1090,19 @@ class UserAdmin(UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if (db_field.name == 'backend_status'):
-            kwargs['widget'] = BackendStatusFullWidget(attrs={"title": "foo"})
-        result =  super(UserAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+    def backend_status_text(self, obj):
+        return mark_safe(backend_text(obj))
 
-        if (db_field.name == 'backend_status'):
-            result.required = False
-
-        return result
+    def backend_status_icon(self, obj):
+        return mark_safe(backend_icon(obj))
+    backend_status_icon.short_description = ""
 
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',
-                   {'fields': ['backend_status', 'name', 'url'],
+                   {'fields': ['backend_status_text', 'name', 'url'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
+    readonly_fields = ('backend_status_text', )
 
     suit_form_tabs =(('general','Dashboard View Details'),)
 
@@ -1197,8 +1198,9 @@ class ReservationAddRefreshForm(ReservationAddForm):
         return False
 
 class ReservationAdmin(PlanetStackBaseAdmin):
-    fieldList = ['backend_status', 'slice', 'startTime', 'duration']
+    fieldList = ['backend_status_text', 'slice', 'startTime', 'duration']
     fieldsets = [('Reservation Details', {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', )
     list_display = ('startTime', 'duration')
     form = ReservationAddForm
 
@@ -1281,11 +1283,12 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     verbose_name_plural = "Parameters"
     verbose_name = "Parameter"
     suit_classes = 'suit-tab suit-tab-netparams'
-    fields = ['backend_status', 'parameter', 'value']
+    fields = ['backend_status_icon', 'parameter', 'value']
+    readonly_fields = ('backend_status_icon', )
 
 class NetworkSliversInline(PlStackTabularInline):
-    fields = ['backend_status', 'network','sliver','ip']
-    readonly_fields = ("ip", )
+    fields = ['backend_status_icon', 'network','sliver','ip']
+    readonly_fields = ("backend_status_icon", "ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
     extra = 0
@@ -1300,7 +1303,8 @@ class NetworkSlicesInline(PlStackTabularInline):
     verbose_name_plural = "Slices"
     verbose_name = "Slice"
     suit_classes = 'suit-tab suit-tab-networkslices'
-    fields = ['backend_status', 'network','slice']
+    fields = ['backend_status_icon', 'network','slice']
+    readonly_fields = ('backend_status_icon', )
 
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
@@ -1310,8 +1314,9 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
 
     fieldsets = [
-        (None, {'fields': ['backend_status', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
 
+    readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
 
     suit_form_tabs =(
