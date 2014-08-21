@@ -16,7 +16,8 @@ class HpcServiceAdmin(SingletonAdmin):
     model = HpcService
     verbose_name = "HPC Service"
     verbose_name_plural = "HPC Service"
-    list_display = ("name","enabled")
+    list_display = ("backend_status_icon", "name","enabled")
+    list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status', 'name','enabled','versionNumber', 'description'], 'classes':['suit-tab suit-tab-general']})]
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
@@ -42,7 +43,8 @@ class ContentProviderInline(PlStackTabularInline):
     readonly_fields = ('content_provider_id',)
 
 class OriginServerAdmin(ReadOnlyAwareAdmin):
-    list_display = ('url','protocol','redirects','contentProvider','authenticated','enabled' )
+    list_display = ('backend_status_icon', 'url','protocol','redirects','contentProvider','authenticated','enabled' )
+    list_display_links = ('backend_status_icon', 'url', )
 
     fields = ('backend_status', 'url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description' )
     readonly_fields = ('origin_server_id',)
@@ -56,7 +58,8 @@ class ContentProviderForm(forms.ModelForm):
 
 class ContentProviderAdmin(ReadOnlyAwareAdmin):
     form = ContentProviderForm
-    list_display = ('name','description','enabled' )
+    list_display = ('backend_status_icon', 'name','description','enabled' )
+    list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [ (None, {'fields': ['backend_status', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
 
     inlines = [CDNPrefixInline]
@@ -66,7 +69,8 @@ class ContentProviderAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'))
 
 class ServiceProviderAdmin(ReadOnlyAwareAdmin):
-    list_display = ('name', 'description', 'enabled')
+    list_display = ('backend_status_icon', 'name', 'description', 'enabled')
+    list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [
         (None, {'fields': ['backend_status', 'name','description','enabled'], 'classes':['suit-tab suit-tab-general']})]
 #, ('Content Providers', {'fields':['contentProviders'],'classes':['suit-tab suit-tab-cps']})]
@@ -84,7 +88,8 @@ class CDNPrefixForm(forms.ModelForm):
 
 class CDNPrefixAdmin(ReadOnlyAwareAdmin):
     form = CDNPrefixForm
-    list_display = ['prefix','contentProvider']
+    list_display = ['backend_status_icon', 'prefix','contentProvider']
+    list_display_links = ('backend_status_icon', 'prefix', )
     fields = ['backend_status', 'prefix', 'contentProvider', 'cdn_prefix_id', 'description', 'defaultOriginServer', 'enabled']
     user_readonly_fields = ['prefix','contentProvider', "cdn_prefix_id", "description", "defaultOriginServer", "enabled"]
 
@@ -92,14 +97,16 @@ class SiteMapAdmin(ReadOnlyAwareAdmin):
     model = SiteMap
     verbose_name = "Site Map"
     verbose_name_plural = "Site Map"
-    list_display = ("name", "contentProvider", "serviceProvider")
+    list_display = ("backend_status_icon", "name", "contentProvider", "serviceProvider")
+    list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ('backend_status', "name", "contentProvider", "serviceProvider", "description", "map")
 
 class AccessMapAdmin(ReadOnlyAwareAdmin):
     model = AccessMap
     verbose_name = "Access Map"
     verbose_name_plural = "Access Map"
-    list_display = ("name", "contentProvider")
+    list_display = ("backend_status_icon", "name", "contentProvider")
+    list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ('backend_status', "name", "contentProvider", "description", "map")
 
 admin.site.register(ServiceProvider, ServiceProviderAdmin)

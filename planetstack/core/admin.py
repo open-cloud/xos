@@ -18,6 +18,14 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 
 import django_evolution
 
+def backend_icon(value):
+        if value == "":
+            return ""
+        elif value == "Provisioning in progress":
+            return '<img src="/static/admin/img/icon_clock.gif">'
+        else:
+            return '<img src="/static/admin/img/icon_error.gif">'
+
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
 
@@ -28,21 +36,11 @@ class PlainTextWidget(forms.HiddenInput):
 
 class BackendStatusIconWidget(forms.Widget):
     def render(self, name, value, attrs=None):
-        if value == "Provisioning in progress":
-            icon = "/static/admin/img/icon_clock.gif"
-        else:
-            icon = "/static/admin/img/icon_error.gif"
-
-        return mark_safe('<div title="%s"><img src="%s"></div>' % (value, icon))
+        return mark_safe('<div title="%s">%s</div>' % (value, backend_icon(value)))
 
 class BackendStatusFullWidget(forms.Widget):
     def render(self, name, value, attrs=None):
-        if value == "Provisioning in progress":
-            icon = "/static/admin/img/icon_clock.gif"
-        else:
-            icon = "/static/admin/img/icon_error.gif"
-
-        return mark_safe('<img src="%s"> %s' % (icon, value))
+        return mark_safe('%s %s' % (backend_icon(value), value))
 
 class ReadOnlyAwareAdmin(admin.ModelAdmin):
 
@@ -106,6 +104,14 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
             result.required = False
 
         return result
+
+    def backend_status_icon(self, obj):
+        if hasattr(obj, 'backend_status'):
+            value = obj.backend_status
+            return mark_safe('<div title="%s">%s</div>' % (value, backend_icon(value)))
+        else:
+            return ""
+    backend_status_icon.short_description = ""
 
 
 class SingletonAdmin (ReadOnlyAwareAdmin):
@@ -565,6 +571,8 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     fieldList = ['backend_status', 'name', 'sites', 'images', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
+    list_display = ['backend_status_icon', 'name']
+    list_display_links = ('backend_status_icon', 'name', )
 
     user_readonly_fields = ['name']
 
@@ -593,7 +601,8 @@ class ServiceAttrAsTabInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-serviceattrs'
 
 class ServiceAdmin(PlanetStackBaseAdmin):
-    list_display = ("name","description","versionNumber","enabled","published")
+    list_display = ("backend_status_icon","name","description","versionNumber","enabled","published")
+    list_display_links = ('backend_status_icon', 'name', )
     fieldList = ["backend_status","name","description","versionNumber","enabled","published"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline]
@@ -623,7 +632,8 @@ class SiteAdmin(PlanetStackBaseAdmin):
 
     user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
 
-    list_display = ('name', 'login_base','site_url', 'enabled')
+    list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
+    list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
     inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentInline]
     search_fields = ['name']
@@ -673,7 +683,8 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['collapse']})
     ]
-    list_display = ('user', 'site', 'role')
+    list_display = ('backend_status_icon', 'user', 'site', 'role')
+    list_display_links = list_display
     user_readonly_fields = fieldList
     user_readonly_inlines = []
 
@@ -723,7 +734,8 @@ class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
     fieldList = ['backend_status', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
-    list_display = ('name', 'site','serviceClass', 'slice_url', 'max_slivers')
+    list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
+    list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
     user_readonly_fields = fieldList
@@ -773,7 +785,8 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['backend_status', 'user', 'slice', 'role']})
     ]
-    list_display = ('user', 'slice', 'role')
+    list_display = ('backend_status_icon', 'user', 'slice', 'role')
+    list_display_links = list_display
 
     user_readonly_fields = ['user', 'slice', 'role']
     user_readonly_inlines = []
@@ -820,6 +833,9 @@ class ImageAdmin(PlanetStackBaseAdmin):
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
+    list_display = ['backend_status_icon', 'name']
+    list_display_links = ('backend_status_icon', 'name', )
+
 class NodeForm(forms.ModelForm):
     class Meta:
         widgets = {
@@ -829,7 +845,8 @@ class NodeForm(forms.ModelForm):
 
 class NodeAdmin(PlanetStackBaseAdmin):
     form = NodeForm
-    list_display = ('name', 'site', 'deployment')
+    list_display = ('backend_status_icon', 'name', 'site', 'deployment')
+    list_display_links = ('backend_status_icon', 'name', )
     list_filter = ('deployment',)
 
     inlines = [TagInline,SliverInline]
@@ -856,7 +873,8 @@ class SliverForm(forms.ModelForm):
         }
 
 class TagAdmin(PlanetStackBaseAdmin):
-    list_display = ['service', 'name', 'value', 'content_type', 'content_object',]
+    list_display = ['backend_status_icon', 'service', 'name', 'value', 'content_type', 'content_object',]
+    list_display_links = list_display
     user_readonly_fields = ['service', 'name', 'value', 'content_type', 'content_object',]
     user_readonly_inlines = []
 
@@ -865,7 +883,8 @@ class SliverAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         ('Sliver Details', {'fields': ['backend_status', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
-    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),
         ('tags','Tags'),
@@ -1091,7 +1110,8 @@ class ServiceResourceInline(PlStackTabularInline):
     extra = 0
 
 class ServiceClassAdmin(PlanetStackBaseAdmin):
-    list_display = ('backend_status', 'name', 'commitment', 'membershipFee')
+    list_display = ('backend_status_icon', 'name', 'commitment', 'membershipFee')
+    list_display_links = ('backend_status_icon', 'name', )
     inlines = [ServiceResourceInline]
 
     user_readonly_fields = ['name', 'commitment', 'membershipFee']
@@ -1237,12 +1257,14 @@ class ReservationAdmin(PlanetStackBaseAdmin):
         return Reservation.select_by_user(request.user)
 
 class NetworkParameterTypeAdmin(PlanetStackBaseAdmin):
-    list_display = ("name", )
+    list_display = ("backend_status_icon", "name", )
+    list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ['name']
     user_readonly_inlines = []
 
 class RouterAdmin(PlanetStackBaseAdmin):
-    list_display = ("name", )
+    list_display = ("backend_status_icon", "name", )
+    list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ['name']
     user_readonly_inlines = []
 
@@ -1281,7 +1303,8 @@ class NetworkSlicesInline(PlStackTabularInline):
     fields = ['backend_status', 'network','slice']
 
 class NetworkAdmin(PlanetStackBaseAdmin):
-    list_display = ("name", "subnet", "ports", "labels")
+    list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
+    list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
@@ -1299,7 +1322,8 @@ class NetworkAdmin(PlanetStackBaseAdmin):
         ('routers','Routers'),
     )
 class NetworkTemplateAdmin(PlanetStackBaseAdmin):
-    list_display = ("name", "guaranteedBandwidth", "visibility")
+    list_display = ("backend_status_icon", "name", "guaranteedBandwidth", "visibility")
+    list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
     user_readonly_inlines = []
 
