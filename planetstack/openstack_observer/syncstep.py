@@ -66,8 +66,10 @@ class SyncStep:
                 peer_object = None
 
             if (peer_object and peer_object.pk==failed.pk and type(peer_object)==type(failed)):
-                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk\
-), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
+                if (obj.backend_status!=peer_object.backend_status):
+                    obj.backend_status = peer_object.backend_status
+                    obj.save(update_fields=['backend_status'])
+                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
 
     def call(self, failed=[], deletion=False):
         pending = self.fetch_pending(deletion)
