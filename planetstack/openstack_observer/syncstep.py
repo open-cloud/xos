@@ -93,10 +93,15 @@ class SyncStep:
                 except:
                     o.backend_status = str_e
 
+                # TOFIX:
+                # DatabaseError: value too long for type character varying(140)
                 if (o.pk):
-                    o.save(update_fields=['backend_status'])
+                    try:
+                        o.save(update_fields=['backend_status'])
+                    except:
+                        print "Could not update backend status field!"
+                        pass
 
-                logger.log_exc("sync step failed!")
                 failed.append(o)
 
         return failed
