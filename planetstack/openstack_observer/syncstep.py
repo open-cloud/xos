@@ -86,10 +86,12 @@ class SyncStep:
                     o.backend_status = "OK"
                     o.save(update_fields=['enacted'])
             except Exception,e:
+                logger.log_exc("sync step failed!")
+                str_e = '%r'%e
                 try:
-                    o.backend_status = self.error_map.map(str(e))
+                    o.backend_status = self.error_map.map(str_e)
                 except:
-                    o.backend_status = str(e)
+                    o.backend_status = str_e
 
                 if (o.pk):
                     o.save(update_fields=['backend_status'])
