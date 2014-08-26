@@ -34,6 +34,9 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
 
         cp_dict = {"service": "HyperCache", "enabled": cp.enabled, "content_provider_id": cpid, "cdn_prefix": cp.prefix}
 
+        if cp.defaultOriginServer and cp.defaultOriginServer.origin_server_id and cp.defaultOriginServer.url:
+            cp_dict["default_origin_server"] = cp.defaultOriginServer.url
+
         #print cp_dict
 
         if not cp.cdn_prefix_id:
