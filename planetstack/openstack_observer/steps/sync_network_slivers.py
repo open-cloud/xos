@@ -56,7 +56,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
             for port in ports:
                 ports_by_id[port["id"]] = port
 
-        for port in ports:
+        for port in ports_by_id.values():
             #logger.info("port %s" % str(port))
             if port["id"] in networkSlivers_by_port:
                 # we already have it
