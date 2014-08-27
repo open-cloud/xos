@@ -732,8 +732,8 @@ class SliceAdmin(PlanetStackBaseAdmin):
     fieldList = ['backend_status_text', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
-    list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
-    list_display_links = ('backend_status_icon', 'name', )
+    list_display = ('backend_status_icon', 'slicename', 'site','serviceClass', 'slice_url', 'max_slivers')
+    list_display_links = ('backend_status_icon', 'slicename', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
     user_readonly_fields = fieldList
