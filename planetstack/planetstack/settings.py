@@ -111,6 +111,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'core.middleware.GlobalRequestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -261,3 +262,4 @@ LOGGING = {
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
+
