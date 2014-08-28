@@ -6,8 +6,9 @@ from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
+from plus import PlusSerializerMixin
 
-class SlicePlusIdSerializer(serializers.ModelSerializer):
+class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = serializers.Field()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
@@ -20,7 +21,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = SlicePlus
-            fields = ('id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','sliceInfo')
+            fields = ('id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
