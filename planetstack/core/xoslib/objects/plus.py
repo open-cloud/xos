@@ -18,5 +18,5 @@ class PlusObjectMixin:
         if (self.enacted is not None) and self.enacted >= self.updated:
             return '<img src="%s">' % self.getBackendIcon()
         else:
-            return '<div title="%s"><img src="%s"></div>' % (self.backend_status, self.getBackendIcon())
+            return '<span title="%s"><img src="%s"></span>' % (self.backend_status, self.getBackendIcon())
 
