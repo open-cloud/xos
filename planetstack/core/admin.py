@@ -24,9 +24,9 @@ def backend_icon(obj): # backend_status, enacted, updated):
         return '<img src="/static/admin/img/icon_success.gif">'
     else:
         if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
-            return '<div title="%s"><img src="/static/admin/img/icon_clock.gif"></div>' % obj.backend_status
+            return '<span title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
         else:
-            return '<div title="%s"><img src="/static/admin/img/icon_error.gif"></div>' % obj.backend_status
+            return '<span title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
 
 def backend_text(obj):
     icon = backend_icon(obj)
