@@ -15,12 +15,13 @@
         role = row.get("sliceInfo").roles[0];
         slivercount = row.get("sliceInfo").sliverCount;
         sitecount = row.get("sliceInfo").siteCount;
+        backendHtml = row.get("backendHtml")
 
         if (! role) {
             continue;
         }
 
-        actualEntries.push(['<a href="/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
+        actualEntries.push([backendHtml + ' <a href="/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
                             role, slivercount, sitecount]);
     }
     oTable = $('#dynamicusersliceinfo').dataTable( {
