@@ -182,7 +182,7 @@ class User(AbstractBaseUser):
         self.set_password(password)
         subject, from_email, to = 'OpenCloud Account Credentials', 'support@opencloud.us', str(self.email)
         text_content = 'This is an important message.'
-        userUrl=get_request().META['HTTP_ORIGIN']
+        userUrl="http://%s/" % get_request().get_host()
         html_content = """<p>Your account has been created on OpenCloud. Please log in <a href="""+userUrl+""">here</a> to activate your account<br><br>Username: """+self.email+"""<br>Temporary Password: """+password+"""<br>Please change your password once you successully login into the site.</p>"""
         msg = EmailMultiAlternatives(subject,text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
