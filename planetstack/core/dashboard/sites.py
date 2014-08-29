@@ -14,8 +14,8 @@ class AdminMixin(object):
         from django.conf.urls import patterns, url
         from views import DashboardCustomize, DashboardDynamicView, DashboardWelcomeView, DashboardAjaxView, SimulatorView, \
                           DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, \
-                          TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
-                          TenantUpdateSlice, DashboardSliceInteractions
+                          TenantViewData,TenantCreateSlice, TenantAddUser,TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
+                          TenantUpdateSlice, DashboardSliceInteractions, RequestAccessView
 
         from views import view_urls
 
@@ -37,6 +37,8 @@ class AdminMixin(object):
                     name="customize"),
                url(r'^hpcdashuserslices/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="hpcdashuserslices"),
+               url(r'^welcome/$', self.admin_view(DashboardWelcomeView.as_view()),
+                    name="welcome"),
                url(r'^hpcdashboard/', self.admin_view(DashboardAjaxView.as_view()),        # DEPRECATED
                     name="hpcdashboard"),
                url(r'^simulator/', self.admin_view(SimulatorView.as_view()),
@@ -53,6 +55,10 @@ class AdminMixin(object):
                     name="tenantview"),
                url(r'^createnewslice/$', self.admin_view(TenantCreateSlice.as_view()),
                     name="createnewslice"),
+               url(r'^adduser/$', self.admin_view(TenantAddUser.as_view()),
+                      name="adduser"),
+               url(r'^requestaccess/$', RequestAccessView.as_view(),
+                      name="requestacces"),
 	       url(r'^updateslice/$', self.admin_view(TenantUpdateSlice.as_view()),
                     name="updateslice"),
                url(r'^picksites/$', self.admin_view(TenantPickSitesView.as_view()),

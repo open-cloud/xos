@@ -8,6 +8,8 @@ from core.models.site import Deployment
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
+from django.core.mail import EmailMultiAlternatives
+from core.middleware import get_request
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -167,9 +169,24 @@ class User(AbstractBaseUser):
 
     def save(self, *args, **kwds):
         if not self.id:
-            self.set_password(self.password)    
+            self.set_password(self.password)
+        if self.is_active:
+            if self.password=="!":
+                self.send_temporary_password()
+
         self.username = self.email
-        super(User, self).save(*args, **kwds)  
+        super(User, self).save(*args, **kwds)
+
+    def send_temporary_password(self):
+        password = User.objects.make_random_password()
+        self.set_password(password)
+        subject, from_email, to = 'OpenCloud Account Credentials', 'support@opencloud.us', str(self.email)
+        text_content = 'This is an important message.'
+        userUrl=get_request().META['HTTP_ORIGIN']
+        html_content = """<p>Your account has been created on OpenCloud. Please log in <a href="""+userUrl+""">here</a> to activate your account<br><br>Username: """+self.email+"""<br>Temporary Password: """+password+"""<br>Please change your password once you successully login into the site.</p>"""
+        msg = EmailMultiAlternatives(subject,text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
     @staticmethod
     def select_by_user(user):
@@ -182,9 +199,9 @@ class User(AbstractBaseUser):
             sites = [sp.site for sp in site_privs if sp.role.role == 'pi']
             # get site privs of users at these sites
             site_privs = SitePrivilege.objects.filter(site__in=sites)
-            user_ids = [sp.user.id for sp in site_privs] + [user.id] 
+            user_ids = [sp.user.id for sp in site_privs] + [user.id]
             qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
-        return qs            
+        return qs
 
 class UserDashboardView(PlCoreBase):
      user = models.ForeignKey(User, related_name="dashboardViews")
