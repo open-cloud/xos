@@ -55,11 +55,6 @@ function OpenCloudModel(name) {
     this.__str__ = function() { return '["all", "filter", "get"]' };
 }
 
-//function Slices() {
-//    this.listAll = function() { return opencloud_data["slices"] }
-//    this.__str__ = function() { return '["listAll"]'; }
-//}
-
 function OpenCloud() {
     this.slices = new OpenCloudModel("slices");
     this.slivers = new OpenCloudModel("slivers");
