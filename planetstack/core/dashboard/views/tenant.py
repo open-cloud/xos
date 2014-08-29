@@ -1,7 +1,39 @@
 from view_common import *
+from core.models import *
 import functools
+from django.contrib.auth.models import BaseUserManager
+from django.core import serializers
+from django.core.mail import EmailMultiAlternatives
 
-BLESSED_SITES = ["Stanford", "Washington", "Princeton", "GeorgiaTech", "MaxPlanck"]
+BLESSED_DEPLOYMENTS = ["US-MaxPlanck", "US-GeorgiaTech", "US-Princeton", "US-Washington", "US-Stanford"]
+
+class RequestAccessView(View):
+    def post(self, request, *args, **kwargs):
+	email = request.POST.get("email", "0")
+	firstname = request.POST.get("firstname", "0")
+	lastname = request.POST.get("lastname", "0")
+	site = request.POST.get("site","0")
+	user = User(
+            email=BaseUserManager.normalize_email(email),
+            firstname=firstname,
+            lastname=lastname,
+	    is_active=False
+        )
+        user.save()
+	user.site=Site.objects.get(name=site)
+	user.save(update_fields=['site'])
+	sitePriv = SitePrivilege.objects.filter(site=user.site)
+	userId = user.id
+	userUrl = "http://"+request.get_host()+"/admin/core/user/"+str(userId)
+	for sp in sitePriv:
+		subject, from_email, to = 'Authorize OpenCloud User Account', 'support@opencloud.us', str(sp.user)
+		text_content = 'This is an important message.'
+		html_content = """<p>Please authorize the following user on site """+site+""": <br><br>User: """+firstname+""" """+lastname+"""<br>Email: """+email+"""<br><br>
+Check the checkbox next to Is Active property at <a href="""+userUrl+"""> this link</a> to authorize the user. If you do not recognize this individual, or otherwise do not want to approve this account, please ignore this email. If you do not approve this request in 48 hours, the account will automatically be deleted.</p>"""
+		msg = EmailMultiAlternatives(subject,text_content, from_email, [to])
+		msg.attach_alternative(html_content, "text/html")
+		msg.send()
+        return HttpResponse(serializers.serialize("json",[user,]), content_type='application/javascript')
 
 class TenantCreateSlice(View):
     def post(self, request, *args, **kwargs):
@@ -15,6 +47,7 @@ class TenantCreateSlice(View):
         networkPorts = request.POST.get("network","0")
         mountDataSets = request.POST.get("mountDataSets","0")
         privateVolume = request.POST.get("privateVolume","0")
+        userEmail = request.POST.get("userEmail","0")
         if (actionToDo == "add"):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
@@ -31,6 +64,19 @@ class TenantCreateSlice(View):
 	   addOrModifyPorts(networkPorts,sliceName)
 	   if privateVolume=="true":
 	   	privateVolForSlice(request.user,sliceName)
+	   slicePrivs=SlicePrivilege(user=User.objects.get(email=userEmail),slice=Slice.objects.get(name=sliceName),role=SliceRole.objects.get(role="admin"))
+           slicePrivs.save()
+        return HttpResponse(json.dumps("Slice created"), content_type='application/javascript')
+
+class TenantAddUser(View):
+    def post(self, request, *args, **kwargs):
+        if request.user.isReadOnlyUser():
+            return HttpResponseForbidden("User is in read-only mode")
+
+        sliceName = request.POST.get("sliceName", "0")
+        userEmail = request.POST.get("userEmail","0")
+        slicePrivs=SlicePrivilege(user=User.objects.get(email=userEmail),slice=Slice.objects.get(name=sliceName),role=SliceRole.objects.get(role="admin"))
+        slicePrivs.save()
         return HttpResponse(json.dumps("Slice created"), content_type='application/javascript')
 
 def privateVolForSlice(user,sliceName):
@@ -103,41 +149,61 @@ def getTenantSliceInfo(user, tableFormat = False):
     tenantSliceDetails['sliceServiceClass']=userSliceTableFormatter(tenantServiceClassData)
     tenantSliceDetails['image']=userSliceTableFormatter(getImageInfo(user))
     tenantSliceDetails['deploymentSites']=userSliceTableFormatter(getDeploymentSites())
-    tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo())
+    #tenantSliceDetails['sites'] = userSliceTableFormatter(getTenantSitesInfo())
     tenantSliceDetails['mountDataSets'] = userSliceTableFormatter(getMountDataSets())
     tenantSliceDetails['publicKey'] = getPublicKey(user)
+    tenantSliceDetails['availableSites']=userSliceTableFormatter(getAvailableSites())
+    tenantSliceDetails['role']=getUserRole(user)
+    tenantSliceDetails['siteUsers']=getSiteUsers(user)
     return tenantSliceDetails
+
+def getSiteUsers(user):
+	users = User.objects.filter(site=user.site)
+	siteUsers=[]
+        for entry in users:
+		siteUsers.append(str(entry))
+	return siteUsers
+
+
+def getUserRole(user):
+	sp=SitePrivilege.objects.filter(user=user)
+	for entry in sp:
+		return str(entry.role)
+
 
 def getTenantInfo(user):
     slices =Slice.objects.all()
     userSliceInfo = []
     for entry in slices:
-       sliceName = Slice.objects.get(id=entry.id).name
-       slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
-       sliceServiceClass = entry.serviceClass.name
-       preferredImage =  entry.imagePreference
-       #sliceDataSet = entry.mountDataSets
-       sliceNetwork = {}
-       numSliver = 0
-       sliceImage=""
-       sliceSite = {}
-       sliceNode = {}
-       sliceInstance= {}
-       #createPrivateVolume(user,sliceName)
-       for sliver in slice.slivers.all():
-	    if sliver.node.site.name in BLESSED_SITES:
-                sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
-                sliceImage = sliver.image.name
-                sliceNode[str(sliver)] = sliver.node.name
-       numSliver = sum(sliceSite.values())
-       numSites = len(sliceSite)
-       userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'instanceNodePair':sliceNode})
+       if (entry.site == user.site):
+           sliceName = Slice.objects.get(id=entry.id).name
+           slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
+           sliceServiceClass = entry.serviceClass.name
+           preferredImage =  entry.imagePreference
+           #sliceDataSet = entry.mountDataSets
+           sliceNetwork = {}
+           numSliver = 0
+           sliceImage=""
+           sliceSite = {}
+           sliceNode = {}
+           sliceInstance= {}
+           #createPrivateVolume(user,sliceName)
+           available_sites = get_available_sites()
+           for sliver in slice.slivers.all():
+                if sliver.node.site.name in available_sites:
+                    sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
+                    sliceImage = sliver.image.name
+                    sliceNode[str(sliver)] = sliver.node.name
+           numSliver = sum(sliceSite.values())
+           numSites = len(sliceSite)
+           userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'instanceNodePair':sliceNode})
     return userSliceInfo
 
 def getTenantSitesInfo():
+        availableSites=getAvailableSites()
 	tenantSiteInfo=[]
         for entry in Site.objects.all():
-            if entry.name in BLESSED_SITES:
+            if entry.name in availableSites:
 		 tenantSiteInfo.append({'siteName':entry.name})
 	return tenantSiteInfo
 
@@ -156,12 +222,23 @@ def getServiceClassInfo(user):
     return sliceInfo
 
 def getImageInfo(user):
-    imageList = Image.objects.all()
-    #imageList = ['Fedora 16 LXC rev 1.3','Hadoop','MPI']
+    #imageList = Image.objects.all()
+    #imageInfo = []
+    #for imageEntry in imageList:
+          #imageInfo.append({'Image':imageEntry.name})
     imageInfo = []
-    for imageEntry in imageList:
-          imageInfo.append({'Image':imageEntry.name})
-          #imageInfo.append({'Image':imageEntry})
+    tempImageInfo = []
+    length = len(BLESSED_DEPLOYMENTS)
+    for deployment in Deployment.objects.all():
+        if deployment.name in BLESSED_DEPLOYMENTS:
+            for x in deployment.imagedeployments_set.all():
+                tempImageInfo.append(x.image.name)
+    temp = {}
+    for i in set(tempImageInfo):
+    	temp[i] = tempImageInfo.count(i)
+    for key in temp:
+	if temp[key]>1:
+		imageInfo.append(key)
     return imageInfo
 
 def createPrivateVolume(user, sliceName):
@@ -228,6 +305,15 @@ def getDeploymentSites():
         deploymentInfo.append({'DeploymentSite':entry.name})
     return deploymentInfo
 
+def getAvailableSites():
+    available_sites = []
+    for deployment in Deployment.objects.all():
+        if deployment.name in BLESSED_DEPLOYMENTS:
+            for x in deployment.sitedeployments_set.all():
+		if x.site.nodes.all():
+                	available_sites.append(x.site.name)
+    return list(set(available_sites))
+
 class TenantDeleteSliceView(View):
         def post(self,request):
                 if request.user.isReadOnlyUser():
@@ -260,12 +346,14 @@ class TenantAddOrRemoveSliverView(View):
         actionToDo = request.POST.get("actionToDo", None)
         count = int(request.POST.get("count","0"))
 	sliceName = request.POST.get("slice", None)
+	imageName = request.POST.get("image",None)
         noAct = request.POST.get("noAct", False)
 
         if not sliceName:
             return HttpResponseServerError("No slice name given")
 
         slice = Slice.objects.get(name=sliceName)
+	image = Image.objects.get(name=imageName)
 
         if siteName:
             siteList = [Site.objects.get(name=siteName)]
@@ -277,7 +365,7 @@ class TenantAddOrRemoveSliverView(View):
             if (siteList is None):
                 siteList = tenant_pick_sites(user, user_ip, slice, count)
 
-            sitesChanged = slice_increase_slivers(request.user, user_ip, siteList, slice, count, noAct)
+            sitesChanged = slice_increase_slivers(request.user, user_ip, siteList, slice, image, count, noAct)
         elif (actionToDo == "rem"):
             sitesChanged = slice_decrease_slivers(request.user, siteList, slice, count, noAct)
         else:
@@ -328,8 +416,9 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
         print "exception in geo code"
         traceback.print_exc()
 
+    available_sites = get_available_sites()
     sites = Site.objects.all()
-    sites = [x for x in sites if x.name in BLESSED_SITES]
+    sites = [x for x in sites if x.name in available_sites]
     sites = sorted(sites, key=functools.partial(siteSortKey, slice=slice, count=count, lat=lat, lon=lon))
 
     return sites
@@ -337,3 +426,7 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
 class TenantViewData(View):
     def get(self, request, **kwargs):
         return HttpResponse(json.dumps(getTenantSliceInfo(request.user, True)), content_type='application/javascript')
+
+class RequestAccountView(View):
+    def get(self, request, **kwargs):
+        return HttpResponse()
