@@ -188,7 +188,7 @@ def getTenantInfo(user):
            sliceNode = {}
            sliceInstance= {}
            #createPrivateVolume(user,sliceName)
-           available_sites = get_available_sites()
+           available_sites = getAvailableSites()
            for sliver in slice.slivers.all():
                 if sliver.node.site.name in available_sites:
                     sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
@@ -416,7 +416,7 @@ def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
         print "exception in geo code"
         traceback.print_exc()
 
-    available_sites = get_available_sites()
+    available_sites = getAvailableSites()
     sites = Site.objects.all()
     sites = [x for x in sites if x.name in available_sites]
     sites = sorted(sites, key=functools.partial(siteSortKey, slice=slice, count=count, lat=lat, lon=lon))
