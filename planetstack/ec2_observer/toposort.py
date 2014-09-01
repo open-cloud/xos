@@ -10,6 +10,103 @@ import pdb
 from datetime import datetime
 from collections import defaultdict
 
+# Assumes that there are no empty dependencies
+# in the graph. E.g. Foo -> []
+def dfs(graph, visit):
+	nodes = graph.keys()
+	edge_nodes = set()
+
+	for n in nodes:
+		edge_nodes|=set(graph[n])
+
+	print 'Edge nodes=',edge_nodes
+	print 'Nodes=',nodes
+
+	sinks = list(edge_nodes - set(nodes))
+	sources = list(set(nodes) - edge_nodes)
+	
+	print 'Sinks =',sinks
+	print 'Sources =',sources
+
+	nodes.extend(sinks)
+
+	for s in sinks:
+		graph[s]=[]
+
+	visited = set(sources)
+	stack = sources
+	while stack:
+		current = stack.pop()
+		visit(current)
+		for node in graph[current]:
+			if node not in visited:
+				stack.append(node)
+				visited.add(node)
+
+
+# Topological sort + find connected components
+# Notes:
+# - Uses a stack instead of recursion
+# - Forfeits optimization involving tracking currently visited nodes
+
+def toposort_with_components(g, steps=None):
+	# Get set of all nodes, including those without outgoing edges
+	keys = set(g.keys())
+	values = set({})
+	for v in g.values():
+		values=values | set(v)
+	
+	all_nodes=list(keys|values)
+	if (not steps):
+		steps = all_nodes
+
+	# Final order
+	order = {}
+
+	# Index of newest component
+	cidx = 0
+
+	# DFS stack, not using recursion
+	stack = []
+
+	# Unmarked set
+	unmarked = all_nodes
+
+	# visiting = [] - skip, don't expect 1000s of nodes, |E|/|V| is small
+
+	while unmarked:
+		stack.insert(0,unmarked[0]) # push first unmarked
+
+		while (stack):
+			n = stack[0]
+			add = True
+			try:
+				for m in g[n]:
+					if (m in unmarked):
+						if (m not in stack):
+							add = False
+							stack.insert(0,m)
+						else:
+							# Should not happen, if so there's a loop
+							print 'Loop at %s'%m
+			except KeyError:
+				pass
+			if (add):
+				if (n in steps):
+					order.append(n)
+				item = stack.pop(0)
+				unmarked.remove(item)
+
+	noorder = list(set(steps) - set(order))
+
+	# Steps that do not have an order get pushed as
+	# separate components that run in parallel.
+	for s in noorder:
+		order['%d'%cidx] = [s]
+		cidx+=1
+
+	return order + noorder
+
 # Topological sort
 # Notes:
 # - Uses a stack instead of recursion
