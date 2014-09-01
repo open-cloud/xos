@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import User,Site,Slice
+from core.models import User,Site,Slice,Deployment
 from encrypted_fields import EncryptedCharField
 
 class UserCredential(PlCoreBase):
