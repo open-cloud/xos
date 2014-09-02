@@ -1,6 +1,7 @@
 from core.models.slice import Slice
+from plus import PlusObjectMixin
 
-class SlicePlus(Slice):
+class SlicePlus(Slice, PlusObjectMixin):
     class Meta:
         proxy = True
 

@@ -3,7 +3,7 @@
     "pk": 1, 
     "model": "core.dashboardview", 
     "fields": {
-        "url": "template:developer", 
+        "url": "template:xosDeveloper_datatables", 
         "updated": "2014-05-19T22:11:11.408Z", 
         "enacted": null, 
         "name": "Developer", 

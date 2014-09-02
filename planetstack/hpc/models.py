@@ -73,7 +73,7 @@ class CDNPrefix(PlCoreBase):
     contentProvider = models.ForeignKey(ContentProvider)
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Content Provider")
 
-    defaultOriginServer = models.ForeignKey(OriginServer)
+    defaultOriginServer = models.ForeignKey(OriginServer, blank=True, null=True)
     enabled = models.BooleanField(default=True)
 
     def __unicode__(self):  return u'%s' % (self.prefix)
