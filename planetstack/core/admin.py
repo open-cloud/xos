@@ -767,13 +767,19 @@ class SliceAdmin(PlanetStackBaseAdmin):
         for node in Node.objects.all():
             deployment_nodes.append( (node.deployment.id, node.id, node.name) )
 
+        sites = {}
+        for site in Site.objects.all():
+            sites[site.id] = site.login_base
+
         context["deployment_nodes"] = deployment_nodes
+        context["sites"] = sites
 
         return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['widget'] = forms.Select(attrs={'onChange': "update_slice_name(this, $($(this).closest('div')[0]).find('.field-name input')[0].id)"})
 
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
