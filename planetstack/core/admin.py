@@ -485,8 +485,17 @@ class DeploymentAdminForm(forms.ModelForm):
             verbose_name=('Images'), is_stacked=False
         )
     )
+    flavors = forms.ModelMultipleChoiceField(
+        queryset=Flavor.objects.all(),
+        required=False,
+        help_text="Select which flavors should be usable on this deployment",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Flavors'), is_stacked=False
+        )
+    )
     class Meta:
         model = Deployment
+        many_to_many = ["flavors",]
 
     def __init__(self, *args, **kwargs):
       request = kwargs.pop('request', None)
@@ -497,6 +506,7 @@ class DeploymentAdminForm(forms.ModelForm):
       if self.instance and self.instance.pk:
         self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+        self.fields['flavors'].initial = self.instance.flavors.all()
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
@@ -536,6 +546,8 @@ class DeploymentAdminForm(forms.ModelForm):
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
 
+      deployment.flavors = self.cleaned_data['flavors']
+
       if commit:
         deployment.save()
 
@@ -547,7 +559,7 @@ class DeploymentAdminForm(forms.ModelForm):
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
 
-        self.save_m2m()
+      self.save_m2m()
 
       return deployment
 
@@ -562,7 +574,7 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
@@ -755,19 +767,13 @@ class SliceAdmin(PlanetStackBaseAdmin):
         for node in Node.objects.all():
             deployment_nodes.append( (node.deployment.id, node.id, node.name) )
 
-        sites = {}
-        for site in Site.objects.all():
-            sites[site.id] = site.login_base 
-        
         context["deployment_nodes"] = deployment_nodes
-        context["sites"] = sites
 
         return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user)
-            kwargs['widget'] = forms.Select(attrs={'onChange': "update_slice_name(this, $($(this).closest('div')[0]).find('.field-name input')[0].id)"}) 
 
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -1338,6 +1344,12 @@ class NetworkTemplateAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
     user_readonly_inlines = []
 
+class FlavorAdmin(PlanetStackBaseAdmin):
+    list_display = ("backend_status_icon", "name", "flavor", "order", "default")
+    list_display_links = ("backend_status_icon", "name")
+    user_readonly_fields = ("name", "flavor")
+    fields = ("name", "description", "flavor", "order", "default")
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -1456,7 +1468,6 @@ class AccountAdmin(admin.ModelAdmin):
     dollar_total_invoices = dollar_field("total_invoices", "Total Invoices")
     dollar_total_payments = dollar_field("total_payments", "Total Payments")
 
-
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
@@ -1499,4 +1510,5 @@ if True:
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)
+    admin.site.register(Flavor, FlavorAdmin)
 
