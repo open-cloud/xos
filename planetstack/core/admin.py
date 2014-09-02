@@ -729,7 +729,7 @@ class SliceForm(forms.ModelForm):
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'slicename', 'site','serviceClass', 'slice_url', 'max_slivers')
