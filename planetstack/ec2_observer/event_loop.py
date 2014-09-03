@@ -33,14 +33,25 @@ class NoOpDriver:
 		 self.enabled = True
 		 self.dependency_graph = None
 
+STEP_STATUS_WORKING=1
+STEP_STATUS_OK=2
+STEP_STATUS_KO=3
+
+def invert_graph(g):
+	ig = {}
+	for k,v in g.items():
+		for v0 in v:
+			try:
+				ig[v0].append(k)
+			except:
+				ig=[k]
+	return ig
+
 class PlanetStackObserver:
 	#sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
 	sync_steps = []
 
-	STEP_STATUS_WORKING=1
-	STEP_STATUS_OK=2
-	STEP_STATUS_KO=3
-
+	
 	def __init__(self):
 		# The Condition object that gets signalled by Feefie events
 		self.step_lookup = {}
@@ -54,16 +65,16 @@ class PlanetStackObserver:
 		else:
 			self.driver = NoOpDriver()
 
-	def wait_for_event(self, timeout, cond=self.event_cond):
-		cond.acquire()
-		cond.wait(timeout)
-		cond.release()
+	def wait_for_event(self, timeout):
+		self.event_cond.acquire()
+		self.event_cond.wait(timeout)
+		self.event_cond.release()
 
-	def wake_up(self, cond=self.event_cond):
+	def wake_up(self):
 		logger.info('Wake up routine called. Event cond %r'%self.event_cond)
-		cond.acquire()
-		cond.notify()
-		cond.release()
+		self.event_cond.acquire()
+		self.event_cond.notify()
+		self.event_cond.release()
 
 	def load_sync_step_modules(self, step_dir=None):
 		if step_dir is None:
@@ -160,6 +171,7 @@ class PlanetStackObserver:
 					# no dependencies, pass
 
 		self.dependency_graph = step_graph
+		self.deletion_dependency_graph = invert_graph(step_graph)
 
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
 		print "Order of steps=",self.ordered_steps
@@ -330,6 +342,7 @@ class PlanetStackObserver:
 				for v in self.dependency_graph.values():
 					if (v):
 						providers.update(v)
+
 				self.step_conditions = {}
 				self.step_status = {}
 				for p in list(providers):
@@ -346,7 +359,7 @@ class PlanetStackObserver:
 				for deletion in [False,True]:
 					threads = []
 					logger.info('Deletion=%r...'%deletion)
-					schedule = self.sync_schedule if not deletion else self.delete_schedule
+					schedule = self.ordered_steps if not deletion else reversed(self.ordered_steps)
 
 					thread = threading.Thread(target=self.sync, args=(schedule.start_conditions, schedule.ordered_steps,deletion, schedule.signal_sem))
 
