@@ -23,15 +23,12 @@ def get_default_flavor(deployment = None):
         flavors = Flavor.objects.all()
 
     if not flavors:
-        print "XXX none"
         return None
 
     for flavor in flavors:
         if flavor.default:
-            print "XXX", flavor
             return flavor
 
-    print "XXX", flavors[0]
     return flavors[0]
 
 # Create your models here.
