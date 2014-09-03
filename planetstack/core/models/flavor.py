@@ -1,7 +1,7 @@
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
+from core.models import PlCoreBase, Deployment
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 

@@ -266,7 +266,7 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'deploymentNetwork', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -277,13 +277,7 @@ class SliverInline(PlStackTabularInline):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deploymentNetwork':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
-           # the inscrutable jquery selector below says:
-           #     find the closest parent "tr" to the current element
-           #     then find the child with class "field-node"
-           #     then find the child with that is a select
-           #     then return its id
-           kwargs['widget'] = forms.Select(attrs={'onChange': "update_nodes(this, $($(this).closest('tr')[0]).find('.field-node select')[0].id)"})
-           #kwargs['widget'] = forms.Select(attrs={'onChange': "console.log($($($(this).closest('tr')[0]).children('.field-node')[0]).children('select')[0].id);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -759,19 +753,21 @@ class SliceAdmin(PlanetStackBaseAdmin):
     )
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        #deployment_nodes = {}
-        #for node in Node.objects.all():
-        #    deployment_nodes[node.deployment.id] = get(deployment_nodes, node.deployment.id, []).append( (node.id, node.name) )
-
         deployment_nodes = []
         for node in Node.objects.all():
             deployment_nodes.append( (node.deployment.id, node.id, node.name) )
+
+        deployment_flavors = []
+        for flavor in Flavor.objects.all():
+            for deployment in flavor.deployments.all():
+                deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
 
         sites = {}
         for site in Site.objects.all():
             sites[site.id] = site.login_base
 
         context["deployment_nodes"] = deployment_nodes
+        context["deployment_flavors"] = deployment_flavors
         context["sites"] = sites
 
         return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
@@ -900,10 +896,10 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deploymentNetwork']
     list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),
@@ -912,7 +908,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
 
     inlines = [TagInline]
 
-    user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image']
+    user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':

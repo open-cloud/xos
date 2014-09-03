@@ -9,11 +9,34 @@ from core.models import Site
 from core.models import Deployment
 from core.models import User
 from core.models import Tag
+from core.models import Flavor
 from django.contrib.contenttypes import generic
+
+def get_default_flavor(deployment = None):
+    # Find a default flavor that can be used for a sliver. This is particularly
+    # useful in evolution. It's also intended this helper function can be used
+    # for admin.py when users
+
+    if deployment:
+        flavors = deployment.flavors.all()
+    else:
+        flavors = Flavor.objects.all()
+
+    if not flavors:
+        print "XXX none"
+        return None
+
+    for flavor in flavors:
+        if flavor.default:
+            print "XXX", flavor
+            return flavor
+
+    print "XXX", flavors[0]
+    return flavors[0]
 
 # Create your models here.
 class Sliver(PlCoreBase):
-    instance_id = models.CharField(null=True, blank=True, max_length=200, help_text="Nova instance id")    
+    instance_id = models.CharField(null=True, blank=True, max_length=200, help_text="Nova instance id")
     name = models.CharField(max_length=200, help_text="Sliver name")
     instance_name = models.CharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
@@ -24,6 +47,7 @@ class Sliver(PlCoreBase):
     node = models.ForeignKey(Node, related_name='slivers')
     deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
+    flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
