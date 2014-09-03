@@ -49,16 +49,16 @@ class PlanetStackObserver:
 		else:
 			self.driver = NoOpDriver()
 
-	def wait_for_event(self, timeout):
-		self.event_cond.acquire()
-		self.event_cond.wait(timeout)
-		self.event_cond.release()
+	def wait_for_event(self, timeout, cond=self.event_cond):
+		cond.acquire()
+		cond.wait(timeout)
+		cond.release()
 
-	def wake_up(self):
+	def wake_up(self, cond=self.event_cond):
 		logger.info('Wake up routine called. Event cond %r'%self.event_cond)
-		self.event_cond.acquire()
-		self.event_cond.notify()
-		self.event_cond.release()
+		cond.acquire()
+		cond.notify()
+		cond.release()
 
 	def load_sync_step_modules(self, step_dir=None):
 		if step_dir is None:
