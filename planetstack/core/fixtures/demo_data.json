@@ -9603,6 +9603,187 @@
     }
 },
 {
+    "pk": 1, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T20:38:23.122Z", 
+        "name": "m1.tiny", 
+        "created": "2014-09-02T20:38:23.122Z", 
+        "deleted": false, 
+        "description": "openstack tiny instance", 
+        "deployments": [
+            7, 
+            10, 
+            9, 
+            8, 
+            6, 
+            5
+        ], 
+        "default": false, 
+        "flavor": "m1.tiny", 
+        "backend_status": "Provisioning in progress", 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T20:59:40.518Z", 
+        "name": "m1.small", 
+        "created": "2014-09-02T20:59:40.518Z", 
+        "deleted": false, 
+        "description": "small openstack instance", 
+        "deployments": [
+            7, 
+            10, 
+            9, 
+            8, 
+            6, 
+            5, 
+            11
+        ], 
+        "default": true, 
+        "flavor": "m1.small", 
+        "backend_status": "Provisioning in progress", 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:00:28.795Z", 
+        "name": "m1.medium", 
+        "created": "2014-09-02T21:00:28.795Z", 
+        "deleted": false, 
+        "description": "medium openstack flavor", 
+        "deployments": [
+            7, 
+            10, 
+            9, 
+            8, 
+            6, 
+            5, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.medium", 
+        "backend_status": "Provisioning in progress", 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:00:57.360Z", 
+        "name": "m1.large", 
+        "created": "2014-09-02T21:00:49.945Z", 
+        "deleted": false, 
+        "description": "large openstack flavor", 
+        "deployments": [
+            7, 
+            10, 
+            9, 
+            8, 
+            6, 
+            5, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.large", 
+        "backend_status": "Provisioning in progress", 
+        "order": 3, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:01:15.285Z", 
+        "name": "m1.xlarge", 
+        "created": "2014-09-02T21:01:15.285Z", 
+        "deleted": false, 
+        "description": "extra large openstack flavor", 
+        "deployments": [
+            7, 
+            10, 
+            9, 
+            8, 
+            6, 
+            5, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.xlarge", 
+        "backend_status": "Provisioning in progress", 
+        "order": 4, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:25:30.120Z", 
+        "name": "m3.medium", 
+        "created": "2014-09-03T00:25:30.120Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.medium", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.medium", 
+        "backend_status": "Provisioning in progress", 
+        "order": 33, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:25:50.419Z", 
+        "name": "m3.large", 
+        "created": "2014-09-03T00:25:50.419Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.large", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.large", 
+        "backend_status": "Provisioning in progress", 
+        "order": 34, 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:26:11.770Z", 
+        "name": "m3.2xlarge", 
+        "created": "2014-09-03T00:26:11.770Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.2xlarge", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.2xlarge", 
+        "backend_status": "Provisioning in progress", 
+        "order": 35, 
+        "enacted": null
+    }
+},
+{
     "pk": 40, 
     "model": "core.sliver", 
     "fields": {
