@@ -6,6 +6,7 @@ import traceback
 import commands
 import threading
 import json
+import pdb
 
 from datetime import datetime
 from collections import defaultdict
@@ -221,7 +222,6 @@ class PlanetStackObserver:
 				self.last_deletion_run_times[e]=0
 
 
-
 	def save_run_times(self):
 		run_times = json.dumps(self.last_run_times)
 		open('/tmp/observer_run_times','w').write(run_times)
@@ -358,7 +358,7 @@ class PlanetStackObserver:
 				self.step_status = {}
 				for p in list(providers):
 					self.step_conditions[p] = threading.Condition()
-					self.step_status[p] = STEP_STATUS_IDLE
+					self.step_status[p] = STEP_STATUS_WORKING
 
 
 				logger.info('Waiting for event')
