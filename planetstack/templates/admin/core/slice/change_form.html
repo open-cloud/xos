@@ -14,12 +14,11 @@ deployment_flavors = [
 {% endfor %}
 ];
 
-sites = [
-{% for s in sites %}
-  [{{ s.0 }}, {{ s.1 }}],
+site_login_bases = [
+{% for s in site_login_bases %}
+  [{{ s.0 }}, "{{ s.1 }}"],
 {% endfor %}
 ];
-
 
 function update_nodes(deployment_select, node_select_id) {
     deployment_id = $(deployment_select).val();
@@ -63,8 +62,10 @@ function sliver_deployment_changed(deployment_select) {
 function update_slice_prefix(site_select, slice_name_id) {
     site_id = $(site_select).val();
     slice_prefix="";
-    if (site_id in sites) {
-        slice_prefix=sites[site_id]+"_";
+    for (i in site_login_bases) {
+        if (site_login_bases[i][0] == site_id) {
+            slice_prefix=site_login_bases[i][1]+"_";
+        }
     }
     $("#"+slice_name_id).val(slice_prefix); 
 }

@@ -4,6 +4,7 @@ from datetime import datetime
 from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
+from django.db.models import F, Q
 
 logger = Logger(level=logging.INFO)
 
@@ -48,7 +49,7 @@ class SyncStep:
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
         main_obj = self.provides[0]
-        if (not deleted):
+        if (not deletion):
             objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         else:
             objs = main_obj.deleted_objects.all()
@@ -59,10 +60,16 @@ class SyncStep:
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
-            peer_object = getattr(obj, peer_name)
+            try:
+                peer_object = getattr(obj, peer_name)
+            except:
+                peer_object = None
+
             if (peer_object and peer_object.pk==failed.pk and type(peer_object)==type(failed)):
-                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk\
-), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
+                if (obj.backend_status!=peer_object.backend_status):
+                    obj.backend_status = peer_object.backend_status
+                    obj.save(update_fields=['backend_status'])
+                raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
 
     def call(self, failed=[], deletion=False):
         pending = self.fetch_pending(deletion)
@@ -79,14 +86,22 @@ class SyncStep:
                     o.backend_status = "OK"
                     o.save(update_fields=['enacted'])
             except Exception,e:
-                try:
-                    o.backend_status = self.error_map.map(str(e))
-                except:
-                    o.backend_status = str(e)
-
-                o.save(update_fields=['backend_status'])
-
                 logger.log_exc("sync step failed!")
+                str_e = '%r'%e
+                try:
+                    o.backend_status = self.error_map.map(str_e)
+                except:
+                    o.backend_status = str_e
+
+                # TOFIX:
+                # DatabaseError: value too long for type character varying(140)
+                if (o.pk):
+                    try:
+                        o.save(update_fields=['backend_status'])
+                    except:
+                        print "Could not update backend status field!"
+                        pass
+
                 failed.append(o)
 
         return failed

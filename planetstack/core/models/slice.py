@@ -11,6 +11,7 @@ from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Deployment
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -38,6 +39,11 @@ class Slice(PlCoreBase):
         return "%s_%s" % (self.site.login_base, self.name)
 
     def save(self, *args, **kwds):
+        
+        site = Site.objects.get(id=self.site.id)
+        if not self.name.startswith(site.login_base):
+            raise ValidationError('slice name must begin with %s' % site.login_base)
+        
         if self.serviceClass is None:
             # We allowed None=True for serviceClass because Django evolution
             # will fail unless it is allowed. But, we we really don't want it to

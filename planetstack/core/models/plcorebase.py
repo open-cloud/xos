@@ -5,6 +5,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
+import model_policies
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file

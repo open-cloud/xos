@@ -6,6 +6,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.user import User
 from core.models.userdeployments import  UserDeployments
+from observer.steps.sync_user_deployments import SyncUserDeployments
 
 class SyncUsers(OpenStackSyncStep):
     provides=[User]
@@ -18,6 +19,6 @@ class SyncUsers(OpenStackSyncStep):
             user_deployment.save()
 
     def delete_record(self, user):
-        user_deployment_deleter = UserDeploymentDeleter()
+        user_deployment_deleter = SyncUserDeployments().delete_record
         for user_deployment in UserDeployments.objects.filter(user=user):
-            user_deployment_deleter(user_deployment.id)
+            user_deployment_deleter(user_deployment)
