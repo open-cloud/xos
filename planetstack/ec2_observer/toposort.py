@@ -10,6 +10,32 @@ import pdb
 from datetime import datetime
 from collections import defaultdict
 
+# Assumes that there are no empty dependencies
+# in the graph. E.g. Foo -> []
+def dfs(graph, visit):
+	nodes = graph.keys()
+	edge_nodes = set()
+
+	for n in nodes:
+		edge_nodes|=set(graph[n])
+
+	sinks = list(edge_nodes - set(nodes))
+	sources = list(set(nodes) - edge_nodes)
+	
+	nodes.extend(sinks)
+
+	visited = set(sources)
+	stack = sources
+	while stack:
+		current = stack.pop()
+		visit(current)
+		for node in graph[current]:
+			if node not in visited:
+				stack.append(node)
+				visited.add(node)
+
+	return sources
+
 # Topological sort
 # Notes:
 # - Uses a stack instead of recursion
