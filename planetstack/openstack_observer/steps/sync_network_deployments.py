@@ -103,6 +103,10 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         network_deployment.save()
 
     def sync_record(self, network_deployment):
+        if not network_deployment.deployment.admin_user:
+            logger.info("deployment %r has no admin_user, skipping" % network_deployment.deployment)
+            return
+
         if network_deployment.network.owner and network_deployment.network.owner.creator:
             try:
                 # update manager context
