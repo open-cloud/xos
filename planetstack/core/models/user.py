@@ -10,6 +10,7 @@ from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
 from django.core.mail import EmailMultiAlternatives
 from core.middleware import get_request
+import model_policies
 
 # Create your models here.
 class UserManager(BaseUserManager):
