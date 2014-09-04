@@ -524,6 +524,40 @@
     }
 },
 {
+    "pk": 5, 
+    "model": "core.deployment", 
+    "fields": {
+        "accessControl": "allow all", 
+        "updated": "2013-04-03T22:57:23.015Z", 
+        "admin_user": "admin", 
+        "name": "deleted5", 
+        "created": "2013-04-03T22:57:23.015Z", 
+        "deleted": false, 
+        "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
+        "admin_password": "CaegoomaezeiFeka", 
+        "backend_status": "Provisioning in progress", 
+        "admin_tenant": "admin", 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.deployment", 
+    "fields": {
+        "accessControl": "allow all", 
+        "updated": "2013-04-03T22:57:23.015Z", 
+        "admin_user": "admin", 
+        "name": "deleted6", 
+        "created": "2013-04-03T22:57:23.015Z", 
+        "deleted": false, 
+        "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
+        "admin_password": "CaegoomaezeiFeka", 
+        "backend_status": "Provisioning in progress", 
+        "admin_tenant": "admin", 
+        "enacted": null
+    }
+},
+{
     "pk": 7, 
     "model": "core.deployment", 
     "fields": {
@@ -531,6 +565,40 @@
         "updated": "2013-04-03T22:57:23.015Z", 
         "admin_user": "admin", 
         "name": "US-Princeton", 
+        "created": "2013-04-03T22:57:23.015Z", 
+        "deleted": false, 
+        "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
+        "admin_password": "CaegoomaezeiFeka", 
+        "backend_status": "Provisioning in progress", 
+        "admin_tenant": "admin", 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.deployment", 
+    "fields": {
+        "accessControl": "allow all", 
+        "updated": "2013-04-03T22:57:23.015Z", 
+        "admin_user": "admin", 
+        "name": "deleted8", 
+        "created": "2013-04-03T22:57:23.015Z", 
+        "deleted": false, 
+        "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
+        "admin_password": "CaegoomaezeiFeka", 
+        "backend_status": "Provisioning in progress", 
+        "admin_tenant": "admin", 
+        "enacted": null
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.deployment", 
+    "fields": {
+        "accessControl": "allow all", 
+        "updated": "2013-04-03T22:57:23.015Z", 
+        "admin_user": "admin", 
+        "name": "deleted9", 
         "created": "2013-04-03T22:57:23.015Z", 
         "deleted": false, 
         "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
@@ -2153,6 +2221,30 @@
     }
 },
 {
+    "pk": 17, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-04-18T00:15:19.309Z", 
+        "imagePreference": null, 
+        "name": "deleted17", 
+        "service": null, 
+        "created": "2014-04-02T18:33:34.260Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 22, 
+        "omf_friendly": false, 
+        "network": null, 
+        "max_slivers": 10, 
+        "mountDataSets": null, 
+        "backend_status": "Provisioning in progress", 
+        "creator": 7, 
+        "enacted": "2014-04-18T00:15:19.363Z"
+    }
+},
+{
     "pk": 18, 
     "model": "core.slice", 
     "fields": {
@@ -2489,6 +2581,30 @@
     }
 },
 {
+    "pk": 36, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-04-18T00:15:19.309Z", 
+        "imagePreference": null, 
+        "name": "deleted36", 
+        "service": null, 
+        "created": "2014-04-02T18:33:34.260Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 22, 
+        "omf_friendly": false, 
+        "network": null, 
+        "max_slivers": 10, 
+        "mountDataSets": null, 
+        "backend_status": "Provisioning in progress", 
+        "creator": 7, 
+        "enacted": "2014-04-18T00:15:19.363Z"
+    }
+},
+{
     "pk": 39, 
     "model": "core.slice", 
     "fields": {
@@ -2558,6 +2674,30 @@
         "backend_status": "Provisioning in progress", 
         "creator": 44, 
         "enacted": "2014-08-11T20:30:01.071Z"
+    }
+},
+{
+    "pk": 42, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-04-18T00:15:19.309Z", 
+        "imagePreference": null, 
+        "name": "deleted42", 
+        "service": null, 
+        "created": "2014-04-02T18:33:34.260Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 22, 
+        "omf_friendly": false, 
+        "network": null, 
+        "max_slivers": 10, 
+        "mountDataSets": null, 
+        "backend_status": "Provisioning in progress", 
+        "creator": 7, 
+        "enacted": "2014-04-18T00:15:19.363Z"
     }
 },
 {
@@ -2654,6 +2794,30 @@
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
         "enacted": "2014-08-26T17:30:15.535Z"
+    }
+},
+{
+    "pk": 51, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-04-18T00:15:19.309Z", 
+        "imagePreference": null, 
+        "name": "deleted51", 
+        "service": null, 
+        "created": "2014-04-02T18:33:34.260Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 22, 
+        "omf_friendly": false, 
+        "network": null, 
+        "max_slivers": 10, 
+        "mountDataSets": null, 
+        "backend_status": "Provisioning in progress", 
+        "creator": 7, 
+        "enacted": "2014-04-18T00:15:19.363Z"
     }
 },
 {
@@ -11465,6 +11629,36 @@
     }
 },
 {
+    "pk": 7, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-05-07T01:11:21.731Z", 
+        "name": "deleted7", 
+        "created": "2014-04-02T19:00:04.504Z", 
+        "deleted": false, 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-05-07T01:11:21.779Z"
+    }
+},
+{
+    "pk": 19, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-05-07T01:11:21.731Z", 
+        "name": "deleted19", 
+        "created": "2014-04-02T19:00:04.504Z", 
+        "deleted": false, 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-05-07T01:11:21.779Z"
+    }
+},
+{
     "pk": 20, 
     "model": "core.image", 
     "fields": {
@@ -11492,6 +11686,36 @@
         "path": "ami-03e5e66a", 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-06T17:30:55.467Z"
+    }
+},
+{
+    "pk": 23, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-05-07T01:11:21.731Z", 
+        "name": "deleted23", 
+        "created": "2014-04-02T19:00:04.504Z", 
+        "deleted": false, 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-05-07T01:11:21.779Z"
+    }
+},
+{
+    "pk": 24, 
+    "model": "core.image", 
+    "fields": {
+        "updated": "2014-05-07T01:11:21.731Z", 
+        "name": "deleted24", 
+        "created": "2014-04-02T19:00:04.504Z", 
+        "deleted": false, 
+        "container_format": "bare", 
+        "disk_format": "raw", 
+        "path": null, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-05-07T01:11:21.779Z"
     }
 },
 {
@@ -12900,6 +13124,187 @@
     }
 },
 {
+    "pk": 1, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T20:38:23.122Z", 
+        "name": "m1.tiny", 
+        "created": "2014-09-02T20:38:23.122Z", 
+        "deleted": false, 
+        "description": "openstack tiny instance", 
+        "deployments": [
+            8, 
+            9, 
+            5, 
+            6, 
+            7, 
+            10
+        ], 
+        "default": false, 
+        "flavor": "m1.tiny", 
+        "backend_status": "Provisioning in progress", 
+        "order": 0, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T20:59:40.518Z", 
+        "name": "m1.small", 
+        "created": "2014-09-02T20:59:40.518Z", 
+        "deleted": false, 
+        "description": "small openstack instance", 
+        "deployments": [
+            8, 
+            9, 
+            5, 
+            6, 
+            7, 
+            10, 
+            11
+        ], 
+        "default": true, 
+        "flavor": "m1.small", 
+        "backend_status": "Provisioning in progress", 
+        "order": 1, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:00:28.795Z", 
+        "name": "m1.medium", 
+        "created": "2014-09-02T21:00:28.795Z", 
+        "deleted": false, 
+        "description": "medium openstack flavor", 
+        "deployments": [
+            8, 
+            9, 
+            5, 
+            6, 
+            7, 
+            10, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.medium", 
+        "backend_status": "Provisioning in progress", 
+        "order": 2, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:00:57.360Z", 
+        "name": "m1.large", 
+        "created": "2014-09-02T21:00:49.945Z", 
+        "deleted": false, 
+        "description": "large openstack flavor", 
+        "deployments": [
+            8, 
+            9, 
+            5, 
+            6, 
+            7, 
+            10, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.large", 
+        "backend_status": "Provisioning in progress", 
+        "order": 3, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-02T21:01:15.285Z", 
+        "name": "m1.xlarge", 
+        "created": "2014-09-02T21:01:15.285Z", 
+        "deleted": false, 
+        "description": "extra large openstack flavor", 
+        "deployments": [
+            8, 
+            9, 
+            5, 
+            6, 
+            7, 
+            10, 
+            11
+        ], 
+        "default": false, 
+        "flavor": "m1.xlarge", 
+        "backend_status": "Provisioning in progress", 
+        "order": 4, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:25:30.120Z", 
+        "name": "m3.medium", 
+        "created": "2014-09-03T00:25:30.120Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.medium", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.medium", 
+        "backend_status": "Provisioning in progress", 
+        "order": 33, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:25:50.419Z", 
+        "name": "m3.large", 
+        "created": "2014-09-03T00:25:50.419Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.large", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.large", 
+        "backend_status": "Provisioning in progress", 
+        "order": 34, 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.flavor", 
+    "fields": {
+        "updated": "2014-09-03T00:26:11.770Z", 
+        "name": "m3.2xlarge", 
+        "created": "2014-09-03T00:26:11.770Z", 
+        "deleted": false, 
+        "description": "ec2 flavor m3.2xlarge", 
+        "deployments": [
+            11
+        ], 
+        "default": false, 
+        "flavor": "m3.2xlarge", 
+        "backend_status": "Provisioning in progress", 
+        "order": 35, 
+        "enacted": null
+    }
+},
+{
     "pk": 372, 
     "model": "core.sliver", 
     "fields": {
@@ -12917,6 +13322,7 @@
         "numberCores": 0, 
         "instance_id": "a5894f3e-f868-4074-a632-bd960b91323e", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:24.227Z"
     }
@@ -12939,6 +13345,7 @@
         "numberCores": 1, 
         "instance_id": "441de6b2-7a22-4521-94c0-60818ab2a7c4", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:57.364Z"
     }
@@ -12961,6 +13368,7 @@
         "numberCores": 1, 
         "instance_id": "8e9a7656-4968-4db1-acd0-3955af7e57a4", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:34.693Z"
     }
@@ -12983,6 +13391,7 @@
         "numberCores": 1, 
         "instance_id": "0ce9e4b3-8d23-4f43-8e8d-c5a76281f36f", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:20.331Z"
     }
@@ -13005,6 +13414,7 @@
         "numberCores": 1, 
         "instance_id": "03e86646-851a-45f8-872e-25a3afbe7fd1", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:46.056Z"
     }
@@ -13027,6 +13437,7 @@
         "numberCores": 1, 
         "instance_id": "0a3241fa-ea54-4960-a2b2-4e5359a7e16f", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:29.930Z"
     }
@@ -13049,6 +13460,7 @@
         "numberCores": 1, 
         "instance_id": "e1be38e4-b34e-443c-b1f6-1f06edcc9285", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:19.156Z"
     }
@@ -13071,6 +13483,7 @@
         "numberCores": 1, 
         "instance_id": "fb6c89f4-68b1-4240-8b95-ffc2f8961e65", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:28:19.509Z"
     }
@@ -13093,6 +13506,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:15.389Z"
     }
@@ -13115,6 +13529,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:09.409Z"
     }
@@ -13137,6 +13552,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:03.369Z"
     }
@@ -13159,6 +13575,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:40.225Z"
     }
@@ -13181,6 +13598,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:26:52.160Z"
     }
@@ -13203,6 +13621,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:46.045Z"
     }
@@ -13225,6 +13644,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:28:02.727Z"
     }
@@ -13247,6 +13667,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:28:08.103Z"
     }
@@ -13269,6 +13690,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:51.411Z"
     }
@@ -13291,6 +13713,7 @@
         "numberCores": 1, 
         "instance_id": "fc5dae72-6988-43fb-a57d-b66e0e1b2b96", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T01:57:25.425Z"
     }
@@ -13313,6 +13736,7 @@
         "numberCores": 1, 
         "instance_id": "4ff8d17e-bece-427c-8344-a0e68e5385c8", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T01:57:04.490Z"
     }
@@ -13335,6 +13759,7 @@
         "numberCores": 1, 
         "instance_id": "6c236a9c-0502-4a7f-80ba-9cbfcb6082e0", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T01:56:36.164Z"
     }
@@ -13357,6 +13782,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:57.194Z"
     }
@@ -13379,6 +13805,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:40.831Z"
     }
@@ -13401,6 +13828,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:30.943Z"
     }
@@ -13423,6 +13851,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:28:13.175Z"
     }
@@ -13445,6 +13874,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:35.738Z"
     }
@@ -13467,6 +13897,7 @@
         "numberCores": 2, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13489,6 +13920,7 @@
         "numberCores": 0, 
         "instance_id": "442cab6c-5d67-4225-9ce4-c240187d5481", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "", 
         "enacted": "2014-08-21T20:01:27.621Z"
     }
@@ -13511,6 +13943,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13533,6 +13966,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13555,6 +13989,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "BadRequest()", 
         "enacted": null
     }
@@ -13577,6 +14012,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13599,6 +14035,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13621,6 +14058,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Unauthorized()", 
         "enacted": null
     }
@@ -13643,6 +14081,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "BadRequest()", 
         "enacted": null
     }
@@ -13665,6 +14104,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "BadRequest()", 
         "enacted": null
     }
@@ -13687,6 +14127,7 @@
         "numberCores": 1, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "BadRequest()", 
         "enacted": null
     }
@@ -13709,6 +14150,7 @@
         "numberCores": 0, 
         "instance_id": null, 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
         "enacted": null
     }
@@ -13731,6 +14173,7 @@
         "numberCores": 0, 
         "instance_id": "08ffd500-487a-4944-b805-1791777d6430", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-22T18:37:47.154Z"
     }
@@ -13753,6 +14196,7 @@
         "numberCores": 0, 
         "instance_id": "3f4871a4-4879-4b9a-a9a0-09e74dc4bddb", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-22T18:38:21.502Z"
     }
@@ -13775,6 +14219,7 @@
         "numberCores": 0, 
         "instance_id": "372ee65d-3a71-4f60-a753-84a25b8dcf09", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-23T00:55:12.311Z"
     }
@@ -13797,6 +14242,7 @@
         "numberCores": 0, 
         "instance_id": "a8fe80ec-9b2d-4c70-8027-133d08942eab", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:11:37.471Z"
     }
@@ -13819,6 +14265,7 @@
         "numberCores": 0, 
         "instance_id": "1b05662d-f0f4-4601-863b-170e9d452808", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:08:52.717Z"
     }
@@ -13841,6 +14288,7 @@
         "numberCores": 0, 
         "instance_id": "7cd8e552-19e2-40d7-81f9-aa73367be9fe", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:12:00.906Z"
     }
@@ -13863,6 +14311,7 @@
         "numberCores": 0, 
         "instance_id": "2cd21947-58e7-4c17-a1af-626d92116334", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:09:15.255Z"
     }
@@ -13885,6 +14334,7 @@
         "numberCores": 0, 
         "instance_id": "eb5b6224-111e-4611-af40-09c35c2b2524", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:12:22.582Z"
     }
@@ -13907,6 +14357,7 @@
         "numberCores": 0, 
         "instance_id": "fbf35b72-718d-45e2-a1ed-0024964ebe31", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:09:36.948Z"
     }
@@ -13929,6 +14380,7 @@
         "numberCores": 0, 
         "instance_id": "6793a962-e360-4d81-b0ff-adc015d6c43d", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:12:44.818Z"
     }
@@ -13951,6 +14403,7 @@
         "numberCores": 0, 
         "instance_id": "c4619ce5-111d-4d7a-a380-78f7870e2c4e", 
         "userData": null, 
+        "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T17:09:59.240Z"
     }
