@@ -240,6 +240,8 @@ class PlanetStackObserver:
 	def sync(self, S, deletion):
 		step = self.step_lookup[S]
 		start_time=time.time()
+
+                logger.info("Starting to work on step %s" % step.__name__)
 		
 		dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
 
@@ -252,9 +254,14 @@ class PlanetStackObserver:
 
 		if (has_deps):
 			for d in deps:
+                                if d==step.__name__:
+                                    logger.info("   step %s self-wait skipped" % step.__name__)
+                                    continue
+
 				cond = self.step_conditions[d]
 				cond.acquire()
 				if (self.step_status[d] is STEP_STATUS_WORKING):
+                                        logger.info("  step %s wait on dep %s" % (step.__name__, d))
 					cond.wait()
 				cond.release()
 			go = self.step_status[d] == STEP_STATUS_OK
@@ -262,7 +269,9 @@ class PlanetStackObserver:
 			go = True
 
 		if (not go):
-			self.failed_steps.append(sync_step)
+                        # SMBAKER: sync_step was not defined here, so I changed
+                        #    this from 'sync_step' to 'step'. Verify.
+			self.failed_steps.append(step)
 			my_status = STEP_STATUS_KO
 		else:
 			sync_step = step(driver=self.driver,error_map=self.error_mapper)
@@ -270,7 +279,7 @@ class PlanetStackObserver:
 			sync_step.dependencies = []
 			try:
 				mlist = sync_step.provides
-				
+
 				for m in mlist:
 					sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
 			except KeyError:
@@ -285,11 +294,11 @@ class PlanetStackObserver:
 				self.check_schedule(sync_step, deletion) # dont run sync_network_routes if time since last run < 1 hour
 				should_run = True
 			except StepNotReady:
-				logging.info('Step not ready: %s'%sync_step.__name__)
+				logger.info('Step not ready: %s'%sync_step.__name__)
 				self.failed_steps.append(sync_step)
 				my_status = STEP_STATUS_KO
 			except Exception,e:
-				logging.error('%r',e)
+				logger.error('%r' % e)
 				logger.log_exc("sync step failed: %r. Deletion: %r"%(sync_step,deletion))
 				self.failed_steps.append(sync_step)
 				my_status = STEP_STATUS_KO
@@ -307,16 +316,18 @@ class PlanetStackObserver:
 					if failed_objects:
 						self.failed_step_objects.update(failed_objects)
 
+                                        logger.info("Step %r succeeded" % step)
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
 				except Exception,e:
-					logging.error('Model step failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
+					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (step, e))
 					logger.log_exc(e)
 					self.failed_steps.append(S)
 					my_status = STEP_STATUS_KO
 			else:
+                                logger.info("Step %r succeeded due to non-run" % step)
 				my_status = STEP_STATUS_OK
-		
+
 		try:
 			my_cond = self.step_conditions[S]
 			my_cond.acquire()
@@ -324,7 +335,7 @@ class PlanetStackObserver:
 			my_cond.notify_all()
 			my_cond.release()
 		except KeyError,e:
-			logging.info('Step %r is a leaf')
+			logger.info('Step %r is a leaf' % step)
 			pass
 
 	def run(self):
@@ -388,6 +399,6 @@ class PlanetStackObserver:
 
 				self.save_run_times()
 			except Exception, e:
-				logging.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!',e)
+				logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
 				logger.log_exc("Exception in observer run loop")
 				traceback.print_exc()
