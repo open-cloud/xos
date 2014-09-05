@@ -417,11 +417,12 @@ class OpenStackDriver:
 
         return (subnet_id, subnet)
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None):
-        flavor_name = self.config.nova_default_flavor
+    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None, flavor_name=None):
+        if not flavor_name:
+            flavor_name = self.config.nova_default_flavor
+
         flavor = self.shell.nova.flavors.find(name=flavor_name)
-        #if not image:
-        #    image = self.config.nova_default_imave
+
         if not security_group:
             security_group = self.config.nova_default_security_group
 
