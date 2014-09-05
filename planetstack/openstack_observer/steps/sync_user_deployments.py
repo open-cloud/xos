@@ -25,6 +25,11 @@ class SyncUserDeployments(OpenStackSyncStep):
 
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
+
+        if not user_deployment.deployment.admin_user:
+            logger.info("deployment %r has no admin_user, skipping" % user_deployment.deployment)
+            return
+
         name = user_deployment.user.email[:user_deployment.user.email.find('@')]
         user_fields = {'name': user_deployment.user.email,
                        'email': user_deployment.user.email,
