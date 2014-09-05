@@ -12,6 +12,7 @@ from datetime import datetime
 from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
+from django.db import connection
 #from openstack.manager import OpenStackManager
 from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
@@ -238,6 +239,7 @@ class PlanetStackObserver:
 				raise StepNotReady
 
 	def sync(self, S, deletion):
+            try:
 		step = self.step_lookup[S]
 		start_time=time.time()
 
@@ -337,6 +339,8 @@ class PlanetStackObserver:
 		except KeyError,e:
 			logger.info('Step %r is a leaf' % step)
 			pass
+            finally:
+                connection.close()
 
 	def run(self):
 		if not self.driver.enabled:
