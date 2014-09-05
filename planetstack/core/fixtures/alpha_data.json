@@ -532,7 +532,7 @@
         "admin_user": "admin", 
         "name": "deleted5", 
         "created": "2013-04-03T22:57:23.015Z", 
-        "deleted": false, 
+        "deleted": true, 
         "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
         "admin_password": "CaegoomaezeiFeka", 
         "backend_status": "Provisioning in progress", 
@@ -549,7 +549,7 @@
         "admin_user": "admin", 
         "name": "deleted6", 
         "created": "2013-04-03T22:57:23.015Z", 
-        "deleted": false, 
+        "deleted": true, 
         "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
         "admin_password": "CaegoomaezeiFeka", 
         "backend_status": "Provisioning in progress", 
@@ -583,7 +583,7 @@
         "admin_user": "admin", 
         "name": "deleted8", 
         "created": "2013-04-03T22:57:23.015Z", 
-        "deleted": false, 
+        "deleted": true, 
         "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
         "admin_password": "CaegoomaezeiFeka", 
         "backend_status": "Provisioning in progress", 
@@ -600,7 +600,7 @@
         "admin_user": "admin", 
         "name": "deleted9", 
         "created": "2013-04-03T22:57:23.015Z", 
-        "deleted": false, 
+        "deleted": true, 
         "auth_url": "http://vicci70.cs.princeton.edu:5000/v2.0/", 
         "admin_password": "CaegoomaezeiFeka", 
         "backend_status": "Provisioning in progress", 
@@ -647,7 +647,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all", 
-        "updated": "2014-04-02T20:09:22.344Z", 
+        "updated": "2014-09-04T01:21:55.582Z", 
         "admin_user": "admin", 
         "name": "US-Arizona", 
         "created": "2014-04-01T21:25:12.397Z", 
@@ -664,7 +664,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all", 
-        "updated": "2014-06-11T20:03:37.851Z", 
+        "updated": "2014-09-04T01:21:46.300Z", 
         "admin_user": "admin", 
         "name": "US-Washington", 
         "created": "2014-06-11T20:03:37.851Z", 
@@ -681,7 +681,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all", 
-        "updated": "2014-06-13T14:25:16.573Z", 
+        "updated": "2014-09-04T01:21:35.842Z", 
         "admin_user": "admin", 
         "name": "EU-MaxPlanck", 
         "created": "2014-06-13T14:15:34.079Z", 
@@ -698,7 +698,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all", 
-        "updated": "2014-06-17T11:40:42.306Z", 
+        "updated": "2014-09-04T01:21:21.848Z", 
         "admin_user": "admin", 
         "name": "US-GeorgiaTech", 
         "created": "2014-06-17T11:40:28.703Z", 
@@ -715,7 +715,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all\r\n", 
-        "updated": "2014-06-27T14:57:46.885Z", 
+        "updated": "2014-09-04T01:21:09.031Z", 
         "admin_user": "admin", 
         "name": "US-Stanford", 
         "created": "2014-06-27T14:43:14.308Z", 
@@ -732,7 +732,7 @@
     "model": "core.deployment", 
     "fields": {
         "accessControl": "allow all", 
-        "updated": "2014-08-05T16:39:13.090Z", 
+        "updated": "2014-09-04T01:22:33.706Z", 
         "admin_user": null, 
         "name": "Amazon EC2", 
         "created": "2014-08-05T16:39:13.090Z", 
@@ -1243,7 +1243,7 @@
         "site": 22, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-09-03T00:22:18.612Z", 
+        "last_login": "2014-09-04T01:17:11.122Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -2221,30 +2221,6 @@
     }
 },
 {
-    "pk": 17, 
-    "model": "core.slice", 
-    "fields": {
-        "updated": "2014-04-18T00:15:19.309Z", 
-        "imagePreference": null, 
-        "name": "deleted17", 
-        "service": null, 
-        "created": "2014-04-02T18:33:34.260Z", 
-        "deleted": false, 
-        "slice_url": "", 
-        "description": "", 
-        "serviceClass": 1, 
-        "enabled": true, 
-        "site": 22, 
-        "omf_friendly": false, 
-        "network": null, 
-        "max_slivers": 10, 
-        "mountDataSets": null, 
-        "backend_status": "Provisioning in progress", 
-        "creator": 7, 
-        "enacted": "2014-04-18T00:15:19.363Z"
-    }
-},
-{
     "pk": 18, 
     "model": "core.slice", 
     "fields": {
@@ -2488,14 +2464,14 @@
     "pk": 32, 
     "model": "core.slice", 
     "fields": {
-        "updated": "2014-08-26T16:57:59.734Z", 
+        "updated": "2014-09-04T16:21:09.362Z", 
         "imagePreference": null, 
         "name": "onlab_dnsredir", 
         "service": 10, 
         "created": "2014-04-29T20:31:12.915Z", 
         "deleted": false, 
         "slice_url": "", 
-        "description": "p", 
+        "description": "r", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 22, 
@@ -2581,30 +2557,6 @@
     }
 },
 {
-    "pk": 36, 
-    "model": "core.slice", 
-    "fields": {
-        "updated": "2014-04-18T00:15:19.309Z", 
-        "imagePreference": null, 
-        "name": "deleted36", 
-        "service": null, 
-        "created": "2014-04-02T18:33:34.260Z", 
-        "deleted": false, 
-        "slice_url": "", 
-        "description": "", 
-        "serviceClass": 1, 
-        "enabled": true, 
-        "site": 22, 
-        "omf_friendly": false, 
-        "network": null, 
-        "max_slivers": 10, 
-        "mountDataSets": null, 
-        "backend_status": "Provisioning in progress", 
-        "creator": 7, 
-        "enacted": "2014-04-18T00:15:19.363Z"
-    }
-},
-{
     "pk": 39, 
     "model": "core.slice", 
     "fields": {
@@ -2674,30 +2626,6 @@
         "backend_status": "Provisioning in progress", 
         "creator": 44, 
         "enacted": "2014-08-11T20:30:01.071Z"
-    }
-},
-{
-    "pk": 42, 
-    "model": "core.slice", 
-    "fields": {
-        "updated": "2014-04-18T00:15:19.309Z", 
-        "imagePreference": null, 
-        "name": "deleted42", 
-        "service": null, 
-        "created": "2014-04-02T18:33:34.260Z", 
-        "deleted": false, 
-        "slice_url": "", 
-        "description": "", 
-        "serviceClass": 1, 
-        "enabled": true, 
-        "site": 22, 
-        "omf_friendly": false, 
-        "network": null, 
-        "max_slivers": 10, 
-        "mountDataSets": null, 
-        "backend_status": "Provisioning in progress", 
-        "creator": 7, 
-        "enacted": "2014-04-18T00:15:19.363Z"
     }
 },
 {
@@ -2776,7 +2704,7 @@
     "pk": 50, 
     "model": "core.slice", 
     "fields": {
-        "updated": "2014-08-26T16:52:46.965Z", 
+        "updated": "2014-09-04T01:17:57.102Z", 
         "imagePreference": "Ubuntu 12.04 LTS", 
         "name": "onlab_smbakertest2", 
         "service": null, 
@@ -2794,30 +2722,6 @@
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
         "enacted": "2014-08-26T17:30:15.535Z"
-    }
-},
-{
-    "pk": 51, 
-    "model": "core.slice", 
-    "fields": {
-        "updated": "2014-04-18T00:15:19.309Z", 
-        "imagePreference": null, 
-        "name": "deleted51", 
-        "service": null, 
-        "created": "2014-04-02T18:33:34.260Z", 
-        "deleted": false, 
-        "slice_url": "", 
-        "description": "", 
-        "serviceClass": 1, 
-        "enabled": true, 
-        "site": 22, 
-        "omf_friendly": false, 
-        "network": null, 
-        "max_slivers": 10, 
-        "mountDataSets": null, 
-        "backend_status": "Provisioning in progress", 
-        "creator": 7, 
-        "enacted": "2014-04-18T00:15:19.363Z"
     }
 },
 {
@@ -2952,34 +2856,6 @@
         "user": 7, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-04-21T14:46:29.604Z"
-    }
-},
-{
-    "pk": 158, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-04-21T14:44:37.869Z", 
-        "slice": 17, 
-        "created": "2014-04-14T13:34:08.876Z", 
-        "deleted": false, 
-        "role": 2, 
-        "user": 4, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-04-21T14:45:25.599Z"
-    }
-},
-{
-    "pk": 159, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-04-21T14:44:37.869Z", 
-        "slice": 17, 
-        "created": "2014-04-15T15:58:43.664Z", 
-        "deleted": false, 
-        "role": 1, 
-        "user": 4, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-04-21T14:45:27.572Z"
     }
 },
 {
@@ -3204,34 +3080,6 @@
         "user": 46, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-07-29T13:59:23.944Z"
-    }
-},
-{
-    "pk": 204, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-07-23T13:35:38.698Z", 
-        "slice": 17, 
-        "created": "2014-07-23T13:35:38.698Z", 
-        "deleted": false, 
-        "role": 1, 
-        "user": 15, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-23T13:37:23.136Z"
-    }
-},
-{
-    "pk": 205, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-07-23T13:35:44.582Z", 
-        "slice": 17, 
-        "created": "2014-07-23T13:35:44.582Z", 
-        "deleted": false, 
-        "role": 1, 
-        "user": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-23T13:37:35.497Z"
     }
 },
 {
@@ -3487,20 +3335,6 @@
     }
 },
 {
-    "pk": 224, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-07-23T13:36:53.596Z", 
-        "slice": 36, 
-        "created": "2014-07-23T13:36:53.596Z", 
-        "deleted": false, 
-        "role": 1, 
-        "user": 22, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-23T13:41:39.553Z"
-    }
-},
-{
     "pk": 225, 
     "model": "core.sliceprivilege", 
     "fields": {
@@ -3613,20 +3447,6 @@
     }
 },
 {
-    "pk": 233, 
-    "model": "core.sliceprivilege", 
-    "fields": {
-        "updated": "2014-07-29T13:33:10.833Z", 
-        "slice": 42, 
-        "created": "2014-07-29T13:33:10.833Z", 
-        "deleted": false, 
-        "role": 1, 
-        "user": 22, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-29T13:33:51.750Z"
-    }
-},
-{
     "pk": 234, 
     "model": "core.sliceprivilege", 
     "fields": {
@@ -3666,125 +3486,6 @@
         "user": 49, 
         "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
         "enacted": null
-    }
-},
-{
-    "pk": 457, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:30:31.154Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:42:53.216Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 11, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
-    "pk": 458, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:39:30.095Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:42:56.134Z", 
-        "deleted": false, 
-        "tenant_id": "515b0b2edf144617bb2cb2641b0febaf", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:39:34.870Z"
-    }
-},
-{
-    "pk": 459, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:39:41.277Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:42:59.409Z", 
-        "deleted": false, 
-        "tenant_id": "e1e5d491eda54e10b413236c45eafb5e", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:39:46.061Z"
-    }
-},
-{
-    "pk": 460, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:39:52.543Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:43:02.191Z", 
-        "deleted": false, 
-        "tenant_id": "4d803863bab942f6bb01444cb0e88ba1", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:39:57.543Z"
-    }
-},
-{
-    "pk": 461, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:40:05.406Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:43:04.950Z", 
-        "deleted": false, 
-        "tenant_id": "689ed402a1f84fc0bbbea6043c7d0d0c", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:40:10.259Z"
-    }
-},
-{
-    "pk": 462, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:40:19.610Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:43:07.982Z", 
-        "deleted": false, 
-        "tenant_id": "a8ef86f89ef04310b885a4bae7e0523c", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:40:24.283Z"
-    }
-},
-{
-    "pk": 463, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:41:16.905Z", 
-        "slice": 17, 
-        "created": "2014-06-20T04:43:10.812Z", 
-        "deleted": false, 
-        "tenant_id": "800812f6aedc49cf8f56cf2249f1e855", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:41:21.775Z"
     }
 },
 {
@@ -5454,23 +5155,6 @@
     }
 },
 {
-    "pk": 562, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:47:56.238Z", 
-        "slice": 17, 
-        "created": "2014-06-27T14:54:33.825Z", 
-        "deleted": false, 
-        "tenant_id": "5d43597035084ac8aefc7eff2640a0fa", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:48:01.343Z"
-    }
-},
-{
     "pk": 563, 
     "model": "core.slicedeployments", 
     "fields": {
@@ -5706,142 +5390,6 @@
         "deployment": 16, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-02T18:44:21.451Z"
-    }
-},
-{
-    "pk": 577, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-03T23:57:08.788Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:41.387Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 11, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
-    "pk": 578, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:31:08.030Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:44.517Z", 
-        "deleted": false, 
-        "tenant_id": "df67810981fd4236a85e0c7335f5435c", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:31:11.481Z"
-    }
-},
-{
-    "pk": 579, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:31:17.168Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:47.674Z", 
-        "deleted": false, 
-        "tenant_id": "00b703389afa4b3280d9b5dc037b7349", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:31:20.376Z"
-    }
-},
-{
-    "pk": 580, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:31:26.069Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:50.830Z", 
-        "deleted": false, 
-        "tenant_id": "02851fc36a354848b6e3975df1eff90e", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:31:29.770Z"
-    }
-},
-{
-    "pk": 581, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:31:37.684Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:53.986Z", 
-        "deleted": false, 
-        "tenant_id": "d87af3d2145d4f57b2b2460b9675c812", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:31:41.102Z"
-    }
-},
-{
-    "pk": 582, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:29:09.368Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:33:57.159Z", 
-        "deleted": false, 
-        "tenant_id": "371d612788ea4d3ea87521ad2988c091", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:29:12.797Z"
-    }
-},
-{
-    "pk": 583, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:30:45.333Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:34:00.394Z", 
-        "deleted": false, 
-        "tenant_id": "73938d81fd20455db69a58f60364eecf", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:30:48.551Z"
-    }
-},
-{
-    "pk": 584, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-07-16T16:30:56.798Z", 
-        "slice": 36, 
-        "created": "2014-07-03T15:34:03.545Z", 
-        "deleted": false, 
-        "tenant_id": "a6fde7a3a22247fe96f88296eaa3f000", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-07-16T16:31:00.144Z"
     }
 },
 {
@@ -6253,142 +5801,6 @@
     }
 },
 {
-    "pk": 625, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:32:08.104Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:53:56.306Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 11, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
-    "pk": 626, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:50:49.865Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:00.865Z", 
-        "deleted": false, 
-        "tenant_id": "579ad89b463d4c9a9c6acc6e3c64ce3b", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:50:55.143Z"
-    }
-},
-{
-    "pk": 628, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:51:02.197Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:09.646Z", 
-        "deleted": false, 
-        "tenant_id": "3d5ed8a732934306bba51b97c5ec5308", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:51:07.282Z"
-    }
-},
-{
-    "pk": 629, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:51:15.560Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:14.173Z", 
-        "deleted": false, 
-        "tenant_id": "ce7b31b8d060415aadf9d00196fea2d3", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:51:20.659Z"
-    }
-},
-{
-    "pk": 630, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:51:28.096Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:18.779Z", 
-        "deleted": false, 
-        "tenant_id": "d993c646753d4ef79ddff8ad84803880", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:51:33.165Z"
-    }
-},
-{
-    "pk": 631, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:51:42.557Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:23.345Z", 
-        "deleted": false, 
-        "tenant_id": "8152f967c6c44877b2c739514e78dc47", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:51:47.870Z"
-    }
-},
-{
-    "pk": 632, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:50:23.067Z", 
-        "slice": 42, 
-        "created": "2014-07-29T14:54:27.987Z", 
-        "deleted": false, 
-        "tenant_id": "46733745b563478c911e6f03c1adf2b1", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:50:27.994Z"
-    }
-},
-{
-    "pk": 635, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-02T18:50:36.170Z", 
-        "slice": 42, 
-        "created": "2014-07-29T15:03:09.502Z", 
-        "deleted": false, 
-        "tenant_id": "5ba03addee8e4f9884099e9a8b8b3e19", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-02T18:50:41.107Z"
-    }
-},
-{
     "pk": 636, 
     "model": "core.slicedeployments", 
     "fields": {
@@ -6678,23 +6090,6 @@
     }
 },
 {
-    "pk": 653, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-05T18:25:35.007Z", 
-        "slice": 17, 
-        "created": "2014-08-05T18:25:35.007Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 17, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
     "pk": 654, 
     "model": "core.slicedeployments", 
     "fields": {
@@ -6702,23 +6097,6 @@
         "updated": "2014-08-05T18:25:35.381Z", 
         "slice": 39, 
         "created": "2014-08-05T18:25:35.381Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 17, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
-    "pk": 655, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-05T18:25:35.878Z", 
-        "slice": 42, 
-        "created": "2014-08-05T18:25:35.878Z", 
         "deleted": false, 
         "tenant_id": null, 
         "subnet_id": null, 
@@ -6821,23 +6199,6 @@
         "updated": "2014-08-26T17:32:32.134Z", 
         "slice": 45, 
         "created": "2014-08-05T18:25:38.216Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 17, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
-    }
-},
-{
-    "pk": 662, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-05T18:25:38.597Z", 
-        "slice": 36, 
-        "created": "2014-08-05T18:25:38.596Z", 
         "deleted": false, 
         "tenant_id": null, 
         "subnet_id": null, 
@@ -7270,125 +6631,6 @@
         "deployment": 16, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-26T18:05:05.600Z"
-    }
-},
-{
-    "pk": 688, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:46:21.024Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:09.976Z", 
-        "deleted": false, 
-        "tenant_id": "f69018e8d54940889ffecb0219edbd6a", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:46:26.233Z"
-    }
-},
-{
-    "pk": 689, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:45:40.637Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:15.196Z", 
-        "deleted": false, 
-        "tenant_id": "2d7862788f6249579c87befe61f3e1df", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:45:45.677Z"
-    }
-},
-{
-    "pk": 690, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:44:06.446Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:20.299Z", 
-        "deleted": false, 
-        "tenant_id": null, 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
-        "enacted": null
-    }
-},
-{
-    "pk": 691, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:45:54.097Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:25.428Z", 
-        "deleted": false, 
-        "tenant_id": "8cf83339f3bd4e86aeac23050f6013a4", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:45:59.580Z"
-    }
-},
-{
-    "pk": 692, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:46:08.721Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:30.853Z", 
-        "deleted": false, 
-        "tenant_id": "7dbabec50743470d9f778860db4ff0bd", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:46:14.297Z"
-    }
-},
-{
-    "pk": 693, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:45:14.593Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:35.963Z", 
-        "deleted": false, 
-        "tenant_id": "329ac86868154500819f62a374669836", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:45:19.800Z"
-    }
-},
-{
-    "pk": 694, 
-    "model": "core.slicedeployments", 
-    "fields": {
-        "router_id": null, 
-        "updated": "2014-08-13T16:45:28.189Z", 
-        "slice": 51, 
-        "created": "2014-08-13T16:38:41.098Z", 
-        "deleted": false, 
-        "tenant_id": "c8cda89200074cc1951b76ae7402eec4", 
-        "subnet_id": null, 
-        "network_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-13T16:45:33.204Z"
     }
 },
 {
@@ -11635,12 +10877,12 @@
         "updated": "2014-05-07T01:11:21.731Z", 
         "name": "deleted7", 
         "created": "2014-04-02T19:00:04.504Z", 
-        "deleted": false, 
+        "deleted": true, 
         "container_format": "bare", 
         "disk_format": "raw", 
         "path": null, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-05-07T01:11:21.779Z"
+        "enacted": null
     }
 },
 {
@@ -11650,12 +10892,12 @@
         "updated": "2014-05-07T01:11:21.731Z", 
         "name": "deleted19", 
         "created": "2014-04-02T19:00:04.504Z", 
-        "deleted": false, 
+        "deleted": true, 
         "container_format": "bare", 
         "disk_format": "raw", 
         "path": null, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-05-07T01:11:21.779Z"
+        "enacted": null
     }
 },
 {
@@ -11695,12 +10937,12 @@
         "updated": "2014-05-07T01:11:21.731Z", 
         "name": "deleted23", 
         "created": "2014-04-02T19:00:04.504Z", 
-        "deleted": false, 
+        "deleted": true, 
         "container_format": "bare", 
         "disk_format": "raw", 
         "path": null, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-05-07T01:11:21.779Z"
+        "enacted": null
     }
 },
 {
@@ -11710,12 +10952,12 @@
         "updated": "2014-05-07T01:11:21.731Z", 
         "name": "deleted24", 
         "created": "2014-04-02T19:00:04.504Z", 
-        "deleted": false, 
+        "deleted": true, 
         "container_format": "bare", 
         "disk_format": "raw", 
         "path": null, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-05-07T01:11:21.779Z"
+        "enacted": null
     }
 },
 {
@@ -13133,12 +12375,14 @@
         "deleted": false, 
         "description": "openstack tiny instance", 
         "deployments": [
-            8, 
-            9, 
-            5, 
-            6, 
             7, 
-            10
+            10, 
+            16, 
+            15, 
+            14, 
+            13, 
+            12, 
+            17
         ], 
         "default": false, 
         "flavor": "m1.tiny", 
@@ -13157,13 +12401,15 @@
         "deleted": false, 
         "description": "small openstack instance", 
         "deployments": [
-            8, 
-            9, 
-            5, 
-            6, 
             7, 
             10, 
-            11
+            11, 
+            16, 
+            15, 
+            14, 
+            13, 
+            12, 
+            17
         ], 
         "default": true, 
         "flavor": "m1.small", 
@@ -13182,13 +12428,15 @@
         "deleted": false, 
         "description": "medium openstack flavor", 
         "deployments": [
-            8, 
-            9, 
-            5, 
-            6, 
             7, 
             10, 
-            11
+            11, 
+            16, 
+            15, 
+            14, 
+            13, 
+            12, 
+            17
         ], 
         "default": false, 
         "flavor": "m1.medium", 
@@ -13207,13 +12455,15 @@
         "deleted": false, 
         "description": "large openstack flavor", 
         "deployments": [
-            8, 
-            9, 
-            5, 
-            6, 
             7, 
             10, 
-            11
+            11, 
+            16, 
+            15, 
+            14, 
+            13, 
+            12, 
+            17
         ], 
         "default": false, 
         "flavor": "m1.large", 
@@ -13232,13 +12482,15 @@
         "deleted": false, 
         "description": "extra large openstack flavor", 
         "deployments": [
-            8, 
-            9, 
-            5, 
-            6, 
             7, 
             10, 
-            11
+            11, 
+            16, 
+            15, 
+            14, 
+            13, 
+            12, 
+            17
         ], 
         "default": false, 
         "flavor": "m1.xlarge", 
@@ -13257,7 +12509,8 @@
         "deleted": false, 
         "description": "ec2 flavor m3.medium", 
         "deployments": [
-            11
+            11, 
+            17
         ], 
         "default": false, 
         "flavor": "m3.medium", 
@@ -13276,7 +12529,8 @@
         "deleted": false, 
         "description": "ec2 flavor m3.large", 
         "deployments": [
-            11
+            11, 
+            17
         ], 
         "default": false, 
         "flavor": "m3.large", 
@@ -13295,7 +12549,8 @@
         "deleted": false, 
         "description": "ec2 flavor m3.2xlarge", 
         "deployments": [
-            11
+            11, 
+            17
         ], 
         "default": false, 
         "flavor": "m3.2xlarge", 
@@ -13558,213 +12813,6 @@
     }
 },
 {
-    "pk": 541, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 778, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:42.855Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node68.gt.vicci.org", 
-        "created": "2014-07-25T20:57:42.855Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:26:40.225Z"
-    }
-},
-{
-    "pk": 542, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 779, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:44.951Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node65.gt.vicci.org", 
-        "created": "2014-07-25T20:57:44.951Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:26:52.160Z"
-    }
-},
-{
-    "pk": 543, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 779, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:47.160Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node65.gt.vicci.org", 
-        "created": "2014-07-25T20:57:47.160Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:27:46.045Z"
-    }
-},
-{
-    "pk": 544, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 780, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:49.225Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node64.gt.vicci.org", 
-        "created": "2014-07-25T20:57:49.225Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:28:02.727Z"
-    }
-},
-{
-    "pk": 545, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 780, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:51.243Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node64.gt.vicci.org", 
-        "created": "2014-07-25T20:57:51.243Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:28:08.103Z"
-    }
-},
-{
-    "pk": 546, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 781, 
-        "instance_name": null, 
-        "updated": "2014-07-25T20:57:53.628Z", 
-        "slice": 17, 
-        "deploymentNetwork": 15, 
-        "name": "node63.gt.vicci.org", 
-        "created": "2014-07-25T20:57:53.628Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 1, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T18:27:51.411Z"
-    }
-},
-{
-    "pk": 547, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 762, 
-        "instance_name": "instance-00000013", 
-        "updated": "2014-08-12T01:54:20.400Z", 
-        "slice": 42, 
-        "deploymentNetwork": 7, 
-        "name": "vicci65.cs.princeton.edu", 
-        "created": "2014-07-28T16:07:39.752Z", 
-        "deleted": false, 
-        "ip": "10.0.31.2", 
-        "image": 3, 
-        "creator": 2, 
-        "numberCores": 1, 
-        "instance_id": "fc5dae72-6988-43fb-a57d-b66e0e1b2b96", 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T01:57:25.425Z"
-    }
-},
-{
-    "pk": 548, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 763, 
-        "instance_name": "instance-00000014", 
-        "updated": "2014-08-12T01:52:41.769Z", 
-        "slice": 42, 
-        "deploymentNetwork": 7, 
-        "name": "vicci66.cs.princeton.edu", 
-        "created": "2014-07-28T16:07:45.413Z", 
-        "deleted": false, 
-        "ip": "10.0.31.4", 
-        "image": 3, 
-        "creator": 2, 
-        "numberCores": 1, 
-        "instance_id": "4ff8d17e-bece-427c-8344-a0e68e5385c8", 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T01:57:04.490Z"
-    }
-},
-{
-    "pk": 549, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 764, 
-        "instance_name": "instance-00000015", 
-        "updated": "2014-08-12T01:51:10.266Z", 
-        "slice": 42, 
-        "deploymentNetwork": 7, 
-        "name": "vicci67.cs.princeton.edu", 
-        "created": "2014-07-28T16:08:09.208Z", 
-        "deleted": false, 
-        "ip": "10.0.31.5", 
-        "image": 3, 
-        "creator": 2, 
-        "numberCores": 1, 
-        "instance_id": "6c236a9c-0502-4a7f-80ba-9cbfcb6082e0", 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-12T01:56:36.164Z"
-    }
-},
-{
     "pk": 550, 
     "model": "core.sliver", 
     "fields": {
@@ -13877,29 +12925,6 @@
         "flavor": 2, 
         "backend_status": "Provisioning in progress", 
         "enacted": "2014-08-12T18:27:35.738Z"
-    }
-},
-{
-    "pk": 584, 
-    "model": "core.sliver", 
-    "fields": {
-        "node": 786, 
-        "instance_name": "", 
-        "updated": "2014-08-13T16:50:02.988Z", 
-        "slice": 51, 
-        "deploymentNetwork": 16, 
-        "name": "slice_project", 
-        "created": "2014-08-13T16:40:57.155Z", 
-        "deleted": false, 
-        "ip": null, 
-        "image": 3, 
-        "creator": 44, 
-        "numberCores": 2, 
-        "instance_id": null, 
-        "userData": null, 
-        "flavor": 2, 
-        "backend_status": "Unauthorized()", 
-        "enacted": null
     }
 },
 {
@@ -14409,6 +13434,29 @@
     }
 },
 {
+    "pk": 624, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 766, 
+        "instance_name": null, 
+        "updated": "2014-09-04T01:38:48.797Z", 
+        "slice": 32, 
+        "deploymentNetwork": 7, 
+        "name": "onlab_dnsredir", 
+        "created": "2014-09-04T01:38:48.797Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 27, 
+        "creator": 8, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 2, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": null
+    }
+},
+{
     "pk": 1, 
     "model": "core.networktemplate", 
     "fields": {
@@ -14463,31 +13511,6 @@
     }
 },
 {
-    "pk": 27, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": "", 
-        "subnet": "", 
-        "updated": "2014-04-16T15:08:31.250Z", 
-        "subnet_id": "", 
-        "name": "acbtest-private", 
-        "created": "2014-04-02T19:53:32.518Z", 
-        "deleted": false, 
-        "network_id": "", 
-        "permittedSlices": [
-            21
-        ], 
-        "labels": "", 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 4, 
-        "owner": 17, 
-        "backend_status": "Provisioning in progress", 
-        "ports": "", 
-        "enacted": "2014-04-16T15:08:31.303Z"
-    }
-},
-{
     "pk": 29, 
     "model": "core.network", 
     "fields": {
@@ -14510,31 +13533,6 @@
         "backend_status": "Provisioning in progress", 
         "ports": "", 
         "enacted": "2014-04-10T16:03:49.874Z"
-    }
-},
-{
-    "pk": 35, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": "", 
-        "subnet": "", 
-        "updated": "2014-04-16T21:01:48.724Z", 
-        "subnet_id": "", 
-        "name": "acbtest-nat-net", 
-        "created": "2014-04-15T19:51:13.207Z", 
-        "deleted": false, 
-        "network_id": "", 
-        "permittedSlices": [
-            21
-        ], 
-        "labels": "", 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 3, 
-        "owner": 17, 
-        "backend_status": "Provisioning in progress", 
-        "ports": "", 
-        "enacted": "2014-04-16T21:01:48.777Z"
     }
 },
 {
@@ -15279,52 +14277,6 @@
     }
 },
 {
-    "pk": 79, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:33:26.737Z", 
-        "subnet_id": null, 
-        "name": "tmslice-Private", 
-        "created": "2014-07-03T15:30:41.129Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 4, 
-        "owner": 36, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-07-03T15:33:30.213Z"
-    }
-},
-{
-    "pk": 80, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:33:33.638Z", 
-        "subnet_id": null, 
-        "name": "tmslice-Public shared IPv4", 
-        "created": "2014-07-03T15:30:48.142Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 3, 
-        "owner": 36, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-07-03T15:33:36.934Z"
-    }
-},
-{
     "pk": 82, 
     "model": "core.network", 
     "fields": {
@@ -15468,52 +14420,6 @@
         "backend_status": "Provisioning in progress", 
         "ports": "", 
         "enacted": "2014-07-25T20:33:13.998Z"
-    }
-},
-{
-    "pk": 88, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:41:14.854Z", 
-        "subnet_id": null, 
-        "name": "tmtest2-Private", 
-        "created": "2014-07-28T16:07:19.520Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 4, 
-        "owner": 42, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-07-29T13:41:19.186Z"
-    }
-},
-{
-    "pk": 89, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:41:23.456Z", 
-        "subnet_id": null, 
-        "name": "tmtest2-Public shared IPv4", 
-        "created": "2014-07-28T16:07:29.693Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 3, 
-        "owner": 42, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-07-29T13:41:27.737Z"
     }
 },
 {
@@ -15793,52 +14699,6 @@
     }
 },
 {
-    "pk": 103, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:37:56.458Z", 
-        "subnet_id": null, 
-        "name": "slice_project-Private", 
-        "created": "2014-08-13T16:37:55.171Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 4, 
-        "owner": 51, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-08-13T16:38:01.567Z"
-    }
-},
-{
-    "pk": 104, 
-    "model": "core.network", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:42:14.665Z", 
-        "subnet_id": null, 
-        "name": "slice_project-Public shared IPv4", 
-        "created": "2014-08-13T16:38:05.869Z", 
-        "deleted": false, 
-        "network_id": null, 
-        "permittedSlices": [], 
-        "labels": null, 
-        "guaranteedBandwidth": 0, 
-        "permitAllSlices": false, 
-        "template": 3, 
-        "owner": 51, 
-        "backend_status": "Provisioning in progress", 
-        "ports": null, 
-        "enacted": "2014-08-13T16:42:20.174Z"
-    }
-},
-{
     "pk": 105, 
     "model": "core.network", 
     "fields": {
@@ -15882,74 +14742,6 @@
         "backend_status": "Provisioning in progress", 
         "ports": "tcp 8003, tcp 8004, tcp 8140", 
         "enacted": "2014-08-20T00:08:55.148Z"
-    }
-},
-{
-    "pk": 191, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.13.0/24", 
-        "updated": "2014-08-12T23:55:46.774Z", 
-        "network": 27, 
-        "created": "2014-04-19T00:55:52.711Z", 
-        "deleted": false, 
-        "subnet_id": "19b9a31c-01eb-4157-815a-4c4240f22e82", 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "497702bb-cd0e-454a-a2c9-e37b4091c3b9", 
-        "enacted": "2014-08-13T00:55:15.188Z"
-    }
-},
-{
-    "pk": 194, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-08-13T00:18:45.241Z", 
-        "network": 27, 
-        "created": "2014-04-19T00:55:52.860Z", 
-        "deleted": false, 
-        "subnet_id": "5505d47f-cacf-4137-a945-b2a3f0628a8d", 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "92af0479-974a-4f1d-9866-3fa72b2c9fcb", 
-        "enacted": "2014-08-13T00:59:50.471Z"
-    }
-},
-{
-    "pk": 195, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-04-19T00:55:52.918Z", 
-        "network": 27, 
-        "created": "2014-04-19T00:55:52.917Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T15:07:00.981Z"
-    }
-},
-{
-    "pk": 196, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-04-19T00:55:58.898Z", 
-        "network": 27, 
-        "created": "2014-04-19T00:55:52.967Z", 
-        "deleted": false, 
-        "subnet_id": "1c86aceb-c2fd-49ed-8062-1f0fc2043956", 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "c3b27e6d-cf70-40f7-8052-05c38499a67f", 
-        "enacted": "2014-04-19T00:55:58.962Z"
     }
 },
 {
@@ -17041,40 +15833,6 @@
     }
 },
 {
-    "pk": 354, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-08-13T00:27:17.535Z", 
-        "network": 27, 
-        "created": "2014-06-16T02:38:56.222Z", 
-        "deleted": false, 
-        "subnet_id": "6461843c-98d4-4ab6-b2e9-ad2b50ac9930", 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "e45ec3bc-e431-41d3-b8a7-f0629163f264", 
-        "enacted": "2014-08-13T00:38:44.944Z"
-    }
-},
-{
-    "pk": 355, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-08-13T00:27:29.342Z", 
-        "network": 27, 
-        "created": "2014-06-16T02:38:58.113Z", 
-        "deleted": false, 
-        "subnet_id": "ea98a7ce-fbc5-4c51-b419-b4bb4d94ab2c", 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "2b14fbe9-0483-41ea-9f57-8e3d9c201ddc", 
-        "enacted": "2014-08-13T00:38:51.924Z"
-    }
-},
-{
     "pk": 356, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -17619,23 +16377,6 @@
     }
 },
 {
-    "pk": 388, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-08-13T00:30:06.113Z", 
-        "network": 27, 
-        "created": "2014-06-18T13:54:09.771Z", 
-        "deleted": false, 
-        "subnet_id": "ea892607-ec58-4067-b2fc-f56084572e8a", 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "04cb8820-626c-411a-bb1f-be9fb7a84087", 
-        "enacted": "2014-08-13T00:44:27.990Z"
-    }
-},
-{
     "pk": 389, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -18027,23 +16768,6 @@
     }
 },
 {
-    "pk": 412, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.1.0/24", 
-        "updated": "2014-06-27T15:45:27.502Z", 
-        "network": 27, 
-        "created": "2014-06-27T14:55:21.851Z", 
-        "deleted": false, 
-        "subnet_id": "205d2e65-7e3b-4ae8-a077-d6d802dde5a1", 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "73f882c5-899f-4c5c-9577-5873d8d83280", 
-        "enacted": "2014-08-13T00:42:13.941Z"
-    }
-},
-{
     "pk": 413, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -18330,142 +17054,6 @@
         "backend_status": "Provisioning in progress", 
         "net_id": null, 
         "enacted": "2014-08-13T00:47:29.533Z"
-    }
-},
-{
-    "pk": 430, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:06.240Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:06.240Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:34.481Z"
-    }
-},
-{
-    "pk": 431, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:09.397Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:09.397Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:39.188Z"
-    }
-},
-{
-    "pk": 432, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:12.561Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:12.561Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:44.442Z"
-    }
-},
-{
-    "pk": 433, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:16.090Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:16.090Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:49.407Z"
-    }
-},
-{
-    "pk": 434, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:19.614Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:19.614Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:54.317Z"
-    }
-},
-{
-    "pk": 435, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:22.866Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:22.866Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:47:59.059Z"
-    }
-},
-{
-    "pk": 436, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:26.112Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:26.112Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:48:03.831Z"
-    }
-},
-{
-    "pk": 437, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-03T15:35:29.655Z", 
-        "network": 79, 
-        "created": "2014-07-03T15:35:29.655Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:48:08.658Z"
     }
 },
 {
@@ -19149,142 +17737,6 @@
     }
 },
 {
-    "pk": 478, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:09.565Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:09.565Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:42:44.669Z"
-    }
-},
-{
-    "pk": 479, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:14.072Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:14.072Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:42:48.917Z"
-    }
-},
-{
-    "pk": 481, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:22.662Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:22.662Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:42:57.599Z"
-    }
-},
-{
-    "pk": 482, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:27.306Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:27.306Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:43:02.169Z"
-    }
-},
-{
-    "pk": 483, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:31.752Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:31.752Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:43:06.629Z"
-    }
-},
-{
-    "pk": 484, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:35.888Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:35.888Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:43:11.002Z"
-    }
-},
-{
-    "pk": 485, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-07-29T13:42:40.115Z", 
-        "network": 88, 
-        "created": "2014-07-29T13:42:40.115Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-07-29T13:43:15.171Z"
-    }
-},
-{
-    "pk": 486, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "10.0.31.0/24", 
-        "updated": "2014-07-29T16:21:25.115Z", 
-        "network": 88, 
-        "created": "2014-07-29T16:21:17.731Z", 
-        "deleted": false, 
-        "subnet_id": "8156e987-6d32-4203-8867-8405d8897d2c", 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "8f641a84-9f0d-4577-8df1-3795adebfe80", 
-        "enacted": "2014-08-13T00:51:25.743Z"
-    }
-},
-{
     "pk": 487, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -19829,23 +18281,6 @@
     }
 },
 {
-    "pk": 519, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-05T18:25:57.575Z", 
-        "network": 27, 
-        "created": "2014-08-05T18:25:57.575Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
     "pk": 520, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -20152,23 +18587,6 @@
     }
 },
 {
-    "pk": 538, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-05T18:26:05.296Z", 
-        "network": 79, 
-        "created": "2014-08-05T18:26:05.296Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-13T00:55:09.092Z"
-    }
-},
-{
     "pk": 539, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -20262,23 +18680,6 @@
         "updated": "2014-08-05T18:26:07.545Z", 
         "network": 87, 
         "created": "2014-08-05T18:26:07.545Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 545, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-05T18:26:07.913Z", 
-        "network": 88, 
-        "created": "2014-08-05T18:26:07.913Z", 
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 17, 
@@ -20829,278 +19230,6 @@
         "backend_status": "Provisioning in progress", 
         "net_id": "bb69f5ec-0ff9-4bfd-b294-be1b68ecfc25", 
         "enacted": "2014-08-13T01:40:23.424Z"
-    }
-},
-{
-    "pk": 578, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:40:56.861Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:40:56.861Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 579, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:02.038Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:02.038Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 7, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 580, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:07.602Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:07.602Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 581, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:12.676Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:12.676Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 582, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:18.158Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:18.158Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "BadRequest()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 583, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:23.208Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:23.208Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 584, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-13T16:41:28.518Z", 
-        "network": 103, 
-        "created": "2014-08-13T16:41:28.518Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 585, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T16:58:08.610Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:08.610Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 586, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:19:32.292Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:14.494Z", 
-        "deleted": false, 
-        "subnet_id": "8283c1a3-b100-48fd-96eb-94e7d53af1a6", 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "c38160c3-2358-44b9-860a-81087e3f9807", 
-        "enacted": "2014-08-14T17:19:38.048Z"
-    }
-},
-{
-    "pk": 587, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:19:44.937Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:20.118Z", 
-        "deleted": false, 
-        "subnet_id": "baa5c07c-3e83-40ec-861b-14fe304926a7", 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "f5c4699f-853c-42a9-8cee-d7de084dbd43", 
-        "enacted": "2014-08-14T17:19:50.540Z"
-    }
-},
-{
-    "pk": 588, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:19:58.546Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:26.086Z", 
-        "deleted": false, 
-        "subnet_id": "36028fb4-2e24-448d-aa0a-282984b1854a", 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "72908e83-75ca-4581-a880-f558882ac5a8", 
-        "enacted": "2014-08-14T17:20:04.359Z"
-    }
-},
-{
-    "pk": 589, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:20:11.619Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:31.828Z", 
-        "deleted": false, 
-        "subnet_id": "fe5ff668-4ad9-4f1d-a442-4897e99514c5", 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "28398a59-3a84-4e03-8ea7-0d57df4f2766", 
-        "enacted": "2014-08-14T17:20:17.706Z"
-    }
-},
-{
-    "pk": 590, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T16:58:37.599Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:37.599Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "BadRequest()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 591, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:20:26.238Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:43.266Z", 
-        "deleted": false, 
-        "subnet_id": "3e098fc4-5d32-4389-9695-e1282c0b3f9c", 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "83ddf097-ebcc-4557-b2a2-10746acac046", 
-        "enacted": "2014-08-14T17:20:31.994Z"
-    }
-},
-{
-    "pk": 592, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T16:58:49.028Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:49.028Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 593, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T16:58:54.815Z", 
-        "network": 35, 
-        "created": "2014-08-14T16:58:54.814Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
     }
 },
 {
@@ -23399,159 +21528,6 @@
     }
 },
 {
-    "pk": 729, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:11:45.368Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:11:45.368Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:12.718Z"
-    }
-},
-{
-    "pk": 730, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:11:51.182Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:11:51.182Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:18.388Z"
-    }
-},
-{
-    "pk": 731, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:11:57.013Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:11:57.013Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:24.092Z"
-    }
-},
-{
-    "pk": 732, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:02.716Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:02.716Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:29.718Z"
-    }
-},
-{
-    "pk": 733, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:08.259Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:08.259Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:35.330Z"
-    }
-},
-{
-    "pk": 734, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:13.752Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:13.752Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:41.086Z"
-    }
-},
-{
-    "pk": 735, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:19.448Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:19.448Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:46.893Z"
-    }
-},
-{
-    "pk": 736, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:25.376Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:25.376Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:52.569Z"
-    }
-},
-{
-    "pk": 737, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:12:31.318Z", 
-        "network": 80, 
-        "created": "2014-08-14T17:12:31.317Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": null, 
-        "enacted": "2014-08-14T17:36:58.229Z"
-    }
-},
-{
     "pk": 738, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -23696,159 +21672,6 @@
         "updated": "2014-08-14T17:13:23.576Z", 
         "network": 83, 
         "created": "2014-08-14T17:13:23.576Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 17, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 747, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:29.242Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:29.242Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 748, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:35.045Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:35.045Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 749, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:40.678Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:40.678Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 750, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:46.277Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:46.277Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 751, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:51.983Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:51.983Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "BadRequest()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 752, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:13:57.647Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:13:57.647Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 753, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "172.16.0.0/12", 
-        "updated": "2014-08-14T17:38:20.543Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:14:03.496Z", 
-        "deleted": false, 
-        "subnet_id": "8283c1a3-b100-48fd-96eb-94e7d53af1a6", 
-        "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
-        "net_id": "c38160c3-2358-44b9-860a-81087e3f9807", 
-        "enacted": "2014-08-14T17:38:26.170Z"
-    }
-},
-{
-    "pk": 754, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:14:09.064Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:14:09.064Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 11, 
-        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 755, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:14:14.601Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:14:14.601Z", 
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 17, 
@@ -24419,125 +22242,6 @@
     }
 },
 {
-    "pk": 790, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:17:52.019Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:17:52.019Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 15, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 791, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:17:57.918Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:17:57.918Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 16, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 792, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:18:03.806Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:18:03.806Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 10, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 793, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:18:09.563Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:18:09.563Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 794, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:18:15.173Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:18:15.173Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 13, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 795, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:18:20.935Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:18:20.935Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 14, 
-        "backend_status": "BadRequest()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
-    "pk": 796, 
-    "model": "core.networkdeployments", 
-    "fields": {
-        "router_id": null, 
-        "subnet": "", 
-        "updated": "2014-08-14T17:18:26.520Z", 
-        "network": 104, 
-        "created": "2014-08-14T17:18:26.520Z", 
-        "deleted": false, 
-        "subnet_id": null, 
-        "deployment": 7, 
-        "backend_status": "Unauthorized()", 
-        "net_id": null, 
-        "enacted": null
-    }
-},
-{
     "pk": 797, 
     "model": "core.networkdeployments", 
     "fields": {
@@ -24806,32 +22510,6 @@
     }
 },
 {
-    "pk": 28, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-04-15T19:51:26.973Z", 
-        "slice": 17, 
-        "network": 35, 
-        "created": "2014-04-10T17:15:22.817Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 30, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-04-15T20:35:26.837Z", 
-        "slice": 21, 
-        "network": 35, 
-        "created": "2014-04-15T20:35:26.837Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
     "pk": 31, 
     "model": "core.networkslice", 
     "fields": {
@@ -24839,32 +22517,6 @@
         "slice": 22, 
         "network": 36, 
         "created": "2014-04-16T00:09:02.307Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 32, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-04-16T15:00:47.647Z", 
-        "slice": 17, 
-        "network": 27, 
-        "created": "2014-04-16T15:00:47.647Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 33, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-04-16T15:08:13.185Z", 
-        "slice": 21, 
-        "network": 27, 
-        "created": "2014-04-16T15:08:13.185Z", 
         "deleted": false, 
         "backend_status": "Provisioning in progress", 
         "enacted": null
@@ -25144,32 +22796,6 @@
     }
 },
 {
-    "pk": 68, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-07-03T15:30:44.721Z", 
-        "slice": 36, 
-        "network": 79, 
-        "created": "2014-07-03T15:30:44.721Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 69, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-07-03T15:30:51.454Z", 
-        "slice": 36, 
-        "network": 80, 
-        "created": "2014-07-03T15:30:51.454Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
     "pk": 71, 
     "model": "core.networkslice", 
     "fields": {
@@ -25216,32 +22842,6 @@
         "slice": 41, 
         "network": 87, 
         "created": "2014-07-25T20:23:38.126Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 75, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-07-28T16:07:24.651Z", 
-        "slice": 42, 
-        "network": 88, 
-        "created": "2014-07-28T16:07:24.651Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 76, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-07-28T16:07:34.924Z", 
-        "slice": 42, 
-        "network": 89, 
-        "created": "2014-07-28T16:07:34.924Z", 
         "deleted": false, 
         "backend_status": "Provisioning in progress", 
         "enacted": null
@@ -25378,32 +22978,6 @@
     }
 },
 {
-    "pk": 89, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-08-13T16:38:00.391Z", 
-        "slice": 51, 
-        "network": 103, 
-        "created": "2014-08-13T16:38:00.391Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
-    "pk": 90, 
-    "model": "core.networkslice", 
-    "fields": {
-        "updated": "2014-08-13T16:38:11.379Z", 
-        "slice": 51, 
-        "network": 104, 
-        "created": "2014-08-13T16:38:11.379Z", 
-        "deleted": false, 
-        "backend_status": "Provisioning in progress", 
-        "enacted": null
-    }
-},
-{
     "pk": 91, 
     "model": "core.networkslice", 
     "fields": {
@@ -25426,96 +23000,6 @@
         "created": "2014-08-19T21:42:28.249Z", 
         "deleted": false, 
         "backend_status": "", 
-        "enacted": null
-    }
-},
-{
-    "pk": 1, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-12T18:56:19.560Z", 
-        "network": 88, 
-        "created": "2014-08-12T18:56:19.560Z", 
-        "deleted": false, 
-        "ip": "10.0.31.4", 
-        "sliver": 548, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "1012a798-7e44-43fa-8321-f82aad7dac4f", 
-        "enacted": null
-    }
-},
-{
-    "pk": 7, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-12T18:56:44.410Z", 
-        "network": 88, 
-        "created": "2014-08-12T18:56:44.410Z", 
-        "deleted": false, 
-        "ip": "10.0.31.2", 
-        "sliver": 547, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "c309c880-04b4-455a-a8cd-74ef44a80558", 
-        "enacted": null
-    }
-},
-{
-    "pk": 8, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-12T18:56:48.290Z", 
-        "network": 88, 
-        "created": "2014-08-12T18:56:48.290Z", 
-        "deleted": false, 
-        "ip": "10.0.31.5", 
-        "sliver": 549, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "d6e65c9d-07b0-4c25-a59f-83c193269128", 
-        "enacted": null
-    }
-},
-{
-    "pk": 15, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-14T17:42:51.532Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:42:51.532Z", 
-        "deleted": false, 
-        "ip": "172.16.0.14", 
-        "sliver": 549, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "0a9b6853-c34c-4841-99f8-52a499df95ba", 
-        "enacted": null
-    }
-},
-{
-    "pk": 17, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-14T17:43:03.289Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:43:03.289Z", 
-        "deleted": false, 
-        "ip": "172.16.0.12", 
-        "sliver": 547, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "540f6fb0-cf10-4757-a378-7e07caae1a2a", 
-        "enacted": null
-    }
-},
-{
-    "pk": 19, 
-    "model": "core.networksliver", 
-    "fields": {
-        "updated": "2014-08-14T17:43:14.647Z", 
-        "network": 89, 
-        "created": "2014-08-14T17:43:14.647Z", 
-        "deleted": false, 
-        "ip": "172.16.0.13", 
-        "sliver": 548, 
-        "backend_status": "Provisioning in progress", 
-        "port_id": "a201f0ff-a11d-48b7-9aaf-68e0fcf7254e", 
         "enacted": null
     }
 },

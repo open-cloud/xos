@@ -42,6 +42,11 @@ class SyncSliceDeployments(OpenStackSyncStep):
 
     def sync_record(self, slice_deployment):
         logger.info("sync'ing slice deployment %s" % slice_deployment)
+
+        if not slice_deployment.deployment.admin_user:
+            logger.info("deployment %r has no admin_user, skipping" % slice_deployment.deployment)
+            return
+
         if not slice_deployment.tenant_id:
             nova_fields = {'tenant_name': slice_deployment.slice.name,
                    'description': slice_deployment.slice.description,
