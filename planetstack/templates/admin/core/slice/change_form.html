@@ -20,20 +20,31 @@ site_login_bases = [
 {% endfor %}
 ];
 
-function update_nodes(deployment_select, node_select_id) {
+function update_nodes(deployment_select, flavor_select, node_select) {
     deployment_id = $(deployment_select).val();
-    html = "<option value=''>---------</option>\n";
+    flavor_name = $(flavor_select).children(":selected").text()
+    html="";
     for (i in deployment_nodes) {
         dn = deployment_nodes[i];
-        if (dn[0] == deployment_id) {
+        if ((dn[0] == deployment_id) && (dn[2].lastIndexOf(flavor_name,0) === 0)) {
             html = html + '<option value="' + dn[1] + '">' + dn[2] + '</option>\n'
         }
     }
+    if (!html) {
+        // now try it without the flavor hostname prefix matching
+        for (i in deployment_nodes) {
+            dn = deployment_nodes[i];
+            if (dn[0] == deployment_id) {
+                html = html + '<option value="' + dn[1] + '">' + dn[2] + '</option>\n'
+            }
+        }
+    }
+    html = "<option value=''>---------</option>\n" + html;
     //console.log(html);
-    $("#"+node_select_id).empty().append(html);
+    node_select.empty().append(html);
 }
 
-function update_flavors(deployment_select, flavor_select_id) {
+function update_flavors(deployment_select, flavor_select) {
     deployment_id = $(deployment_select).val();
     html = "<option value=''>---------</option>\n";
     for (i in deployment_flavors) {
@@ -43,20 +54,37 @@ function update_flavors(deployment_select, flavor_select_id) {
         }
     }
     //console.log(html);
-    $("#"+flavor_select_id).empty().append(html);
+    flavor_select.empty().append(html);
 }
 
-function sliver_deployment_changed(deployment_select) {
+function sliver_deployment_changed(any_control) {
+   /* This function handles someone changing the deploymentNetwork control
+      in the add-sliver line. It updats the flavors and nodes dialogs
+      accordingly.
+   */
+
    /* the inscrutable jquery selector below says:
       find the closest parent "tr" to the current element
-      then find the child with class "field-node"
+      then find the child with class "field-deploymentNetwork"
       then find the child with that is a select
-      then return its id
+      then return it's id
+      then turn it into a jquery object
     */
-    nodes_select_id = $($(deployment_select).closest('tr')[0]).find('.field-node select')[0].id;
-    update_nodes(deployment_select, nodes_select_id);
-    flavors_select_id = $($(deployment_select).closest('tr')[0]).find('.field-flavor select')[0].id;
-    update_flavors(deployment_select, flavors_select_id);
+    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deploymentNetwork select')[0].id);
+    node_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-node select')[0].id);
+    flavor_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-flavor select')[0].id);
+    update_nodes(deployment_select, flavor_select, node_select);
+    update_flavors(deployment_select, flavor_select);
+}
+
+function sliver_flavor_changed(any_control) {
+    /* this is like sliver_flavor changed, but does not update the flavors
+       control
+    */
+    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deploymentNetwork select')[0].id);
+    node_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-node select')[0].id);
+    flavor_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-flavor select')[0].id);
+    update_nodes(deployment_select, flavor_select, node_select);
 }
 
 function update_slice_prefix(site_select, slice_name_id) {
