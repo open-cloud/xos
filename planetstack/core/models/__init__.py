@@ -18,6 +18,7 @@ from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole
 from .slice import SlicePrivilege
+from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
 from .planetstack import PlanetStackRole
