@@ -18,6 +18,7 @@ requires: tar
 requires: gcc
 requires: python-httplib2
 requires: GeoIP
+requires: python-keyczar
 
 %description
 %{summary}
@@ -46,6 +47,7 @@ pip-python install django-suit
 pip-python install django-evolution
 pip-python install django-bitfield
 pip-python install django-ipware
+pip-python install django-encrypted-fields
 
 easy_install django_evolution
 easy_install python_gflags
