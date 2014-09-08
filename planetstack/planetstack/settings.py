@@ -262,4 +262,5 @@ LOGGING = {
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
-
+ENCRYPTED_FIELDS_KEYDIR = '/opt/planetstack/private_keys'
+ENCRYPTED_FIELD_MODE = 'ENCRYPT'
