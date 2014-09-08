@@ -278,6 +278,8 @@ class SliverInline(PlStackTabularInline):
         if db_field.name == 'deploymentNetwork':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
+        elif db_field.name == 'flavor':
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
