@@ -78,6 +78,19 @@ function dumpdata {
     ln -s $FN $BACKUP_DIR/dumpdata-latest.json
 }
 
+function genkeys {
+    mkdir -p public_keys
+    mkdir -p private_keys
+    echo "Generating keys"
+	keyczart create --location=private_keys --name="OpenCloud" --purpose=crypt --asymmetric=rsa
+	keyczart addkey --location=private_keys --status=primary --size=1024
+	keyczart pubkey --location=private_keys --destination=public_keys
+    if [[ ! -f public_keys/1 ]]; then
+        echo "FAILED to create keys"
+        exit
+    fi
+}
+
 COMMAND=$1
 
 if [ "$COMMAND" = "initdb" ]; then
@@ -135,4 +148,7 @@ if [ "$COMMAND" = "stopserver" ]; then
 fi
 if [ "$COMMAND" = "dumpdata" ]; then
     dumpdata
+fi
+if [ "$COMMAND" = "genkeys" ]; then
+    genkeys
 fi
