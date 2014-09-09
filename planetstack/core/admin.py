@@ -21,12 +21,12 @@ import django_evolution
 def backend_icon(obj): # backend_status, enacted, updated):
     #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
     if (obj.enacted is not None) and obj.enacted >= obj.updated:
-        return '<img src="/static/admin/img/icon_success.gif">'
+        return '<span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>'
     else:
         if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
-            return '<span title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
+            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
         else:
-            return '<span title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
+            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
 
 def backend_text(obj):
     icon = backend_icon(obj)
@@ -284,41 +284,6 @@ class SliverInline(PlStackTabularInline):
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
         return field
-
-"""
-    SMBAKER: This is the old code that implemented each network type as a
-    separate column in the sliver table.
-
-    def _declared_fieldsets(self):
-        # Return None so django will call get_fieldsets and we can insert our
-        # dynamic fields
-        return None
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(SliverInline, self).get_readonly_fields(request, obj))
-
-        # Lookup the networks that are bound to the slivers, and add those
-        # network names to the list of readonly fields.
-
-        for sliver in obj.slivers.all():
-            for nbs in sliver.networksliver_set.all():
-                if nbs.ip:
-                    network_name = nbs.network.name
-                    if network_name not in [str(x) for x in readonly_fields]:
-                        readonly_fields.append(NetworkLookerUpper.get(network_name))
-
-        return readonly_fields
-
-    def get_fieldsets(self, request, obj=None):
-        form = self.get_formset(request, obj).form
-        # fields = the read/write files + the read-only fields
-        fields = list(self.fields)
-        for fieldName in self.get_readonly_fields(request,obj):
-            if not fieldName in fields:
-                fields.append(fieldName)
-
-        return [(None, {'fields': fields})]
-"""
 
 class SiteInline(PlStackTabularInline):
     model = Site
