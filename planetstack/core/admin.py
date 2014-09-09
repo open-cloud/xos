@@ -764,12 +764,18 @@ class SliceAdmin(PlanetStackBaseAdmin):
             for deployment in flavor.deployments.all():
                 deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
 
+        deployment_images = []
+        for image in Image.objects.all():
+            for imageDeployment in image.imagedeployments_set.all():
+                deployment_images.append( (imageDeployment.deployment.id, image.id, image.name) )
+
         site_login_bases = []
         for site in Site.objects.all():
-            site_login_bases.append((site.id, site.login_base)) 
-        
+            site_login_bases.append((site.id, site.login_base))
+
         context["deployment_nodes"] = deployment_nodes
         context["deployment_flavors"] = deployment_flavors
+        context["deployment_images"] = deployment_images
         context["site_login_bases"] = site_login_bases
         return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
