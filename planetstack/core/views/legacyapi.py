@@ -158,8 +158,19 @@ def GetInterfaces(slicename, node_ids):
             node_id = ps_id_to_pl_id(ps_sliver.node_id)
             if node_id in node_ids:
                 ps_node = ps_sliver.node
+
+                ip = socket.gethostbyname(ps_node.name)
+
+                # search for a dedicated public IP address
+                for networkSliver in ps_sliver.networksliver_set.all():
+                    if (not networkSliver.ip):
+                        continue
+                    template = networkSliver.network.template
+                    if (template.visibility=="public") and (template.translation=="none"):
+                        ip=networkSliver.ip
+
                 interface = {"node_id": node_id,
-                             "ip": socket.gethostbyname(ps_node.name),
+                             "ip": ip,
                              "broadcast": None,
                              "mac": "11:22:33:44:55:66",
                              "bwlimit": None,
