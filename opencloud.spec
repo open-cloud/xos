@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
 Version: 1.0.25
-Release: 6
+Release: 7
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -18,7 +18,6 @@ requires: tar
 requires: gcc
 requires: python-httplib2
 requires: GeoIP
-requires: python-keyczar
 
 %description
 %{summary}
@@ -48,12 +47,15 @@ pip-python install django-evolution
 pip-python install django-bitfield
 pip-python install django-ipware
 pip-python install django-encrypted-fields
+pip-python install python-keyczar
 
 easy_install django_evolution
 easy_install python_gflags
 easy_install google_api_python_client
 
-wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
+if [ ! -f /usr/lib/python2.7/site-packages/suit/static/suit/js/jquery-1.9.1.min.js ]; then
+    wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
+fi
 
 if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
    rm -f /usr/share/GeoIP/GeoLiteCity.*
@@ -115,6 +117,12 @@ else
     echo "UPGRADE - doing evolution"
     /opt/planetstack/scripts/opencloud evolvedb
 fi
+
+if [ ! -f /opt/planetstack/public_keys ]; then
+    cd /opt/planetstack
+    scripts/opencloud genkeys
+fi
+
 # start the server
 /opt/planetstack/scripts/opencloud runserver
 
