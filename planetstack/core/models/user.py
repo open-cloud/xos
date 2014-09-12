@@ -48,8 +48,12 @@ class UserManager(BaseUserManager):
         return user
 
 class DeletedUserManager(UserManager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(UserManager, self).get_query_set().filter(deleted=True)
+
+    # deprecated in django 1.7 in favor of get_queryset()
+    def get_query_set(self):
+        return self.get_queryset()
 
 class User(AbstractBaseUser):
 
