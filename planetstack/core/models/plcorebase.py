@@ -22,14 +22,22 @@ except:
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class PlCoreBaseDeletionManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(PlCoreBaseDeletionManager, self).get_query_set().filter(deleted=True)
+
+    # deprecated in django 1.7 in favor of get_queryset()
+    def get_query_set(self):
+        return self.get_queryset()
 
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class PlCoreBaseManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return super(PlCoreBaseManager, self).get_query_set().filter(deleted=False)
+
+    # deprecated in django 1.7 in favor of get_queryset()
+    def get_query_set(self):
+        return self.get_queryset()
 
 class PlCoreBase(models.Model):
     objects = PlCoreBaseManager()
