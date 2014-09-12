@@ -37,8 +37,8 @@ class PlCoreBase(models.Model):
 
     # default values for created and updated are only there to keep evolution
     # from failing.
-    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
-    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
+    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
+    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
     enacted = models.DateTimeField(null=True, default=None)
     backend_status = models.CharField(max_length=140,
                                       default="Provisioning in progress")
