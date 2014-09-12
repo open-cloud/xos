@@ -46,8 +46,12 @@ function syncdb {
     python /opt/planetstack/manage.py syncdb --noinput
 }
 function evolvedb {
-    echo "Syncing OpenCloud services..."
+    echo "Evolving OpenCloud services..."
     python /opt/planetstack/manage.py evolve --hint --execute --noinput
+}
+function migratedb {
+    echo "Migrating OpenCloud services..."
+    python /opt/planetstack/manage.py migrate
 }
 function stopserver {
     echo "Stopping any running OpenCloud Service(s)"
@@ -128,6 +132,11 @@ if [ "$COMMAND" = "evolvedb" ]; then
     stopserver
     ensure_postgres_running
     evolvedb
+fi
+if [ "$COMMAND" = "migratedb" ]; then
+    stopserver
+    ensure_postgres_running
+    migratedb
 fi
 if [ "$COMMAND" = "resetdb" ]; then
     stopserver
