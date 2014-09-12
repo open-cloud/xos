@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
 Version: 1.0.25
-Release: 7
+Release: 8
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -110,17 +110,19 @@ rm -rf %{buildroot}
 ln -s ec2_observer /opt/planetstack/observer
 ln -s config-opencloud.py /opt/planetstack/syndicate_observer/syndicatelib_config/config.py
 
+if [ ! -e /opt/planetstack/public_keys ]; then
+    cd /opt/planetstack
+    scripts/opencloud genkeys
+fi
+
 if [ "$1" == 1 ] ; then
     echo "NEW INSTALL - initializing database"
     /opt/planetstack/scripts/opencloud initdb
 else
     echo "UPGRADE - doing evolution"
     /opt/planetstack/scripts/opencloud evolvedb
-fi
-
-if [ ! -f /opt/planetstack/public_keys ]; then
-    cd /opt/planetstack
-    scripts/opencloud genkeys
+    #echo "UPGRADE - doing migration"    
+    #/opt/planetstack/scripts/opencloud migratedb
 fi
 
 # start the server
