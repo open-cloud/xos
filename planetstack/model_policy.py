@@ -8,8 +8,10 @@ import model_policies
 def post_save_handler(sender, **kwargs):
 	sender_name = sender.__name__
 	policy_name = 'model_policy_%s'%sender_name
-	try:
-		policy_handler = getattr(model_policies, policy_name)
-		policy_handler.handle(sender)
-	except:
-		pass
+	
+	if (not kwargs['update_fields']):
+		try:
+			policy_handler = getattr(model_policies, policy_name)
+			policy_handler.handle(sender)
+		except:
+			pass
