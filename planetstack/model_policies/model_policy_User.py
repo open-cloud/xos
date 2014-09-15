@@ -1,6 +1,8 @@
 from core.models import *
 
 def handle(user):
+	from core.models import Deployment,SiteDeployments,UserDeployments
+	from collections import defaultdict
 	deployments = Deployment.objects.all()
 	site_deployments = SiteDeployments.objects.all()
 	site_deploy_lookup = defaultdict(list)

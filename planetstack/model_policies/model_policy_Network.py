@@ -1,6 +1,8 @@
 from core.models import *
 
 def handle(network):
+	from core.models import SliceDeployments,NetworkDeployments
+	from collections import defaultdict
 	# network deployments are not visible to users. We must ensure
 	# networks are deployed at all deploymets available to their slices.
 	slice_deployments = SliceDeployments.objects.all()

@@ -1,6 +1,7 @@
-from core.models import *
 
 def handle(slice):
+	from core.models import SiteDeployments,SliceDeployments,Deployment
+	from collections import defaultdict
 	site_deployments = SiteDeployments.objects.all()
 	site_deploy_lookup = defaultdict(list)
 	for site_deployment in site_deployments:
