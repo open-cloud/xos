@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import datetime
 from django.conf import settings
-
+import django.utils.timezone
 
 class Migration(migrations.Migration):
 
@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
             name='CDNPrefix',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
             name='ContentProvider',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -76,8 +76,8 @@ class Migration(migrations.Migration):
             name='OriginServer',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -98,8 +98,8 @@ class Migration(migrations.Migration):
             name='ServiceProvider',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
