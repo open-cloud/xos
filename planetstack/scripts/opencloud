@@ -7,6 +7,8 @@ fi
 
 BACKUP_DIR=/opt/planetstack_backups
 
+DJANGO_17=`python -c "import django; from distutils.version import StrictVersion; print int(StrictVersion(django.get_version()) >= StrictVersion('1.7'))"`
+
 cd /opt/planetstack
 
 function ensure_postgres_running {
@@ -44,6 +46,10 @@ function dropdb {
 function syncdb {
     echo "Syncing OpenCloud services..."
     python /opt/planetstack/manage.py syncdb --noinput
+    if [[ $DJANGO_17 ]]; then
+        echo "Loading initial data from fixture..."
+        python /opt/planetstack/manage.py loaddata /opt/planetstack/core/fixtures/initial_data.json
+    fi
 }
 function evolvedb {
     echo "Evolving OpenCloud services..."
