@@ -500,6 +500,26 @@
     }
 },
 {
+    "pk": 29, 
+    "model": "core.site", 
+    "fields": {
+        "updated": "2014-09-16T23:19:51.232Z", 
+        "name": "dpk_site_test_p43", 
+        "created": "2014-09-16T23:00:33.362Z", 
+        "deleted": false, 
+        "enabled": true, 
+        "longitude": null, 
+        "site_url": "", 
+        "login_base": "p43_", 
+        "location": "0,0", 
+        "latitude": null, 
+        "is_public": true, 
+        "backend_status": "Provisioning in progress", 
+        "abbreviated_name": "", 
+        "enacted": "2014-09-16T23:08:15.304Z"
+    }
+},
+{
     "pk": 1, 
     "model": "core.siterole", 
     "fields": {
@@ -652,8 +672,8 @@
         "name": "US-Arizona", 
         "created": "2014-04-01T21:25:12.397Z", 
         "deleted": false, 
-        "auth_url": "http://node1.cs.arizona.edu:5000/v2.0/", 
-        "admin_password": "Damiphoebuengaew", 
+        "auth_url": "http://juju.cs.arizona.edu:4990/v2.0/", 
+        "admin_password": "cemiQuuthaiCiquo", 
         "backend_status": "Provisioning in progress", 
         "admin_tenant": "admin", 
         "enacted": null
@@ -927,6 +947,20 @@
     }
 },
 {
+    "pk": 31, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-09-16T23:18:43.130Z", 
+        "created": "2014-09-16T23:18:43.130Z", 
+        "deleted": true, 
+        "tenant_id": null, 
+        "site": 29, 
+        "deployment": 16, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": null
+    }
+},
+{
     "pk": 1, 
     "model": "core.dashboardview", 
     "fields": {
@@ -1087,7 +1121,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-09-03T17:15:44.605Z", 
+        "last_login": "2014-09-11T14:28:18.010Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dpqNrrgAEp4e$VPB3FV69CfHuABJMx2qAa1ZYSWW5wvUqZUfgEHbyfHw=", 
@@ -1139,7 +1173,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-08-11T21:32:47.157Z", 
+        "last_login": "2014-09-10T20:49:07.816Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$Zc9RH7xXXcBb$VH6pAV7G4aAnC1oLmPIcBztlbz6o+raFxNYVGtc/AwQ=", 
@@ -1165,7 +1199,7 @@
         "site": 10, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-08-22T19:33:18.710Z", 
+        "last_login": "2014-09-10T08:00:08.793Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
@@ -1217,7 +1251,7 @@
         "site": 22, 
         "phone": "", 
         "is_staff": true, 
-        "last_login": "2014-08-25T18:13:31.563Z", 
+        "last_login": "2014-09-16T21:37:24.053Z", 
         "timezone": "America/New_York", 
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$EOrqG6KzVO8z$4jSJMN/35PKPmJkDEHjAY1c/mDpBfoW1U8XAfk1eDLk=", 
@@ -1596,7 +1630,7 @@
         "username": "tmtest@cs.princeton.edu", 
         "public_key": "", 
         "updated": "2014-08-06T17:30:57.713Z", 
-        "backend_status": "AttributeError(\"'NoneType' object has no attribute 'admin_driver'\",)", 
+        "backend_status": "AttributeError(\"'User' object has no attribute 'kuser_id'\",)", 
         "is_readonly": false, 
         "firstname": "Tony", 
         "user_url": null, 
@@ -2481,7 +2515,7 @@
         "mountDataSets": null, 
         "backend_status": "Provisioning in progress", 
         "creator": 7, 
-        "enacted": "2014-08-26T17:27:19.530Z"
+        "enacted": "2014-09-10T06:38:43.337Z"
     }
 },
 {
@@ -2721,7 +2755,7 @@
         "mountDataSets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
-        "enacted": "2014-08-26T17:30:15.535Z"
+        "enacted": "2014-09-10T06:39:01.415Z"
     }
 },
 {
@@ -2817,7 +2851,367 @@
         "mountDataSets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 2, 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:02.440Z"
+    }
+},
+{
+    "pk": 57, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-11T00:30:17.802Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_test_issue", 
+        "service": null, 
+        "created": "2014-09-09T23:21:40.684Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": 44, 
+        "enacted": "2014-09-15T07:52:11.738Z"
+    }
+},
+{
+    "pk": 58, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-10T08:01:21.608Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "us-east-1a_", 
+        "service": null, 
+        "created": "2014-09-10T08:00:53.468Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 28, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": 5, 
+        "enacted": "2014-09-10T08:02:56.730Z"
+    }
+},
+{
+    "pk": 60, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-16T22:54:04.709Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan2", 
+        "service": null, 
+        "created": "2014-09-12T18:47:53.242Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": 5, 
+        "enacted": "2014-09-16T22:59:56.547Z"
+    }
+},
+{
+    "pk": 61, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-12T18:51:31.033Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan3", 
+        "service": null, 
+        "created": "2014-09-12T18:51:31.033Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:16.231Z"
+    }
+},
+{
+    "pk": 62, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-12T19:04:23.162Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan4", 
+        "service": null, 
+        "created": "2014-09-12T19:04:23.162Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:18.432Z"
+    }
+},
+{
+    "pk": 64, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-12T19:16:41.990Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan5", 
+        "service": null, 
+        "created": "2014-09-12T19:16:41.990Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:20.670Z"
+    }
+},
+{
+    "pk": 65, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:12:57.834Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan6", 
+        "service": null, 
+        "created": "2014-09-15T07:12:57.834Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:22.908Z"
+    }
+},
+{
+    "pk": 66, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:15:16.246Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan7", 
+        "service": null, 
+        "created": "2014-09-15T07:15:16.246Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:25.213Z"
+    }
+},
+{
+    "pk": 67, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:18:03.925Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan8", 
+        "service": null, 
+        "created": "2014-09-15T07:18:03.925Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:27.411Z"
+    }
+},
+{
+    "pk": 69, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:31:12.107Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan9", 
+        "service": null, 
+        "created": "2014-09-15T07:31:12.107Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:51:48.950Z"
+    }
+},
+{
+    "pk": 70, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:42:13.531Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan11", 
+        "service": null, 
+        "created": "2014-09-15T07:42:13.531Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:07.246Z"
+    }
+},
+{
+    "pk": 71, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:45:20.779Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan12", 
+        "service": null, 
+        "created": "2014-09-15T07:45:20.779Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T07:52:09.456Z"
+    }
+},
+{
+    "pk": 72, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T07:58:58.353Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan13", 
+        "service": null, 
+        "created": "2014-09-15T07:58:58.353Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T08:00:28.796Z"
+    }
+},
+{
+    "pk": 73, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-15T08:02:45.413Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_sapan14", 
+        "service": null, 
+        "created": "2014-09-15T08:02:45.413Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": null, 
+        "enacted": "2014-09-15T08:09:25.299Z"
+    }
+},
+{
+    "pk": 74, 
+    "model": "core.slice", 
+    "fields": {
+        "updated": "2014-09-16T22:58:07.348Z", 
+        "imagePreference": "Ubuntu 12.04 LTS", 
+        "name": "stanford_09_16", 
+        "service": null, 
+        "created": "2014-09-16T22:58:07.348Z", 
+        "deleted": false, 
+        "slice_url": "", 
+        "description": "", 
+        "serviceClass": 1, 
+        "enabled": true, 
+        "site": 8, 
+        "omf_friendly": false, 
+        "network": "Private Only", 
+        "max_slivers": 10, 
+        "mountDataSets": "GenBank", 
+        "backend_status": "Provisioning in progress", 
+        "creator": 44, 
+        "enacted": "2014-09-16T22:59:58.840Z"
     }
 },
 {
@@ -3484,7 +3878,7 @@
         "deleted": false, 
         "role": 1, 
         "user": 49, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -3502,7 +3896,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:06.840Z"
     }
 },
 {
@@ -3621,7 +4015,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:11.447Z"
     }
 },
 {
@@ -3740,7 +4134,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:12.468Z"
     }
 },
 {
@@ -3859,7 +4253,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:13.476Z"
     }
 },
 {
@@ -3978,7 +4372,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:14.545Z"
     }
 },
 {
@@ -4097,7 +4491,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:07.832Z"
     }
 },
 {
@@ -4216,7 +4610,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:08.851Z"
     }
 },
 {
@@ -4335,7 +4729,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:15.622Z"
     }
 },
 {
@@ -4454,7 +4848,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:16.646Z"
     }
 },
 {
@@ -4470,7 +4864,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": "2014-08-12T15:38:35.149Z"
     }
 },
@@ -4564,7 +4958,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:26:50.364Z", 
+        "updated": "2014-09-10T06:38:33.571Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:10.757Z", 
         "deleted": false, 
@@ -4573,7 +4967,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:03.588Z"
     }
 },
 {
@@ -4581,7 +4975,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:27:09.756Z", 
+        "updated": "2014-09-10T06:38:34.644Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:13.469Z", 
         "deleted": false, 
@@ -4589,7 +4983,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": "2014-08-11T23:46:34.930Z"
     }
 },
@@ -4598,7 +4992,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:02:42.674Z", 
+        "updated": "2014-09-10T06:39:27.712Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:16.318Z", 
         "deleted": false, 
@@ -4607,7 +5001,7 @@
         "network_id": null, 
         "deployment": 7, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:02:53.670Z"
+        "enacted": "2014-09-10T06:39:28.735Z"
     }
 },
 {
@@ -4615,7 +5009,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:59:48.371Z", 
+        "updated": "2014-09-10T06:39:31.749Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:19.037Z", 
         "deleted": false, 
@@ -4624,7 +5018,7 @@
         "network_id": null, 
         "deployment": 10, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T17:59:58.239Z"
+        "enacted": "2014-09-10T06:39:32.866Z"
     }
 },
 {
@@ -4632,7 +5026,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:00:41.859Z", 
+        "updated": "2014-09-10T06:39:36.931Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:21.821Z", 
         "deleted": false, 
@@ -4641,7 +5035,7 @@
         "network_id": null, 
         "deployment": 13, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:00:51.632Z"
+        "enacted": "2014-09-10T06:39:38.684Z"
     }
 },
 {
@@ -4649,7 +5043,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:07:36.663Z", 
+        "updated": "2014-09-10T06:38:38.996Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:24.728Z", 
         "deleted": false, 
@@ -4657,7 +5051,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": "2014-08-26T18:07:46.903Z"
     }
 },
@@ -4666,7 +5060,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:26:01.813Z", 
+        "updated": "2014-09-10T06:38:40.118Z", 
         "slice": 32, 
         "created": "2014-06-20T04:46:27.448Z", 
         "deleted": false, 
@@ -4692,7 +5086,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:20.672Z"
     }
 },
 {
@@ -4811,7 +5205,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:21.762Z"
     }
 },
 {
@@ -4930,7 +5324,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:22.795Z"
     }
 },
 {
@@ -5049,7 +5443,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:23.807Z"
     }
 },
 {
@@ -5312,7 +5706,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:04:32.603Z", 
+        "updated": "2014-09-10T06:40:48.696Z", 
         "slice": 32, 
         "created": "2014-06-27T14:55:05.011Z", 
         "deleted": false, 
@@ -5321,7 +5715,7 @@
         "network_id": null, 
         "deployment": 16, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:04:42.353Z"
+        "enacted": "2014-09-10T06:40:49.724Z"
     }
 },
 {
@@ -5406,7 +5800,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:24.856Z"
     }
 },
 {
@@ -5542,7 +5936,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:50.780Z"
     }
 },
 {
@@ -5669,7 +6063,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:29:54.112Z", 
+        "updated": "2014-09-16T23:17:16.745Z", 
         "slice": 41, 
         "created": "2014-07-25T20:20:55.515Z", 
         "deleted": false, 
@@ -5677,7 +6071,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 11, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:609 peer Slice:41 failed  Slice:41',)", 
         "enacted": null
     }
 },
@@ -5686,7 +6080,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:31:47.448Z", 
+        "updated": "2014-09-16T23:17:09.006Z", 
         "slice": 41, 
         "created": "2014-07-25T20:20:59.833Z", 
         "deleted": false, 
@@ -5694,7 +6088,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:610 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:31:50.958Z"
     }
 },
@@ -5703,7 +6097,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:31:58.501Z", 
+        "updated": "2014-09-16T23:17:18.737Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:03.996Z", 
         "deleted": false, 
@@ -5711,7 +6105,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 7, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:611 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:01.847Z"
     }
 },
@@ -5720,7 +6114,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:32:07.687Z", 
+        "updated": "2014-09-16T23:17:24.284Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:08.037Z", 
         "deleted": false, 
@@ -5728,7 +6122,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 10, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:612 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:11.284Z"
     }
 },
@@ -5737,7 +6131,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:32:17.760Z", 
+        "updated": "2014-09-16T23:17:10.856Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:12.195Z", 
         "deleted": false, 
@@ -5745,7 +6139,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 13, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:613 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:21.223Z"
     }
 },
@@ -5754,7 +6148,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:32:27.859Z", 
+        "updated": "2014-09-16T23:17:20.598Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:16.424Z", 
         "deleted": false, 
@@ -5762,7 +6156,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:614 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:31.438Z"
     }
 },
@@ -5771,7 +6165,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:32:39.003Z", 
+        "updated": "2014-09-16T23:17:22.388Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:20.457Z", 
         "deleted": false, 
@@ -5779,7 +6173,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 14, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:615 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:42.599Z"
     }
 },
@@ -5788,7 +6182,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:32:49.373Z", 
+        "updated": "2014-09-16T23:17:12.962Z", 
         "slice": 41, 
         "created": "2014-07-25T20:21:24.600Z", 
         "deleted": false, 
@@ -5796,7 +6190,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 16, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:616 peer Slice:41 failed  Slice:41',)", 
         "enacted": "2014-08-11T20:32:52.947Z"
     }
 },
@@ -5814,7 +6208,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:51.835Z"
     }
 },
 {
@@ -5830,7 +6224,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": "2014-08-02T19:05:57.735Z"
     }
 },
@@ -5950,7 +6344,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:55.567Z"
     }
 },
 {
@@ -5967,7 +6361,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:56.646Z"
     }
 },
 {
@@ -5984,7 +6378,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:57.687Z"
     }
 },
 {
@@ -6001,7 +6395,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:58.711Z"
     }
 },
 {
@@ -6018,7 +6412,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:40:59.732Z"
     }
 },
 {
@@ -6035,7 +6429,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:00.753Z"
     }
 },
 {
@@ -6052,7 +6446,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:01.871Z"
     }
 },
 {
@@ -6069,7 +6463,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:03.039Z"
     }
 },
 {
@@ -6077,7 +6471,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:26:40.702Z", 
+        "updated": "2014-09-10T06:38:42.282Z", 
         "slice": 32, 
         "created": "2014-08-05T18:25:34.633Z", 
         "deleted": false, 
@@ -6086,7 +6480,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:05.811Z"
     }
 },
 {
@@ -6103,7 +6497,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:04.067Z"
     }
 },
 {
@@ -6120,7 +6514,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:05.135Z"
     }
 },
 {
@@ -6137,7 +6531,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:06.165Z"
     }
 },
 {
@@ -6154,7 +6548,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:07.193Z"
     }
 },
 {
@@ -6171,7 +6565,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:08.231Z"
     }
 },
 {
@@ -6188,7 +6582,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:09.254Z"
     }
 },
 {
@@ -6205,7 +6599,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:10.281Z"
     }
 },
 {
@@ -6222,7 +6616,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:11.309Z"
     }
 },
 {
@@ -6230,7 +6624,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-11T20:29:57.599Z", 
+        "updated": "2014-09-16T23:17:14.766Z", 
         "slice": 41, 
         "created": "2014-08-05T18:25:39.348Z", 
         "deleted": false, 
@@ -6238,7 +6632,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 17, 
-        "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
+        "backend_status": "FailedDependency('Failed dependency for SliceDeployments:664 peer Slice:41 failed  Slice:41',)", 
         "enacted": null
     }
 },
@@ -6290,7 +6684,7 @@
         "network_id": null, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:12.349Z"
     }
 },
 {
@@ -6392,7 +6786,7 @@
         "network_id": null, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:41:13.411Z"
     }
 },
 {
@@ -6442,7 +6836,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -6519,7 +6913,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:06:00.937Z", 
+        "updated": "2014-09-10T06:41:37.128Z", 
         "slice": 50, 
         "created": "2014-08-13T01:41:43.495Z", 
         "deleted": false, 
@@ -6528,7 +6922,7 @@
         "network_id": null, 
         "deployment": 7, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:06:10.460Z"
+        "enacted": "2014-09-10T06:41:38.231Z"
     }
 },
 {
@@ -6536,7 +6930,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:08:42.217Z", 
+        "updated": "2014-09-10T06:41:41.271Z", 
         "slice": 50, 
         "created": "2014-08-13T01:41:48.297Z", 
         "deleted": false, 
@@ -6545,7 +6939,7 @@
         "network_id": null, 
         "deployment": 10, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:08:52.807Z"
+        "enacted": "2014-09-10T06:41:42.339Z"
     }
 },
 {
@@ -6553,7 +6947,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:29:36.845Z", 
+        "updated": "2014-09-10T06:38:56.209Z", 
         "slice": 50, 
         "created": "2014-08-13T01:41:53.615Z", 
         "deleted": false, 
@@ -6561,7 +6955,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -6570,7 +6964,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:07:07.205Z", 
+        "updated": "2014-09-10T06:41:47.477Z", 
         "slice": 50, 
         "created": "2014-08-13T01:41:58.350Z", 
         "deleted": false, 
@@ -6579,7 +6973,7 @@
         "network_id": null, 
         "deployment": 13, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:07:24.715Z"
+        "enacted": "2014-09-10T06:41:48.530Z"
     }
 },
 {
@@ -6587,7 +6981,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T17:29:56.743Z", 
+        "updated": "2014-09-10T06:38:58.354Z", 
         "slice": 50, 
         "created": "2014-08-13T01:42:03.363Z", 
         "deleted": false, 
@@ -6604,7 +6998,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:09:04.626Z", 
+        "updated": "2014-09-10T06:38:59.391Z", 
         "slice": 50, 
         "created": "2014-08-13T01:42:08.057Z", 
         "deleted": false, 
@@ -6612,7 +7006,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 15, 
-        "backend_status": "Provisioning in progress", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": "2014-08-26T18:09:14.228Z"
     }
 },
@@ -6621,7 +7015,7 @@
     "model": "core.slicedeployments", 
     "fields": {
         "router_id": null, 
-        "updated": "2014-08-26T18:04:55.719Z", 
+        "updated": "2014-09-10T06:42:59.622Z", 
         "slice": 50, 
         "created": "2014-08-13T01:42:12.997Z", 
         "deleted": false, 
@@ -6630,7 +7024,7 @@
         "network_id": null, 
         "deployment": 16, 
         "backend_status": "Provisioning in progress", 
-        "enacted": "2014-08-26T18:05:05.600Z"
+        "enacted": "2014-09-10T06:43:00.672Z"
     }
 },
 {
@@ -6680,7 +7074,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -6799,7 +7193,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -6918,7 +7312,7 @@
         "subnet_id": null, 
         "network_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -7001,7 +7395,7 @@
         "user": 1, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:33.598Z"
     }
 },
 {
@@ -7099,7 +7493,7 @@
         "user": 3, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:36.933Z"
     }
 },
 {
@@ -7197,7 +7591,7 @@
         "user": 4, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:38.018Z"
     }
 },
 {
@@ -7295,7 +7689,7 @@
         "user": 5, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:39.215Z"
     }
 },
 {
@@ -7393,7 +7787,7 @@
         "user": 6, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:34.751Z"
     }
 },
 {
@@ -7491,7 +7885,7 @@
         "user": 9, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:40.261Z"
     }
 },
 {
@@ -7589,7 +7983,7 @@
         "user": 10, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:41.316Z"
     }
 },
 {
@@ -7687,7 +8081,7 @@
         "user": 11, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:42.417Z"
     }
 },
 {
@@ -7785,7 +8179,7 @@
         "user": 12, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:43.471Z"
     }
 },
 {
@@ -7883,7 +8277,7 @@
         "user": 13, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:44.511Z"
     }
 },
 {
@@ -7981,7 +8375,7 @@
         "user": 14, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:45.586Z"
     }
 },
 {
@@ -8079,7 +8473,7 @@
         "user": 15, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:46.728Z"
     }
 },
 {
@@ -8177,7 +8571,7 @@
         "user": 16, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:47.749Z"
     }
 },
 {
@@ -8275,7 +8669,7 @@
         "user": 17, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:48.782Z"
     }
 },
 {
@@ -8373,7 +8767,7 @@
         "user": 20, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:49.836Z"
     }
 },
 {
@@ -8471,7 +8865,7 @@
         "user": 2, 
         "deployment": 11, 
         "backend_status": "", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:50.904Z"
     }
 },
 {
@@ -8569,7 +8963,7 @@
         "user": 7, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:51.963Z"
     }
 },
 {
@@ -8667,7 +9061,7 @@
         "user": 21, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:53.022Z"
     }
 },
 {
@@ -8765,7 +9159,7 @@
         "user": 22, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:54.090Z"
     }
 },
 {
@@ -8863,7 +9257,7 @@
         "user": 40, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:55.140Z"
     }
 },
 {
@@ -8961,7 +9355,7 @@
         "user": 41, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:56.718Z"
     }
 },
 {
@@ -9059,7 +9453,7 @@
         "user": 42, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:57.780Z"
     }
 },
 {
@@ -9157,7 +9551,7 @@
         "user": 8, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:58.936Z"
     }
 },
 {
@@ -9255,7 +9649,7 @@
         "user": 43, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:38:59.965Z"
     }
 },
 {
@@ -9675,7 +10069,7 @@
         "user": 44, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:01.092Z"
     }
 },
 {
@@ -9688,7 +10082,7 @@
         "kuser_id": "a842b6bdb9e8478980de17313bb80aa1", 
         "user": 44, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": "2014-07-29T14:28:09.205Z"
     }
 },
@@ -9787,7 +10181,7 @@
         "user": 45, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:03.731Z"
     }
 },
 {
@@ -9913,7 +10307,7 @@
         "user": 46, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:04.753Z"
     }
 },
 {
@@ -10025,7 +10419,7 @@
         "user": 47, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:05.767Z"
     }
 },
 {
@@ -10137,7 +10531,7 @@
         "user": 1, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:06.918Z"
     }
 },
 {
@@ -10151,7 +10545,7 @@
         "user": 3, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:07.933Z"
     }
 },
 {
@@ -10165,7 +10559,7 @@
         "user": 5, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:08.997Z"
     }
 },
 {
@@ -10179,7 +10573,7 @@
         "user": 9, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:09.999Z"
     }
 },
 {
@@ -10193,7 +10587,7 @@
         "user": 10, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:11.106Z"
     }
 },
 {
@@ -10207,7 +10601,7 @@
         "user": 11, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:12.146Z"
     }
 },
 {
@@ -10221,7 +10615,7 @@
         "user": 12, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:13.227Z"
     }
 },
 {
@@ -10235,7 +10629,7 @@
         "user": 13, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:14.246Z"
     }
 },
 {
@@ -10249,7 +10643,7 @@
         "user": 15, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:15.312Z"
     }
 },
 {
@@ -10263,7 +10657,7 @@
         "user": 16, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:16.350Z"
     }
 },
 {
@@ -10277,7 +10671,7 @@
         "user": 17, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:17.360Z"
     }
 },
 {
@@ -10291,7 +10685,7 @@
         "user": 20, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:18.390Z"
     }
 },
 {
@@ -10305,7 +10699,7 @@
         "user": 14, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:19.525Z"
     }
 },
 {
@@ -10319,7 +10713,7 @@
         "user": 4, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:20.525Z"
     }
 },
 {
@@ -10333,7 +10727,7 @@
         "user": 7, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:21.543Z"
     }
 },
 {
@@ -10347,7 +10741,7 @@
         "user": 2, 
         "deployment": 17, 
         "backend_status": "", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:22.551Z"
     }
 },
 {
@@ -10361,7 +10755,7 @@
         "user": 21, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:23.729Z"
     }
 },
 {
@@ -10375,7 +10769,7 @@
         "user": 22, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:24.940Z"
     }
 },
 {
@@ -10389,7 +10783,7 @@
         "user": 41, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:25.946Z"
     }
 },
 {
@@ -10403,7 +10797,7 @@
         "user": 42, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:26.958Z"
     }
 },
 {
@@ -10417,7 +10811,7 @@
         "user": 43, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:27.998Z"
     }
 },
 {
@@ -10431,7 +10825,7 @@
         "user": 46, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:29.000Z"
     }
 },
 {
@@ -10445,7 +10839,7 @@
         "user": 8, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:30.011Z"
     }
 },
 {
@@ -10459,7 +10853,7 @@
         "user": 44, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:31.051Z"
     }
 },
 {
@@ -10473,7 +10867,7 @@
         "user": 45, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:32.060Z"
     }
 },
 {
@@ -10487,7 +10881,7 @@
         "user": 40, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:33.185Z"
     }
 },
 {
@@ -10501,7 +10895,7 @@
         "user": 47, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:34.216Z"
     }
 },
 {
@@ -10515,7 +10909,7 @@
         "user": 6, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:35.255Z"
     }
 },
 {
@@ -10557,7 +10951,7 @@
         "user": 48, 
         "deployment": 11, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:36.273Z"
     }
 },
 {
@@ -10641,7 +11035,7 @@
         "user": 48, 
         "deployment": 17, 
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'", 
-        "enacted": null
+        "enacted": "2014-09-10T06:39:37.293Z"
     }
 },
 {
@@ -10780,7 +11174,7 @@
         "kuser_id": null, 
         "user": 50, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "BadRequest()", 
         "enacted": null
     }
 },
@@ -11409,6 +11803,48 @@
         "backend_status": "Provisioning in progress", 
         "glance_image_id": "f984d1bb-25f4-4491-b969-c75a430eaefb", 
         "enacted": "2014-08-26T16:35:36.768Z"
+    }
+},
+{
+    "pk": 104, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-09-09T17:07:47.098Z", 
+        "created": "2014-09-09T17:07:47.098Z", 
+        "deleted": false, 
+        "image": 21, 
+        "deployment": 17, 
+        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 105, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-09-09T17:08:00.870Z", 
+        "created": "2014-09-09T17:08:00.870Z", 
+        "deleted": false, 
+        "image": 20, 
+        "deployment": 17, 
+        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
+        "glance_image_id": null, 
+        "enacted": null
+    }
+},
+{
+    "pk": 106, 
+    "model": "core.imagedeployments", 
+    "fields": {
+        "updated": "2014-09-09T17:09:52.206Z", 
+        "created": "2014-09-09T17:08:24.429Z", 
+        "deleted": false, 
+        "image": 3, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "glance_image_id": "d828750b-c37e-4a5c-b13a-c3a7c38e3c53", 
+        "enacted": "2014-09-09T17:09:53.437Z"
     }
 },
 {
@@ -12266,6 +12702,132 @@
     }
 },
 {
+    "pk": 812, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:27.557Z", 
+        "name": "vicci69.CS.Princeton.EDU", 
+        "created": "2014-09-04T17:48:27.556Z", 
+        "deleted": false, 
+        "site": 18, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:28.354Z"
+    }
+},
+{
+    "pk": 813, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:29.200Z", 
+        "name": "vicci66.CS.Princeton.EDU", 
+        "created": "2014-09-04T17:48:29.200Z", 
+        "deleted": false, 
+        "site": 17, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:30.317Z"
+    }
+},
+{
+    "pk": 814, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:31.116Z", 
+        "name": "vicci68.CS.Princeton.EDU", 
+        "created": "2014-09-04T17:48:31.116Z", 
+        "deleted": false, 
+        "site": 8, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:31.952Z"
+    }
+},
+{
+    "pk": 815, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:33.111Z", 
+        "name": "vicci67.CS.Princeton.EDU", 
+        "created": "2014-09-04T17:48:33.111Z", 
+        "deleted": false, 
+        "site": 21, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:33.935Z"
+    }
+},
+{
+    "pk": 816, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:34.733Z", 
+        "name": "vicci65.CS.Princeton.EDU", 
+        "created": "2014-09-04T17:48:34.733Z", 
+        "deleted": false, 
+        "site": 20, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:35.765Z"
+    }
+},
+{
+    "pk": 817, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:36.596Z", 
+        "name": "node1.losa.internet2.vini-veritas.net", 
+        "created": "2014-09-04T17:48:36.596Z", 
+        "deleted": false, 
+        "site": 14, 
+        "deployment": 10, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:37.484Z"
+    }
+},
+{
+    "pk": 818, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:38.281Z", 
+        "name": "node2.losa.internet2.vini-veritas.net", 
+        "created": "2014-09-04T17:48:38.281Z", 
+        "deleted": false, 
+        "site": 20, 
+        "deployment": 10, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:39.226Z"
+    }
+},
+{
+    "pk": 819, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-04T17:48:40.020Z", 
+        "name": "node63.stanford.vicci.org", 
+        "created": "2014-09-04T17:48:40.020Z", 
+        "deleted": false, 
+        "site": 25, 
+        "deployment": 16, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-04T17:48:40.940Z"
+    }
+},
+{
+    "pk": 820, 
+    "model": "core.node", 
+    "fields": {
+        "updated": "2014-09-16T23:01:53.435Z", 
+        "name": "node43.princeton.vicci.org", 
+        "created": "2014-09-16T23:01:53.435Z", 
+        "deleted": false, 
+        "site": 29, 
+        "deployment": 7, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": null
+    }
+},
+{
     "pk": 4, 
     "model": "core.serviceresource", 
     "fields": {
@@ -12377,12 +12939,12 @@
         "deployments": [
             7, 
             10, 
-            16, 
-            15, 
-            14, 
             13, 
-            12, 
-            17
+            14, 
+            15, 
+            16, 
+            17, 
+            12
         ], 
         "default": false, 
         "flavor": "m1.tiny", 
@@ -12404,12 +12966,12 @@
             7, 
             10, 
             11, 
-            16, 
-            15, 
-            14, 
             13, 
-            12, 
-            17
+            14, 
+            15, 
+            16, 
+            17, 
+            12
         ], 
         "default": true, 
         "flavor": "m1.small", 
@@ -12431,12 +12993,12 @@
             7, 
             10, 
             11, 
-            16, 
-            15, 
-            14, 
             13, 
-            12, 
-            17
+            14, 
+            15, 
+            16, 
+            17, 
+            12
         ], 
         "default": false, 
         "flavor": "m1.medium", 
@@ -12458,12 +13020,12 @@
             7, 
             10, 
             11, 
-            16, 
-            15, 
-            14, 
             13, 
-            12, 
-            17
+            14, 
+            15, 
+            16, 
+            17, 
+            12
         ], 
         "default": false, 
         "flavor": "m1.large", 
@@ -12485,12 +13047,12 @@
             7, 
             10, 
             11, 
-            16, 
-            15, 
-            14, 
             13, 
-            12, 
-            17
+            14, 
+            15, 
+            16, 
+            17, 
+            12
         ], 
         "default": false, 
         "flavor": "m1.xlarge", 
@@ -12969,7 +13531,7 @@
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
-        "backend_status": "Unauthorized()", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": null
     }
 },
@@ -12992,7 +13554,7 @@
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
-        "backend_status": "Unauthorized()", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": null
     }
 },
@@ -13038,7 +13600,7 @@
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
-        "backend_status": "Unauthorized()", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": null
     }
 },
@@ -13084,7 +13646,7 @@
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
-        "backend_status": "Unauthorized()", 
+        "backend_status": "AuthorizationFailure('Authorization Failed: Bad request (HTTP 400)',)", 
         "enacted": null
     }
 },
@@ -13176,7 +13738,7 @@
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "enacted": null
     }
 },
@@ -13438,8 +14000,8 @@
     "model": "core.sliver", 
     "fields": {
         "node": 766, 
-        "instance_name": null, 
-        "updated": "2014-09-04T01:38:48.797Z", 
+        "instance_name": "instance-00000046", 
+        "updated": "2014-09-10T06:44:15.351Z", 
         "slice": 32, 
         "deploymentNetwork": 7, 
         "name": "onlab_dnsredir", 
@@ -13449,9 +14011,208 @@
         "image": 27, 
         "creator": 8, 
         "numberCores": 0, 
+        "instance_id": "d450e032-d4d6-48a8-84b5-464909956ec9", 
+        "userData": null, 
+        "flavor": 2, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-10T06:44:16.378Z"
+    }
+},
+{
+    "pk": 626, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 812, 
+        "instance_name": "instance-00000044", 
+        "updated": "2014-09-05T21:45:00.511Z", 
+        "slice": 32, 
+        "deploymentNetwork": 7, 
+        "name": "onlab_dnsredir", 
+        "created": "2014-09-05T21:43:17.511Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 27, 
+        "creator": 8, 
+        "numberCores": 0, 
+        "instance_id": "4c39a400-5f2d-461e-b6e7-3d8efc378a5a", 
+        "userData": null, 
+        "flavor": 3, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-05T21:45:01.459Z"
+    }
+},
+{
+    "pk": 629, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 765, 
+        "instance_name": "instance-00000045", 
+        "updated": "2014-09-09T17:15:20.200Z", 
+        "slice": 49, 
+        "deploymentNetwork": 7, 
+        "name": "onlab_smbakertest", 
+        "created": "2014-09-09T17:10:34.829Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 27, 
+        "creator": 8, 
+        "numberCores": 0, 
+        "instance_id": "e248ef54-c796-47b3-b52b-be5927732bb0", 
+        "userData": null, 
+        "flavor": 4, 
+        "backend_status": "Provisioning in progress", 
+        "enacted": "2014-09-09T17:15:21.272Z"
+    }
+},
+{
+    "pk": 630, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 786, 
+        "instance_name": null, 
+        "updated": "2014-09-09T23:33:11.246Z", 
+        "slice": 57, 
+        "deploymentNetwork": 16, 
+        "name": "stanford_test_issue", 
+        "created": "2014-09-09T23:33:11.245Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 3, 
+        "creator": 44, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 4, 
+        "backend_status": "Unauthorized()", 
+        "enacted": null
+    }
+},
+{
+    "pk": 631, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 811, 
+        "instance_name": null, 
+        "updated": "2014-09-10T08:01:22.982Z", 
+        "slice": 58, 
+        "deploymentNetwork": 17, 
+        "name": "us-east-1a_", 
+        "created": "2014-09-10T08:01:22.982Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 20, 
+        "creator": 5, 
+        "numberCores": 0, 
         "instance_id": null, 
         "userData": null, 
         "flavor": 2, 
+        "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
+        "enacted": null
+    }
+},
+{
+    "pk": 632, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 785, 
+        "instance_name": null, 
+        "updated": "2014-09-10T21:34:33.695Z", 
+        "slice": 57, 
+        "deploymentNetwork": 16, 
+        "name": "stanford_test_issue", 
+        "created": "2014-09-10T21:34:33.695Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 3, 
+        "creator": 44, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 5, 
+        "backend_status": "Unauthorized()", 
+        "enacted": null
+    }
+},
+{
+    "pk": 633, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 786, 
+        "instance_name": null, 
+        "updated": "2014-09-10T21:52:54.506Z", 
+        "slice": 57, 
+        "deploymentNetwork": 16, 
+        "name": "stanford_test_issue", 
+        "created": "2014-09-10T21:52:54.506Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 3, 
+        "creator": 44, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 3, 
+        "backend_status": "Unauthorized()", 
+        "enacted": null
+    }
+},
+{
+    "pk": 634, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 786, 
+        "instance_name": null, 
+        "updated": "2014-09-11T00:30:20.779Z", 
+        "slice": 57, 
+        "deploymentNetwork": 16, 
+        "name": "stanford_test_issue", 
+        "created": "2014-09-11T00:30:20.779Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 3, 
+        "creator": 44, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 3, 
+        "backend_status": "Unauthorized()", 
+        "enacted": null
+    }
+},
+{
+    "pk": 635, 
+    "model": "core.sliver", 
+    "fields": {
+        "node": 786, 
+        "instance_name": null, 
+        "updated": "2014-09-16T22:54:06.473Z", 
+        "slice": 60, 
+        "deploymentNetwork": 16, 
+        "name": "stanford_sapan2", 
+        "created": "2014-09-16T22:54:06.473Z", 
+        "deleted": false, 
+        "ip": null, 
+        "image": 3, 
+        "creator": 44, 
+        "numberCores": 0, 
+        "instance_id": null, 
+        "userData": null, 
+        "flavor": 4, 
+        "backend_status": "Unauthorized()", 
+        "enacted": null
+    }
+},
+{
+    "pk": 1, 
+    "model": "core.deploymentcredential", 
+    "fields": {
+        "updated": "2014-09-10T06:40:16.074Z", 
+        "enc_value": "foobar", 
+        "name": "foo", 
+        "created": "2014-09-10T06:40:16.074Z", 
+        "deleted": false, 
+        "deployment": 17, 
+        "key_id": "", 
         "backend_status": "Provisioning in progress", 
         "enacted": null
     }
@@ -18294,7 +19055,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:04.295Z"
     }
 },
 {
@@ -18311,7 +19072,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:09.989Z"
     }
 },
 {
@@ -18328,7 +19089,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:11.166Z"
     }
 },
 {
@@ -18345,7 +19106,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:12.175Z"
     }
 },
 {
@@ -18362,7 +19123,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:13.178Z"
     }
 },
 {
@@ -18379,7 +19140,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:05.321Z"
     }
 },
 {
@@ -18396,7 +19157,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:14.197Z"
     }
 },
 {
@@ -18413,7 +19174,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:15.239Z"
     }
 },
 {
@@ -18430,7 +19191,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:16.288Z"
     }
 },
 {
@@ -18447,7 +19208,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:17.294Z"
     }
 },
 {
@@ -18464,7 +19225,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:18.292Z"
     }
 },
 {
@@ -18481,7 +19242,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:19.384Z"
     }
 },
 {
@@ -18498,7 +19259,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:06.347Z"
     }
 },
 {
@@ -18515,7 +19276,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:01.739Z"
     }
 },
 {
@@ -18532,7 +19293,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:20.414Z"
     }
 },
 {
@@ -18549,7 +19310,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:21.469Z"
     }
 },
 {
@@ -18583,7 +19344,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:22.488Z"
     }
 },
 {
@@ -18600,7 +19361,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:23.510Z"
     }
 },
 {
@@ -18617,7 +19378,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:24.556Z"
     }
 },
 {
@@ -18634,7 +19395,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:25.645Z"
     }
 },
 {
@@ -18651,7 +19412,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:07.435Z"
     }
 },
 {
@@ -18668,7 +19429,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:26.773Z"
     }
 },
 {
@@ -18685,7 +19446,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:27.780Z"
     }
 },
 {
@@ -18702,7 +19463,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:28.811Z"
     }
 },
 {
@@ -18719,7 +19480,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:29.863Z"
     }
 },
 {
@@ -18904,7 +19665,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19023,7 +19784,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19142,7 +19903,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19244,7 +20005,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19348,7 +20109,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:36.900Z"
     }
 },
 {
@@ -19382,7 +20143,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:37.887Z"
     }
 },
 {
@@ -19397,7 +20158,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19501,7 +20262,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:41.618Z"
     }
 },
 {
@@ -19535,7 +20296,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:42.611Z"
     }
 },
 {
@@ -19550,7 +20311,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19654,7 +20415,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:46.589Z"
     }
 },
 {
@@ -19688,7 +20449,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:47.677Z"
     }
 },
 {
@@ -19703,7 +20464,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19807,7 +20568,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:51.267Z"
     }
 },
 {
@@ -19841,7 +20602,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:52.286Z"
     }
 },
 {
@@ -19856,7 +20617,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -19960,7 +20721,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:54.455Z"
     }
 },
 {
@@ -19994,7 +20755,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:55.577Z"
     }
 },
 {
@@ -20009,7 +20770,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20113,7 +20874,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:43:59.317Z"
     }
 },
 {
@@ -20147,7 +20908,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:00.362Z"
     }
 },
 {
@@ -20162,7 +20923,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20266,7 +21027,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:04.025Z"
     }
 },
 {
@@ -20300,7 +21061,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:05.107Z"
     }
 },
 {
@@ -20315,7 +21076,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20419,7 +21180,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:08.910Z"
     }
 },
 {
@@ -20453,7 +21214,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:09.956Z"
     }
 },
 {
@@ -20468,7 +21229,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20572,7 +21333,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:13.723Z"
     }
 },
 {
@@ -20606,7 +21367,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:14.753Z"
     }
 },
 {
@@ -20621,7 +21382,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20725,7 +21486,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:18.459Z"
     }
 },
 {
@@ -20759,7 +21520,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:19.488Z"
     }
 },
 {
@@ -20774,7 +21535,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -20878,7 +21639,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:23.187Z"
     }
 },
 {
@@ -20912,7 +21673,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:24.230Z"
     }
 },
 {
@@ -20927,7 +21688,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21031,7 +21792,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:26.433Z"
     }
 },
 {
@@ -21065,7 +21826,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:27.468Z"
     }
 },
 {
@@ -21080,7 +21841,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21184,7 +21945,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:31.230Z"
     }
 },
 {
@@ -21218,7 +21979,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:32.258Z"
     }
 },
 {
@@ -21250,7 +22011,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21337,7 +22098,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:36.058Z"
     }
 },
 {
@@ -21354,7 +22115,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:37.083Z"
     }
 },
 {
@@ -21539,7 +22300,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21660,7 +22421,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:40.749Z"
     }
 },
 {
@@ -21677,7 +22438,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:41.770Z"
     }
 },
 {
@@ -21777,7 +22538,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21813,7 +22574,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:45.411Z"
     }
 },
 {
@@ -21828,7 +22589,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -21915,7 +22676,7 @@
         "deployment": 11, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:47.635Z"
     }
 },
 {
@@ -21949,7 +22710,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:48.684Z"
     }
 },
 {
@@ -22202,7 +22963,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -22255,7 +23016,7 @@
         "deployment": 17, 
         "backend_status": "AuthorizationFailure(\"Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'\",)", 
         "net_id": null, 
-        "enacted": null
+        "enacted": "2014-09-10T06:44:53.947Z"
     }
 },
 {
@@ -22304,7 +23065,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -22423,7 +23184,7 @@
         "deleted": false, 
         "subnet_id": null, 
         "deployment": 12, 
-        "backend_status": "AuthorizationFailure('Authorization Failed: Unable to communicate with identity service: [Errno 111] Connection refused. (HTTP 400)',)", 
+        "backend_status": "Unauthorized()", 
         "net_id": null, 
         "enacted": null
     }
@@ -23360,6 +24121,96 @@
         "sliver": 618, 
         "backend_status": "Provisioning in progress", 
         "port_id": "d702edf8-812b-4fe9-8fce-d2710d759bc6", 
+        "enacted": null
+    }
+},
+{
+    "pk": 69, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-05T21:47:00.017Z", 
+        "network": 76, 
+        "created": "2014-09-05T21:47:00.017Z", 
+        "deleted": false, 
+        "ip": "10.0.25.6", 
+        "sliver": 626, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "76fd287c-da17-447b-ba39-477eaae4bc18", 
+        "enacted": null
+    }
+},
+{
+    "pk": 70, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-05T21:47:01.024Z", 
+        "network": 75, 
+        "created": "2014-09-05T21:47:01.024Z", 
+        "deleted": false, 
+        "ip": "172.16.0.25", 
+        "sliver": 626, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "9a6a77d7-8eba-45ab-ac69-2aa1b1e5f573", 
+        "enacted": null
+    }
+},
+{
+    "pk": 71, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-09T17:16:35.083Z", 
+        "network": 99, 
+        "created": "2014-09-09T17:16:35.082Z", 
+        "deleted": false, 
+        "ip": "10.0.36.4", 
+        "sliver": 629, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "5fd53cf8-59c3-4091-8c5d-5f23ffd75892", 
+        "enacted": null
+    }
+},
+{
+    "pk": 72, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-09T17:16:36.151Z", 
+        "network": 100, 
+        "created": "2014-09-09T17:16:36.151Z", 
+        "deleted": false, 
+        "ip": "172.16.0.26", 
+        "sliver": 629, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "3c0aa28f-0dda-4bc1-8453-ba807efa2b38", 
+        "enacted": null
+    }
+},
+{
+    "pk": 73, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-10T06:46:08.334Z", 
+        "network": 76, 
+        "created": "2014-09-10T06:46:08.334Z", 
+        "deleted": false, 
+        "ip": "10.0.25.7", 
+        "sliver": 624, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "d0002a13-444b-4266-80dc-85247a48e27b", 
+        "enacted": null
+    }
+},
+{
+    "pk": 74, 
+    "model": "core.networksliver", 
+    "fields": {
+        "updated": "2014-09-10T06:46:09.442Z", 
+        "network": 75, 
+        "created": "2014-09-10T06:46:09.442Z", 
+        "deleted": false, 
+        "ip": "172.16.0.27", 
+        "sliver": 624, 
+        "backend_status": "Provisioning in progress", 
+        "port_id": "3df19320-7eab-43b1-970e-b8cad928e993", 
         "enacted": null
     }
 },
