@@ -5,7 +5,7 @@ from django.db import models, migrations
 import datetime
 import syndicate_storage.models
 from django.conf import settings
-
+import django.utils.timezone
 
 class Migration(migrations.Migration):
 
@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
             name='SyndicatePrincipal',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -58,8 +58,8 @@ class Migration(migrations.Migration):
             name='Volume',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -81,8 +81,8 @@ class Migration(migrations.Migration):
             name='VolumeAccessRight',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
@@ -100,8 +100,8 @@ class Migration(migrations.Migration):
             name='VolumeSlice',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=datetime.datetime.now, auto_now=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
