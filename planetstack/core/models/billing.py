@@ -6,6 +6,7 @@ from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models import Sum
+from django.utils import timezone
 
 class Account(PlCoreBase):
     site = models.ForeignKey(Site, related_name="accounts", help_text="Site for this account")
@@ -51,7 +52,7 @@ class UsableObject(PlCoreBase):
 class Payment(PlCoreBase):
     account = models.ForeignKey(Account, related_name="payments")
     amount = models.FloatField(default=0.0)
-    date = models.DateTimeField(default=datetime.datetime.now)
+    date = models.DateTimeField(default=timezone.now)
 
     def __unicode__(self): return u'%s-%0.2f-%s' % (self.account.site.name, self.amount, str(self.date))
 
