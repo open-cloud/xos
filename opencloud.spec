@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.25
-Release: 8
+Version: 1.0.26
+Release: 7
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ requires: GeoIP
 # Empty section.
 
 %pre
-#pip-python install django==1.5
+pip-python install django==1.7
 pip-python install djangorestframework
 pip-python install markdown  # Markdown support for the browseable API.
 pip-python install pyyaml    # YAML content-type support.
@@ -119,10 +119,9 @@ if [ "$1" == 1 ] ; then
     echo "NEW INSTALL - initializing database"
     /opt/planetstack/scripts/opencloud initdb
 else
-    echo "UPGRADE - doing evolution"
+    # scripts/opencloud will choose evolve or migrate depending on django version
+    echo "UPGRADE - doing evolution/migration"
     /opt/planetstack/scripts/opencloud evolvedb
-    #echo "UPGRADE - doing migration"    
-    #/opt/planetstack/scripts/opencloud migratedb
 fi
 
 # start the server
