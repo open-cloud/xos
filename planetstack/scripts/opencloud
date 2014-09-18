@@ -134,15 +134,14 @@ if [ "$COMMAND" = "restoredb" ]; then
     createdb
     syncdb
 fi
-if [ "$COMMAND" = "evolvedb" ]; then
+if [ "$COMMAND" = "evolvedb" -o "$COMMAND" = "migratedb" ]; then
     stopserver
     ensure_postgres_running
-    evolvedb
-fi
-if [ "$COMMAND" = "migratedb" ]; then
-    stopserver
-    ensure_postgres_running
-    migratedb
+    if [[ $DJANGO_17 ]]; then
+        migratedb
+    else
+        evolvedb
+    fi
 fi
 if [ "$COMMAND" = "resetdb" ]; then
     stopserver
