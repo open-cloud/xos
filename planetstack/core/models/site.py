@@ -6,6 +6,18 @@ from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
 from core.acl import AccessControlList
 
+class DeploymentDeletionManager(PlCoreBaseDeletionManager):
+    def get_queryset(self):
+        parent=super(DeploymentDeletionManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
 class DeploymentLinkManager(PlCoreBaseManager):
     def get_queryset(self):
         parent=super(DeploymentLinkManager, self)
