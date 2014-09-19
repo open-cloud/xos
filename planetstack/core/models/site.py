@@ -1,10 +1,22 @@
 import os
 from django.db import models
-from core.models import PlCoreBase
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
 from core.acl import AccessControlList
+
+class DeploymentManager(PlCoreBaseManager):
+    def get_queryset(self):
+        parent=super(DeploymentManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
 
 class Site(PlCoreBase):
     """
