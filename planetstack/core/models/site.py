@@ -225,6 +225,9 @@ class DeploymentPrivilege(PlCoreBase):
         return qs 
 
 class SiteDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     site = models.ForeignKey(Site)
     deployment = models.ForeignKey(Deployment)
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
