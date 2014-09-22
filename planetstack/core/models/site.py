@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from django.db.models import Q
 from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Tag
 from django.contrib.contenttypes import generic
