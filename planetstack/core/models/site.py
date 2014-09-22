@@ -186,6 +186,8 @@ class Deployment(PlCoreBase):
         return Deployment.objects.all()
 
 class DeploymentRole(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
 
     ROLE_CHOICES = (('admin','Admin'),)
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
