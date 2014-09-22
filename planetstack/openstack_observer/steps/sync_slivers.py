@@ -86,7 +86,8 @@ class SyncSlivers(OpenStackSyncStep):
                                 hostname = sliver.node.name,
                                 pubkeys = pubkeys,
                                 nics = nics,
-                                userdata = userData )
+                                userdata = userData,
+                                flavor_name = sliver.flavor.flavor )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
             sliver.save()    

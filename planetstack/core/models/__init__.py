@@ -18,11 +18,13 @@ from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole
 from .slice import SlicePrivilege
+from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
 from .planetstack import PlanetStackRole
 from .planetstack import PlanetStackPrivilege
 from .slicetag import SliceTag
+from .flavor import Flavor
 from .sliver import Sliver
 from .reservation import ReservedResource
 from .reservation import Reservation

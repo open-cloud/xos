@@ -18,6 +18,16 @@
 		</fieldset>
 	</form>
 </div>
+<div id="add-user-form" title="Add User" style="display: none;">
+        <form>
+                <fieldset>
+			<div class="create-slice-row">
+                                <label for="add-slice-user">Add User</label>
+                                <select id="add-slice-user" class="tenant-create-slice"></select>
+                        </div>
+                </fieldset>
+        </form>
+</div>
 <div id="create-slice-form" title="Create New Slice" style="display: none;">
 	<form>
 		<fieldset>
@@ -42,7 +52,11 @@
 				<input type="checkbox" name="checkbox" id="private-vol" value="value">
 			</div>
 			<div class="create-slice-row">
-                                <label for="mount-data-sets">Data Sets</label>
+                                <label for="add-user">Add User</label>
+                                <select id="add-user" class="tenant-create-slice"></select>
+                        </div>
+			<div class="create-slice-row">
+                                <label for="mount-data-sets">Data Set</label>
                                 <select id="mount-data-sets" class="tenant-create-slice"></select>
                         </div>
 			<div class="create-slice-row">
@@ -182,7 +196,7 @@
                                 $("#adv-service-level-dropdown").append("<option>" + serviceLevelData[row]['serviceClass'] + "</option>");
                         }
                         for (row in imageData) {
-                                $("#adv-image-dropdown").append("<option>" + imageData[row]['Image'] + "</option>");
+                                $("#adv-image-dropdown").append("<option>" + imageData[row] + "</option>");
                         }
                         for (row in dataSet) {
                                 $("#adv-dataset-dropdown").append("<option>" + dataSet[row]['DataSet'] + "</option>");
@@ -200,9 +214,11 @@
 				}
 			}
 			for (row in siteRows) {
-				var entry = siteRows[row]['siteName'];
+				//var entry = siteRows[row]['siteName'];
+				var entry = siteRows[row];
 				if (!(entry in tableData)) {
-					tableData[siteRows[row]['siteName']] = 0;
+					//tableData[siteRows[row]['siteName']] = 0;
+					tableData[siteRows[row]] = 0;
 				}
 			}
 			for (row in tableData) {
@@ -224,6 +240,7 @@
 								siteName: newRow,
 								count: newTableData[newRow] - tableData[newRow],
 								slice: $("#advTenantSliceDropDown").val(),
+								image: $("#adv-image-dropdown").val(),
 								actionToDo: "add",
 								csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
 								state: "inactive"
@@ -242,6 +259,7 @@
 								siteName: newRow,
 								count: tableData[newRow] - newTableData[newRow],
 								slice: $("#advTenantSliceDropDown").val(),
+								image: $("#adv-image-dropdown").val(),
 								actionToDo: "rem",
 								csrfmiddlewaretoken: "{{ csrf_token }}", // < here
 								state: "inactive"
@@ -333,14 +351,14 @@
 			}
 		}
 
-		function UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet) {
+		function UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet,siteUsers) {
 				//Add check for #dynamicusersliceinfo_filter label-> input having focus here
 				$("<div></div>").attr('id', 'tenantSliceDataWrapper').appendTo('#tabs-5');
 				$("<div></div>").attr('id', 'advancedTenantSliceDataWrapper').appendTo('#tabs-5');
 				var sliceData = '';
 				sliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
 				var advSliceData = '';
-				advSliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing slivers</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing slivers</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <input type="text" name="adv-network-value" id="adv-network-value"> <span class="help-inline">List of port ranges(if any) e.g. 1021-1026,1029</span><br></div><div class="tenant-row"><span class="summary-attr"><b>Data Sets:</b> <span id="adv-slice-data-set-value"> </span>  <input type="checkbox" name="checkbox" id="private-vol-checkbox" value="value"><span class="help-inline">Include Private Volume</span></span></div>';
+				advSliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing slivers</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing slivers</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <input type="text" name="adv-network-value" id="adv-network-value"> <span class="help-inline">List of port ranges(if any) e.g. 1021-1026,1029</span><br></div><div class="tenant-row"><span class="summary-attr"><b>Data Set:</b> <span id="adv-slice-data-set-value"> </span>  <input type="checkbox" name="checkbox" id="private-vol-checkbox" value="value"><span class="help-inline">Include Private Volume</span></span></div>';
 				$('#tenantSliceDataWrapper').append(sliceData).css("display", "none");
 				$('#advancedTenantSliceDataWrapper').append(advSliceData);
 				$("#advancedTenantSliceDataWrapper").css("display", "none");
@@ -356,6 +374,7 @@
 				$("<div></div>").attr('id', 'advTenantSiteTable').appendTo('#tabs-5').css("display", "none");
 				$('<div class="btn btn-success" id="create-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Create New Slice</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-success" id="delete-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Delete a Slice</div>').appendTo("#tabs-5");
+				$('<div class="btn btn-success" id="add-user-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add User</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-high btn-info" id="download-details">Download Slice Details</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-5").css("display", "none");
@@ -386,6 +405,7 @@
 								data: {
 									count: parseInt($("#numOfSlivers").val()),
 									slice: $("#tenantSliceDropDown").val(),
+									image: $("#slice-image-value").html(),
 									actionToDo: "add",
 									csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
 									state: "inactive"
@@ -412,6 +432,7 @@ $("#dialog-form").dialog("close");
 								data: {
 									count: parseInt($("#numOfSlivers").val()),
 									slice: $("#tenantSliceDropDown").val(),
+									image: $("#slice-image-value").html(),
 									actionToDo: "rem",
 									csrfmiddlewaretoken: "{{ csrf_token }}", // < here
 									state: "inactive"
@@ -436,26 +457,69 @@ location.reload();
 				});
 				$("#dialog-form").dialog("open");
 			});
+			$("#add-user-btn").unbind().click(function(){
+				$("#add-slice-user").empty();
+				for (row in siteUsers) {
+                                        $("#add-slice-user").append("<option>" + siteUsers[row] + "</option>");
+                                }
+				$("#add-user-form").dialog({
+                                        autoOpen: false,
+                                        height: 200,
+                                        width: 350,
+                                        modal: true,
+                                        dialogClass: "tenantDialog",
+                                        buttons: {
+                                                "Submit": function () {
+                                                        $.ajax({
+                                                                url: '/adduser/',
+                                                                dataType: 'json',
+                                                                data: {
+                                                                        sliceName: $("#advTenantSliceDropDown").val(),
+                                                                        userEmail: $("#add-slice-user").val(),
+                                                                        csrfmiddlewaretoken: "{{ csrf_token }}", // < here
+                                                                        state: "inactive"
+                                                                },
+                                                                async: false,
+                                                                type: 'POST',
+                                                                success: function () {
+                                                                        location.reload();
+                                                                }
+
+                                                        });
+                                                },
+                                                Cancel: function () {
+                                                        $(this).dialog("close");
+                                                }
+                                        }
+                                });
+                                $("#add-user-form").dialog("open");
+							
+
+			});
 			$("#create-slice-btn").unbind().click(function () {
 				$("#new-service-class").empty();
 				$("#new-image").empty();
+				$("#add-user").empty();
 				$("#mount-data-sets").empty();
 				$("#new-network").empty();
 				for (row in serviceLevelData) {
 					$("#new-service-class").append("<option>" + serviceLevelData[row]['serviceClass'] + "</option>");
 				}
 				for (row in imageData) {
-					$("#new-image").append("<option>" + imageData[row]['Image'] + "</option>");
+					$("#new-image").append("<option>" + imageData[row] + "</option>");
 				}
 				for (row in dataSet) {
                                         $("#mount-data-sets").append("<option>" + dataSet[row]['DataSet'] + "</option>");
+                                }
+				for (row in siteUsers) {
+                                        $("#add-user").append("<option>" + siteUsers[row] + "</option>");
                                 }
 				var nameOfSlice = $("#new-slice-name").val();
 				var nameOfServiceClass = $("#new-service-class").val();
 				var nameOfImage = $("#new-image").val();
 				$("#create-slice-form").dialog({
 					autoOpen: false,
-					height: 400,
+					height: 420,
 					width: 400,
 					modal: true,
 					dialogClass: "tenantDialog",
@@ -471,6 +535,7 @@ location.reload();
 									network: $("#new-network").val(),
 									privateVolume: $("#private-vol").is(":checked"),
 									mountDataSets: $("#mount-data-sets").val(),
+									userEmail: $("#add-user").val(),
 									actionToDo: "add",
 									csrfmiddlewaretoken: "{{ csrf_token }}", // < here 
 									state: "inactive"
@@ -495,6 +560,7 @@ location.reload();
                                                                 data: {
                                                                         count: parseInt($("#number-of-slivers").val()),
                                                                         slice: $("#new-slice-name").val(),
+									image: $("#new-image").val(),
                                                                         actionToDo: "add",
                                                                         csrfmiddlewaretoken: "{{ csrf_token }}", // < here
                                                                         state: "inactive"
@@ -563,9 +629,11 @@ location.reload();
 				var imageData = data['image']['rows'];
 				//var networkData = data['network']['rows'];
 				var serviceLevelData = data['sliceServiceClass']['rows'];
-				var siteRows = data['sites']['rows'];
+				//var siteRows = data['sites']['rows'];
+				var siteRows = data['availableSites']['rows'];
 				var dataSet = data['mountDataSets']['rows'];
-				UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet);
+				var siteUsers = data['siteUsers'];
+				UserSliceTable(rows,imageData,serviceLevelData,siteRows,dataSet,siteUsers);
 				if(!(data['publicKey'])){
 					$(".public-key-warning").css("display","block");
 				}
@@ -574,6 +642,14 @@ location.reload();
 				$("#tooltip").css("display", "none");
 				$("#basic-tooltip").css("display", "none");
 				$("#adv-tooltip").css("display", "none");
+				if(!(data['role']=="pi"||data['role']=="admin")){
+					$("#create-slice-btn").off();
+					$("#create-slice-btn").css('background','grey');
+					$("#delete-slice-btn").off();
+					$("#delete-slice-btn").css('background','grey');
+					$("#add-user-btn").off();
+                                        $("#add-user-btn").css('background','grey');
+				}
 			},
 			complete: function () {}
 		});

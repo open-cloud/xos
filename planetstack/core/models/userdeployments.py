@@ -4,8 +4,12 @@ from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
 from core.models import PlCoreBase,Site,User,Deployment
+from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 
 class UserDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     user = models.ForeignKey(User)
     deployment = models.ForeignKey(Deployment)
     kuser_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone user id")

@@ -5,30 +5,32 @@ from core.models import Site
 from core.models.site import SitePrivilege
 from core.models import User
 from core.models import Role
-from core.models import Deployment
+from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 from core.models import ServiceClass
+from core.models.serviceclass import get_default_serviceclass
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Deployment
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
 class Slice(PlCoreBase):
     name = models.CharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
-    omf_friendly = models.BooleanField()
+    omf_friendly = models.BooleanField(default=False)
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
-    max_slivers = models.IntegerField(default=10) 
+    max_slivers = models.IntegerField(default=10)
     imagePreference = models.CharField(default="Ubuntu 12.04 LTS", null=True, blank=True, max_length=256)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
     network = models.CharField(default="Private Only",null=True, blank=True, max_length=256)
     mountDataSets = models.CharField(default="GenBank",null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
 
-    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=ServiceClass.get_default)
+    serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -38,6 +40,11 @@ class Slice(PlCoreBase):
         return "%s_%s" % (self.site.login_base, self.name)
 
     def save(self, *args, **kwds):
+        
+        site = Site.objects.get(id=self.site.id)
+        if not self.name.startswith(site.login_base):
+            raise ValidationError('slice name must begin with %s' % site.login_base)
+        
         if self.serviceClass is None:
             # We allowed None=True for serviceClass because Django evolution
             # will fail unless it is allowed. But, we we really don't want it to
@@ -106,6 +113,9 @@ class SlicePrivilege(PlCoreBase):
         return qs
 
 class SliceDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     slice = models.ForeignKey(Slice)
     deployment = models.ForeignKey(Deployment)
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
