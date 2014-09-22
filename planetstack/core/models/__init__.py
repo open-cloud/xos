@@ -1,5 +1,4 @@
 from .plcorebase import PlCoreBase
-from .planetstack import PlanetStack
 from .project import Project
 from .singletonmodel import SingletonModel
 from .service import Service
@@ -21,8 +20,7 @@ from .slice import SlicePrivilege
 from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
-from .planetstack import PlanetStackRole
-from .planetstack import PlanetStackPrivilege
+from .planetstackspecific import PlanetStack,PlanetStackRole,PlanetStackPrivilege
 from .slicetag import SliceTag
 from .flavor import Flavor
 from .sliver import Sliver
