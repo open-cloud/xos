@@ -36,7 +36,7 @@ class DashboardAddOrRemoveSliverView(View):
 
         if (actionToDo == "add"):
             user_ip = request.GET.get("ip", get_ip(request))
-            slice_increase_slivers(request.user, user_ip, siteList, slice, 1)
+            slice_increase_slivers(request.user, user_ip, siteList, slice, image.objects.all()[0], 1)
         elif (actionToDo == "rem"):
             slice_decrease_slivers(request.user, siteList, slice, 1)
 

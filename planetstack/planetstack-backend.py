@@ -3,7 +3,12 @@ import os
 import argparse
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from observer.backend import Backend
-from planetstack.config import Config 
+from planetstack.config import Config
+
+try:
+    from django import setup as django_setup # django 1.7
+except:
+    django_setup = False
 
 config = Config()
 
@@ -27,15 +32,18 @@ def daemon():
 def main():
     # Generate command line parser
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
-    parser.add_argument('-d', '--daemon', dest='daemon', action='store_true', default=False, 
+    parser.add_argument('-d', '--daemon', dest='daemon', action='store_true', default=False,
                         help='Run as daemon.')
     # smbaker: util/config.py parses sys.argv[] directly to get config file name; include the option here to avoid
     #   throwing unrecognized argument exceptions
     parser.add_argument('-C', '--config', dest='config_file', action='store', default="/opt/planetstack/plstackapi_config",
                         help='Name of config file.')
     args = parser.parse_args()
-       
+
     if args.daemon: daemon()
+
+    if django_setup: # 1.7
+        django_setup()
 
     backend = Backend()
     backend.run()    

@@ -11,6 +11,7 @@ from util.logger import Logger, logging
 from ec2_observer.awslib import *
 from core.models.site import *
 from core.models.slice import *
+from ec2_observer.creds import *
 import pdb
 
 logger = Logger(level=logging.INFO)
@@ -38,9 +39,9 @@ class SyncSlivers(SyncStep):
         return my_slivers
 
     def delete_record(self, sliver):
-        import pdb
-        pdb.set_trace()
-        result = aws_run('ec2 terminate-instances --instance-ids=%s'%sliver.instance_id)
+        user = sliver.creator
+        e = get_creds(user=user, site=user.site)
+        result = aws_run('ec2 terminate-instances --instance-ids=%s'%sliver.instance_id, env=e)
 
     def sync_record(self, sliver):
         logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
@@ -81,7 +82,10 @@ class SyncSlivers(SyncStep):
 
             # Bail out of we don't have a key
             key_name = sliver.creator.email.lower().replace('@', 'AT').replace('.', '')
-            key_sig = aws_run('ec2 describe-key-pairs')
+            u = sliver.creator
+            s = u.site
+            e = get_creds(user=u, site=s)
+            key_sig = aws_run('ec2 describe-key-pairs', env=e)
             ec2_keys = key_sig['KeyPairs']
             key_found = False
             for key in ec2_keys:
@@ -94,7 +98,7 @@ class SyncSlivers(SyncStep):
                 raise Exception('Will not sync sliver without key')
 
             image_id = sliver.image.path
-            instance_sig = aws_run('ec2 run-instances --image-id %s --instance-type %s --count 1 --key-name %s --placement AvailabilityZone=%s'%(image_id,instance_type,key_name,sliver.node.site.name))
+            instance_sig = aws_run('ec2 run-instances --image-id %s --instance-type %s --count 1 --key-name %s --placement AvailabilityZone=%s'%(image_id,instance_type,key_name,sliver.node.site.name), env=e)
             sliver.instance_id = instance_sig['Instances'][0]['InstanceId']
             sliver.save()
             state = instance_sig['Instances'][0]['State']['Code']
@@ -105,7 +109,7 @@ class SyncSlivers(SyncStep):
                 # This status message should go into backend_status
                 raise Exception('Waiting for instance to start')
         else:
-            ret = aws_run('ec2 describe-instances --instance-ids %s'%sliver.instance_id)
+            ret = aws_run('ec2 describe-instances --instance-ids %s'%sliver.instance_id, env=e)
             state = ret['Reservations'][0]['Instances'][0]['State']['Code']
             if (state==16):
                 sliver.ip = ret['Reservations'][0]['Instances'][0]['PublicIpAddress']

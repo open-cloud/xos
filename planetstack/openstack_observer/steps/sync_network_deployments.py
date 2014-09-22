@@ -20,25 +20,6 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         if (deleted):
             return NetworkDeployments.deleted_objects.all()
         else:
-            # network deployments are not visible to users. We must ensure
-            # networks are deployed at all deploymets available to their slices.
-            slice_deployments = SliceDeployments.objects.all()
-            slice_deploy_lookup = defaultdict(list)
-            for slice_deployment in slice_deployments:
-                slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
-
-            network_deployments = NetworkDeployments.objects.all()
-            network_deploy_lookup = defaultdict(list)
-            for network_deployment in network_deployments:
-                network_deploy_lookup[network_deployment.network].append(network_deployment.deployment)
-
-            for network in Network.objects.filter():
-                expected_deployments = slice_deploy_lookup[network.owner]
-                for expected_deployment in expected_deployments:
-                    if network not in network_deploy_lookup or \
-                      expected_deployment not in network_deploy_lookup[network]:
-                        nd = NetworkDeployments(network=network, deployment=expected_deployment)
-                        nd.save()
             return NetworkDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def get_next_subnet(self, deployment=None):
@@ -122,6 +103,10 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         network_deployment.save()
 
     def sync_record(self, network_deployment):
+        if not network_deployment.deployment.admin_user:
+            logger.info("deployment %r has no admin_user, skipping" % network_deployment.deployment)
+            return
+
         if network_deployment.network.owner and network_deployment.network.owner.creator:
             try:
                 # update manager context

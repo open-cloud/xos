@@ -2,6 +2,7 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import Deployment
+from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 
 # Create your models here.
 
@@ -14,6 +15,8 @@ class Image(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class ImageDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
     image = models.ForeignKey(Image)
     deployment = models.ForeignKey(Deployment)
     glance_image_id = models.CharField(null=True, blank=True, max_length=200, help_text="Glance image id") 
