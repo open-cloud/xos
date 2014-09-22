@@ -132,6 +132,8 @@ class SitePrivilege(PlCoreBase):
         return qs
 
 class Deployment(PlCoreBase):
+    objects = DeploymentManager()
+    deleted_objects = DeploymentDeletionManager()
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
     admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
