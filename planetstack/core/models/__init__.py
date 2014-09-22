@@ -1,5 +1,4 @@
 from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
-from .site import DeploymentLinkManager,DeploymentLinkDeletionManager
 from .project import Project
 from .singletonmodel import SingletonModel
 from .service import Service
@@ -10,6 +9,7 @@ from .site import Site,Deployment, DeploymentRole, DeploymentPrivilege, SiteDepl
 from .dashboard import DashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
+from .site import DeploymentLinkManager,DeploymentLinkDeletionManager
 from .slice import Slice, SliceDeployments
 from .site import SitePrivilege, SiteDeployments
 from .userdeployments import UserDeployments
