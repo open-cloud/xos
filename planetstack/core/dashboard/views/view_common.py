@@ -68,7 +68,7 @@ def getSliceInfo(user):
         for sliver in slice.slivers.all():
              #sites_used['deploymentSites'] = sliver.node.deployment.name
              # sites_used[sliver.image.name] = sliver.image.name
-             sites_used[sliver.node.site.name] = sliver.numberCores
+             sites_used[sliver.node.site.name] = 1 #sliver.numberCores
         sliceid = Slice.objects.get(id=entry.slice.id).id
         try:
             sliverList = Sliver.objects.filter(slice=entry.slice.id)
@@ -175,7 +175,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
 
     return new_rows
 
-def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
+def slice_increase_slivers(user, user_ip, siteList, slice, image, count, noAct=False):
     sitesChanged = {}
 
     # let's compute how many slivers are in use in each node of each site
@@ -202,10 +202,9 @@ def slice_increase_slivers(user, user_ip, siteList, slice, count, noAct=False):
             sliver = Sliver(name=node.name,
                         slice=slice,
                         node=node,
-                        image = Image.objects.all()[0],
+                        image = image,
                         creator = User.objects.get(email=user),
-                        deploymentNetwork=node.deployment,
-                        numberCores =1 )
+                        deploymentNetwork=node.deployment)
             sliver.save()
 
         node.sliverCount = node.sliverCount + 1

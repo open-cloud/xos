@@ -7,6 +7,8 @@ fi
 
 BACKUP_DIR=/opt/planetstack_backups
 
+DJANGO_17=`python -c "import django; from distutils.version import StrictVersion; print int(StrictVersion(django.get_version()) >= StrictVersion('1.7'))"`
+
 cd /opt/planetstack
 
 function ensure_postgres_running {
@@ -44,10 +46,18 @@ function dropdb {
 function syncdb {
     echo "Syncing OpenCloud services..."
     python /opt/planetstack/manage.py syncdb --noinput
+    if [[ $DJANGO_17 ]]; then
+        echo "Loading initial data from fixture..."
+        python /opt/planetstack/manage.py loaddata /opt/planetstack/core/fixtures/initial_data.json
+    fi
 }
 function evolvedb {
-    echo "Syncing OpenCloud services..."
+    echo "Evolving OpenCloud services..."
     python /opt/planetstack/manage.py evolve --hint --execute --noinput
+}
+function migratedb {
+    echo "Migrating OpenCloud services..."
+    python /opt/planetstack/manage.py migrate
 }
 function stopserver {
     echo "Stopping any running OpenCloud Service(s)"
@@ -76,6 +86,19 @@ function dumpdata {
     fi
     rm -f $BACKUP_DIR/dumpdata-latest.json
     ln -s $FN $BACKUP_DIR/dumpdata-latest.json
+}
+
+function genkeys {
+    mkdir -p public_keys
+    mkdir -p private_keys
+    echo "Generating keys"
+	keyczart create --location=private_keys --name="OpenCloud" --purpose=crypt --asymmetric=rsa
+	keyczart addkey --location=private_keys --status=primary --size=1024
+	keyczart pubkey --location=private_keys --destination=public_keys
+    if [[ ! -f public_keys/1 ]]; then
+        echo "FAILED to create keys"
+        exit
+    fi
 }
 
 COMMAND=$1
@@ -111,10 +134,14 @@ if [ "$COMMAND" = "restoredb" ]; then
     createdb
     syncdb
 fi
-if [ "$COMMAND" = "evolvedb" ]; then
+if [ "$COMMAND" = "evolvedb" -o "$COMMAND" = "migratedb" ]; then
     stopserver
     ensure_postgres_running
-    evolvedb
+    if [[ $DJANGO_17 ]]; then
+        migratedb
+    else
+        evolvedb
+    fi
 fi
 if [ "$COMMAND" = "resetdb" ]; then
     stopserver
@@ -135,4 +162,7 @@ if [ "$COMMAND" = "stopserver" ]; then
 fi
 if [ "$COMMAND" = "dumpdata" ]; then
     dumpdata
+fi
+if [ "$COMMAND" = "genkeys" ]; then
+    genkeys
 fi

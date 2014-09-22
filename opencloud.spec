@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.23
-Release: 0
+Version: 1.0.26
+Release: 7
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ requires: GeoIP
 # Empty section.
 
 %pre
-#pip-python install django==1.5
+pip-python install django==1.7
 pip-python install djangorestframework
 pip-python install markdown  # Markdown support for the browseable API.
 pip-python install pyyaml    # YAML content-type support.
@@ -46,12 +46,16 @@ pip-python install django-suit
 pip-python install django-evolution
 pip-python install django-bitfield
 pip-python install django-ipware
+pip-python install django-encrypted-fields
+pip-python install python-keyczar
 
 easy_install django_evolution
 easy_install python_gflags
 easy_install google_api_python_client
 
-wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
+if [ ! -f /usr/lib/python2.7/site-packages/suit/static/suit/js/jquery-1.9.1.min.js ]; then
+    wget -P /usr/lib/python2.7/site-packages/suit/static/suit/js http://code.jquery.com/jquery-1.9.1.min.js
+fi
 
 if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
    rm -f /usr/share/GeoIP/GeoLiteCity.*
@@ -106,13 +110,20 @@ rm -rf %{buildroot}
 ln -s ec2_observer /opt/planetstack/observer
 ln -s config-opencloud.py /opt/planetstack/syndicate_observer/syndicatelib_config/config.py
 
+if [ ! -e /opt/planetstack/public_keys ]; then
+    cd /opt/planetstack
+    scripts/opencloud genkeys
+fi
+
 if [ "$1" == 1 ] ; then
     echo "NEW INSTALL - initializing database"
     /opt/planetstack/scripts/opencloud initdb
 else
-    echo "UPGRADE - doing evolution"
+    # scripts/opencloud will choose evolve or migrate depending on django version
+    echo "UPGRADE - doing evolution/migration"
     /opt/planetstack/scripts/opencloud evolvedb
 fi
+
 # start the server
 /opt/planetstack/scripts/opencloud runserver
 

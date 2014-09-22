@@ -4,7 +4,11 @@ from core.models import PlCoreBase
 from core.models import Site
 from core.models import Deployment
 
-# Create your models here.
+def get_default_serviceclass():
+    try:
+        return ServiceClass.objects.get(name="Best Effort")
+    except ServiceClass.DoesNotExist:
+        return None
 
 class ServiceClass(PlCoreBase):
     name = models.CharField(max_length=32)
@@ -19,13 +23,6 @@ class ServiceClass(PlCoreBase):
        verbose_name_plural = "Service classes"
 
     def __unicode__(self):  return u'%s' % (self.name)
-
-    @staticmethod
-    def get_default():
-        try:
-            return ServiceClass.objects.get(name="Best Effort")
-        except ServiceClass.DoesNotExist:
-            return None
 
     def save_by_user(self, user, *args, **kwds):
         if self.can_update(user):

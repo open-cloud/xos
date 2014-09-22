@@ -1,10 +1,11 @@
-import datetime
 import os
 import sys
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
+from django.utils import timezone
+import model_policy
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
@@ -21,14 +22,30 @@ except:
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class PlCoreBaseDeletionManager(models.Manager):
+    def get_queryset(self):
+        parent=super(PlCoreBaseDeletionManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(deleted=True)
+        else:
+            return parent.get_query_set().filter(deleted=True)
+
+    # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
-        return super(PlCoreBaseDeletionManager, self).get_query_set().filter(deleted=True)
+        return self.get_queryset()
 
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class PlCoreBaseManager(models.Manager):
+    def get_queryset(self):
+        parent=super(PlCoreBaseManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(deleted=False)
+        else:
+            return parent.get_query_set().filter(deleted=False)
+
+    # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
-        return super(PlCoreBaseManager, self).get_query_set().filter(deleted=False)
+        return self.get_queryset()
 
 class PlCoreBase(models.Model):
     objects = PlCoreBaseManager()
@@ -36,8 +53,8 @@ class PlCoreBase(models.Model):
 
     # default values for created and updated are only there to keep evolution
     # from failing.
-    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
-    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
+    created = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    updated = models.DateTimeField(auto_now=True, default=timezone.now)
     enacted = models.DateTimeField(null=True, default=None)
     backend_status = models.CharField(max_length=140,
                                       default="Provisioning in progress")

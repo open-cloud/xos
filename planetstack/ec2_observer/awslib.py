@@ -4,8 +4,8 @@ import json
 class AwsException(Exception):
 	pass
 
-def aws_run(cmd):
-	cmd = 'aws %s'%cmd
+def aws_run(cmd,env=''):
+	cmd = '%s aws %s'%(env,cmd)
 	pipe = os.popen(cmd)
 	output_str = pipe.read()
 

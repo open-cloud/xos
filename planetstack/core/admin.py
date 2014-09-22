@@ -21,12 +21,12 @@ import django_evolution
 def backend_icon(obj): # backend_status, enacted, updated):
     #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
     if (obj.enacted is not None) and obj.enacted >= obj.updated:
-        return '<img src="/static/admin/img/icon_success.gif">'
+        return '<span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>'
     else:
         if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
-            return '<span title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
+            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
         else:
-            return '<span title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
+            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
 
 def backend_text(obj):
     icon = backend_icon(obj)
@@ -266,7 +266,7 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'deploymentNetwork', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -277,52 +277,13 @@ class SliverInline(PlStackTabularInline):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deploymentNetwork':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
-           # the inscrutable jquery selector below says:
-           #     find the closest parent "tr" to the current element
-           #     then find the child with class "field-node"
-           #     then find the child with that is a select
-           #     then return its id
-           kwargs['widget'] = forms.Select(attrs={'onChange': "update_nodes(this, $($(this).closest('tr')[0]).find('.field-node select')[0].id)"})
-           #kwargs['widget'] = forms.Select(attrs={'onChange': "console.log($($($(this).closest('tr')[0]).children('.field-node')[0]).children('select')[0].id);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
+        elif db_field.name == 'flavor':
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
         return field
-
-"""
-    SMBAKER: This is the old code that implemented each network type as a
-    separate column in the sliver table.
-
-    def _declared_fieldsets(self):
-        # Return None so django will call get_fieldsets and we can insert our
-        # dynamic fields
-        return None
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(SliverInline, self).get_readonly_fields(request, obj))
-
-        # Lookup the networks that are bound to the slivers, and add those
-        # network names to the list of readonly fields.
-
-        for sliver in obj.slivers.all():
-            for nbs in sliver.networksliver_set.all():
-                if nbs.ip:
-                    network_name = nbs.network.name
-                    if network_name not in [str(x) for x in readonly_fields]:
-                        readonly_fields.append(NetworkLookerUpper.get(network_name))
-
-        return readonly_fields
-
-    def get_fieldsets(self, request, obj=None):
-        form = self.get_formset(request, obj).form
-        # fields = the read/write files + the read-only fields
-        fields = list(self.fields)
-        for fieldName in self.get_readonly_fields(request,obj):
-            if not fieldName in fields:
-                fields.append(fieldName)
-
-        return [(None, {'fields': fields})]
-"""
 
 class SiteInline(PlStackTabularInline):
     model = Site
@@ -485,8 +446,17 @@ class DeploymentAdminForm(forms.ModelForm):
             verbose_name=('Images'), is_stacked=False
         )
     )
+    flavors = forms.ModelMultipleChoiceField(
+        queryset=Flavor.objects.all(),
+        required=False,
+        help_text="Select which flavors should be usable on this deployment",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Flavors'), is_stacked=False
+        )
+    )
     class Meta:
         model = Deployment
+        many_to_many = ["flavors",]
 
     def __init__(self, *args, **kwargs):
       request = kwargs.pop('request', None)
@@ -497,6 +467,7 @@ class DeploymentAdminForm(forms.ModelForm):
       if self.instance and self.instance.pk:
         self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+        self.fields['flavors'].initial = self.instance.flavors.all()
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
@@ -536,6 +507,8 @@ class DeploymentAdminForm(forms.ModelForm):
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
 
+      deployment.flavors = self.cleaned_data['flavors']
+
       if commit:
         deployment.save()
 
@@ -547,7 +520,7 @@ class DeploymentAdminForm(forms.ModelForm):
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
 
-        self.save_m2m()
+      self.save_m2m()
 
       return deployment
 
@@ -562,7 +535,7 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
@@ -729,11 +702,11 @@ class SliceForm(forms.ModelForm):
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'name', 'site', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
-    list_display = ('backend_status_icon', 'slicename', 'site','serviceClass', 'slice_url', 'max_slivers')
-    list_display_links = ('backend_status_icon', 'slicename', )
+    list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
+    list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
     user_readonly_fields = fieldList
@@ -747,21 +720,34 @@ class SliceAdmin(PlanetStackBaseAdmin):
     )
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        #deployment_nodes = {}
-        #for node in Node.objects.all():
-        #    deployment_nodes[node.deployment.id] = get(deployment_nodes, node.deployment.id, []).append( (node.id, node.name) )
-
         deployment_nodes = []
         for node in Node.objects.all():
             deployment_nodes.append( (node.deployment.id, node.id, node.name) )
 
-        context["deployment_nodes"] = deployment_nodes
+        deployment_flavors = []
+        for flavor in Flavor.objects.all():
+            for deployment in flavor.deployments.all():
+                deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
 
+        deployment_images = []
+        for image in Image.objects.all():
+            for imageDeployment in image.imagedeployments_set.all():
+                deployment_images.append( (imageDeployment.deployment.id, image.id, image.name) )
+
+        site_login_bases = []
+        for site in Site.objects.all():
+            site_login_bases.append((site.id, site.login_base))
+
+        context["deployment_nodes"] = deployment_nodes
+        context["deployment_flavors"] = deployment_flavors
+        context["deployment_images"] = deployment_images
+        context["site_login_bases"] = site_login_bases
         return super(SliceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['widget'] = forms.Select(attrs={'onChange': "update_slice_prefix(this, $($(this).closest('fieldset')[0]).find('.field-name input')[0].id)"})
 
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -882,10 +868,10 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deploymentNetwork']
     list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),
@@ -894,7 +880,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
 
     inlines = [TagInline]
 
-    user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'numberCores', 'image']
+    user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -1332,6 +1318,12 @@ class NetworkTemplateAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
     user_readonly_inlines = []
 
+class FlavorAdmin(PlanetStackBaseAdmin):
+    list_display = ("backend_status_icon", "name", "flavor", "order", "default")
+    list_display_links = ("backend_status_icon", "name")
+    user_readonly_fields = ("name", "flavor")
+    fields = ("name", "description", "flavor", "order", "default")
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -1450,7 +1442,6 @@ class AccountAdmin(admin.ModelAdmin):
     dollar_total_invoices = dollar_field("total_invoices", "Total Invoices")
     dollar_total_payments = dollar_field("total_payments", "Total Payments")
 
-
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
@@ -1493,4 +1484,5 @@ if True:
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)
+    admin.site.register(Flavor, FlavorAdmin)
 
