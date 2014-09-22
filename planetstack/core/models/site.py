@@ -5,6 +5,9 @@ from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
 from core.acl import AccessControlList
+from planetstack.config import Config
+
+config = Config()
 
 class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
