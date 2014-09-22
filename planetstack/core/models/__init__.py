@@ -1,5 +1,5 @@
 from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
-from .deployment import DeploymentLinkManager,DeploymentLinkDeletionManager
+from .site import DeploymentLinkManager,DeploymentLinkDeletionManager
 from .project import Project
 from .singletonmodel import SingletonModel
 from .service import Service
