@@ -3,6 +3,7 @@ from django.db import models
 from core.models import PlCoreBase
 from core.models import User,Site,Slice,Deployment
 from encrypted_fields import EncryptedCharField
+from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 
 class UserCredential(PlCoreBase):
     user = models.ForeignKey(User, related_name='credentials', help_text="The User this credential is associated with")
@@ -38,6 +39,8 @@ class SliceCredential(PlCoreBase):
         return self.name
 
 class DeploymentCredential(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
     deployment = models.ForeignKey(Deployment, related_name='credentials', help_text="The User this credential is associated with")
 
     name = models.SlugField(help_text="The credential type, e.g. ec2", max_length=128)
