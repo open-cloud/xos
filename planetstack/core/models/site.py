@@ -195,6 +195,8 @@ class DeploymentRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class DeploymentPrivilege(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
 
     user = models.ForeignKey('User', related_name='deployment_privileges')
     deployment = models.ForeignKey('Deployment', related_name='deployment_privileges')
