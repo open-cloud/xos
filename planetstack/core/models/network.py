@@ -2,6 +2,7 @@ import os
 import socket
 from django.db import models
 from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
+from core.models import DeploymentLinkManager,DeploymentLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
@@ -114,6 +115,9 @@ class Network(PlCoreBase):
         return qs
 
 class NetworkDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     # Stores the openstack ids at various deployments
     network = models.ForeignKey(Network)
     deployment = models.ForeignKey(Deployment)
