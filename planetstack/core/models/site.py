@@ -13,10 +13,16 @@ config = Config()
 class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
         parent=super(DeploymentLinkDeletionManager, self)
-        if hasattr(parent, "get_queryset"):
-            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+        if (backend_type):
+            return parent_queryset.filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
         else:
-            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+            return parent_queryset
 
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
@@ -26,10 +32,18 @@ class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
 class DeploymentDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
         parent=super(DeploymentDeletionManager, self)
-        if hasattr(parent, "get_queryset"):
-            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+
+        if backend_type:
+            return parent_queryset.filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
         else:
-            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+            return parent_queryset
 
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
@@ -38,10 +52,18 @@ class DeploymentDeletionManager(PlCoreBaseDeletionManager):
 class DeploymentLinkManager(PlCoreBaseManager):
     def get_queryset(self):
         parent=super(DeploymentLinkManager, self)
-        if hasattr(parent, "get_queryset"):
-            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+
+        if backend_type:
+            return parent_queryset.filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
         else:
-            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+            return parent_queryset
 
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
@@ -51,10 +73,18 @@ class DeploymentLinkManager(PlCoreBaseManager):
 class DeploymentManager(PlCoreBaseManager):
     def get_queryset(self):
         parent=super(DeploymentManager, self)
-        if hasattr(parent, "get_queryset"):
-            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+
+        if backend_type:
+            return parent_queryset.filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
         else:
-            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+            return parent_queryset.filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
 
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
