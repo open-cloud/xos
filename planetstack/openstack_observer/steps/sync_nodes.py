@@ -38,12 +38,11 @@ class SyncNodes(OpenStackSyncStep):
                 continue
 
             for compute_node in compute_nodes:
-                hostname = compute_node.hypervisor_hostname.lower()
-                if hostname not in node_hostnames:
+                if compute_node.hypervisor_hostname not in node_hostnames:
                     # XX TODO:figure out how to correctly identify a node's site.
                     # XX pick a random site to add the node to for now
                     site_index = random.randint(0, len(sites))
-                    node = Node(name=hostname,
+                    node = Node(name=compute_node.hypervisor_hostname,
                                 site=sites[site_index], deployment=deployment)
                     new_nodes.append(node)
 
