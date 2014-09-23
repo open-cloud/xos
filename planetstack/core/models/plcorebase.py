@@ -98,25 +98,31 @@ class PlCoreBase(models.Model):
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         purge = kwds.get('purge',False)
+        silent = kwds.get('silent',False)
         try:
             purge = purge or observer_disabled
         except NameError:
             pass
-            
+
         if (purge):
             del kwds['purge']
             super(PlCoreBase, self).delete(*args, **kwds)
         else:
             self.deleted = True
             self.enacted=None
-            self.save(update_fields=['enacted','deleted'])
-
+            self.save(update_fields=['enacted','deleted'], silent=silent)
 
     def save(self, *args, **kwargs):
+        if "silent" in kwargs:
+            silent=kwargs.pop("silent")
+        else:
+            silent=False
+
         super(PlCoreBase, self).save(*args, **kwargs)
 
         # This is a no-op if observer_disabled is set
-        notify_observer()
+        if not silent:
+            notify_observer()
 
         self.__initial = self._dict
 
