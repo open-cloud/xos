@@ -5,7 +5,7 @@ from core.models import Site
 from core.models.site import SitePrivilege
 from core.models import User
 from core.models import Role
-from core.models import Deployment
+from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 from core.models import ServiceClass
 from core.models.serviceclass import get_default_serviceclass
 from core.models import Tag
@@ -113,6 +113,9 @@ class SlicePrivilege(PlCoreBase):
         return qs
 
 class SliceDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     slice = models.ForeignKey(Slice)
     deployment = models.ForeignKey(Deployment)
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")

@@ -1,10 +1,64 @@
 import os
 from django.db import models
-from core.models import PlCoreBase
+from django.db.models import Q
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
 from core.acl import AccessControlList
+from planetstack.config import Config
+
+config = Config()
+
+class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
+    def get_queryset(self):
+        parent=super(DeploymentLinkDeletionManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
+
+class DeploymentDeletionManager(PlCoreBaseDeletionManager):
+    def get_queryset(self):
+        parent=super(DeploymentDeletionManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
+class DeploymentLinkManager(PlCoreBaseManager):
+    def get_queryset(self):
+        parent=super(DeploymentLinkManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(deployment__backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
+
+class DeploymentManager(PlCoreBaseManager):
+    def get_queryset(self):
+        parent=super(DeploymentManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+        else:
+            return parent.get_queryset().filter(Q(backend_type=config.observer_backend_type)|Q(backend_type=None))
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
 
 class Site(PlCoreBase):
     """
@@ -82,11 +136,14 @@ class SitePrivilege(PlCoreBase):
         return qs
 
 class Deployment(PlCoreBase):
+    objects = DeploymentManager()
+    deleted_objects = DeploymentDeletionManager()
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
     admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
     auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
+    backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
 
     # smbaker: the default of 'allow all' is intended for evolutions of existing
     #    deployments. When new deployments are created via the GUI, they are
@@ -133,6 +190,8 @@ class Deployment(PlCoreBase):
         return Deployment.objects.all()
 
 class DeploymentRole(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
 
     ROLE_CHOICES = (('admin','Admin'),)
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
@@ -140,6 +199,8 @@ class DeploymentRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class DeploymentPrivilege(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
 
     user = models.ForeignKey('User', related_name='deployment_privileges')
     deployment = models.ForeignKey('Deployment', related_name='deployment_privileges')
@@ -168,6 +229,9 @@ class DeploymentPrivilege(PlCoreBase):
         return qs 
 
 class SiteDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+
     site = models.ForeignKey(Site)
     deployment = models.ForeignKey(Deployment)
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
