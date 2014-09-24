@@ -24,6 +24,23 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
+    def fetch_pending(self, deleted):
+        self.sanity_check()
+
+        return SyncStep.fetch_pending(self, deleted)
+
+    def sanity_check(self):
+        # sanity check to make sure our PS objects have CMI objects behind them
+        all_ors_ids = [x["origin_server_id"] for x in self.client.onev.ListAll("OriginServer")]
+        for ors in OriginServer.objects.all():
+            if (ors.origin_server_id is not None) and (ors.origin_server_id not in all_ors_ids):
+                # we have an origin server ID, but it doesn't exist in the CMI
+                # something went wrong
+                # start over
+                logger.info("origin server %s was not found on CMI" % ors.origin_server_id)
+                ors.origin_server_id=None
+                ors.save()
+
     def sync_record(self, ors):
         logger.info("sync'ing origin server %s" % str(ors))
 
