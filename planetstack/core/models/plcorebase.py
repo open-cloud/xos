@@ -69,6 +69,7 @@ class PlCoreBase(models.Model):
     def __init__(self, *args, **kwargs):
         super(PlCoreBase, self).__init__(*args, **kwargs)
         self.__initial = self._dict
+        self.silent = False
 
     @property
     def diff(self):
@@ -113,10 +114,10 @@ class PlCoreBase(models.Model):
             self.save(update_fields=['enacted','deleted'], silent=silent)
 
     def save(self, *args, **kwargs):
+        # let the user specify silence as either a kwarg or an instance varible
+        silent = self.silent
         if "silent" in kwargs:
-            silent=kwargs.pop("silent")
-        else:
-            silent=False
+            silent=silent or kwargs.pop("silent")
 
         super(PlCoreBase, self).save(*args, **kwargs)
 
