@@ -62,5 +62,6 @@ class SyncContentProvider(SyncStep, HpcLibrary):
         cp.save()
 
     def delete_record(self, m):
-        self.client.onev.Delete("ContentProvider", m.content_provider_id)
+        if m.content_provider_id is not None:
+            self.client.onev.Delete("ContentProvider", m.content_provider_id)
 

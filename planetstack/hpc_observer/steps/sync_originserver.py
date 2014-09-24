@@ -69,7 +69,9 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         url = url[7:]
         self.client.cob.UpdateContent(ors.origin_server_id, {"url": url})
 
+        ors.silent = True
         ors.save()
 
-    def delete(self, m):
-        self.client.onev.Delete("OriginServer", m.origin_server_id)
+    def delete_record(self, m):
+        if m.origin_server_id is not None:
+            self.client.onev.Delete("OriginServer", m.origin_server_id)
