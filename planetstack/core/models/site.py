@@ -84,7 +84,7 @@ class DeploymentManager(PlCoreBaseManager):
         if backend_type:
             return parent_queryset.filter(Q(backend_type=backend_type)|Q(backend_type=None))
         else:
-            return parent_queryset.filter(Q(backend_type=backend_type)|Q(backend_type=None))
+            return parent_queryset
 
     # deprecated in django 1.7 in favor of get_queryset().
     def get_query_set(self):
