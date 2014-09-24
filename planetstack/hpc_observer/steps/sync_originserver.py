@@ -62,7 +62,7 @@ class SyncOriginServer(SyncStep, HpcLibrary):
             id = self.client.onev.Create("OriginServer", ors_dict)
             ors.origin_server_id = id
         else:
-            id = self.client.onev.Update("OriginServer", ors.origin_server_id, ors_dict)
+            self.client.onev.Update("OriginServer", ors.origin_server_id, ors_dict)
 
         # ... something breaks (analytics) if the URL starts with http://, so we
         # change it in cob after we added it via onev.
