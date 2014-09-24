@@ -52,5 +52,5 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
         sp.save()
 
     def delete_record(self, m):
-        print "XXX delete service provider", m
-        self.client.onev.Delete("ServiceProvider", m.service_provider_id)
+        if m.service_provider_id is not None:
+            self.client.onev.Delete("ServiceProvider", m.service_provider_id)

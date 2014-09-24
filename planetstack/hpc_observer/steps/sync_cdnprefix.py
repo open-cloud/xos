@@ -62,4 +62,5 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         cp.save()
 
     def delete_record(self, m):
-        self.client.onev.Delete("CDNPrefix", m.cdn_prefix_id)
+        if m.cdn_prefix_id is not None:
+            self.client.onev.Delete("CDNPrefix", m.cdn_prefix_id)
