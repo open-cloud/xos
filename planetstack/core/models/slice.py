@@ -42,7 +42,8 @@ class Slice(PlCoreBase):
     def save(self, *args, **kwds):
         
         site = Site.objects.get(id=self.site.id)
-        if not self.name.startswith(site.login_base):
+        # allow preexisting slices to keep their original name for now
+        if not self.id and not self.name.startswith(site.login_base):
             raise ValidationError('slice name must begin with %s' % site.login_base)
         
         if self.serviceClass is None:
