@@ -73,7 +73,7 @@ class SyncUserDeployments(OpenStackSyncStep):
         user_deployment.save()
 
     def delete_record(self, user_deployment):
-        if user_deployment.user.kuser_id:
+        if user_deployment.kuser_id:
             driver = self.driver.admin_driver(deployment=user_deployment.deployment.name)
-            driver.delete_user(user_deployment.user.kuser_id)
+            driver.delete_user(user_deployment.kuser_id)
 
