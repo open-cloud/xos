@@ -7,7 +7,7 @@ import subprocess
 import StringIO
 
 if len(sys.argv)<3:
-    print >> sys.stderr, "syntax: copy-opencloud <srcfn> <desthost:destfn>"
+    print >> sys.stderr, "syntax: diff-opencloud <localfn> <remotehost:remotefn>"
     sys.exit(-1)
 
 srcfn = sys.argv[1]
@@ -22,16 +22,19 @@ if not ":" in dest:
 if destfn.endswith("/"):
     destfn = destfn + os.path.basename(srcfn)
 
-enctext = base64.b64encode(open(srcfn).read())
-#script = 'sudo bash -C "base64 -d -i > %s <<EOF\n%s\nEOF\n"' % (destfn, enctext)
-script = 'base64 -d -i > %s <<EOF\n%s\nEOF\n' % (destfn, enctext) 
-
+script = 'echo START; base64 %s' % destfn
 
 file("/tmp/script","w").write(script)
 
 p = subprocess.Popen(["ssh", "-A", hostname], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-print p.communicate(input=script)[0]
+enctext = p.communicate(input=script)[0]
 
+enctext = enctext.split("START")[1]
+
+text = base64.b64decode(enctext)
+
+file("/tmp/diff-src","w").write(text)
+os.system("diff /tmp/diff-src %s" % srcfn)
 
 """
 SRCPATHNAME=$1
