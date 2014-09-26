@@ -26,8 +26,14 @@ script = 'echo START; base64 %s' % destfn
 
 file("/tmp/script","w").write(script)
 
-p = subprocess.Popen(["ssh", "-A", hostname], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-enctext = p.communicate(input=script)[0]
+p = subprocess.Popen(["ssh", "-A", hostname], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+(enctext,stderr) = p.communicate(input=script)
+
+if stderr:
+    print >> sys.stderr, stderr
+
+if "No such file" in stderr:
+    sys.exit(-1)
 
 enctext = enctext.split("START")[1]
 
