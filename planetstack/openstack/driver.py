@@ -417,7 +417,7 @@ class OpenStackDriver:
 
         return (subnet_id, subnet)
 
-    def spawn_instance(self, name, key_name=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None, flavor_name=None):
+    def spawn_instance(self, name, key_name=None, availability_zone=None, hostname=None, image_id=None, security_group=None, pubkeys=[], nics=None, metadata=None, userdata=None, flavor_name=None):
         if not flavor_name:
             flavor_name = self.config.nova_default_flavor
 
@@ -430,9 +430,16 @@ class OpenStackDriver:
         #if pubkeys:
         #    files["/root/.ssh/authorized_keys"] = "\n".join(pubkeys).encode('base64')
         hints = {}
-        availability_zone = None
+        
+        # determine availability zone and compute host 
+        availability_zone_filter = None
+        if not availability_zone:
+            availability_zone_filter = 'nova'
+        else: 
+            availability_zone_filter = availability_zone
         if hostname:
-            availability_zone = 'nova:%s' % hostname.split('.')[0]
+            availability_zone_filter += ':%s' % hostname.split('.')[0]
+
         server = self.shell.nova.servers.create(
                                             name=name,
                                             key_name = key_name,
@@ -441,7 +448,7 @@ class OpenStackDriver:
                                             security_group = security_group,
                                             #files = files,
                                             scheduler_hints=hints,
-                                            availability_zone=availability_zone,
+                                            availability_zone=availability_zone_filter,
                                             nics=nics,
                                             networks=nics,
                                             meta=metadata,
