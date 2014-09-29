@@ -535,7 +535,7 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'flavors', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
@@ -699,6 +699,15 @@ class SliceForm(forms.ModelForm):
         widgets = {
             'service': LinkedSelect
         }
+
+    def clean(self):
+        cleaned_data = super(SliceForm, self).clean()
+        name = cleaned_data.get('name')
+        site_id = cleaned_data.get('site')
+        site = Slice.objects.get(id=site_id)
+        if not name.startswith(site.login_base):
+            raise forms.ValidationError('slice name must begin with %s' % site.login_base)
+        return cleaned_data
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm

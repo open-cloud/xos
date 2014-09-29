@@ -174,6 +174,7 @@ class Deployment(PlCoreBase):
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
     auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
     backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
+    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     # smbaker: the default of 'allow all' is intended for evolutions of existing
     #    deployments. When new deployments are created via the GUI, they are
