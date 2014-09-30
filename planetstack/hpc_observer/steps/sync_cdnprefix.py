@@ -25,11 +25,14 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         HpcLibrary.__init__(self)
 
     def fetch_pending(self, deleted):
-        self.sanity_check()
+        #self.consistency_check()
 
         return SyncStep.fetch_pending(self, deleted)
 
-    def sanity_check(self):
+    def consistency_check(self):
+        # set to true if something changed
+        result=False
+
         # sanity check to make sure our PS objects have CMI objects behind them
         all_p_ids = [x["cdn_prefix_id"] for x in self.client.onev.ListAll("CDNPrefix")]
 
@@ -48,10 +51,14 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
                 logger.info("CDN Prefix %s was not found on CMI" % p.cdn_prefix_id)
                 p.cdn_prefix_id=None
                 p.save()
+                result = True
 
             if (p.defaultOriginServer!=None) and (all_origins.get(p.cdn_prefix_id,None) != p.defaultOriginServer.url):
                 logger.info("CDN Prefix %s does not have default origin server on CMI" % str(p))
-                p.save() # this will set updated>enacted and force run
+                p.save() # this will set updated>enacted and force observer to re-sync
+                result = True
+
+        return result
 
     def sync_record(self, cp):
         logger.info("sync'ing cdn prefix %s" % str(cp))
