@@ -1,6 +1,7 @@
 import os
 import sys
 import base64
+
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.syncstep import SyncStep
@@ -25,11 +26,14 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         HpcLibrary.__init__(self)
 
     def fetch_pending(self, deleted):
-        self.sanity_check()
+        #self.consistency_check()
 
         return SyncStep.fetch_pending(self, deleted)
 
-    def sanity_check(self):
+    def consistency_check(self):
+        # set to true if something changed
+        result=False
+
         # sanity check to make sure our PS objects have CMI objects behind them
         all_ors_ids = [x["origin_server_id"] for x in self.client.onev.ListAll("OriginServer")]
         for ors in OriginServer.objects.all():
@@ -40,6 +44,9 @@ class SyncOriginServer(SyncStep, HpcLibrary):
                 logger.info("origin server %s was not found on CMI" % ors.origin_server_id)
                 ors.origin_server_id=None
                 ors.save()
+                result = True
+
+        return result
 
     def sync_record(self, ors):
         logger.info("sync'ing origin server %s" % str(ors))
