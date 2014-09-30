@@ -5,13 +5,13 @@ from core.models import *
 import model_policies
 
 @receiver(post_save)
-def post_save_handler(sender, **kwargs):
+def post_save_handler(sender, instance, **kwargs):
 	sender_name = sender.__name__
 	policy_name = 'model_policy_%s'%sender_name
 	
 	if (not kwargs['update_fields']):
 		try:
 			policy_handler = getattr(model_policies, policy_name)
-			policy_handler.handle(sender)
+			policy_handler.handle(instance)
 		except:
 			pass
