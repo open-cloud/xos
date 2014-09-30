@@ -25,11 +25,14 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
         HpcLibrary.__init__(self)
 
     def fetch_pending(self, deleted):
-        self.sanity_check()
+        #self.consistency_check()
 
         return SyncStep.fetch_pending(self, deleted)
 
-    def sanity_check(self):
+    def consistency_check(self):
+        # set to true if something changed
+        result=False
+
         # sanity check to make sure our PS objects have CMI objects behind them
         all_sp_ids = [x["service_provider_id"] for x in self.client.onev.ListAll("ServiceProvider")]
         for sp in ServiceProvider.objects.all():
@@ -37,11 +40,13 @@ class SyncServiceProvider(SyncStep, HpcLibrary):
                 logger.info("Service provider %s was not found on CMI" % sp.service_provider_id)
                 sp.service_provider_id=None
                 sp.save()
+                result = True
+
+        return result
 
     def sync_record(self, sp):
         logger.info("sync'ing service provider %s" % str(sp))
         account_name = self.make_account_name(sp.name)
-        print "XXX", sp.name, account_name
         sp_dict = {"account": account_name, "name": sp.name, "enabled": sp.enabled}
         if not sp.service_provider_id:
             id = self.client.onev.Create("ServiceProvider", sp_dict)
