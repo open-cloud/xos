@@ -419,6 +419,24 @@ class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
         instances = formset.save(commit=False)
         for instance in instances:
             instance.save_by_user(request.user)
+
+        # BUG in django 1.7? Objects are not deleted by formset.save if
+        # commit is False. So let's delete them ourselves.
+        #
+        # code from forms/models.py save_existing_objects()
+        try:
+            forms_to_delete = formset.deleted_forms
+        except AttributeError:
+            forms_to_delete = []
+        if formset.initial_forms:
+            for form in formset.initial_forms:
+                obj = form.instance
+                if form in forms_to_delete:
+                    if obj.pk is None:
+                        continue
+                    formset.deleted_objects.append(obj)
+                    obj.delete()
+
         formset.save_m2m()
 
 class SliceRoleAdmin(PlanetStackBaseAdmin):
