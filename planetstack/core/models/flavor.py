@@ -19,10 +19,6 @@ class Flavor(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    @staticmethod
-    def select_by_user(user):
-        return Flavor.objects.all()
-
 """ FlavorParameterType and FlavorParameter are below for completeness sake,
     waiting for the day we might want to add parameters to flavors.
 
