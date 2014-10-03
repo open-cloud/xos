@@ -8,13 +8,21 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.forms import ReadOnlyPasswordHashField, AdminPasswordChangeForm
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
+
+# this block of stuff is needed for UserAdmin
+from django.db import transaction
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+csrf_protect_m = method_decorator(csrf_protect)
+sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 import django_evolution
 
@@ -43,7 +51,8 @@ class PlainTextWidget(forms.HiddenInput):
             value = ''
         return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
 
-class ReadOnlyAwareAdmin(admin.ModelAdmin):
+class PermissionCheckingAdmin(admin.ModelAdmin):
+    # call save_by_user and delete_by_user instead of save and delete
 
     def has_add_permission(self, request, obj=None):
         return (not self.__user_is_readonly(request))
@@ -53,13 +62,42 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if self.__user_is_readonly(request):
+            # this 'if' might be redundant if save_by_user is implemented right
             raise PermissionDenied
-            #pass
-        else:
-            return super(ReadOnlyAwareAdmin, self).save_model(request, obj, form, change)
+
+        obj.caller = request.user
+        # update openstack connection to use this site/tenant
+        obj.save_by_user(request.user)
+
+    def delete_model(self, request, obj):
+        obj.delete_by_user(request.user)
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.save_by_user(request.user)
+
+        # BUG in django 1.7? Objects are not deleted by formset.save if
+        # commit is False. So let's delete them ourselves.
+        #
+        # code from forms/models.py save_existing_objects()
+        try:
+            forms_to_delete = formset.deleted_forms
+        except AttributeError:
+            forms_to_delete = []
+        if formset.initial_forms:
+            for form in formset.initial_forms:
+                obj = form.instance
+                if form in forms_to_delete:
+                    if obj.pk is None:
+                        continue
+                    formset.deleted_objects.append(obj)
+                    obj.delete()
+
+        formset.save_m2m()
 
     def get_actions(self,request):
-        actions = super(ReadOnlyAwareAdmin,self).get_actions(request)
+        actions = super(PermissionCheckingAdmin,self).get_actions(request)
 
         if self.__user_is_readonly(request):
             if 'delete_selected' in actions:
@@ -85,13 +123,13 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
                 self.inlines = self.inlines_save
 
         try:
-            return super(ReadOnlyAwareAdmin, self).change_view(request, object_id, extra_context=extra_context)
+            return super(PermissionCheckingAdmin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
             pass
         if request.method == 'POST':
             raise PermissionDenied
         request.readonly = True
-        return super(ReadOnlyAwareAdmin, self).change_view(request, object_id, extra_context=extra_context)
+        return super(PermissionCheckingAdmin, self).change_view(request, object_id, extra_context=extra_context)
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
@@ -103,6 +141,11 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
         return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
 
+class ReadOnlyAwareAdmin(PermissionCheckingAdmin):
+    pass
+
+class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
+    save_on_top = False
 
 class SingletonAdmin (ReadOnlyAwareAdmin):
     def has_add_permission(self, request):
@@ -114,7 +157,6 @@ class SingletonAdmin (ReadOnlyAwareAdmin):
             return False
         else:
             return True
-
 
 class PlStackTabularInline(admin.TabularInline):
     def __init__(self, *args, **kwargs):
@@ -403,41 +445,6 @@ class ImageDeploymentsInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-imagedeployments'
     fields = ['backend_status_icon', 'image', 'deployment', 'glance_image_id']
     readonly_fields = ['backend_status_icon', 'glance_image_id']
-
-class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
-    save_on_top = False
-
-    def save_model(self, request, obj, form, change):
-        obj.caller = request.user
-        # update openstack connection to use this site/tenant
-        obj.save_by_user(request.user)
-
-    def delete_model(self, request, obj):
-        obj.delete_by_user(request.user)
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.save_by_user(request.user)
-
-        # BUG in django 1.7? Objects are not deleted by formset.save if
-        # commit is False. So let's delete them ourselves.
-        #
-        # code from forms/models.py save_existing_objects()
-        try:
-            forms_to_delete = formset.deleted_forms
-        except AttributeError:
-            forms_to_delete = []
-        if formset.initial_forms:
-            for form in formset.initial_forms:
-                obj = form.instance
-                if form in forms_to_delete:
-                    if obj.pk is None:
-                        continue
-                    formset.deleted_objects.append(obj)
-                    obj.delete()
-
-        formset.save_m2m()
 
 class SliceRoleAdmin(PlanetStackBaseAdmin):
     model = SliceRole
@@ -1004,13 +1011,17 @@ class UserDashboardViewInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-dashboards'
     fields = ['user', 'dashboardView', 'order']
 
-class UserAdmin(UserAdmin):
+class UserAdmin(PlanetStackBaseAdmin):
     class Meta:
         app_label = "core"
+
+    add_form_template = 'admin/auth/user/add_form.html'
+    change_user_password_template = None
 
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
@@ -1019,7 +1030,7 @@ class UserAdmin(UserAdmin):
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline,UserDashboardViewInline]
 
-    fieldListLoginDetails = ['email','site','password','is_active','is_readonly','is_admin','public_key']
+    fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
@@ -1054,61 +1065,135 @@ class UserAdmin(UserAdmin):
 
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def has_add_permission(self, request, obj=None):
-        return (not self.__user_is_readonly(request))
-
-    def has_delete_permission(self, request, obj=None):
-        return (not self.__user_is_readonly(request))
-
-    def get_actions(self,request):
-        actions = super(UserAdmin,self).get_actions(request)
-
-        if self.__user_is_readonly(request):
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-
-        return actions
-
-    def change_view(self,request,object_id, extra_context=None):
-
-        if self.__user_is_readonly(request):
-            if not hasattr(self, "readonly_save"):
-                # save the original readonly fields
-                self.readonly_save = self.readonly_fields
-                self.inlines_save = self.inlines
-            if hasattr(self, "user_readonly_fields"):
-                self.readonly_fields=self.user_readonly_fields
-            if hasattr(self, "user_readonly_inlines"):
-                self.inlines = self.user_readonly_inlines
-        else:
-            if hasattr(self, "readonly_save"):
-                # restore the original readonly fields
-                self.readonly_fields = self.readonly_save
-                self.inlines = self.inlines_save
-
-        try:
-            return super(UserAdmin, self).change_view(request, object_id, extra_context=extra_context)
-        except PermissionDenied:
-            pass
-        if request.method == 'POST':
-            raise PermissionDenied
-        request.readonly = True
-        return super(UserAdmin, self).change_view(request, object_id, extra_context=extra_context)
-
-    def __user_is_readonly(self, request):
-        #groups = [x.name for x in request.user.groups.all() ]
-        #return "readonly" in groups
-        return request.user.isReadOnlyUser()
-
     def queryset(self, request):
         return User.select_by_user(request.user)
 
-    def backend_status_text(self, obj):
-        return mark_safe(backend_text(obj))
+    # ------------------------------------------------------------------------
+    # stuff copied from ModelAdmin.UserAdmin
+    # ------------------------------------------------------------------------
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return super(UserAdmin, self).get_fieldsets(request, obj)
 
-    def backend_status_icon(self, obj):
-        return mark_safe(backend_icon(obj))
-    backend_status_icon.short_description = ""
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Use special form during user creation
+        """
+        defaults = {}
+        if obj is None:
+            defaults['form'] = self.add_form
+        defaults.update(kwargs)
+        return super(UserAdmin, self).get_form(request, obj, **defaults)
+
+    def get_urls(self):
+        from django.conf.urls import patterns
+        return patterns('',
+            (r'^(\d+)/password/$',
+             self.admin_site.admin_view(self.user_change_password))
+        ) + super(UserAdmin, self).get_urls()
+
+    def lookup_allowed(self, lookup, value):
+        # See #20078: we don't want to allow any lookups involving passwords.
+        if lookup.startswith('password'):
+            return False
+        return super(UserAdmin, self).lookup_allowed(lookup, value)
+
+    @sensitive_post_parameters_m
+    @csrf_protect_m
+    @transaction.atomic
+    def add_view(self, request, form_url='', extra_context=None):
+        # It's an error for a user to have add permission but NOT change
+        # permission for users. If we allowed such users to add users, they
+        # could create superusers, which would mean they would essentially have
+        # the permission to change users. To avoid the problem entirely, we
+        # disallow users from adding users if they don't have change
+        # permission.
+        if not self.has_change_permission(request):
+            if self.has_add_permission(request) and settings.DEBUG:
+                # Raise Http404 in debug mode so that the user gets a helpful
+                # error message.
+                raise Http404(
+                    'Your user does not have the "Change user" permission. In '
+                    'order to add users, Django requires that your user '
+                    'account have both the "Add user" and "Change user" '
+                    'permissions set.')
+            raise PermissionDenied
+        if extra_context is None:
+            extra_context = {}
+        username_field = self.model._meta.get_field(self.model.USERNAME_FIELD)
+        defaults = {
+            'auto_populated_fields': (),
+            'username_help_text': username_field.help_text,
+        }
+        extra_context.update(defaults)
+        return super(UserAdmin, self).add_view(request, form_url,
+                                               extra_context)
+
+    @sensitive_post_parameters_m
+    def user_change_password(self, request, id, form_url=''):
+        if not self.has_change_permission(request):
+            raise PermissionDenied
+        user = get_object_or_404(self.get_queryset(request), pk=id)
+        if request.method == 'POST':
+            form = self.change_password_form(user, request.POST)
+            if form.is_valid():
+                form.save()
+                change_message = self.construct_change_message(request, form, None)
+                self.log_change(request, user, change_message)
+                msg = ugettext('Password changed successfully.')
+                messages.success(request, msg)
+                update_session_auth_hash(request, form.user)
+                return HttpResponseRedirect('..')
+        else:
+            form = self.change_password_form(user)
+
+        fieldsets = [(None, {'fields': list(form.base_fields)})]
+        adminForm = admin.helpers.AdminForm(form, fieldsets, {})
+
+        context = {
+            'title': _('Change password: %s') % escape(user.get_username()),
+            'adminForm': adminForm,
+            'form_url': form_url,
+            'form': form,
+            'is_popup': (IS_POPUP_VAR in request.POST or
+                         IS_POPUP_VAR in request.GET),
+            'add': True,
+            'change': False,
+            'has_delete_permission': False,
+            'has_change_permission': True,
+            'has_absolute_url': False,
+            'opts': self.model._meta,
+            'original': user,
+            'save_as': False,
+            'show_save': True,
+        }
+        context.update(admin.site.each_context())
+        return TemplateResponse(request,
+            self.change_user_password_template or
+            'admin/auth/user/change_password.html',
+            context, current_app=self.admin_site.name)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        """
+        Determines the HttpResponse for the add_view stage. It mostly defers to
+        its superclass implementation but is customized because the User model
+        has a slightly different workflow.
+        """
+        # We should allow further modification of the user just added i.e. the
+        # 'Save' button should behave like the 'Save and continue editing'
+        # button except in two scenarios:
+        # * The user has pressed the 'Save and add another' button
+        # * We are adding a user in a popup
+        if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
+            request.POST['_continue'] = 1
+        return super(UserAdmin, self).response_add(request, obj,
+                                                   post_url_continue)
+
+    # ------------------------------------------------------------------------
+    # end stuff copied from ModelAdmin.UserAdmin
+    # ------------------------------------------------------------------------
+
 
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',

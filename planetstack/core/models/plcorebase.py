@@ -48,7 +48,43 @@ class PlCoreBaseManager(models.Manager):
     def get_query_set(self):
         return self.get_queryset()
 
-class PlCoreBase(models.Model):
+class DiffModelMixIn:
+    # Provides useful methods for computing which objects in a model have
+    # changed. Make sure to do self._initial = self._dict in the __init__
+    # method.
+
+    # This is broken out of PlCoreBase into a Mixin so the User model can
+    # also make use of it.
+
+    @property
+    def _dict(self):
+        return model_to_dict(self, fields=[field.name for field in
+                             self._meta.fields])
+
+    @property
+    def diff(self):
+        d1 = self._initial
+        d2 = self._dict
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        return dict(diffs)
+
+    @property
+    def has_changed(self):
+        return bool(self.diff)
+
+    @property
+    def changed_fields(self):
+        return self.diff.keys()
+
+    @property
+    def has_field_changed(self, field_name):
+        return field_name in self.diff.keys()
+
+    def get_field_diff(self, field_name):
+        return self.diff.get(field_name, None)
+
+
+class PlCoreBase(models.Model, DiffModelMixIn):
     objects = PlCoreBaseManager()
     deleted_objects = PlCoreBaseDeletionManager()
 
@@ -69,26 +105,8 @@ class PlCoreBase(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(PlCoreBase, self).__init__(*args, **kwargs)
-        self.__initial = self._dict
+        self._initial = self._dict # for DiffModelMixIn
         self.silent = False
-
-    @property
-    def diff(self):
-        d1 = self.__initial
-        d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
-        return dict(diffs)
-
-    @property
-    def has_changed(self):
-        return bool(self.diff)
-
-    @property
-    def changed_fields(self):
-        return self.diff.keys()
-
-    def get_field_diff(self, field_name):
-        return self.diff.get(field_name, None)
 
     def can_update(self, user):
         if user.is_readonly:
@@ -96,6 +114,11 @@ class PlCoreBase(models.Model):
         if user.is_admin:
             return True
         return False
+
+    def can_update_field(self, user, fieldName):
+        # Give us the opportunity to implement fine-grained permission checking.
+        # Default to True, and let can_update() permit or deny the whole object.
+        return True
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
@@ -131,6 +154,11 @@ class PlCoreBase(models.Model):
     def save_by_user(self, user, *args, **kwds):
         if not self.can_update(user):
             raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
+
+        for fieldName in self.changed_fields:
+            if not self.can_update_field(user, fieldName):
+                raise PermissionDenied("You do not have permission to update field %s in object %s" % (fieldName, self.__class__.__name__))
+
         self.save(*args, **kwds)
 
     def delete_by_user(self, user, *args, **kwds):
@@ -138,10 +166,6 @@ class PlCoreBase(models.Model):
             raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
         self.delete(*args, **kwds)
 
-    @property
-    def _dict(self):
-        return model_to_dict(self, fields=[field.name for field in
-                             self._meta.fields])
 
 
 

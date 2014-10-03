@@ -3,7 +3,7 @@ import datetime
 from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
-from core.models import PlCoreBase,Site, DashboardView
+from core.models import PlCoreBase,Site, DashboardView, DiffModelMixIn
 from core.models.site import Deployment
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
@@ -11,6 +11,7 @@ from operator import itemgetter, attrgetter
 from django.core.mail import EmailMultiAlternatives
 from core.middleware import get_request
 import model_policy
+from django.core.exceptions import PermissionDenied
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -55,7 +56,7 @@ class DeletedUserManager(UserManager):
     def get_query_set(self):
         return self.get_queryset()
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, DiffModelMixIn):
 
     class Meta:
         app_label = "core"
@@ -98,6 +99,10 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['firstname', 'lastname']
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        self._initial = self._dict # for DiffModelMixIn
 
     def isReadOnlyUser(self):
         return self.is_readonly
@@ -182,6 +187,8 @@ class User(AbstractBaseUser):
         self.username = self.email
         super(User, self).save(*args, **kwds)
 
+        self._initial = self._dict
+
     def send_temporary_password(self):
         password = User.objects.make_random_password()
         self.set_password(password)
@@ -192,6 +199,41 @@ class User(AbstractBaseUser):
         msg = EmailMultiAlternatives(subject,text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+
+    def can_update_field(self, user, fieldName):
+        from core.models import SitePrivilege
+        if (user.is_admin):
+            # admin can update anything
+            return True
+
+        # fields that a site PI can update
+        if fieldName in ["is_active", "is_readonly"]:
+            site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
+            for site_priv in site_privs:
+                if site_priv.role.role == 'pi':
+                    return True
+
+        # fields that a user cannot update in his/her own record
+        if fieldName in ["is_admin", "is_active", "site", "is_staff", "is_readonly"]:
+            return False
+
+        return True
+
+    def can_update(self, user):
+        from core.models import SitePrivilege
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        if (user.id == self.id):
+            return True
+        # site pis can update
+        site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
+        for site_priv in site_privs:
+            if site_priv.role.role == 'pi':
+                return True
+
+        return False
 
     @staticmethod
     def select_by_user(user):
@@ -207,6 +249,21 @@ class User(AbstractBaseUser):
             user_ids = [sp.user.id for sp in site_privs] + [user.id]
             qs = User.objects.filter(Q(site__in=sites) | Q(id__in=user_ids))
         return qs
+
+    def save_by_user(self, user, *args, **kwds):
+        if not self.can_update(user):
+            raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
+
+        for fieldName in self.changed_fields:
+            if not self.can_update_field(user, fieldName):
+                raise PermissionDenied("You do not have permission to update field %s in object %s" % (fieldName, self.__class__.__name__))
+
+        self.save(*args, **kwds)
+
+    def delete_by_user(self, user, *args, **kwds):
+        if not self.can_update(user):
+            raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
+        self.delete(*args, **kwds)
 
 class UserDashboardView(PlCoreBase):
      user = models.ForeignKey(User, related_name="dashboardViews")
