@@ -216,10 +216,6 @@ class Deployment(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    @staticmethod
-    def select_by_user(user):
-        return Deployment.objects.all()
-
 class DeploymentRole(PlCoreBase):
     #objects = DeploymentLinkManager()
     #deleted_objects = DeploymentLinkDeletionManager()
@@ -266,10 +262,6 @@ class SiteDeployments(PlCoreBase):
     site = models.ForeignKey(Site)
     deployment = models.ForeignKey(Deployment)
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
-
-    @staticmethod
-    def select_by_user(user):
-        return SiteDeployments.objects.all()
 
     #class Meta:
     #    db_table = 'core_site_deployments'

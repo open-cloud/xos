@@ -24,10 +24,6 @@ class NetworkTemplate(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    @staticmethod
-    def select_by_user(user):
-        return NetworkTemplate.objects.all()
-
 class Network(PlCoreBase):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)

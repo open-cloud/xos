@@ -149,7 +149,7 @@ class PlCoreBase(models.Model, DiffModelMixIn):
         if not silent:
             notify_observer()
 
-        self.__initial = self._dict
+        self._initial = self._dict
 
     def save_by_user(self, user, *args, **kwds):
         if not self.can_update(user):
@@ -165,6 +165,12 @@ class PlCoreBase(models.Model, DiffModelMixIn):
         if not self.can_update(user):
             raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
         self.delete(*args, **kwds)
+
+    @classmethod
+    def select_by_user(cls, user):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.all()
 
 
 
