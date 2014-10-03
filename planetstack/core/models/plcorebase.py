@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
 import model_policy
 
 try:
@@ -128,12 +129,14 @@ class PlCoreBase(models.Model):
         self.__initial = self._dict
 
     def save_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            self.save(*args, **kwds)
+        if not self.can_update(user):
+            raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
+        self.save(*args, **kwds)
 
     def delete_by_user(self, user, *args, **kwds):
-        if self.can_update(user):
-            self.delete(*args, **kwds)
+        if not self.can_update(user):
+            raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
+        self.delete(*args, **kwds)
 
     @property
     def _dict(self):
