@@ -18,6 +18,7 @@ requires: tar
 requires: gcc
 requires: python-httplib2
 requires: GeoIP
+requires: wget
 
 %description
 %{summary}
