@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
+from rest_framework import status
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
@@ -33,10 +34,12 @@ def api_root(request, format=None):
 		'sliceroles': reverse('slicerole-list', request=request, format=format),
 		'tags': reverse('tag-list', request=request, format=format),
 		'invoices': reverse('invoice-list', request=request, format=format),
-		'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
 		'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
+		'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
 		'networkslivers': reverse('networksliver-list', request=request, format=format),
 		'networkdeploymentses': reverse('networkdeployments-list', request=request, format=format),
+		'flavors': reverse('flavor-list', request=request, format=format),
+		'projects': reverse('project-list', request=request, format=format),
 		'slices': reverse('slice-list', request=request, format=format),
 		'networks': reverse('network-list', request=request, format=format),
 		'services': reverse('service-list', request=request, format=format),
@@ -46,6 +49,7 @@ def api_root(request, format=None):
 		'roles': reverse('role-list', request=request, format=format),
 		'usableobjects': reverse('usableobject-list', request=request, format=format),
 		'siteroles': reverse('siterole-list', request=request, format=format),
+		'slicecredentials': reverse('slicecredential-list', request=request, format=format),
 		'slivers': reverse('sliver-list', request=request, format=format),
 		'nodes': reverse('node-list', request=request, format=format),
 		'dashboardviews': reverse('dashboardview-list', request=request, format=format),
@@ -63,10 +67,11 @@ def api_root(request, format=None):
 		'userdeploymentses': reverse('userdeployments-list', request=request, format=format),
 		'accounts': reverse('account-list', request=request, format=format),
 		'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
-		'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
+		'sitecredentials': reverse('sitecredential-list', request=request, format=format),
 		'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
 		'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
-		'projects': reverse('project-list', request=request, format=format),
+		'usercredentials': reverse('usercredential-list', request=request, format=format),
+		'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
 		'slicetags': reverse('slicetag-list', request=request, format=format),
 		'networktemplates': reverse('networktemplate-list', request=request, format=format),
 		'routers': reverse('router-list', request=request, format=format),
@@ -166,48 +171,16 @@ class SliceRoleIdSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
-	
-	
-	
-	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
-	
-	
-	
-	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
-	
-	
 	class Meta:
 		model = Tag
-		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id','sites','slices','slivers','nodes',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 class TagIdSerializer(serializers.ModelSerializer):
 	id = serializers.Field()
 	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
-	
-	
-	
-	slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
-	
-	
-	
-	nodes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='node-detail')
-	
-	
 	class Meta:
 		model = Tag
-		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id','sites','slices','slivers','nodes',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 
 
@@ -229,23 +202,6 @@ class InvoiceIdSerializer(serializers.ModelSerializer):
 
 
 
-class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
-
-class PlanetStackRoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
-
-
-
-
 class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
@@ -259,6 +215,23 @@ class SlicePrivilegeIdSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = SlicePrivilege
 		fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+
+
+
+
+class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = PlanetStackRole
+		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+
+class PlanetStackRoleIdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = PlanetStackRole
+		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
@@ -293,6 +266,40 @@ class NetworkDeploymentsIdSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = NetworkDeployments
 		fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
+
+
+
+
+class FlavorSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = Flavor
+		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+
+class FlavorIdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = Flavor
+		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+
+
+
+
+class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = Project
+		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+
+class ProjectIdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = Project
+		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
 
 
 
@@ -514,6 +521,23 @@ class SiteRoleIdSerializer(serializers.ModelSerializer):
 
 
 
+class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = SliceCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+
+class SliceCredentialIdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = SliceCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+
+
+
+
 class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
@@ -527,7 +551,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
 		model = Sliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','userData','networks','networks',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 class SliverIdSerializer(serializers.ModelSerializer):
 	id = serializers.Field()
@@ -542,7 +566,7 @@ class SliverIdSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Sliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','userData','networks','networks',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 
 
@@ -694,9 +718,17 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
 	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
 	
 	
+	
+	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+	
+	
+	
+	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+	
+	
 	class Meta:
 		model = Deployment
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','accessControl','sites','sites',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 class DeploymentIdSerializer(serializers.ModelSerializer):
 	id = serializers.Field()
@@ -709,9 +741,17 @@ class DeploymentIdSerializer(serializers.ModelSerializer):
 	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
 	
 	
+	
+	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+	
+	
+	
+	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+	
+	
 	class Meta:
 		model = Deployment
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','accessControl','sites','sites',)
+		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 
 
@@ -835,19 +875,19 @@ class NetworkParameterTypeIdSerializer(serializers.ModelSerializer):
 
 
 
-class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = SiteDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+		model = SiteCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
-class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
+class SiteCredentialIdSerializer(serializers.ModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = SiteDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+		model = SiteCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 
 
@@ -886,19 +926,36 @@ class DeploymentRoleIdSerializer(serializers.ModelSerializer):
 
 
 
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = Project
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+		model = UserCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
 
-class ProjectIdSerializer(serializers.ModelSerializer):
+class UserCredentialIdSerializer(serializers.ModelSerializer):
 	id = serializers.Field()
 	
 	class Meta:
-		model = Project
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+		model = UserCredential
+		fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+
+
+
+
+class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = SiteDeployments
+		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+
+class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
+	id = serializers.Field()
+	
+	class Meta:
+		model = SiteDeployments
+		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 
 
@@ -987,13 +1044,17 @@ serializerLookUp = {
 
                  Invoice: InvoiceSerializer,
 
-                 PlanetStackRole: PlanetStackRoleSerializer,
-
                  SlicePrivilege: SlicePrivilegeSerializer,
+
+                 PlanetStackRole: PlanetStackRoleSerializer,
 
                  NetworkSliver: NetworkSliverSerializer,
 
                  NetworkDeployments: NetworkDeploymentsSerializer,
+
+                 Flavor: FlavorSerializer,
+
+                 Project: ProjectSerializer,
 
                  Slice: SliceSerializer,
 
@@ -1012,6 +1073,8 @@ serializerLookUp = {
                  UsableObject: UsableObjectSerializer,
 
                  SiteRole: SiteRoleSerializer,
+
+                 SliceCredential: SliceCredentialSerializer,
 
                  Sliver: SliverSerializer,
 
@@ -1047,13 +1110,15 @@ serializerLookUp = {
 
                  NetworkParameterType: NetworkParameterTypeSerializer,
 
-                 SiteDeployments: SiteDeploymentsSerializer,
+                 SiteCredential: SiteCredentialSerializer,
 
                  DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
                  DeploymentRole: DeploymentRoleSerializer,
 
-                 Project: ProjectSerializer,
+                 UserCredential: UserCredentialSerializer,
+
+                 SiteDeployments: SiteDeploymentsSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -1065,6 +1130,51 @@ serializerLookUp = {
 
                  None: None,
                 }
+
+class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+    # To handle fine-grained field permissions, we have to check can_update
+    # the object has been updated but before it has been saved.
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        self.object = self.get_object_or_none()
+
+        serializer = self.get_serializer(self.object, data=request.DATA,
+                                         files=request.FILES, partial=partial)
+
+        if not serializer.is_valid():
+            print "UpdateModelMixin: not serializer.is_valid"
+            print serializer.errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            self.pre_save(serializer.object)
+        except ValidationError as err:
+            # full_clean on model instance may be called in pre_save,
+            # so we have to handle eventual errors.
+            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+
+        if serializer.object is not None:
+            if not serializer.object.can_update(request.user):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if self.object is None:
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        self.object = serializer.save(force_update=True)
+        self.post_save(self.object, created=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.can_update(request.user):
+            return super(Detail, self).destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 # Based on core/views/*.py
 
@@ -1095,7 +1205,7 @@ class ServiceAttributeList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ServiceAttributeDetail(generics.RetrieveUpdateDestroyAPIView):
+class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ServiceAttribute.objects.select_related().all()
     serializer_class = ServiceAttributeSerializer
     id_serializer_class = ServiceAttributeIdSerializer
@@ -1110,20 +1220,9 @@ class ServiceAttributeDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return ServiceAttribute.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceAttributeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceAttributeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1153,7 +1252,7 @@ class ImageList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
+class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
@@ -1168,20 +1267,9 @@ class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Image.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ImageDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ImageDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1211,7 +1299,7 @@ class NetworkParameterList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class NetworkParameterDetail(generics.RetrieveUpdateDestroyAPIView):
+class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameter.objects.select_related().all()
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
@@ -1226,20 +1314,9 @@ class NetworkParameterDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return NetworkParameter.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkParameterDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkParameterDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1269,7 +1346,7 @@ class SiteList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SiteDetail(generics.RetrieveUpdateDestroyAPIView):
+class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
@@ -1284,20 +1361,9 @@ class SiteDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Site.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1327,7 +1393,7 @@ class SliceRoleList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SliceRoleDetail(generics.RetrieveUpdateDestroyAPIView):
+class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceRole.objects.select_related().all()
     serializer_class = SliceRoleSerializer
     id_serializer_class = SliceRoleIdSerializer
@@ -1342,20 +1408,9 @@ class SliceRoleDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return SliceRole.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceRoleDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceRoleDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1364,7 +1419,7 @@ class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id','sites','slices','slivers','nodes',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -1385,7 +1440,7 @@ class TagList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class TagDetail(generics.RetrieveUpdateDestroyAPIView):
+class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
@@ -1400,20 +1455,9 @@ class TagDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Tag.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(TagDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(TagDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1443,7 +1487,7 @@ class InvoiceList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class InvoiceDetail(generics.RetrieveUpdateDestroyAPIView):
+class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
     id_serializer_class = InvoiceIdSerializer
@@ -1458,78 +1502,9 @@ class InvoiceDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Invoice.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(InvoiceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(InvoiceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class PlanetStackRoleList(generics.ListCreateAPIView):
-    queryset = PlanetStackRole.objects.select_related().all()
-    serializer_class = PlanetStackRoleSerializer
-    id_serializer_class = PlanetStackRoleIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return PlanetStackRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = PlanetStackRole().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackRoleList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class PlanetStackRoleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PlanetStackRole.objects.select_related().all()
-    serializer_class = PlanetStackRoleSerializer
-    id_serializer_class = PlanetStackRoleIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return PlanetStackRole.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackRoleDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackRoleDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1559,7 +1534,7 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SlicePrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
+class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
     serializer_class = SlicePrivilegeSerializer
     id_serializer_class = SlicePrivilegeIdSerializer
@@ -1574,20 +1549,56 @@ class SlicePrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return SlicePrivilege.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class PlanetStackRoleList(generics.ListCreateAPIView):
+    queryset = PlanetStackRole.objects.select_related().all()
+    serializer_class = PlanetStackRoleSerializer
+    id_serializer_class = PlanetStackRoleIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return PlanetStackRole.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = PlanetStackRole().update(request.DATA)
         obj = self.get_object()
+        obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SlicePrivilegeDetail, self).update(request, *args, **kwargs)
+            return super(PlanetStackRoleList, self).create(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SlicePrivilegeDetail, self).destroy(request, *args, **kwargs)
+class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = PlanetStackRole.objects.select_related().all()
+    serializer_class = PlanetStackRoleSerializer
+    id_serializer_class = PlanetStackRoleIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return PlanetStackRole.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1617,7 +1628,7 @@ class NetworkSliverList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class NetworkSliverDetail(generics.RetrieveUpdateDestroyAPIView):
+class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkSliver.objects.select_related().all()
     serializer_class = NetworkSliverSerializer
     id_serializer_class = NetworkSliverIdSerializer
@@ -1632,20 +1643,9 @@ class NetworkSliverDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return NetworkSliver.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkSliverDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkSliverDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -1675,7 +1675,7 @@ class NetworkDeploymentsList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class NetworkDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
+class NetworkDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkDeployments.objects.select_related().all()
     serializer_class = NetworkDeploymentsSerializer
     id_serializer_class = NetworkDeploymentsIdSerializer
@@ -1690,29 +1690,18 @@ class NetworkDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return NetworkDeployments.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkDeploymentsDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkDeploymentsDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
-class SliceList(generics.ListCreateAPIView):
-    queryset = Slice.objects.select_related().all()
-    serializer_class = SliceSerializer
-    id_serializer_class = SliceIdSerializer
+class FlavorList(generics.ListCreateAPIView):
+    queryset = Flavor.objects.select_related().all()
+    serializer_class = FlavorSerializer
+    id_serializer_class = FlavorIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -1722,21 +1711,21 @@ class SliceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return Slice.select_by_user(self.request.user)
+        return Flavor.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Slice().update(request.DATA)
+        #obj = Flavor().update(request.DATA)
         obj = self.get_object()
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SliceList, self).create(request, *args, **kwargs)
+            return super(FlavorList, self).create(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SliceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Slice.objects.select_related().all()
-    serializer_class = SliceSerializer
-    id_serializer_class = SliceIdSerializer
+class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Flavor.objects.select_related().all()
+    serializer_class = FlavorSerializer
+    id_serializer_class = FlavorIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -1746,1646 +1735,11 @@ class SliceDetail(generics.RetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return Slice.select_by_user(self.request.user)
+        return Flavor.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class NetworkList(generics.ListCreateAPIView):
-    queryset = Network.objects.select_related().all()
-    serializer_class = NetworkSerializer
-    id_serializer_class = NetworkIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Network.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Network().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class NetworkDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Network.objects.select_related().all()
-    serializer_class = NetworkSerializer
-    id_serializer_class = NetworkIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Network.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ServiceList(generics.ListCreateAPIView):
-    queryset = Service.objects.select_related().all()
-    serializer_class = ServiceSerializer
-    id_serializer_class = ServiceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Service.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Service().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ServiceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Service.objects.select_related().all()
-    serializer_class = ServiceSerializer
-    id_serializer_class = ServiceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Service.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ServiceClassList(generics.ListCreateAPIView):
-    queryset = ServiceClass.objects.select_related().all()
-    serializer_class = ServiceClassSerializer
-    id_serializer_class = ServiceClassIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ServiceClass.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = ServiceClass().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceClassList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ServiceClassDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ServiceClass.objects.select_related().all()
-    serializer_class = ServiceClassSerializer
-    id_serializer_class = ServiceClassIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ServiceClass.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceClassDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceClassDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class PaymentList(generics.ListCreateAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Payment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Payment().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PaymentList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class PaymentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Payment.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PaymentDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PaymentDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ChargeList(generics.ListCreateAPIView):
-    queryset = Charge.objects.select_related().all()
-    serializer_class = ChargeSerializer
-    id_serializer_class = ChargeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Charge.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Charge().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ChargeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ChargeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Charge.objects.select_related().all()
-    serializer_class = ChargeSerializer
-    id_serializer_class = ChargeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Charge.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ChargeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ChargeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class RoleList(generics.ListCreateAPIView):
-    queryset = Role.objects.select_related().all()
-    serializer_class = RoleSerializer
-    id_serializer_class = RoleIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Role.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Role().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(RoleList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Role.objects.select_related().all()
-    serializer_class = RoleSerializer
-    id_serializer_class = RoleIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Role.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(RoleDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(RoleDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class UsableObjectList(generics.ListCreateAPIView):
-    queryset = UsableObject.objects.select_related().all()
-    serializer_class = UsableObjectSerializer
-    id_serializer_class = UsableObjectIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return UsableObject.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = UsableObject().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UsableObjectList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class UsableObjectDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = UsableObject.objects.select_related().all()
-    serializer_class = UsableObjectSerializer
-    id_serializer_class = UsableObjectIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return UsableObject.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UsableObjectDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UsableObjectDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class SiteRoleList(generics.ListCreateAPIView):
-    queryset = SiteRole.objects.select_related().all()
-    serializer_class = SiteRoleSerializer
-    id_serializer_class = SiteRoleIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SiteRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = SiteRole().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteRoleList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class SiteRoleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SiteRole.objects.select_related().all()
-    serializer_class = SiteRoleSerializer
-    id_serializer_class = SiteRoleIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SiteRole.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteRoleDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteRoleDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class SliverList(generics.ListCreateAPIView):
-    queryset = Sliver.objects.select_related().all()
-    serializer_class = SliverSerializer
-    id_serializer_class = SliverIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','userData','networks','networks',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Sliver.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Sliver().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliverList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class SliverDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sliver.objects.select_related().all()
-    serializer_class = SliverSerializer
-    id_serializer_class = SliverIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Sliver.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliverDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliverDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class NodeList(generics.ListCreateAPIView):
-    queryset = Node.objects.select_related().all()
-    serializer_class = NodeSerializer
-    id_serializer_class = NodeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Node.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Node().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NodeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class NodeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Node.objects.select_related().all()
-    serializer_class = NodeSerializer
-    id_serializer_class = NodeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Node.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NodeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NodeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class DashboardViewList(generics.ListCreateAPIView):
-    queryset = DashboardView.objects.select_related().all()
-    serializer_class = DashboardViewSerializer
-    id_serializer_class = DashboardViewIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return DashboardView.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = DashboardView().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DashboardViewList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class DashboardViewDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DashboardView.objects.select_related().all()
-    serializer_class = DashboardViewSerializer
-    id_serializer_class = DashboardViewIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return DashboardView.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DashboardViewDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DashboardViewDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ImageDeploymentsList(generics.ListCreateAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = ImageDeployments().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ImageDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ImageDeploymentsDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ImageDeploymentsDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ReservedResourceList(generics.ListCreateAPIView):
-    queryset = ReservedResource.objects.select_related().all()
-    serializer_class = ReservedResourceSerializer
-    id_serializer_class = ReservedResourceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ReservedResource.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = ReservedResource().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ReservedResourceList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ReservedResourceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ReservedResource.objects.select_related().all()
-    serializer_class = ReservedResourceSerializer
-    id_serializer_class = ReservedResourceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ReservedResource.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ReservedResourceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ReservedResourceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class NetworkSliceList(generics.ListCreateAPIView):
-    queryset = NetworkSlice.objects.select_related().all()
-    serializer_class = NetworkSliceSerializer
-    id_serializer_class = NetworkSliceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return NetworkSlice.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = NetworkSlice().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkSliceList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class NetworkSliceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = NetworkSlice.objects.select_related().all()
-    serializer_class = NetworkSliceSerializer
-    id_serializer_class = NetworkSliceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return NetworkSlice.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkSliceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkSliceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class UserDashboardViewList(generics.ListCreateAPIView):
-    queryset = UserDashboardView.objects.select_related().all()
-    serializer_class = UserDashboardViewSerializer
-    id_serializer_class = UserDashboardViewIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return UserDashboardView.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = UserDashboardView().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserDashboardViewList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class UserDashboardViewDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = UserDashboardView.objects.select_related().all()
-    serializer_class = UserDashboardViewSerializer
-    id_serializer_class = UserDashboardViewIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return UserDashboardView.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDashboardViewDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDashboardViewDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class PlanetStackPrivilegeList(generics.ListCreateAPIView):
-    queryset = PlanetStackPrivilege.objects.select_related().all()
-    serializer_class = PlanetStackPrivilegeSerializer
-    id_serializer_class = PlanetStackPrivilegeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return PlanetStackPrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = PlanetStackPrivilege().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class PlanetStackPrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PlanetStackPrivilege.objects.select_related().all()
-    serializer_class = PlanetStackPrivilegeSerializer
-    id_serializer_class = PlanetStackPrivilegeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return PlanetStackPrivilege.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackPrivilegeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackPrivilegeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class UserList(generics.ListCreateAPIView):
-    queryset = User.objects.select_related().all()
-    serializer_class = UserSerializer
-    id_serializer_class = UserIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return User.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = User().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.select_related().all()
-    serializer_class = UserSerializer
-    id_serializer_class = UserIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return User.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class DeploymentList(generics.ListCreateAPIView):
-    queryset = Deployment.objects.select_related().all()
-    serializer_class = DeploymentSerializer
-    id_serializer_class = DeploymentIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','accessControl','sites','sites',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Deployment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Deployment().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class DeploymentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Deployment.objects.select_related().all()
-    serializer_class = DeploymentSerializer
-    id_serializer_class = DeploymentIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Deployment.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class ReservationList(generics.ListCreateAPIView):
-    queryset = Reservation.objects.select_related().all()
-    serializer_class = ReservationSerializer
-    id_serializer_class = ReservationIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Reservation.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Reservation().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ReservationList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Reservation.objects.select_related().all()
-    serializer_class = ReservationSerializer
-    id_serializer_class = ReservationIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Reservation.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ReservationDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ReservationDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class SliceDeploymentsList(generics.ListCreateAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = SliceDeployments().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class SliceDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceDeploymentsDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceDeploymentsDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class SitePrivilegeList(generics.ListCreateAPIView):
-    queryset = SitePrivilege.objects.select_related().all()
-    serializer_class = SitePrivilegeSerializer
-    id_serializer_class = SitePrivilegeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SitePrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = SitePrivilege().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SitePrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class SitePrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SitePrivilege.objects.select_related().all()
-    serializer_class = SitePrivilegeSerializer
-    id_serializer_class = SitePrivilegeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SitePrivilege.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SitePrivilegeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SitePrivilegeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class PlanetStackList(generics.ListCreateAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = PlanetStack().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class PlanetStackDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class UserDeploymentsList(generics.ListCreateAPIView):
-    queryset = UserDeployments.objects.select_related().all()
-    serializer_class = UserDeploymentsSerializer
-    id_serializer_class = UserDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return UserDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = UserDeployments().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class UserDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = UserDeployments.objects.select_related().all()
-    serializer_class = UserDeploymentsSerializer
-    id_serializer_class = UserDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return UserDeployments.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDeploymentsDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(UserDeploymentsDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class AccountList(generics.ListCreateAPIView):
-    queryset = Account.objects.select_related().all()
-    serializer_class = AccountSerializer
-    id_serializer_class = AccountIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Account.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = Account().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(AccountList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class AccountDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Account.objects.select_related().all()
-    serializer_class = AccountSerializer
-    id_serializer_class = AccountIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Account.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(AccountDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(AccountDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class NetworkParameterTypeList(generics.ListCreateAPIView):
-    queryset = NetworkParameterType.objects.select_related().all()
-    serializer_class = NetworkParameterTypeSerializer
-    id_serializer_class = NetworkParameterTypeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return NetworkParameterType.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = NetworkParameterType().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class NetworkParameterTypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = NetworkParameterType.objects.select_related().all()
-    serializer_class = NetworkParameterTypeSerializer
-    id_serializer_class = NetworkParameterTypeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return NetworkParameterType.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkParameterTypeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkParameterTypeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class SiteDeploymentsList(generics.ListCreateAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = SiteDeployments().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class SiteDeploymentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteDeploymentsDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SiteDeploymentsDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class DeploymentPrivilegeList(generics.ListCreateAPIView):
-    queryset = DeploymentPrivilege.objects.select_related().all()
-    serializer_class = DeploymentPrivilegeSerializer
-    id_serializer_class = DeploymentPrivilegeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return DeploymentPrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = DeploymentPrivilege().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class DeploymentPrivilegeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DeploymentPrivilege.objects.select_related().all()
-    serializer_class = DeploymentPrivilegeSerializer
-    id_serializer_class = DeploymentPrivilegeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return DeploymentPrivilege.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentPrivilegeDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentPrivilegeDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
-
-
-
-class DeploymentRoleList(generics.ListCreateAPIView):
-    queryset = DeploymentRole.objects.select_related().all()
-    serializer_class = DeploymentRoleSerializer
-    id_serializer_class = DeploymentRoleIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return DeploymentRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        #obj = DeploymentRole().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentRoleList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class DeploymentRoleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DeploymentRole.objects.select_related().all()
-    serializer_class = DeploymentRoleSerializer
-    id_serializer_class = DeploymentRoleIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return DeploymentRole.select_by_user(self.request.user)
-
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentRoleDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(DeploymentRoleDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -3415,7 +1769,7 @@ class ProjectList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
     id_serializer_class = ProjectIdSerializer
@@ -3430,20 +1784,1513 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Project.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SliceList(generics.ListCreateAPIView):
+    queryset = Slice.objects.select_related().all()
+    serializer_class = SliceSerializer
+    id_serializer_class = SliceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Slice.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Slice().update(request.DATA)
         obj = self.get_object()
+        obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ProjectDetail, self).update(request, *args, **kwargs)
+            return super(SliceList, self).create(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):
+class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Slice.objects.select_related().all()
+    serializer_class = SliceSerializer
+    id_serializer_class = SliceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Slice.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class NetworkList(generics.ListCreateAPIView):
+    queryset = Network.objects.select_related().all()
+    serializer_class = NetworkSerializer
+    id_serializer_class = NetworkIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Network.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Network().update(request.DATA)
         obj = self.get_object()
+        obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ProjectDetail, self).destroy(request, *args, **kwargs)
+            return super(NetworkList, self).create(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+
+class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Network.objects.select_related().all()
+    serializer_class = NetworkSerializer
+    id_serializer_class = NetworkIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Network.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ServiceList(generics.ListCreateAPIView):
+    queryset = Service.objects.select_related().all()
+    serializer_class = ServiceSerializer
+    id_serializer_class = ServiceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Service.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Service().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ServiceList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Service.objects.select_related().all()
+    serializer_class = ServiceSerializer
+    id_serializer_class = ServiceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Service.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ServiceClassList(generics.ListCreateAPIView):
+    queryset = ServiceClass.objects.select_related().all()
+    serializer_class = ServiceClassSerializer
+    id_serializer_class = ServiceClassIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ServiceClass.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = ServiceClass().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ServiceClassList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ServiceClass.objects.select_related().all()
+    serializer_class = ServiceClassSerializer
+    id_serializer_class = ServiceClassIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ServiceClass.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class PaymentList(generics.ListCreateAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Payment.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Payment().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(PaymentList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Payment.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ChargeList(generics.ListCreateAPIView):
+    queryset = Charge.objects.select_related().all()
+    serializer_class = ChargeSerializer
+    id_serializer_class = ChargeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Charge.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Charge().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ChargeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Charge.objects.select_related().all()
+    serializer_class = ChargeSerializer
+    id_serializer_class = ChargeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Charge.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class RoleList(generics.ListCreateAPIView):
+    queryset = Role.objects.select_related().all()
+    serializer_class = RoleSerializer
+    id_serializer_class = RoleIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Role.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Role().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(RoleList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Role.objects.select_related().all()
+    serializer_class = RoleSerializer
+    id_serializer_class = RoleIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Role.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class UsableObjectList(generics.ListCreateAPIView):
+    queryset = UsableObject.objects.select_related().all()
+    serializer_class = UsableObjectSerializer
+    id_serializer_class = UsableObjectIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return UsableObject.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = UsableObject().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(UsableObjectList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UsableObject.objects.select_related().all()
+    serializer_class = UsableObjectSerializer
+    id_serializer_class = UsableObjectIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return UsableObject.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SiteRoleList(generics.ListCreateAPIView):
+    queryset = SiteRole.objects.select_related().all()
+    serializer_class = SiteRoleSerializer
+    id_serializer_class = SiteRoleIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SiteRole.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SiteRole().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SiteRoleList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteRole.objects.select_related().all()
+    serializer_class = SiteRoleSerializer
+    id_serializer_class = SiteRoleIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SiteRole.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SliceCredentialList(generics.ListCreateAPIView):
+    queryset = SliceCredential.objects.select_related().all()
+    serializer_class = SliceCredentialSerializer
+    id_serializer_class = SliceCredentialIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SliceCredential.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SliceCredential().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SliceCredentialList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceCredential.objects.select_related().all()
+    serializer_class = SliceCredentialSerializer
+    id_serializer_class = SliceCredentialIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SliceCredential.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SliverList(generics.ListCreateAPIView):
+    queryset = Sliver.objects.select_related().all()
+    serializer_class = SliverSerializer
+    id_serializer_class = SliverIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Sliver.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Sliver().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SliverList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Sliver.objects.select_related().all()
+    serializer_class = SliverSerializer
+    id_serializer_class = SliverIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Sliver.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class NodeList(generics.ListCreateAPIView):
+    queryset = Node.objects.select_related().all()
+    serializer_class = NodeSerializer
+    id_serializer_class = NodeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Node.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Node().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(NodeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Node.objects.select_related().all()
+    serializer_class = NodeSerializer
+    id_serializer_class = NodeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Node.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class DashboardViewList(generics.ListCreateAPIView):
+    queryset = DashboardView.objects.select_related().all()
+    serializer_class = DashboardViewSerializer
+    id_serializer_class = DashboardViewIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return DashboardView.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = DashboardView().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(DashboardViewList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = DashboardView.objects.select_related().all()
+    serializer_class = DashboardViewSerializer
+    id_serializer_class = DashboardViewIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return DashboardView.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ImageDeploymentsList(generics.ListCreateAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ImageDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = ImageDeployments().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ImageDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ReservedResourceList(generics.ListCreateAPIView):
+    queryset = ReservedResource.objects.select_related().all()
+    serializer_class = ReservedResourceSerializer
+    id_serializer_class = ReservedResourceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ReservedResource.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = ReservedResource().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ReservedResourceList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ReservedResource.objects.select_related().all()
+    serializer_class = ReservedResourceSerializer
+    id_serializer_class = ReservedResourceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ReservedResource.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class NetworkSliceList(generics.ListCreateAPIView):
+    queryset = NetworkSlice.objects.select_related().all()
+    serializer_class = NetworkSliceSerializer
+    id_serializer_class = NetworkSliceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return NetworkSlice.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = NetworkSlice().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(NetworkSliceList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = NetworkSlice.objects.select_related().all()
+    serializer_class = NetworkSliceSerializer
+    id_serializer_class = NetworkSliceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return NetworkSlice.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class UserDashboardViewList(generics.ListCreateAPIView):
+    queryset = UserDashboardView.objects.select_related().all()
+    serializer_class = UserDashboardViewSerializer
+    id_serializer_class = UserDashboardViewIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return UserDashboardView.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = UserDashboardView().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(UserDashboardViewList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserDashboardView.objects.select_related().all()
+    serializer_class = UserDashboardViewSerializer
+    id_serializer_class = UserDashboardViewIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return UserDashboardView.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class PlanetStackPrivilegeList(generics.ListCreateAPIView):
+    queryset = PlanetStackPrivilege.objects.select_related().all()
+    serializer_class = PlanetStackPrivilegeSerializer
+    id_serializer_class = PlanetStackPrivilegeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return PlanetStackPrivilege.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = PlanetStackPrivilege().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = PlanetStackPrivilege.objects.select_related().all()
+    serializer_class = PlanetStackPrivilegeSerializer
+    id_serializer_class = PlanetStackPrivilegeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return PlanetStackPrivilege.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.select_related().all()
+    serializer_class = UserSerializer
+    id_serializer_class = UserIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return User.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = User().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(UserList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = User.objects.select_related().all()
+    serializer_class = UserSerializer
+    id_serializer_class = UserIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return User.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class DeploymentList(generics.ListCreateAPIView):
+    queryset = Deployment.objects.select_related().all()
+    serializer_class = DeploymentSerializer
+    id_serializer_class = DeploymentIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Deployment.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Deployment().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(DeploymentList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Deployment.objects.select_related().all()
+    serializer_class = DeploymentSerializer
+    id_serializer_class = DeploymentIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Deployment.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ReservationList(generics.ListCreateAPIView):
+    queryset = Reservation.objects.select_related().all()
+    serializer_class = ReservationSerializer
+    id_serializer_class = ReservationIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Reservation.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Reservation().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ReservationList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects.select_related().all()
+    serializer_class = ReservationSerializer
+    id_serializer_class = ReservationIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Reservation.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SliceDeploymentsList(generics.ListCreateAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SliceDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SliceDeployments().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SliceDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SitePrivilegeList(generics.ListCreateAPIView):
+    queryset = SitePrivilege.objects.select_related().all()
+    serializer_class = SitePrivilegeSerializer
+    id_serializer_class = SitePrivilegeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SitePrivilege.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SitePrivilege().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SitePrivilegeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SitePrivilege.objects.select_related().all()
+    serializer_class = SitePrivilegeSerializer
+    id_serializer_class = SitePrivilegeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SitePrivilege.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class PlanetStackList(generics.ListCreateAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return PlanetStack.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = PlanetStack().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(PlanetStackList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return PlanetStack.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class UserDeploymentsList(generics.ListCreateAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return UserDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = UserDeployments().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(UserDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return UserDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class AccountList(generics.ListCreateAPIView):
+    queryset = Account.objects.select_related().all()
+    serializer_class = AccountSerializer
+    id_serializer_class = AccountIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Account.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = Account().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(AccountList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Account.objects.select_related().all()
+    serializer_class = AccountSerializer
+    id_serializer_class = AccountIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Account.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class NetworkParameterTypeList(generics.ListCreateAPIView):
+    queryset = NetworkParameterType.objects.select_related().all()
+    serializer_class = NetworkParameterTypeSerializer
+    id_serializer_class = NetworkParameterTypeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return NetworkParameterType.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = NetworkParameterType().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = NetworkParameterType.objects.select_related().all()
+    serializer_class = NetworkParameterTypeSerializer
+    id_serializer_class = NetworkParameterTypeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return NetworkParameterType.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SiteCredentialList(generics.ListCreateAPIView):
+    queryset = SiteCredential.objects.select_related().all()
+    serializer_class = SiteCredentialSerializer
+    id_serializer_class = SiteCredentialIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SiteCredential.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SiteCredential().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SiteCredentialList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteCredential.objects.select_related().all()
+    serializer_class = SiteCredentialSerializer
+    id_serializer_class = SiteCredentialIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SiteCredential.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class DeploymentPrivilegeList(generics.ListCreateAPIView):
+    queryset = DeploymentPrivilege.objects.select_related().all()
+    serializer_class = DeploymentPrivilegeSerializer
+    id_serializer_class = DeploymentPrivilegeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return DeploymentPrivilege.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = DeploymentPrivilege().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = DeploymentPrivilege.objects.select_related().all()
+    serializer_class = DeploymentPrivilegeSerializer
+    id_serializer_class = DeploymentPrivilegeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return DeploymentPrivilege.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class DeploymentRoleList(generics.ListCreateAPIView):
+    queryset = DeploymentRole.objects.select_related().all()
+    serializer_class = DeploymentRoleSerializer
+    id_serializer_class = DeploymentRoleIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return DeploymentRole.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = DeploymentRole().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(DeploymentRoleList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = DeploymentRole.objects.select_related().all()
+    serializer_class = DeploymentRoleSerializer
+    id_serializer_class = DeploymentRoleIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return DeploymentRole.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class UserCredentialList(generics.ListCreateAPIView):
+    queryset = UserCredential.objects.select_related().all()
+    serializer_class = UserCredentialSerializer
+    id_serializer_class = UserCredentialIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return UserCredential.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = UserCredential().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(UserCredentialList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserCredential.objects.select_related().all()
+    serializer_class = UserCredentialSerializer
+    id_serializer_class = UserCredentialIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return UserCredential.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SiteDeploymentsList(generics.ListCreateAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SiteDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        #obj = SiteDeployments().update(request.DATA)
+        obj = self.get_object()
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SiteDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -3473,7 +3320,7 @@ class SliceTagList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SliceTagDetail(generics.RetrieveUpdateDestroyAPIView):
+class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceTag.objects.select_related().all()
     serializer_class = SliceTagSerializer
     id_serializer_class = SliceTagIdSerializer
@@ -3488,20 +3335,9 @@ class SliceTagDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return SliceTag.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceTagDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SliceTagDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -3531,7 +3367,7 @@ class NetworkTemplateList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class NetworkTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
+class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
@@ -3546,20 +3382,9 @@ class NetworkTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return NetworkTemplate.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkTemplateDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(NetworkTemplateDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -3589,7 +3414,7 @@ class RouterList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class RouterDetail(generics.RetrieveUpdateDestroyAPIView):
+class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
     id_serializer_class = RouterIdSerializer
@@ -3604,20 +3429,9 @@ class RouterDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Router.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(RouterDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(RouterDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
@@ -3647,7 +3461,7 @@ class ServiceResourceList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class ServiceResourceDetail(generics.RetrieveUpdateDestroyAPIView):
+class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ServiceResource.objects.select_related().all()
     serializer_class = ServiceResourceSerializer
     id_serializer_class = ServiceResourceIdSerializer
@@ -3662,20 +3476,9 @@ class ServiceResourceDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return ServiceResource.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceResourceDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(ServiceResourceDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 
 
