@@ -527,10 +527,10 @@ class DeploymentAdminForm(forms.ModelForm):
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
 
-      deployment.flavors = self.cleaned_data['flavors']
-
       if commit:
         deployment.save()
+        # this has to be done after save() if/when a deployment is first created
+        deployment.flavors = self.cleaned_data['flavors']
 
       if deployment.pk:
         # save_m2m() doesn't seem to work with 'through' relations. So we
