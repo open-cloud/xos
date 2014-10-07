@@ -727,8 +727,10 @@ class SliceForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(SliceForm, self).clean()
         name = cleaned_data.get('name')
-        site_id = cleaned_data.get('site')
-        site = Slice.objects.get(id=site_id)
+        site = cleaned_data.get('site')
+        if (not isinstance(site,Site)):
+            # previous code indicates 'site' could be a site_id and not a site?
+            site = Slice.objects.get(id=site.id)
         if not name.startswith(site.login_base):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
