@@ -80,6 +80,9 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/site_privileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
     url(r'^plstackapi/site_privileges/(?P<pk>[a-zA-Z0-9_]+)/$', SitePrivilegeDetail.as_view(), name='siteprivilege-detail'),
+
+    url(r'^plstackapi/site_roles/$', SiteList.as_view(), name='siterole-list'),
+    url(r'^plstackapi/site_roles/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteDetail.as_view(), name='siterole-detail'),
   
     url(r'^plstackapi/sites/$', SiteList.as_view(), name='site-list'),
     url(r'^plstackapi/sites/(?P<pk>[a-zA-Z0-9_\-]+)/$', SiteDetail.as_view(), name='site-detail'),
