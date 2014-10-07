@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
+from rest_framework import status
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
@@ -70,6 +71,51 @@ serializerLookUp = {
                  None: None,
                 }
 
+class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+    # To handle fine-grained field permissions, we have to check can_update
+    # the object has been updated but before it has been saved.
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        self.object = self.get_object_or_none()
+
+        serializer = self.get_serializer(self.object, data=request.DATA,
+                                         files=request.FILES, partial=partial)
+
+        if not serializer.is_valid():
+            print "UpdateModelMixin: not serializer.is_valid"
+            print serializer.errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            self.pre_save(serializer.object)
+        except ValidationError as err:
+            # full_clean on model instance may be called in pre_save,
+            # so we have to handle eventual errors.
+            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+
+        if serializer.object is not None:
+            if not serializer.object.can_update(request.user):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if self.object is None:
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        self.object = serializer.save(force_update=True)
+        self.post_save(self.object, created=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.can_update(request.user):
+            return super({{ object.camel }}Detail, self).destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 # Based on core/views/*.py
 {% for object in generator.all %}
 
@@ -99,7 +145,7 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
+class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
     id_serializer_class = {{ object.camel }}IdSerializer
@@ -114,19 +160,8 @@ class {{ object.camel }}Detail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return {{ object.camel }}.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super({{ object.camel }}Detail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super({{ object.camel }}Detail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-     
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
 {% endfor %}
