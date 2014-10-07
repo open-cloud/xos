@@ -76,13 +76,11 @@ class DiffModelMixIn:
     def changed_fields(self):
         return self.diff.keys()
 
-    @property
     def has_field_changed(self, field_name):
         return field_name in self.diff.keys()
 
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
-
 
 class PlCoreBase(models.Model, DiffModelMixIn):
     objects = PlCoreBaseManager()
@@ -113,12 +111,8 @@ class PlCoreBase(models.Model, DiffModelMixIn):
             return False
         if user.is_admin:
             return True
-        return False
 
-    def can_update_field(self, user, fieldName):
-        # Give us the opportunity to implement fine-grained permission checking.
-        # Default to True, and let can_update() permit or deny the whole object.
-        return True
+        return False
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
@@ -153,11 +147,10 @@ class PlCoreBase(models.Model, DiffModelMixIn):
 
     def save_by_user(self, user, *args, **kwds):
         if not self.can_update(user):
-            raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
-
-        for fieldName in self.changed_fields:
-            if not self.can_update_field(user, fieldName):
-                raise PermissionDenied("You do not have permission to update field %s in object %s" % (fieldName, self.__class__.__name__))
+            if getattr(self, "_cant_update_fieldName", None) is not None:
+                raise PermissionDenied("You do not have permission to update field %s on object %s" % (self._cant_update_fieldName, self.__class__.__name__))
+            else:
+                raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
 
         self.save(*args, **kwds)
 
