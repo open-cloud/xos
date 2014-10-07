@@ -100,6 +100,9 @@ class User(AbstractBaseUser, DiffModelMixIn):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['firstname', 'lastname']
 
+    PI_FORBIDDEN_FIELDS = ["is_admin", "site", "is_staff"]
+    USER_FORBIDDEN_FIELDS = ["is_admin", "is_active", "site", "is_staff", "is_readonly"]
+
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
         self._initial = self._dict # for DiffModelMixIn
@@ -200,38 +203,28 @@ class User(AbstractBaseUser, DiffModelMixIn):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def can_update_field(self, user, fieldName):
-        from core.models import SitePrivilege
-        if (user.is_admin):
-            # admin can update anything
-            return True
-
-        # fields that a site PI can update
-        if fieldName in ["is_active", "is_readonly"]:
-            site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
-            for site_priv in site_privs:
-                if site_priv.role.role == 'pi':
-                    return True
-
-        # fields that a user cannot update in his/her own record
-        if fieldName in ["is_admin", "is_active", "site", "is_staff", "is_readonly"]:
-            return False
-
-        return True
-
     def can_update(self, user):
         from core.models import SitePrivilege
+        _cant_update_fieldName = None
         if user.is_readonly:
             return False
         if user.is_admin:
-            return True
-        if (user.id == self.id):
             return True
         # site pis can update
         site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
         for site_priv in site_privs:
             if site_priv.role.role == 'pi':
+                for fieldName in self.diff.keys():
+                    if fieldName in self.PI_FORBIDDEN_FIELDS:
+                        _cant_update_fieldName = fieldName
+                        return False
                 return True
+        if (user.id == self.id):
+            for fieldName in self.diff.keys():
+                if fieldName in self.USER_FORBIDDEN_FIELDS:
+                    _cant_update_fieldName = fieldName
+                    return False
+            return True
 
         return False
 
@@ -252,11 +245,10 @@ class User(AbstractBaseUser, DiffModelMixIn):
 
     def save_by_user(self, user, *args, **kwds):
         if not self.can_update(user):
-            raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
-
-        for fieldName in self.changed_fields:
-            if not self.can_update_field(user, fieldName):
-                raise PermissionDenied("You do not have permission to update field %s in object %s" % (fieldName, self.__class__.__name__))
+            if getattr(self, "_cant_update_fieldName", None) is not None:
+                raise PermissionDenied("You do not have permission to update field %s on object %s" % (self._cant_update_fieldName, self.__class__.__name__))
+            else:
+                raise PermissionDenied("You do not have permission to update %s objects" % self.__class__.__name__)
 
         self.save(*args, **kwds)
 
