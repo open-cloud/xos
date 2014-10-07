@@ -799,6 +799,28 @@ class SliceAdmin(PlanetStackBaseAdmin):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
+    def save_model(self, request, obj, form, change):
+      obj.save()
+      # create default public slice networks
+      public_net = Network(
+          name = obj.name+'-public',
+          template = NetworkTemplate.objects.get(name='Public dedicated IPv4'),
+          owner = obj 
+      )
+      public_net.save()
+      public_slice_net = NetworkSlice(network=public_net, slice=obj)
+      public_slice_net.save()
+      # create default private slice networks
+      private_net = Network(
+          name = obj.name+'-private',
+          template = NetworkTemplate.objects.get(name='Private'),
+          owner = obj
+      )
+      private_net.save()
+      private_slice_net = NetworkSlice(network=private_net, slice=obj)
+      private_slice_net.save()
+
+
 
 class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
