@@ -17,6 +17,10 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
 
 import django_evolution
+import threading
+
+# thread locals necessary to work around a django-suit issue
+_thread_locals = threading.local()
 
 def backend_icon(obj): # backend_status, enacted, updated):
     #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
@@ -1036,7 +1040,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'firstname', 'lastname', 'is_readonly', 'phone', 'public_key','password1', 'password2')}
+            'fields': ('email', 'firstname', 'lastname', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
         ),
     )
     readonly_fields = ('backend_status_text', )
@@ -1046,12 +1050,24 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
 
     user_readonly_fields = fieldListLoginDetails + fieldListContactInfo
 
-    suit_form_tabs =(('general','Login Details'),
-                     ('contact','Contact Information'),
-                     ('sliceprivileges','Slice Privileges'),
-                     ('siteprivileges','Site Privileges'),
-                     ('deploymentprivileges','Deployment Privileges'),
-                     ('dashboards','Dashboard Views'))
+    def get_form(self, request, obj=None):
+        # Save obj in thread-local storage, so suit_form_tabs can use it to
+        # determine whether we're in edit or add mode.
+        _thread_locals.request = request
+        _thread_locals.obj = obj
+        return super(UserAdmin, self).get_form(request, obj)
+
+    @property
+    def suit_form_tabs(self):
+        if getattr(_thread_locals, "obj", None) is None:
+            return []
+        else:
+            return (('general','Login Details'),
+                         ('contact','Contact Information'),
+                         ('sliceprivileges','Slice Privileges'),
+                         ('siteprivileges','Site Privileges'),
+                         ('deploymentprivileges','Deployment Privileges'),
+                         ('dashboards','Dashboard Views'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
