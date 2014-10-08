@@ -20,7 +20,7 @@ class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
 
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
         if (backend_type):
-            return parent_queryset.filter(Q(deployment__backend_type=backend_type)|Q(backend_type=None))
+            return parent_queryset.filter(Q(deployment__backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -41,7 +41,7 @@ class DeploymentDeletionManager(PlCoreBaseDeletionManager):
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
 
         if backend_type:
-            return parent_queryset.filter(Q(backend_type=backend_type)|Q(backend_type=None))
+            return parent_queryset.filter(Q(backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -61,7 +61,7 @@ class DeploymentLinkManager(PlCoreBaseManager):
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
 
         if backend_type:
-            return parent_queryset.filter(Q(deployment__backend_type=backend_type)|Q(backend_type=None))
+            return parent_queryset.filter(Q(deployment__backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -82,7 +82,7 @@ class DeploymentManager(PlCoreBaseManager):
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
 
         if backend_type:
-            return parent_queryset.filter(Q(backend_type=backend_type)|Q(backend_type=None))
+            return parent_queryset.filter(Q(backend_type=backend_type))
         else:
             return parent_queryset
 
