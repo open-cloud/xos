@@ -9,17 +9,17 @@ from django.forms import widgets
 from rest_framework import filters
 
 """
-	Schema of the generator object:
-		all: Set of all Model objects
-		all_if(regex): Set of Model objects that match regex
-	
-	Model object:
-		plural: English plural of object name
-		camel: CamelCase version of object name
-		refs: list of references to other Model objects
-		props: list of properties minus refs
+    Schema of the generator object:
+        all: Set of all Model objects
+        all_if(regex): Set of Model objects that match regex
+    
+    Model object:
+        plural: English plural of object name
+        camel: CamelCase version of object name
+        refs: list of references to other Model objects
+        props: list of properties minus refs
 
-	TODO: Deal with subnets
+    TODO: Deal with subnets
 """
 
 # Based on api_root.py
@@ -27,8 +27,8 @@ from rest_framework import filters
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-		{% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
-		{% endfor %}
+        {% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
+        {% endfor %}
     })
 
 # Based on serializers.py
@@ -36,30 +36,30 @@ def api_root(request, format=None):
 {% for object in generator.all %}
 
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	{% for ref in object.refs %}
-	{% if ref.multi %}
-	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
-	{% else %}
-	{{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
-	{% endif %}
-	{% endfor %}
-	class Meta:
-		model = {{ object.camel }}
-		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+    id = serializers.Field()
+    {% for ref in object.refs %}
+    {% if ref.multi %}
+    {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+    {% else %}
+    {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
+    {% endif %}
+    {% endfor %}
+    class Meta:
+        model = {{ object.camel }}
+        fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	{% for ref in object.refs %}
-	{% if ref.multi %}
-	{{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
-	{% else %}
-	{{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
-	{% endif %}
-	{% endfor %}
-	class Meta:
-		model = {{ object.camel }}
-		fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+    id = serializers.Field()
+    {% for ref in object.refs %}
+    {% if ref.multi %}
+    {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+    {% else %}
+    {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
+    {% endif %}
+    {% endfor %}
+    class Meta:
+        model = {{ object.camel }}
+        fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 
 {% endfor %}
@@ -140,7 +140,9 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
         #obj = {{ object.camel }}().update(request.DATA)
         #obj = self.get_object()
         #obj.caller = request.user
-        return super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        ret = super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
         #if obj.can_update(request.user):
         #    return super({{ object.camel }}List, self).create(request, *args, **kwargs)
         #else:
