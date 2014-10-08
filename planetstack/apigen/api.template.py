@@ -138,12 +138,13 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         #obj = {{ object.camel }}().update(request.DATA)
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super({{ object.camel }}List, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        #obj = self.get_object()
+        #obj.caller = request.user
+        return super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        #if obj.can_update(request.user):
+        #    return super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        #else:
+        #    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
