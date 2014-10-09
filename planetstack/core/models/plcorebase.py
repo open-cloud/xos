@@ -117,14 +117,17 @@ class PlCoreBase(models.Model, DiffModelMixIn):
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         purge = kwds.get('purge',False)
+        if purge:
+            del kwds['purge']
         silent = kwds.get('silent',False)
+        if silent:
+            del kwds['silent']
         try:
             purge = purge or observer_disabled
         except NameError:
             pass
 
         if (purge):
-            del kwds['purge']
             super(PlCoreBase, self).delete(*args, **kwds)
         else:
             self.deleted = True
