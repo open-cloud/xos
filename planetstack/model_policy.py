@@ -11,7 +11,8 @@ def post_save_handler(sender, instance, **kwargs):
 	
 	if (not kwargs['update_fields']):
 		try:
-			policy_handler = getattr(model_policies, policy_name)
-			policy_handler.handle(instance)
+			policy_handler = getattr(model_policies, policy_name, None)
+			if policy_handler is not None:
+				policy_handler.handle(instance)
 		except:
 			pass
