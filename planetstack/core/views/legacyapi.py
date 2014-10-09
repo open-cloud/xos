@@ -92,7 +92,7 @@ def GetNodes(node_ids=None, fields=None, slice_remap={}):
                 "site_id": ps_id_to_pl_id(ps_node.site_id),
                 "node_type": "regular",
                 "peer_node_id": None,
-                "hostname": ps_node.name,
+                "hostname": ps_node.name.lower(),
                 "conf_file_ids": [],
                 "slice_ids": slice_ids,
                 "model": "planetstack",
