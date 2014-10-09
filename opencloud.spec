@@ -49,6 +49,11 @@ pip-python install django-bitfield
 pip-python install django-ipware
 pip-python install django-encrypted-fields
 pip-python install python-keyczar
+pip-python install python-keystoneclient
+pip-python install python-novaclient
+pip-python install python-neutronclient 
+pip-python install python-glanceclient
+
 
 easy_install django_evolution
 easy_install python_gflags
