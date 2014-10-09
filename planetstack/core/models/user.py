@@ -13,6 +13,20 @@ from core.middleware import get_request
 import model_policy
 from django.core.exceptions import PermissionDenied
 
+# ------ from plcorebase.py ------
+try:
+    # This is a no-op if observer_disabled is set to 1 in the config file
+    from observer import *
+except:
+    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
+    import traceback
+    traceback.print_exc()
+
+    # guard against something failing
+    def notify_observer(*args, **kwargs):
+        pass
+# ------ ------
+
 # Create your models here.
 class UserManager(BaseUserManager):
     def create_user(self, email, firstname, lastname, password=None):
