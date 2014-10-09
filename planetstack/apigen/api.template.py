@@ -111,7 +111,7 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.can_update(request.user):
-            return super({{ object.camel }}Detail, self).destroy(request, *args, **kwargs)
+            return super(generics.RetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -137,16 +137,19 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
         return {{ object.camel }}.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = {{ object.camel }}().update(request.DATA)
-        #obj = self.get_object()
-        #obj.caller = request.user
+        obj = {{ object.camel }}(**request.DATA)
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super({{ object.camel }}List, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
         ret = super({{ object.camel }}List, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
-        #if obj.can_update(request.user):
-        #    return super({{ object.camel }}List, self).create(request, *args, **kwargs)
-        #else:
-        #    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return ret
+
 
 class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
