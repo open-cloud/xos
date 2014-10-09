@@ -18,8 +18,6 @@ def get_slice_id(slice_name):
     return r.json()[0]["id"]
 
 def get_node_id(host_name):
-#    r = requests.get(NODES_API + "?name=%s" % host_name, auth=opencloud_auth)
-#    return r.json()[0]["id"]
      r = requests.get(NODES_API)
      nodes = r.json()
      for node in nodes:
