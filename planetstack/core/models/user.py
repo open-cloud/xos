@@ -135,6 +135,8 @@ class User(AbstractBaseUser, DiffModelMixIn):
     def delete(self, *args, **kwds):
         # so we have something to give the observer
         purge = kwds.get('purge',False)
+        if purge:
+            del kwds['purge']
         try:
             purge = purge or observer_disabled
         except NameError:
