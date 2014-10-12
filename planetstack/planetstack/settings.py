@@ -214,7 +214,7 @@ SUIT_CONFIG = {
         {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
         {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
         {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate_storage'},
-        {'label': 'Cassandra', 'icon':'icon-cog', 'app': 'cassandra'},
+#        {'label': 'Cassandra', 'icon':'icon-cog', 'app': 'cassandra'},
 #        {'label': 'KairosDB', 'icon':'icon-cog', 'app': 'kairos'},
 #        {'label': 'Nagios', 'icon':'icon-cog', 'app': 'nagios'},
 
