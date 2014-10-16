@@ -137,6 +137,24 @@ class PermissionCheckingAdminMixin(object):
         return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
 
+    def get_form(self, request, obj=None):
+        # Save obj and request in thread-local storage, so suit_form_tabs can
+        # use it to determine whether we're in edit or add mode, and can
+        # determine whether the user is an admin.
+        _thread_locals.request = request
+        _thread_locals.obj = obj
+        return super(PermissionCheckingAdminMixin, self).get_form(request, obj)
+
+    def get_inline_instances(self, request, obj=None):
+        inlines = super(PermissionCheckingAdminMixin, self).get_inline_instances(request, obj)
+
+        # inlines that should only be shown to an admin user
+        if request.user.is_admin:
+            for inline_class in getattr(self, "admin_inlines", []):
+                inlines.append(inline_class(self.model, self.admin_site))
+
+        return inlines
+
 class ReadOnlyAwareAdmin(PermissionCheckingAdminMixin, admin.ModelAdmin):
     # Note: Make sure PermissionCheckingAdminMixin is listed before
     # admin.ModelAdmin in the class declaration.
@@ -639,15 +657,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            if isinstance(inline, SliceInline):
-                inline.model.caller = request.user
-            yield inline.get_formset(request, obj)
-
-    def get_formsets(self, request, obj=None):
-        for inline in self.get_inline_instances(request, obj):
-            # hide MyInline in the add view
-            if obj is None:
-                continue
             if isinstance(inline, SliverInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
@@ -764,13 +773,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
 #        ('reservations','Reservations'),
 #    )
 
-    def get_form(self, request, obj=None):
-        # Save obj in thread-local storage, so suit_form_tabs can use it to
-        # determine whether we're in edit or add mode.
-        _thread_locals.request = request
-        _thread_locals.obj = obj
-        return super(SliceAdmin, self).get_form(request, obj)
-
     @property
     def suit_form_tabs(self):
         tabs =[('general', 'Slice Details'),
@@ -831,15 +833,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
             if isinstance(inline, SliverInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
-
-    def get_inline_instances(self, request, obj=None):
-        inlines = super(SliceAdmin, self).get_inline_instances(request, obj)
-
-        if request.user.is_admin:
-            for inline_class in self.admin_inlines:
-                inlines.append(inline_class(self.model, self.admin_site))
-
-        return inlines
 
 class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
     fieldsets = [
@@ -1092,13 +1085,6 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     filter_horizontal = ()
 
     user_readonly_fields = fieldListLoginDetails + fieldListContactInfo
-
-    def get_form(self, request, obj=None):
-        # Save obj in thread-local storage, so suit_form_tabs can use it to
-        # determine whether we're in edit or add mode.
-        _thread_locals.request = request
-        _thread_locals.obj = obj
-        return super(UserAdmin, self).get_form(request, obj)
 
     @property
     def suit_form_tabs(self):
