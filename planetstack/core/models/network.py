@@ -5,10 +5,62 @@ from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
 from core.models import DeploymentLinkManager,DeploymentLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.core.exceptions import ValidationError
 
 # If true, then IP addresses will be allocated by the model. If false, then
 # we will assume the observer handles it.
 NO_OBSERVER=False
+
+def ParseNatList(ports):
+    """ Support a list of ports in the format "protocol:port, protocol:port, ..."
+        examples:
+            tcp 123
+            tcp 123:133
+            tcp 123, tcp 124, tcp 125, udp 201, udp 202
+
+        User can put either a "/" or a " " between protocol and ports
+        Port ranges can be specified with "-" or ":"
+    """
+    nats = []
+    if ports:
+        parts = ports.split(",")
+        for part in parts:
+            part = part.strip()
+            if "/" in part:
+                (protocol, ports) = part.split("/",1)
+            elif " " in part:
+                (protocol, ports) = part.split(None,1)
+            else:
+                raise TypeError('malformed port specifier %s, format example: "tcp 123, tcp 201:206, udp 333"' % part)
+
+            protocol = protocol.strip()
+            ports = ports.strip()
+
+            if not (protocol in ["udp", "tcp"]):
+                raise ValueError('unknown protocol %s' % protocol)
+
+            if "-" in ports:
+                (first, last) = ports.split("-")
+                first = int(first.strip())
+                last = int(last.strip())
+                portStr = "%d:%d" % (first, last)
+            elif ":" in ports:
+                (first, last) = ports.split(":")
+                first = int(first.strip())
+                last = int(last.strip())
+                portStr = "%d:%d" % (first, last)
+            else:
+                portStr = "%d" % int(ports)
+
+            nats.append( {"l4_protocol": protocol, "l4_port": portStr} )
+
+    return nats
+
+def ValidateNatList(ports):
+    try:
+        ParseNatList(ports)
+    except Exception,e:
+        raise ValidationError(str(e))
 
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
@@ -28,7 +80,7 @@ class Network(PlCoreBase):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
     subnet = models.CharField(max_length=32, blank=True)
-    ports = models.CharField(max_length=1024, blank=True, null=True)
+    ports = models.CharField(max_length=1024, blank=True, null=True, validators=[ValidateNatList])
     labels = models.CharField(max_length=1024, blank=True, null=True)
     owner = models.ForeignKey(Slice, related_name="ownedNetworks", help_text="Slice that owns control of this Network")
 
@@ -56,49 +108,7 @@ class Network(PlCoreBase):
 
     @property
     def nat_list(self):
-        """ Support a list of ports in the format "protocol:port, protocol:port, ..."
-            examples:
-                tcp 123
-                tcp 123:133
-                tcp 123, tcp 124, tcp 125, udp 201, udp 202
-
-            User can put either a "/" or a " " between protocol and ports
-            Port ranges can be specified with "-" or ":"
-        """
-        nats = []
-        if self.ports:
-            parts = self.ports.split(",")
-            for part in parts:
-                part = part.strip()
-                if "/" in part:
-                    (protocol, ports) = part.split("/",1)
-                elif " " in part:
-                    (protocol, ports) = part.split(None,1)
-                else:
-                    raise TypeError('malformed port specifier %s, format example: "tcp 123, tcp 201:206, udp 333"' % part)
-
-                protocol = protocol.strip()
-                ports = ports.strip()
-
-                if not (protocol in ["udp", "tcp"]):
-                    raise TypeError('unknown protocol %s' % protocol)
-
-                if "-" in ports:
-                    (first, last) = ports.split("-")
-                    first = int(first.strip())
-                    last = int(last.strip())
-                    portStr = "%d:%d" % (first, last)
-                elif ":" in ports:
-                    (first, last) = ports.split(":")
-                    first = int(first.strip())
-                    last = int(last.strip())
-                    portStr = "%d:%d" % (first, last)
-                else:
-                    portStr = "%d" % int(ports)
-
-                nats.append( {"l4_protocol": protocol, "l4_port": portStr} )
-
-        return nats
+        return ParseNatList(self.ports)
 
     @staticmethod
     def select_by_user(user):
