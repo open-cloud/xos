@@ -765,14 +765,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
 
     user_readonly_fields = fieldList
 
-#    suit_form_tabs =(('general', 'Slice Details'),
-#        ('slicenetworks','Networks'),
-#        ('sliceprivileges','Privileges'),
-#        ('slivers','Slivers'),
-#        ('tags','Tags'),
-#        ('reservations','Reservations'),
-#    )
-
     @property
     def suit_form_tabs(self):
         tabs =[('general', 'Slice Details'),
@@ -967,9 +959,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
         # make some fields read only if we are updating an existing record
         if obj == None:
             #self.readonly_fields = ('ip', 'instance_name')
-            self.readonly_fields = ('backend_status_text')
+            self.readonly_fields = ('backend_status_text',)
         else:
-            self.readonly_fields = ('backend_status_text')
+            self.readonly_fields = ('backend_status_text',)
             #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key')
 
         for inline in self.get_inline_instances(request, obj):
@@ -1316,12 +1308,22 @@ class NetworkSlicesInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network','slice']
     readonly_fields = ('backend_status_icon', )
 
+class NetworkDeploymentsInline(PlStackTabularInline):
+    model = NetworkDeployments
+    extra = 0
+    verbose_name_plural = "Network Deployments"
+    verbose_name = "Network Deployment"
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['backend_status_icon', 'deployment','net_id','subnet_id']
+    readonly_fields = ('backend_status_icon', )
+
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
+    admin_inlines = [NetworkDeploymentsInline]
 
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
@@ -1329,13 +1331,22 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
 
-    suit_form_tabs =(
-        ('general','Network Details'),
-        ('netparams', 'Parameters'),
-        ('networkslivers','Slivers'),
-        ('networkslices','Slices'),
-        ('routers','Routers'),
-    )
+    @property
+    def suit_form_tabs(self):
+        tabs=[('general','Network Details'),
+            ('netparams', 'Parameters'),
+            ('networkslivers','Slivers'),
+            ('networkslices','Slices'),
+            ('routers','Routers'),
+        ]
+
+        request=getattr(_thread_locals, "request", None)
+        if request and request.user.is_admin:
+            tabs.append( ('admin-only', 'Admin-Only') )
+
+        return tabs
+
+
 class NetworkTemplateAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "guaranteedBandwidth", "visibility")
     list_display_links = ('backend_status_icon', 'name', )
