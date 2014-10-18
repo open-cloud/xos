@@ -62,6 +62,17 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def get_queryset(self):
+        parent=super(UserManager, self)
+        if hasattr(parent, "get_queryset"):
+            return parent.get_queryset().filter(deleted=False)
+        else:
+            return parent.get_query_set().filter(deleted=False)
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
 class DeletedUserManager(UserManager):
     def get_queryset(self):
         return super(UserManager, self).get_query_set().filter(deleted=True)
