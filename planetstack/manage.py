@@ -7,4 +7,9 @@ if __name__ == "__main__":
 
     from django.core.management import execute_from_command_line
 
+    if "--nomodelpolicy" in sys.argv:
+        import model_policy
+        model_policy.EnableModelPolicy(False)
+        sys.argv.remove("--nomodelpolicy")
+
     execute_from_command_line(sys.argv)
