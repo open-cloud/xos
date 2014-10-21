@@ -4,10 +4,19 @@ import pdb
 from core.models import *
 import model_policies
 
+modelPolicyEnabled = True
+
+def EnableModelPolicy(x):
+    global modelPolicyEnabled
+    modelPolicyEnabled = x
+
 @receiver(post_save)
 def post_save_handler(sender, instance, **kwargs):
 	sender_name = sender.__name__
 	policy_name = 'model_policy_%s'%sender_name
+
+        if not modelPolicyEnabled:
+            return
 	
 	if (not kwargs['update_fields']):
 		try:
