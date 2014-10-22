@@ -738,6 +738,9 @@ class SliceForm(forms.ModelForm):
         cleaned_data = super(SliceForm, self).clean()
         name = cleaned_data.get('name')
         site = cleaned_data.get('site')
+        slice_id = self.instance.id
+        if not site and slice_id:
+            site = Slice.objects.get(id=slice_id).site
         if (not isinstance(site,Site)):
             # previous code indicates 'site' could be a site_id and not a site?
             site = Slice.objects.get(id=site.id)
