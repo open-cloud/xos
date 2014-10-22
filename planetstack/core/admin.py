@@ -15,6 +15,7 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
+from cgi import escape as html_escape
 
 import django_evolution
 import threading
@@ -30,14 +31,14 @@ def backend_icon(obj): # backend_status, enacted, updated):
         if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
             return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
         else:
-            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % obj.backend_status
+            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % html_escape(obj.backend_status, quote=True)
 
 def backend_text(obj):
     icon = backend_icon(obj)
     if (obj.enacted is not None) and obj.enacted >= obj.updated:
-        return "%s %s" % (icon, "successfully enacted") # enacted on %s" % str(obj.enacted))
+        return "%s %s" % (icon, "successfully enacted")
     else:
-        return "%s %s" % (icon, obj.backend_status)
+        return "%s %s" % (icon, html_escape(obj.backend_status, quote=True))
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
