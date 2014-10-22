@@ -781,6 +781,18 @@ class SliceAdmin(PlanetStackBaseAdmin):
             tabs.append( ('admin-only', 'Admin-Only') )
 
         return tabs
+    
+    def add_view(self, request, form_url='', extra_context=None):
+        # revert to default read-only fields
+        self.readonly_fields = ('backend_status_text',)
+        return super(SliceAdmin, self).add_view(request, form_url, extra_context=extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        print object_id
+        # cannot change the site of an existing slice so make the site field read only
+        if object_id:
+            self.readonly_fields = ('backend_status_text','site')
+        return super(SliceAdmin, self).change_view(request, object_id, form_url)
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         deployment_nodes = []
