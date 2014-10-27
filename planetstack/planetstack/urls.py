@@ -51,6 +51,9 @@ urlpatterns = patterns('',
     url(r'^plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
     url(r'^plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name='account-detail'),
 
+    url(r'^plstackapi/flavors/$', FlavorList.as_view(), name='flavor-list'),
+    url(r'^plstackapi/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name='flavor-detail'),
+
     url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
     url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
 
