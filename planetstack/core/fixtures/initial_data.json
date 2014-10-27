@@ -1220,7 +1220,7 @@
         "name": "nagios",
         "created": "2014-06-18T00:00:43.149Z",
         "deleted": false,
-        "url": "http://nagiosadmin:letmein@node52.princeton.vicci.org:8088/nagios/cgi-bin/status.cgi?host=all",
+        "url": "http://nagiosadmin:nagiosadmin@nagios.opencloud.us:8014/nagios/cgi-bin/status.cgi?host=all",
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
@@ -1239,6 +1239,19 @@
     },
     "model": "core.dashboardview",
     "pk": 9
+},
+{
+    "fields": {
+        "updated": "2014-10-27T21:34:28.456Z",
+        "name": "cacti",
+        "created": "2014-10-27T21:19:30.111Z",
+        "deleted": false,
+        "url": "http://cacti.opencloud.us:8011/cacti/graph_view.php",
+        "backend_status": "Provisioning in progress",
+        "enacted": null
+    },
+    "model": "core.dashboardview",
+    "pk": 10
 },
 {
     "fields": {
