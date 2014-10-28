@@ -88,7 +88,7 @@ if (! window.XOSLIB_LOADED ) {
 
         startPolling: function() {
             if (!this._polling) {
-                collection=this;
+                var collection=this;
                 setInterval(function() { collection.fetch(); }, 10000);
                 this._polling=true;
                 this.fetch();
