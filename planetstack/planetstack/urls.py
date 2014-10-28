@@ -105,8 +105,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
     url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
     
-    url(r'^plstackapi/services/$', SliceList.as_view(), name='service-list'),
-    url(r'^plstackapi/services/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='service-detail'),
+    url(r'^plstackapi/services/$', ServiceList.as_view(), name='service-list'),
+    url(r'^plstackapi/services/(?P<pk>[a-zA-Z0-9_\-]+)/$', ServiceDetail.as_view(), name='service-detail'),
 
     url(r'^plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
     url(r'^plstackapi/slices/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliceDetail.as_view(), name='slice-detail'),
