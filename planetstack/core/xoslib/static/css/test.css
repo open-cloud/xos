@@ -2,11 +2,25 @@
     border: 1px solid black;
 }
 
-#detailBox {
+#rightSide {
     position: fixed;
     top: 1em;
     right: 1em;
-    border: 1px;
+}
+
+#detailBox {
+    padding: 10px;
+    border: 2px solid;
     background-color: #f0f0f0;
+    margin-bottom:50px;
+    display:none;
+}
+
+#errorBox {
+    padding: 10px;
+    border: 2px solid;
+    background-color: #f00000;
+    margin-bottom:50px;
+    display:none;
 }
 
