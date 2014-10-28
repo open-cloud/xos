@@ -1,0 +1,298 @@
+<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.syphon.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.wreqr.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.babysitter.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.marionette.js"></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}" media="all" >
+
+<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/test.js"></script>
+
+<p>This shows all of the things you can see using xosLib</p>
+
+<h3>Deployments</h3>
+<div id="deploymentList">
+</div>
+
+<h3>Images</h3>
+<div id="imageList">
+</div>
+
+<h3>Network Templates</h3>
+<div id="networkTemplateList">
+</div>
+
+<h3>Networks</h3>
+<div id="networkList">
+</div>
+
+<h3>Nodes</h3>
+<div id="nodeList">
+</div>
+
+<h3>Services</h3>
+<div id="serviceList">
+</div>
+
+<h3>Sites</h3>
+<div id="siteList">
+</div>
+
+<h3>Slices</h3>
+<div id="sliceList">
+</div>
+
+<h3>Slivers</h3>
+<div id="sliverList">
+</div>
+
+<!-- Deployment -->
+
+<script type="text/template" id="test-deployment-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>backend</th>
+     <th>admin_tenant</th>
+     <th># sites</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-deployment-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= backend_type %></td>
+  <td><%= admin_tenant %></td>
+  <td><%= sites.length %></td>
+</script>
+
+<!-- Image -->
+
+<script type="text/template" id="test-image-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>disk_format</th>
+     <th>container_format</th>
+     <th>path</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-image-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= disk_format %></td>
+  <td><%= container_format %></td>
+  <td><%= path %></td>
+</script>
+
+<!-- NetworkTemplate -->
+
+<script type="text/template" id="test-networkTemplate-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>description</th>
+     <th>visibility</th>
+     <th>translation</th>
+     <th>sharedNetworkName</th>
+     <th>sharedNetworkId</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-networkTemplate-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= description %></td>
+  <td><%= visibility %></td>
+  <td><%= translation %></td>
+  <td><%= sharedNetworkName %></td>
+  <td><%= sharedNetworkId %></td>
+</script>
+
+<!-- Network -->
+
+<script type="text/template" id="test-network-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>template</th>
+     <th>ports</th>
+     <th>labels</th>
+     <th>owner</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-network-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= template %></td>
+  <td><%= ports %></td>
+  <td><%= labels %></td>
+  <td><%= owner %></td>
+</script>
+
+<!-- Node -->
+
+<script type="text/template" id="test-node-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>site</th>
+     <th>deployment</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-node-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= site %></td>
+  <td><%= deployment %></td>
+</script>
+
+<!-- Service -->
+
+<script type="text/template" id="test-service-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>description</th>
+     <th>enabled</th>
+     <th>versionNumber</th>
+     <th>published</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-service-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= description %></td>
+  <td><%= enabled %></td>
+  <td><%= versionNumber %></td>
+  <td><%= published %></td>
+</script>
+
+<!-- Site -->
+
+<script type="text/template" id="test-site-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>url</th>
+     <th>enabled</th>
+     <th>login_base</th>
+     <th>is_public</th>
+     <th>abbreviated_name</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-site-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= site_url %></td>
+  <td><%= enabled %></td>
+  <td><%= login_base %></td>
+  <td><%= is_public %></td>
+  <td><%= abbreviated_name %></td>
+</script>
+
+<!-- Slice -->
+
+<script type="text/template" id="test-slice-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>enabled</th>
+     <th>omf_friendly</th>
+     <th>description</th>
+     <th>slice_url</th>
+     <th>site</th>
+     <th>max_slivers</th>
+     <th>service</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-slice-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= enabled %></td>
+  <td><%= omf_friendly %></td>
+  <td><%= description %></td>
+  <td><%= slice_url %></td>
+  <td><%= site %></td>
+  <td><%= max_slivers %></td>
+  <td><%= service %></td>
+</script>
+
+<!-- Sliver -->
+
+<script type="text/template" id="test-sliver-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>name</th>
+     <th>instance_id</th>
+     <th>instance_name</th>
+     <th>image</th>
+     <th>creator</th>
+     <th>slice</th>
+     <th>node</th>
+     <th>deploymentNetwork</th>
+     <th>flavor</th>
+     <th>userData</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-sliver-listitem-template">
+  <td><%= id %></td>
+  <td><%= name %></td>
+  <td><%= instance_id %></td>
+  <td><%= instance_name %></td>
+  <td><%= image %></td>
+  <td><%= creator %></td>
+  <td><%= slice %></td>
+  <td><%= node %></td>
+  <td><%= deploymentNetwork %></td>
+  <td><%= flavor %></td>
+  <td><%= userData %></td>
+</script>
+
+</script>
+
