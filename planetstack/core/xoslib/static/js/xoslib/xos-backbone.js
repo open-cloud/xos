@@ -6,11 +6,11 @@ if (! window.XOSLIB_LOADED ) {
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
     USER_API = "/plstackapi/users/";
-    DEPLOYMENT_API = "/plstackapi/deployments";
-    IMAGE_API = "/plstackapi/images";
-    NETWORKTEMPLATE_API = "/plstackapi/networktemplates";
-    NETWORK_API = "/plstackapi/networks";
-    SERVICE_API = "/plstackapi/services";
+    DEPLOYMENT_API = "/plstackapi/deployments/";
+    IMAGE_API = "/plstackapi/images/";
+    NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
+    NETWORK_API = "/plstackapi/networks/";
+    SERVICE_API = "/plstackapi/services/";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
 
