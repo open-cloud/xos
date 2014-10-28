@@ -2,3 +2,11 @@
     border: 1px solid black;
 }
 
+#detailBox {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    border: 1px;
+    background-color: #f0f0f0;
+}
+

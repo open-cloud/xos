@@ -48,6 +48,13 @@
 <div id="sliverList">
 </div>
 
+<div id="detailBox">
+<button id="close-detail-view">Close Detail View</button>
+<div id="detail"></div>
+<div id="linkedObjs1"></div>
+<div id="linkedObjs2"></div>
+</div>
+
 <!-- Deployment -->
 
 <script type="text/template" id="test-deployment-list-template">
@@ -72,6 +79,18 @@
   <td><%= sites.length %></td>
 </script>
 
+<script type="text/template" id="test-deployment-detail-template">
+  <h3>Detail View: Deployment</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Backend:</td><td><input type="text" name="backend_type" value="<%= backend_type %>"></td></tr>
+  <tr><td>Admin Tenant:</td><td><input type="text" name="admin_tenant" value="<%= admin_tenant %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Image -->
 
 <script type="text/template" id="test-image-list-template">
@@ -87,13 +106,24 @@
   </table>
 </script>
 
-
 <script type="text/template" id="test-image-listitem-template">
   <td><%= id %></td>
   <td><%= name %></td>
   <td><%= disk_format %></td>
   <td><%= container_format %></td>
   <td><%= path %></td>
+</script>
+
+<script type="text/template" id="test-image-detail-template">
+  <h3>Detail View: Image</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Disk Format:</td><td><input type="text" name="backend_type" value="<%= disk_format %>"></td></tr>
+  <tr><td>Container Format:</td><td><input type="text" name="admin_tenant" value="<%= container_format %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
 </script>
 
 <!-- NetworkTemplate -->
@@ -124,6 +154,21 @@
   <td><%= sharedNetworkId %></td>
 </script>
 
+<script type="text/template" id="test-networkTemplate-detail-template">
+  <h3>Detail View: NetworkTemplate</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
+  <tr><td>Visibility:</td><td><input type="text" name="visibility" value="<%= visibility %>"></td></tr>
+  <tr><td>Translation:</td><td><input type="text" name="translation" value="<%= translation %>"></td></tr>
+  <tr><td>Shared Network Name:</td><td><input type="text" name="sharedNetworkName" value="<%= sharedNetworkName %>"></td></tr>
+  <tr><td>Shared Network Id:</td><td><input type="text" name="sharedNetworkId" value="<%= sharedNetworkId %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Network -->
 
 <script type="text/template" id="test-network-list-template">
@@ -150,6 +195,20 @@
   <td><%= owner %></td>
 </script>
 
+<script type="text/template" id="test-network-detail-template">
+  <h3>Detail View: Network</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Template:</td><td><input type="text" name="template" value="<%= template %>"></td></tr>
+  <tr><td>Ports:</td><td><input type="text" name="ports" value="<%= ports %>"></td></tr>
+  <tr><td>Labels:</td><td><input type="text" name="labels" value="<%= labels %>"></td></tr>
+  <tr><td>Owner:</td><td><input type="text" name="owner" value="<%= owner %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Node -->
 
 <script type="text/template" id="test-node-list-template">
@@ -170,6 +229,18 @@
   <td><%= name %></td>
   <td><%= site %></td>
   <td><%= deployment %></td>
+</script>
+
+<script type="text/template" id="test-node-detail-template">
+  <h3>Detail View: Node</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Site:</td><td><input type="text" name="site" value="<%= site %>"></td></tr>
+  <tr><td>Deployment:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
 </script>
 
 <!-- Service -->
@@ -196,6 +267,18 @@
   <td><%= enabled %></td>
   <td><%= versionNumber %></td>
   <td><%= published %></td>
+</script>
+
+<script type="text/template" id="test-service-detail-template">
+  <h3>Detail View: Service</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
+  <tr><td>Version Number:</td><td><input type="text" name="versionNumber" value="<%= versionNumber %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
 </script>
 
 <!-- Site -->
@@ -226,6 +309,18 @@
   <td><%= abbreviated_name %></td>
 </script>
 
+<script type="text/template" id="test-site-detail-template">
+  <h3>Detail View: Site</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>url:</td><td><input type="text" name="site_url" value="<%= site_url %>"></td></tr>
+  <tr><td>login_base:</td><td><input type="text" name="login_base" value="<%= login_base %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Slice -->
 
 <script type="text/template" id="test-slice-list-template">
@@ -245,7 +340,6 @@
   </table>
 </script>
 
-
 <script type="text/template" id="test-slice-listitem-template">
   <td><%= id %></td>
   <td><%= name %></td>
@@ -256,6 +350,20 @@
   <td><%= site %></td>
   <td><%= max_slivers %></td>
   <td><%= service %></td>
+</script>
+
+<script type="text/template" id="test-slice-detail-template">
+  <h3>Detail View: Slice</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Enabled:</td><td><input type="checkbox" name="enabled" <% if (enabled) print("checked"); %>></td></tr>
+  <tr><td>Description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
+  <tr><td>Url:</td><td><input type="text" name="slice_url" value="<%= slice_url %>"></td></tr>
+  <tr><td>Max Slivers:</td><td><input type="text" name="max_slivers" value="<%= max_slivers %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
 </script>
 
 <!-- Sliver -->
@@ -292,6 +400,21 @@
   <td><%= deploymentNetwork %></td>
   <td><%= flavor %></td>
   <td><%= userData %></td>
+</script>
+
+<script type="text/template" id="test-sliver-detail-template">
+  <h3>Detail View: Sliver</h3>
+  <form>
+  <table>
+  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>instance_id:</td><td><input type="text" name="instance_id" value="<%= instance_id %>"></td></tr>
+  <tr><td>instance_name:</td><td><input type="text" name="instance_name" value="<%= instance_name %>"></td></tr>
+  <tr><td>Image:</td><td><input type="text" name="image" value="<%= image %>"></td></tr>
+  <tr><td>Creator:</td><td><input type="text" name="creator" value="<%= creator %>"></td></tr>
+  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
 </script>
 
 </script>
