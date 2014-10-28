@@ -45,7 +45,7 @@ TestApp.showError = function(result) {
 };
 
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'node', 'service', 'site', 'slice', 'sliver'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'node', 'service', 'site', 'slice', 'sliver', 'user'];
 
      for (var index in objs) {
          name = objs[index];
@@ -126,9 +126,6 @@ TestApp.on("start", function() {
      $('#close-detail-view').unbind().bind('click', function() {
          $('#detailBox').hide();
      });
-
-//     $('#detailBox').hide();
-//     $('#errorBox').hide();
 });
 
 $(document).ready(function(){
