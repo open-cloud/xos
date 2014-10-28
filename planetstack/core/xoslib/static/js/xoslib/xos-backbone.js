@@ -8,6 +8,7 @@ if (! window.XOSLIB_LOADED ) {
     USER_API = "/plstackapi/users/";
     DEPLOYMENT_API = "/plstackapi/deployments";
     IMAGE_API = "/plstackapi/images";
+    NETWORKTEMPLATE_API = "/plstackapi/networktemplates";
     NETWORK_API = "/plstackapi/networks";
     SERVICE_API = "/plstackapi/services";
 
@@ -199,6 +200,11 @@ if (! window.XOSLIB_LOADED ) {
         this.imageCollection = XOSCollection.extend({ urlRoot: IMAGE_API,
                                                            model: this.image});
         this.images = new this.imageCollection();
+
+        this.networkTemplate = XOSModel.extend({ urlRoot: NETWORKTEMPLATE_API });
+        this.networkTemplateCollection = XOSCollection.extend({ urlRoot: NETWORKTEMPLATE_API,
+                                                           model: this.networkTemplate});
+        this.networkTemplates = new this.networkTemplateCollection();
 
         this.network = XOSModel.extend({ urlRoot: NETWORK_API });
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
