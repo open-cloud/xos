@@ -48,6 +48,10 @@
 <div id="sliverList">
 </div>
 
+<h3>Users</h3>
+<div id="userList">
+</div>
+
 <div id="rightSide">
 <div id="errorBox">
 </div>
@@ -426,6 +430,48 @@
   <tr><td>Image:</td><td><input type="text" name="image" value="<%= image %>"></td></tr>
   <tr><td>Creator:</td><td><input type="text" name="creator" value="<%= creator %>"></td></tr>
   <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
+<!-- User -->
+
+<script type="text/template" id="test-user-list-template">
+  <table class="test-table">
+  <thead><tr>
+     <th>username</th>
+     <th>firstname</th>
+     <th>lastname</th>
+     <th>phone</th>
+     <th>user_url</th>
+     <th>site</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-user-listitem-template">
+  <td><%= id %></td>
+  <td><%= username %></td>
+  <td><%= firstname %></td>
+  <td><%= lastname %></td>
+  <td><%= phone %></td>
+  <td><%= user_url %></td>
+  <td><%= site %></td>
+</script>
+
+<script type="text/template" id="test-user-detail-template">
+  <h3>Detail View: Sliver</h3>
+  <form>
+  <table>
+  <tr><td>User Name:</td><td><input type="text" name="username" value="<%= username %>"></td></tr>
+  <tr><td>First Name:</td><td><input type="text" name="firstname" value="<%= firstname %>"></td></tr>
+  <tr><td>Last Name:</td><td><input type="text" name="lastname" value="<%= lastname %>"></td></tr>
+  <tr><td>Phone:</td><td><input type="text" name="phone" value="<%= phone %>"></td></tr>
+  <tr><td>Url:</td><td><input type="text" name="user_url" value="<%= user_url %>"></td></tr>
+  <tr><td>Site:</td><td><input type="text" name="site" value="<%= site %>"></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
