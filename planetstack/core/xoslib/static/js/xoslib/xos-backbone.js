@@ -9,6 +9,7 @@ if (! window.XOSLIB_LOADED ) {
     DEPLOYMENT_API = "/plstackapi/deployments";
     IMAGE_API = "/plstackapi/images";
     NETWORK_API = "/plstackapi/networks";
+    SERVICE_API = "/plstackapi/services";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
 
@@ -203,6 +204,11 @@ if (! window.XOSLIB_LOADED ) {
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
                                                            model: this.network});
         this.networks = new this.networkCollection();
+
+        this.service = XOSModel.extend({ urlRoot: SERVICE_API });
+        this.serviceCollection = XOSCollection.extend({ urlRoot: SERVICE_API,
+                                                       model: this.service});
+        this.services = new this.serviceCollection();
 
         // enhanced REST
         this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API });
