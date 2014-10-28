@@ -48,12 +48,26 @@
 <div id="sliverList">
 </div>
 
+<div id="rightSide">
+<div id="errorBox">
+</div>
+
 <div id="detailBox">
 <button id="close-detail-view">Close Detail View</button>
 <div id="detail"></div>
 <div id="linkedObjs1"></div>
 <div id="linkedObjs2"></div>
 </div>
+</div>
+
+<script type="text/template" id="test-error-template">
+  <button id="close-error-box">Close Error Message</button>
+  <h3>An error has occurred.</h3>
+  <table class="test-error-table">
+  <tr><td>Code:</td><td><%= status %></td></tr>
+  <tr><td>Message:</td><td><%= statusText %></td></tr>
+  </table>
+</script>
 
 <!-- Deployment -->
 

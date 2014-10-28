@@ -32,6 +32,18 @@ TestApp.DeploymentListView = Marionette.CompositeView.extend({
     },
 });
 
+TestApp.hideError = function(result) {
+    $("#errorBox").hide();
+};
+
+TestApp.showError = function(result) {
+     $("#errorBox").show();
+     $("#errorBox").html(_.template($("#test-error-template").html())(result));
+     $('#close-error-box').unbind().bind('click', function() {
+         $('#errorBox').hide();
+     });
+};
+
 TestApp.on("start", function() {
      var objs = ['deployment', 'image', 'networkTemplate', 'network', 'node', 'service', 'site', 'slice', 'sliver'];
 
@@ -59,10 +71,16 @@ TestApp.on("start", function() {
                 this.dirty = true;
             },
 
+            saveError: function(model, result, xhr) {
+                TestApp.showError(result);
+            },
+
             submitClicked: function(e) {
+                TestApp.hideError();
                 e.preventDefault();
                 var data = Backbone.Syphon.serialize(this);
-                this.model.save(data);
+                var thisView = this;
+                this.model.save(data, {error: function(model, result, xhr) { thisView.saveError(model, result, xhr); }});
                 this.dirty = false;
             },
          });
@@ -76,6 +94,7 @@ TestApp.on("start", function() {
              events: {"click": "changeItem"},
 
              changeItem: function(e) {
+                    TestApp.hideError();
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -104,11 +123,12 @@ TestApp.on("start", function() {
          xos[collection_name].startPolling();
      }
 
-     $('#close-detail-view').bind('click', function() {
+     $('#close-detail-view').unbind().bind('click', function() {
          $('#detailBox').hide();
      });
 
-     $('#detailBox').hide();
+//     $('#detailBox').hide();
+//     $('#errorBox').hide();
 });
 
 $(document).ready(function(){
