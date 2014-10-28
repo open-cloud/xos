@@ -14,6 +14,22 @@ if (! window.XOSLIB_LOADED ) {
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     XOSModel = Backbone.Model.extend({
         /* from backbone-tastypie.js */
         //idAttribute: 'resource_uri',
@@ -231,7 +247,8 @@ if (! window.XOSLIB_LOADED ) {
       var _sync = Backbone.sync;
       Backbone.sync = function(method, model, options){
         options.beforeSend = function(xhr){
-          var token = $('meta[name="csrf-token"]').attr('content');
+          //var token = $('meta[name="csrf-token"]').attr('content');
+          var token = getCookie("csrftoken");
           xhr.setRequestHeader('X-CSRFToken', token);
           console.log(token);
         };
