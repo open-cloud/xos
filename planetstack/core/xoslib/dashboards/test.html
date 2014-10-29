@@ -53,6 +53,8 @@
 </div>
 
 <div id="rightSide">
+<div id="successBox">
+</div>
 <div id="errorBox">
 </div>
 
@@ -68,6 +70,15 @@
   <button id="close-error-box">Close Error Message</button>
   <h3>An error has occurred.</h3>
   <table class="test-error-table">
+  <tr><td>Code:</td><td><%= status %></td></tr>
+  <tr><td>Message:</td><td><%= statusText %></td></tr>
+  </table>
+</script>
+
+<script type="text/template" id="test-success-template">
+  <button id="close-success-box">Close Success Message</button>
+  <h3>Success!</h3>
+  <table class="test-success-table">
   <tr><td>Code:</td><td><%= status %></td></tr>
   <tr><td>Message:</td><td><%= statusText %></td></tr>
   </table>
