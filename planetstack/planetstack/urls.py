@@ -116,6 +116,9 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/slice_memberships/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
     url(r'^plstackapi/slice_memberships/(?P<pk>[0-9]+)/$', SlicePrivilegeDetail.as_view(), name='sliceprivilege-detail'),
+
+    url(r'^plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
+    url(r'^plstackapi/slice_deployments/(?P<pk>[0-9]+)/$', SliceDeploymentsDetail.as_view(), name='slicedeployments-detail'),
     
     url(r'^plstackapi/slivers/$', SliverList.as_view(), name='sliver-list'),
     url(r'^plstackapi/slivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', SliverDetail.as_view(), name='sliver-detail'),
