@@ -3,6 +3,7 @@ if (! window.XOSLIB_LOADED ) {
 
     SLIVER_API = "/plstackapi/slivers/";
     SLICE_API = "/plstackapi/slices/";
+    SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
     USER_API = "/plstackapi/users/";
@@ -13,22 +14,6 @@ if (! window.XOSLIB_LOADED ) {
     SERVICE_API = "/plstackapi/services/";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
-
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     XOSModel = Backbone.Model.extend({
         /* from backbone-tastypie.js */
@@ -78,6 +63,8 @@ if (! window.XOSLIB_LOADED ) {
           this.sortVar = 'name';
           this.sortOrder = 'asc';
         },
+
+        relatedCollections: [],
 
         simpleComparator: function( model ){
           parts=this.sortVar.split(".");
@@ -149,6 +136,13 @@ if (! window.XOSLIB_LOADED ) {
             model.fetch(options);
         },
 
+        filterBy: function(fieldName, value) {
+             filtered = this.filter(function(obj) {
+                 return obj.get(fieldName) == value;
+                 });
+             return new this.constructor(filtered);
+        },
+
         /* from backbone-tastypie.js */
         url: function( models ) {
                     var url = this.urlRoot || ( models && models.length && models[0].urlRoot );
@@ -169,7 +163,7 @@ if (! window.XOSLIB_LOADED ) {
                     return url;
             },
 
-            listMethods: function() {
+        listMethods: function() {
                 var res = [];
                 for(var m in this) {
                     if(typeof this[m] == "function") {
@@ -177,6 +171,10 @@ if (! window.XOSLIB_LOADED ) {
                     }
                 }
                 return res;
+            },
+
+        templateHelpers: function() {
+            return { title: "foo" };
             }
     });
 
@@ -189,8 +187,14 @@ if (! window.XOSLIB_LOADED ) {
 
         this.slice = XOSModel.extend({ urlRoot: SLICE_API });
         this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
+                                                       relatedCollections: {"slivers": "slice", "sliceDeployments": "slice"},
                                                        model: this.slice});
         this.slices = new this.sliceCollection();
+
+        this.sliceDeployment = XOSModel.extend({ urlRoot: SLICEDEPLOYMENT_API });
+        this.sliceDeploymentCollection = XOSCollection.extend({ urlRoot: SLICEDEPLOYMENT_API,
+                                                       model: this.slice});
+        this.sliceDeployments = new this.sliceDeploymentCollection();
 
         this.node = XOSModel.extend({ urlRoot: NODE_API });
         this.nodeCollection = XOSCollection.extend({ urlRoot: NODE_API,
@@ -233,7 +237,7 @@ if (! window.XOSLIB_LOADED ) {
         this.services = new this.serviceCollection();
 
         // enhanced REST
-        this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API });
+        this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API, relatedCollections: {'slivers': "slice"} });
         this.slicePlusCollection = XOSCollection.extend({ urlRoot: SLICEPLUS_API,
                                                           model: this.slicePlus});
         this.slicesPlus = new this.slicePlusCollection();
@@ -243,14 +247,28 @@ if (! window.XOSLIB_LOADED ) {
 
     xos = new xoslib();
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     (function() {
       var _sync = Backbone.sync;
       Backbone.sync = function(method, model, options){
         options.beforeSend = function(xhr){
-          //var token = $('meta[name="csrf-token"]').attr('content');
           var token = getCookie("csrftoken");
           xhr.setRequestHeader('X-CSRFToken', token);
-          console.log(token);
         };
         return _sync(method, model, options);
       };
