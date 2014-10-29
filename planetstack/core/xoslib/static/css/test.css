@@ -12,7 +12,7 @@
     padding: 10px;
     border: 2px solid;
     background-color: #f0f0f0;
-    margin-bottom:50px;
+    margin-bottom:30px;
     display:none;
 }
 
@@ -20,7 +20,15 @@
     padding: 10px;
     border: 2px solid;
     background-color: #f00000;
-    margin-bottom:50px;
+    margin-bottom:30px;
+    display:none;
+}
+
+#successBox {
+    padding: 10px;
+    border: 2px solid;
+    background-color: #00f000;
+    margin-bottom:30px;
     display:none;
 }
 

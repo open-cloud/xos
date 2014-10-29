@@ -34,6 +34,15 @@ TestApp.DeploymentListView = Marionette.CompositeView.extend({
 
 TestApp.hideError = function(result) {
     $("#errorBox").hide();
+    $("#successBox").hide();
+};
+
+TestApp.showSuccess = function(result) {
+     $("#successBox").show();
+     $("#successBox").html(_.template($("#test-success-template").html())(result));
+     $('#close-success-box').unbind().bind('click', function() {
+         $('#successBox').hide();
+     });
 };
 
 TestApp.showError = function(result) {
@@ -75,12 +84,17 @@ TestApp.on("start", function() {
                 TestApp.showError(result);
             },
 
+            saveSuccess: function(model, result, xhr) {
+                TestApp.showSuccess({status: xhr.xhr.status, statusText: xhr.xhr.statusText});
+            },
+
             submitClicked: function(e) {
                 TestApp.hideError();
                 e.preventDefault();
                 var data = Backbone.Syphon.serialize(this);
                 var thisView = this;
-                this.model.save(data, {error: function(model, result, xhr) { thisView.saveError(model, result, xhr); }});
+                this.model.save(data, {error: function(model, result, xhr) { thisView.saveError(model, result, xhr); },
+                                       success: function(model, result, xhr) { thisView.saveSuccess(model, result, xhr); }});
                 this.dirty = false;
             },
          });
@@ -120,7 +134,7 @@ TestApp.on("start", function() {
          var listView = new listViewClass();
 
          TestApp[region_name].show(listView);
-         xos[collection_name].startPolling();
+         xos[collection_name].fetch(); //startPolling();
      }
 
      $('#close-detail-view').unbind().bind('click', function() {
