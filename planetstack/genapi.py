@@ -9,17 +9,17 @@ from django.forms import widgets
 from rest_framework import filters
 
 """
-	Schema of the generator object:
-		all: Set of all Model objects
-		all_if(regex): Set of Model objects that match regex
-	
-	Model object:
-		plural: English plural of object name
-		camel: CamelCase version of object name
-		refs: list of references to other Model objects
-		props: list of properties minus refs
+    Schema of the generator object:
+        all: Set of all Model objects
+        all_if(regex): Set of Model objects that match regex
+    
+    Model object:
+        plural: English plural of object name
+        camel: CamelCase version of object name
+        refs: list of references to other Model objects
+        props: list of properties minus refs
 
-	TODO: Deal with subnets
+    TODO: Deal with subnets
 """
 
 # Based on api_root.py
@@ -27,56 +27,56 @@ from rest_framework import filters
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-		'serviceattributes': reverse('serviceattribute-list', request=request, format=format),
-		'images': reverse('image-list', request=request, format=format),
-		'networkparameters': reverse('networkparameter-list', request=request, format=format),
-		'sites': reverse('site-list', request=request, format=format),
-		'sliceroles': reverse('slicerole-list', request=request, format=format),
-		'tags': reverse('tag-list', request=request, format=format),
-		'invoices': reverse('invoice-list', request=request, format=format),
-		'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
-		'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
-		'networkslivers': reverse('networksliver-list', request=request, format=format),
-		'networkdeploymentses': reverse('networkdeployments-list', request=request, format=format),
-		'flavors': reverse('flavor-list', request=request, format=format),
-		'projects': reverse('project-list', request=request, format=format),
-		'slices': reverse('slice-list', request=request, format=format),
-		'networks': reverse('network-list', request=request, format=format),
-		'services': reverse('service-list', request=request, format=format),
-		'serviceclasses': reverse('serviceclass-list', request=request, format=format),
-		'payments': reverse('payment-list', request=request, format=format),
-		'charges': reverse('charge-list', request=request, format=format),
-		'roles': reverse('role-list', request=request, format=format),
-		'usableobjects': reverse('usableobject-list', request=request, format=format),
-		'siteroles': reverse('siterole-list', request=request, format=format),
-		'slicecredentials': reverse('slicecredential-list', request=request, format=format),
-		'slivers': reverse('sliver-list', request=request, format=format),
-		'nodes': reverse('node-list', request=request, format=format),
-		'dashboardviews': reverse('dashboardview-list', request=request, format=format),
-		'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
-		'reservedresources': reverse('reservedresource-list', request=request, format=format),
-		'networkslices': reverse('networkslice-list', request=request, format=format),
-		'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
-		'planetstackprivileges': reverse('planetstackprivilege-list', request=request, format=format),
-		'users': reverse('user-list', request=request, format=format),
-		'deployments': reverse('deployment-list', request=request, format=format),
-		'reservations': reverse('reservation-list', request=request, format=format),
-		'slicedeploymentses': reverse('slicedeployments-list', request=request, format=format),
-		'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
-		'planetstacks': reverse('planetstack-list', request=request, format=format),
-		'userdeploymentses': reverse('userdeployments-list', request=request, format=format),
-		'accounts': reverse('account-list', request=request, format=format),
-		'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
-		'sitecredentials': reverse('sitecredential-list', request=request, format=format),
-		'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
-		'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
-		'usercredentials': reverse('usercredential-list', request=request, format=format),
-		'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
-		'slicetags': reverse('slicetag-list', request=request, format=format),
-		'networktemplates': reverse('networktemplate-list', request=request, format=format),
-		'routers': reverse('router-list', request=request, format=format),
-		'serviceresources': reverse('serviceresource-list', request=request, format=format),
-		
+        'serviceattributes': reverse('serviceattribute-list', request=request, format=format),
+        'images': reverse('image-list', request=request, format=format),
+        'networkparameters': reverse('networkparameter-list', request=request, format=format),
+        'sites': reverse('site-list', request=request, format=format),
+        'sliceroles': reverse('slicerole-list', request=request, format=format),
+        'tags': reverse('tag-list', request=request, format=format),
+        'invoices': reverse('invoice-list', request=request, format=format),
+        'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
+        'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
+        'networkslivers': reverse('networksliver-list', request=request, format=format),
+        'networkdeploymentses': reverse('networkdeployments-list', request=request, format=format),
+        'flavors': reverse('flavor-list', request=request, format=format),
+        'projects': reverse('project-list', request=request, format=format),
+        'slices': reverse('slice-list', request=request, format=format),
+        'networks': reverse('network-list', request=request, format=format),
+        'services': reverse('service-list', request=request, format=format),
+        'serviceclasses': reverse('serviceclass-list', request=request, format=format),
+        'payments': reverse('payment-list', request=request, format=format),
+        'charges': reverse('charge-list', request=request, format=format),
+        'roles': reverse('role-list', request=request, format=format),
+        'usableobjects': reverse('usableobject-list', request=request, format=format),
+        'siteroles': reverse('siterole-list', request=request, format=format),
+        'slicecredentials': reverse('slicecredential-list', request=request, format=format),
+        'slivers': reverse('sliver-list', request=request, format=format),
+        'nodes': reverse('node-list', request=request, format=format),
+        'dashboardviews': reverse('dashboardview-list', request=request, format=format),
+        'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
+        'reservedresources': reverse('reservedresource-list', request=request, format=format),
+        'networkslices': reverse('networkslice-list', request=request, format=format),
+        'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
+        'planetstackprivileges': reverse('planetstackprivilege-list', request=request, format=format),
+        'users': reverse('user-list', request=request, format=format),
+        'deployments': reverse('deployment-list', request=request, format=format),
+        'reservations': reverse('reservation-list', request=request, format=format),
+        'slicedeploymentses': reverse('slicedeployments-list', request=request, format=format),
+        'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
+        'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'userdeploymentses': reverse('userdeployments-list', request=request, format=format),
+        'accounts': reverse('account-list', request=request, format=format),
+        'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
+        'sitecredentials': reverse('sitecredential-list', request=request, format=format),
+        'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
+        'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
+        'usercredentials': reverse('usercredential-list', request=request, format=format),
+        'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
+        'slicetags': reverse('slicetag-list', request=request, format=format),
+        'networktemplates': reverse('networktemplate-list', request=request, format=format),
+        'routers': reverse('router-list', request=request, format=format),
+        'serviceresources': reverse('serviceresource-list', request=request, format=format),
+        
     })
 
 # Based on serializers.py
@@ -84,946 +84,946 @@ def api_root(request, format=None):
 
 
 class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceAttribute
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceAttribute
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
 
 class ServiceAttributeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceAttribute
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceAttribute
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
 
 
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Image
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Image
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
 
 class ImageIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Image
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Image
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
 
 
 
 
 class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkParameter
-		fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkParameter
+        fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
 
 class NetworkParameterIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkParameter
-		fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkParameter
+        fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
 
 
 
 
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Site
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Site
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
 
 class SiteIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Site
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Site
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
 
 
 
 
 class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 class SliceRoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Tag
-		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Tag
+        fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 class TagIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Tag
-		fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Tag
+        fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Invoice
-		fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Invoice
+        fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
 
 class InvoiceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Invoice
-		fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Invoice
+        fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
 
 
 
 
 class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SlicePrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SlicePrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
 
 class SlicePrivilegeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SlicePrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SlicePrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
 
 
 
 
 class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStackRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 class PlanetStackRoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStackRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
 
 class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkSliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkSliver
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
 
 class NetworkSliverIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkSliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkSliver
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
 
 
 
 
 class NetworkDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
 
 class NetworkDeploymentsIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
 
 
 
 
 class FlavorSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Flavor
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Flavor
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
 
 class FlavorIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Flavor
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Flavor
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
 
 
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Project
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Project
+        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
 
 class ProjectIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Project
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Project
+        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
 
 
 
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	class Meta:
-		model = Slice
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+    id = serializers.Field()
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    class Meta:
+        model = Slice
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
 
 class SliceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	class Meta:
-		model = Slice
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+    id = serializers.Field()
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    class Meta:
+        model = Slice
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
 
 
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	availableRouters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	class Meta:
-		model = Network
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
+    id = serializers.Field()
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    availableRouters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    class Meta:
+        model = Network
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
 
 class NetworkIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	availableRouters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	
-	routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
-	
-	
-	class Meta:
-		model = Network
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
+    id = serializers.Field()
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    availableRouters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    
+    routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
+    
+    
+    class Meta:
+        model = Network
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
 
 
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Service
-		fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Service
+        fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 class ServiceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Service
-		fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Service
+        fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 
 
 
 class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceClass
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceClass
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 class ServiceClassIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceClass
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceClass
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Payment
-		fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Payment
+        fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
 class PaymentIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Payment
-		fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Payment
+        fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
 
 
 
 class ChargeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Charge
-		fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Charge
+        fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 class ChargeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Charge
-		fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Charge
+        fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 
 
 
 class RoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Role
-		fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Role
+        fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
 
 class RoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Role
-		fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Role
+        fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
 
 
 
 
 class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UsableObject
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UsableObject
+        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
 
 class UsableObjectIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UsableObject
-		fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UsableObject
+        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
 
 
 
 
 class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 class SiteRoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
 
 class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
 
 class SliceCredentialIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
 
 
 
 
 class SliverSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	class Meta:
-		model = Sliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
+    id = serializers.Field()
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    class Meta:
+        model = Sliver
+        fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 class SliverIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	
-	networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-	
-	
-	class Meta:
-		model = Sliver
-		fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
+    id = serializers.Field()
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    class Meta:
+        model = Sliver
+        fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 
 
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Node
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Node
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
 
 class NodeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Node
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Node
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
 
 
 
 
 class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DashboardView
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DashboardView
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
 
 class DashboardViewIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DashboardView
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DashboardView
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
 
 
 
 
 class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ImageDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ImageDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ImageDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ImageDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 
 
 
 class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ReservedResource
-		fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ReservedResource
+        fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 class ReservedResourceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ReservedResource
-		fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ReservedResource
+        fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 
 
 
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkSlice
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkSlice
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
 
 class NetworkSliceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkSlice
-		fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkSlice
+        fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
 
 
 
 
 class UserDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserDashboardView
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserDashboardView
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
 
 class UserDashboardViewIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserDashboardView
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserDashboardView
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
 
 
 
 
 class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackPrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStackPrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
 
 class PlanetStackPrivilegeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStackPrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStackPrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
 
 
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = User
-		fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = User
+        fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
 
 class UserIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = User
-		fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = User
+        fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
 
 
 
 
 class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
-	
-	
-	
-	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
-	
-	
-	class Meta:
-		model = Deployment
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
+    id = serializers.Field()
+    
+    
+    sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    
+    
+    
+    sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    
+    
+    
+    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+    
+    
+    
+    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+    
+    
+    class Meta:
+        model = Deployment
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 class DeploymentIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
-	
-	
-	
-	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
-	
-	
-	
-	flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
-	
-	
-	class Meta:
-		model = Deployment
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
+    id = serializers.Field()
+    
+    
+    sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    
+    
+    
+    sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    
+    
+    
+    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+    
+    
+    
+    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
+    
+    
+    class Meta:
+        model = Deployment
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 
 
 
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Reservation
-		fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Reservation
+        fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
 
 class ReservationIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Reservation
-		fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Reservation
+        fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
 
 
 
 
 class SliceDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 
 
 
 class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SitePrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SitePrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
 
 class SitePrivilegeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SitePrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SitePrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
 
 
 
 
 class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStack
-		fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStack
+        fields = ('id','created','updated','enacted','backend_status','deleted','description',)
 
 class PlanetStackIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = PlanetStack
-		fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = PlanetStack
+        fields = ('id','created','updated','enacted','backend_status','deleted','description',)
 
 
 
 
 class UserDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 class UserDeploymentsIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 
 
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Account
-		fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Account
+        fields = ('id','created','updated','enacted','backend_status','deleted','site',)
 
 class AccountIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Account
-		fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Account
+        fields = ('id','created','updated','enacted','backend_status','deleted','site',)
 
 
 
 
 class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkParameterType
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkParameterType
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
 
 class NetworkParameterTypeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkParameterType
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkParameterType
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
 
 
 
 
 class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 class SiteCredentialIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 
 
 
 class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DeploymentPrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DeploymentPrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
 
 class DeploymentPrivilegeIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DeploymentPrivilege
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DeploymentPrivilege
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
 
 
 
 
 class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DeploymentRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DeploymentRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 class DeploymentRoleIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = DeploymentRole
-		fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = DeploymentRole
+        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
 
 class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
 
 class UserCredentialIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = UserCredential
-		fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = UserCredential
+        fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
 
 
 
 
 class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SiteDeployments
-		fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SiteDeployments
+        fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 
 
 
 class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceTag
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceTag
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
 
 class SliceTagIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = SliceTag
-		fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = SliceTag
+        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
 
 
 
 
 class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkTemplate
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkTemplate
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId',)
 
 class NetworkTemplateIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = NetworkTemplate
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = NetworkTemplate
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId',)
 
 
 
 
 class RouterSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Router
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Router
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
 
 class RouterIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = Router
-		fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = Router
+        fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
 
 
 
 
 class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceResource
-		fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceResource
+        fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 class ServiceResourceIdSerializer(serializers.ModelSerializer):
-	id = serializers.Field()
-	
-	class Meta:
-		model = ServiceResource
-		fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+    id = serializers.Field()
+    
+    class Meta:
+        model = ServiceResource
+        fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 
 
@@ -1137,6 +1137,7 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     # the object has been updated but before it has been saved.
 
     def update(self, request, *args, **kwargs):
+        print "XXX update"
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
 
@@ -1171,9 +1172,15 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.can_update(request.user):
-            return super(Detail, self).destroy(request, *args, **kwargs)
+            return super(generics.RetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+    def put(self, request, *args, **kwargs):
+        print "XXX put"
+        return super(PlanetStackRetrieveUpdateDestroyAPIView,self).put(request,*args, **kwargs);
+        #return self.update(request, *args, **kwargs)
 
 
 # Based on core/views/*.py
@@ -1197,13 +1204,19 @@ class ServiceAttributeList(generics.ListCreateAPIView):
         return ServiceAttribute.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = ServiceAttribute().update(request.DATA)
-        obj = self.get_object()
+        obj = ServiceAttribute(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceAttributeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ServiceAttributeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ServiceAttribute.objects.select_related().all()
@@ -1244,13 +1257,19 @@ class ImageList(generics.ListCreateAPIView):
         return Image.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Image().update(request.DATA)
-        obj = self.get_object()
+        obj = Image(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ImageList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ImageList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Image.objects.select_related().all()
@@ -1291,13 +1310,19 @@ class NetworkParameterList(generics.ListCreateAPIView):
         return NetworkParameter.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkParameter().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkParameter(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkParameterList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkParameterList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameter.objects.select_related().all()
@@ -1338,13 +1363,19 @@ class SiteList(generics.ListCreateAPIView):
         return Site.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Site().update(request.DATA)
-        obj = self.get_object()
+        obj = Site(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Site.objects.select_related().all()
@@ -1385,13 +1416,19 @@ class SliceRoleList(generics.ListCreateAPIView):
         return SliceRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SliceRole().update(request.DATA)
-        obj = self.get_object()
+        obj = SliceRole(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceRoleList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceRoleList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceRole.objects.select_related().all()
@@ -1432,13 +1469,19 @@ class TagList(generics.ListCreateAPIView):
         return Tag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Tag().update(request.DATA)
-        obj = self.get_object()
+        obj = Tag(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(TagList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(TagList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.select_related().all()
@@ -1479,13 +1522,19 @@ class InvoiceList(generics.ListCreateAPIView):
         return Invoice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Invoice().update(request.DATA)
-        obj = self.get_object()
+        obj = Invoice(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(InvoiceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(InvoiceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.select_related().all()
@@ -1526,13 +1575,19 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
         return SlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SlicePrivilege().update(request.DATA)
-        obj = self.get_object()
+        obj = SlicePrivilege(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SlicePrivilegeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SlicePrivilegeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
@@ -1573,13 +1628,19 @@ class PlanetStackRoleList(generics.ListCreateAPIView):
         return PlanetStackRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = PlanetStackRole().update(request.DATA)
-        obj = self.get_object()
+        obj = PlanetStackRole(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackRoleList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(PlanetStackRoleList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = PlanetStackRole.objects.select_related().all()
@@ -1620,13 +1681,19 @@ class NetworkSliverList(generics.ListCreateAPIView):
         return NetworkSliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkSliver().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkSliver(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkSliverList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkSliverList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkSliver.objects.select_related().all()
@@ -1667,13 +1734,19 @@ class NetworkDeploymentsList(generics.ListCreateAPIView):
         return NetworkDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkDeployments().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkDeployments(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkDeploymentsList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkDeployments.objects.select_related().all()
@@ -1714,13 +1787,19 @@ class FlavorList(generics.ListCreateAPIView):
         return Flavor.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Flavor().update(request.DATA)
-        obj = self.get_object()
+        obj = Flavor(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(FlavorList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(FlavorList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Flavor.objects.select_related().all()
@@ -1761,13 +1840,19 @@ class ProjectList(generics.ListCreateAPIView):
         return Project.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Project().update(request.DATA)
-        obj = self.get_object()
+        obj = Project(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ProjectList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ProjectList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Project.objects.select_related().all()
@@ -1808,13 +1893,19 @@ class SliceList(generics.ListCreateAPIView):
         return Slice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Slice().update(request.DATA)
-        obj = self.get_object()
+        obj = Slice(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Slice.objects.select_related().all()
@@ -1855,13 +1946,19 @@ class NetworkList(generics.ListCreateAPIView):
         return Network.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Network().update(request.DATA)
-        obj = self.get_object()
+        obj = Network(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Network.objects.select_related().all()
@@ -1902,13 +1999,19 @@ class ServiceList(generics.ListCreateAPIView):
         return Service.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Service().update(request.DATA)
-        obj = self.get_object()
+        obj = Service(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ServiceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Service.objects.select_related().all()
@@ -1949,13 +2052,19 @@ class ServiceClassList(generics.ListCreateAPIView):
         return ServiceClass.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = ServiceClass().update(request.DATA)
-        obj = self.get_object()
+        obj = ServiceClass(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceClassList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ServiceClassList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ServiceClass.objects.select_related().all()
@@ -1996,13 +2105,19 @@ class PaymentList(generics.ListCreateAPIView):
         return Payment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Payment().update(request.DATA)
-        obj = self.get_object()
+        obj = Payment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PaymentList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(PaymentList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Payment.objects.select_related().all()
@@ -2043,13 +2158,19 @@ class ChargeList(generics.ListCreateAPIView):
         return Charge.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Charge().update(request.DATA)
-        obj = self.get_object()
+        obj = Charge(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ChargeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ChargeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Charge.objects.select_related().all()
@@ -2090,13 +2211,19 @@ class RoleList(generics.ListCreateAPIView):
         return Role.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Role().update(request.DATA)
-        obj = self.get_object()
+        obj = Role(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(RoleList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(RoleList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Role.objects.select_related().all()
@@ -2137,13 +2264,19 @@ class UsableObjectList(generics.ListCreateAPIView):
         return UsableObject.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = UsableObject().update(request.DATA)
-        obj = self.get_object()
+        obj = UsableObject(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UsableObjectList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(UsableObjectList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = UsableObject.objects.select_related().all()
@@ -2184,13 +2317,19 @@ class SiteRoleList(generics.ListCreateAPIView):
         return SiteRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SiteRole().update(request.DATA)
-        obj = self.get_object()
+        obj = SiteRole(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteRoleList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteRoleList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SiteRole.objects.select_related().all()
@@ -2231,13 +2370,19 @@ class SliceCredentialList(generics.ListCreateAPIView):
         return SliceCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SliceCredential().update(request.DATA)
-        obj = self.get_object()
+        obj = SliceCredential(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceCredentialList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceCredentialList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceCredential.objects.select_related().all()
@@ -2278,13 +2423,19 @@ class SliverList(generics.ListCreateAPIView):
         return Sliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Sliver().update(request.DATA)
-        obj = self.get_object()
+        obj = Sliver(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliverList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliverList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Sliver.objects.select_related().all()
@@ -2325,13 +2476,19 @@ class NodeList(generics.ListCreateAPIView):
         return Node.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Node().update(request.DATA)
-        obj = self.get_object()
+        obj = Node(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NodeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NodeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Node.objects.select_related().all()
@@ -2372,13 +2529,19 @@ class DashboardViewList(generics.ListCreateAPIView):
         return DashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = DashboardView().update(request.DATA)
-        obj = self.get_object()
+        obj = DashboardView(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DashboardViewList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(DashboardViewList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = DashboardView.objects.select_related().all()
@@ -2419,13 +2582,19 @@ class ImageDeploymentsList(generics.ListCreateAPIView):
         return ImageDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = ImageDeployments().update(request.DATA)
-        obj = self.get_object()
+        obj = ImageDeployments(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ImageDeployments.objects.select_related().all()
@@ -2466,13 +2635,19 @@ class ReservedResourceList(generics.ListCreateAPIView):
         return ReservedResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = ReservedResource().update(request.DATA)
-        obj = self.get_object()
+        obj = ReservedResource(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ReservedResourceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ReservedResourceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ReservedResource.objects.select_related().all()
@@ -2513,13 +2688,19 @@ class NetworkSliceList(generics.ListCreateAPIView):
         return NetworkSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkSlice().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkSlice(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkSliceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkSliceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkSlice.objects.select_related().all()
@@ -2560,13 +2741,19 @@ class UserDashboardViewList(generics.ListCreateAPIView):
         return UserDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = UserDashboardView().update(request.DATA)
-        obj = self.get_object()
+        obj = UserDashboardView(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserDashboardViewList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(UserDashboardViewList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = UserDashboardView.objects.select_related().all()
@@ -2607,13 +2794,19 @@ class PlanetStackPrivilegeList(generics.ListCreateAPIView):
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = PlanetStackPrivilege().update(request.DATA)
-        obj = self.get_object()
+        obj = PlanetStackPrivilege(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = PlanetStackPrivilege.objects.select_related().all()
@@ -2654,13 +2847,24 @@ class UserList(generics.ListCreateAPIView):
         return User.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = User().update(request.DATA)
-        obj = self.get_object()
+        print "XXX create"
+        obj = User(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(UserList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+    def put(self, request, *args, **kwargs):
+        print "XXX UserList.put"
+        return super(UserList,self).put(request,*args, **kwargs)
+
 
 class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = User.objects.select_related().all()
@@ -2701,13 +2905,19 @@ class DeploymentList(generics.ListCreateAPIView):
         return Deployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Deployment().update(request.DATA)
-        obj = self.get_object()
+        obj = Deployment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(DeploymentList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Deployment.objects.select_related().all()
@@ -2748,13 +2958,19 @@ class ReservationList(generics.ListCreateAPIView):
         return Reservation.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Reservation().update(request.DATA)
-        obj = self.get_object()
+        obj = Reservation(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ReservationList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ReservationList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.select_related().all()
@@ -2795,13 +3011,19 @@ class SliceDeploymentsList(generics.ListCreateAPIView):
         return SliceDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SliceDeployments().update(request.DATA)
-        obj = self.get_object()
+        obj = SliceDeployments(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceDeployments.objects.select_related().all()
@@ -2842,13 +3064,19 @@ class SitePrivilegeList(generics.ListCreateAPIView):
         return SitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SitePrivilege().update(request.DATA)
-        obj = self.get_object()
+        obj = SitePrivilege(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SitePrivilegeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SitePrivilegeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SitePrivilege.objects.select_related().all()
@@ -2889,13 +3117,19 @@ class PlanetStackList(generics.ListCreateAPIView):
         return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = PlanetStack().update(request.DATA)
-        obj = self.get_object()
+        obj = PlanetStack(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = PlanetStack.objects.select_related().all()
@@ -2936,13 +3170,19 @@ class UserDeploymentsList(generics.ListCreateAPIView):
         return UserDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = UserDeployments().update(request.DATA)
-        obj = self.get_object()
+        obj = UserDeployments(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserDeploymentsList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(UserDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = UserDeployments.objects.select_related().all()
@@ -2983,13 +3223,19 @@ class AccountList(generics.ListCreateAPIView):
         return Account.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Account().update(request.DATA)
-        obj = self.get_object()
+        obj = Account(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(AccountList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(AccountList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Account.objects.select_related().all()
@@ -3030,13 +3276,19 @@ class NetworkParameterTypeList(generics.ListCreateAPIView):
         return NetworkParameterType.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkParameterType().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkParameterType(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameterType.objects.select_related().all()
@@ -3077,13 +3329,19 @@ class SiteCredentialList(generics.ListCreateAPIView):
         return SiteCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SiteCredential().update(request.DATA)
-        obj = self.get_object()
+        obj = SiteCredential(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteCredentialList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteCredentialList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SiteCredential.objects.select_related().all()
@@ -3124,13 +3382,19 @@ class DeploymentPrivilegeList(generics.ListCreateAPIView):
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = DeploymentPrivilege().update(request.DATA)
-        obj = self.get_object()
+        obj = DeploymentPrivilege(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = DeploymentPrivilege.objects.select_related().all()
@@ -3171,13 +3435,19 @@ class DeploymentRoleList(generics.ListCreateAPIView):
         return DeploymentRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = DeploymentRole().update(request.DATA)
-        obj = self.get_object()
+        obj = DeploymentRole(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentRoleList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(DeploymentRoleList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = DeploymentRole.objects.select_related().all()
@@ -3218,13 +3488,19 @@ class UserCredentialList(generics.ListCreateAPIView):
         return UserCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = UserCredential().update(request.DATA)
-        obj = self.get_object()
+        obj = UserCredential(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserCredentialList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(UserCredentialList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = UserCredential.objects.select_related().all()
@@ -3265,13 +3541,19 @@ class SiteDeploymentsList(generics.ListCreateAPIView):
         return SiteDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SiteDeployments().update(request.DATA)
-        obj = self.get_object()
+        obj = SiteDeployments(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SiteDeployments.objects.select_related().all()
@@ -3312,13 +3594,19 @@ class SliceTagList(generics.ListCreateAPIView):
         return SliceTag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = SliceTag().update(request.DATA)
-        obj = self.get_object()
+        obj = SliceTag(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceTagList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceTagList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SliceTag.objects.select_related().all()
@@ -3359,13 +3647,19 @@ class NetworkTemplateList(generics.ListCreateAPIView):
         return NetworkTemplate.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = NetworkTemplate().update(request.DATA)
-        obj = self.get_object()
+        obj = NetworkTemplate(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkTemplateList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(NetworkTemplateList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
@@ -3406,13 +3700,19 @@ class RouterList(generics.ListCreateAPIView):
         return Router.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = Router().update(request.DATA)
-        obj = self.get_object()
+        obj = Router(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(RouterList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(RouterList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Router.objects.select_related().all()
@@ -3453,13 +3753,19 @@ class ServiceResourceList(generics.ListCreateAPIView):
         return ServiceResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        #obj = ServiceResource().update(request.DATA)
-        obj = self.get_object()
+        obj = ServiceResource(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceResourceList, self).create(request, *args, **kwargs)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("failed obj.can_update")
+
+        ret = super(ServiceResourceList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 
 class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ServiceResource.objects.select_related().all()
