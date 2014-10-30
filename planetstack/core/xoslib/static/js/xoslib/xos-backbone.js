@@ -4,6 +4,8 @@ if (! window.XOSLIB_LOADED ) {
     SLIVER_API = "/plstackapi/slivers/";
     SLICE_API = "/plstackapi/slices/";
     SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
+    SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
+    SLICEROLE_API = "/plstackapi/slice_roles/";
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
     USER_API = "/plstackapi/users/";
@@ -11,6 +13,7 @@ if (! window.XOSLIB_LOADED ) {
     IMAGE_API = "/plstackapi/images/";
     NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
     NETWORK_API = "/plstackapi/networks/";
+    NETWORKSLIVER_API = "/plstackapi/networkslivers/";
     SERVICE_API = "/plstackapi/services/";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
@@ -65,6 +68,7 @@ if (! window.XOSLIB_LOADED ) {
         },
 
         relatedCollections: [],
+        foreignCollections: [],
 
         simpleComparator: function( model ){
           parts=this.sortVar.split(".");
@@ -172,32 +176,44 @@ if (! window.XOSLIB_LOADED ) {
                 }
                 return res;
             },
-
-        templateHelpers: function() {
-            return { title: "foo" };
-            }
     });
 
     function xoslib() {
         // basic REST
         this.sliver = XOSModel.extend({ urlRoot: SLIVER_API });
         this.sliverCollection = XOSCollection.extend({ urlRoot: SLIVER_API,
+                                                       relatedCollections: {"networkSlivers": "sliver"},
+                                                       foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
                                                        model: this.sliver});
         this.slivers = new this.sliverCollection();
 
         this.slice = XOSModel.extend({ urlRoot: SLICE_API });
         this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
-                                                       relatedCollections: {"slivers": "slice", "sliceDeployments": "slice"},
+                                                       relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice"},
+                                                       foreignCollections: ["services", "sites"],
                                                        model: this.slice});
         this.slices = new this.sliceCollection();
 
         this.sliceDeployment = XOSModel.extend({ urlRoot: SLICEDEPLOYMENT_API });
         this.sliceDeploymentCollection = XOSCollection.extend({ urlRoot: SLICEDEPLOYMENT_API,
+                                                       foreignCollections: ["slices", "deployments"],
                                                        model: this.slice});
         this.sliceDeployments = new this.sliceDeploymentCollection();
 
+        this.slicePrivilege = XOSModel.extend({ urlRoot: SLICEPRIVILEGE_API });
+        this.slicePrivilegeCollection = XOSCollection.extend({ urlRoot: SLICEPRIVILEGE_API,
+                                                       foreignCollections: ["slices", "users", "sliceRoles"],
+                                                       model: this.slice});
+        this.slicePrivileges = new this.slicePrivilegeCollection();
+
+        this.sliceRole = XOSModel.extend({ urlRoot: SLICEROLE_API });
+        this.sliceRoleCollection = XOSCollection.extend({ urlRoot: SLICEROLE_API,
+                                                       model: this.slice});
+        this.sliceRoles = new this.sliceRoleCollection();
+
         this.node = XOSModel.extend({ urlRoot: NODE_API });
         this.nodeCollection = XOSCollection.extend({ urlRoot: NODE_API,
+                                                       foreignCollections: ["sites", "deployments"],
                                                        model: this.node});
         this.nodes = new this.nodeCollection();
 
@@ -228,8 +244,14 @@ if (! window.XOSLIB_LOADED ) {
 
         this.network = XOSModel.extend({ urlRoot: NETWORK_API });
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
+                                                           foreignCollections: ["slivers", "networkTemplates"],
                                                            model: this.network});
         this.networks = new this.networkCollection();
+
+        this.networkSliver = XOSModel.extend({ urlRoot: NETWORKSLIVER_API });
+        this.networkSliverCollection = XOSCollection.extend({ urlRoot: NETWORKSLIVER_API,
+                                                           model: this.networkSliver});
+        this.networkSlivers = new this.networkSliverCollection();
 
         this.service = XOSModel.extend({ urlRoot: SERVICE_API });
         this.serviceCollection = XOSCollection.extend({ urlRoot: SERVICE_API,
