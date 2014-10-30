@@ -12,43 +12,33 @@
 
 <p>This shows all of the things you can see using xosLib</p>
 
-<h3>Deployments</h3>
 <div id="deploymentList">
 </div>
 
-<h3>Images</h3>
 <div id="imageList">
 </div>
 
-<h3>Network Templates</h3>
 <div id="networkTemplateList">
 </div>
 
-<h3>Networks</h3>
 <div id="networkList">
 </div>
 
-<h3>Nodes</h3>
 <div id="nodeList">
 </div>
 
-<h3>Services</h3>
 <div id="serviceList">
 </div>
 
-<h3>Sites</h3>
 <div id="siteList">
 </div>
 
-<h3>Slices</h3>
 <div id="sliceList">
 </div>
 
-<h3>Slivers</h3>
 <div id="sliverList">
 </div>
 
-<h3>Users</h3>
 <div id="userList">
 </div>
 
@@ -63,6 +53,8 @@
 <div id="detail"></div>
 <div id="linkedObjs1"></div>
 <div id="linkedObjs2"></div>
+<div id="linkedObjs3"></div>
+<div id="linkedObjs4"></div>
 </div>
 </div>
 
@@ -87,6 +79,7 @@
 <!-- Deployment -->
 
 <script type="text/template" id="test-deployment-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -101,8 +94,8 @@
 
 
 <script type="text/template" id="test-deployment-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= backend_type %></td>
   <td><%= admin_tenant %></td>
   <td><%= sites.length %></td>
@@ -123,6 +116,7 @@
 <!-- Image -->
 
 <script type="text/template" id="test-image-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -136,8 +130,8 @@
 </script>
 
 <script type="text/template" id="test-image-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= disk_format %></td>
   <td><%= container_format %></td>
   <td><%= path %></td>
@@ -158,6 +152,7 @@
 <!-- NetworkTemplate -->
 
 <script type="text/template" id="test-networkTemplate-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -174,8 +169,8 @@
 
 
 <script type="text/template" id="test-networkTemplate-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= description %></td>
   <td><%= visibility %></td>
   <td><%= translation %></td>
@@ -201,6 +196,7 @@
 <!-- Network -->
 
 <script type="text/template" id="test-network-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -214,14 +210,13 @@
   </table>
 </script>
 
-
 <script type="text/template" id="test-network-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= template %></td>
   <td><%= ports %></td>
   <td><%= labels %></td>
-  <td><%= owner %></td>
+  <td><%= idToName(owner,"slivers","name") %></td>
 </script>
 
 <script type="text/template" id="test-network-detail-template">
@@ -238,9 +233,47 @@
   </form>
 </script>
 
+<!-- NetworkSliver -->
+
+<script type="text/template" id="test-networkSliver-list-template">
+  <h3><%= title %></h3>
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>network</th>
+     <th>sliver</th>
+     <th>ip</th>
+     <th>port_id</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+<script type="text/template" id="test-networkSliver-listitem-template">
+  <td class="objectLink"><%= id %></td>
+  <td><%= idToName(network,"networks","name") %></td>
+  <td><%= idToName(sliver,"slivers","name") %></td>
+  <td><%= ip %></td>
+  <td><%= port_id %></td>
+</script>
+
+<script type="text/template" id="test-networkSliver-detail-template">
+  <h3>Detail View: Network</h3>
+  <form>
+  <table>
+  <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
+  <tr><td>Sliver:</td><td><input type="text" name="sliver" value="<%= sliver %>"></td></tr>
+  <tr><td>Ip:</td><td><input type="text" name="ip" value="<%= ip %>"></td></tr>
+  <tr><td>Port_id:</td><td><input type="text" name="port_id" value="<%= port_id %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Node -->
 
 <script type="text/template" id="test-node-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -254,10 +287,10 @@
 
 
 <script type="text/template" id="test-node-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
-  <td><%= site %></td>
-  <td><%= deployment %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
+  <td><%= idToName(site,"sites","name") %></td>
+  <td><%= idToName(deployment,"deployments","name") %></td>
 </script>
 
 <script type="text/template" id="test-node-detail-template">
@@ -272,9 +305,39 @@
   </form>
 </script>
 
+<!-- SliceRole -->
+
+<script type="text/template" id="test-sliceRole-list-template">
+  <h3><%= title %></h3>
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>role</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+
+<script type="text/template" id="test-sliceRole-listitem-template">
+  <td class="objectLink"><%= id %></td>
+  <td><%= role %></td>
+</script>
+
+<script type="text/template" id="test-sliceRole-detail-template">
+  <h3>Detail View: Service</h3>
+  <form>
+  <table>
+  <tr><td>Role:</td><td><input type="text" name="role" value="<%= role %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Service -->
 
 <script type="text/template" id="test-service-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -290,8 +353,8 @@
 
 
 <script type="text/template" id="test-service-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= description %></td>
   <td><%= enabled %></td>
   <td><%= versionNumber %></td>
@@ -313,6 +376,7 @@
 <!-- Site -->
 
 <script type="text/template" id="test-site-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -327,10 +391,9 @@
   </table>
 </script>
 
-
 <script type="text/template" id="test-site-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= site_url %></td>
   <td><%= enabled %></td>
   <td><%= login_base %></td>
@@ -353,6 +416,7 @@
 <!-- Slice -->
 
 <script type="text/template" id="test-slice-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -370,15 +434,15 @@
 </script>
 
 <script type="text/template" id="test-slice-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= enabled %></td>
   <td><%= omf_friendly %></td>
   <td><%= description %></td>
   <td><%= slice_url %></td>
-  <td><%= site %></td>
+  <td><%= idToName(site,"sites","name") %></td>
   <td><%= max_slivers %></td>
-  <td><%= service %></td>
+  <td><%= idToName(service,"services","name") %></td>
 </script>
 
 <script type="text/template" id="test-slice-detail-template">
@@ -395,9 +459,78 @@
   </form>
 </script>
 
+<!-- SlicDeployment -->
+
+<script type="text/template" id="test-sliceDeployment-list-template">
+  <h3><%= title %></h3>
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>slice</th>
+     <th>deployment</th>
+     <th>tenant_id</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+<script type="text/template" id="test-sliceDeployment-listitem-template">
+  <td class="objectLink"><%= id %></td>
+  <td><%= idToName(slice,"slices","name") %></td>
+  <td><%= idToName(deployment,"deployments","name") %></td>
+  <td><%= tenant_id %></td>
+</script>
+
+<script type="text/template" id="test-sliceDeployment-detail-template">
+  <h3>Detail View: Slice Deployment</h3>
+  <form>
+  <table>
+  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
+  <tr><td>Deployment:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
+  <tr><td>Tenant Id:</td><td><input type="text" name="tenant_id" value="<%= tenant_id %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
+<!-- SlicePrivilege -->
+
+<script type="text/template" id="test-slicePrivilege-list-template">
+  <h3><%= title %></h3>
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>user</th>
+     <th>slice</th>
+     <th>role</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+<script type="text/template" id="test-slicePrivilege-listitem-template">
+  <td class="objectLink"><%= id %></td>
+  <td><%= idToName(user,"users","username") %></td>
+  <td><%= idToName(slice,"slices","name") %></td>
+  <td><%= idToName(role,"sliceRoles","role") %></td>
+</script>
+
+<script type="text/template" id="test-slicePrivilege-detail-template">
+  <h3>Detail View: Slice Privilege</h3>
+  <form>
+  <table>
+  <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>
+  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
+  <tr><td>Role:</td><td><input type="text" name="role" value="<%= role %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Sliver -->
 
 <script type="text/template" id="test-sliver-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -418,15 +551,15 @@
 
 
 <script type="text/template" id="test-sliver-listitem-template">
-  <td><%= id %></td>
-  <td><%= name %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= name %></td>
   <td><%= instance_id %></td>
   <td><%= instance_name %></td>
-  <td><%= image %></td>
-  <td><%= creator %></td>
-  <td><%= slice %></td>
-  <td><%= node %></td>
-  <td><%= deploymentNetwork %></td>
+  <td><%= idToName(image,"images","name") %></td>
+  <td><%= idToName(creator,"users","name") %></td>
+  <td><%= idToName(slice,"slices","name") %></td>
+  <td><%= idToName(node,"nodes","name") %></td>
+  <td><%= idToName(deploymentNetwork,"deployments","name") %></td>
   <td><%= flavor %></td>
   <td><%= userData %></td>
 </script>
@@ -449,6 +582,7 @@
 <!-- User -->
 
 <script type="text/template" id="test-user-list-template">
+  <h3><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -465,8 +599,8 @@
 
 
 <script type="text/template" id="test-user-listitem-template">
-  <td><%= id %></td>
-  <td><%= username %></td>
+  <td class="objectLink"><%= id %></td>
+  <td class="objectLink"><%= username %></td>
   <td><%= firstname %></td>
   <td><%= lastname %></td>
   <td><%= phone %></td>
