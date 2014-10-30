@@ -6,6 +6,7 @@
     position: fixed;
     top: 1em;
     right: 1em;
+    width: 450px;
 }
 
 #detailBox {
@@ -14,6 +15,8 @@
     background-color: #f0f0f0;
     margin-bottom:30px;
     display:none;
+    overflow:auto;
+    max-height:80vh;
 }
 
 #errorBox {
@@ -30,5 +33,11 @@
     background-color: #00f000;
     margin-bottom:30px;
     display:none;
+}
+
+.objectLink {
+    cursor:pointer;
+    color:blue;
+    text-decoration:underline;
 }
 
