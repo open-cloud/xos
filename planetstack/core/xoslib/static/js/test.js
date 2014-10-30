@@ -11,25 +11,11 @@ TestApp.addRegions({
     sliceList: "#sliceList",
     sliverList: "#sliverList",
     userList: "#userList",
-    detail: "#detail"
-});
-
-// ---- Deployment ----
-
-TestApp.DeploymentListItemView = Marionette.ItemView.extend({
-    template: '#test-deployment-listitem-template',
-    tagName: 'tr',
-    className: 'test-tablerow',
-});
-
-TestApp.DeploymentListView = Marionette.CompositeView.extend({
-    childView: TestApp.DeploymentListItemView,
-    childViewContainer: 'tbody',
-    template: '#test-deployment-list-template',
-
-    initialize: function() {
-        this.listenTo(this.collection, 'change', this._renderChildren)
-    },
+    detail: "#detail",
+    linkedObjs1: "#linkedObjs1",
+    linkedObjs2: "#linkedObjs2",
+    linkedObjs3: "#linkedObjs3",
+    linkedObjs4: "#linkedObjs4"
 });
 
 TestApp.hideError = function(result) {
@@ -53,8 +39,17 @@ TestApp.showError = function(result) {
      });
 };
 
+idToName = function(id, collectionName, fieldName) {
+    linkedObject = xos[collectionName].get(id);
+    if (linkedObject == undefined) {
+        return "#" + id;
+    } else {
+        return linkedObject.attributes[fieldName];
+    }
+};
+
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'node', 'service', 'site', 'slice', 'sliver', 'user'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole'];
 
      for (var index in objs) {
          name = objs[index];
@@ -112,6 +107,20 @@ TestApp.on("start", function() {
                     e.preventDefault();
                     e.stopPropagation();
 
+                    index=0;
+                    for (relatedName in this.model.collection.relatedCollections) {
+                        relatedField = this.model.collection.relatedCollections[relatedName];
+
+                        relatedListViewClass = TestApp[relatedName + "ListView"].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
+                        TestApp["linkedObjs" + (index+1)].show(new relatedListViewClass());
+                        index = index + 1;
+                    }
+
+                    while (index<4) {
+                        TestApp["linkedObjs" + (index+1)].empty();
+                        index = index + 1;
+                    }
+
                     var detailView = new this.detailClass({
                         model: this.model,
                     });
@@ -125,15 +134,32 @@ TestApp.on("start", function() {
              childViewContainer: 'tbody',
              template: table_template,
              collection: xos[collection_name],
+             title: name + "s",
 
              initialize: function() {
                  this.listenTo(this.collection, 'change', this._renderChildren)
+
+                 // Because many of the templates use idToName(), we need to
+                 // listen to the collections that hold the names for the ids
+                 // that we want to display.
+                 for (i in this.collection.foreignCollections) {
+                     foreignName = this.collection.foreignCollections[i];
+                     this.listenTo(xos[foreignName], 'change', this._renderChildren);
+                     this.listenTo(xos[foreignName], 'sort', this._renderChildren);
+                 }
+             },
+
+             templateHelpers: function() {
+                return { title: this.title };
              },
          });
+         TestApp[collection_name + "ListView"] = listViewClass;
 
          var listView = new listViewClass();
 
-         TestApp[region_name].show(listView);
+         if (region_name in TestApp.getRegions()) {
+             TestApp[region_name].show(listView);
+         }
          xos[collection_name].fetch(); //startPolling();
      }
 
