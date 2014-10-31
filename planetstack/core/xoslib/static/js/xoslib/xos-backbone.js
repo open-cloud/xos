@@ -9,6 +9,7 @@ if (! window.XOSLIB_LOADED ) {
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
     USER_API = "/plstackapi/users/";
+    USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
     DEPLOYMENT_API = "/plstackapi/deployments/";
     IMAGE_API = "/plstackapi/images/";
     NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
@@ -224,8 +225,16 @@ if (! window.XOSLIB_LOADED ) {
 
         this.user = XOSModel.extend({ urlRoot: USER_API });
         this.userCollection = XOSCollection.extend({ urlRoot: USER_API,
+                                                       relatedCollections: {"slicePrivileges": "user", "slices": "owner", "userDeployments": "user"},
+                                                       foreignCollections: ["sites"],
                                                        model: this.user});
         this.users = new this.userCollection();
+
+        this.userDeployment = XOSModel.extend({ urlRoot: USER_API });
+        this.userDeploymentCollection = XOSCollection.extend({ urlRoot: USERDEPLOYMENT_API,
+                                                       foreignCollections: ["users","deployments"],
+                                                       model: this.user});
+        this.userDeployments = new this.userDeploymentCollection();
 
         this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API });
         this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
