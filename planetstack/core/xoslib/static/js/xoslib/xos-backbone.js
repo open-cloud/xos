@@ -13,6 +13,7 @@ if (! window.XOSLIB_LOADED ) {
     DEPLOYMENT_API = "/plstackapi/deployments/";
     IMAGE_API = "/plstackapi/images/";
     NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
+    NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
     NETWORK_API = "/plstackapi/networks/";
     NETWORKSLIVER_API = "/plstackapi/networkslivers/";
     SERVICE_API = "/plstackapi/services/";
@@ -253,6 +254,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.network = XOSModel.extend({ urlRoot: NETWORK_API });
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
+                                                           relatedCollections: {"networkDeployments": "network", "networkSlivers": "network"},
                                                            foreignCollections: ["slices", "networkTemplates"],
                                                            model: this.network});
         this.networks = new this.networkCollection();
@@ -261,6 +263,11 @@ if (! window.XOSLIB_LOADED ) {
         this.networkSliverCollection = XOSCollection.extend({ urlRoot: NETWORKSLIVER_API,
                                                            model: this.networkSliver});
         this.networkSlivers = new this.networkSliverCollection();
+
+        this.networkDeployment = XOSModel.extend({ urlRoot: NETWORKDEPLOYMENT_API });
+        this.networkDeploymentCollection = XOSCollection.extend({ urlRoot: NETWORKDEPLOYMENT_API,
+                                                           model: this.networkDeployment});
+        this.networkDeployments = new this.networkDeploymentCollection();
 
         this.service = XOSModel.extend({ urlRoot: SERVICE_API });
         this.serviceCollection = XOSCollection.extend({ urlRoot: SERVICE_API,
