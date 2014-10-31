@@ -102,6 +102,9 @@ urlpatterns = patterns('',
     url(r'^plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
     url(r'^plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkSliverDetail.as_view(), name='networksliver-detail'),
 
+    url(r'^plstackapi/networkdeployments/$', NetworkDeploymentsList.as_view(), name='networkdeployment-list'),
+    url(r'^plstackapi/networkdeployments/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDeploymentsDetail.as_view(), name='networkdeployment-detail'),
+
     url(r'^plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
     url(r'^plstackapi/networks/(?P<pk>[a-zA-Z0-9_\-]+)/$', NetworkDetail.as_view(), name='network-detail'),
     
@@ -131,6 +134,9 @@ urlpatterns = patterns('',
 
     url(r'^plstackapi/users/$', UserList.as_view(), name='user-list'),
     url(r'^plstackapi/users/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserDetail.as_view(), name='user-detail'),
+
+    url(r'^plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
+    url(r'^plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9_\-]+)/$', UserDeploymentsDetail.as_view(), name='userdeployments-detail'),
 
     url(r'^xmlrpc/legacyapi/$', 'core.views.legacyapi.LegacyXMLRPC', name='xmlrpc'),
 
