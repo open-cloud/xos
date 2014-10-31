@@ -244,7 +244,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.network = XOSModel.extend({ urlRoot: NETWORK_API });
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
-                                                           foreignCollections: ["slivers", "networkTemplates"],
+                                                           foreignCollections: ["slices", "networkTemplates"],
                                                            model: this.network});
         this.networks = new this.networkCollection();
 
