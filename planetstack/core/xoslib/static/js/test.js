@@ -49,7 +49,7 @@ idToName = function(id, collectionName, fieldName) {
 };
 
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 
      for (var index in objs) {
          name = objs[index];
