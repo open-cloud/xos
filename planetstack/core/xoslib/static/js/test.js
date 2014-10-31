@@ -53,9 +53,9 @@ TestApp.on("start", function() {
 
      for (var index in objs) {
          name = objs[index];
-         tr_template = '#test-' + name + '-listitem-template';
-         table_template = '#test-' + name + '-list-template';
-         detail_template = '#test-' + name + '-detail-template';
+         tr_template = '#xosAdmin-' + name + '-listitem-template';
+         table_template = '#xosAdmin-' + name + '-list-template';
+         detail_template = '#xosAdmin-' + name + '-detail-template';
          collection_name = name + "s";
          region_name = name + "List";
 
@@ -144,6 +144,9 @@ TestApp.on("start", function() {
                  // that we want to display.
                  for (i in this.collection.foreignCollections) {
                      foreignName = this.collection.foreignCollections[i];
+                     if (xos[foreignName] == undefined) {
+                         console.log("Failed to find xos class " + foreignName);
+                     }
                      this.listenTo(xos[foreignName], 'change', this._renderChildren);
                      this.listenTo(xos[foreignName], 'sort', this._renderChildren);
                  }
@@ -169,6 +172,6 @@ TestApp.on("start", function() {
 });
 
 $(document).ready(function(){
-  TestApp.start();
+    TestApp.start();
 });
 
