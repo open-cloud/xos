@@ -192,6 +192,40 @@
   </form>
 </script>
 
+<!-- NetworkDeployment -->
+
+<script type="text/template" id="xosAdmin-networkDeployment-list-template">
+  <h3><%= title %></h3>
+  <table class="test-table">
+  <thead><tr>
+     <th>id</th>
+     <th>network</th>
+     <th>deployment</th>
+     <th>net_id</th>
+  </tr></thead>
+  <tbody></tbody>
+  </table>
+</script>
+
+<script type="text/template" id="xosAdmin-networkDeployment-listitem-template">
+  <td class="objectLink"><%= id %></td>
+  <td><%= idToName(network,"networks","name") %></td>
+  <td><%= idToName(deployment,"deployments","name") %></td>
+  <td><%= net_id %></td>
+</script>
+
+<script type="text/template" id="xosAdmin-networkDeployment-detail-template">
+  <h3>Detail View: Network</h3>
+  <form>
+  <table>
+  <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
+  <tr><td>Sliver:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
+  <tr><td>Ip:</td><td><input type="text" name="net_id" value="<%= net_id %>"></td></tr>
+  <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
+  </table>
+  </form>
+</script>
+
 <!-- Node -->
 
 <script type="text/template" id="xosAdmin-node-list-template">

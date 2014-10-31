@@ -49,7 +49,7 @@ idToName = function(id, collectionName, fieldName) {
 };
 
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 
      for (var index in objs) {
          name = objs[index];
@@ -111,7 +111,11 @@ TestApp.on("start", function() {
                     for (relatedName in this.model.collection.relatedCollections) {
                         relatedField = this.model.collection.relatedCollections[relatedName];
 
-                        relatedListViewClass = TestApp[relatedName + "ListView"].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
+                        relatedListViewClassName = relatedName + "ListView";
+                        if (TestApp[relatedListViewClassName] == undefined) {
+                            console.log("warning: " + relatedListViewClassName + " not found");
+                        }
+                        relatedListViewClass = TestApp[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
                         TestApp["linkedObjs" + (index+1)].show(new relatedListViewClass());
                         index = index + 1;
                     }
