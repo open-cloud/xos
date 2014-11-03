@@ -27,7 +27,7 @@ class DashboardDynamicView(TemplateView):
 
         if name=="root":
             return self.multiDashboardView(request, context)
-        elif request.GET.get("wholePage",None):
+        elif kwargs.get("wholePage",None):
             return self.singleFullView(request, name, context)
         else:
             return self.singleDashboardView(request, name, context)
