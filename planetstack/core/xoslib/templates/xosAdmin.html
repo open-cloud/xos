@@ -146,10 +146,10 @@
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Template:</td><td><input type="text" name="template" value="<%= template %>"></td></tr>
+  <tr><td>Template:</td><td><%= idToSelect("template",template,"networkTemplates","name") %></td></tr>
   <tr><td>Ports:</td><td><input type="text" name="ports" value="<%= ports %>"></td></tr>
   <tr><td>Labels:</td><td><input type="text" name="labels" value="<%= labels %>"></td></tr>
-  <tr><td>Owner:</td><td><input type="text" name="owner" value="<%= owner %>"></td></tr>
+  <tr><td>Owner:</td><td><%= idToSelect("owner",owner,"slices","name") %></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
@@ -254,8 +254,8 @@
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Site:</td><td><input type="text" name="site" value="<%= site %>"></td></tr>
-  <tr><td>Deployment:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
+  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
+  <tr><td>Deployment:</td><td><%= idToSelect("deployment",deployment,"deployments","name") %></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
@@ -415,7 +415,7 @@
   </form>
 </script>
 
-<!-- SlicDeployment -->
+<!-- SliceDeployment -->
 
 <script type="text/template" id="xosAdmin-sliceDeployment-list-template">
   <h3><%= title %></h3>
@@ -527,9 +527,9 @@
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
   <tr><td>instance_id:</td><td><input type="text" name="instance_id" value="<%= instance_id %>"></td></tr>
   <tr><td>instance_name:</td><td><input type="text" name="instance_name" value="<%= instance_name %>"></td></tr>
-  <tr><td>Image:</td><td><input type="text" name="image" value="<%= image %>"></td></tr>
-  <tr><td>Creator:</td><td><input type="text" name="creator" value="<%= creator %>"></td></tr>
-  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
+  <tr><td>Image:</td><td><%= idToSelect("image",image,"images","name") %></td></tr>
+  <tr><td>Creator:</td><td><%= idToSelect("creator",creator,"users","username") %></td></tr>
+  <tr><td>Slice:</td><td><%= idToSelect("deploymentNetwork",deploymentNetwork,"deployments","name") %></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
@@ -573,7 +573,7 @@
   <tr><td>Last Name:</td><td><input type="text" name="lastname" value="<%= lastname %>"></td></tr>
   <tr><td>Phone:</td><td><input type="text" name="phone" value="<%= phone %>"></td></tr>
   <tr><td>Url:</td><td><input type="text" name="user_url" value="<%= user_url %>"></td></tr>
-  <tr><td>Site:</td><td><input type="text" name="site" value="<%= site %>"></td></tr>
+  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
