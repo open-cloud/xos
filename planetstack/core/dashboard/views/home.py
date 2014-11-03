@@ -14,6 +14,11 @@ class DashboardDynamicView(TemplateView):
        {% block content %}
     """
 
+    head_wholePage_template = r"""{% extends "admin/wholePage.html" %}
+       {% load admin_static %}
+       {% block content %}
+    """
+
     tail_template = r"{% endblock %}"
 
     def get(self, request, name="root", *args, **kwargs):
@@ -22,6 +27,8 @@ class DashboardDynamicView(TemplateView):
 
         if name=="root":
             return self.multiDashboardView(request, context)
+        elif request.GET.get("wholePage",None):
+            return self.singleFullView(request, name, context)
         else:
             return self.singleDashboardView(request, name, context)
 
@@ -92,6 +99,20 @@ class DashboardDynamicView(TemplateView):
 
     def singleDashboardView(self, request, name, context):
         head_template = self.head_template
+        tail_template = self.tail_template
+
+        t = template.Template(head_template + self.readTemplate(name) + self.tail_template)
+
+        response_kwargs = {}
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(
+            request = request,
+            template = t,
+            context = context,
+            **response_kwargs)
+
+    def singleFullView(self, request, name, context):
+        head_template = self.head_wholePage_template
         tail_template = self.tail_template
 
         t = template.Template(head_template + self.readTemplate(name) + self.tail_template)
