@@ -48,6 +48,29 @@ idToName = function(id, collectionName, fieldName) {
     }
 };
 
+idToOptions = function(id, collectionName, fieldName) {
+    result=""
+    for (index in xos[collectionName].models) {
+        linkedObject = xos[collectionName].models[index];
+        linkedId = linkedObject["id"];
+        linkedName = linkedObject.attributes[fieldName];
+        if (linkedId == id) {
+            selected = " selected";
+        } else {
+            selected = "";
+        }
+        result = result + '<option value="' + linkedId + '"' + selected + '>' + linkedName + '</option>';
+    }
+    return result;
+};
+
+idToSelect = function(variable, id, collectionName, fieldName) {
+    result = '<select name="' + variable + '">' +
+             idToOptions(id, collectionName, fieldName) +
+             '</select>';
+    return result;
+}
+
 TestApp.on("start", function() {
      var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 
