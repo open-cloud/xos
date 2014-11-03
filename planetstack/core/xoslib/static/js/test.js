@@ -1,4 +1,4 @@
-TestApp = new Marionette.Application();
+TestApp = new XOSApplication();
 
 TestApp.addRegions({
     deploymentList: "#deploymentList",
@@ -17,59 +17,6 @@ TestApp.addRegions({
     linkedObjs3: "#linkedObjs3",
     linkedObjs4: "#linkedObjs4"
 });
-
-TestApp.hideError = function(result) {
-    $("#errorBox").hide();
-    $("#successBox").hide();
-};
-
-TestApp.showSuccess = function(result) {
-     $("#successBox").show();
-     $("#successBox").html(_.template($("#test-success-template").html())(result));
-     $('#close-success-box').unbind().bind('click', function() {
-         $('#successBox').hide();
-     });
-};
-
-TestApp.showError = function(result) {
-     $("#errorBox").show();
-     $("#errorBox").html(_.template($("#test-error-template").html())(result));
-     $('#close-error-box').unbind().bind('click', function() {
-         $('#errorBox').hide();
-     });
-};
-
-idToName = function(id, collectionName, fieldName) {
-    linkedObject = xos[collectionName].get(id);
-    if (linkedObject == undefined) {
-        return "#" + id;
-    } else {
-        return linkedObject.attributes[fieldName];
-    }
-};
-
-idToOptions = function(id, collectionName, fieldName) {
-    result=""
-    for (index in xos[collectionName].models) {
-        linkedObject = xos[collectionName].models[index];
-        linkedId = linkedObject["id"];
-        linkedName = linkedObject.attributes[fieldName];
-        if (linkedId == id) {
-            selected = " selected";
-        } else {
-            selected = "";
-        }
-        result = result + '<option value="' + linkedId + '"' + selected + '>' + linkedName + '</option>';
-    }
-    return result;
-};
-
-idToSelect = function(variable, id, collectionName, fieldName) {
-    result = '<select name="' + variable + '">' +
-             idToOptions(id, collectionName, fieldName) +
-             '</select>';
-    return result;
-}
 
 TestApp.on("start", function() {
      var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
