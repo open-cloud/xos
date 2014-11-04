@@ -1,0 +1,55 @@
+.test-table td, th {
+    border: 1px solid black;
+}
+.objectLink {
+    cursor:pointer;
+    color:blue;
+    text-decoration:underline;
+}
+
+#navigationPanel {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  width: 130px;
+  bottom: 0;
+  overflow: hidden;
+  background-color: #F0F0F0;
+}
+
+#headerPanel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 100px;
+  overflow: hidden;
+  background-color: #F0E0E0;
+}
+
+#logPanel {
+  position: absolute;
+  top: auto;
+  left: 130px;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: 100px;
+  overflow: hidden;
+  background-color: #F0E0E0;
+}
+
+#contentPanel {
+    position: fixed;
+    top: 100px;
+    bottom: 100px;
+    left: 130px;
+    right: 0;
+    overflow: auto;
+    background: #f0F0E0;
+}
+
+.btn-xosnav {
+    width: 120px;
+}
