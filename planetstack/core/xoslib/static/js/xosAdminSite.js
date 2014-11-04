@@ -23,18 +23,24 @@ XOSAdminApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
      XOSAdminApp.Router.navigate(detailNavLink + "/" + model.id, {trigger: true});
 };
 
+ICON_CLASSES = {home: "icon-home", deployments: "icon-deployment", sites: "icon-site", slices: "icon-slice", users: "icon-user"};
+
 XOSAdminApp.updateNavigationPanel = function() {
     buttonTemplate=$("#xos-navbutton").html();
     assert(buttonTemplate != undefined, "buttonTemplate is undefined");
-    html=""
+    html="<div class='left-nav'><ul>";
     for (var index in NAV_OBJS) {
         name = NAV_OBJS[index];
         collection_name = name+"s";
-        nav_url = "/" + collection_name;
+        //nav_url = "/" + collection_name;
+        nav_url = "#" + collection_name;
         id = "nav-"+name;
+        icon_class = ICON_CLASSES[collection_name] || "icon-cog";
 
-        html = html + _.template(buttonTemplate, {name: collection_name, router: "XOSAdminApp.Router", routeUrl: nav_url});
+        html = html + _.template(buttonTemplate, {name: collection_name, router: "XOSAdminApp.Router", routeUrl: nav_url, iconClass: icon_class});
     }
+
+    html = html + "</ul>";
 
     $("#navigationPanel").html(html);
 };
