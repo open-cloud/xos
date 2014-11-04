@@ -1,0 +1,45 @@
+<script src="{{ STATIC_URL }}/js/vendor/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.syphon.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.wreqr.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.babysitter.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/backbone.marionette.js"></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/xosAdminSite.css' %}" media="all" >
+
+<script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
+<script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
+<script src="{{ STATIC_URL }}/js/xosAdminSite.js"></script>
+
+<div id="headerPanel">
+header
+</div>
+
+<div id="navigationPanel">
+nav
+</div>
+
+<div id="contentPanel">
+content
+
+<div id="detailBox">
+<div id="detail"></div>
+<div id="linkedObjs1"></div>
+<div id="linkedObjs2"></div>
+<div id="linkedObjs3"></div>
+<div id="linkedObjs4"></div>
+</div>
+
+</div>
+
+<div id="logPanel">
+log
+
+<div id="successBox">
+</div>
+<div id="errorBox">
+</div>
+
+</div>
+
+{% include 'xosAdmin.html' %}
