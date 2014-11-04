@@ -1,0 +1,73 @@
+{% load admin_static %}{% load suit_tags %}{% load i18n %}
+
+      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
+      {% block header %}
+        {% if not is_popup %}
+          <!-- Header -->
+          <div id="header" class="header">
+            
+            <div id="branding">
+                  {% block quick-search %}
+                {% with 'SEARCH_URL'|suit_conf as search_url %}
+                  {% if search_url %}
+                    <form class="form-search nav-quick-search" autocomplete="off" action="{% if '/' in search_url %}{{ search_url }}{% else %}{% url search_url %}{% endif %}" method="GET">
+                      <i class="input-icon icon-search"></i>
+                      <input type="text" name="q" class="input-medium search-query" id="quick-search">
+                      <input type="submit" class="submit" value="">
+                    </form>
+                  {% endif %}
+                {% endwith %}
+              {% endblock %}
+            </div>
+          
+            {% block header_time %}
+            <div id="branding2">
+            <!--<div class="header-content header-content-first">
+              <div class="header-column icon">
+                <i class="icon-time"></i>
+              </div>
+              <div class="header-column">
+                <span class="date"> {% suit_date %}</span><br>
+                <span class="time" id="clock">{% suit_time %}</span>
+              </div>
+            </div>-->
+          
+            {% endblock %}
+
+            {% block header_content %}
+              <!--<div class="header-content">
+                <div class="header-column icon">
+                  <i class="icon-comment"></i>
+                </div>
+                <div class="header-column">
+                  <a href="" class="grey"><b>2</b> new messages</a>
+                </div>
+              </div>-->
+            {% endblock %}
+
+            {% if user.is_active and user.is_staff %}
+              <div id="user-tools">
+                {% trans 'Welcome,' %}
+                <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">{{user.email}}</a>
+                <span class="user-links">
+                {% block userlinks %}
+                  {% url 'django-admindocs-docroot' as docsroot %}
+                  {% if docsroot %}
+                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                   <span class="separator">|</span>
+                  {% endif %}
+                  <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                  <span class="separator">|</span>
+                  <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                  </span>
+                {% endblock %}
+              </div>
+            {% endif %}
+
+            {% block nav-global %}{% endblock %}
+
+          </div>
+           </div>
+        {% endif %}
+        <!-- END Header -->
+      {% endblock %}
