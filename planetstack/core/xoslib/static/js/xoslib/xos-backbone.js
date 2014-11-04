@@ -65,12 +65,18 @@ if (! window.XOSLIB_LOADED ) {
                  },
 
         initialize: function(){
+          this.isLoaded = false;
           this.sortVar = 'name';
           this.sortOrder = 'asc';
+          this.on( "sort", this.sorted );
         },
 
         relatedCollections: [],
         foreignCollections: [],
+
+        sorted: function() {
+            this.isLoaded = true;
+        },
 
         simpleComparator: function( model ){
           parts=this.sortVar.split(".");
@@ -182,102 +188,103 @@ if (! window.XOSLIB_LOADED ) {
 
     function xoslib() {
         // basic REST
-        this.sliver = XOSModel.extend({ urlRoot: SLIVER_API });
+        this.sliver = XOSModel.extend({ urlRoot: SLIVER_API, modelName: "sliver" });
         this.sliverCollection = XOSCollection.extend({ urlRoot: SLIVER_API,
                                                        relatedCollections: {"networkSlivers": "sliver"},
                                                        foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
                                                        model: this.sliver});
         this.slivers = new this.sliverCollection();
 
-        this.slice = XOSModel.extend({ urlRoot: SLICE_API });
+        this.slice = XOSModel.extend({ urlRoot: SLICE_API, modelName: "slice" });
         this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
                                                        relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice"},
                                                        foreignCollections: ["services", "sites"],
                                                        model: this.slice});
         this.slices = new this.sliceCollection();
 
-        this.sliceDeployment = XOSModel.extend({ urlRoot: SLICEDEPLOYMENT_API });
+        this.sliceDeployment = XOSModel.extend({ urlRoot: SLICEDEPLOYMENT_API, modelName: "sliceDeployment" });
         this.sliceDeploymentCollection = XOSCollection.extend({ urlRoot: SLICEDEPLOYMENT_API,
                                                        foreignCollections: ["slices", "deployments"],
                                                        model: this.slice});
         this.sliceDeployments = new this.sliceDeploymentCollection();
 
-        this.slicePrivilege = XOSModel.extend({ urlRoot: SLICEPRIVILEGE_API });
+        this.slicePrivilege = XOSModel.extend({ urlRoot: SLICEPRIVILEGE_API, modelName: "slicePrivilege" });
         this.slicePrivilegeCollection = XOSCollection.extend({ urlRoot: SLICEPRIVILEGE_API,
                                                        foreignCollections: ["slices", "users", "sliceRoles"],
                                                        model: this.slice});
         this.slicePrivileges = new this.slicePrivilegeCollection();
 
-        this.sliceRole = XOSModel.extend({ urlRoot: SLICEROLE_API });
+        this.sliceRole = XOSModel.extend({ urlRoot: SLICEROLE_API, modelName: "sliceRole" });
         this.sliceRoleCollection = XOSCollection.extend({ urlRoot: SLICEROLE_API,
                                                        model: this.slice});
         this.sliceRoles = new this.sliceRoleCollection();
 
-        this.node = XOSModel.extend({ urlRoot: NODE_API });
+        this.node = XOSModel.extend({ urlRoot: NODE_API, modelName: "node" });
         this.nodeCollection = XOSCollection.extend({ urlRoot: NODE_API,
                                                        foreignCollections: ["sites", "deployments"],
                                                        model: this.node});
         this.nodes = new this.nodeCollection();
 
-        this.site = XOSModel.extend({ urlRoot: SITE_API });
+        this.site = XOSModel.extend({ urlRoot: SITE_API, modelName: "site" });
         this.siteCollection = XOSCollection.extend({ urlRoot: SITE_API,
                                                        model: this.site});
         this.sites = new this.siteCollection();
 
-        this.user = XOSModel.extend({ urlRoot: USER_API });
+        this.user = XOSModel.extend({ urlRoot: USER_API, modelName: "user" });
         this.userCollection = XOSCollection.extend({ urlRoot: USER_API,
                                                        relatedCollections: {"slicePrivileges": "user", "slices": "owner", "userDeployments": "user"},
                                                        foreignCollections: ["sites"],
                                                        model: this.user});
         this.users = new this.userCollection();
 
-        this.userDeployment = XOSModel.extend({ urlRoot: USER_API });
+        this.userDeployment = XOSModel.extend({ urlRoot: USERDEPLOYMENT_API, modelName: "userDeployment" });
         this.userDeploymentCollection = XOSCollection.extend({ urlRoot: USERDEPLOYMENT_API,
                                                        foreignCollections: ["users","deployments"],
                                                        model: this.user});
         this.userDeployments = new this.userDeploymentCollection();
 
-        this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API });
+        this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API, modelName: "deployment" });
         this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
                                                            relatedCollections: {"slivers": "deployment", "networkDeployments": "deployment", "userDeployments": "deployment"},
                                                            model: this.deployment});
         this.deployments = new this.deploymentCollection();
 
-        this.image = XOSModel.extend({ urlRoot: IMAGE_API });
+        this.image = XOSModel.extend({ urlRoot: IMAGE_API, modelName: "image" });
         this.imageCollection = XOSCollection.extend({ urlRoot: IMAGE_API,
                                                            model: this.image});
         this.images = new this.imageCollection();
 
-        this.networkTemplate = XOSModel.extend({ urlRoot: NETWORKTEMPLATE_API });
+        this.networkTemplate = XOSModel.extend({ urlRoot: NETWORKTEMPLATE_API, modelName: "networkTemplate" });
         this.networkTemplateCollection = XOSCollection.extend({ urlRoot: NETWORKTEMPLATE_API,
                                                            model: this.networkTemplate});
         this.networkTemplates = new this.networkTemplateCollection();
 
-        this.network = XOSModel.extend({ urlRoot: NETWORK_API });
+        this.network = XOSModel.extend({ urlRoot: NETWORK_API, modelName: "network" });
         this.networkCollection = XOSCollection.extend({ urlRoot: NETWORK_API,
                                                            relatedCollections: {"networkDeployments": "network", "networkSlivers": "network"},
                                                            foreignCollections: ["slices", "networkTemplates"],
                                                            model: this.network});
         this.networks = new this.networkCollection();
 
-        this.networkSliver = XOSModel.extend({ urlRoot: NETWORKSLIVER_API });
+        this.networkSliver = XOSModel.extend({ urlRoot: NETWORKSLIVER_API, modelName: "networkSliver" });
         this.networkSliverCollection = XOSCollection.extend({ urlRoot: NETWORKSLIVER_API,
                                                            model: this.networkSliver});
         this.networkSlivers = new this.networkSliverCollection();
 
-        this.networkDeployment = XOSModel.extend({ urlRoot: NETWORKDEPLOYMENT_API });
+        this.networkDeployment = XOSModel.extend({ urlRoot: NETWORKDEPLOYMENT_API, modelName: "networkDeployment" });
         this.networkDeploymentCollection = XOSCollection.extend({ urlRoot: NETWORKDEPLOYMENT_API,
                                                            model: this.networkDeployment});
         this.networkDeployments = new this.networkDeploymentCollection();
 
-        this.service = XOSModel.extend({ urlRoot: SERVICE_API });
+        this.service = XOSModel.extend({ urlRoot: SERVICE_API, modelName: "sliver" });
         this.serviceCollection = XOSCollection.extend({ urlRoot: SERVICE_API,
                                                        model: this.service});
         this.services = new this.serviceCollection();
 
         // enhanced REST
-        this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API, relatedCollections: {'slivers': "slice"} });
+        this.slicePlus = XOSModel.extend({ urlRoot: SLICEPLUS_API, modelName: "slicePlus" });
         this.slicePlusCollection = XOSCollection.extend({ urlRoot: SLICEPLUS_API,
+                                                          relatedCollections: {'slivers': "slice"},
                                                           model: this.slicePlus});
         this.slicesPlus = new this.slicePlusCollection();
 

@@ -22,13 +22,22 @@
   <button class="btn btn-default btn-xosnav" onclick="<%= router %>.navigate('<%= routeUrl %>', {trigger: true})"><%= name %></button><br>
 </script>
 
+<script type="text/template" id="xos-log-template">
+  <tr id="<%= logMessageId %>">
+     <td><%= success %></td>
+     <td><%= what %></td>
+     <td><%= status %></td>
+     <td><%= statusText %></td>
+  </tr>
+</script>
+
 <script type="text/template" id="xos-navbutton">
   <li>
       <a href="<%= routeUrl %>">
           <i class="<%= iconClass %>"></i>
           <%= name %>
       </a>
-  </lid>
+  </li>
 </script>
 
 <!-- Deployment -->
