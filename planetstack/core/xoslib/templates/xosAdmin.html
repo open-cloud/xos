@@ -18,8 +18,17 @@
   </table>
 </script>
 
-<script type="text/template" id="xos-navbutton">
+<script type="text/template" id="xos-navbutton-old">
   <button class="btn btn-default btn-xosnav" onclick="<%= router %>.navigate('<%= routeUrl %>', {trigger: true})"><%= name %></button><br>
+</script>
+
+<script type="text/template" id="xos-navbutton">
+  <li>
+      <a href="<%= routeUrl %>">
+          <i class="<%= iconClass %>"></i>
+          <%= name %>
+      </a>
+  </lid>
 </script>
 
 <!-- Deployment -->
