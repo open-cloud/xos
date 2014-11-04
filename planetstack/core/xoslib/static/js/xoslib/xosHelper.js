@@ -1,3 +1,15 @@
+function assert(outcome, description) {
+    if (!outcome) {
+        console.log(description);
+    }
+}
+
+HTMLView = Marionette.ItemView.extend({
+  render: function() {
+      this.$el.append(this.options.html);
+  },
+});
+
 XOSApplication = Marionette.Application.extend({
     detailBoxId: "#detailBox",
     errorBoxId: "#errorBox",
@@ -6,26 +18,130 @@ XOSApplication = Marionette.Application.extend({
     successCloseButtonId: "#close-success-box",
     errorTemplate: "#xos-error-template",
     successTemplate: "#xos-success-template",
+    logMessageCount: 0,
 
-    hideError: function(result) {
-        $(this.errorBoxId).hide();
-        $(this.successBoxId).hide();
+    hideError: function() {
+        if (this.logWindowId) {
+        } else {
+            $(this.errorBoxId).hide();
+            $(this.successBoxId).hide();
+        }
     },
 
     showSuccess: function(result) {
-         $(this.successBoxId).show();
-         $(this.successBoxId).html(_.template($(this.successTemplate).html())(result));
-         $(this.successCloseButtonId).unbind().bind('click', function() {
-             $(this.successBoxId).hide();
-         });
+         if (this.logTableId) {
+             result["success"] = "success";
+             this.appendLogWindow(result);
+         } else {
+             $(this.successBoxId).show();
+             $(this.successBoxId).html(_.template($(this.successTemplate).html())(result));
+             $(this.successCloseButtonId).unbind().bind('click', function() {
+                 $(this.successBoxId).hide();
+             });
+         }
     },
 
     showError: function(result) {
-         $(this.errorBoxId).show();
-         $(this.errorBoxId).html(_.template($(this.errorTemplate).html())(result));
-         $(this.errorCloseButtonId).unbind().bind('click', function() {
-             $(this.errorBoxId).hide();
-         });
+         if (this.logTableId) {
+             result["success"] = "failure";
+             this.appendLogWindow(result);
+         } else {
+             $(this.errorBoxId).show();
+             $(this.errorBoxId).html(_.template($(this.errorTemplate).html())(result));
+             $(this.errorCloseButtonId).unbind().bind('click', function() {
+                 $(this.errorBoxId).hide();
+             });
+         }
+    },
+
+    showInformational: function(result) {
+         if (this.logTableId) {
+             result["success"] = "information";
+             return this.appendLogWindow(result);
+         } else {
+             return undefined;
+         }
+    },
+
+    appendLogWindow: function(result) {
+        // compute a new logMessageId for this log message
+        logMessageId = "logMessage" + this.logMessageCount;
+        this.logMessageCount = this.logMessageCount + 1;
+        result["logMessageId"] = logMessageId;
+
+        logMessageTemplate=$("#xos-log-template").html();
+        assert(logMessageTemplate != undefined, "logMessageTemplate is undefined");
+        newRow = _.template(logMessageTemplate, result);
+        assert(newRow != undefined, "newRow is undefined");
+
+        if (result["infoMsgId"] != undefined) {
+            // We were passed the logMessageId of an informational message,
+            // and the caller wants us to replace that message with our own.
+            // i.e. replace an informational message with a success or an error.
+            console.log(result["infoMsgId"]);
+            console.log($("."+result["infoMsgId"]));
+            $("#"+result["infoMsgId"]).replaceWith(newRow);
+        } else {
+            // Create a brand new log message rather than replacing one.
+            logTableBody = $(this.logTableId + " tbody");
+            logTableBody.prepend(newRow);
+        }
+        return logMessageId;
+    },
+
+    hideLinkedItems: function(result) {
+        index=0;
+        while (index<4) {
+            this["linkedObjs" + (index+1)].empty();
+            index = index + 1;
+        }
+    },
+
+    listViewShower: function(listViewName, regionName) {
+        var app=this;
+        return function() {
+            app[regionName].show(new app[listViewName]);
+            app.hideLinkedItems();
+        }
+    },
+
+    detailShower: function(detailName, collection_name, regionName) {
+        var app=this;
+        showModelId = function(model_id) {
+            showModel = function(model) {
+                                console.log(app);
+                detailViewClass = app[detailName];
+                detailView = new detailViewClass({model: model});
+                app[regionName].show(detailView);
+                detailView.showLinkedItems();
+            }
+
+            collection = xos[collection_name];
+            model = collection.get(model_id);
+            if (model == undefined) {
+                if (!collection.isLoaded) {
+                    // If the model cannot be found, then maybe it's because
+                    // we haven't finished loading the collection yet. So wait for
+                    // the sort event to complete, then try again.
+                    collection.once("sort", function() {
+                        collection = xos[collection_name];
+                        model = collection.get(model_id);
+                        if (model == undefined) {
+                            // We tried. It's not here. Complain to the user.
+                            app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
+                        } else {
+                            showModel(model);
+                        }
+                    });
+                } else {
+                    // The collection was loaded, the user must just be asking for something we don't have.
+                    app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
+                }
+            } else {
+                showModel(model);
+            }
+        }
+        return showModelId;
     },
 });
 
@@ -53,21 +169,27 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.dirty = true;
             },
 
-            saveError: function(model, result, xhr) {
+            saveError: function(model, result, xhr, infoMsgId) {
+                result["what"] = "save " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
                 this.app.showError(result);
             },
 
-            saveSuccess: function(model, result, xhr) {
-                this.app.showSuccess({status: xhr.xhr.status, statusText: xhr.xhr.statusText});
+            saveSuccess: function(model, result, xhr, infoMsgId) {
+                result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
+                result["what"] = "save " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
+                this.app.showSuccess(result);
             },
 
             submitClicked: function(e) {
                 this.app.hideError();
                 e.preventDefault();
+                var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
-                var thisView = this;
-                this.model.save(data, {error: function(model, result, xhr) { thisView.saveError(model, result, xhr); },
-                                       success: function(model, result, xhr) { thisView.saveSuccess(model, result, xhr); }});
+                var that = this;
+                this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
+                                       success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId);}});
                 this.dirty = false;
             },
 
