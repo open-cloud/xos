@@ -1,6 +1,6 @@
 <!-- Error and Success templates -->
 
-<script type="text/template" id="test-error-template">
+<script type="text/template" id="xos-error-template">
   <button id="close-error-box">Close Error Message</button>
   <h3>An error has occurred.</h3>
   <table class="test-error-table">
@@ -9,13 +9,17 @@
   </table>
 </script>
 
-<script type="text/template" id="test-success-template">
+<script type="text/template" id="xos-success-template">
   <button id="close-success-box">Close Success Message</button>
   <h3>Success!</h3>
   <table class="test-success-table">
   <tr><td>Code:</td><td><%= status %></td></tr>
   <tr><td>Message:</td><td><%= statusText %></td></tr>
   </table>
+</script>
+
+<script type="text/template" id="xos-navbutton">
+  <button class="btn btn-default btn-xosnav" onclick="<%= router %>.navigate('<%= routeUrl %>', {trigger: true})"><%= name %></button><br>
 </script>
 
 <!-- Deployment -->
@@ -623,7 +627,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-detail-template">
-  <h3>Detail View: User</h3>
+  <h3>Detail View: UserDeployment</h3>
   <form>
   <table>
   <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>
