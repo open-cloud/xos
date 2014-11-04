@@ -1,4 +1,5 @@
 XOSApplication = Marionette.Application.extend({
+    detailBoxId: "#detailBox",
     errorBoxId: "#errorBox",
     errorCloseButtonId: "#close-error-box",
     successBoxId: "#successBox",
@@ -26,6 +27,125 @@ XOSApplication = Marionette.Application.extend({
              $(this.errorBoxId).hide();
          });
     },
+});
+
+/* XOSDetailView
+      extend with:
+         app - MarionetteApplication
+         template - template (See XOSHelper.html)
+*/
+
+XOSDetailView = Marionette.ItemView.extend({
+            tagName: "div",
+
+            events: {"click button.js-submit": "submitClicked",
+                     "change input": "inputChanged"},
+
+            events: {"click button.js-submit": "submitClicked",
+                     "change input": "inputChanged"},
+
+            /* inputChanged is watching the onChange events of the input controls. We
+               do this to track when this view is 'dirty', so we can throw up a warning
+               if the user tries to change his slices without saving first.
+            */
+
+            inputChanged: function(e) {
+                this.dirty = true;
+            },
+
+            saveError: function(model, result, xhr) {
+                this.app.showError(result);
+            },
+
+            saveSuccess: function(model, result, xhr) {
+                this.app.showSuccess({status: xhr.xhr.status, statusText: xhr.xhr.statusText});
+            },
+
+            submitClicked: function(e) {
+                this.app.hideError();
+                e.preventDefault();
+                var data = Backbone.Syphon.serialize(this);
+                var thisView = this;
+                this.model.save(data, {error: function(model, result, xhr) { thisView.saveError(model, result, xhr); },
+                                       success: function(model, result, xhr) { thisView.saveSuccess(model, result, xhr); }});
+                this.dirty = false;
+            },
+
+            showLinkedItems: function() {
+                    index=0;
+                    for (relatedName in this.model.collection.relatedCollections) {
+                        relatedField = this.model.collection.relatedCollections[relatedName];
+
+                        relatedListViewClassName = relatedName + "ListView";
+                        if (this.app[relatedListViewClassName] == undefined) {
+                            console.log("warning: " + relatedListViewClassName + " not found");
+                        }
+                        relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
+                        this.app["linkedObjs" + (index+1)].show(new relatedListViewClass());
+                        index = index + 1;
+                    }
+
+                    while (index<4) {
+                        this.app["linkedObjs" + (index+1)].empty();
+                        index = index + 1;
+                    }
+              },
+});
+
+/* XOSItemView
+      This is for items that will be displayed as table rows.
+      extend with:
+         app - MarionetteApplication
+         template - template (See XOSHelper.html)
+         detailClass - class of detail view, probably an XOSDetailView
+*/
+
+XOSItemView = Marionette.ItemView.extend({
+             tagName: 'tr',
+             className: 'test-tablerow',
+
+             events: {"click": "changeItem"},
+
+             changeItem: function(e) {
+                    this.app.hideError();
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    this.app.navigateToModel(this.app, this.detailClass, this.detailNavLink, this.model);
+             },
+});
+
+/* XOSListView:
+      extend with:
+         app - MarionetteApplication
+         childView - class of ItemView, probably an XOSItemView
+         template - template (see xosHelper.html)
+         collection - collection that holds these objects
+         title - title to display in template
+*/
+
+XOSListView = Marionette.CompositeView.extend({
+             childViewContainer: 'tbody',
+
+             initialize: function() {
+                 this.listenTo(this.collection, 'change', this._renderChildren)
+
+                 // Because many of the templates use idToName(), we need to
+                 // listen to the collections that hold the names for the ids
+                 // that we want to display.
+                 for (i in this.collection.foreignCollections) {
+                     foreignName = this.collection.foreignCollections[i];
+                     if (xos[foreignName] == undefined) {
+                         console.log("Failed to find xos class " + foreignName);
+                     }
+                     this.listenTo(xos[foreignName], 'change', this._renderChildren);
+                     this.listenTo(xos[foreignName], 'sort', this._renderChildren);
+                 }
+             },
+
+             templateHelpers: function() {
+                return { title: this.title };
+             },
 });
 
 /* Give an id, the name of a collection, and the name of a field for models
