@@ -1,13 +1,7 @@
 OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
-function assert(outcome, description) {
-    if (!outcome) {
-        console.log(description);
-    }
-}
-
-XOSAdminApp = new XOSApplication();
+XOSAdminApp = new XOSApplication({logTableId: "#logTable"});
 
 XOSAdminApp.addRegions({
     navigation: "#navigationPanel",
@@ -32,7 +26,6 @@ XOSAdminApp.updateNavigationPanel = function() {
     for (var index in NAV_OBJS) {
         name = NAV_OBJS[index];
         collection_name = name+"s";
-        //nav_url = "/" + collection_name;
         nav_url = "#" + collection_name;
         id = "nav-"+name;
         icon_class = ICON_CLASSES[collection_name] || "icon-cog";
@@ -89,27 +82,6 @@ XOSAdminApp.initRouter = function() {
     var api = {};
     var routes = {};
 
-    function listViewShower(listViewName) {
-        return function() {
-            XOSAdminApp.detail.show(new XOSAdminApp[listViewName]);
-        }
-    };
-
-    function detailShower(detailName, collection_name) {
-        shower = function(model_id) {
-            model = xos[collection_name].get(model_id);
-            if (model == undefined) {
-                $("#detail").html("not ready yet");
-                return;
-            }
-            detailViewClass = XOSAdminApp[detailName];
-            detailView = new detailViewClass({model: model});
-            XOSAdminApp.detail.show(detailView);
-            detailView.showLinkedItems();
-        }
-        return shower;
-    };
-
     for (var index in OBJS) {
         name = OBJS[index];
         collection_name = name + "s";
@@ -118,13 +90,13 @@ XOSAdminApp.initRouter = function() {
         listViewName = collection_name + "ListView";
         detailViewName = collection_name + "DetailView";
 
-        api[api_command] = listViewShower(listViewName);
+        api[api_command] = XOSAdminApp.listViewShower(listViewName, "detail");
         routes[nav_url] = api_command;
 
         nav_url = collection_name + "/:id";
         api_command = "detail" + collection_name.charAt(0).toUpperCase() + collection_name.slice(1);
 
-        api[api_command] = detailShower(detailViewName, collection_name);
+        api[api_command] = XOSAdminApp.detailShower(detailViewName, collection_name, "detail");
         routes[nav_url] = api_command;
     };
 

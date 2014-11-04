@@ -6,12 +6,15 @@
     color:blue;
     text-decoration:underline;
 }
+#logTable td, th {
+    border: 1px solid black;
+}
 
 #navigationPanel {
   position: absolute;
   top: 100px;
   left: 0;
-  width: 130px;
+  width: 220px;
   bottom: 0;
   overflow: hidden;
   background-color: #F0F0F0;
@@ -31,7 +34,7 @@
 #logPanel {
   position: absolute;
   top: auto;
-  left: 130px;
+  left: 220px;
   right: 0;
   bottom: 0;
   width: auto;
@@ -44,7 +47,7 @@
     position: fixed;
     top: 100px;
     bottom: 100px;
-    left: 130px;
+    left: 220px;
     right: 0;
     overflow: auto;
     background: #f0F0E0;
