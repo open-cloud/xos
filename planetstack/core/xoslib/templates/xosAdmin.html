@@ -588,7 +588,8 @@
   <tr><td>instance_name:</td><td><input type="text" name="instance_name" value="<%= instance_name %>"></td></tr>
   <tr><td>Image:</td><td><%= idToSelect("image",image,"images","name") %></td></tr>
   <tr><td>Creator:</td><td><%= idToSelect("creator",creator,"users","username") %></td></tr>
-  <tr><td>Slice:</td><td><%= idToSelect("deploymentNetwork",deploymentNetwork,"deployments","name") %></td></tr>
+  <tr><td>Slice:</td><td><%= idToSelect("slice",slice,"slices","name") %></td></tr>
+  <tr><td>Deployment:</td><td><%= idToSelect("deploymentNetwork",deploymentNetwork,"deployments","name") %></td></tr>
   <tr><td colspan=2><button class="btn js-submit">Save</button></td></tr>
   </table>
   </form>
