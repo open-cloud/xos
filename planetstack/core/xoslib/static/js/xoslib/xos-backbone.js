@@ -245,7 +245,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API, modelName: "deployment" });
         this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
-                                                           relatedCollections: {"slivers": "deployment", "networkDeployments": "deployment", "userDeployments": "deployment"},
+                                                           relatedCollections: {"slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
                                                            model: this.deployment});
         this.deployments = new this.deploymentCollection();
 
