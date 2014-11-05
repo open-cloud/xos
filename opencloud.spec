@@ -104,6 +104,14 @@ comm -13 %{_tmppath}/config-files.sorted %{_tmppath}/tmp-filelist.sorted > %{_tm
 
 cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
 
+# Clone ansible with latest openstack modules
+git clone --recursive git://github.com/ansible/ansible.git /opt/ansible
+mkdir -p /etc/ansible
+echo > /etc/ansible/hosts << "EOF"
+[localhost]
+127.0.0.1
+EOF
+
 %clean
 rm -rf %{buildroot}
 
