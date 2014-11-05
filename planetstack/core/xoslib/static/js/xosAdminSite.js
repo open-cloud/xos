@@ -90,13 +90,13 @@ XOSAdminApp.initRouter = function() {
         listViewName = collection_name + "ListView";
         detailViewName = collection_name + "DetailView";
 
-        api[api_command] = XOSAdminApp.listViewShower(listViewName, "detail");
+        api[api_command] = XOSAdminApp.listViewShower(listViewName, collection_name, "detail", collection_name);
         routes[nav_url] = api_command;
 
         nav_url = collection_name + "/:id";
         api_command = "detail" + collection_name.charAt(0).toUpperCase() + collection_name.slice(1);
 
-        api[api_command] = XOSAdminApp.detailShower(detailViewName, collection_name, "detail");
+        api[api_command] = XOSAdminApp.detailShower(detailViewName, collection_name, "detail", name);
         routes[nav_url] = api_command;
     };
 
