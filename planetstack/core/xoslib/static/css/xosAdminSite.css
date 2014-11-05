@@ -17,7 +17,7 @@
   width: 220px;
   bottom: 0;
   overflow: hidden;
-  background-color: #F0F0F0;
+  //background-color: #F0F0F0;
 }
 
 #headerPanel {
@@ -28,7 +28,7 @@
   width: auto;
   height: 100px;
   overflow: hidden;
-  background-color: #F0E0E0;
+  //background-color: #F0E0E0;
 }
 
 #logPanel {
@@ -40,7 +40,7 @@
   width: auto;
   height: 100px;
   overflow: hidden;
-  background-color: #F0E0E0;
+  //background-color: #F0E0E0;
 }
 
 #contentPanel {
@@ -50,7 +50,7 @@
     left: 220px;
     right: 0;
     overflow: auto;
-    background: #f0F0E0;
+    //background: #f0F0E0;
 }
 
 .btn-xosnav {
