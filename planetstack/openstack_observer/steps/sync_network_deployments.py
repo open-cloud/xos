@@ -25,7 +25,8 @@ class SyncNetworkDeployments(OpenStackSyncStep):
     def get_next_subnet(self, deployment=None):
         # limit ourself to 10.0.x.x for now
         valid_subnet = lambda net: net.startswith('10.0')
-        driver = self.driver.admin_driver(deployment=deployment)
+
+        driver = self.driver.admin_driver(deployment=deployment,tenant='admin')
         subnets = driver.shell.quantum.list_subnets()['subnets']
         ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
                 if valid_subnet(subnet['cidr'])]
@@ -107,15 +108,12 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % network_deployment.deployment)
             return
 
+        self.driver = self.driver.admin_driver(deployment=network_deployment.deployment,tenant='admin')
         if network_deployment.network.owner and network_deployment.network.owner.creator:
             try:
                 # update manager context
-                real_driver = self.driver
-                self.driver = self.driver.client_driver(caller=network_deployment.network.owner.creator,
-                                                        tenant=network_deployment.network.owner.name,
-                                                        deployment=network_deployment.deployment.name)
+		# Bring back
                 self.save_network_deployment(network_deployment)
-                self.driver = real_driver
                 logger.info("saved network deployment: %s" % (network_deployment))
             except Exception,e:
                 logger.log_exc("save network deployment failed: %s" % network_deployment)

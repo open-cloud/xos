@@ -254,10 +254,13 @@ class PlanetStackObserver:
 		except KeyError:
 			has_deps = False
 
+		go = False
+
 		if (has_deps):
 			for d in deps:
                                 if d==step.__name__:
                                     logger.info("   step %s self-wait skipped" % step.__name__)
+				    go = True
                                     continue
 
 				cond = self.step_conditions[d]
@@ -266,7 +269,7 @@ class PlanetStackObserver:
                                         logger.info("  step %s wait on dep %s" % (step.__name__, d))
 					cond.wait()
 				cond.release()
-			go = self.step_status[d] == STEP_STATUS_OK
+			go = go or self.step_status[d] == STEP_STATUS_OK
 		else:
 			go = True
 
