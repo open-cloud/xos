@@ -9,6 +9,7 @@ from core.models.site import Deployment, SiteDeployments
 from core.models.slice import Slice, SliceDeployments
 from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
+from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
@@ -47,46 +48,41 @@ class SyncSliceDeployments(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % slice_deployment.deployment)
             return
 
-        if not slice_deployment.tenant_id:
-            nova_fields = {'tenant_name': slice_deployment.slice.name,
-                   'description': slice_deployment.slice.description,
-                   'enabled': slice_deployment.slice.enabled}
-            driver = self.driver.admin_driver(deployment=slice_deployment.deployment.name)
-            tenant = driver.create_tenant(**nova_fields)
-            slice_deployment.tenant_id = tenant.id
-
-            # XXX give caller an admin role at the tenant they've created
-            deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
+	deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
                                                              deployment=slice_deployment.deployment)            
-            if not deployment_users:
-                logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
-            else:
-                deployment_user = deployment_users[0]
-                # lookup user id at this deployment
-                kuser= driver.shell.keystone.users.find(email=slice_deployment.slice.creator.email)
+    	if not deployment_users:
+	    logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
+	    roles = []
+    	else:
+	    deployment_user = deployment_users[0]
+	    roles = ['admin']
+	    
+	max_instances=int(slice_deployment.slice.max_slivers)
+	tenant_fields = {'endpoint':slice_deployment.deployment.auth_url,
+		         'admin_user': slice_deployment.deployment.admin_user,
+		         'admin_password': slice_deployment.deployment.admin_password,
+		         'admin_tenant': 'admin',
+		         'tenant': slice_deployment.slice.name,
+		         'tenant_description': slice_deployment.slice.description,
+			 'roles':roles,
+			 'name':deployment_user.email,
+			 'max_instances':max_instances}
 
-                # add required roles at the slice's tenant 
-                driver.add_user_role(kuser.id, tenant.id, 'admin')
-                    
-                # refresh credentials using this tenant
-                client_driver = self.driver.client_driver(caller=deployment_user.user,
-                                                          tenant=tenant.name, 
-                                                          deployment=slice_deployment.deployment.name)
-
-
-        if slice_deployment.id and slice_deployment.tenant_id:
-            # update existing tenant
-            driver = self.driver.admin_driver(deployment=slice_deployment.deployment.name)
-            driver.update_tenant(slice_deployment.tenant_id,
-                                 description=slice_deployment.slice.description,
-                                 enabled=slice_deployment.slice.enabled)  
-
-        if slice_deployment.tenant_id:
-            # update slice/tenant quota
-            driver = self.driver.client_driver(deployment=slice_deployment.deployment.name, tenant=slice_deployment.slice.name)
-            driver.shell.nova.quotas.update(tenant_id=slice_deployment.tenant_id, instances=int(slice_deployment.slice.max_slivers)) 
-
-        slice_deployment.save()
+	res = run_template('sync_slice_deployments.yaml', tenant_fields)
+	expected_num = len(roles)+1
+	if (len(res)!=expected_num):
+	    raise Exception('Could not sync tenants for slice %s'%slice_deployment.slice.name)
+	else:
+	    tenant_id = res[0]['id']
+	    if (not slice_deployment.tenant_id):
+	        handle = os.popen('nova quota-update --instances %d %s'%(max_instances,tenant_id))
+		output = handle.read()
+		result = handle.close()
+		if (result):
+		    logging.info('Could not update quota for %s'%slice_deployment.slice.name)
+		slice_deployment.tenant_id = tenant_id
+		slice_deployment.save()
+			
 
 
     def delete_record(self, slice_deployment):
@@ -106,11 +102,4 @@ class SyncSliceDeployments(OpenStackSyncStep):
             client_driver.delete_network(slice_deployment.network_id)
         if slice_deployment.tenant_id:
             driver.delete_tenant(slice_deployment.tenant_id)
-        # delete external route
-        #subnet = None
-        #subnets = client_driver.shell.quantum.list_subnets()['subnets']
-        #for snet in subnets:
-        #    if snet['id'] == slice_deployment.subnet_id:
-        #        subnet = snet
-        #if subnet:
-        #    driver.delete_external_route(subnet)
+        

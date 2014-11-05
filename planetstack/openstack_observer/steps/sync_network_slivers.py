@@ -47,7 +47,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 logger.info("deployment %s has no admin_tenant" % deployment.name)
                 continue
             try:
-                driver = self.driver.admin_driver(deployment=deployment.name)
+                driver = self.driver.admin_driver(deployment=deployment.name,tenant='admin')
                 ports = driver.shell.quantum.list_ports()["ports"]
             except:
                 logger.log_exc("failed to get ports from deployment %s" % deployment.name)
@@ -137,7 +137,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
             if (neutron_nat_list != nat_list):
                 logger.info("Setting nat:forward_ports for port %s network %s sliver %s to %s" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
                 try:
-                    driver = self.driver.client_driver(caller=networkSliver.sliver.creator, tenant=networkSliver.sliver.slice.name, deployment=networkSliver.sliver.node.deployment.name)
+                    driver = self.driver.admin_driver(deployment=networkSliver.sliver.node.deployment,tenant='admin')
                     driver.shell.quantum.update_port(networkSliver.port_id, {"port": {"nat:forward_ports": nat_list}})
                 except:
                     logger.log_exc("failed to update port with nat_list %s" % str(nat_list))

@@ -24,7 +24,7 @@ class SyncNodes(OpenStackSyncStep):
         # collect local nodes
         sites = Site.objects.all()
         nodes = Node.objects.all()
-        node_hostnames  = [node.name for node in nodes]
+        node_hostnames = [node.name for node in nodes]
 
         # fetch all nodes from each deployment
         deployments = Deployment.objects.all()

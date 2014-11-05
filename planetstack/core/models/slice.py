@@ -124,8 +124,8 @@ class SliceDeployments(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
-    slice = models.ForeignKey(Slice)
-    deployment = models.ForeignKey(Deployment)
+    slice = models.ForeignKey(Slice, related_name='slicedeployments')
+    deployment = models.ForeignKey(Deployment, related_name='slicedeployments')
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
