@@ -31,6 +31,23 @@
   </tr>
 </script>
 
+<script type="text/template" id="xos-tabs-template">
+  <ul class="xos-nav-list">
+  <% _.each(tabs, function(tab) { %>
+      <li class="xos-nav-item" id="xos-nav-<%= tab["region"] %>"><%= tab["name"] %></li>
+  <% }); %>
+  </ul>
+</script>
+
+<script type="text/template" id="xos-title-list">
+  <h3><%= title %></h3>
+</script>
+
+<script type="text/template" id="xos-title-detail">
+  <h3><%= title %></h3>
+</script>
+
+
 <script type="text/template" id="xos-navbutton">
   <li>
       <a href="<%= routeUrl %>">
@@ -43,7 +60,7 @@
 <!-- Deployment -->
 
 <script type="text/template" id="xosAdmin-deployment-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -66,7 +83,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-deployment-detail-template">
-  <h3>Detail View: Deployment</h3>
+  <h3 class="xos-detail-title">Detail View: Deployment</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -80,7 +97,7 @@
 <!-- Image -->
 
 <script type="text/template" id="xosAdmin-image-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -102,7 +119,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-image-detail-template">
-  <h3>Detail View: Image</h3>
+  <h3 class="xos-detail-title">Detail View: Image</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -116,7 +133,7 @@
 <!-- NetworkTemplate -->
 
 <script type="text/template" id="xosAdmin-networkTemplate-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -143,7 +160,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-networkTemplate-detail-template">
-  <h3>Detail View: NetworkTemplate</h3>
+  <h3 class="xos-detail-title">Detail View: NetworkTemplate</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -160,7 +177,7 @@
 <!-- Network -->
 
 <script type="text/template" id="xosAdmin-network-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -184,7 +201,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-network-detail-template">
-  <h3>Detail View: Network</h3>
+  <h3 class="xos-detail-title">Detail View: Network</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -200,7 +217,7 @@
 <!-- NetworkSliver -->
 
 <script type="text/template" id="xosAdmin-networkSliver-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -222,7 +239,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-networkSliver-detail-template">
-  <h3>Detail View: Network</h3>
+  <h3 class="xos-detail-title">Detail View: Network</h3>
   <form>
   <table>
   <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
@@ -237,7 +254,7 @@
 <!-- NetworkDeployment -->
 
 <script type="text/template" id="xosAdmin-networkDeployment-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -257,7 +274,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-networkDeployment-detail-template">
-  <h3>Detail View: Network</h3>
+  <h3 class="xos-detail-title">Detail View: Network</h3>
   <form>
   <table>
   <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
@@ -271,7 +288,7 @@
 <!-- Node -->
 
 <script type="text/template" id="xosAdmin-node-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -292,7 +309,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-node-detail-template">
-  <h3>Detail View: Node</h3>
+  <h3 class="xos-detail-title">Detail View: Node</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -306,7 +323,7 @@
 <!-- SliceRole -->
 
 <script type="text/template" id="xosAdmin-sliceRole-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -323,7 +340,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-sliceRole-detail-template">
-  <h3>Detail View: Service</h3>
+  <h3 class="xos-detail-title">Detail View: Service</h3>
   <form>
   <table>
   <tr><td>Role:</td><td><input type="text" name="role" value="<%= role %>"></td></tr>
@@ -335,7 +352,7 @@
 <!-- Service -->
 
 <script type="text/template" id="xosAdmin-service-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -360,7 +377,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-service-detail-template">
-  <h3>Detail View: Service</h3>
+  <h3 class="xos-detail-title">Detail View: Service</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -374,7 +391,7 @@
 <!-- Site -->
 
 <script type="text/template" id="xosAdmin-site-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -400,7 +417,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-site-detail-template">
-  <h3>Detail View: Site</h3>
+  <h3 class="xos-detail-title">Detail View: Site</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -414,7 +431,7 @@
 <!-- Slice -->
 
 <script type="text/template" id="xosAdmin-slice-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -444,7 +461,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-slice-detail-template">
-  <h3>Detail View: Slice</h3>
+  <h3 class="xos-detail-title">Detail View: Slice</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -460,7 +477,7 @@
 <!-- SliceDeployment -->
 
 <script type="text/template" id="xosAdmin-sliceDeployment-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -480,7 +497,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-sliceDeployment-detail-template">
-  <h3>Detail View: Slice Deployment</h3>
+  <h3 class="xos-detail-title">Detail View: Slice Deployment</h3>
   <form>
   <table>
   <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
@@ -494,7 +511,7 @@
 <!-- SlicePrivilege -->
 
 <script type="text/template" id="xosAdmin-slicePrivilege-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -514,7 +531,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-slicePrivilege-detail-template">
-  <h3>Detail View: Slice Privilege</h3>
+  <h3 class="xos-detail-title">Detail View: Slice Privilege</h3>
   <form>
   <table>
   <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>
@@ -528,7 +545,7 @@
 <!-- Sliver -->
 
 <script type="text/template" id="xosAdmin-sliver-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -563,7 +580,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-sliver-detail-template">
-  <h3>Detail View: Sliver</h3>
+  <h3 class="xos-detail-title">Detail View: Sliver</h3>
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
@@ -580,7 +597,7 @@
 <!-- User -->
 
 <script type="text/template" id="xosAdmin-user-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -607,7 +624,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-user-detail-template">
-  <h3>Detail View: User</h3>
+  <h3 class="xos-detail-title">Detail View: User</h3>
   <form>
   <table>
   <tr><td>User Name:</td><td><input type="text" name="username" value="<%= username %>"></td></tr>
@@ -624,7 +641,7 @@
 <!-- UserDeployments -->
 
 <script type="text/template" id="xosAdmin-userDeployment-list-template">
-  <h3><%= title %></h3>
+  <h3 class="xos-list-title"><%= title %></h3>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -645,7 +662,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-detail-template">
-  <h3>Detail View: UserDeployment</h3>
+  <h3 class="xos-detail-title">Detail View: UserDeployment</h3>
   <form>
   <table>
   <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>

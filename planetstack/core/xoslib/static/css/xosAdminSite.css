@@ -56,3 +56,55 @@
 .btn-xosnav {
     width: 120px;
 }
+
+.xos-nav-list {
+    list-style:none;
+    border-bottom-style: solid;
+    border-bottom-color: #105E9E;
+    color: #105E93;
+    margin: 0px 4px 15px 5px;
+}
+
+.xos-nav-item {
+    background-color: #E0E0E0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+    display: inline-block;
+    content: normal;
+    clear: none;
+
+    padding:8px 20px 7px;
+
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #105E9E;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.xos-nav-item:hover {
+    background-color: #A0A0A0;
+    letter-spacing: 1px;
+}
+
+.xos-nav-item.active  {
+    background-color: #105E9E;
+    color:#ffffff;
+    font-weight:normal;
+    padding-top:10px;
+    text-decoration:none;
+}
+
+.xos-list-title {
+    display: none;
+}
+
+.xos-detail-title {
+    display: none;
+}
+
