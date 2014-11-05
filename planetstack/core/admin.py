@@ -138,13 +138,13 @@ class PermissionCheckingAdminMixin(object):
         return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
 
-    def get_form(self, request, obj=None):
+    def get_form(self, request, obj=None, **kwargs):
         # Save obj and request in thread-local storage, so suit_form_tabs can
         # use it to determine whether we're in edit or add mode, and can
         # determine whether the user is an admin.
         _thread_locals.request = request
         _thread_locals.obj = obj
-        return super(PermissionCheckingAdminMixin, self).get_form(request, obj)
+        return super(PermissionCheckingAdminMixin, self).get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
         inlines = super(PermissionCheckingAdminMixin, self).get_inline_instances(request, obj)

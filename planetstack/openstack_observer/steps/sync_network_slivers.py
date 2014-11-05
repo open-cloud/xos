@@ -17,6 +17,8 @@ class SyncNetworkSlivers(OpenStackSyncStep):
     #     which Network is associated from the port.
 
     def call(self, **args):
+        logger.info("sync'ing network slivers")
+
         networkSlivers = NetworkSliver.objects.all()
         networkSlivers_by_id = {}
         networkSlivers_by_port = {}
