@@ -24,7 +24,7 @@ class SyncSlivers(OpenStackSyncStep):
         return userdata
 
     def sync_record(self, sliver):
-        logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
+        logger.info("sync'ing sliver:%s slice:%s deployment:%s " % (sliver, sliver.slice.name, sliver.node.deployment))
 
         metadata_update = {}
 	if (sliver.numberCores):
