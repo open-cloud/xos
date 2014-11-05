@@ -1,7 +1,7 @@
 OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
-XOSAdminApp = new XOSApplication({logTableId: "#logTable"});
+XOSAdminApp = new XOSApplication({logTableId: "#logTable", hideTabsByDefault: true});
 
 XOSAdminApp.addRegions({
     navigation: "#navigationPanel",

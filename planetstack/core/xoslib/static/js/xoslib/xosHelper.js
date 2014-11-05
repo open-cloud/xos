@@ -244,12 +244,12 @@ XOSDetailView = Marionette.ItemView.extend({
                         assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
                         relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
                         this.app[regionName].show(new relatedListViewClass());
-                        this.app[regionName].$el.hide();
+                        if (this.app.hideTabsByDefault) {
+                            this.app[regionName].$el.hide();
+                        }
                         tabs.push({name: relatedName, region: regionName});
                         index = index + 1;
                     }
-
-                    console.log(index);
 
                     while (index<4) {
                         this.app["linkedObjs" + (index+1)].empty();
