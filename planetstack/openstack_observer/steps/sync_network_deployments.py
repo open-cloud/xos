@@ -104,6 +104,8 @@ class SyncNetworkDeployments(OpenStackSyncStep):
         network_deployment.save()
 
     def sync_record(self, network_deployment):
+        logger.info("sync'ing network deployment %s for network %s slice %s deployment %s" % (network_deployment, network_deployment.network, str(network_deployment.network.owner), network_deployment.deployment))
+
         if not network_deployment.deployment.admin_user:
             logger.info("deployment %r has no admin_user, skipping" % network_deployment.deployment)
             return
