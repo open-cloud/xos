@@ -17,8 +17,8 @@ class Image(PlCoreBase):
 class ImageDeployments(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
-    image = models.ForeignKey(Image)
-    deployment = models.ForeignKey(Deployment)
+    image = models.ForeignKey(Image,related_name='imagedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
     glance_image_id = models.CharField(null=True, blank=True, max_length=200, help_text="Glance image id") 
 
     def __unicode__(self):  return u'%s %s' % (self.image, self.deployment)

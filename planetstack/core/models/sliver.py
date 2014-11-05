@@ -1,7 +1,8 @@
 import os
 from django.db import models
+from django.db.models import Q
 from django.core import exceptions
-from core.models import PlCoreBase
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Image
 from core.models import Slice
 from core.models import Node
@@ -11,6 +12,9 @@ from core.models import User
 from core.models import Tag
 from core.models import Flavor
 from django.contrib.contenttypes import generic
+from planetstack.config import Config
+
+config = Config()
 
 def get_default_flavor(deployment = None):
     # Find a default flavor that can be used for a sliver. This is particularly
@@ -31,8 +35,49 @@ def get_default_flavor(deployment = None):
 
     return flavors[0]
 
+class SliverDeletionManager(PlCoreBaseDeletionManager):
+    def get_queryset(self):
+        parent=super(SliverDeletionManager, self)
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+        if (backend_type):
+            return parent_queryset.filter(Q(node__deployment__backend_type=backend_type))
+        else:
+            return parent_queryset
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
+
+class SliverManager(PlCoreBaseManager):
+    def get_queryset(self):
+        parent=super(SliverManager, self)
+
+        try:
+            backend_type = config.observer_backend_type
+        except AttributeError:
+            backend_type = None
+
+        parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
+
+        if backend_type:
+            return parent_queryset.filter(Q(node__deployment__backend_type=backend_type))
+        else:
+            return parent_queryset
+
+    # deprecated in django 1.7 in favor of get_queryset().
+    def get_query_set(self):
+        return self.get_queryset()
+
 # Create your models here.
 class Sliver(PlCoreBase):
+    objects = SliverManager()
+    deleted_objects = SliverDeletionManager()
     instance_id = models.CharField(null=True, blank=True, max_length=200, help_text="Nova instance id")
     name = models.CharField(max_length=200, help_text="Sliver name")
     instance_name = models.CharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")

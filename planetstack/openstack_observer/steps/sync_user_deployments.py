@@ -10,6 +10,8 @@ from core.models.user import User
 from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
+from observer.ansible import *
+
 logger = Logger(level=logging.INFO)
 
 class SyncUserDeployments(OpenStackSyncStep):
@@ -30,50 +32,55 @@ class SyncUserDeployments(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % user_deployment.deployment)
             return
 
+	template = os_template_env.get_template('sync_user_deployments.yaml')
+	
         name = user_deployment.user.email[:user_deployment.user.email.find('@')]
-        user_fields = {'name': user_deployment.user.email,
-                       'email': user_deployment.user.email,
-                       'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
-                       'enabled': True}    
-        driver = self.driver.admin_driver(deployment=user_deployment.deployment.name)
-        if not user_deployment.kuser_id:
-            keystone_user = driver.create_user(**user_fields)
-            user_deployment.kuser_id = keystone_user.id
-        else:
-            driver.update_user(user_deployment.kuser_id, user_fields)
 
-        # setup user deployment home site roles  
+	roles = []
+	# setup user deployment home site roles  
         if user_deployment.user.site:
             site_deployments = SiteDeployments.objects.filter(site=user_deployment.user.site,
                                                               deployment=user_deployment.deployment)
             if site_deployments:
                 # need the correct tenant id for site at the deployment
                 tenant_id = site_deployments[0].tenant_id  
-                driver.add_user_role(user_deployment.kuser_id, 
-                                     tenant_id, 'user')
+		tenant_name = site_deployments[0].site.login_base
+
+		roles.append('user')
                 if user_deployment.user.is_admin:
-                    driver.add_user_role(user_deployment.kuser_id, tenant_id, 'admin')
-                else:
-                    # may have admin role so attempt to remove it
-                    driver.delete_user_role(user_deployment.kuser_id, tenant_id, 'admin')
+                    roles.append('admin')
+	    else:
+		raise Exception('Internal error. Missing SiteDeployment for user %s'%user_deployment.user.email)
+	else:
+	    raise Exception('Siteless user %s'%user_deployment.user.email)
 
-        #if user_deployment.user.public_key:
-        #    if not user_deployment.user.keyname:
-        #        keyname = user_deployment.user.email.lower().replace('@', 'AT').replace('.', '')
-        #        user_deployment.user.keyname = keyname
-        #        user_deployment.user.save()
-        #    
-        #    user_driver = driver.client_driver(caller=user_deployment.user, 
-        #                                       tenant=user_deployment.user.site.login_base, 
-        #                                       deployment=user_deployment.deployment.name)
-        #    key_fields =  {'name': user_deployment.user.keyname,
-        #                   'public_key': user_deployment.user.public_key}
-        #    user_driver.create_keypair(**key_fields)
 
-        user_deployment.save()
+        user_fields = {'endpoint':user_deployment.deployment.auth_url,
+		       'name': user_deployment.user.email,
+                       'email': user_deployment.user.email,
+                       'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
+                       'admin_user': user_deployment.deployment.admin_user,
+		       'admin_password': user_deployment.deployment.admin_password,
+		       'admin_tenant': 'admin',
+		       'roles':roles,
+		       'tenant':tenant_name}    
+	
+	rendered = template.render(user_fields)
+	res = run_template('sync_user_deployments.yaml', user_fields)
+
+	# results is an array in which each element corresponds to an 
+	# "ok" string received per operation. If we get as many oks as
+	# the number of operations we issued, that means a grand success.
+	# Otherwise, the number of oks tell us which operation failed.
+	expected_length = len(roles) + 1
+	if (len(res)==expected_length):
+        	user_deployment.save()
+	elif (len(res)):
+		raise Exception('Could not assign roles for user %s'%user_fields['name'])
+	else:
+		raise Exception('Could not create or update user %s'%user_fields['name'])
 
     def delete_record(self, user_deployment):
         if user_deployment.kuser_id:
             driver = self.driver.admin_driver(deployment=user_deployment.deployment.name)
             driver.delete_user(user_deployment.kuser_id)
-

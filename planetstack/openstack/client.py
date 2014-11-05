@@ -1,15 +1,12 @@
 import urlparse
 try:
     from keystoneclient.v2_0 import client as keystone_client
-    from glance import client as glance_client
+    #from glance import client as glance_client
     import glanceclient
     from novaclient.v1_1 import client as nova_client
-    from quantumclient.v2_0 import client as quantum_client
+    from neutronclient.v2_0 import client as quantum_client
     from nova.db.sqlalchemy import api as nova_db_api 
     from nova.context import get_admin_context
-    from keystone.common.sql import core  
-    core.CONF(args=[], project='keystone', default_config_files=['/etc/keystone/keystone.conf'])
-    from keystone.identity.backends.sql import Metadata
     has_openstack = True
 except:
     has_openstack = False
@@ -70,17 +67,6 @@ class Client:
         #if '@' in self.username:
         #    self.username = self.username[:self.username.index('@')]
 
-class KeystoneDB:
-    @require_enabled
-    def get_session(self):
-        return core.Base().get_session()
-
-    @require_enabled
-    def get_metadata(self):
-        session = self.get_session()
-        return session.query(Metadata).all()     
-
-
 class KeystoneClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
@@ -104,7 +90,7 @@ class GlanceClient(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
-            self.client = glance_client.get_client(host='0.0.0.0',
+            self.client = glanceclient.get_client(host='0.0.0.0',
                                                    username=self.username,
                                                    password=self.password,
                                                    tenant=self.tenant,
@@ -190,12 +176,11 @@ class OpenStackClient:
         url_parsed = urlparse.urlparse(self.keystone.url)
         hostname = url_parsed.netloc.split(':')[0]
         token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
-        self.keystone_db = KeystoneDB()
-        self.glance = GlanceClient(*args, **kwds)
+        #self.glance = GlanceClient(*args, **kwds)
         
         self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
-        self.nova_db = NovaDB(*args, **kwds)
+        # self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
     
 
