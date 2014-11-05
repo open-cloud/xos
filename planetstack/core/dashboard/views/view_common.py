@@ -61,8 +61,13 @@ def getSliceInfo(user):
     userSliceInfo = []
     for entry in slicePrivs:
 
-        slicename = Slice.objects.get(id=entry.slice.id).name
-        slice = Slice.objects.get(name=Slice.objects.get(id=entry.slice.id).name)
+        slice = Slice.objects.filter(id=entry.slice.id)
+        if not slice:
+            # the privilege is to a slice that doesn't exist
+            print "data model consistency problem, slice %s doesn't exist" % entry.slice.id
+            continue
+        slice = slice[0]
+        slicename = slice.name
         sliverList=Sliver.objects.all()
         sites_used = {}
         for sliver in slice.slivers.all():
