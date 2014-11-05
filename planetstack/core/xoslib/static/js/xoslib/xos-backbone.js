@@ -197,7 +197,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.slice = XOSModel.extend({ urlRoot: SLICE_API, modelName: "slice" });
         this.sliceCollection = XOSCollection.extend({ urlRoot: SLICE_API,
-                                                       relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice"},
+                                                       relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
                                                        foreignCollections: ["services", "sites"],
                                                        model: this.slice});
         this.slices = new this.sliceCollection();

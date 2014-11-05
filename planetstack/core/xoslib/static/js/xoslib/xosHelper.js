@@ -4,6 +4,10 @@ function assert(outcome, description) {
     }
 }
 
+function templateFromId(id) {
+    return _.template($(id).html());
+}
+
 HTMLView = Marionette.ItemView.extend({
   render: function() {
       this.$el.append(this.options.html);
@@ -35,8 +39,9 @@ XOSApplication = Marionette.Application.extend({
          } else {
              $(this.successBoxId).show();
              $(this.successBoxId).html(_.template($(this.successTemplate).html())(result));
+             var that=this;
              $(this.successCloseButtonId).unbind().bind('click', function() {
-                 $(this.successBoxId).hide();
+                 $(that.successBoxId).hide();
              });
          }
     },
@@ -48,8 +53,9 @@ XOSApplication = Marionette.Application.extend({
          } else {
              $(this.errorBoxId).show();
              $(this.errorBoxId).html(_.template($(this.errorTemplate).html())(result));
+             var that=this;
              $(this.errorCloseButtonId).unbind().bind('click', function() {
-                 $(this.errorBoxId).hide();
+                 $(that.errorBoxId).hide();
              });
          }
     },
@@ -78,8 +84,6 @@ XOSApplication = Marionette.Application.extend({
             // We were passed the logMessageId of an informational message,
             // and the caller wants us to replace that message with our own.
             // i.e. replace an informational message with a success or an error.
-            console.log(result["infoMsgId"]);
-            console.log($("."+result["infoMsgId"]));
             $("#"+result["infoMsgId"]).replaceWith(newRow);
         } else {
             // Create a brand new log message rather than replacing one.
@@ -90,31 +94,35 @@ XOSApplication = Marionette.Application.extend({
     },
 
     hideLinkedItems: function(result) {
-        index=0;
+        var index=0;
         while (index<4) {
             this["linkedObjs" + (index+1)].empty();
             index = index + 1;
         }
     },
 
-    listViewShower: function(listViewName, regionName) {
+    listViewShower: function(listViewName, collection_name, regionName, title) {
         var app=this;
         return function() {
             app[regionName].show(new app[listViewName]);
             app.hideLinkedItems();
+            $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
+            $("#detail").show();
+            $("#tabs").hide();
         }
     },
 
-    detailShower: function(detailName, collection_name, regionName) {
+    detailShower: function(detailName, collection_name, regionName, title) {
         var app=this;
         showModelId = function(model_id) {
             showModel = function(model) {
-                                console.log(app);
                 detailViewClass = app[detailName];
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
                 detailView.showLinkedItems();
             }
+
+            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
 
             collection = xos[collection_name];
             model = collection.get(model_id);
@@ -193,25 +201,65 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.dirty = false;
             },
 
+            tabClick: function(tabId, regionName) {
+                    region = this.app[regionName];
+                    if (this.currentTabRegion != undefined) {
+                        this.currentTabRegion.$el.hide();
+                    }
+                    if (this.currentTabId != undefined) {
+                        $(this.currentTabId).removeClass('active');
+                    }
+                    this.currentTabRegion = region;
+                    this.currentTabRegion.$el.show();
+
+                    this.currentTabId = tabId;
+                    $(tabId).addClass('active');
+            },
+
+            showTabs: function(tabs) {
+                template = templateFromId("#xos-tabs-template", {tabs: tabs});
+                $("#tabs").html(template(tabs));
+                var that = this;
+
+                _.each(tabs, function(tab) {
+                    var regionName = tab["region"];
+                    var tabId = '#xos-nav-'+regionName;
+                    $(tabId).bind('click', function() { that.tabClick(tabId, regionName); });
+                });
+
+                $("#tabs").show();
+            },
+
             showLinkedItems: function() {
-                    index=0;
+                    tabs=[];
+
+                    tabs.push({name: "details", region: "detail"});
+
+                    var index=0;
                     for (relatedName in this.model.collection.relatedCollections) {
                         relatedField = this.model.collection.relatedCollections[relatedName];
+                        regionName = "linkedObjs" + (index+1);
 
                         relatedListViewClassName = relatedName + "ListView";
-                        if (this.app[relatedListViewClassName] == undefined) {
-                            console.log("warning: " + relatedListViewClassName + " not found");
-                        }
+                        assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
                         relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
-                        this.app["linkedObjs" + (index+1)].show(new relatedListViewClass());
+                        this.app[regionName].show(new relatedListViewClass());
+                        this.app[regionName].$el.hide();
+                        tabs.push({name: relatedName, region: regionName});
                         index = index + 1;
                     }
+
+                    console.log(index);
 
                     while (index<4) {
                         this.app["linkedObjs" + (index+1)].empty();
                         index = index + 1;
                     }
+
+                    this.showTabs(tabs);
+                    this.tabClick('#xos-nav-detail', 'detail');
               },
+
 });
 
 /* XOSItemView
