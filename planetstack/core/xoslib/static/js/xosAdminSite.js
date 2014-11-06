@@ -1,7 +1,16 @@
 OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
-XOSAdminApp = new XOSApplication({logTableId: "#logTable", hideTabsByDefault: true});
+REWRITES = {"/admin/core/deployment/": "#deployments",
+            "/admin/core/site/" : "#sites",
+            "/admin/core/slice/" : "#slices",
+            "/admin/core/user/" : "#users"};
+
+XOSAdminApp = new XOSApplication({
+    logTableId: "#logTable",
+    statusMsgId: "#statusMsg",
+    hideTabsByDefault: true
+});
 
 XOSAdminApp.addRegions({
     navigation: "#navigationPanel",
@@ -101,7 +110,24 @@ XOSAdminApp.initRouter = function() {
     };
 
     XOSAdminApp.Router = new router({ appRoutes: routes, controller: api });
-}
+};
+
+/* rewriteLinks
+
+   Rewrite the links in the suit navbar from django-links to marionette
+   links. This let's us intercept the navbar and make it function within
+   this view rather than jumping back out to a django view.
+*/
+
+XOSAdminApp.rewriteLinks = function () {
+    $("a").each(function() {
+        href=$(this).attr("href");
+        rewrite_href=REWRITES[href];
+        if (rewrite_href) {
+            $(this).attr("href", rewrite_href);
+        }
+    });
+};
 
 XOSAdminApp.on("start", function() {
      XOSAdminApp.buildViews();
@@ -109,6 +135,8 @@ XOSAdminApp.on("start", function() {
      XOSAdminApp.initRouter();
 
      XOSAdminApp.updateNavigationPanel();
+
+     XOSAdminApp.rewriteLinks();
 
      if (Backbone.history) {
          console.log("history start");
