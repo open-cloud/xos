@@ -33,8 +33,8 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showSuccess: function(result) {
+         result["success"] = "success";
          if (this.logTableId) {
-             result["success"] = "success";
              this.appendLogWindow(result);
          } else {
              $(this.successBoxId).show();
@@ -47,8 +47,8 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showError: function(result) {
+         result["success"] = "failure";
          if (this.logTableId) {
-             result["success"] = "failure";
              this.appendLogWindow(result);
          } else {
              $(this.errorBoxId).show();
@@ -61,8 +61,8 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showInformational: function(result) {
+         result["success"] = "information";
          if (this.logTableId) {
-             result["success"] = "information";
              return this.appendLogWindow(result);
          } else {
              return undefined;
@@ -90,6 +90,11 @@ XOSApplication = Marionette.Application.extend({
             logTableBody = $(this.logTableId + " tbody");
             logTableBody.prepend(newRow);
         }
+
+        if (this.statusMsgId) {
+            $(this.statusMsgId).html( templateFromId("#xos-status-template")(result) );
+        }
+
         return logMessageId;
     },
 
@@ -165,9 +170,6 @@ XOSDetailView = Marionette.ItemView.extend({
             events: {"click button.js-submit": "submitClicked",
                      "change input": "inputChanged"},
 
-            events: {"click button.js-submit": "submitClicked",
-                     "change input": "inputChanged"},
-
             /* inputChanged is watching the onChange events of the input controls. We
                do this to track when this view is 'dirty', so we can throw up a warning
                if the user tries to change his slices without saving first.
@@ -191,6 +193,7 @@ XOSDetailView = Marionette.ItemView.extend({
             },
 
             submitClicked: function(e) {
+                console.log("submit clicked");
                 this.app.hideError();
                 e.preventDefault();
                 var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
