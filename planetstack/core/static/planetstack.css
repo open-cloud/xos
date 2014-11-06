@@ -136,6 +136,12 @@ padding: 7px 0 0 0px;
 
 /*************************/
 
+.footer .content .statusMsg {
+    float: right;
+    padding: 15px 20px 0 0;
+    display: block;
+}
+
 .alignCenter {
     text-align: center !important;
     align: center !important;
