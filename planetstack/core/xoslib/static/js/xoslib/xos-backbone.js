@@ -227,6 +227,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.site = XOSModel.extend({ urlRoot: SITE_API, modelName: "site" });
         this.siteCollection = XOSCollection.extend({ urlRoot: SITE_API,
+                                                       relatedCollections: {"users": "site", "slices": "site", "nodes": "site"},
                                                        model: this.site});
         this.sites = new this.siteCollection();
 
@@ -245,7 +246,7 @@ if (! window.XOSLIB_LOADED ) {
 
         this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API, modelName: "deployment" });
         this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
-                                                           relatedCollections: {"slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
+                                                           relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
                                                            model: this.deployment});
         this.deployments = new this.deploymentCollection();
 
