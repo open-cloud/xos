@@ -1,0 +1,20 @@
+.breadcrumb {
+    display: none;
+}
+
+.btn-xos-detail {
+    display: none;
+}
+
+#logPanel {
+    display: none;
+}
+
+#contentButtonPanel {
+    float: right;
+    width: 200px;
+}
+
+#contentInner {
+    margin-right: 200px;
+}
