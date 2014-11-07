@@ -16,12 +16,16 @@ class Composition(PlCoreBase):
     name = models.CharField(max_length=255);
     services = models.ManyToManyField(Service, through='CompositionServiceThrough', blank=True);
 
+    def __unicode__(self):
+        return self.name
+
 class CompositionServiceThrough(PlCoreBase):
     class Meta:
         app_label = "servcomp"
+        ordering = ("order", )
 
-    Composition = models.ForeignKey(Composition)
-    Service = models.ForeignKey(Service, related_name="compositions")
+    composition = models.ForeignKey(Composition)
+    service = models.ForeignKey(Service, related_name="compositions")
     order = models.IntegerField(default=0)
 
 class EndUser(PlCoreBase):
@@ -33,4 +37,7 @@ class EndUser(PlCoreBase):
     lastName = models.CharField(max_length=80)
     macAddress = models.CharField(max_length=80)
     composition = models.ForeignKey(Composition, related_name="endUsers", blank=True, null=True)
+
+    def __unicode__(self):
+        return self.email
 
