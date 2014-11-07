@@ -82,9 +82,42 @@ class DiffModelMixIn:
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
-class PlCoreBase(models.Model, DiffModelMixIn):
+class PlCoreBase(models.Model): # , DiffModelMixIn):
     objects = PlCoreBaseManager()
     deleted_objects = PlCoreBaseDeletionManager()
+
+    # ---- copy stuff from DiffModelMixin ----
+
+    # XXX Django fails miserably when trying to create initial migrations when
+    #    DiffModelMixin is used. So, until we figure out what's wrong,
+    #    just copied the guts of DiffModelMixIn here.
+
+    @property
+    def _dict(self):
+        return model_to_dict(self, fields=[field.name for field in
+                             self._meta.fields])
+
+    @property
+    def diff(self):
+        d1 = self._initial
+        d2 = self._dict
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        return dict(diffs)
+
+    @property
+    def has_changed(self):
+        return bool(self.diff)
+
+    @property
+    def changed_fields(self):
+        return self.diff.keys()
+
+    def has_field_changed(self, field_name):
+        return field_name in self.diff.keys()
+
+    def get_field_diff(self, field_name):
+        return self.diff.get(field_name, None)
+    # ---- end copy stuff from DiffModelMixin ----
 
     # default values for created and updated are only there to keep evolution
     # from failing.
