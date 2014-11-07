@@ -20,8 +20,15 @@
      handler for this Save button tells the save button inside the detail
      form to click itself.
 -->
-<button class="btn js-submit btn-xos-contentButtonPanel" onclick="$('button.js-submit.btn-xos-detail').click()">Save</button>
+<div class="box save-box" id="xos-detail-button-box">
+<button class="btn btn-high btn-info btn-xos-contentButtonPanel" onclick="$('button.btn-xos-save-leave').click()">Save</button>
+<button class="btn btn-high btn-xos-contentButtonPanel" onclick="$('button.btn-xos-save-continue').click()">Save and continue editing</button>
+<button class="btn btn-high btn-xos-contentButtonPanel" onclick="$('button.btn-xos-save-another').click()">Save and add another</button>
 </div>
+<div class="box save-box" id="xos-listview-button-box">
+<button class="btn btn-high btn-success btn-xos-contentButtonPanel" onclick="">Add</button>
+</div>
+</div> <!-- end contentButtonPanel -->
 <div id="contentInner">
 <div id="tabs">
 </div>
@@ -30,8 +37,8 @@
 <div id="linkedObjs2"></div>
 <div id="linkedObjs3"></div>
 <div id="linkedObjs4"></div>
-</div>
-</div>
+</div> <!-- end contentInner -->
+</div> <!-- end contentPanel -->
 
 <div id="logPanel">
 <table id="logTable">

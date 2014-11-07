@@ -113,7 +113,9 @@ XOSApplication = Marionette.Application.extend({
             app.hideLinkedItems();
             $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
             $("#detail").show();
+            $("#xos-listview-button-box").show();
             $("#tabs").hide();
+            $("#xos-detail-button-box").hide();
         }
     },
 
@@ -125,6 +127,8 @@ XOSApplication = Marionette.Application.extend({
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
                 detailView.showLinkedItems();
+                $("#xos-detail-button-box").show();
+                $("#xos-listview-button-box").hide();
             }
 
             $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
@@ -167,7 +171,9 @@ XOSApplication = Marionette.Application.extend({
 XOSDetailView = Marionette.ItemView.extend({
             tagName: "div",
 
-            events: {"click button.js-submit": "submitClicked",
+            events: {"click button.btn-xos-save-continue": "submitContinueClicked",
+                     "click button.btn-xos-save-leave": "submitLeaveClicked",
+                     "click button.btn-xos-save-another": "submitAddAnotherClicked",
                      "change input": "inputChanged"},
 
             /* inputChanged is watching the onChange events of the input controls. We
@@ -192,10 +198,26 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.app.showSuccess(result);
             },
 
-            submitClicked: function(e) {
-                console.log("submit clicked");
-                this.app.hideError();
+            submitContinueClicked: function(e) {
+                console.log("saveContinue");
                 e.preventDefault();
+                this.save();
+            },
+
+            submitLeaveClicked: function(e) {
+                console.log("saveLeave");
+                e.preventDefault();
+                this.save();
+            },
+
+            submitAddAnotherClicked: function(e) {
+                console.log("saveAnother");
+                e.preventDefault();
+                this.save();
+            },
+
+            save: function() {
+                this.app.hideError();
                 var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
