@@ -12,6 +12,15 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, PlStackTabularInline
 
+class ServiceInline(PlStackTabularInline):
+    model = CompositionServiceThrough
+    verbose_name = "Service"
+    verbose_name_plural = "Services"
+    extra = 0
+    #suit_classes = 'suit-tab suit-tab-general'
+    fields = ('backend_status_icon', 'service', 'order')
+    readonly_fields = ('backend_status_icon',)
+
 class CompositionServiceAdmin(SingletonAdmin):
     model = CompositionService
     verbose_name = "Composition Service"
@@ -29,13 +38,21 @@ class CompositionServiceAdmin(SingletonAdmin):
         ('serviceattrs','Additional Attributes'),
     )
 
+class CompositionForm(forms.ModelForm):
+    model = Composition
+    class Media:
+       js = ('/static/js/menu-sort-2.js',)
+
 class CompositionAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name' )
     list_display_links = ('backend_status_icon', 'name' )
+    form = CompositionForm
 
     fields = ('backend_status_text', 'name')
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ('name',)
+
+    inlines = [ServiceInline]
 
 class EndUserAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'email', 'macAddress', 'composition' )
