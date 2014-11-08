@@ -95,7 +95,7 @@ XOSAdminApp.initRouter = function() {
         name = OBJS[index];
         collection_name = name + "s";
         nav_url = collection_name;
-        api_command = "list" + collection_name.charAt(0).toUpperCase() + collection_name.slice(1);
+        api_command = "list" + firstCharUpper(collection_name);
         listViewName = collection_name + "ListView";
         detailViewName = collection_name + "DetailView";
 
@@ -103,9 +103,14 @@ XOSAdminApp.initRouter = function() {
         routes[nav_url] = api_command;
 
         nav_url = collection_name + "/:id";
-        api_command = "detail" + collection_name.charAt(0).toUpperCase() + collection_name.slice(1);
+        api_command = "detail" + firstCharUpper(collection_name);
 
         api[api_command] = XOSAdminApp.detailShower(detailViewName, collection_name, "detail", name);
+        routes[nav_url] = api_command;
+
+        nav_url = "add" + firstCharUpper(name);
+        api_command = "add" + firstCharUpper(name);
+        api[api_command] = XOSAdminApp.addShower(detailViewName, collection_name, "detail", name);
         routes[nav_url] = api_command;
     };
 

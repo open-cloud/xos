@@ -8,6 +8,10 @@ function templateFromId(id) {
     return _.template($(id).html());
 }
 
+function firstCharUpper(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 HTMLView = Marionette.ItemView.extend({
   render: function() {
       this.$el.append(this.options.html);
@@ -116,6 +120,15 @@ XOSApplication = Marionette.Application.extend({
             $("#xos-listview-button-box").show();
             $("#tabs").hide();
             $("#xos-detail-button-box").hide();
+        }
+    },
+
+    addShower: function(detailName, collection_name, regionName, title) {
+        var app=this;
+        return function() {
+            detailViewClass = app[detailName];
+            detailView = new detailViewClass();
+            app[regionName].show(detailView);
         }
     },
 
@@ -321,6 +334,15 @@ XOSItemView = Marionette.ItemView.extend({
 
 XOSListView = Marionette.CompositeView.extend({
              childViewContainer: 'tbody',
+
+             events: {"click button.btn-xos-add": "addClicked",
+                     },
+
+             addClicked: function(e) {
+                console.log("add");
+                e.preventDefault();
+                this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName));
+             },
 
              initialize: function() {
                  this.listenTo(this.collection, 'change', this._renderChildren)
