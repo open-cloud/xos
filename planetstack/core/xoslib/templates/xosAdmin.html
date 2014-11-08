@@ -69,10 +69,17 @@
     </tr>
 </script>
 
+<script type="text/template" id="xos-inline-list-buttons-template">
+           <button class="btn js-submit btn-xos-list btn-xos-add">Add</button>
+       </td>
+    </tr>
+</script>
+
 <!-- Deployment -->
 
 <script type="text/template" id="xosAdmin-deployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -690,4 +697,5 @@
 
 <script>
 xosInlineDetailButtonsTemplate = _.template($("#xos-inline-detail-buttons-template").html());
+xosInlineListButtonsTemplate = _.template($("#xos-inline-list-buttons-template").html());
 </script>
