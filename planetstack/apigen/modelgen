@@ -55,6 +55,24 @@ class GenObj(object):
 			else:
 				return name+'s'
 
+        def singular(self):
+            return str(self)
+
+        def rest_name(self):
+            # These are things that either for historic reasons or due to incorrect naming,
+            # got called something different than the autogen thinks they should be
+            # called.
+            REST_FIXUP = {'networkdeploymentses': 'networkdeployments',
+                            'imagedeploymentses': 'imagedeployments',
+                            'slicedeploymentses': 'slice_deployments',
+                            'userdeploymentses': 'user_deployments',
+                            'sitedeploymentses': 'sitedeployments',
+                            'siteroles': 'site_roles',
+                            'sliceprivileges': 'slice_privileges',
+                            'sliceroles': 'slice_roles',
+                            }
+            return REST_FIXUP.get(self.plural(), self.plural())
+
 	def camel(self):
 		name = str(self.model.__name__)
 		return name
