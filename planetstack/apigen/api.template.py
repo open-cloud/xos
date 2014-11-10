@@ -7,6 +7,7 @@ from rest_framework import status
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
+from django.conf.urls import patterns, url
 
 """
     Schema of the generator object:
@@ -22,7 +23,14 @@ from rest_framework import filters
     TODO: Deal with subnets
 """
 
-# Based on api_root.py
+def get_REST_patterns():
+    return patterns('',
+        url(r'^plstackapi/$', api_root),
+    {% for object in generator.all %}
+        url(r'plstackapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
+        url(r'plstackapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+    {% endfor %}
+    )
 
 @api_view(['GET'])
 def api_root(request, format=None):
