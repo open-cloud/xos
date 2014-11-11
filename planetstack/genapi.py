@@ -7,6 +7,7 @@ from rest_framework import status
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
+from django.conf.urls import patterns, url
 
 """
     Schema of the generator object:
@@ -22,7 +23,158 @@ from rest_framework import filters
     TODO: Deal with subnets
 """
 
-# Based on api_root.py
+def get_REST_patterns():
+    return patterns('',
+        url(r'^plstackapi/$', api_root),
+    
+        url(r'plstackapi/serviceattributes/$', ServiceAttributeList.as_view(), name='serviceattribute-list'),
+        url(r'plstackapi/serviceattributes/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceAttributeDetail.as_view(), name ='serviceattribute-detail'),
+    
+        url(r'plstackapi/images/$', ImageList.as_view(), name='image-list'),
+        url(r'plstackapi/images/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDetail.as_view(), name ='image-detail'),
+    
+        url(r'plstackapi/networkparameters/$', NetworkParameterList.as_view(), name='networkparameter-list'),
+        url(r'plstackapi/networkparameters/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkParameterDetail.as_view(), name ='networkparameter-detail'),
+    
+        url(r'plstackapi/sites/$', SiteList.as_view(), name='site-list'),
+        url(r'plstackapi/sites/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDetail.as_view(), name ='site-detail'),
+    
+        url(r'plstackapi/slice_roles/$', SliceRoleList.as_view(), name='slicerole-list'),
+        url(r'plstackapi/slice_roles/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceRoleDetail.as_view(), name ='slicerole-detail'),
+    
+        url(r'plstackapi/tags/$', TagList.as_view(), name='tag-list'),
+        url(r'plstackapi/tags/(?P<pk>[a-zA-Z0-9\-]+)/$', TagDetail.as_view(), name ='tag-detail'),
+    
+        url(r'plstackapi/invoices/$', InvoiceList.as_view(), name='invoice-list'),
+        url(r'plstackapi/invoices/(?P<pk>[a-zA-Z0-9\-]+)/$', InvoiceDetail.as_view(), name ='invoice-detail'),
+    
+        url(r'plstackapi/slice_privileges/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
+        url(r'plstackapi/slice_privileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SlicePrivilegeDetail.as_view(), name ='sliceprivilege-detail'),
+    
+        url(r'plstackapi/planetstackroles/$', PlanetStackRoleList.as_view(), name='planetstackrole-list'),
+        url(r'plstackapi/planetstackroles/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackRoleDetail.as_view(), name ='planetstackrole-detail'),
+    
+        url(r'plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
+        url(r'plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
+    
+        url(r'plstackapi/networkdeployments/$', NetworkDeploymentsList.as_view(), name='networkdeployments-list'),
+        url(r'plstackapi/networkdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkDeploymentsDetail.as_view(), name ='networkdeployments-detail'),
+    
+        url(r'plstackapi/flavors/$', FlavorList.as_view(), name='flavor-list'),
+        url(r'plstackapi/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
+    
+        url(r'plstackapi/projects/$', ProjectList.as_view(), name='project-list'),
+        url(r'plstackapi/projects/(?P<pk>[a-zA-Z0-9\-]+)/$', ProjectDetail.as_view(), name ='project-detail'),
+    
+        url(r'plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
+        url(r'plstackapi/slices/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDetail.as_view(), name ='slice-detail'),
+    
+        url(r'plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
+        url(r'plstackapi/networks/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkDetail.as_view(), name ='network-detail'),
+    
+        url(r'plstackapi/services/$', ServiceList.as_view(), name='service-list'),
+        url(r'plstackapi/services/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceDetail.as_view(), name ='service-detail'),
+    
+        url(r'plstackapi/serviceclasses/$', ServiceClassList.as_view(), name='serviceclass-list'),
+        url(r'plstackapi/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
+    
+        url(r'plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
+        url(r'plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
+    
+        url(r'plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
+        url(r'plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
+    
+        url(r'plstackapi/roles/$', RoleList.as_view(), name='role-list'),
+        url(r'plstackapi/roles/(?P<pk>[a-zA-Z0-9\-]+)/$', RoleDetail.as_view(), name ='role-detail'),
+    
+        url(r'plstackapi/usableobjects/$', UsableObjectList.as_view(), name='usableobject-list'),
+        url(r'plstackapi/usableobjects/(?P<pk>[a-zA-Z0-9\-]+)/$', UsableObjectDetail.as_view(), name ='usableobject-detail'),
+    
+        url(r'plstackapi/site_roles/$', SiteRoleList.as_view(), name='siterole-list'),
+        url(r'plstackapi/site_roles/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteRoleDetail.as_view(), name ='siterole-detail'),
+    
+        url(r'plstackapi/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
+        url(r'plstackapi/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
+    
+        url(r'plstackapi/slivers/$', SliverList.as_view(), name='sliver-list'),
+        url(r'plstackapi/slivers/(?P<pk>[a-zA-Z0-9\-]+)/$', SliverDetail.as_view(), name ='sliver-detail'),
+    
+        url(r'plstackapi/nodes/$', NodeList.as_view(), name='node-list'),
+        url(r'plstackapi/nodes/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeDetail.as_view(), name ='node-detail'),
+    
+        url(r'plstackapi/dashboardviews/$', DashboardViewList.as_view(), name='dashboardview-list'),
+        url(r'plstackapi/dashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name ='dashboardview-detail'),
+    
+        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployments-list'),
+        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployments-detail'),
+    
+        url(r'plstackapi/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
+        url(r'plstackapi/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
+    
+        url(r'plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
+        url(r'plstackapi/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
+    
+        url(r'plstackapi/userdashboardviews/$', UserDashboardViewList.as_view(), name='userdashboardview-list'),
+        url(r'plstackapi/userdashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDashboardViewDetail.as_view(), name ='userdashboardview-detail'),
+    
+        url(r'plstackapi/planetstackprivileges/$', PlanetStackPrivilegeList.as_view(), name='planetstackprivilege-list'),
+        url(r'plstackapi/planetstackprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackPrivilegeDetail.as_view(), name ='planetstackprivilege-detail'),
+    
+        url(r'plstackapi/users/$', UserList.as_view(), name='user-list'),
+        url(r'plstackapi/users/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDetail.as_view(), name ='user-detail'),
+    
+        url(r'plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
+        url(r'plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name ='deployment-detail'),
+    
+        url(r'plstackapi/reservations/$', ReservationList.as_view(), name='reservation-list'),
+        url(r'plstackapi/reservations/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservationDetail.as_view(), name ='reservation-detail'),
+    
+        url(r'plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
+        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
+    
+        url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
+        url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
+    
+        url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
+        url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+    
+        url(r'plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
+        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
+    
+        url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
+        url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
+    
+        url(r'plstackapi/networkparametertypes/$', NetworkParameterTypeList.as_view(), name='networkparametertype-list'),
+        url(r'plstackapi/networkparametertypes/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkParameterTypeDetail.as_view(), name ='networkparametertype-detail'),
+    
+        url(r'plstackapi/sitecredentials/$', SiteCredentialList.as_view(), name='sitecredential-list'),
+        url(r'plstackapi/sitecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteCredentialDetail.as_view(), name ='sitecredential-detail'),
+    
+        url(r'plstackapi/deploymentprivileges/$', DeploymentPrivilegeList.as_view(), name='deploymentprivilege-list'),
+        url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
+    
+        url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
+        url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
+    
+        url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
+        url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
+    
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
+    
+        url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
+        url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
+    
+        url(r'plstackapi/networktemplates/$', NetworkTemplateList.as_view(), name='networktemplate-list'),
+        url(r'plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkTemplateDetail.as_view(), name ='networktemplate-detail'),
+    
+        url(r'plstackapi/routers/$', RouterList.as_view(), name='router-list'),
+        url(r'plstackapi/routers/(?P<pk>[a-zA-Z0-9\-]+)/$', RouterDetail.as_view(), name ='router-detail'),
+    
+        url(r'plstackapi/serviceresources/$', ServiceResourceList.as_view(), name='serviceresource-list'),
+        url(r'plstackapi/serviceresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceResourceDetail.as_view(), name ='serviceresource-detail'),
+    
+    )
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -1137,7 +1289,6 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     # the object has been updated but before it has been saved.
 
     def update(self, request, *args, **kwargs):
-        print "XXX update"
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
 
@@ -1175,12 +1326,6 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
             return super(generics.RetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-    def put(self, request, *args, **kwargs):
-        print "XXX put"
-        return super(PlanetStackRetrieveUpdateDestroyAPIView,self).put(request,*args, **kwargs);
-        #return self.update(request, *args, **kwargs)
 
 
 # Based on core/views/*.py
@@ -2847,7 +2992,6 @@ class UserList(generics.ListCreateAPIView):
         return User.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        print "XXX create"
         obj = User(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
@@ -2860,10 +3004,6 @@ class UserList(generics.ListCreateAPIView):
             raise Exception(ret.data)
 
         return ret
-
-    def put(self, request, *args, **kwargs):
-        print "XXX UserList.put"
-        return super(UserList,self).put(request,*args, **kwargs)
 
 
 class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
