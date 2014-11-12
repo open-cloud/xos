@@ -159,8 +159,8 @@ def get_REST_patterns():
         url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
         url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
     
-        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
-        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployments-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployments-detail'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
@@ -1095,18 +1095,18 @@ class UserCredentialIdSerializer(serializers.ModelSerializer):
 
 
 
-class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SiteDeployments
+        model = SiteDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
-class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
+class SiteDeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SiteDeployments
+        model = SiteDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 
@@ -1270,7 +1270,7 @@ serializerLookUp = {
 
                  UserCredential: UserCredentialSerializer,
 
-                 SiteDeployments: SiteDeploymentsSerializer,
+                 SiteDeployment: SiteDeploymentSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -3663,10 +3663,10 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteDeploymentsList(generics.ListCreateAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
+class SiteDeploymentList(generics.ListCreateAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
@@ -3678,27 +3678,27 @@ class SiteDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
+        return SiteDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SiteDeployments(**request.DATA)
+        obj = SiteDeployment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
+class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3708,7 +3708,7 @@ class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
+        return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
