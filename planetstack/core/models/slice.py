@@ -120,7 +120,7 @@ class SlicePrivilege(PlCoreBase):
             qs = SlicePrivilege.objects.filter(id__in=sp_ids)
         return qs
 
-class SliceDeployments(PlCoreBase):
+class SliceDeployment(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
@@ -136,8 +136,8 @@ class SliceDeployments(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = SliceDeployments.objects.all()
+            qs = SliceDeployment.objects.all()
         else:
             slices = Slice.select_by_user(user)
-            qs = SliceDeployments.objects.filter(slice__in=slices)
+            qs = SliceDeployment.objects.filter(slice__in=slices)
         return qs    

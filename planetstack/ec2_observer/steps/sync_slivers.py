@@ -30,7 +30,7 @@ class SyncSlivers(SyncStep):
         my_slivers = [] 
 
         for sliver in all_slivers:
-            sd = SliceDeployments.objects.filter(Q(slice=sliver.slice))
+            sd = SliceDeployment.objects.filter(Q(slice=sliver.slice))
             if (sd):
                 if (sd.deployment.name=='Amazon EC2'):
                     my_slivers.append(sliver)
