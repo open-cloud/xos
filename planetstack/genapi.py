@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
@@ -13,7 +14,7 @@ from django.conf.urls import patterns, url
     Schema of the generator object:
         all: Set of all Model objects
         all_if(regex): Set of Model objects that match regex
-    
+
     Model object:
         plural: English plural of object name
         camel: CamelCase version of object name
@@ -29,150 +30,199 @@ def get_REST_patterns():
     
         url(r'plstackapi/serviceattributes/$', ServiceAttributeList.as_view(), name='serviceattribute-list'),
         url(r'plstackapi/serviceattributes/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceAttributeDetail.as_view(), name ='serviceattribute-detail'),
+#        url(r'plstackapi/serviceattributes/!new/$', ServiceAttributeNew.as_view(), name ='serviceattribute-new'),
     
         url(r'plstackapi/images/$', ImageList.as_view(), name='image-list'),
         url(r'plstackapi/images/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDetail.as_view(), name ='image-detail'),
+#        url(r'plstackapi/images/!new/$', ImageNew.as_view(), name ='image-new'),
     
         url(r'plstackapi/networkparameters/$', NetworkParameterList.as_view(), name='networkparameter-list'),
         url(r'plstackapi/networkparameters/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkParameterDetail.as_view(), name ='networkparameter-detail'),
+#        url(r'plstackapi/networkparameters/!new/$', NetworkParameterNew.as_view(), name ='networkparameter-new'),
     
         url(r'plstackapi/sites/$', SiteList.as_view(), name='site-list'),
         url(r'plstackapi/sites/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDetail.as_view(), name ='site-detail'),
+#        url(r'plstackapi/sites/!new/$', SiteNew.as_view(), name ='site-new'),
     
         url(r'plstackapi/slice_roles/$', SliceRoleList.as_view(), name='slicerole-list'),
         url(r'plstackapi/slice_roles/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceRoleDetail.as_view(), name ='slicerole-detail'),
+#        url(r'plstackapi/slice_roles/!new/$', SliceRoleNew.as_view(), name ='slicerole-new'),
     
         url(r'plstackapi/tags/$', TagList.as_view(), name='tag-list'),
         url(r'plstackapi/tags/(?P<pk>[a-zA-Z0-9\-]+)/$', TagDetail.as_view(), name ='tag-detail'),
+#        url(r'plstackapi/tags/!new/$', TagNew.as_view(), name ='tag-new'),
     
         url(r'plstackapi/invoices/$', InvoiceList.as_view(), name='invoice-list'),
         url(r'plstackapi/invoices/(?P<pk>[a-zA-Z0-9\-]+)/$', InvoiceDetail.as_view(), name ='invoice-detail'),
+#        url(r'plstackapi/invoices/!new/$', InvoiceNew.as_view(), name ='invoice-new'),
     
         url(r'plstackapi/slice_privileges/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
         url(r'plstackapi/slice_privileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SlicePrivilegeDetail.as_view(), name ='sliceprivilege-detail'),
+#        url(r'plstackapi/slice_privileges/!new/$', SlicePrivilegeNew.as_view(), name ='sliceprivilege-new'),
     
         url(r'plstackapi/planetstackroles/$', PlanetStackRoleList.as_view(), name='planetstackrole-list'),
         url(r'plstackapi/planetstackroles/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackRoleDetail.as_view(), name ='planetstackrole-detail'),
+#        url(r'plstackapi/planetstackroles/!new/$', PlanetStackRoleNew.as_view(), name ='planetstackrole-new'),
     
         url(r'plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
         url(r'plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
+#        url(r'plstackapi/networkslivers/!new/$', NetworkSliverNew.as_view(), name ='networksliver-new'),
     
         url(r'plstackapi/networkdeployments/$', NetworkDeploymentsList.as_view(), name='networkdeployments-list'),
         url(r'plstackapi/networkdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkDeploymentsDetail.as_view(), name ='networkdeployments-detail'),
+#        url(r'plstackapi/networkdeployments/!new/$', NetworkDeploymentsNew.as_view(), name ='networkdeployments-new'),
     
         url(r'plstackapi/flavors/$', FlavorList.as_view(), name='flavor-list'),
         url(r'plstackapi/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
+#        url(r'plstackapi/flavors/!new/$', FlavorNew.as_view(), name ='flavor-new'),
     
         url(r'plstackapi/projects/$', ProjectList.as_view(), name='project-list'),
         url(r'plstackapi/projects/(?P<pk>[a-zA-Z0-9\-]+)/$', ProjectDetail.as_view(), name ='project-detail'),
+#        url(r'plstackapi/projects/!new/$', ProjectNew.as_view(), name ='project-new'),
     
         url(r'plstackapi/slices/$', SliceList.as_view(), name='slice-list'),
         url(r'plstackapi/slices/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDetail.as_view(), name ='slice-detail'),
+#        url(r'plstackapi/slices/!new/$', SliceNew.as_view(), name ='slice-new'),
     
         url(r'plstackapi/networks/$', NetworkList.as_view(), name='network-list'),
         url(r'plstackapi/networks/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkDetail.as_view(), name ='network-detail'),
+#        url(r'plstackapi/networks/!new/$', NetworkNew.as_view(), name ='network-new'),
     
         url(r'plstackapi/services/$', ServiceList.as_view(), name='service-list'),
         url(r'plstackapi/services/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceDetail.as_view(), name ='service-detail'),
+#        url(r'plstackapi/services/!new/$', ServiceNew.as_view(), name ='service-new'),
     
         url(r'plstackapi/serviceclasses/$', ServiceClassList.as_view(), name='serviceclass-list'),
         url(r'plstackapi/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
+#        url(r'plstackapi/serviceclasses/!new/$', ServiceClassNew.as_view(), name ='serviceclass-new'),
     
         url(r'plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
         url(r'plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
+#        url(r'plstackapi/payments/!new/$', PaymentNew.as_view(), name ='payment-new'),
     
         url(r'plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
+#        url(r'plstackapi/charges/!new/$', ChargeNew.as_view(), name ='charge-new'),
     
         url(r'plstackapi/roles/$', RoleList.as_view(), name='role-list'),
         url(r'plstackapi/roles/(?P<pk>[a-zA-Z0-9\-]+)/$', RoleDetail.as_view(), name ='role-detail'),
+#        url(r'plstackapi/roles/!new/$', RoleNew.as_view(), name ='role-new'),
     
         url(r'plstackapi/usableobjects/$', UsableObjectList.as_view(), name='usableobject-list'),
         url(r'plstackapi/usableobjects/(?P<pk>[a-zA-Z0-9\-]+)/$', UsableObjectDetail.as_view(), name ='usableobject-detail'),
+#        url(r'plstackapi/usableobjects/!new/$', UsableObjectNew.as_view(), name ='usableobject-new'),
     
         url(r'plstackapi/site_roles/$', SiteRoleList.as_view(), name='siterole-list'),
         url(r'plstackapi/site_roles/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteRoleDetail.as_view(), name ='siterole-detail'),
+#        url(r'plstackapi/site_roles/!new/$', SiteRoleNew.as_view(), name ='siterole-new'),
     
         url(r'plstackapi/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
         url(r'plstackapi/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
+#        url(r'plstackapi/slicecredentials/!new/$', SliceCredentialNew.as_view(), name ='slicecredential-new'),
     
         url(r'plstackapi/slivers/$', SliverList.as_view(), name='sliver-list'),
         url(r'plstackapi/slivers/(?P<pk>[a-zA-Z0-9\-]+)/$', SliverDetail.as_view(), name ='sliver-detail'),
+#        url(r'plstackapi/slivers/!new/$', SliverNew.as_view(), name ='sliver-new'),
     
         url(r'plstackapi/nodes/$', NodeList.as_view(), name='node-list'),
         url(r'plstackapi/nodes/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeDetail.as_view(), name ='node-detail'),
+#        url(r'plstackapi/nodes/!new/$', NodeNew.as_view(), name ='node-new'),
     
         url(r'plstackapi/dashboardviews/$', DashboardViewList.as_view(), name='dashboardview-list'),
         url(r'plstackapi/dashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name ='dashboardview-detail'),
+#        url(r'plstackapi/dashboardviews/!new/$', DashboardViewNew.as_view(), name ='dashboardview-new'),
     
-        url(r'plstackapi/imagedeployments/$', ImageDeploymentList.as_view(), name='imagedeployments-list'),
-        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentDetail.as_view(), name ='imagedeployments-detail'),
+        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployments-list'),
+        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployments-detail'),
+#        url(r'plstackapi/imagedeployments/!new/$', ImageDeploymentsNew.as_view(), name ='imagedeployments-new'),
     
         url(r'plstackapi/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
         url(r'plstackapi/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
+#        url(r'plstackapi/reservedresources/!new/$', ReservedResourceNew.as_view(), name ='reservedresource-new'),
     
         url(r'plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
         url(r'plstackapi/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
+#        url(r'plstackapi/networkslices/!new/$', NetworkSliceNew.as_view(), name ='networkslice-new'),
     
         url(r'plstackapi/userdashboardviews/$', UserDashboardViewList.as_view(), name='userdashboardview-list'),
         url(r'plstackapi/userdashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDashboardViewDetail.as_view(), name ='userdashboardview-detail'),
+#        url(r'plstackapi/userdashboardviews/!new/$', UserDashboardViewNew.as_view(), name ='userdashboardview-new'),
     
         url(r'plstackapi/planetstackprivileges/$', PlanetStackPrivilegeList.as_view(), name='planetstackprivilege-list'),
         url(r'plstackapi/planetstackprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackPrivilegeDetail.as_view(), name ='planetstackprivilege-detail'),
+#        url(r'plstackapi/planetstackprivileges/!new/$', PlanetStackPrivilegeNew.as_view(), name ='planetstackprivilege-new'),
     
         url(r'plstackapi/users/$', UserList.as_view(), name='user-list'),
         url(r'plstackapi/users/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDetail.as_view(), name ='user-detail'),
+#        url(r'plstackapi/users/!new/$', UserNew.as_view(), name ='user-new'),
     
         url(r'plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
         url(r'plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name ='deployment-detail'),
+#        url(r'plstackapi/deployments/!new/$', DeploymentNew.as_view(), name ='deployment-new'),
     
         url(r'plstackapi/reservations/$', ReservationList.as_view(), name='reservation-list'),
         url(r'plstackapi/reservations/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservationDetail.as_view(), name ='reservation-detail'),
+#        url(r'plstackapi/reservations/!new/$', ReservationNew.as_view(), name ='reservation-new'),
     
-        url(r'plstackapi/slice_deployments/$', SliceDeploymentList.as_view(), name='slicedeployments-list'),
-        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentDetail.as_view(), name ='slicedeployments-detail'),
+        url(r'plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
+        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
+#        url(r'plstackapi/slice_deployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployments-new'),
     
         url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
+#        url(r'plstackapi/siteprivileges/!new/$', SitePrivilegeNew.as_view(), name ='siteprivilege-new'),
     
         url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
         url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+#        url(r'plstackapi/planetstacks/!new/$', PlanetStackNew.as_view(), name ='planetstack-new'),
     
-        url(r'plstackapi/user_deployments/$', UserDeploymentList.as_view(), name='userdeployments-list'),
-        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentDetail.as_view(), name ='userdeployments-detail'),
+        url(r'plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
+        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
+#        url(r'plstackapi/user_deployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployments-new'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
+#        url(r'plstackapi/accounts/!new/$', AccountNew.as_view(), name ='account-new'),
     
         url(r'plstackapi/networkparametertypes/$', NetworkParameterTypeList.as_view(), name='networkparametertype-list'),
         url(r'plstackapi/networkparametertypes/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkParameterTypeDetail.as_view(), name ='networkparametertype-detail'),
+#        url(r'plstackapi/networkparametertypes/!new/$', NetworkParameterTypeNew.as_view(), name ='networkparametertype-new'),
     
         url(r'plstackapi/sitecredentials/$', SiteCredentialList.as_view(), name='sitecredential-list'),
         url(r'plstackapi/sitecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteCredentialDetail.as_view(), name ='sitecredential-detail'),
+#        url(r'plstackapi/sitecredentials/!new/$', SiteCredentialNew.as_view(), name ='sitecredential-new'),
     
         url(r'plstackapi/deploymentprivileges/$', DeploymentPrivilegeList.as_view(), name='deploymentprivilege-list'),
         url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
+#        url(r'plstackapi/deploymentprivileges/!new/$', DeploymentPrivilegeNew.as_view(), name ='deploymentprivilege-new'),
     
         url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
+#        url(r'plstackapi/deploymentroles/!new/$', DeploymentRoleNew.as_view(), name ='deploymentrole-new'),
     
         url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
         url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
+#        url(r'plstackapi/usercredentials/!new/$', UserCredentialNew.as_view(), name ='usercredential-new'),
     
-        url(r'plstackapi/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployments-list'),
-        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployments-detail'),
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
+#        url(r'plstackapi/sitedeployments/!new/$', SiteDeploymentsNew.as_view(), name ='sitedeployments-new'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
+#        url(r'plstackapi/slicetags/!new/$', SliceTagNew.as_view(), name ='slicetag-new'),
     
         url(r'plstackapi/networktemplates/$', NetworkTemplateList.as_view(), name='networktemplate-list'),
         url(r'plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkTemplateDetail.as_view(), name ='networktemplate-detail'),
+#        url(r'plstackapi/networktemplates/!new/$', NetworkTemplateNew.as_view(), name ='networktemplate-new'),
     
         url(r'plstackapi/routers/$', RouterList.as_view(), name='router-list'),
         url(r'plstackapi/routers/(?P<pk>[a-zA-Z0-9\-]+)/$', RouterDetail.as_view(), name ='router-detail'),
+#        url(r'plstackapi/routers/!new/$', RouterNew.as_view(), name ='router-new'),
     
         url(r'plstackapi/serviceresources/$', ServiceResourceList.as_view(), name='serviceresource-list'),
         url(r'plstackapi/serviceresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceResourceDetail.as_view(), name ='serviceresource-detail'),
+#        url(r'plstackapi/serviceresources/!new/$', ServiceResourceNew.as_view(), name ='serviceresource-new'),
     
     )
 
@@ -757,18 +807,18 @@ class DashboardViewIdSerializer(serializers.ModelSerializer):
 
 
 
-class ImageDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployment
+        model = ImageDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
-class ImageDeploymentIdSerializer(serializers.ModelSerializer):
+class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployment
+        model = ImageDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 
@@ -925,18 +975,18 @@ class ReservationIdSerializer(serializers.ModelSerializer):
 
 
 
-class SliceDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class SliceDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployment
+        model = SliceDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
-class SliceDeploymentIdSerializer(serializers.ModelSerializer):
+class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployment
+        model = SliceDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 
@@ -976,18 +1026,18 @@ class PlanetStackIdSerializer(serializers.ModelSerializer):
 
 
 
-class UserDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class UserDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployment
+        model = UserDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
-class UserDeploymentIdSerializer(serializers.ModelSerializer):
+class UserDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployment
+        model = UserDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 
@@ -1095,18 +1145,18 @@ class UserCredentialIdSerializer(serializers.ModelSerializer):
 
 
 
-class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SiteDeployment
+        model = SiteDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
-class SiteDeploymentIdSerializer(serializers.ModelSerializer):
+class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SiteDeployment
+        model = SiteDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 
@@ -1234,7 +1284,7 @@ serializerLookUp = {
 
                  DashboardView: DashboardViewSerializer,
 
-                 ImageDeployment: ImageDeploymentSerializer,
+                 ImageDeployments: ImageDeploymentsSerializer,
 
                  ReservedResource: ReservedResourceSerializer,
 
@@ -1250,13 +1300,13 @@ serializerLookUp = {
 
                  Reservation: ReservationSerializer,
 
-                 SliceDeployment: SliceDeploymentSerializer,
+                 SliceDeployments: SliceDeploymentsSerializer,
 
                  SitePrivilege: SitePrivilegeSerializer,
 
                  PlanetStack: PlanetStackSerializer,
 
-                 UserDeployment: UserDeploymentSerializer,
+                 UserDeployments: UserDeploymentsSerializer,
 
                  Account: AccountSerializer,
 
@@ -1270,7 +1320,7 @@ serializerLookUp = {
 
                  UserCredential: UserCredentialSerializer,
 
-                 SiteDeployment: SiteDeploymentSerializer,
+                 SiteDeployments: SiteDeploymentsSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -1349,7 +1399,10 @@ class ServiceAttributeList(generics.ListCreateAPIView):
         return ServiceAttribute.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ServiceAttribute(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceAttributeList, self).create(request, *args, **kwargs)
@@ -1382,6 +1435,31 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ServiceAttributeNew(GenericAPIView):
+    serializer_class = ServiceAttributeSerializer
+    id_serializer_class = ServiceAttributeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ServiceAttribute()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ImageList(generics.ListCreateAPIView):
@@ -1402,7 +1480,10 @@ class ImageList(generics.ListCreateAPIView):
         return Image.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Image(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ImageList, self).create(request, *args, **kwargs)
@@ -1435,6 +1516,31 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ImageNew(GenericAPIView):
+    serializer_class = ImageSerializer
+    id_serializer_class = ImageIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Image()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkParameterList(generics.ListCreateAPIView):
@@ -1455,7 +1561,10 @@ class NetworkParameterList(generics.ListCreateAPIView):
         return NetworkParameter.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkParameter(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkParameterList, self).create(request, *args, **kwargs)
@@ -1488,6 +1597,31 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkParameterNew(GenericAPIView):
+    serializer_class = NetworkParameterSerializer
+    id_serializer_class = NetworkParameterIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkParameter()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SiteList(generics.ListCreateAPIView):
@@ -1508,7 +1642,10 @@ class SiteList(generics.ListCreateAPIView):
         return Site.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Site(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteList, self).create(request, *args, **kwargs)
@@ -1541,6 +1678,31 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SiteNew(GenericAPIView):
+    serializer_class = SiteSerializer
+    id_serializer_class = SiteIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Site()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SliceRoleList(generics.ListCreateAPIView):
@@ -1561,7 +1723,10 @@ class SliceRoleList(generics.ListCreateAPIView):
         return SliceRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SliceRole(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceRoleList, self).create(request, *args, **kwargs)
@@ -1594,6 +1759,31 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceRoleNew(GenericAPIView):
+    serializer_class = SliceRoleSerializer
+    id_serializer_class = SliceRoleIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SliceRole()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class TagList(generics.ListCreateAPIView):
@@ -1614,7 +1804,10 @@ class TagList(generics.ListCreateAPIView):
         return Tag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Tag(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(TagList, self).create(request, *args, **kwargs)
@@ -1647,6 +1840,31 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class TagNew(GenericAPIView):
+    serializer_class = TagSerializer
+    id_serializer_class = TagIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Tag()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class InvoiceList(generics.ListCreateAPIView):
@@ -1667,7 +1885,10 @@ class InvoiceList(generics.ListCreateAPIView):
         return Invoice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Invoice(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(InvoiceList, self).create(request, *args, **kwargs)
@@ -1700,6 +1921,31 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class InvoiceNew(GenericAPIView):
+    serializer_class = InvoiceSerializer
+    id_serializer_class = InvoiceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Invoice()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SlicePrivilegeList(generics.ListCreateAPIView):
@@ -1720,7 +1966,10 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
         return SlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SlicePrivilege(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SlicePrivilegeList, self).create(request, *args, **kwargs)
@@ -1753,6 +2002,31 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SlicePrivilegeNew(GenericAPIView):
+    serializer_class = SlicePrivilegeSerializer
+    id_serializer_class = SlicePrivilegeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SlicePrivilege()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class PlanetStackRoleList(generics.ListCreateAPIView):
@@ -1773,7 +2047,10 @@ class PlanetStackRoleList(generics.ListCreateAPIView):
         return PlanetStackRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = PlanetStackRole(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackRoleList, self).create(request, *args, **kwargs)
@@ -1806,6 +2083,31 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class PlanetStackRoleNew(GenericAPIView):
+    serializer_class = PlanetStackRoleSerializer
+    id_serializer_class = PlanetStackRoleIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = PlanetStackRole()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkSliverList(generics.ListCreateAPIView):
@@ -1826,7 +2128,10 @@ class NetworkSliverList(generics.ListCreateAPIView):
         return NetworkSliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkSliver(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkSliverList, self).create(request, *args, **kwargs)
@@ -1859,6 +2164,31 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkSliverNew(GenericAPIView):
+    serializer_class = NetworkSliverSerializer
+    id_serializer_class = NetworkSliverIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkSliver()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkDeploymentsList(generics.ListCreateAPIView):
@@ -1879,7 +2209,10 @@ class NetworkDeploymentsList(generics.ListCreateAPIView):
         return NetworkDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkDeployments(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkDeploymentsList, self).create(request, *args, **kwargs)
@@ -1912,6 +2245,31 @@ class NetworkDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkDeploymentsNew(GenericAPIView):
+    serializer_class = NetworkDeploymentsSerializer
+    id_serializer_class = NetworkDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class FlavorList(generics.ListCreateAPIView):
@@ -1932,7 +2290,10 @@ class FlavorList(generics.ListCreateAPIView):
         return Flavor.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Flavor(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(FlavorList, self).create(request, *args, **kwargs)
@@ -1965,6 +2326,31 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class FlavorNew(GenericAPIView):
+    serializer_class = FlavorSerializer
+    id_serializer_class = FlavorIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Flavor()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -1985,7 +2371,10 @@ class ProjectList(generics.ListCreateAPIView):
         return Project.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Project(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ProjectList, self).create(request, *args, **kwargs)
@@ -2018,6 +2407,31 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ProjectNew(GenericAPIView):
+    serializer_class = ProjectSerializer
+    id_serializer_class = ProjectIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Project()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SliceList(generics.ListCreateAPIView):
@@ -2038,7 +2452,10 @@ class SliceList(generics.ListCreateAPIView):
         return Slice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Slice(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceList, self).create(request, *args, **kwargs)
@@ -2071,6 +2488,31 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceNew(GenericAPIView):
+    serializer_class = SliceSerializer
+    id_serializer_class = SliceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Slice()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkList(generics.ListCreateAPIView):
@@ -2091,7 +2533,10 @@ class NetworkList(generics.ListCreateAPIView):
         return Network.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Network(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkList, self).create(request, *args, **kwargs)
@@ -2124,6 +2569,31 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkNew(GenericAPIView):
+    serializer_class = NetworkSerializer
+    id_serializer_class = NetworkIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Network()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ServiceList(generics.ListCreateAPIView):
@@ -2144,7 +2614,10 @@ class ServiceList(generics.ListCreateAPIView):
         return Service.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Service(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceList, self).create(request, *args, **kwargs)
@@ -2177,6 +2650,31 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ServiceNew(GenericAPIView):
+    serializer_class = ServiceSerializer
+    id_serializer_class = ServiceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Service()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ServiceClassList(generics.ListCreateAPIView):
@@ -2197,7 +2695,10 @@ class ServiceClassList(generics.ListCreateAPIView):
         return ServiceClass.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ServiceClass(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceClassList, self).create(request, *args, **kwargs)
@@ -2230,6 +2731,31 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ServiceClassNew(GenericAPIView):
+    serializer_class = ServiceClassSerializer
+    id_serializer_class = ServiceClassIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ServiceClass()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class PaymentList(generics.ListCreateAPIView):
@@ -2250,7 +2776,10 @@ class PaymentList(generics.ListCreateAPIView):
         return Payment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Payment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PaymentList, self).create(request, *args, **kwargs)
@@ -2283,6 +2812,31 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class PaymentNew(GenericAPIView):
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Payment()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ChargeList(generics.ListCreateAPIView):
@@ -2303,7 +2857,10 @@ class ChargeList(generics.ListCreateAPIView):
         return Charge.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Charge(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ChargeList, self).create(request, *args, **kwargs)
@@ -2336,6 +2893,31 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ChargeNew(GenericAPIView):
+    serializer_class = ChargeSerializer
+    id_serializer_class = ChargeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Charge()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class RoleList(generics.ListCreateAPIView):
@@ -2356,7 +2938,10 @@ class RoleList(generics.ListCreateAPIView):
         return Role.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Role(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(RoleList, self).create(request, *args, **kwargs)
@@ -2389,6 +2974,31 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class RoleNew(GenericAPIView):
+    serializer_class = RoleSerializer
+    id_serializer_class = RoleIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Role()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class UsableObjectList(generics.ListCreateAPIView):
@@ -2409,7 +3019,10 @@ class UsableObjectList(generics.ListCreateAPIView):
         return UsableObject.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = UsableObject(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UsableObjectList, self).create(request, *args, **kwargs)
@@ -2442,6 +3055,31 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class UsableObjectNew(GenericAPIView):
+    serializer_class = UsableObjectSerializer
+    id_serializer_class = UsableObjectIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = UsableObject()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SiteRoleList(generics.ListCreateAPIView):
@@ -2462,7 +3100,10 @@ class SiteRoleList(generics.ListCreateAPIView):
         return SiteRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SiteRole(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteRoleList, self).create(request, *args, **kwargs)
@@ -2495,6 +3136,31 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SiteRoleNew(GenericAPIView):
+    serializer_class = SiteRoleSerializer
+    id_serializer_class = SiteRoleIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SiteRole()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SliceCredentialList(generics.ListCreateAPIView):
@@ -2515,7 +3181,10 @@ class SliceCredentialList(generics.ListCreateAPIView):
         return SliceCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SliceCredential(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceCredentialList, self).create(request, *args, **kwargs)
@@ -2548,6 +3217,31 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceCredentialNew(GenericAPIView):
+    serializer_class = SliceCredentialSerializer
+    id_serializer_class = SliceCredentialIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SliceCredential()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SliverList(generics.ListCreateAPIView):
@@ -2568,7 +3262,10 @@ class SliverList(generics.ListCreateAPIView):
         return Sliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Sliver(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliverList, self).create(request, *args, **kwargs)
@@ -2601,6 +3298,31 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliverNew(GenericAPIView):
+    serializer_class = SliverSerializer
+    id_serializer_class = SliverIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Sliver()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NodeList(generics.ListCreateAPIView):
@@ -2621,7 +3343,10 @@ class NodeList(generics.ListCreateAPIView):
         return Node.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Node(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NodeList, self).create(request, *args, **kwargs)
@@ -2654,6 +3379,31 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NodeNew(GenericAPIView):
+    serializer_class = NodeSerializer
+    id_serializer_class = NodeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Node()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class DashboardViewList(generics.ListCreateAPIView):
@@ -2674,7 +3424,10 @@ class DashboardViewList(generics.ListCreateAPIView):
         return DashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = DashboardView(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DashboardViewList, self).create(request, *args, **kwargs)
@@ -2707,12 +3460,37 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class DashboardViewNew(GenericAPIView):
+    serializer_class = DashboardViewSerializer
+    id_serializer_class = DashboardViewIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = DashboardView()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
-class ImageDeploymentList(generics.ListCreateAPIView):
-    queryset = ImageDeployment.objects.select_related().all()
-    serializer_class = ImageDeploymentSerializer
-    id_serializer_class = ImageDeploymentIdSerializer
+
+class ImageDeploymentsList(generics.ListCreateAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
@@ -2724,27 +3502,30 @@ class ImageDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ImageDeployment.select_by_user(self.request.user)
+        return ImageDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ImageDeployment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ImageDeploymentList, self).create(request, *args, **kwargs)
+            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ImageDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ImageDeployment.objects.select_related().all()
-    serializer_class = ImageDeploymentSerializer
-    id_serializer_class = ImageDeploymentIdSerializer
+class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -2754,11 +3535,36 @@ class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ImageDeployment.select_by_user(self.request.user)
+        return ImageDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ImageDeploymentsNew(GenericAPIView):
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ImageDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
 
@@ -2780,7 +3586,10 @@ class ReservedResourceList(generics.ListCreateAPIView):
         return ReservedResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ReservedResource(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ReservedResourceList, self).create(request, *args, **kwargs)
@@ -2813,6 +3622,31 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ReservedResourceNew(GenericAPIView):
+    serializer_class = ReservedResourceSerializer
+    id_serializer_class = ReservedResourceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ReservedResource()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkSliceList(generics.ListCreateAPIView):
@@ -2833,7 +3667,10 @@ class NetworkSliceList(generics.ListCreateAPIView):
         return NetworkSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkSlice(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkSliceList, self).create(request, *args, **kwargs)
@@ -2866,6 +3703,31 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkSliceNew(GenericAPIView):
+    serializer_class = NetworkSliceSerializer
+    id_serializer_class = NetworkSliceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkSlice()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class UserDashboardViewList(generics.ListCreateAPIView):
@@ -2886,7 +3748,10 @@ class UserDashboardViewList(generics.ListCreateAPIView):
         return UserDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = UserDashboardView(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserDashboardViewList, self).create(request, *args, **kwargs)
@@ -2919,6 +3784,31 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class UserDashboardViewNew(GenericAPIView):
+    serializer_class = UserDashboardViewSerializer
+    id_serializer_class = UserDashboardViewIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = UserDashboardView()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class PlanetStackPrivilegeList(generics.ListCreateAPIView):
@@ -2939,7 +3829,10 @@ class PlanetStackPrivilegeList(generics.ListCreateAPIView):
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = PlanetStackPrivilege(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
@@ -2972,6 +3865,31 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class PlanetStackPrivilegeNew(GenericAPIView):
+    serializer_class = PlanetStackPrivilegeSerializer
+    id_serializer_class = PlanetStackPrivilegeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = PlanetStackPrivilege()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class UserList(generics.ListCreateAPIView):
@@ -2992,7 +3910,10 @@ class UserList(generics.ListCreateAPIView):
         return User.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = User(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserList, self).create(request, *args, **kwargs)
@@ -3025,6 +3946,31 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class UserNew(GenericAPIView):
+    serializer_class = UserSerializer
+    id_serializer_class = UserIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = User()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class DeploymentList(generics.ListCreateAPIView):
@@ -3045,7 +3991,10 @@ class DeploymentList(generics.ListCreateAPIView):
         return Deployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Deployment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentList, self).create(request, *args, **kwargs)
@@ -3078,6 +4027,31 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class DeploymentNew(GenericAPIView):
+    serializer_class = DeploymentSerializer
+    id_serializer_class = DeploymentIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Deployment()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ReservationList(generics.ListCreateAPIView):
@@ -3098,7 +4072,10 @@ class ReservationList(generics.ListCreateAPIView):
         return Reservation.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Reservation(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ReservationList, self).create(request, *args, **kwargs)
@@ -3131,12 +4108,37 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ReservationNew(GenericAPIView):
+    serializer_class = ReservationSerializer
+    id_serializer_class = ReservationIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Reservation()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
-class SliceDeploymentList(generics.ListCreateAPIView):
-    queryset = SliceDeployment.objects.select_related().all()
-    serializer_class = SliceDeploymentSerializer
-    id_serializer_class = SliceDeploymentIdSerializer
+
+class SliceDeploymentsList(generics.ListCreateAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
@@ -3148,27 +4150,30 @@ class SliceDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SliceDeployment.select_by_user(self.request.user)
+        return SliceDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SliceDeployment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SliceDeploymentList, self).create(request, *args, **kwargs)
+            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SliceDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SliceDeployment.objects.select_related().all()
-    serializer_class = SliceDeploymentSerializer
-    id_serializer_class = SliceDeploymentIdSerializer
+class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3178,11 +4183,36 @@ class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SliceDeployment.select_by_user(self.request.user)
+        return SliceDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceDeploymentsNew(GenericAPIView):
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SliceDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
 
@@ -3204,7 +4234,10 @@ class SitePrivilegeList(generics.ListCreateAPIView):
         return SitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SitePrivilege(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SitePrivilegeList, self).create(request, *args, **kwargs)
@@ -3237,6 +4270,31 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SitePrivilegeNew(GenericAPIView):
+    serializer_class = SitePrivilegeSerializer
+    id_serializer_class = SitePrivilegeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SitePrivilege()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class PlanetStackList(generics.ListCreateAPIView):
@@ -3257,7 +4315,10 @@ class PlanetStackList(generics.ListCreateAPIView):
         return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = PlanetStack(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(PlanetStackList, self).create(request, *args, **kwargs)
@@ -3290,12 +4351,37 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class PlanetStackNew(GenericAPIView):
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = PlanetStack()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
-class UserDeploymentList(generics.ListCreateAPIView):
-    queryset = UserDeployment.objects.select_related().all()
-    serializer_class = UserDeploymentSerializer
-    id_serializer_class = UserDeploymentIdSerializer
+
+class UserDeploymentsList(generics.ListCreateAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
@@ -3307,27 +4393,30 @@ class UserDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return UserDeployment.select_by_user(self.request.user)
+        return UserDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = UserDeployment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(UserDeploymentList, self).create(request, *args, **kwargs)
+            return super(UserDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(UserDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(UserDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = UserDeployment.objects.select_related().all()
-    serializer_class = UserDeploymentSerializer
-    id_serializer_class = UserDeploymentIdSerializer
+class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3337,11 +4426,36 @@ class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return UserDeployment.select_by_user(self.request.user)
+        return UserDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class UserDeploymentsNew(GenericAPIView):
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = UserDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
 
@@ -3363,7 +4477,10 @@ class AccountList(generics.ListCreateAPIView):
         return Account.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Account(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(AccountList, self).create(request, *args, **kwargs)
@@ -3396,6 +4513,31 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class AccountNew(GenericAPIView):
+    serializer_class = AccountSerializer
+    id_serializer_class = AccountIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Account()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkParameterTypeList(generics.ListCreateAPIView):
@@ -3416,7 +4558,10 @@ class NetworkParameterTypeList(generics.ListCreateAPIView):
         return NetworkParameterType.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkParameterType(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
@@ -3449,6 +4594,31 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkParameterTypeNew(GenericAPIView):
+    serializer_class = NetworkParameterTypeSerializer
+    id_serializer_class = NetworkParameterTypeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkParameterType()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class SiteCredentialList(generics.ListCreateAPIView):
@@ -3469,7 +4639,10 @@ class SiteCredentialList(generics.ListCreateAPIView):
         return SiteCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SiteCredential(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SiteCredentialList, self).create(request, *args, **kwargs)
@@ -3502,6 +4675,31 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SiteCredentialNew(GenericAPIView):
+    serializer_class = SiteCredentialSerializer
+    id_serializer_class = SiteCredentialIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SiteCredential()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class DeploymentPrivilegeList(generics.ListCreateAPIView):
@@ -3522,7 +4720,10 @@ class DeploymentPrivilegeList(generics.ListCreateAPIView):
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = DeploymentPrivilege(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
@@ -3555,6 +4756,31 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class DeploymentPrivilegeNew(GenericAPIView):
+    serializer_class = DeploymentPrivilegeSerializer
+    id_serializer_class = DeploymentPrivilegeIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = DeploymentPrivilege()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class DeploymentRoleList(generics.ListCreateAPIView):
@@ -3575,7 +4801,10 @@ class DeploymentRoleList(generics.ListCreateAPIView):
         return DeploymentRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = DeploymentRole(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(DeploymentRoleList, self).create(request, *args, **kwargs)
@@ -3608,6 +4837,31 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class DeploymentRoleNew(GenericAPIView):
+    serializer_class = DeploymentRoleSerializer
+    id_serializer_class = DeploymentRoleIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = DeploymentRole()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class UserCredentialList(generics.ListCreateAPIView):
@@ -3628,7 +4882,10 @@ class UserCredentialList(generics.ListCreateAPIView):
         return UserCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = UserCredential(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(UserCredentialList, self).create(request, *args, **kwargs)
@@ -3661,12 +4918,37 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class UserCredentialNew(GenericAPIView):
+    serializer_class = UserCredentialSerializer
+    id_serializer_class = UserCredentialIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = UserCredential()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
-class SiteDeploymentList(generics.ListCreateAPIView):
-    queryset = SiteDeployment.objects.select_related().all()
-    serializer_class = SiteDeploymentSerializer
-    id_serializer_class = SiteDeploymentIdSerializer
+
+class SiteDeploymentsList(generics.ListCreateAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
@@ -3678,27 +4960,30 @@ class SiteDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SiteDeployment.select_by_user(self.request.user)
+        return SiteDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SiteDeployment(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
+            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployment.objects.select_related().all()
-    serializer_class = SiteDeploymentSerializer
-    id_serializer_class = SiteDeploymentIdSerializer
+class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3708,11 +4993,36 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SiteDeployment.select_by_user(self.request.user)
+        return SiteDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SiteDeploymentsNew(GenericAPIView):
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SiteDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
 
@@ -3734,7 +5044,10 @@ class SliceTagList(generics.ListCreateAPIView):
         return SliceTag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SliceTag(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(SliceTagList, self).create(request, *args, **kwargs)
@@ -3767,6 +5080,31 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceTagNew(GenericAPIView):
+    serializer_class = SliceTagSerializer
+    id_serializer_class = SliceTagIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SliceTag()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class NetworkTemplateList(generics.ListCreateAPIView):
@@ -3787,7 +5125,10 @@ class NetworkTemplateList(generics.ListCreateAPIView):
         return NetworkTemplate.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = NetworkTemplate(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(NetworkTemplateList, self).create(request, *args, **kwargs)
@@ -3820,6 +5161,31 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class NetworkTemplateNew(GenericAPIView):
+    serializer_class = NetworkTemplateSerializer
+    id_serializer_class = NetworkTemplateIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = NetworkTemplate()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class RouterList(generics.ListCreateAPIView):
@@ -3840,7 +5206,10 @@ class RouterList(generics.ListCreateAPIView):
         return Router.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = Router(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(RouterList, self).create(request, *args, **kwargs)
@@ -3873,6 +5242,31 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class RouterNew(GenericAPIView):
+    serializer_class = RouterSerializer
+    id_serializer_class = RouterIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = Router()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
 
 
 class ServiceResourceList(generics.ListCreateAPIView):
@@ -3893,7 +5287,10 @@ class ServiceResourceList(generics.ListCreateAPIView):
         return ServiceResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ServiceResource(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super(ServiceResourceList, self).create(request, *args, **kwargs)
@@ -3925,6 +5322,31 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ServiceResourceNew(GenericAPIView):
+    serializer_class = ServiceResourceSerializer
+    id_serializer_class = ServiceResourceIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ServiceResource()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 
 

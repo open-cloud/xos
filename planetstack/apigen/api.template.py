@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from core.models import *
 from django.forms import widgets
 from rest_framework import filters
@@ -13,7 +14,7 @@ from django.conf.urls import patterns, url
     Schema of the generator object:
         all: Set of all Model objects
         all_if(regex): Set of Model objects that match regex
-    
+
     Model object:
         plural: English plural of object name
         camel: CamelCase version of object name
@@ -29,6 +30,7 @@ def get_REST_patterns():
     {% for object in generator.all %}
         url(r'plstackapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
         url(r'plstackapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+#        url(r'plstackapi/{{ object.rest_name }}/!new/$', {{ object.camel }}New.as_view(), name ='{{ object.singular }}-new'),
     {% endfor %}
     )
 
@@ -145,7 +147,10 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
         return {{ object.camel }}.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = {{ object.camel }}(**request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
             return super({{ object.camel }}List, self).create(request, *args, **kwargs)
@@ -177,5 +182,30 @@ class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class {{ object.camel }}New(GenericAPIView):
+    serializer_class = {{ object.camel }}Serializer
+    id_serializer_class = {{ object.camel }}IdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = {{ object.camel }}()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
 
 {% endfor %}
