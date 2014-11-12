@@ -125,8 +125,8 @@ class NetworkDeployments(PlCoreBase):
     deleted_objects = DeploymentLinkDeletionManager()
 
     # Stores the openstack ids at various deployments
-    network = models.ForeignKey(Network)
-    deployment = models.ForeignKey(Deployment)
+    network = models.ForeignKey(Network, related_name='networkdeployments')
+    deployment = models.ForeignKey(Deployment, related_name='networkdeployments')
     net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
@@ -149,8 +149,8 @@ class NetworkSlice(PlCoreBase):
     # This object exists solely so we can implement the permission check when
     # adding slices to networks. It adds no additional fields to the relation.
 
-    network = models.ForeignKey(Network)
-    slice = models.ForeignKey(Slice)
+    network = models.ForeignKey(Network,related_name='networkslices')
+    slice = models.ForeignKey(Slice,related_name='networkslices')
 
     def save(self, *args, **kwds):
         slice = self.slice
@@ -178,8 +178,8 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class NetworkSliver(PlCoreBase):
-    network = models.ForeignKey(Network)
-    sliver = models.ForeignKey(Sliver)
+    network = models.ForeignKey(Network,relatedname='networkslivers')
+    sliver = models.ForeignKey(Sliver,relatedname='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
 
@@ -227,7 +227,7 @@ class NetworkParameterType(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class NetworkParameter(PlCoreBase):
-    parameter = models.ForeignKey(NetworkParameterType, related_name="parameters", help_text="The type of the parameter")
+    parameter = models.ForeignKey(NetworkParameterType, related_name="networkparameters", help_text="The type of the parameter")
     value = models.CharField(help_text="The value of this parameter", max_length=1024)
 
     # The required fields to do a ObjectType lookup, and object_id assignment

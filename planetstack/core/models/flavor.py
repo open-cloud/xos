@@ -29,7 +29,7 @@ class FlavorParameterType(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class FlavorParameter(PlCoreBase):
-    parameter = models.ForeignKey(FlavorParameterType, related_name="parameters", help_text="The type of the parameter")
+    parameter = models.ForeignKey(FlavorParameterType, related_name="flavorparameters", help_text="The type of the parameter")
     value = models.CharField(help_text="The value of this parameter", max_length=1024)
 
     flavor = models.ForeignKey(Flavor,related_name='flavorparameter')
