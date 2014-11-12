@@ -21,6 +21,6 @@ class SyncNetworks(OpenStackSyncStep):
         for network_deployment in NetworkDeployments.objects.filter(network=network):
             try:
                 network_deployment_deleter(network_deployment)    
-            except Exeption,e:
+            except Exception,e:
                 logger.log_exc("Failed to delete network deployment %s" % network_deployment)
                 raise e
