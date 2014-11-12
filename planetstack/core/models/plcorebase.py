@@ -201,6 +201,10 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
         # filtering of visible objects by user.
         return cls.objects.all()
 
+    @classmethod
+    def is_ephemeral(cls):
+	return False
+
 
 
 
