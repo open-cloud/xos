@@ -117,6 +117,7 @@
 
 <script type="text/template" id="xosAdmin-image-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -153,6 +154,7 @@
 
 <script type="text/template" id="xosAdmin-networkTemplate-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -197,6 +199,7 @@
 
 <script type="text/template" id="xosAdmin-network-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -237,6 +240,7 @@
 
 <script type="text/template" id="xosAdmin-networkSliver-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -274,6 +278,7 @@
 
 <script type="text/template" id="xosAdmin-networkDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -308,6 +313,7 @@
 
 <script type="text/template" id="xosAdmin-node-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -343,6 +349,7 @@
 
 <script type="text/template" id="xosAdmin-sliceRole-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -372,6 +379,7 @@
 
 <script type="text/template" id="xosAdmin-service-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -411,6 +419,7 @@
 
 <script type="text/template" id="xosAdmin-site-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -454,6 +463,7 @@
 
 <script type="text/template" id="xosAdmin-slice-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -487,6 +497,7 @@
   <form>
   <table>
   <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
+  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
   <tr><td>Enabled:</td><td><input type="checkbox" name="enabled" <% if (enabled) print("checked"); %>></td></tr>
   <tr><td>Description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
   <tr><td>Url:</td><td><input type="text" name="slice_url" value="<%= slice_url %>"></td></tr>
@@ -500,6 +511,7 @@
 
 <script type="text/template" id="xosAdmin-sliceDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -534,6 +546,7 @@
 
 <script type="text/template" id="xosAdmin-slicePrivilege-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -568,6 +581,7 @@
 
 <script type="text/template" id="xosAdmin-sliver-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -621,6 +635,7 @@
 
 <script type="text/template" id="xosAdmin-user-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -665,6 +680,7 @@
 
 <script type="text/template" id="xosAdmin-userDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
+  <%= xosInlineListButtonsTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
