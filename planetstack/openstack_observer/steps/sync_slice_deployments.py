@@ -48,7 +48,7 @@ class SyncSliceDeployment(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % slice_deployment.deployment)
             return
 
-	deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
+	deployment_users = UserDeployment.objects.filter(user=slice_deployment.slice.creator,
                                                              deployment=slice_deployment.deployment)            
     	if not deployment_users:
 	    logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
