@@ -126,9 +126,12 @@ XOSApplication = Marionette.Application.extend({
     addShower: function(detailName, collection_name, regionName, title) {
         var app=this;
         return function() {
+            model = new xos[collection_name].model();
             detailViewClass = app[detailName];
-            detailView = new detailViewClass();
+            detailView = new detailViewClass({model: model});
             app[regionName].show(detailView);
+            $("#xos-detail-button-box").show();
+            $("#xos-listview-button-box").hide();
         }
     },
 
@@ -341,7 +344,7 @@ XOSListView = Marionette.CompositeView.extend({
              addClicked: function(e) {
                 console.log("add");
                 e.preventDefault();
-                this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName));
+                this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName), {trigger: true});
              },
 
              initialize: function() {
