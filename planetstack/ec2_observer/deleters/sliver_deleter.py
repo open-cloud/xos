@@ -1,4 +1,4 @@
-from core.models import Sliver, SliceDeployments
+from core.models import Sliver, SliceDeployment
 from observer.deleter import Deleter
 
 class SliverDeleter(Deleter):

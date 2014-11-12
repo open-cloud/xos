@@ -5,23 +5,23 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Deployment, SiteDeployments
-from core.models.slice import Slice, SliceDeployments
-from core.models.userdeployments import UserDeployments
+from core.models.site import Deployment, SiteDeployment
+from core.models.slice import Slice, SliceDeployment
+from core.models.userdeployments import UserDeployment
 from util.logger import Logger, logging
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncSliceDeployments(OpenStackSyncStep):
-    provides=[SliceDeployments]
+class SyncSliceDeployment(OpenStackSyncStep):
+    provides=[SliceDeployment]
     requested_interval=0
 
     def fetch_pending(self, deleted):
         if (deleted):
-            return SliceDeployments.deleted_objects.all()
+            return SliceDeployment.deleted_objects.all()
         else:
-            return SliceDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            return SliceDeployment.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def get_next_subnet(self, deployment=None):
         # limit ourself to 10.0.x.x for now
