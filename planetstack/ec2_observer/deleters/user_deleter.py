@@ -1,4 +1,4 @@
-from core.models import User, UserDeployments
+from core.models import User, UserDeployment
 from observer.deleter import Deleter
 from observer.deleters.user_deployment_deleter import UserDeploymentDeleter
 

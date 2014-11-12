@@ -20,8 +20,8 @@ class PlanetStackRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class PlanetStackPrivilege(PlCoreBase):
-    user = models.ForeignKey('User', related_name='planetstack_privileges')
-    planetstack = models.ForeignKey('PlanetStack', related_name='planetstack_privileges', default=1)
+    user = models.ForeignKey('User', related_name='planetstackprivileges')
+    planetstack = models.ForeignKey('PlanetStack', related_name='planetstackprivileges', default=1)
     role = models.ForeignKey('PlanetStackRole')
 
     def __unicode__(self):  return u'%s %s %s' % (self.planetstack, self.user, self.role)

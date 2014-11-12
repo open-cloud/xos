@@ -141,9 +141,9 @@ class SiteRole(PlCoreBase):
 
 class SitePrivilege(PlCoreBase):
 
-    user = models.ForeignKey('User', related_name='site_privileges')
-    site = models.ForeignKey('Site', related_name='site_privileges')
-    role = models.ForeignKey('SiteRole')
+    user = models.ForeignKey('User', related_name='siteprivileges')
+    site = models.ForeignKey('Site', related_name='siteprivileges')
+    role = models.ForeignKey('SiteRole',related_name='siteprivileges')
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
@@ -229,9 +229,9 @@ class DeploymentPrivilege(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
-    user = models.ForeignKey('User', related_name='deployment_privileges')
-    deployment = models.ForeignKey('Deployment', related_name='deployment_privileges')
-    role = models.ForeignKey('DeploymentRole')
+    user = models.ForeignKey('User', related_name='deploymentprivileges')
+    deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
+    role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
 
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
