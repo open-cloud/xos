@@ -118,7 +118,7 @@ for slice in Slice.objects.all():
     now = int(time.time())/HOUR_SECONDS*HOUR_SECONDS
 
     charge_kind=None
-    for resource in slice.serviceClass.resources.all():
+    for resource in slice.serviceClass.serviceresources.all():
         if resource.name == "numberCores":
             charge_kind = "reservation"
             cost = resource.cost
