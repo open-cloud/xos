@@ -193,7 +193,7 @@ class Deployment(PlCoreBase):
 
         if slice:
             potential_users.append(slice.creator)
-            for priv in slice.slice_privileges.all():
+            for priv in slice.sliceprivileges.all():
                 if priv.user not in potential_users:
                     potential_users.append(priv.user)
 
