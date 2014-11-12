@@ -105,7 +105,7 @@ class Site(PlCoreBase):
     abbreviated_name = models.CharField(max_length=80)
 
     #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
-    deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
+    deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
