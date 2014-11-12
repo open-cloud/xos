@@ -12,7 +12,7 @@ import inspect
 from django.core import serializers
 import json
 
-print "function xosdefault() {"
+print "function xos_get_defaults() {"
 
 for c in dir(core.models):
     c = getattr(core.models,c)
@@ -37,4 +37,5 @@ for c in dir(core.models):
         print "  this." + classname + " = " + fields_json + ";"
 
 print "};"
+print "xosdefaults = new xos_get_defaults();"
 
