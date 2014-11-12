@@ -5,24 +5,24 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import Deployment
-from core.models import Image, ImageDeployments
+from core.models import Image, ImageDeployment
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
-class SyncImageDeployments(OpenStackSyncStep):
-    provides=[ImageDeployments]
+class SyncImageDeployment(OpenStackSyncStep):
+    provides=[ImageDeployment]
     requested_interval=0
 
     def fetch_pending(self, deleted):
         if (deleted):
             return []
-         # smbaker: commented out automatic creation of ImageDeployments as
+         # smbaker: commented out automatic creation of ImageDeployment as
          #    as they will now be configured in GUI. Not sure if this is
          #    sufficient.
 
 #        # ensure images are available across all deployments
-#        image_deployments = ImageDeployments.objects.all()
+#        image_deployments = ImageDeployment.objects.all()
 #        image_deploy_lookup = defaultdict(list)
 #        for image_deployment in image_deployments:
 #            image_deploy_lookup[image_deployment.image].append(image_deployment.deployment)
@@ -33,11 +33,11 @@ class SyncImageDeployments(OpenStackSyncStep):
 #            for expected_deployment in expected_deployments:
 #                if image not in image_deploy_lookup or \
 #                  expected_deployment not in image_deploy_lookup[image]:
-#                    id = ImageDeployments(image=image, deployment=expected_deployment)
+#                    id = ImageDeployment(image=image, deployment=expected_deployment)
 #                    id.save()
 
         # now we return all images that need to be enacted
-        return ImageDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        return ImageDeployment.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, image_deployment):
         logger.info("Working on image %s on deployment %s" % (image_deployment.image.name, image_deployment.deployment.name))

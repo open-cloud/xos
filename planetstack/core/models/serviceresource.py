@@ -8,7 +8,7 @@ from core.models import ServiceClass
 # Create your models here.
 
 class ServiceResource(PlCoreBase):
-    serviceClass = models.ForeignKey(ServiceClass, related_name = "resources")
+    serviceClass = models.ForeignKey(ServiceClass, related_name = "serviceresources")
     name = models.CharField(max_length=32)
     maxUnitsDeployment = models.IntegerField(default=1)
     maxUnitsNode = models.IntegerField(default=1)
