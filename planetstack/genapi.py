@@ -138,8 +138,8 @@ def get_REST_patterns():
         url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
         url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
     
-        url(r'plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
-        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
+        url(r'plstackapi/user_deployments/$', UserDeploymentList.as_view(), name='userdeployments-list'),
+        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentDetail.as_view(), name ='userdeployments-detail'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
@@ -976,18 +976,18 @@ class PlanetStackIdSerializer(serializers.ModelSerializer):
 
 
 
-class UserDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class UserDeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployments
+        model = UserDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
-class UserDeploymentsIdSerializer(serializers.ModelSerializer):
+class UserDeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployments
+        model = UserDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 
@@ -3292,10 +3292,10 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class UserDeploymentsList(generics.ListCreateAPIView):
-    queryset = UserDeployments.objects.select_related().all()
-    serializer_class = UserDeploymentsSerializer
-    id_serializer_class = UserDeploymentsIdSerializer
+class UserDeploymentList(generics.ListCreateAPIView):
+    queryset = UserDeployment.objects.select_related().all()
+    serializer_class = UserDeploymentSerializer
+    id_serializer_class = UserDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
@@ -3307,27 +3307,27 @@ class UserDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return UserDeployments.select_by_user(self.request.user)
+        return UserDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = UserDeployments(**request.DATA)
+        obj = UserDeployment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(UserDeploymentsList, self).create(request, *args, **kwargs)
+            return super(UserDeploymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(UserDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(UserDeploymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = UserDeployments.objects.select_related().all()
-    serializer_class = UserDeploymentsSerializer
-    id_serializer_class = UserDeploymentsIdSerializer
+class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserDeployment.objects.select_related().all()
+    serializer_class = UserDeploymentSerializer
+    id_serializer_class = UserDeploymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3337,7 +3337,7 @@ class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return UserDeployments.select_by_user(self.request.user)
+        return UserDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 

@@ -8,6 +8,6 @@ class UserDeleter(Deleter):
     def call(self, pk):
         user = User.objects.get(pk=pk)
         user_deployment_deleter = UserDeploymentDeleter()
-        for user_deployment in UserDeployments.objects.filter(user=user):
+        for user_deployment in UserDeployment.objects.filter(user=user):
             user_deployment_deleter(user_deployment.id)
         user.delete()

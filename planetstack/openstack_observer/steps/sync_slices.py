@@ -4,7 +4,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.slice import Slice, SliceDeployments
+from core.models.slice import Slice, SliceDeployment
 from util.logger import Logger, logging
 from observer.steps.sync_slice_deployments import *
 

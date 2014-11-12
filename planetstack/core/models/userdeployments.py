@@ -19,7 +19,7 @@ class UserDeployments(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = UserDeployments.objects.all()
+            qs = UserDeployment.objects.all()
         else:
             users = Users.select_by_user(user)
             qs = Usereployments.objects.filter(user__in=slices)
