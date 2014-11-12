@@ -32,10 +32,10 @@ class Reservation(PlCoreBase):
         return qs
 
 class ReservedResource(PlCoreBase):
-    sliver = models.ForeignKey(Sliver, related_name="reservedResourrces")
-    resource = models.ForeignKey(ServiceResource, related_name="reservedResources")
+    sliver = models.ForeignKey(Sliver, related_name="reservedresources")
+    resource = models.ForeignKey(ServiceResource, related_name="reservedresources")
     quantity = models.IntegerField(default=1)
-    reservationSet = models.ForeignKey(Reservation, related_name="reservedResources")
+    reservationSet = models.ForeignKey(Reservation, related_name="reservedresources")
 
     class Meta(PlCoreBase.Meta):
        verbose_name_plural = "Reserved Resources"

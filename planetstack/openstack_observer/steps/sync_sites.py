@@ -14,7 +14,7 @@ class SyncSites(OpenStackSyncStep):
         site.save()
 
     def delete_record(self, site):
-        site_deployments = SiteDeployments.objects.filter(site=site)
-        site_deployment_deleter = SyncSiteDeployments().delete_record
+        site_deployments = SiteDeployment.objects.filter(site=site)
+        site_deployment_deleter = SyncSiteDeployment().delete_record
         for site_deployment in site_deployments:
             site_deployment_deleter(site_deployment)

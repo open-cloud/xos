@@ -105,7 +105,7 @@ class Site(PlCoreBase):
     abbreviated_name = models.CharField(max_length=80)
 
     #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
-    deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
+    deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -141,9 +141,9 @@ class SiteRole(PlCoreBase):
 
 class SitePrivilege(PlCoreBase):
 
-    user = models.ForeignKey('User', related_name='site_privileges')
-    site = models.ForeignKey('Site', related_name='site_privileges')
-    role = models.ForeignKey('SiteRole')
+    user = models.ForeignKey('User', related_name='siteprivileges')
+    site = models.ForeignKey('Site', related_name='siteprivileges')
+    role = models.ForeignKey('SiteRole',related_name='siteprivileges')
 
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
@@ -193,7 +193,7 @@ class Deployment(PlCoreBase):
 
         if slice:
             potential_users.append(slice.creator)
-            for priv in slice.slice_privileges.all():
+            for priv in slice.sliceprivileges.all():
                 if priv.user not in potential_users:
                     potential_users.append(priv.user)
 
@@ -229,9 +229,9 @@ class DeploymentPrivilege(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
-    user = models.ForeignKey('User', related_name='deployment_privileges')
-    deployment = models.ForeignKey('Deployment', related_name='deployment_privileges')
-    role = models.ForeignKey('DeploymentRole')
+    user = models.ForeignKey('User', related_name='deploymentprivileges')
+    deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
+    role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
 
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
@@ -255,12 +255,12 @@ class DeploymentPrivilege(PlCoreBase):
             qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
         return qs 
 
-class SiteDeployments(PlCoreBase):
+class SiteDeployment(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
-    site = models.ForeignKey(Site)
-    deployment = models.ForeignKey(Deployment)
+    site = models.ForeignKey(Site,related_name='sitedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
 
     #class Meta:

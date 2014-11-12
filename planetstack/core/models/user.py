@@ -183,7 +183,7 @@ class User(AbstractBaseUser, DiffModelMixIn):
     def get_dashboards(self):
         DEFAULT_DASHBOARDS=["Tenant"]
 
-        dashboards = sorted(list(self.dashboardViews.all()), key=attrgetter('order'))
+        dashboards = sorted(list(self.userdashboardviews.all()), key=attrgetter('order'))
         dashboards = [x.dashboardView for x in dashboards]
 
         if not dashboards:
@@ -285,6 +285,6 @@ class User(AbstractBaseUser, DiffModelMixIn):
         self.delete(*args, **kwds)
 
 class UserDashboardView(PlCoreBase):
-     user = models.ForeignKey(User, related_name="dashboardViews")
-     dashboardView = models.ForeignKey(DashboardView, related_name="dashboardViews")
+     user = models.ForeignKey(User, related_name='userdashboardviews')
+     dashboardView = models.ForeignKey(DashboardView, related_name='userdashboardviews')
      order = models.IntegerField(default=0)
