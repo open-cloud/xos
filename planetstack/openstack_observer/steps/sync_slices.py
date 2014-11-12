@@ -15,14 +15,14 @@ class SyncSlices(OpenStackSyncStep):
     requested_interval=0
 
     def sync_record(self, slice):
-        for slice_deployment in SliceDeployments.objects.filter(slice=slice):
+        for slice_deployment in SliceDeployment.objects.filter(slice=slice):
             # bump the 'updated' timestamp and trigger observer to update
             # slice across all deployments 
             slice_deployment.save()    
 
     def delete_record(self, slice):
-        slice_deployment_deleter = SyncSliceDeployments().delete_record
-        for slice_deployment in SliceDeployments.objects.filter(slice=slice):
+        slice_deployment_deleter = SyncSliceDeployment().delete_record
+        for slice_deployment in SliceDeployment.objects.filter(slice=slice):
             try:
                 slice_deployment_deleter(slice_deployment)
             except Exception,e:

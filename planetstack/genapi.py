@@ -129,8 +129,8 @@ def get_REST_patterns():
         url(r'plstackapi/reservations/$', ReservationList.as_view(), name='reservation-list'),
         url(r'plstackapi/reservations/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservationDetail.as_view(), name ='reservation-detail'),
     
-        url(r'plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
-        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
+        url(r'plstackapi/slice_deployments/$', SliceDeploymentList.as_view(), name='slicedeployments-list'),
+        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentDetail.as_view(), name ='slicedeployments-detail'),
     
         url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
@@ -925,18 +925,18 @@ class ReservationIdSerializer(serializers.ModelSerializer):
 
 
 
-class SliceDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class SliceDeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployments
+        model = SliceDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
-class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
+class SliceDeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployments
+        model = SliceDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 
@@ -1250,13 +1250,13 @@ serializerLookUp = {
 
                  Reservation: ReservationSerializer,
 
-                 SliceDeployments: SliceDeploymentsSerializer,
+                 SliceDeployment: SliceDeploymentSerializer,
 
                  SitePrivilege: SitePrivilegeSerializer,
 
                  PlanetStack: PlanetStackSerializer,
 
-                 UserDeployments: UserDeploymentsSerializer,
+                 UserDeployment: UserDeploymentSerializer,
 
                  Account: AccountSerializer,
 
@@ -3133,10 +3133,10 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliceDeploymentsList(generics.ListCreateAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
+class SliceDeploymentList(generics.ListCreateAPIView):
+    queryset = SliceDeployment.objects.select_related().all()
+    serializer_class = SliceDeploymentSerializer
+    id_serializer_class = SliceDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
@@ -3148,27 +3148,27 @@ class SliceDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
+        return SliceDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = SliceDeployments(**request.DATA)
+        obj = SliceDeployment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+            return super(SliceDeploymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(SliceDeploymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
+class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceDeployment.objects.select_related().all()
+    serializer_class = SliceDeploymentSerializer
+    id_serializer_class = SliceDeploymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3178,7 +3178,7 @@ class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
+        return SliceDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 

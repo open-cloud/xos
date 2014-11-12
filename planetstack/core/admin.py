@@ -748,8 +748,8 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class SliceDeploymentsInline(PlStackTabularInline):
-    model = SliceDeployments
+class SliceDeploymentInline(PlStackTabularInline):
+    model = SliceDeployment
     extra = 0
     verbose_name = "Slice Deployment"
     verbose_name_plural = "Slice Deployments"
@@ -765,7 +765,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
-    admin_inlines = [SliceDeploymentsInline]
+    admin_inlines = [SliceDeploymentInline]
 
     user_readonly_fields = fieldList
 
