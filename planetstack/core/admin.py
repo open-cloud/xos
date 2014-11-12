@@ -409,7 +409,7 @@ class SitePrivilegeInline(PlStackTabularInline):
         return SitePrivilege.select_by_user(request.user)
 
 class SiteDeploymentInline(PlStackTabularInline):
-    model = SiteDeployments
+    model = SiteDeployment
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['backend_status_icon', 'deployment','site']
@@ -424,7 +424,7 @@ class SiteDeploymentInline(PlStackTabularInline):
         return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        return SiteDeployments.select_by_user(request.user)
+        return SiteDeployment.select_by_user(request.user)
 
 
 class SlicePrivilegeInline(PlStackTabularInline):
@@ -455,8 +455,8 @@ class SliceNetworkInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network']
     readonly_fields = ('backend_status_icon', )
 
-class ImageDeploymentsInline(PlStackTabularInline):
-    model = ImageDeployments
+class ImageDeploymentInline(PlStackTabularInline):
+    model = ImageDeployment
     extra = 0
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
@@ -560,8 +560,8 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployment, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployment, "deployment", "image")
 
       self.save_m2m()
 
@@ -580,7 +580,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
     fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
@@ -748,8 +748,8 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class SliceDeploymentsInline(PlStackTabularInline):
-    model = SliceDeployments
+class SliceDeploymentInline(PlStackTabularInline):
+    model = SliceDeployment
     extra = 0
     verbose_name = "Slice Deployment"
     verbose_name_plural = "Slice Deployments"
@@ -765,7 +765,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
-    admin_inlines = [SliceDeploymentsInline]
+    admin_inlines = [SliceDeploymentInline]
 
     user_readonly_fields = fieldList
 
@@ -892,7 +892,7 @@ class ImageAdmin(PlanetStackBaseAdmin):
 
     suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
-    inlines = [SliverInline, ImageDeploymentsInline]
+    inlines = [SliverInline, ImageDeploymentInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 

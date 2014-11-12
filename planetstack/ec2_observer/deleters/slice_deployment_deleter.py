@@ -1,12 +1,12 @@
-from core.models import Slice, SliceDeployments, User
+from core.models import Slice, SliceDeployment, User
 from observer.deleter import Deleter
 from openstack.driver import OpenStackDriver
 
 class SliceDeploymentDeleter(Deleter):
-    model='SliceDeployments'
+    model='SliceDeployment'
 
     def call(self, pk):
-        slice_deployment = SliceDeployments.objects.get(pk=pk)
+        slice_deployment = SliceDeployment.objects.get(pk=pk)
         user = User.objects.get(id=slice_deployment.slice.creator.id)
         driver = OpenStackDriver().admin_driver(deployment=slice_deployment.deployment.name)
         client_driver = driver.client_driver(caller=user,
