@@ -255,12 +255,12 @@ class DeploymentPrivilege(PlCoreBase):
             qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
         return qs 
 
-class SiteDeployments(PlCoreBase):
+class SiteDeployment(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
-    site = models.ForeignKey(Site)
-    deployment = models.ForeignKey(Deployment)
+    site = models.ForeignKey(Site,related_name='sitedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
 
     #class Meta:
