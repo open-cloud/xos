@@ -105,8 +105,8 @@ def get_REST_patterns():
         url(r'plstackapi/dashboardviews/$', DashboardViewList.as_view(), name='dashboardview-list'),
         url(r'plstackapi/dashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name ='dashboardview-detail'),
     
-        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployments-list'),
-        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployments-detail'),
+        url(r'plstackapi/imagedeployments/$', ImageDeploymentList.as_view(), name='imagedeployments-list'),
+        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentDetail.as_view(), name ='imagedeployments-detail'),
     
         url(r'plstackapi/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
         url(r'plstackapi/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
@@ -757,18 +757,18 @@ class DashboardViewIdSerializer(serializers.ModelSerializer):
 
 
 
-class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class ImageDeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployments
+        model = ImageDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
-class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
+class ImageDeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployments
+        model = ImageDeployment
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 
@@ -1234,7 +1234,7 @@ serializerLookUp = {
 
                  DashboardView: DashboardViewSerializer,
 
-                 ImageDeployments: ImageDeploymentsSerializer,
+                 ImageDeployment: ImageDeploymentSerializer,
 
                  ReservedResource: ReservedResourceSerializer,
 
@@ -2709,10 +2709,10 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ImageDeploymentsList(generics.ListCreateAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
+class ImageDeploymentList(generics.ListCreateAPIView):
+    queryset = ImageDeployment.objects.select_related().all()
+    serializer_class = ImageDeploymentSerializer
+    id_serializer_class = ImageDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
@@ -2724,27 +2724,27 @@ class ImageDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
+        return ImageDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
-        obj = ImageDeployments(**request.DATA)
+        obj = ImageDeployment(**request.DATA)
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+            return super(ImageDeploymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(ImageDeploymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
+class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ImageDeployment.objects.select_related().all()
+    serializer_class = ImageDeploymentSerializer
+    id_serializer_class = ImageDeploymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -2754,7 +2754,7 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
+        return ImageDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 

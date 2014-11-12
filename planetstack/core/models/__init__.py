@@ -13,7 +13,7 @@ from .site import DeploymentLinkManager,DeploymentLinkDeletionManager
 from .slice import Slice, SliceDeployment
 from .site import SitePrivilege, SiteDeployment
 from .userdeployments import UserDeployment
-from .image import Image, ImageDeployments
+from .image import Image, ImageDeployment
 from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole

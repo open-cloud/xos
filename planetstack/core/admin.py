@@ -455,8 +455,8 @@ class SliceNetworkInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network']
     readonly_fields = ('backend_status_icon', )
 
-class ImageDeploymentsInline(PlStackTabularInline):
-    model = ImageDeployments
+class ImageDeploymentInline(PlStackTabularInline):
+    model = ImageDeployment
     extra = 0
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
@@ -561,7 +561,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    a better way...
 
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployment, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployment, "deployment", "image")
 
       self.save_m2m()
 
@@ -580,7 +580,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
     fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
@@ -892,7 +892,7 @@ class ImageAdmin(PlanetStackBaseAdmin):
 
     suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
-    inlines = [SliverInline, ImageDeploymentsInline]
+    inlines = [SliverInline, ImageDeploymentInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
