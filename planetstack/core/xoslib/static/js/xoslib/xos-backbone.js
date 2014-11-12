@@ -29,7 +29,12 @@ if (! window.XOSLIB_LOADED ) {
                     var url = this.attributes.resource_uri;
 
                     if (!url) {
-                        url = this.urlRoot + this.id;
+                        if (this.id) {
+                            url = this.urlRoot + this.id;
+                        } else {
+                            // this happens when creating a new model.
+                            url = this.urlRoot;
+                        }
                     }
 
                     if (!url) {
@@ -253,14 +258,17 @@ if (! window.XOSLIB_LOADED ) {
                                                        modelName: "userDeployment"});
         this.userDeployments = new this.userDeploymentCollection();
 
-        this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API, modelName: "deployment" });
+        this.deployment = XOSModel.extend({ urlRoot: DEPLOYMENT_API,
+                                            modelName: "deployment",
+                                            defaults: xosdefaults.deployment });
         this.deploymentCollection = XOSCollection.extend({ urlRoot: DEPLOYMENT_API,
                                                            relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
                                                            model: this.deployment,
                                                            modelName: "deployment"});
         this.deployments = new this.deploymentCollection();
 
-        this.image = XOSModel.extend({ urlRoot: IMAGE_API, modelName: "image" });
+        this.image = XOSModel.extend({ urlRoot: IMAGE_API,
+                                       modelName: "image" });
         this.imageCollection = XOSCollection.extend({ urlRoot: IMAGE_API,
                                                            model: this.image,
                                                            modelName: "image"});
