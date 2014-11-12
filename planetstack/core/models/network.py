@@ -178,8 +178,8 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class NetworkSliver(PlCoreBase):
-    network = models.ForeignKey(Network,relatedname='networkslivers')
-    sliver = models.ForeignKey(Sliver,relatedname='networkslivers')
+    network = models.ForeignKey(Network,related_name='networkslivers')
+    sliver = models.ForeignKey(Sliver,related_name='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
 
