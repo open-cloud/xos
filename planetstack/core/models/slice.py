@@ -102,9 +102,9 @@ class SliceRole(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.role)
 
 class SlicePrivilege(PlCoreBase):
-    user = models.ForeignKey('User', related_name='slice_privileges')
-    slice = models.ForeignKey('Slice', related_name='slice_privileges')
-    role = models.ForeignKey('SliceRole')
+    user = models.ForeignKey('User', related_name='sliceprivileges')
+    slice = models.ForeignKey('Slice', related_name='sliceprivileges')
+    role = models.ForeignKey('SliceRole',related_name='sliceprivileges')
 
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 

@@ -21,7 +21,7 @@ class ReservationAgent:
                 if reservation.endTime <= tNow:
                     print "    deleting expired reservation"
                     reservation.delete()
-                for reservedResource in reservation.reservedResources.all():
+                for reservedResource in reservation.reservedresources.all():
                     sliver_resources = slivers.get(reservedResource.sliver.id, {})
                     sliver_resources[reservedResource.resource.name] = reservedResource.quantity
                     slivers[reservedResource.sliver.id] = sliver_resources

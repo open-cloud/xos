@@ -12,7 +12,7 @@ class DashboardCustomize(View):
             dashboards = [x.strip() for x in dashboards.split(",")]
             dashboards = [DashboardView.objects.get(name=x) for x in dashboards]
 
-        request.user.dashboardViews.all().delete()
+        request.user.userdashboardviews.all().delete()
 
         for i,dashboard in enumerate(dashboards):
             udbv = UserDashboardView(user=request.user, dashboardView=dashboard, order=i)
