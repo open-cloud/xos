@@ -1,4 +1,4 @@
-from core.models import Site, SiteDeployments
+from core.models import Site, SiteDeployment
 from observer.deleter import Deleter
 from observer.deleters.site_deployment_deleter import SiteDeploymentDeleter
 
@@ -7,7 +7,7 @@ class SiteDeleter(Deleter):
     
     def call(self, pk):
         site = Site.objects.get(pk=pk)
-        site_deployments = SiteDeployments.objects.filter(site=site)
+        site_deployments = SiteDeployment.objects.filter(site=site)
         site_deployment_deleter = SiteDeploymentDeleter()
         for site_deployment in site_deployments:
             site_deployment_deleter(site_deployment.id)

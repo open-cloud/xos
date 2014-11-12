@@ -409,7 +409,7 @@ class SitePrivilegeInline(PlStackTabularInline):
         return SitePrivilege.select_by_user(request.user)
 
 class SiteDeploymentInline(PlStackTabularInline):
-    model = SiteDeployments
+    model = SiteDeployment
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['backend_status_icon', 'deployment','site']
@@ -424,7 +424,7 @@ class SiteDeploymentInline(PlStackTabularInline):
         return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        return SiteDeployments.select_by_user(request.user)
+        return SiteDeployment.select_by_user(request.user)
 
 
 class SlicePrivilegeInline(PlStackTabularInline):
@@ -560,7 +560,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployment, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
 
       self.save_m2m()

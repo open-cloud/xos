@@ -39,7 +39,7 @@ class SyncUserDeployments(OpenStackSyncStep):
 	roles = []
 	# setup user deployment home site roles  
         if user_deployment.user.site:
-            site_deployments = SiteDeployments.objects.filter(site=user_deployment.user.site,
+            site_deployments = SiteDeployment.objects.filter(site=user_deployment.user.site,
                                                               deployment=user_deployment.deployment)
             if site_deployments:
                 # need the correct tenant id for site at the deployment
