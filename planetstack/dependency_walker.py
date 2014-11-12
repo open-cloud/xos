@@ -79,6 +79,7 @@ def __walk_deps(fn, object, deps):
 
 			for o in peer_objects:
 				fn(o, object)
+				# Uncomment the following line to enable recursion
 				# walk_inv_deps(fn, o)
 
 def p(x):

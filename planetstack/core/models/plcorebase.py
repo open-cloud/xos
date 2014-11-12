@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 import model_policy
+from model_autodeletion import ephemeral_models
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
@@ -203,7 +204,7 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
 
     @classmethod
     def is_ephemeral(cls):
-	return False
+	return cls in ephemeral_models
 
 
 
