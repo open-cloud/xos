@@ -78,6 +78,8 @@ if (! window.XOSLIB_LOADED ) {
 
         initialize: function(){
           this.isLoaded = false;
+          this.failedLoad = false;
+          this.startedLoad = false;
           this.sortVar = 'name';
           this.sortOrder = 'asc';
           this.on( "sort", this.sorted );
@@ -87,7 +89,7 @@ if (! window.XOSLIB_LOADED ) {
         foreignCollections: [],
 
         sorted: function() {
-            this.isLoaded = true;
+            //console.log("sorted " + this.modelName);
         },
 
         simpleComparator: function( model ){
@@ -111,6 +113,43 @@ if (! window.XOSLIB_LOADED ) {
             } else {
                 return l < r ? -1 : l > r ? 1 : 0;
             }
+        },
+
+        fetchSuccess: function(collection, response, options) {
+            this.failedLoad = false;
+            if (!this.isLoaded) {
+                this.isLoaded = true;
+                Backbone.trigger("xoslib:collectionLoadChange", this);
+            }
+            if (options["orig_success"]) {
+                options["orig_success"](collection, response, options);
+            }
+        },
+
+        fetchFailure: function(collection, response, options) {
+            if ((!this.isLoaded) && (!this.failedLoad)) {
+                this.failedLoad=true;
+                Backbone.trigger("xoslib:collectionLoadChange", this);
+            }
+            if (options["orig_failure"]) {
+                options["orig_failure"](collection, response, options);
+            }
+        },
+
+        fetch: function(options) {
+            var self=this;
+            if (!this.startedLoad) {
+                this.startedLoad=true;
+                Backbone.trigger("xoslib:collectionLoadChange", this);
+            }
+            if (options == undefined) {
+                options = {};
+            }
+            options["orig_success"] = options["success"];
+            options["orig_failure"] = options["failure"];
+            options["success"] = function(collection, response, options) { self.fetchSuccess.call(self, collection, response, options); };
+            options["failure"] = this.fetchFailure;
+            Backbone.Collection.prototype.fetch.call(this, options);
         },
 
         startPolling: function() {
@@ -229,10 +268,12 @@ if (! window.XOSLIB_LOADED ) {
         lib[collectionName] = new lib[collectionClassName]();
 
         lib.allCollectionNames.push(collectionName);
+        lib.allCollections.push(lib[collectionName]);
     };
 
     function xoslib() {
         this.allCollectionNames = [];
+        this.allCollections = [];
 
         define_model(this, {urlRoot: SLIVER_API,
                             relatedCollections: {"networkSlivers": "sliver"},
@@ -303,6 +344,24 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "slicePlus"});
 
         this.listObjects = function() { return this.allCollectionNames; };
+
+        this.getCollectionStatus = function() {
+            stats = {isLoaded: 0, failedLoad: 0, startedLoad: 0};
+            for (index in this.allCollections) {
+                collection = this.allCollections[index];
+                if (collection.isLoaded) {
+                    stats["isLoaded"] = stats["isLoaded"] + 1;
+                }
+                if (collection.failedLoad) {
+                    stats["failedLoad"] = stats["failedLoad"] + 1;
+                }
+                if (collection.startedLoad) {
+                    stats["startedLoad"] = stats["startedLoad"] + 1;
+                }
+            }
+            stats["completedLoad"] = stats["failedLoad"] + stats["isLoaded"];
+            return stats;
+        };
     };
 
     xos = new xoslib();

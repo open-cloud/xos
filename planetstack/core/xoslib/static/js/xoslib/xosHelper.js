@@ -138,40 +138,19 @@ XOSApplication = Marionette.Application.extend({
     detailShower: function(detailName, collection_name, regionName, title) {
         var app=this;
         showModelId = function(model_id) {
-            showModel = function(model) {
+            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
+
+            collection = xos[collection_name];
+            model = collection.get(model_id);
+            if (model == undefined) {
+                app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
+            } else {
                 detailViewClass = app[detailName];
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
                 detailView.showLinkedItems();
                 $("#xos-detail-button-box").show();
                 $("#xos-listview-button-box").hide();
-            }
-
-            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
-
-            collection = xos[collection_name];
-            model = collection.get(model_id);
-            if (model == undefined) {
-                if (!collection.isLoaded) {
-                    // If the model cannot be found, then maybe it's because
-                    // we haven't finished loading the collection yet. So wait for
-                    // the sort event to complete, then try again.
-                    collection.once("sort", function() {
-                        collection = xos[collection_name];
-                        model = collection.get(model_id);
-                        if (model == undefined) {
-                            // We tried. It's not here. Complain to the user.
-                            app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
-                        } else {
-                            showModel(model);
-                        }
-                    });
-                } else {
-                    // The collection was loaded, the user must just be asking for something we don't have.
-                    app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
-                }
-            } else {
-                showModel(model);
             }
         }
         return showModelId;

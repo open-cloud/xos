@@ -134,6 +134,24 @@ XOSAdminApp.rewriteLinks = function () {
     });
 };
 
+XOSAdminApp.startNavigation = function() {
+    Backbone.history.start();
+    XOSAdminApp.navigationStarted = true;
+}
+
+XOSAdminApp.collectionLoadChange = function() {
+    stats = xos.getCollectionStatus();
+
+    if (!XOSAdminApp.navigationStarted) {
+        if (stats["isLoaded"] + stats["failedLoad"] >= stats["startedLoad"]) {
+            XOSAdminApp.startNavigation();
+        } else {
+            $("#detail").html("<h3>Loading...</h3><div id='xos-startup-progress'></div>");
+            $("#xos-startup-progress").progressbar({value: stats["completedLoad"], max: stats["startedLoad"]});
+        }
+    }
+};
+
 XOSAdminApp.on("start", function() {
      XOSAdminApp.buildViews();
 
@@ -143,10 +161,11 @@ XOSAdminApp.on("start", function() {
 
      XOSAdminApp.rewriteLinks();
 
-     if (Backbone.history) {
-         console.log("history start");
-         Backbone.history.start();
-     }
+     // fire it once to initially show the progress bar
+     XOSAdminApp.collectionLoadChange();
+
+     // fire it each time the collection load status is updated
+     Backbone.on("xoslib:collectionLoadChange", XOSAdminApp.collectionLoadChange);
 });
 
 $(document).ready(function(){
