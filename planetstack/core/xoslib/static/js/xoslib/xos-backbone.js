@@ -3,8 +3,6 @@ if (! window.XOSLIB_LOADED ) {
 
     SLIVER_API = "/plstackapi/slivers/";
     SLICE_API = "/plstackapi/slices/";
-    SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
-    SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
     SLICEROLE_API = "/plstackapi/slice_roles/";
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
@@ -13,10 +11,19 @@ if (! window.XOSLIB_LOADED ) {
     DEPLOYMENT_API = "/plstackapi/deployments/";
     IMAGE_API = "/plstackapi/images/";
     NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
-    NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
     NETWORK_API = "/plstackapi/networks/";
     NETWORKSLIVER_API = "/plstackapi/networkslivers/";
     SERVICE_API = "/plstackapi/services/";
+    SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
+    NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
+
+    /* changed as a side effect of the big rename
+    SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
+    USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
+    */
+
+    SLICEDEPLOYMENT_API = "/plstackapi/slicedeployments/";
+    USERDEPLOYMENT_API = "/plstackapi/userdeployments/";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
 
