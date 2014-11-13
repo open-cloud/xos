@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.27
-Release: 3
+Version: 1.0.28
+Release: 2
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
