@@ -35,13 +35,13 @@ def handle(slice):
 			private_net = network
 	if not public_nets:
                 # ensure there is at least one public network, and default it to dedicated
-		dedicated_public_net = Network(
-          	    name = slice.name+'-public',
-             	    template = NetworkTemplate.objects.get(name='Public dedicated IPv4'),
+		nat_net = Network(
+          	    name = slice.name+'-nat',
+             	    template = NetworkTemplate.objects.get(name='Public shared IPv4'),
           	    owner = slice
       		    )
-		dedicated_public_net.save()
-                public_nets.append(dedicated_public_net)
+		nat_net.save()
+                public_nets.append(nat_net)
 
 	if not private_net:
         	private_net = Network(
