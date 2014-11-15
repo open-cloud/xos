@@ -433,12 +433,12 @@ class OpenStackDriver:
         
         # determine availability zone and compute host 
         availability_zone_filter = None
-        if not availability_zone:
+        if availability_zone is None or not availability_zone:
             availability_zone_filter = 'nova'
         else: 
             availability_zone_filter = availability_zone
         if hostname:
-            availability_zone_filter += ':%s' % hostname.split('.')[0]
+            availability_zone_filter += ':%s' % hostname
 
         server = self.shell.nova.servers.create(
                                             name=name,

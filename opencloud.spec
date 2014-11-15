@@ -104,13 +104,6 @@ comm -13 %{_tmppath}/config-files.sorted %{_tmppath}/tmp-filelist.sorted > %{_tm
 
 cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
 
-# Clone ansible with latest openstack modules
-git clone --recursive git://github.com/ansible/ansible.git /opt/ansible
-mkdir -p /etc/ansible
-echo > /etc/ansible/hosts << "EOF"
-[localhost]
-127.0.0.1
-EOF
 
 %clean
 rm -rf %{buildroot}
@@ -119,6 +112,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %config /opt/planetstack/plstackapi_config
 %config /opt/planetstack/deployment_auth.py
+%config /opt/planetstack/model-deps
 
 %post
 ln -s ec2_observer /opt/planetstack/observer
@@ -137,6 +131,15 @@ else
     echo "UPGRADE - doing evolution/migration"
     /opt/planetstack/scripts/opencloud evolvedb
 fi
+
+# Clone ansible with latest openstack modules
+git clone --recursive git://github.com/ansible/ansible.git /opt/ansible
+mkdir -p /etc/ansible
+echo > /etc/ansible/hosts << "EOF"
+[localhost]
+127.0.0.1
+EOF
+
 
 # start the server
 /opt/planetstack/scripts/opencloud runserver

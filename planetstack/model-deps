@@ -1,0 +1,104 @@
+{
+    "Slice": [
+        "Site", 
+        "Service", 
+        "ServiceClass"
+    ], 
+    "ImageDeployments": [
+        "Image", 
+        "Deployment"
+    ], 
+    "ReservedResource": [
+        "Sliver"
+    ], 
+    "NetworkSlice": [
+        "Network", 
+        "Slice"
+    ], 
+    "Charge": [
+        "Account", 
+        "Slice", 
+        "Invoice"
+    ], 
+    "SliceDeployments": [
+        "Slice", 
+        "Deployment"
+    ], 
+    "Sliver": [
+        "Image", 
+        "Slice", 
+        "Node"
+    ], 
+    "Node": [
+        "Site", 
+        "Deployment"
+    ], 
+    "UserDashboardView": [
+        "User", 
+        "DashboardView"
+    ], 
+    "Tag": [
+        "Service"
+    ], 
+    "User": [
+        "Site"
+    ], 
+    "SliceTag": [
+        "Slice"
+    ], 
+    "Reservation": [
+        "Slice"
+    ], 
+    "ServiceResource": [
+        "ServiceClass"
+    ], 
+    "Payment": [
+        "Account"
+    ], 
+    "UserDeployments": [
+        "User", 
+        "Deployment"
+    ], 
+    "Account": [
+        "Site"
+    ], 
+    "ServiceAttribute": [
+        "Service"
+    ], 
+    "SlicePrivilege": [
+        "User", 
+        "Slice", 
+        "Role"
+    ], 
+    "NetworkSliver": [
+        "Network", 
+        "Sliver"
+    ], 
+    "SitePrivilege": [
+        "User", 
+        "Site", 
+        "Role"
+    ], 
+    "NetworkDeployments": [
+        "Network", 
+        "Deployment",
+		"SliceDeployments"
+    ], 
+    "SiteDeployments": [
+        "Site", 
+        "Deployment"
+    ], 
+    "DeploymentPrivilege": [
+        "User", 
+        "Deployment", 
+        "Role"
+    ], 
+    "PlanetStackPrivilege": [
+        "User", 
+        "PlanetStack", 
+        "Role"
+    ], 
+    "Invoice": [
+        "Account"
+    ]
+}
