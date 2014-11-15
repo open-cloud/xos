@@ -37,7 +37,7 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showSuccess: function(result) {
-         result["success"] = "success";
+         result["statusclass"] = "success";
          if (this.logTableId) {
              this.appendLogWindow(result);
          } else {
@@ -51,7 +51,7 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showError: function(result) {
-         result["success"] = "failure";
+         result["statusclass"] = "failure";
          if (this.logTableId) {
              this.appendLogWindow(result);
          } else {
@@ -65,7 +65,7 @@ XOSApplication = Marionette.Application.extend({
     },
 
     showInformational: function(result) {
-         result["success"] = "information";
+         result["statusclass"] = "inprog";
          if (this.logTableId) {
              return this.appendLogWindow(result);
          } else {
@@ -203,6 +203,8 @@ XOSDetailView = Marionette.ItemView.extend({
                 console.log("saveLeave");
                 e.preventDefault();
                 this.save();
+                this.app.Router.navigate(this.listNavLink, {trigger: true});
+                console.log("route to " + this.listNavLink);
             },
 
             submitAddAnotherClicked: function(e) {

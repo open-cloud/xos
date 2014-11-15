@@ -10,8 +10,16 @@
     display: none;
 }
 
-#logPanel {
-    display: none;
+#logTable {
+    width: 100%;
+}
+
+#logTable tr {
+  border-bottom: 1px solid;
+}
+
+#logTable tr:last-child {
+  border-bottom: none;
 }
 
 #contentButtonPanel {

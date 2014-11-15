@@ -14,6 +14,14 @@
 <script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
 <script src="{{ STATIC_URL }}/js/xosAdminSite.js"></script>
 
+<script type="text/template" id="xos-log-template">
+  <tr id="<%= logMessageId %>" class="xos-log xos-<%= statusclass %>">
+     <td><%= what %><br>
+         <%= status %> <%= statusText %>
+     </td>
+  </tr>
+</script>
+
 <div id="contentPanel">
 <div id="contentTitle">
 </div>
@@ -30,6 +38,12 @@
 <div class="box save-box" id="xos-listview-button-box">
 <button class="btn btn-high btn-success btn-xos-contentButtonPanel" onclick="$('button.btn-xos-add').click()">Add</button>
 </div>
+<div class="box" id="logPanel">
+<table id="logTable">
+<tbody>
+</tbody>
+</table> <!-- end logTable -->
+</div> <!-- end logPanel -->
 </div> <!-- end contentButtonPanel -->
 <div id="contentInner">
 <div id="tabs">
@@ -41,16 +55,5 @@
 <div id="linkedObjs4"></div>
 </div> <!-- end contentInner -->
 </div> <!-- end contentPanel -->
-
-<div id="logPanel">
-<table id="logTable">
-<thead>
-<tr><th>status</th><th>operation</th><th>code</th><th>message</th></tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-
-</div>
 
 {% include 'xosAdmin.html' %}
