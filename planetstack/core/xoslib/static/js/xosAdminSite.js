@@ -56,10 +56,12 @@ XOSAdminApp.buildViews = function() {
          collection_name = name + "s";
          region_name = name + "List";
          detailNavLink = collection_name;
+         listNavLink = collection_name;
 
          detailClass = XOSDetailView.extend({
             template: detail_template,
             app: XOSAdminApp,
+            listNavLink: listNavLink,
          });
          XOSAdminApp[collection_name + "DetailView"] = detailClass;
 

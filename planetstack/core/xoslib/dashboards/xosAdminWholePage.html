@@ -14,6 +14,14 @@
 <script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
 <script src="{{ STATIC_URL }}/js/xosAdminSite.js"></script>
 
+<script type="text/template" id="xos-log-template">
+  <tr id="<%= logMessageId %>" class="xos-log xos-<%= statusclass %>">
+     <td><%= what %></td>
+     <td><%= status %></td>
+     <td><%= statusText %></td>
+  </tr>
+</script>
+
 <div id="headerPanel">
 {% include 'xosAdminHeader.html' %}
 </div>
