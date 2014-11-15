@@ -6,8 +6,17 @@
     color:blue;
     text-decoration:underline;
 }
-#logTable td, th {
-    border: 1px solid black;
+
+.xos-log.xos-success {
+    background-color: #00ff00;
+}
+
+.xos-log.xos-inprog {
+    background-color: #ffff00;
+}
+
+.xos-log.xos-failure {
+    background-color: #ff0000;
 }
 
 .btn-xosnav {
@@ -81,4 +90,5 @@
 #xos-listview-button-box {
     display: none;
 }
+
 
