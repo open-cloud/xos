@@ -65,6 +65,8 @@ def ValidateNatList(ports):
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
     TRANSLATION_CHOICES = (('none', 'none'), ('NAT', 'NAT'))
+    TOPOLOGY_CHOICES = (('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))
+    CONTROLLER_CHOICES = ((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))
 
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
@@ -73,6 +75,8 @@ class NetworkTemplate(PlCoreBase):
     translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
     sharedNetworkName = models.CharField(max_length=30, blank=True, null=True)
     sharedNetworkId = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    topologyKind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
+    controllerKind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -89,6 +93,9 @@ class Network(PlCoreBase):
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
     slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
     slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
+
+    topologyParameters = models.TextField(null=True, blank=True)
+    controllerParameters = models.TextField(null=True, blank=True)
 
     # for observer/manager
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
