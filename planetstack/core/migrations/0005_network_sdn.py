@@ -35,4 +35,10 @@ class Migration(migrations.Migration):
             field=models.CharField(default=b'BigSwitch', max_length=30, choices=[(b'bigswitch', b'BigSwitch'), (b'physical', b'Physical'), (b'custom', b'Custom')]),
             preserve_default=True,
         ),
+        migrations.AddField(
+            model_name='network',
+            name='controllerUrl',
+            field=models.CharField(max_length=1024, null=True, blank=True),
+            preserve_default=True,
+        ),
     ]
