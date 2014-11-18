@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.admin.widgets import FilteredSelectMultiple, AdminTextareaWidget
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, AdminPasswordChangeForm
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
@@ -15,6 +15,9 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.html import conditional_escape, format_html
+from django.forms.utils import flatatt, to_current_timezone
 from cgi import escape as html_escape
 
 import django_evolution
@@ -39,6 +42,17 @@ def backend_text(obj):
         return "%s %s" % (icon, "successfully enacted")
     else:
         return "%s %s" % (icon, html_escape(obj.backend_status, quote=True))
+
+class UploadTextareaWidget(AdminTextareaWidget):
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        final_attrs = self.build_attrs(attrs, name=name)
+        return format_html('<input type="file" style="width: 0; height: 0" id="btn_upload_%s" onChange="uploadTextarea(event,\'%s\');">' \
+                           '<button onClick="$(\'#btn_upload_%s\').click(); return false;">Upload</button>' \
+                           '<br><textarea{0}>\r\n{1}</textarea>' % (attrs["id"], attrs["id"], attrs["id"]),
+                           flatatt(final_attrs),
+                           force_text(value))
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -508,8 +522,8 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
-        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments.all()]
+        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
@@ -560,8 +574,8 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployment, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployment, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployment, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployment, "deployment", "image")
 
       self.save_m2m()
 
@@ -1041,6 +1055,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
+        widgets = { 'public_key': UploadTextareaWidget, }
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -1333,6 +1348,14 @@ class NetworkDeploymentsInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'deployment','net_id','subnet_id']
     readonly_fields = ('backend_status_icon', )
 
+class NetworkForm(forms.ModelForm):
+    class Meta:
+        model = Network
+        widgets = {
+            'topologyParameters': UploadTextareaWidget,
+            'controllerParameters': UploadTextareaWidget,
+        }
+
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
@@ -1340,6 +1363,8 @@ class NetworkAdmin(PlanetStackBaseAdmin):
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [NetworkDeploymentsInline]
+
+    form=NetworkForm
 
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'],
