@@ -1342,7 +1342,11 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     admin_inlines = [NetworkDeploymentsInline]
 
     fieldsets = [
-        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'],
+                'classes':['suit-tab suit-tab-general']}),
+        (None, {'fields': ['topologyParameters', 'controllerParameters'],
+                'classes':['suit-tab suit-tab-sdn']}),
+                ]
 
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
@@ -1350,6 +1354,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     @property
     def suit_form_tabs(self):
         tabs=[('general','Network Details'),
+            ('sdn', 'SDN Configuration'),
             ('netparams', 'Parameters'),
             ('networkslivers','Slivers'),
             ('networkslices','Slices'),
@@ -1368,6 +1373,10 @@ class NetworkTemplateAdmin(PlanetStackBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
     user_readonly_inlines = []
+    fieldsets = [
+        (None, {'fields': ['name', 'description', 'guaranteedBandwidth', 'visibility', 'translation', 'sharedNetworkName', 'sharedNetworkId', 'topologyKind', 'controllerKind'],
+                'classes':['suit-tab suit-tab-general']}),]
+    suit_form_tabs = (('general','Network Template Details'), )
 
 class FlavorAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "flavor", "order", "default")
