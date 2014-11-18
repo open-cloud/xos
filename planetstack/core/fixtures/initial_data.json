@@ -770,7 +770,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:28.687Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 19
 },
 {
@@ -784,7 +784,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:34.657Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 20
 },
 {
@@ -798,7 +798,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:40.604Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 21
 },
 {
@@ -812,7 +812,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:47.047Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 22
 },
 {
@@ -826,7 +826,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-08-08T03:49:32.318Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 27
 },
 {
@@ -840,7 +840,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:03.289Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 28
 },
 {
@@ -854,7 +854,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:07.804Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 29
 },
 {
@@ -868,7 +868,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:12.521Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 30
 },
 {
@@ -882,7 +882,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 31
 },
 {
@@ -896,7 +896,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 32
 },
 {
@@ -910,7 +910,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 33
 },
 {
@@ -924,7 +924,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 34
 },
 {
@@ -938,7 +938,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 35
 },
 {
@@ -952,7 +952,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 36
 },
 {
@@ -966,7 +966,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 37
 },
 {
@@ -980,7 +980,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 38
 },
 {
@@ -994,7 +994,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 39
 },
 {
@@ -1008,7 +1008,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 40
 },
 {
@@ -1022,7 +1022,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 41
 },
 {
@@ -1036,7 +1036,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 42
 },
 {
@@ -1050,7 +1050,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 43
 },
 {
@@ -1064,7 +1064,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 44
 },
 {
@@ -1078,7 +1078,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 45
 },
 {
@@ -1092,7 +1092,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 46
 },
 {
@@ -1106,7 +1106,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 47
 },
 {
@@ -1120,7 +1120,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 48
 },
 {
@@ -2580,7 +2580,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-19T21:27:13.213Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 520
 },
 {
@@ -2597,7 +2597,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-19T21:20:51.267Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 523
 },
 {
@@ -2614,7 +2614,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:52:25.434Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 527
 },
 {
@@ -2631,7 +2631,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:52:07.509Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 530
 },
 {
@@ -2648,7 +2648,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:52:58.664Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 601
 },
 {
@@ -2665,7 +2665,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:53:13.181Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 604
 },
 {
@@ -2682,7 +2682,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-23T19:08:33.215Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 636
 },
 {
@@ -2699,7 +2699,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-23T19:08:29.878Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 639
 },
 {
@@ -2716,7 +2716,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:53:14.182Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 652
 },
 {
@@ -2733,7 +2733,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:53:47.081Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 660
 },
 {
@@ -2750,7 +2750,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-23T19:08:35.265Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 661
 },
 {
@@ -2767,7 +2767,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-19T21:24:10.263Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 663
 },
 {
@@ -2784,7 +2784,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-19T21:26:56.547Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 696
 },
 {
@@ -2801,7 +2801,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-30T22:45:16.802Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 717
 },
 {
@@ -2818,7 +2818,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-30T22:45:06.606Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 718
 },
 {
@@ -2835,7 +2835,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-30T22:45:26.987Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 724
 },
 {
@@ -2852,7 +2852,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:57:49.519Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 735
 },
 {
@@ -2869,7 +2869,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:58:00.648Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 736
 },
 {
@@ -2886,7 +2886,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:00:10.998Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 741
 },
 {
@@ -2903,7 +2903,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:00:45.917Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 771
 },
 {
@@ -2920,7 +2920,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:00:46.958Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 772
 },
 {
@@ -2937,7 +2937,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:01:25.823Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 777
 },
 {
@@ -2954,7 +2954,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:54:10.312Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 780
 },
 {
@@ -2971,7 +2971,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:54:16.599Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 781
 },
 {
@@ -2988,7 +2988,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:55:11.345Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 786
 },
 {
@@ -3005,7 +3005,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-10T15:00:36.737Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 881
 },
 {
@@ -3022,7 +3022,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-10T15:00:26.523Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 882
 },
 {
@@ -3039,7 +3039,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-10T15:00:27.706Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 887
 },
 {
@@ -3056,7 +3056,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:03:58.881Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 892
 },
 {
@@ -3073,7 +3073,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:04:00.105Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 893
 },
 {
@@ -3090,7 +3090,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T19:04:33.113Z"
     },
-    "model": "core.slicedeployments",
+    "model": "core.slicedeployment",
     "pk": 898
 },
 {
@@ -3104,7 +3104,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:33.598Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185099
 },
 {
@@ -3118,7 +3118,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:55:21.096Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185102
 },
 {
@@ -3132,7 +3132,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:36.933Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185106
 },
 {
@@ -3146,7 +3146,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:55:58.261Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185109
 },
 {
@@ -3160,7 +3160,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:38.018Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185113
 },
 {
@@ -3174,7 +3174,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:56:36.095Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185116
 },
 {
@@ -3188,7 +3188,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:39.215Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185120
 },
 {
@@ -3202,7 +3202,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:57:15.536Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185123
 },
 {
@@ -3216,7 +3216,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:34.751Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185127
 },
 {
@@ -3230,7 +3230,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-07-29T13:40:15.324Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185130
 },
 {
@@ -3244,7 +3244,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:40.261Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185134
 },
 {
@@ -3258,7 +3258,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:58:30.143Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185137
 },
 {
@@ -3272,7 +3272,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:41.316Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185141
 },
 {
@@ -3286,7 +3286,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:59:08.467Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185144
 },
 {
@@ -3300,7 +3300,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:42.417Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185148
 },
 {
@@ -3314,7 +3314,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T02:59:46.257Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185151
 },
 {
@@ -3328,7 +3328,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:43.471Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185155
 },
 {
@@ -3342,7 +3342,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:00:26.396Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185158
 },
 {
@@ -3356,7 +3356,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:44.511Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185162
 },
 {
@@ -3370,7 +3370,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:01:08.304Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185165
 },
 {
@@ -3384,7 +3384,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:45.586Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185169
 },
 {
@@ -3398,7 +3398,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:01:48.161Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185172
 },
 {
@@ -3412,7 +3412,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-22T19:32:36.146Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185176
 },
 {
@@ -3426,7 +3426,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-22T19:31:19.005Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185179
 },
 {
@@ -3440,7 +3440,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:47.749Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185183
 },
 {
@@ -3454,7 +3454,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:03:09.169Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185186
 },
 {
@@ -3468,7 +3468,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:49.836Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185211
 },
 {
@@ -3482,7 +3482,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:05:53.743Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185214
 },
 {
@@ -3496,7 +3496,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:51.963Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185239
 },
 {
@@ -3510,7 +3510,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:08:40.668Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185242
 },
 {
@@ -3524,7 +3524,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:47:30.210Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185253
 },
 {
@@ -3538,7 +3538,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-10-09T18:47:38.413Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185256
 },
 {
@@ -3552,7 +3552,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:55.140Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185358
 },
 {
@@ -3566,7 +3566,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-27T15:44:13.460Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185361
 },
 {
@@ -3580,7 +3580,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:58.936Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185379
 },
 {
@@ -3594,7 +3594,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:22:28.026Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185382
 },
 {
@@ -3608,7 +3608,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:38:59.965Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185386
 },
 {
@@ -3622,7 +3622,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T03:23:07.843Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185389
 },
 {
@@ -3636,7 +3636,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:03.731Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185442
 },
 {
@@ -3650,7 +3650,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-27T15:50:49.245Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185445
 },
 {
@@ -3664,7 +3664,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-24T00:09:34.526Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185451
 },
 {
@@ -3678,7 +3678,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-09-24T00:09:33.726Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185454
 },
 {
@@ -3692,7 +3692,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:05.767Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185459
 },
 {
@@ -3706,7 +3706,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-07-29T13:43:41.976Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185462
 },
 {
@@ -3720,7 +3720,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:06.918Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185467
 },
 {
@@ -3734,7 +3734,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:07.933Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185468
 },
 {
@@ -3748,7 +3748,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:08.997Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185469
 },
 {
@@ -3762,7 +3762,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:09.999Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185470
 },
 {
@@ -3776,7 +3776,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:11.106Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185471
 },
 {
@@ -3790,7 +3790,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:12.146Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185472
 },
 {
@@ -3804,7 +3804,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:13.227Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185473
 },
 {
@@ -3818,7 +3818,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:14.246Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185474
 },
 {
@@ -3832,7 +3832,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-22T19:32:28.094Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185475
 },
 {
@@ -3846,7 +3846,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:16.350Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185476
 },
 {
@@ -3860,7 +3860,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:18.390Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185478
 },
 {
@@ -3874,7 +3874,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:19.525Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185479
 },
 {
@@ -3888,7 +3888,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:20.525Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185480
 },
 {
@@ -3902,7 +3902,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:21.543Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185481
 },
 {
@@ -3916,7 +3916,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-10-09T18:48:00.563Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185484
 },
 {
@@ -3930,7 +3930,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:27.998Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185487
 },
 {
@@ -3944,7 +3944,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-24T00:13:03.459Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185488
 },
 {
@@ -3958,7 +3958,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:30.011Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185489
 },
 {
@@ -3972,7 +3972,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:32.060Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185491
 },
 {
@@ -3986,7 +3986,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:33.185Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185492
 },
 {
@@ -4000,7 +4000,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:34.216Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185493
 },
 {
@@ -4014,7 +4014,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-09-10T06:39:35.255Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185494
 },
 {
@@ -4028,7 +4028,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-08T00:17:29.844Z"
     },
-    "model": "core.userdeployments",
+    "model": "core.userdeployment",
     "pk": 185505
 },
 {
@@ -4207,7 +4207,7 @@
         "glance_image_id": null,
         "enacted": "2014-05-07T02:18:19.218Z"
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 22
 },
 {
@@ -4221,7 +4221,7 @@
         "glance_image_id": null,
         "enacted": "2014-05-07T02:18:19.707Z"
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 23
 },
 {
@@ -4235,7 +4235,7 @@
         "glance_image_id": null,
         "enacted": "2014-05-07T02:18:11.651Z"
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 30
 },
 {
@@ -4249,7 +4249,7 @@
         "glance_image_id": null,
         "enacted": "2014-05-07T02:18:13.042Z"
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 31
 },
 {
@@ -4263,7 +4263,7 @@
         "glance_image_id": null,
         "enacted": null
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 104
 },
 {
@@ -4277,7 +4277,7 @@
         "glance_image_id": null,
         "enacted": null
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 105
 },
 {
@@ -4291,7 +4291,7 @@
         "glance_image_id": null,
         "enacted": null
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 107
 },
 {
@@ -4305,7 +4305,7 @@
         "glance_image_id": null,
         "enacted": null
     },
-    "model": "core.imagedeployments",
+    "model": "core.imagedeployment",
     "pk": 108
 },
 {
