@@ -95,6 +95,7 @@ class Network(PlCoreBase):
     slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
 
     topologyParameters = models.TextField(null=True, blank=True)
+    controllerUrl = models.CharField(null=True, blank=True, max_length=1024)
     controllerParameters = models.TextField(null=True, blank=True)
 
     # for observer/manager
