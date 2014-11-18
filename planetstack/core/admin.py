@@ -1344,7 +1344,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'],
                 'classes':['suit-tab suit-tab-general']}),
-        (None, {'fields': ['topologyParameters', 'controllerParameters'],
+        (None, {'fields': ['topologyParameters', 'controllerUrl', 'controllerParameters'],
                 'classes':['suit-tab suit-tab-sdn']}),
                 ]
 
