@@ -1,0 +1,17 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - nova_compute:
+       state: present
+       auth_url: http://172.31.38.128:5000/v2.0/
+       login_username: admin
+       login_password: 6a789bf69dd647e2
+       login_tenant_name: admin
+       name: gloopy
+       image_id: 3ee851df-b35a-41c5-8551-f681e7209095
+       key_name: boo
+       wait_for: 200
+       flavor_id: 3
+       nics:
+         - net-id: d1de537b-80dc-4c1b-aa5f-4a197b33b5f6
