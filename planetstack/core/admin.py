@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.admin.widgets import FilteredSelectMultiple, AdminTextareaWidget
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, AdminPasswordChangeForm
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
@@ -15,6 +15,9 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.html import conditional_escape, format_html
+from django.forms.utils import flatatt, to_current_timezone
 from cgi import escape as html_escape
 
 import django_evolution
@@ -39,6 +42,17 @@ def backend_text(obj):
         return "%s %s" % (icon, "successfully enacted")
     else:
         return "%s %s" % (icon, html_escape(obj.backend_status, quote=True))
+
+class UploadTextareaWidget(AdminTextareaWidget):
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        final_attrs = self.build_attrs(attrs, name=name)
+        return format_html('<input type="file" style="width: 0; height: 0" id="btn_upload_%s" onChange="uploadTextarea(event,\'%s\');">' \
+                           '<button onClick="$(\'#btn_upload_%s\').click(); return false;">Upload</button>' \
+                           '<br><textarea{0}>\r\n{1}</textarea>' % (attrs["id"], attrs["id"], attrs["id"]),
+                           flatatt(final_attrs),
+                           force_text(value))
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -408,8 +422,8 @@ class SitePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
-class SiteDeploymentInline(PlStackTabularInline):
-    model = SiteDeployment
+class SiteDeploymentsInline(PlStackTabularInline):
+    model = SiteDeployments
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['backend_status_icon', 'deployment','site']
@@ -421,10 +435,10 @@ class SiteDeploymentInline(PlStackTabularInline):
 
         if db_field.name == 'deployment':
             kwargs['queryset'] = Deployment.select_by_user(request.user)
-        return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(SiteDeploymentsInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        return SiteDeployment.select_by_user(request.user)
+        return SiteDeployments.select_by_user(request.user)
 
 
 class SlicePrivilegeInline(PlStackTabularInline):
@@ -455,8 +469,8 @@ class SliceNetworkInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network']
     readonly_fields = ('backend_status_icon', )
 
-class ImageDeploymentInline(PlStackTabularInline):
-    model = ImageDeployment
+class ImageDeploymentsInline(PlStackTabularInline):
+    model = ImageDeployments
     extra = 0
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
@@ -508,8 +522,8 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
-        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments.all()]
+        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
@@ -560,8 +574,8 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployment, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployment, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
 
       self.save_m2m()
 
@@ -580,7 +594,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
     fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
@@ -647,7 +661,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentInline]
+    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentsInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -748,8 +762,8 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class SliceDeploymentInline(PlStackTabularInline):
-    model = SliceDeployment
+class SliceDeploymentsInline(PlStackTabularInline):
+    model = SliceDeployments
     extra = 0
     verbose_name = "Slice Deployment"
     verbose_name_plural = "Slice Deployments"
@@ -765,7 +779,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
-    admin_inlines = [SliceDeploymentInline]
+    admin_inlines = [SliceDeploymentsInline]
 
     user_readonly_fields = fieldList
 
@@ -892,7 +906,7 @@ class ImageAdmin(PlanetStackBaseAdmin):
 
     suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
-    inlines = [SliverInline, ImageDeploymentInline]
+    inlines = [SliverInline, ImageDeploymentsInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
@@ -1041,6 +1055,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
+        widgets = { 'public_key': UploadTextareaWidget, }
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -1333,6 +1348,14 @@ class NetworkDeploymentsInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'deployment','net_id','subnet_id']
     readonly_fields = ('backend_status_icon', )
 
+class NetworkForm(forms.ModelForm):
+    class Meta:
+        model = Network
+        widgets = {
+            'topologyParameters': UploadTextareaWidget,
+            'controllerParameters': UploadTextareaWidget,
+        }
+
 class NetworkAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
@@ -1341,8 +1364,14 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [NetworkDeploymentsInline]
 
+    form=NetworkForm
+
     fieldsets = [
-        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'], 'classes':['suit-tab suit-tab-general']}),]
+        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet'],
+                'classes':['suit-tab suit-tab-general']}),
+        (None, {'fields': ['topologyParameters', 'controllerUrl', 'controllerParameters'],
+                'classes':['suit-tab suit-tab-sdn']}),
+                ]
 
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name','template','ports','labels','owner','guaranteedBandwidth', 'permitAllSlices','permittedSlices','network_id','router_id','subnet_id','subnet']
@@ -1350,6 +1379,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     @property
     def suit_form_tabs(self):
         tabs=[('general','Network Details'),
+            ('sdn', 'SDN Configuration'),
             ('netparams', 'Parameters'),
             ('networkslivers','Slivers'),
             ('networkslices','Slices'),
@@ -1368,6 +1398,10 @@ class NetworkTemplateAdmin(PlanetStackBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
     user_readonly_inlines = []
+    fieldsets = [
+        (None, {'fields': ['name', 'description', 'guaranteedBandwidth', 'visibility', 'translation', 'sharedNetworkName', 'sharedNetworkId', 'topologyKind', 'controllerKind'],
+                'classes':['suit-tab suit-tab-general']}),]
+    suit_form_tabs = (('general','Network Template Details'), )
 
 class FlavorAdmin(PlanetStackBaseAdmin):
     list_display = ("backend_status_icon", "name", "flavor", "order", "default")

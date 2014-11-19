@@ -5,7 +5,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from ec2_observer.syncstep import SyncStep
 from core.models.sliver import Sliver
-from core.models.slice import SlicePrivilege, SliceDeployment
+from core.models.slice import SlicePrivilege, SliceDeployments
 from core.models.network import Network, NetworkSlice, NetworkDeployments
 from util.logger import Logger, logging
 from ec2_observer.awslib import *
@@ -30,7 +30,7 @@ class SyncSlivers(SyncStep):
         my_slivers = [] 
 
         for sliver in all_slivers:
-            sd = SliceDeployment.objects.filter(Q(slice=sliver.slice))
+            sd = SliceDeployments.objects.filter(Q(slice=sliver.slice))
             if (sd):
                 if (sd.deployment.name=='Amazon EC2'):
                     my_slivers.append(sliver)

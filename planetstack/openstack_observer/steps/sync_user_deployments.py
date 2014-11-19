@@ -5,25 +5,25 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import SiteDeployment, Deployment
+from core.models.site import SiteDeployments, Deployment
 from core.models.user import User
-from core.models.userdeployments import UserDeployment
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncUserDeployment(OpenStackSyncStep):
-    provides=[UserDeployment, User]
+class SyncUserDeployments(OpenStackSyncStep):
+    provides=[UserDeployments, User]
     requested_interval=0
 
     def fetch_pending(self, deleted):
 
         if (deleted):
-            return UserDeployment.deleted_objects.all()
+            return UserDeployments.deleted_objects.all()
         else:
-            return UserDeployment.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
+            return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
@@ -39,7 +39,7 @@ class SyncUserDeployment(OpenStackSyncStep):
 	roles = []
 	# setup user deployment home site roles  
         if user_deployment.user.site:
-            site_deployments = SiteDeployment.objects.filter(site=user_deployment.user.site,
+            site_deployments = SiteDeployments.objects.filter(site=user_deployment.user.site,
                                                               deployment=user_deployment.deployment)
             if site_deployments:
                 # need the correct tenant id for site at the deployment
@@ -50,7 +50,7 @@ class SyncUserDeployment(OpenStackSyncStep):
                 if user_deployment.user.is_admin:
                     roles.append('admin')
 	    else:
-		raise Exception('Internal error. Missing SiteDeployment for user %s'%user_deployment.user.email)
+		raise Exception('Internal error. Missing SiteDeployments for user %s'%user_deployment.user.email)
 	else:
 	    raise Exception('Siteless user %s'%user_deployment.user.email)
 
