@@ -7,23 +7,23 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import SiteDeployments, Deployment
 from core.models.user import User
-from core.models.userdeployments import UserDeployment
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncUserDeployment(OpenStackSyncStep):
-    provides=[UserDeployment, User]
+class SyncUserDeployments(OpenStackSyncStep):
+    provides=[UserDeployments, User]
     requested_interval=0
 
     def fetch_pending(self, deleted):
 
         if (deleted):
-            return UserDeployment.deleted_objects.all()
+            return UserDeployments.deleted_objects.all()
         else:
-            return UserDeployment.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
+            return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, user_deployment):
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))

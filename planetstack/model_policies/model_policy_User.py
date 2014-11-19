@@ -1,7 +1,7 @@
 from core.models import *
 
 def handle(user):
-	from core.models import Deployment,SiteDeployments,UserDeployment
+	from core.models import Deployment,SiteDeployments,UserDeployments
 	from collections import defaultdict
 	deployments = Deployment.objects.all()
 	site_deployments = SiteDeployments.objects.all()
@@ -10,7 +10,7 @@ def handle(user):
 		site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
 
 	user_deploy_lookup = defaultdict(list)
-	for user_deployment in UserDeployment.objects.all():
+	for user_deployment in UserDeployments.objects.all():
 		user_deploy_lookup[user_deployment.user].append(user_deployment.deployment)
    
 	all_deployments = Deployment.objects.filter() 
@@ -27,6 +27,6 @@ def handle(user):
 		if not user in user_deploy_lookup or \
 		  expected_deployment not in user_deploy_lookup[user]: 
 			# add new record
-			ud = UserDeployment(user=user, deployment=expected_deployment)
+			ud = UserDeployments(user=user, deployment=expected_deployment)
 			ud.save()    
 
