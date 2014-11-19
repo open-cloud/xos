@@ -422,8 +422,8 @@ class SitePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
-class SiteDeploymentInline(PlStackTabularInline):
-    model = SiteDeployment
+class SiteDeploymentsInline(PlStackTabularInline):
+    model = SiteDeployments
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['backend_status_icon', 'deployment','site']
@@ -435,10 +435,10 @@ class SiteDeploymentInline(PlStackTabularInline):
 
         if db_field.name == 'deployment':
             kwargs['queryset'] = Deployment.select_by_user(request.user)
-        return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(SiteDeploymentsInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        return SiteDeployment.select_by_user(request.user)
+        return SiteDeployments.select_by_user(request.user)
 
 
 class SlicePrivilegeInline(PlStackTabularInline):
@@ -574,7 +574,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployment, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployment, "deployment", "image")
 
       self.save_m2m()
@@ -661,7 +661,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentInline]
+    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentsInline]
     search_fields = ['name']
 
     def queryset(self, request):
