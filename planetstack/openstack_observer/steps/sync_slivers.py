@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
-from core.models.slice import Slice, SlicePrivilege, SliceDeployment
+from core.models.slice import Slice, SlicePrivilege, SliceDeployments
 from core.models.network import Network, NetworkSlice, NetworkDeployments
 from util.logger import Logger, logging
 from observer.ansible import *

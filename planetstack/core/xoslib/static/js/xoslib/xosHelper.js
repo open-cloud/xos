@@ -28,6 +28,23 @@ XOSApplication = Marionette.Application.extend({
     successTemplate: "#xos-success-template",
     logMessageCount: 0,
 
+    confirmDialog: function(view, event) {
+        $("#xos-confirm-dialog").dialog({
+           autoOpen: false,
+           modal: true,
+           buttons : {
+                "Confirm" : function() {
+                  $(this).dialog("close");
+                  view.trigger(event);
+                },
+                "Cancel" : function() {
+                  $(this).dialog("close");
+                }
+              }
+            });
+        $("#xos-confirm-dialog").dialog("open");
+    },
+
     hideError: function() {
         if (this.logWindowId) {
         } else {
@@ -128,7 +145,7 @@ XOSApplication = Marionette.Application.extend({
         return function() {
             model = new xos[collection_name].model();
             detailViewClass = app[detailName];
-            detailView = new detailViewClass({model: model});
+            detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             app[regionName].show(detailView);
             $("#xos-detail-button-box").show();
             $("#xos-listview-button-box").hide();
@@ -169,7 +186,12 @@ XOSDetailView = Marionette.ItemView.extend({
             events: {"click button.btn-xos-save-continue": "submitContinueClicked",
                      "click button.btn-xos-save-leave": "submitLeaveClicked",
                      "click button.btn-xos-save-another": "submitAddAnotherClicked",
+                     "click button.btn-xos-delete": "deleteClicked",
                      "change input": "inputChanged"},
+
+            initialize: function() {
+                this.on('deleteConfirmed', this.deleteConfirmed);
+            },
 
             /* inputChanged is watching the onChange events of the input controls. We
                do this to track when this view is 'dirty', so we can throw up a warning
@@ -193,6 +215,19 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.app.showSuccess(result);
             },
 
+            destroyError: function(model, result, xhr, infoMsgId) {
+                result["what"] = "destroy " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
+                this.app.showError(result);
+            },
+
+            destroySuccess: function(model, result, xhr, infoMsgId) {
+                result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
+                result["what"] = "destroy " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
+                this.app.showSuccess(result);
+            },
+
             submitContinueClicked: function(e) {
                 console.log("saveContinue");
                 e.preventDefault();
@@ -203,14 +238,14 @@ XOSDetailView = Marionette.ItemView.extend({
                 console.log("saveLeave");
                 e.preventDefault();
                 this.save();
-                this.app.Router.navigate(this.listNavLink, {trigger: true});
-                console.log("route to " + this.listNavLink);
+                this.app.navigate("list", this.model.modelName);
             },
 
             submitAddAnotherClicked: function(e) {
                 console.log("saveAnother");
                 e.preventDefault();
                 this.save();
+                this.app.navigate("add", this.model.modelName);
             },
 
             save: function() {
@@ -218,10 +253,35 @@ XOSDetailView = Marionette.ItemView.extend({
                 var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
+                var isNew = !this.model.id;
                 this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId);}});
+                if (isNew) {
+                    console.log(this.model);
+                    this.collection.add(this.model);
+                    this.collection.sort();
+                }
                 this.dirty = false;
             },
+
+            destroyModel: function() {
+                 this.app.hideError();
+                 var infoMsgId = this.app.showInformational( {what: "destroy " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
+                 var that = this;
+                 this.model.destroy({error: function(model, result, xhr) { that.destroyError(model,result,xhr,infoMsgId);},
+                                     success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
+            },
+
+             deleteClicked: function(e) {
+                 e.preventDefault();
+                 this.app.confirmDialog(this, "deleteConfirmed");
+             },
+
+             deleteConfirmed: function() {
+                 modelName = this.model.modelName;
+                 this.destroyModel();
+                 this.app.navigate("list", modelName);
+             },
 
             tabClick: function(tabId, regionName) {
                     region = this.app[regionName];
@@ -320,16 +380,30 @@ XOSListView = Marionette.CompositeView.extend({
              childViewContainer: 'tbody',
 
              events: {"click button.btn-xos-add": "addClicked",
+                      "click button.btn-xos-refresh": "refreshClicked",
                      },
 
+             _fetchStateChange: function() {
+                 if (this.collection.fetching) {
+                    $("#xos-list-title-spinner").show();
+                 } else {
+                    $("#xos-list-title-spinner").hide();
+                 }
+             },
+
              addClicked: function(e) {
-                console.log("add");
                 e.preventDefault();
                 this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName), {trigger: true});
              },
 
-             initialize: function() {
-                 this.listenTo(this.collection, 'change', this._renderChildren)
+             refreshClicked: function(e) {
+                 e.preventDefault();
+                 this.collection.refresh(refreshRelated=true);
+             },
+
+             initialize: function() {
+                 this.listenTo(this.collection, 'change', this._renderChildren)
+                 this.listenTo(this.collection, 'fetchStateChange', this._fetchStateChange);
 
                  // Because many of the templates use idToName(), we need to
                  // listen to the collections that hold the names for the ids

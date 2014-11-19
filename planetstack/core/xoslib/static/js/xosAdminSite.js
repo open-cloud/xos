@@ -26,6 +26,17 @@ XOSAdminApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
      XOSAdminApp.Router.navigate(detailNavLink + "/" + model.id, {trigger: true});
 };
 
+XOSAdminApp.navigate = function(what, modelName, modelId) {
+    collection_name = modelName + "s";
+    if (what=="list") {
+        XOSAdminApp.Router.navigate(collection_name, {trigger: true})
+    } else if (what=="detail") {
+        XOSAdminApp.Router.navigate(collection_name + "/" + modelId, {trigger: true})
+    } else if (what=="add") {
+        XOSAdminApp.Router.navigate("add" + firstCharUpper(modelName), {trigger: true})
+    }
+}
+
 ICON_CLASSES = {home: "icon-home", deployments: "icon-deployment", sites: "icon-site", slices: "icon-slice", users: "icon-user"};
 
 XOSAdminApp.updateNavigationPanel = function() {
@@ -56,12 +67,10 @@ XOSAdminApp.buildViews = function() {
          collection_name = name + "s";
          region_name = name + "List";
          detailNavLink = collection_name;
-         listNavLink = collection_name;
 
          detailClass = XOSDetailView.extend({
             template: detail_template,
             app: XOSAdminApp,
-            listNavLink: listNavLink,
          });
          XOSAdminApp[collection_name + "DetailView"] = detailClass;
 

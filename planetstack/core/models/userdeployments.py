@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from core.models import PlCoreBase,Site,User,Deployment
 from core.models import Deployment,DeploymentLinkManager,DeploymentLinkDeletionManager
 
-class UserDeployment(PlCoreBase):
+class UserDeployments(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
@@ -19,7 +19,7 @@ class UserDeployment(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = UserDeployment.objects.all()
+            qs = UserDeployments.objects.all()
         else:
             users = Users.select_by_user(user)
             qs = Usereployments.objects.filter(user__in=slices)

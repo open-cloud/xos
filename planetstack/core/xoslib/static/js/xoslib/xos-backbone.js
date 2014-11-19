@@ -116,21 +116,27 @@ if (! window.XOSLIB_LOADED ) {
         },
 
         fetchSuccess: function(collection, response, options) {
+            //console.log("fetch succeeded " + collection.modelName);
             this.failedLoad = false;
+            this.fetching = false;
             if (!this.isLoaded) {
                 this.isLoaded = true;
                 Backbone.trigger("xoslib:collectionLoadChange", this);
             }
+            this.trigger("fetchStateChange");
             if (options["orig_success"]) {
                 options["orig_success"](collection, response, options);
             }
         },
 
         fetchFailure: function(collection, response, options) {
+            //console.log("fetch failed " + collection.modelName);
+            this.fetching = false;
             if ((!this.isLoaded) && (!this.failedLoad)) {
                 this.failedLoad=true;
                 Backbone.trigger("xoslib:collectionLoadChange", this);
             }
+            this.trigger("fetchStateChange");
             if (options["orig_failure"]) {
                 options["orig_failure"](collection, response, options);
             }
@@ -138,10 +144,13 @@ if (! window.XOSLIB_LOADED ) {
 
         fetch: function(options) {
             var self=this;
+            this.fetching=true;
+            //console.log("fetch " + this.modelName);
             if (!this.startedLoad) {
                 this.startedLoad=true;
                 Backbone.trigger("xoslib:collectionLoadChange", this);
             }
+            this.trigger("fetchStateChange");
             if (options == undefined) {
                 options = {};
             }
@@ -158,6 +167,20 @@ if (! window.XOSLIB_LOADED ) {
                 setInterval(function() { collection.fetch(); }, 10000);
                 this._polling=true;
                 this.fetch();
+            }
+        },
+
+        refresh: function(refreshRelated) {
+            if (!this.fetching) {
+                this.fetch();
+            }
+            if (refreshRelated) {
+                for (related in this.relatedCollections) {
+                    related = xos[related];
+                    if (!related.fetching) {
+                        related.fetch();
+                    }
+                }
             }
         },
 
