@@ -196,9 +196,9 @@ def get_REST_patterns():
         url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
 #        url(r'plstackapi/deploymentprivileges/!new/$', DeploymentPrivilegeNew.as_view(), name ='deploymentprivilege-new'),
     
-        url(r'plstackapi/imagedeployments/$', ImageDeploymentList.as_view(), name='imagedeployment-list'),
-        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentDetail.as_view(), name ='imagedeployment-detail'),
-#        url(r'plstackapi/imagedeployments/!new/$', ImageDeploymentNew.as_view(), name ='imagedeployment-new'),
+        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployment-list'),
+        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployment-detail'),
+#        url(r'plstackapi/imagedeployments/!new/$', ImageDeploymentsNew.as_view(), name ='imagedeployment-new'),
     
         url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
@@ -1111,18 +1111,18 @@ class DeploymentPrivilegeIdSerializer(serializers.ModelSerializer):
 
 
 
-class ImageDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployment
+        model = ImageDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
-class ImageDeploymentIdSerializer(serializers.ModelSerializer):
+class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = ImageDeployment
+        model = ImageDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 
@@ -1316,7 +1316,7 @@ serializerLookUp = {
 
                  DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
-                 ImageDeployment: ImageDeploymentSerializer,
+                 ImageDeployments: ImageDeploymentsSerializer,
 
                  DeploymentRole: DeploymentRoleSerializer,
 
@@ -4783,10 +4783,10 @@ class DeploymentPrivilegeNew(GenericAPIView):
 
 
 
-class ImageDeploymentList(generics.ListCreateAPIView):
-    queryset = ImageDeployment.objects.select_related().all()
-    serializer_class = ImageDeploymentSerializer
-    id_serializer_class = ImageDeploymentIdSerializer
+class ImageDeploymentsList(generics.ListCreateAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
@@ -4798,7 +4798,7 @@ class ImageDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ImageDeployment.select_by_user(self.request.user)
+        return ImageDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -4807,21 +4807,21 @@ class ImageDeploymentList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ImageDeploymentList, self).create(request, *args, **kwargs)
+            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ImageDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ImageDeployment.objects.select_related().all()
-    serializer_class = ImageDeploymentSerializer
-    id_serializer_class = ImageDeploymentIdSerializer
+class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4831,7 +4831,7 @@ class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ImageDeployment.select_by_user(self.request.user)
+        return ImageDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -4842,9 +4842,9 @@ class ImageDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     filled with defaults. I solved it another way, so this code may soon be
     abandoned.
 
-class ImageDeploymentNew(GenericAPIView):
-    serializer_class = ImageDeploymentSerializer
-    id_serializer_class = ImageDeploymentIdSerializer
+class ImageDeploymentsNew(GenericAPIView):
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
 
     def get(self, request, *args, **kwargs):
         return self.makenew(request, *args, **kwargs)
@@ -4857,7 +4857,7 @@ class ImageDeploymentNew(GenericAPIView):
             return self.serializer_class
 
     def makenew(self, request, *args, **kwargs):
-        obj = ImageDeployment()
+        obj = ImageDeployments()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
