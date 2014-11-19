@@ -66,11 +66,19 @@
     text-decoration:none;
 }
 
+/* these are for the inline list and detail titles */
+
 .xos-list-title {
     display: none;
 }
 
 .xos-detail-title {
+    display: none;
+}
+
+/* this one goes with contenttitle */
+
+#xos-list-title-spinner {
     display: none;
 }
 
@@ -91,4 +99,6 @@
     display: none;
 }
 
-
+#xos-confirm-dialog {
+    display: none;
+}
