@@ -172,9 +172,9 @@ def get_REST_patterns():
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
 #        url(r'plstackapi/siteprivileges/!new/$', SitePrivilegeNew.as_view(), name ='siteprivilege-new'),
     
-        url(r'plstackapi/slicedeployments/$', SliceDeploymentList.as_view(), name='slicedeployment-list'),
-        url(r'plstackapi/slicedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentDetail.as_view(), name ='slicedeployment-detail'),
-#        url(r'plstackapi/slicedeployments/!new/$', SliceDeploymentNew.as_view(), name ='slicedeployment-new'),
+        url(r'plstackapi/slicedeployments/$', SliceDeploymentsList.as_view(), name='slicedeployment-list'),
+        url(r'plstackapi/slicedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployment-detail'),
+#        url(r'plstackapi/slicedeployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployment-new'),
     
         url(r'plstackapi/userdeployments/$', UserDeploymentList.as_view(), name='userdeployment-list'),
         url(r'plstackapi/userdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentDetail.as_view(), name ='userdeployment-detail'),
@@ -1009,18 +1009,18 @@ class SitePrivilegeIdSerializer(serializers.ModelSerializer):
 
 
 
-class SliceDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class SliceDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployment
+        model = SliceDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
-class SliceDeploymentIdSerializer(serializers.ModelSerializer):
+class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = SliceDeployment
+        model = SliceDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 
@@ -1304,7 +1304,7 @@ serializerLookUp = {
 
                  SitePrivilege: SitePrivilegeSerializer,
 
-                 SliceDeployment: SliceDeploymentSerializer,
+                 SliceDeployments: SliceDeploymentsSerializer,
 
                  UserDeployment: UserDeploymentSerializer,
 
@@ -4297,10 +4297,10 @@ class SitePrivilegeNew(GenericAPIView):
 
 
 
-class SliceDeploymentList(generics.ListCreateAPIView):
-    queryset = SliceDeployment.objects.select_related().all()
-    serializer_class = SliceDeploymentSerializer
-    id_serializer_class = SliceDeploymentIdSerializer
+class SliceDeploymentsList(generics.ListCreateAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
@@ -4312,7 +4312,7 @@ class SliceDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SliceDeployment.select_by_user(self.request.user)
+        return SliceDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -4321,21 +4321,21 @@ class SliceDeploymentList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SliceDeploymentList, self).create(request, *args, **kwargs)
+            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SliceDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SliceDeployment.objects.select_related().all()
-    serializer_class = SliceDeploymentSerializer
-    id_serializer_class = SliceDeploymentIdSerializer
+class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4345,7 +4345,7 @@ class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SliceDeployment.select_by_user(self.request.user)
+        return SliceDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -4356,9 +4356,9 @@ class SliceDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     filled with defaults. I solved it another way, so this code may soon be
     abandoned.
 
-class SliceDeploymentNew(GenericAPIView):
-    serializer_class = SliceDeploymentSerializer
-    id_serializer_class = SliceDeploymentIdSerializer
+class SliceDeploymentsNew(GenericAPIView):
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
 
     def get(self, request, *args, **kwargs):
         return self.makenew(request, *args, **kwargs)
@@ -4371,7 +4371,7 @@ class SliceDeploymentNew(GenericAPIView):
             return self.serializer_class
 
     def makenew(self, request, *args, **kwargs):
-        obj = SliceDeployment()
+        obj = SliceDeployments()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """

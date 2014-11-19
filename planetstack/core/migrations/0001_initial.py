@@ -778,7 +778,7 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='SliceDeployments',
+            name='SliceDeploymentss',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
