@@ -99,4 +99,6 @@
     display: none;
 }
 
-
+#xos-confirm-dialog {
+    display: none;
+}
