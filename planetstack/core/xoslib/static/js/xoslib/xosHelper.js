@@ -128,7 +128,7 @@ XOSApplication = Marionette.Application.extend({
         return function() {
             model = new xos[collection_name].model();
             detailViewClass = app[detailName];
-            detailView = new detailViewClass({model: model});
+            detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             app[regionName].show(detailView);
             $("#xos-detail-button-box").show();
             $("#xos-listview-button-box").hide();
@@ -203,14 +203,14 @@ XOSDetailView = Marionette.ItemView.extend({
                 console.log("saveLeave");
                 e.preventDefault();
                 this.save();
-                this.app.Router.navigate(this.listNavLink, {trigger: true});
-                console.log("route to " + this.listNavLink);
+                this.app.navigate("list", this.model.modelName);
             },
 
             submitAddAnotherClicked: function(e) {
                 console.log("saveAnother");
                 e.preventDefault();
                 this.save();
+                this.app.navigate("add", this.model.modelName);
             },
 
             save: function() {
@@ -218,8 +218,14 @@ XOSDetailView = Marionette.ItemView.extend({
                 var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
+                var isNew = !this.model.id;
                 this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId);}});
+                if (isNew) {
+                    console.log(this.model);
+                    this.collection.add(this.model);
+                    this.collection.sort();
+                }
                 this.dirty = false;
             },
 
@@ -320,16 +326,30 @@ XOSListView = Marionette.CompositeView.extend({
              childViewContainer: 'tbody',
 
              events: {"click button.btn-xos-add": "addClicked",
+                      "click button.btn-xos-refresh": "refreshClicked",
                      },
 
+             _fetchStateChange: function() {
+                 if (this.collection.fetching) {
+                    $("#xos-list-title-spinner").show();
+                 } else {
+                    $("#xos-list-title-spinner").hide();
+                 }
+             },
+
              addClicked: function(e) {
-                console.log("add");
                 e.preventDefault();
                 this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName), {trigger: true});
              },
 
-             initialize: function() {
-                 this.listenTo(this.collection, 'change', this._renderChildren)
+             refreshClicked: function(e) {
+                 e.preventDefault();
+                 this.collection.refresh(refreshRelated=true);
+             },
+
+             initialize: function() {
+                 this.listenTo(this.collection, 'change', this._renderChildren)
+                 this.listenTo(this.collection, 'fetchStateChange', this._fetchStateChange);
 
                  // Because many of the templates use idToName(), we need to
                  // listen to the collections that hold the names for the ids
