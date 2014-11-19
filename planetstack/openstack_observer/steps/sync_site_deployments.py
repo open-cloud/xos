@@ -6,9 +6,9 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.ansible import *
 
-class SyncSiteDeployment(OpenStackSyncStep):
+class SyncSiteDeployments(OpenStackSyncStep):
     requested_interval=0
-    provides=[SiteDeployment, Site]
+    provides=[SiteDeployments, Site]
 
     def sync_record(self, site_deployment):
 
