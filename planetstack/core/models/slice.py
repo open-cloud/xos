@@ -93,7 +93,7 @@ class Slice(PlCoreBase):
         nets = Network.objects.filter(slices=self)
         nets.delete() 
         # delete slice deployments
-        slice_deployments = SliceDeployments.objects.filter(slice=self)
+        slice_deployments = SliceDeploymentss.objects.filter(slice=self)
         slice_deployments.delete()
         # delete slice privilege
         slice_privileges = SlicePrivilege.objects.filter(slice=self)
@@ -128,7 +128,7 @@ class SlicePrivilege(PlCoreBase):
             qs = SlicePrivilege.objects.filter(id__in=sp_ids)
         return qs
 
-class SliceDeployment(PlCoreBase):
+class SliceDeployments(PlCoreBase):
     objects = DeploymentLinkManager()
     deleted_objects = DeploymentLinkDeletionManager()
 
@@ -144,8 +144,8 @@ class SliceDeployment(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = SliceDeployment.objects.all()
+            qs = SliceDeployments.objects.all()
         else:
             slices = Slice.select_by_user(user)
-            qs = SliceDeployment.objects.filter(slice__in=slices)
+            qs = SliceDeployments.objects.filter(slice__in=slices)
         return qs    

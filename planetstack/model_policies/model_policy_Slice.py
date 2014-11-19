@@ -1,13 +1,13 @@
 
 def handle(slice):
-	from core.models import SiteDeployments,SliceDeployment,Deployment,Network,NetworkSlice,NetworkTemplate
+	from core.models import SiteDeployments,SliceDeployments,Deployment,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
 	site_deployments = SiteDeployments.objects.all()
 	site_deploy_lookup = defaultdict(list)
 	for site_deployment in site_deployments:
 		site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
 	
-	slice_deployments = SliceDeployment.objects.all()
+	slice_deployments = SliceDeployments.objects.all()
 	slice_deploy_lookup = defaultdict(list)
 	for slice_deployment in slice_deployments:
 		slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
@@ -19,7 +19,7 @@ def handle(slice):
 	for expected_deployment in expected_deployments:
 		if slice not in slice_deploy_lookup or \
 		   expected_deployment not in slice_deploy_lookup[slice]:
-			sd = SliceDeployment(slice=slice, deployment=expected_deployment)
+			sd = SliceDeployments(slice=slice, deployment=expected_deployment)
 			sd.save()
 
 	# make sure slice has at least 1 public and 1 private networkd
