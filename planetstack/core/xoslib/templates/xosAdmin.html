@@ -35,7 +35,7 @@
 </script>
 
 <script type="text/template" id="xos-title-list">
-  <h3><%= title %></h3>
+  <h3><img src="/static/img/brokencircle.gif" height=16 width=16 id="xos-list-title-spinner"> <%= title %></h3>
 </script>
 
 <script type="text/template" id="xos-title-detail">
@@ -56,12 +56,14 @@
        <td colspan=2><button class="btn js-submit btn-xos-detail btn-xos-save-leave">Save</button>
            <button class="btn js-submit btn-xos-detail btn-xos-save-continue">Save and Continue Editing</button>
            <button class="btn js-submit btn-xos-detail btn-xos-save-another">Save and Add Another</button>
+           <button class="btn js-submit btn-xos-detail btn-xos-delete">Delete</button>
        </td>
     </tr>
 </script>
 
 <script type="text/template" id="xos-inline-list-buttons-template">
            <button class="btn js-submit btn-xos-list btn-xos-add">Add</button>
+           <button class="btn js-submit btn-xos-list btn-xos-refresh">Refresh</button>
        </td>
     </tr>
 </script>
@@ -89,7 +91,7 @@
   <td class="objectLink"><%= name %></td>
   <td><%= backend_type %></td>
   <td><%= admin_tenant %></td>
-  <td><%= sites.length %></td>
+  <td><%= typeof sites != 'undefined' && sites.length || 0 %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-deployment-detail-template">
