@@ -7,9 +7,9 @@ from core.models.site import *
 from ec2_observer.awslib import *
 import pdb
 
-class SyncSiteDeployment(SyncStep):
+class SyncSiteDeployments(SyncStep):
     requested_interval=86400
-    provides=[SiteDeployment]
+    provides=[SiteDeployments]
 
     def fetch_pending(self, deletion):
         if (deletion):
@@ -29,7 +29,7 @@ class SyncSiteDeployment(SyncStep):
         # The syncstep should catch it
         # At any rate, we should not run if there are no deployments
         deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
-        current_site_deployments = SiteDeployment.objects.filter(Q(deployment=deployment))
+        current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))
         site_dict = {}
 
         for sd in current_site_deployments:
@@ -40,7 +40,7 @@ class SyncSiteDeployment(SyncStep):
             try:
                 site_record = site_dict[site]
             except KeyError:
-                sd = SiteDeployment(site=site,deployment=deployment,tenant_id=base64.urlsafe_b64encode(os.urandom(12)))
+                sd = SiteDeployments(site=site,deployment=deployment,tenant_id=base64.urlsafe_b64encode(os.urandom(12)))
                 updated_site_deployments.append(sd)
 
         return updated_site_deployments

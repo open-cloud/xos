@@ -1,8 +1,8 @@
 
 def handle(slice):
-	from core.models import SiteDeployment,SliceDeployment,Deployment,Network,NetworkSlice,NetworkTemplate
+	from core.models import SiteDeployments,SliceDeployment,Deployment,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
-	site_deployments = SiteDeployment.objects.all()
+	site_deployments = SiteDeployments.objects.all()
 	site_deploy_lookup = defaultdict(list)
 	for site_deployment in site_deployments:
 		site_deploy_lookup[site_deployment.site].append(site_deployment.deployment)
