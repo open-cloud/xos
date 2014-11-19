@@ -7,7 +7,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import Deployment, SiteDeployments
 from core.models.slice import Slice, SliceDeployments
-from core.models.userdeployments import UserDeployment
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 from observer.ansible import *
 
@@ -48,7 +48,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % slice_deployment.deployment)
             return
 
-	deployment_users = UserDeployment.objects.filter(user=slice_deployment.slice.creator,
+	deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
                                                              deployment=slice_deployment.deployment)            
     	if not deployment_users:
 	    logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))

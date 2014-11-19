@@ -176,9 +176,9 @@ def get_REST_patterns():
         url(r'plstackapi/slicedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployment-detail'),
 #        url(r'plstackapi/slicedeployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployment-new'),
     
-        url(r'plstackapi/userdeployments/$', UserDeploymentList.as_view(), name='userdeployment-list'),
-        url(r'plstackapi/userdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentDetail.as_view(), name ='userdeployment-detail'),
-#        url(r'plstackapi/userdeployments/!new/$', UserDeploymentNew.as_view(), name ='userdeployment-new'),
+        url(r'plstackapi/userdeployments/$', UserDeploymentsList.as_view(), name='userdeployment-list'),
+        url(r'plstackapi/userdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployment-detail'),
+#        url(r'plstackapi/userdeployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployment-new'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
@@ -1026,18 +1026,18 @@ class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
 
 
 
-class UserDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+class UserDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployment
+        model = UserDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
-class UserDeploymentIdSerializer(serializers.ModelSerializer):
+class UserDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
     class Meta:
-        model = UserDeployment
+        model = UserDeployments
         fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 
@@ -1306,7 +1306,7 @@ serializerLookUp = {
 
                  SliceDeployments: SliceDeploymentsSerializer,
 
-                 UserDeployment: UserDeploymentSerializer,
+                 UserDeployments: UserDeploymentsSerializer,
 
                  Account: AccountSerializer,
 
@@ -4378,10 +4378,10 @@ class SliceDeploymentsNew(GenericAPIView):
 
 
 
-class UserDeploymentList(generics.ListCreateAPIView):
-    queryset = UserDeployment.objects.select_related().all()
-    serializer_class = UserDeploymentSerializer
-    id_serializer_class = UserDeploymentIdSerializer
+class UserDeploymentsList(generics.ListCreateAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
@@ -4393,7 +4393,7 @@ class UserDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return UserDeployment.select_by_user(self.request.user)
+        return UserDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -4402,21 +4402,21 @@ class UserDeploymentList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(UserDeploymentList, self).create(request, *args, **kwargs)
+            return super(UserDeploymentsList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(UserDeploymentList, self).create(request, *args, **kwargs)
+        ret = super(UserDeploymentsList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = UserDeployment.objects.select_related().all()
-    serializer_class = UserDeploymentSerializer
-    id_serializer_class = UserDeploymentIdSerializer
+class UserDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = UserDeployments.objects.select_related().all()
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4426,7 +4426,7 @@ class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return UserDeployment.select_by_user(self.request.user)
+        return UserDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -4437,9 +4437,9 @@ class UserDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     filled with defaults. I solved it another way, so this code may soon be
     abandoned.
 
-class UserDeploymentNew(GenericAPIView):
-    serializer_class = UserDeploymentSerializer
-    id_serializer_class = UserDeploymentIdSerializer
+class UserDeploymentsNew(GenericAPIView):
+    serializer_class = UserDeploymentsSerializer
+    id_serializer_class = UserDeploymentsIdSerializer
 
     def get(self, request, *args, **kwargs):
         return self.makenew(request, *args, **kwargs)
@@ -4452,7 +4452,7 @@ class UserDeploymentNew(GenericAPIView):
             return self.serializer_class
 
     def makenew(self, request, *args, **kwargs):
-        obj = UserDeployment()
+        obj = UserDeployments()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
