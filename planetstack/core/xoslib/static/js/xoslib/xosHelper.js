@@ -28,6 +28,23 @@ XOSApplication = Marionette.Application.extend({
     successTemplate: "#xos-success-template",
     logMessageCount: 0,
 
+    confirmDialog: function(view, event) {
+        $("#xos-confirm-dialog").dialog({
+           autoOpen: false,
+           modal: true,
+           buttons : {
+                "Confirm" : function() {
+                  $(this).dialog("close");
+                  view.trigger(event);
+                },
+                "Cancel" : function() {
+                  $(this).dialog("close");
+                }
+              }
+            });
+        $("#xos-confirm-dialog").dialog("open");
+    },
+
     hideError: function() {
         if (this.logWindowId) {
         } else {
@@ -169,7 +186,12 @@ XOSDetailView = Marionette.ItemView.extend({
             events: {"click button.btn-xos-save-continue": "submitContinueClicked",
                      "click button.btn-xos-save-leave": "submitLeaveClicked",
                      "click button.btn-xos-save-another": "submitAddAnotherClicked",
+                     "click button.btn-xos-delete": "deleteClicked",
                      "change input": "inputChanged"},
+
+            initialize: function() {
+                this.on('deleteConfirmed', this.deleteConfirmed);
+            },
 
             /* inputChanged is watching the onChange events of the input controls. We
                do this to track when this view is 'dirty', so we can throw up a warning
@@ -189,6 +211,19 @@ XOSDetailView = Marionette.ItemView.extend({
             saveSuccess: function(model, result, xhr, infoMsgId) {
                 result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
                 result["what"] = "save " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
+                this.app.showSuccess(result);
+            },
+
+            destroyError: function(model, result, xhr, infoMsgId) {
+                result["what"] = "destroy " + model.__proto__.modelName;
+                result["infoMsgId"] = infoMsgId;
+                this.app.showError(result);
+            },
+
+            destroySuccess: function(model, result, xhr, infoMsgId) {
+                result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
+                result["what"] = "destroy " + model.__proto__.modelName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showSuccess(result);
             },
@@ -228,6 +263,25 @@ XOSDetailView = Marionette.ItemView.extend({
                 }
                 this.dirty = false;
             },
+
+            destroyModel: function() {
+                 this.app.hideError();
+                 var infoMsgId = this.app.showInformational( {what: "destroy " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
+                 var that = this;
+                 this.model.destroy({error: function(model, result, xhr) { that.destroyError(model,result,xhr,infoMsgId);},
+                                     success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
+            },
+
+             deleteClicked: function(e) {
+                 e.preventDefault();
+                 this.app.confirmDialog(this, "deleteConfirmed");
+             },
+
+             deleteConfirmed: function() {
+                 modelName = this.model.modelName;
+                 this.destroyModel();
+                 this.app.navigate("list", modelName);
+             },
 
             tabClick: function(tabId, regionName) {
                     region = this.app[regionName];
