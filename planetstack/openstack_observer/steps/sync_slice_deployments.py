@@ -6,22 +6,22 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import Deployment, SiteDeployments
-from core.models.slice import Slice, SliceDeployment
+from core.models.slice import Slice, SliceDeployments
 from core.models.userdeployments import UserDeployment
 from util.logger import Logger, logging
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncSliceDeployment(OpenStackSyncStep):
-    provides=[SliceDeployment]
+class SyncSliceDeployments(OpenStackSyncStep):
+    provides=[SliceDeployments]
     requested_interval=0
 
     def fetch_pending(self, deleted):
         if (deleted):
-            return SliceDeployment.deleted_objects.all()
+            return SliceDeployments.deleted_objects.all()
         else:
-            return SliceDeployment.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            return SliceDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def get_next_subnet(self, deployment=None):
         # limit ourself to 10.0.x.x for now
