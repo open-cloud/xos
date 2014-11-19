@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import *
-from core.models.userdeployments import UserDeployment
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -26,7 +26,7 @@ class SyncSliceMemberships(OpenStackSyncStep):
         for slice_deployment in slice_deployments:
             if not slice_deployment.tenant_id:
                 continue
-            user_deployments = UserDeployment.objects.filter(deployment=slice_deployment.deployment,
+            user_deployments = UserDeployments.objects.filter(deployment=slice_deployment.deployment,
                                                               user=slice_memb.user)
             if user_deployments:
                 kuser_id  = user_deployments[0].kuser_id
