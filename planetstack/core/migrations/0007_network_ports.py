@@ -9,7 +9,7 @@ import timezones.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0006_auto_20141111_2314'),
+        ('core', '0004_auto_20141006_1719'),
     ]
 
     operations = [
