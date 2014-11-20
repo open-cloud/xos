@@ -12,4 +12,9 @@ if __name__ == "__main__":
         model_policy.EnableModelPolicy(False)
         sys.argv.remove("--nomodelpolicy")
 
+    if "--noobserver" in sys.argv:
+        import observer
+        observer.EnableObserver(False)
+        sys.argv.remove("--noobserver")
+
     execute_from_command_line(sys.argv)
