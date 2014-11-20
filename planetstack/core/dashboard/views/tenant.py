@@ -231,7 +231,7 @@ def getImageInfo(user):
     length = len(BLESSED_DEPLOYMENTS)
     for deployment in Deployment.objects.all():
         if deployment.name in BLESSED_DEPLOYMENTS:
-            for x in deployment.imagedeployments_set.all():
+            for x in deployment.imagedeployments.all():
                 tempImageInfo.append(x.image.name)
     temp = {}
     for i in set(tempImageInfo):
@@ -309,7 +309,7 @@ def getAvailableSites():
     available_sites = []
     for deployment in Deployment.objects.all():
         if deployment.name in BLESSED_DEPLOYMENTS:
-            for x in deployment.sitedeployments_set.all():
+            for x in deployment.sitedeployments.all():
 		if x.site.nodes.all():
                 	available_sites.append(x.site.name)
     return list(set(available_sites))

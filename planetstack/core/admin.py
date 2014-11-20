@@ -823,7 +823,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
 
         deployment_images = []
         for image in Image.objects.all():
-            for imageDeployment in image.imagedeployments_set.all():
+            for imageDeployment in image.imagedeployments.all():
                 deployment_images.append( (imageDeployment.deployment.id, image.id, image.name) )
 
         site_login_bases = []
