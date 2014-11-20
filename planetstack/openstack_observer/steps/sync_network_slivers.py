@@ -29,7 +29,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         networks = Network.objects.all()
         networks_by_id = {}
         for network in networks:
-            for nd in network.networkdeployments_set.all():
+            for nd in network.networkdeployments.all():
                 networks_by_id[nd.net_id] = network
 
         #logger.info("networks_by_id = ")
