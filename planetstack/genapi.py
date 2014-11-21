@@ -96,9 +96,9 @@ def get_REST_patterns():
         url(r'plstackapi/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
 #        url(r'plstackapi/serviceclasses/!new/$', ServiceClassNew.as_view(), name ='serviceclass-new'),
     
-        url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
-        url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
-#        url(r'plstackapi/planetstacks/!new/$', PlanetStackNew.as_view(), name ='planetstack-new'),
+        url(r'plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
+        url(r'plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
+#        url(r'plstackapi/payments/!new/$', PaymentNew.as_view(), name ='payment-new'),
     
         url(r'plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
@@ -132,13 +132,13 @@ def get_REST_patterns():
         url(r'plstackapi/dashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name ='dashboardview-detail'),
 #        url(r'plstackapi/dashboardviews/!new/$', DashboardViewNew.as_view(), name ='dashboardview-new'),
     
+        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployments-list'),
+        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployments-detail'),
+#        url(r'plstackapi/imagedeployments/!new/$', ImageDeploymentsNew.as_view(), name ='imagedeployments-new'),
+    
         url(r'plstackapi/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
         url(r'plstackapi/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
 #        url(r'plstackapi/reservedresources/!new/$', ReservedResourceNew.as_view(), name ='reservedresource-new'),
-    
-        url(r'plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
-        url(r'plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
-#        url(r'plstackapi/payments/!new/$', PaymentNew.as_view(), name ='payment-new'),
     
         url(r'plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
         url(r'plstackapi/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
@@ -147,10 +147,6 @@ def get_REST_patterns():
         url(r'plstackapi/userdashboardviews/$', UserDashboardViewList.as_view(), name='userdashboardview-list'),
         url(r'plstackapi/userdashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDashboardViewDetail.as_view(), name ='userdashboardview-detail'),
 #        url(r'plstackapi/userdashboardviews/!new/$', UserDashboardViewNew.as_view(), name ='userdashboardview-new'),
-    
-        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployment-list'),
-        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployment-detail'),
-#        url(r'plstackapi/sitedeployments/!new/$', SiteDeploymentsNew.as_view(), name ='sitedeployment-new'),
     
         url(r'plstackapi/planetstackprivileges/$', PlanetStackPrivilegeList.as_view(), name='planetstackprivilege-list'),
         url(r'plstackapi/planetstackprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackPrivilegeDetail.as_view(), name ='planetstackprivilege-detail'),
@@ -168,17 +164,21 @@ def get_REST_patterns():
         url(r'plstackapi/reservations/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservationDetail.as_view(), name ='reservation-detail'),
 #        url(r'plstackapi/reservations/!new/$', ReservationNew.as_view(), name ='reservation-new'),
     
+        url(r'plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
+        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
+#        url(r'plstackapi/slice_deployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployments-new'),
+    
         url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
 #        url(r'plstackapi/siteprivileges/!new/$', SitePrivilegeNew.as_view(), name ='siteprivilege-new'),
     
-        url(r'plstackapi/slicedeployments/$', SliceDeploymentsList.as_view(), name='slicedeployment-list'),
-        url(r'plstackapi/slicedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployment-detail'),
-#        url(r'plstackapi/slicedeployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployment-new'),
+        url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
+        url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+#        url(r'plstackapi/planetstacks/!new/$', PlanetStackNew.as_view(), name ='planetstack-new'),
     
-        url(r'plstackapi/userdeployments/$', UserDeploymentsList.as_view(), name='userdeployment-list'),
-        url(r'plstackapi/userdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployment-detail'),
-#        url(r'plstackapi/userdeployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployment-new'),
+        url(r'plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
+        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
+#        url(r'plstackapi/user_deployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployments-new'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
@@ -196,10 +196,6 @@ def get_REST_patterns():
         url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
 #        url(r'plstackapi/deploymentprivileges/!new/$', DeploymentPrivilegeNew.as_view(), name ='deploymentprivilege-new'),
     
-        url(r'plstackapi/imagedeployments/$', ImageDeploymentsList.as_view(), name='imagedeployment-list'),
-        url(r'plstackapi/imagedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployment-detail'),
-#        url(r'plstackapi/imagedeployments/!new/$', ImageDeploymentsNew.as_view(), name ='imagedeployment-new'),
-    
         url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
 #        url(r'plstackapi/deploymentroles/!new/$', DeploymentRoleNew.as_view(), name ='deploymentrole-new'),
@@ -207,6 +203,10 @@ def get_REST_patterns():
         url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
         url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
 #        url(r'plstackapi/usercredentials/!new/$', UserCredentialNew.as_view(), name ='usercredential-new'),
+    
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
+#        url(r'plstackapi/sitedeployments/!new/$', SiteDeploymentsNew.as_view(), name ='sitedeployments-new'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
@@ -246,7 +246,7 @@ def api_root(request, format=None):
         'networks': reverse('network-list', request=request, format=format),
         'services': reverse('service-list', request=request, format=format),
         'serviceclasses': reverse('serviceclass-list', request=request, format=format),
-        'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'payments': reverse('payment-list', request=request, format=format),
         'charges': reverse('charge-list', request=request, format=format),
         'roles': reverse('role-list', request=request, format=format),
         'usableobjects': reverse('usableobject-list', request=request, format=format),
@@ -255,25 +255,25 @@ def api_root(request, format=None):
         'slivers': reverse('sliver-list', request=request, format=format),
         'nodes': reverse('node-list', request=request, format=format),
         'dashboardviews': reverse('dashboardview-list', request=request, format=format),
+        'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
         'reservedresources': reverse('reservedresource-list', request=request, format=format),
-        'payments': reverse('payment-list', request=request, format=format),
         'networkslices': reverse('networkslice-list', request=request, format=format),
         'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
-        'sitedeployments': reverse('sitedeployment-list', request=request, format=format),
         'planetstackprivileges': reverse('planetstackprivilege-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
         'deployments': reverse('deployment-list', request=request, format=format),
         'reservations': reverse('reservation-list', request=request, format=format),
+        'slicedeploymentses': reverse('slicedeployments-list', request=request, format=format),
         'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
-        'slicedeployments': reverse('slicedeployment-list', request=request, format=format),
-        'userdeployments': reverse('userdeployment-list', request=request, format=format),
+        'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'userdeploymentses': reverse('userdeployments-list', request=request, format=format),
         'accounts': reverse('account-list', request=request, format=format),
         'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
         'sitecredentials': reverse('sitecredential-list', request=request, format=format),
         'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
-        'imagedeployments': reverse('imagedeployment-list', request=request, format=format),
         'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
         'usercredentials': reverse('usercredential-list', request=request, format=format),
+        'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
         'slicetags': reverse('slicetag-list', request=request, format=format),
         'networktemplates': reverse('networktemplate-list', request=request, format=format),
         'routers': reverse('router-list', request=request, format=format),
@@ -288,16 +288,22 @@ def api_root(request, format=None):
 class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceAttribute
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','value','service',)
 
 class ServiceAttributeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceAttribute
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','value','service',)
 
 
 
@@ -305,16 +311,22 @@ class ServiceAttributeIdSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Image
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
 
 class ImageIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Image
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
 
 
 
@@ -322,16 +334,22 @@ class ImageIdSerializer(serializers.ModelSerializer):
 class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkParameter
-        fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
 
 class NetworkParameterIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkParameter
-        fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
 
 
 
@@ -339,16 +357,22 @@ class NetworkParameterIdSerializer(serializers.ModelSerializer):
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Site
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
 
 class SiteIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Site
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name',)
 
 
 
@@ -356,16 +380,22 @@ class SiteIdSerializer(serializers.ModelSerializer):
 class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class SliceRoleIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
@@ -373,16 +403,22 @@ class SliceRoleIdSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Tag
-        fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 class TagIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Tag
-        fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 
 
@@ -390,16 +426,22 @@ class TagIdSerializer(serializers.ModelSerializer):
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Invoice
-        fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','date','account',)
 
 class InvoiceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Invoice
-        fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','date','account',)
 
 
 
@@ -407,16 +449,22 @@ class InvoiceIdSerializer(serializers.ModelSerializer):
 class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SlicePrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','slice','role',)
 
 class SlicePrivilegeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SlicePrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','slice','role',)
 
 
 
@@ -424,16 +472,22 @@ class SlicePrivilegeIdSerializer(serializers.ModelSerializer):
 class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = PlanetStackRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class PlanetStackRoleIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = PlanetStackRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
@@ -441,16 +495,22 @@ class PlanetStackRoleIdSerializer(serializers.ModelSerializer):
 class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkSliver
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
 
 class NetworkSliverIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkSliver
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
 
 
 
@@ -458,16 +518,22 @@ class NetworkSliverIdSerializer(serializers.ModelSerializer):
 class NetworkDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
 
 class NetworkDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','deployment','net_id','router_id','subnet_id','subnet',)
 
 
 
@@ -475,16 +541,22 @@ class NetworkDeploymentsIdSerializer(serializers.ModelSerializer):
 class FlavorSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Flavor
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
 
 class FlavorIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Flavor
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default',)
 
 
 
@@ -492,16 +564,22 @@ class FlavorIdSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Project
-        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 class ProjectIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Project
-        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 
 
@@ -525,9 +603,12 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Slice
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
 
 class SliceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -548,9 +629,12 @@ class SliceIdSerializer(serializers.ModelSerializer):
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Slice
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','networks','networks',)
 
 
 
@@ -574,9 +658,12 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Network
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
 
 class NetworkIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -597,9 +684,12 @@ class NetworkIdSerializer(serializers.ModelSerializer):
     routers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='router-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Network
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','routers','availableRouters','routers','routers',)
 
 
 
@@ -607,16 +697,22 @@ class NetworkIdSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Service
-        fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 class ServiceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Service
-        fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 
 
@@ -624,33 +720,45 @@ class ServiceIdSerializer(serializers.ModelSerializer):
 class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceClass
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 class ServiceClassIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceClass
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 
 
 
-class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
+class PaymentSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
-        model = PlanetStack
-        fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+        model = Payment
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
-class PlanetStackIdSerializer(serializers.ModelSerializer):
+class PaymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
-        model = PlanetStack
-        fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+        model = Payment
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
 
 
@@ -658,16 +766,22 @@ class PlanetStackIdSerializer(serializers.ModelSerializer):
 class ChargeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Charge
-        fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 class ChargeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Charge
-        fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 
 
@@ -675,16 +789,22 @@ class ChargeIdSerializer(serializers.ModelSerializer):
 class RoleSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Role
-        fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
 
 class RoleIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Role
-        fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
 
 
 
@@ -692,16 +812,22 @@ class RoleIdSerializer(serializers.ModelSerializer):
 class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UsableObject
-        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 class UsableObjectIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UsableObject
-        fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 
 
@@ -709,16 +835,22 @@ class UsableObjectIdSerializer(serializers.ModelSerializer):
 class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SiteRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class SiteRoleIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SiteRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
@@ -726,16 +858,22 @@ class SiteRoleIdSerializer(serializers.ModelSerializer):
 class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
 
 class SliceCredentialIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
 
 
 
@@ -751,9 +889,12 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Sliver
-        fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 class SliverIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -766,9 +907,12 @@ class SliverIdSerializer(serializers.ModelSerializer):
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Sliver
-        fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','deploymentNetwork','numberCores','flavor','userData','networks','networks',)
 
 
 
@@ -776,16 +920,22 @@ class SliverIdSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Node
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
 
 class NodeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Node
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','site','deployment',)
 
 
 
@@ -793,16 +943,45 @@ class NodeIdSerializer(serializers.ModelSerializer):
 class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DashboardView
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','url',)
 
 class DashboardViewIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DashboardView
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','url',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','url',)
+
+
+
+
+class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = ImageDeployments
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+
+class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = ImageDeployments
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
 
 
 
@@ -810,33 +989,22 @@ class DashboardViewIdSerializer(serializers.ModelSerializer):
 class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ReservedResource
-        fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 class ReservedResourceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ReservedResource
-        fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
-
-
-
-
-class PaymentSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = Payment
-        fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
-
-class PaymentIdSerializer(serializers.ModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = Payment
-        fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 
 
@@ -844,16 +1012,22 @@ class PaymentIdSerializer(serializers.ModelSerializer):
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkSlice
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','slice',)
 
 class NetworkSliceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkSlice
-        fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','network','slice',)
 
 
 
@@ -861,33 +1035,22 @@ class NetworkSliceIdSerializer(serializers.ModelSerializer):
 class UserDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserDashboardView
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
 
 class UserDashboardViewIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserDashboardView
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
-
-
-
-
-class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = SiteDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
-
-class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = SiteDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
 
 
 
@@ -895,16 +1058,22 @@ class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
 class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = PlanetStackPrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
 
 class PlanetStackPrivilegeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = PlanetStackPrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
 
 
 
@@ -912,16 +1081,22 @@ class PlanetStackPrivilegeIdSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = User
-        fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+        fields = ('humanReadableName', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
 
 class UserIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = User
-        fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+        fields = ('humanReadableName', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
 
 
 
@@ -945,9 +1120,12 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
     flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Deployment
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 class DeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -968,9 +1146,12 @@ class DeploymentIdSerializer(serializers.ModelSerializer):
     flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
     
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Deployment
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl','sites','sites','flavors','flavors',)
 
 
 
@@ -978,33 +1159,22 @@ class DeploymentIdSerializer(serializers.ModelSerializer):
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Reservation
-        fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
 
 class ReservationIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Reservation
-        fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
-
-
-
-
-class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = SitePrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
-
-class SitePrivilegeIdSerializer(serializers.ModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = SitePrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
 
 
 
@@ -1012,16 +1182,68 @@ class SitePrivilegeIdSerializer(serializers.ModelSerializer):
 class SliceDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
 
 class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+
+
+
+
+class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = SitePrivilege
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','site','role',)
+
+class SitePrivilegeIdSerializer(serializers.ModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = SitePrivilege
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','site','role',)
+
+
+
+
+class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = PlanetStack
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','description',)
+
+class PlanetStackIdSerializer(serializers.ModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = PlanetStack
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','description',)
 
 
 
@@ -1029,16 +1251,22 @@ class SliceDeploymentsIdSerializer(serializers.ModelSerializer):
 class UserDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 class UserDeploymentsIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','deployment','kuser_id',)
 
 
 
@@ -1046,16 +1274,22 @@ class UserDeploymentsIdSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Account
-        fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site',)
 
 class AccountIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Account
-        fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site',)
 
 
 
@@ -1063,16 +1297,22 @@ class AccountIdSerializer(serializers.ModelSerializer):
 class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkParameterType
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description',)
 
 class NetworkParameterTypeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkParameterType
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description',)
 
 
 
@@ -1080,16 +1320,22 @@ class NetworkParameterTypeIdSerializer(serializers.ModelSerializer):
 class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SiteCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 class SiteCredentialIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SiteCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 
 
@@ -1097,33 +1343,22 @@ class SiteCredentialIdSerializer(serializers.ModelSerializer):
 class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DeploymentPrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
 
 class DeploymentPrivilegeIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DeploymentPrivilege
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
-
-
-
-
-class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = ImageDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
-
-class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
-    id = serializers.Field()
-    
-    class Meta:
-        model = ImageDeployments
-        fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
 
 
 
@@ -1131,16 +1366,22 @@ class ImageDeploymentsIdSerializer(serializers.ModelSerializer):
 class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DeploymentRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class DeploymentRoleIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = DeploymentRole
-        fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 
 
@@ -1148,16 +1389,45 @@ class DeploymentRoleIdSerializer(serializers.ModelSerializer):
 class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
 
 class UserCredentialIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = UserCredential
-        fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+
+
+
+
+class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = SiteDeployments
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+
+class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    class Meta:
+        model = SiteDeployments
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
 
 
 
@@ -1165,16 +1435,22 @@ class UserCredentialIdSerializer(serializers.ModelSerializer):
 class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceTag
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','name','value',)
 
 class SliceTagIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = SliceTag
-        fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','slice','name','value',)
 
 
 
@@ -1182,16 +1458,22 @@ class SliceTagIdSerializer(serializers.ModelSerializer):
 class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkTemplate
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
 class NetworkTemplateIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = NetworkTemplate
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
 
 
@@ -1199,16 +1481,22 @@ class NetworkTemplateIdSerializer(serializers.ModelSerializer):
 class RouterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Router
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','owner',)
 
 class RouterIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = Router
-        fields = ('id','created','updated','enacted','backend_status','deleted','name','owner',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','name','owner',)
 
 
 
@@ -1216,16 +1504,22 @@ class RouterIdSerializer(serializers.ModelSerializer):
 class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceResource
-        fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 class ServiceResourceIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = ServiceResource
-        fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+        fields = ('humanReadableName', 'id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 
 
@@ -1266,7 +1560,7 @@ serializerLookUp = {
 
                  ServiceClass: ServiceClassSerializer,
 
-                 PlanetStack: PlanetStackSerializer,
+                 Payment: PaymentSerializer,
 
                  Charge: ChargeSerializer,
 
@@ -1284,15 +1578,13 @@ serializerLookUp = {
 
                  DashboardView: DashboardViewSerializer,
 
-                 ReservedResource: ReservedResourceSerializer,
+                 ImageDeployments: ImageDeploymentsSerializer,
 
-                 Payment: PaymentSerializer,
+                 ReservedResource: ReservedResourceSerializer,
 
                  NetworkSlice: NetworkSliceSerializer,
 
                  UserDashboardView: UserDashboardViewSerializer,
-
-                 SiteDeployments: SiteDeploymentsSerializer,
 
                  PlanetStackPrivilege: PlanetStackPrivilegeSerializer,
 
@@ -1302,9 +1594,11 @@ serializerLookUp = {
 
                  Reservation: ReservationSerializer,
 
+                 SliceDeployments: SliceDeploymentsSerializer,
+
                  SitePrivilege: SitePrivilegeSerializer,
 
-                 SliceDeployments: SliceDeploymentsSerializer,
+                 PlanetStack: PlanetStackSerializer,
 
                  UserDeployments: UserDeploymentsSerializer,
 
@@ -1316,11 +1610,11 @@ serializerLookUp = {
 
                  DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
-                 ImageDeployments: ImageDeploymentsSerializer,
-
                  DeploymentRole: DeploymentRoleSerializer,
 
                  UserCredential: UserCredentialSerializer,
+
+                 SiteDeployments: SiteDeploymentsSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -2758,12 +3052,12 @@ class ServiceClassNew(GenericAPIView):
 
 
 
-class PlanetStackList(generics.ListCreateAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class PaymentList(generics.ListCreateAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -2773,7 +3067,7 @@ class PlanetStackList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
+        return Payment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -2782,21 +3076,21 @@ class PlanetStackList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(PlanetStackList, self).create(request, *args, **kwargs)
+            return super(PaymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
+        ret = super(PaymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -2806,7 +3100,7 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
+        return Payment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -2817,9 +3111,9 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     filled with defaults. I solved it another way, so this code may soon be
     abandoned.
 
-class PlanetStackNew(GenericAPIView):
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class PaymentNew(GenericAPIView):
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
 
     def get(self, request, *args, **kwargs):
         return self.makenew(request, *args, **kwargs)
@@ -2832,7 +3126,7 @@ class PlanetStackNew(GenericAPIView):
             return self.serializer_class
 
     def makenew(self, request, *args, **kwargs):
-        obj = PlanetStack()
+        obj = Payment()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
@@ -3487,6 +3781,87 @@ class DashboardViewNew(GenericAPIView):
 
 
 
+class ImageDeploymentsList(generics.ListCreateAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ImageDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ImageDeployments.objects.select_related().all()
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ImageDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class ImageDeploymentsNew(GenericAPIView):
+    serializer_class = ImageDeploymentsSerializer
+    id_serializer_class = ImageDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = ImageDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
+
+
 class ReservedResourceList(generics.ListCreateAPIView):
     queryset = ReservedResource.objects.select_related().all()
     serializer_class = ReservedResourceSerializer
@@ -3562,87 +3937,6 @@ class ReservedResourceNew(GenericAPIView):
 
     def makenew(self, request, *args, **kwargs):
         obj = ReservedResource()
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-"""
-
-
-
-class PaymentList(generics.ListCreateAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Payment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PaymentList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(PaymentList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Payment.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-"""
-    XXX smbaker: my intent was to create a view that would return 'new' objects
-    filled with defaults. I solved it another way, so this code may soon be
-    abandoned.
-
-class PaymentNew(GenericAPIView):
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.makenew(request, *args, **kwargs)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def makenew(self, request, *args, **kwargs):
-        obj = Payment()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
@@ -3805,87 +4099,6 @@ class UserDashboardViewNew(GenericAPIView):
 
     def makenew(self, request, *args, **kwargs):
         obj = UserDashboardView()
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-"""
-
-
-
-class SiteDeploymentsList(generics.ListCreateAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-"""
-    XXX smbaker: my intent was to create a view that would return 'new' objects
-    filled with defaults. I solved it another way, so this code may soon be
-    abandoned.
-
-class SiteDeploymentsNew(GenericAPIView):
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.makenew(request, *args, **kwargs)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def makenew(self, request, *args, **kwargs):
-        obj = SiteDeployments()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
@@ -4216,6 +4429,87 @@ class ReservationNew(GenericAPIView):
 
 
 
+class SliceDeploymentsList(generics.ListCreateAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SliceDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SliceDeployments.objects.select_related().all()
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SliceDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SliceDeploymentsNew(GenericAPIView):
+    serializer_class = SliceDeploymentsSerializer
+    id_serializer_class = SliceDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SliceDeployments()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
+
+
 class SitePrivilegeList(generics.ListCreateAPIView):
     queryset = SitePrivilege.objects.select_related().all()
     serializer_class = SitePrivilegeSerializer
@@ -4297,12 +4591,12 @@ class SitePrivilegeNew(GenericAPIView):
 
 
 
-class SliceDeploymentsList(generics.ListCreateAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
+class PlanetStackList(generics.ListCreateAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','deployment','tenant_id','network_id','router_id','subnet_id',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4312,7 +4606,7 @@ class SliceDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
+        return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -4321,21 +4615,21 @@ class SliceDeploymentsList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+            return super(PlanetStackList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SliceDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SliceDeployments.objects.select_related().all()
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
+class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4345,7 +4639,7 @@ class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SliceDeployments.select_by_user(self.request.user)
+        return PlanetStack.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -4356,9 +4650,9 @@ class SliceDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     filled with defaults. I solved it another way, so this code may soon be
     abandoned.
 
-class SliceDeploymentsNew(GenericAPIView):
-    serializer_class = SliceDeploymentsSerializer
-    id_serializer_class = SliceDeploymentsIdSerializer
+class PlanetStackNew(GenericAPIView):
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
 
     def get(self, request, *args, **kwargs):
         return self.makenew(request, *args, **kwargs)
@@ -4371,7 +4665,7 @@ class SliceDeploymentsNew(GenericAPIView):
             return self.serializer_class
 
     def makenew(self, request, *args, **kwargs):
-        obj = SliceDeployments()
+        obj = PlanetStack()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """
@@ -4783,87 +5077,6 @@ class DeploymentPrivilegeNew(GenericAPIView):
 
 
 
-class ImageDeploymentsList(generics.ListCreateAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment','glance_image_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ImageDeployments.objects.select_related().all()
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ImageDeployments.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-"""
-    XXX smbaker: my intent was to create a view that would return 'new' objects
-    filled with defaults. I solved it another way, so this code may soon be
-    abandoned.
-
-class ImageDeploymentsNew(GenericAPIView):
-    serializer_class = ImageDeploymentsSerializer
-    id_serializer_class = ImageDeploymentsIdSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.makenew(request, *args, **kwargs)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def makenew(self, request, *args, **kwargs):
-        obj = ImageDeployments()
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-"""
-
-
-
 class DeploymentRoleList(generics.ListCreateAPIView):
     queryset = DeploymentRole.objects.select_related().all()
     serializer_class = DeploymentRoleSerializer
@@ -5020,6 +5233,87 @@ class UserCredentialNew(GenericAPIView):
 
     def makenew(self, request, *args, **kwargs):
         obj = UserCredential()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
+"""
+
+
+
+class SiteDeploymentsList(generics.ListCreateAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','tenant_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SiteDeployments.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployments.objects.select_related().all()
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SiteDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+"""
+    XXX smbaker: my intent was to create a view that would return 'new' objects
+    filled with defaults. I solved it another way, so this code may soon be
+    abandoned.
+
+class SiteDeploymentsNew(GenericAPIView):
+    serializer_class = SiteDeploymentsSerializer
+    id_serializer_class = SiteDeploymentsIdSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.makenew(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def makenew(self, request, *args, **kwargs):
+        obj = SiteDeployments()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 """

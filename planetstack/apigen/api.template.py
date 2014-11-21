@@ -54,9 +54,12 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
     {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
     {% endif %}
     {% endfor %}
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = {{ object.camel }}
-        fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        fields = ('humanReadableName', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -67,9 +70,12 @@ class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
     {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
     {% endif %}
     {% endfor %}
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    def getHumanReadableName(self, obj):
+        return str(obj)
     class Meta:
         model = {{ object.camel }}
-        fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        fields = ('humanReadableName', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 
 {% endfor %}
