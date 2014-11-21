@@ -164,9 +164,9 @@ def get_REST_patterns():
         url(r'plstackapi/reservations/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservationDetail.as_view(), name ='reservation-detail'),
 #        url(r'plstackapi/reservations/!new/$', ReservationNew.as_view(), name ='reservation-new'),
     
-        url(r'plstackapi/slice_deployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
-        url(r'plstackapi/slice_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
-#        url(r'plstackapi/slice_deployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployments-new'),
+        url(r'plstackapi/slicedeployments/$', SliceDeploymentsList.as_view(), name='slicedeployments-list'),
+        url(r'plstackapi/slicedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceDeploymentsDetail.as_view(), name ='slicedeployments-detail'),
+#        url(r'plstackapi/slicedeployments/!new/$', SliceDeploymentsNew.as_view(), name ='slicedeployments-new'),
     
         url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
@@ -176,9 +176,9 @@ def get_REST_patterns():
         url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
 #        url(r'plstackapi/planetstacks/!new/$', PlanetStackNew.as_view(), name ='planetstack-new'),
     
-        url(r'plstackapi/user_deployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
-        url(r'plstackapi/user_deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
-#        url(r'plstackapi/user_deployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployments-new'),
+        url(r'plstackapi/userdeployments/$', UserDeploymentsList.as_view(), name='userdeployments-list'),
+        url(r'plstackapi/userdeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDeploymentsDetail.as_view(), name ='userdeployments-detail'),
+#        url(r'plstackapi/userdeployments/!new/$', UserDeploymentsNew.as_view(), name ='userdeployments-new'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
