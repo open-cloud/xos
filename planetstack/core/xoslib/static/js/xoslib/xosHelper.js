@@ -116,6 +116,8 @@ XOSApplication = Marionette.Application.extend({
             $(this.statusMsgId).html( templateFromId("#xos-status-template")(result) );
         }
 
+        limitTableRows(this.logTableId, 5);
+
         return logMessageId;
     },
 
