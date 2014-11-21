@@ -12,16 +12,20 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = serializers.Field()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
+        humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
+
+        def getHumanReadableName(self, obj):
+            return str(obj)
 
         networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
         availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
 
         class Meta:
             model = SlicePlus
-            fields = ('id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
