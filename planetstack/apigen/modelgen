@@ -64,8 +64,8 @@ class GenObj(object):
             # called.
             REST_FIXUP = {'networkdeploymentses': 'networkdeployments',
                             'imagedeploymentses': 'imagedeployments',
-                            'slicedeploymentses': 'slice_deployments',
-                            'userdeploymentses': 'user_deployments',
+                            'slicedeploymentses': 'slicedeployments',
+                            'userdeploymentses': 'userdeployments',
                             'sitedeploymentses': 'sitedeployments',
                             'siteroles': 'site_roles',
                             'sliceprivileges': 'slice_privileges',
