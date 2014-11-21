@@ -65,7 +65,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
 		         'tenant': slice_deployment.slice.name,
 		         'tenant_description': slice_deployment.slice.description,
 			 'roles':roles,
-			 'name':deployment_user.email,
+			 'name':deployment_user.user.email,
 			 'max_instances':max_instances}
 
 	res = run_template('sync_slice_deployments.yaml', tenant_fields)
