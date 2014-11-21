@@ -12,10 +12,12 @@
 
 #logPanel {
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #logTable {
     width: 100%;
+    white-space: nowrap;
 }
 
 #logTable tr {

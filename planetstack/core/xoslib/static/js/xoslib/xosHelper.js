@@ -205,27 +205,27 @@ XOSDetailView = Marionette.ItemView.extend({
             },
 
             saveError: function(model, result, xhr, infoMsgId) {
-                result["what"] = "save " + model.__proto__.modelName;
+                result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showError(result);
             },
 
             saveSuccess: function(model, result, xhr, infoMsgId) {
                 result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
-                result["what"] = "save " + model.__proto__.modelName;
+                result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showSuccess(result);
             },
 
             destroyError: function(model, result, xhr, infoMsgId) {
-                result["what"] = "destroy " + model.__proto__.modelName;
+                result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showError(result);
             },
 
             destroySuccess: function(model, result, xhr, infoMsgId) {
                 result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
-                result["what"] = "destroy " + model.__proto__.modelName;
+                result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showSuccess(result);
             },
@@ -252,7 +252,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
             save: function() {
                 this.app.hideError();
-                var infoMsgId = this.app.showInformational( {what: "save " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
+                var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
                 var isNew = !this.model.id;
@@ -268,7 +268,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
             destroyModel: function() {
                  this.app.hideError();
-                 var infoMsgId = this.app.showInformational( {what: "destroy " + this.model.__proto__.modelName, status: "", statusText: "in progress..."} );
+                 var infoMsgId = this.app.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
                  var that = this;
                  this.model.destroy({error: function(model, result, xhr) { that.destroyError(model,result,xhr,infoMsgId);},
                                      success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
