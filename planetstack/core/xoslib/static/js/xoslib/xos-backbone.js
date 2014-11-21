@@ -264,7 +264,11 @@ if (! window.XOSLIB_LOADED ) {
         modelName = attrs.modelName;
         modelClassName = modelName;
         collectionClassName = modelName + "Collection";
-        collectionName = modelName + "s";
+
+        if (!attrs.collectionName) {
+            attrs.collectionName = modelName + "s";
+        }
+        collectionName = attrs.collectionName;
 
         modelAttrs = {}
         collectionAttrs = {}
@@ -364,7 +368,8 @@ if (! window.XOSLIB_LOADED ) {
         // enhanced REST
         define_model(this, {urlRoot: SLICEPLUS_API,
                             relatedCollections: {'slivers': "slice"},
-                            modelName: "slicePlus"});
+                            modelName: "slicePlus",
+                            collectionName: "slicesPlus"});
 
         this.listObjects = function() { return this.allCollectionNames; };
 

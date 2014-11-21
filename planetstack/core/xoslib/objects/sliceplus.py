@@ -18,7 +18,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         roles = []
         if (user!=None):
-            roles = [x.role for x in self.slice_privileges.filter(user=user)]
+            roles = [x.role for x in self.sliceprivileges.filter(user=user)]
 
         return {"sitesUsed": used_sites,
                 "deploymentsUsed": used_deployments,
