@@ -78,7 +78,7 @@ class DashboardSliceInteractions(View):
                     if sp.user.id not in ids:
                         ids.append(sp.user.id)
         elif name=="networks":
-            for sp in slice.networkslice_set.all():
+            for sp in slice.networkslices.all():
                     if sp.network.id not in ids:
                         ids.append(sp.network.id)
         elif name=="sites":
