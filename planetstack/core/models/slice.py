@@ -99,7 +99,7 @@ class Slice(PlCoreBase):
         slice_privileges = SlicePrivilege.objects.filter(slice=self)
         slice_privileges.delete() 
         # continue with normal delete
-        super(SliceAdmin, self).delete(*args, **kwds) 
+        super(Slice, self).delete(*args, **kwds) 
          
 
 class SliceRole(PlCoreBase):
