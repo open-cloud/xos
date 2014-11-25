@@ -206,6 +206,21 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
     def is_ephemeral(cls):
 	return cls in ephemeral_models
 
+    def getValidators(self):
+        """ primarily for REST API, return a dictionary of field names mapped
+            to lists of the type of validations that need to be applied to
+            those fields.
+        """
+        validators = {}
+        for field in self._meta.fields:
+            l = []
+            if field.blank==False:
+                l.append("notBlank")
+            validators[field.name] = l
+        return validators
+
+
+
 
 
 
