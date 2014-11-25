@@ -67,11 +67,23 @@ XOSApplication = Marionette.Application.extend({
          }
     },
 
+    popupErrorDialog: function(responseText) {
+        $("#xos-error-dialog").html(templateFromId("#xos-error-response")($.parseJSON(responseText)));
+        $("#xos-error-dialog").dialog({
+            modal: true,
+            buttons: {
+                Ok: function() { $(this).dialog("close"); }
+            }
+        });
+    },
+
     showError: function(result) {
          result["statusclass"] = "failure";
          if (this.logTableId) {
              this.appendLogWindow(result);
+             this.popupErrorDialog(result.responseText);
          } else {
+             // this is really old stuff
              $(this.errorBoxId).show();
              $(this.errorBoxId).html(_.template($(this.errorTemplate).html())(result));
              var that=this;
