@@ -93,13 +93,13 @@ class Slice(PlCoreBase):
         nets = Network.objects.filter(slices=self)
         nets.delete() 
         # delete slice deployments
-        slice_deployments = SliceDeploymentss.objects.filter(slice=self)
+        slice_deployments = SliceDeployments.objects.filter(slice=self)
         slice_deployments.delete()
         # delete slice privilege
         slice_privileges = SlicePrivilege.objects.filter(slice=self)
         slice_privileges.delete() 
         # continue with normal delete
-        super(SliceAdmin, self).delete(*args, **kwds) 
+        super(Slice, self).delete(*args, **kwds) 
          
 
 class SliceRole(PlCoreBase):
