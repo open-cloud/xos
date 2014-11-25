@@ -12,7 +12,7 @@ import inspect
 from django.core import serializers
 import json
 
-print "function xos_get_defaults() {"
+print "function xos_get_validators() {"
 
 for c in dir(core.models):
     c = getattr(core.models,c)
@@ -24,18 +24,12 @@ for c in dir(core.models):
         if (classname in ["plCoreBase", "singletonModel"]):
             continue
 
-        fieldNames = [f.name for f in c._meta.fields]
-
-        fields = json.loads(serializers.serialize("json",[c],fields=fieldNames))[0]["fields"]
-
-        for f in fields.keys():
-            if f in ['created', 'updated', 'enacted']:
-                fields[f] = None
+        fields = c.getValidators();
 
         fields_json = json.dumps(fields)
 
         print "  this." + classname + " = " + fields_json + ";"
 
 print "};"
-print "xosdefaults = new xos_get_defaults();"
+print "xosvalidators = new xos_get_validators();"
 
