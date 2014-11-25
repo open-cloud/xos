@@ -83,6 +83,20 @@ class DiffModelMixIn:
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
 
+    #classmethod
+    def getValidators(cls):
+        """ primarily for REST API, return a dictionary of field names mapped
+            to lists of the type of validations that need to be applied to
+            those fields.
+        """
+        validators = {}
+        for field in cls._meta.fields:
+            l = []
+            if field.blank==False:
+                l.append("notBlank")
+            validators[field.name] = l
+        return validators
+
 class PlCoreBase(models.Model): # , DiffModelMixIn):
     objects = PlCoreBaseManager()
     deleted_objects = PlCoreBaseDeletionManager()
@@ -118,6 +132,21 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
 
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
+
+    #classmethod
+    def getValidators(cls):
+        """ primarily for REST API, return a dictionary of field names mapped
+            to lists of the type of validations that need to be applied to
+            those fields.
+        """
+        validators = {}
+        for field in cls._meta.fields:
+            l = []
+            if field.blank==False:
+                l.append("notBlank")
+            validators[field.name] = l
+        return validators
+
     # ---- end copy stuff from DiffModelMixin ----
 
     # default values for created and updated are only there to keep evolution
@@ -205,19 +234,6 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
     @classmethod
     def is_ephemeral(cls):
 	return cls in ephemeral_models
-
-    def getValidators(self):
-        """ primarily for REST API, return a dictionary of field names mapped
-            to lists of the type of validations that need to be applied to
-            those fields.
-        """
-        validators = {}
-        for field in self._meta.fields:
-            l = []
-            if field.blank==False:
-                l.append("notBlank")
-            validators[field.name] = l
-        return validators
 
 
 
