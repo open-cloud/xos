@@ -30,7 +30,6 @@ def get_REST_patterns():
     {% for object in generator.all %}
         url(r'plstackapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
         url(r'plstackapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
-#        url(r'plstackapi/{{ object.rest_name }}/!new/$', {{ object.camel }}New.as_view(), name ='{{ object.singular }}-new'),
     {% endfor %}
     )
 
@@ -55,11 +54,17 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
         return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
     class Meta:
         model = {{ object.camel }}
-        fields = ('humanReadableName', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
@@ -71,11 +76,17 @@ class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
         return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
     class Meta:
         model = {{ object.camel }}
-        fields = ('humanReadableName', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
+        fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 
 {% endfor %}
@@ -100,16 +111,20 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
                                          files=request.FILES, partial=partial)
 
         if not serializer.is_valid():
-            print "UpdateModelMixin: not serializer.is_valid"
-            print serializer.errors
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             self.pre_save(serializer.object)
         except ValidationError as err:
             # full_clean on model instance may be called in pre_save,
             # so we have to handle eventual errors.
-            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+            response = {"error": "validation",
+                         "specific_error": "ValidationError in pre_save",
+                         "reasons": err.message_dict}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.object is not None:
             if not serializer.object.can_update(request.user):
@@ -155,7 +170,10 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if not (serializer.is_valid()):
-            raise Exception("failed serializer.is_valid: " + str(serializer.errors))
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
@@ -188,30 +206,5 @@ class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-"""
-    XXX smbaker: my intent was to create a view that would return 'new' objects
-    filled with defaults. I solved it another way, so this code may soon be
-    abandoned.
-
-class {{ object.camel }}New(GenericAPIView):
-    serializer_class = {{ object.camel }}Serializer
-    id_serializer_class = {{ object.camel }}IdSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.makenew(request, *args, **kwargs)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def makenew(self, request, *args, **kwargs):
-        obj = {{ object.camel }}()
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
-"""
 
 {% endfor %}
