@@ -1,5 +1,21 @@
 <!-- Error and Success templates -->
 
+<script type="text/template" id="xos-error-response">
+  <h5>Error</h5>
+  <table>
+  <tr><td>error:</td><td><%= error %></td></tr>
+  <tr><td>check:</td><td><%= specific_error %></td></tr>
+  </table>
+  <h5>Details:</h5>
+      <table>
+      <tbody>
+      <% _.each(reasons, function(element, index) { %>
+          <tr><td><%= index %></td><td><%= element %></td></tr>
+      <% }); %>
+      </tbody>
+      </table>
+</script>
+
 <script type="text/template" id="xos-error-template">
   <button id="close-error-box">Close Error Message</button>
   <h3>An error has occurred.</h3>
