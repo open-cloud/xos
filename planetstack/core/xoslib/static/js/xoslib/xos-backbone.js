@@ -72,17 +72,22 @@ if (! window.XOSLIB_LOADED ) {
 
             validate: function(attrs, options) {
                 errors = {};
+                foundErrors = false;
                 _.each(this.validators, function(validatorList, fieldName) {
                     _.each(validatorList, function(validator) {
                         if (fieldName in attrs) {
                             validatorResult = validateField(validator, attrs[fieldName])
                             if (validatorResult != true) {
                                 errors[fieldName] = validatorResult;
+                                foundErrors = true;
                             }
                         }
                     });
                 });
-                return errors;
+                if (foundErrors) {
+                    return errors;
+                }
+                // backbone.js semantics -- on successful validate, return nothing
             }
     });
 
