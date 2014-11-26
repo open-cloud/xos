@@ -369,12 +369,13 @@ XOSDetailView = Marionette.ItemView.extend({
               },
 
             onFormDataInvalid: function(errors) {
+                this.$el.find(".help-inline").remove();
                 var self=this;
                 var markErrors = function(value, key) {
                     console.log("name='" + key + "'");
                     var $inputElement = self.$el.find("[name='" + key + "']");
                     var $inputContainer = $inputElement.parent();
-                    $inputContainer.find(".help-inline").remove();
+                    //$inputContainer.find(".help-inline").remove();
                     var $errorEl = $("<span>", {class: "help-inline error", text: value});
                     $inputContainer.append($errorEl).addClass("error");
                 }
