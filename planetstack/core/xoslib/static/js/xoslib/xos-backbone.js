@@ -76,7 +76,7 @@ if (! window.XOSLIB_LOADED ) {
                 _.each(this.validators, function(validatorList, fieldName) {
                     _.each(validatorList, function(validator) {
                         if (fieldName in attrs) {
-                            validatorResult = validateField(validator, attrs[fieldName])
+                            validatorResult = validateField(validator, attrs[fieldName], this)
                             if (validatorResult != true) {
                                 errors[fieldName] = validatorResult;
                                 foundErrors = true;
@@ -295,7 +295,7 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "validate"])>=0) {
                 modelAttrs[key] = value;
             }
             if ($.inArray(key, ["urlRoot", "modelName", "relatedCollections", "foreignCollections"])>=0) {
@@ -334,7 +334,21 @@ if (! window.XOSLIB_LOADED ) {
         define_model(this, {urlRoot: SLICE_API,
                            relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
-                           modelName: "slice"});
+                           modelName: "slice",
+                           validate: function(attrs, options) {
+                               errors = XOSModel.prototype.validate(this, attrs, options);
+                               // validate that slice.name starts with site.login_base
+                               site = attrs.site || this.site;
+                               if ((site!=undefined) && (attrs.name!=undefined)) {
+                                   site = xos.sites.get(site);
+                                   if (attrs.name.indexOf(site.attributes.login_base) != 0) {
+                                        errors = errors || {};
+                                        errors["name"] = "must start with " + site.attributes.login_base;
+                                   }
+                               }
+                               return errors;
+                             },
+                           });
 
         define_model(this, {urlRoot: SLICEDEPLOYMENT_API,
                            foreignCollections: ["slices", "deployments"],
