@@ -66,6 +66,11 @@
     text-decoration:none;
 }
 
+.help-inline.error {
+    color: red;
+    font-weight: bold;
+}
+
 /* these are for the inline list and detail titles */
 
 .xos-list-title {

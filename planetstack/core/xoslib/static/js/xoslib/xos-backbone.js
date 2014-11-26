@@ -68,6 +68,21 @@ if (! window.XOSLIB_LOADED ) {
                     }
                 }
                 return res;
+            },
+
+            validate: function(attrs, options) {
+                errors = {};
+                _.each(this.validators, function(validatorList, fieldName) {
+                    _.each(validatorList, function(validator) {
+                        if (fieldName in attrs) {
+                            validatorResult = validateField(validator, attrs[fieldName])
+                            if (validatorResult != true) {
+                                errors[fieldName] = validatorResult;
+                            }
+                        }
+                    });
+                });
+                return errors;
             }
     });
 
@@ -285,6 +300,10 @@ if (! window.XOSLIB_LOADED ) {
 
         if (xosdefaults && xosdefaults[modelName]) {
             modelAttrs["defaults"] = xosdefaults[modelName];
+        }
+
+        if (xosvalidators && xosvalidators[modelName]) {
+            modelAttrs["validators"] = xosvalidators[modelName];
         }
 
         lib[modelName] = XOSModel.extend(modelAttrs);
