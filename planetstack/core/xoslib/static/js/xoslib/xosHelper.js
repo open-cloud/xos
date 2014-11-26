@@ -268,6 +268,8 @@ XOSDetailView = Marionette.ItemView.extend({
                 var that = this;
                 var isNew = !this.model.id;
 
+                this.$el.find(".help-inline").remove();
+
                 /* although model.validate() is called automatically by
                    model.save, we call it ourselves, so we can throw up our
                    validation error before creating the infoMsg in the log
@@ -369,7 +371,6 @@ XOSDetailView = Marionette.ItemView.extend({
               },
 
             onFormDataInvalid: function(errors) {
-                this.$el.find(".help-inline").remove();
                 var self=this;
                 var markErrors = function(value, key) {
                     console.log("name='" + key + "'");
