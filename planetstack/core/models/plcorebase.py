@@ -94,6 +94,8 @@ class DiffModelMixIn:
             l = []
             if field.blank==False:
                 l.append("notBlank")
+            if field.__class__.__name__=="URLField":
+                l.append("url")
             validators[field.name] = l
         return validators
 
@@ -144,6 +146,8 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
             l = []
             if field.blank==False:
                 l.append("notBlank")
+            if field.__class__.__name__=="URLField":
+                l.append("url")
             validators[field.name] = l
         return validators
 
