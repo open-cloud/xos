@@ -341,9 +341,9 @@ if (! window.XOSLIB_LOADED ) {
                                site = attrs.site || this.site;
                                if ((site!=undefined) && (attrs.name!=undefined)) {
                                    site = xos.sites.get(site);
-                                   if (attrs.name.indexOf(site.attributes.login_base) != 0) {
+                                   if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
                                         errors = errors || {};
-                                        errors["name"] = "must start with " + site.attributes.login_base;
+                                        errors["name"] = "must start with " + site.attributes.login_base + "_";
                                    }
                                }
                                return errors;
