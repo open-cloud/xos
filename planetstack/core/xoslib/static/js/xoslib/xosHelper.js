@@ -264,10 +264,22 @@ XOSDetailView = Marionette.ItemView.extend({
 
             save: function() {
                 this.app.hideError();
-                var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
                 var isNew = !this.model.id;
+
+                /* although model.validate() is called automatically by
+                   model.save, we call it ourselves, so we can throw up our
+                   validation error before creating the infoMsg in the log
+                */
+                errors =  this.model.validate(data);
+                if (errors) {
+                    this.onFormDataInvalid(errors);
+                    return;
+                }
+
+                var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
+
                 this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId);}});
                 if (isNew) {
@@ -355,6 +367,19 @@ XOSDetailView = Marionette.ItemView.extend({
                     this.showTabs(tabs);
                     this.tabClick('#xos-nav-detail', 'detail');
               },
+
+            onFormDataInvalid: function(errors) {
+                var self=this;
+                var markErrors = function(value, key) {
+                    console.log("name='" + key + "'");
+                    var $inputElement = self.$el.find("[name='" + key + "']");
+                    var $inputContainer = $inputElement.parent();
+                    $inputContainer.find(".help-inline").remove();
+                    var $errorEl = $("<span>", {class: "help-inline error", text: value});
+                    $inputContainer.append($errorEl).addClass("error");
+                }
+                _.each(errors, markErrors);
+            },
 
 });
 
