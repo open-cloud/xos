@@ -10,7 +10,7 @@ from planetstack.config import Config
 
 config = Config()
 
-class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
+class ControllerLinkDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
         parent=super(DeploymentLinkDeletionManager, self)
         try:
@@ -20,7 +20,7 @@ class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
 
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
         if (backend_type):
-            return parent_queryset.filter(Q(deployment__backend_type=backend_type))
+            return parent_queryset.filter(Q(controller__backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -29,9 +29,9 @@ class DeploymentLinkDeletionManager(PlCoreBaseDeletionManager):
         return self.get_queryset()
 
 
-class DeploymentDeletionManager(PlCoreBaseDeletionManager):
+class ControllerDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
-        parent=super(DeploymentDeletionManager, self)
+        parent=super(ControllerDeletionManager, self)
 
         try:
             backend_type = config.observer_backend_type
@@ -49,9 +49,9 @@ class DeploymentDeletionManager(PlCoreBaseDeletionManager):
     def get_query_set(self):
         return self.get_queryset()
 
-class DeploymentLinkManager(PlCoreBaseManager):
+class ControllerLinkManager(PlCoreBaseManager):
     def get_queryset(self):
-        parent=super(DeploymentLinkManager, self)
+        parent=super(ControllerLinkManager, self)
 
         try:
             backend_type = config.observer_backend_type
@@ -61,7 +61,7 @@ class DeploymentLinkManager(PlCoreBaseManager):
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
 
         if backend_type:
-            return parent_queryset.filter(Q(deployment__backend_type=backend_type))
+            return parent_queryset.filter(Q(controller__backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -70,7 +70,7 @@ class DeploymentLinkManager(PlCoreBaseManager):
         return self.get_queryset()
 
 
-class DeploymentManager(PlCoreBaseManager):
+class ControllerManager(PlCoreBaseManager):
     def get_queryset(self):
         parent=super(DeploymentManager, self)
 
@@ -166,15 +166,15 @@ class SitePrivilege(PlCoreBase):
         return qs
 
 class Deployment(PlCoreBase):
-    objects = DeploymentManager()
-    deleted_objects = DeploymentDeletionManager()
+    #objects = DeploymentManager()
+    #deleted_objects = DeploymentDeletionManager()
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
-    admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
-    admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
-    admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
-    auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
-    backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
-    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
+    #admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
+    #admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
+    #admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
+    #auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
+    #backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
+    #availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     # smbaker: the default of 'allow all' is intended for evolutions of existing
     #    deployments. When new deployments are created via the GUI, they are
@@ -216,7 +216,7 @@ class Deployment(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class DeploymentRole(PlCoreBase):
+class ControllerRole(PlCoreBase):
     #objects = DeploymentLinkManager()
     #deleted_objects = DeploymentLinkDeletionManager()
 
@@ -225,45 +225,63 @@ class DeploymentRole(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.role)
 
-class DeploymentPrivilege(PlCoreBase):
-    objects = DeploymentLinkManager()
-    deleted_objects = DeploymentLinkDeletionManager()
+class ControllerPrivilege(PlCoreBase):
+    objects = ControllerLinkManager()
+    deleted_objects = ControllerLinkDeletionManager()
 
-    user = models.ForeignKey('User', related_name='deploymentprivileges')
-    deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
-    role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
+    user = models.ForeignKey('User', related_name='controllerprivileges')
+    controller = models.ForeignKey('Controller', related_name='controllerprivileges')
+    role = models.ForeignKey('ControllerRole',related_name='controllerprivileges')
 
-    def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
+    def __unicode__(self):  return u'%s %s %s' % (self.controller, self.user, self.role)
 
     def can_update(self, user):
         if user.is_readonly:
             return False
         if user.is_admin:
             return True
-        dprivs = DeploymentPrivilege.objects.filter(user=user)
-        for dpriv in dprivs:
-            if dpriv.role.role == 'admin':
+        cprivs = ControllerPrivilege.objects.filter(user=user)
+        for cpriv in dprivs:
+            if cpriv.role.role == 'admin':
                 return True
         return False
 
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = DeploymentPrivilege.objects.all()
+            qs = ControllerPrivilege.objects.all()
         else:
-            dpriv_ids = [dp.id for dp in DeploymentPrivilege.objects.filter(user=user)]
-            qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
+            cpriv_ids = [cp.id for cp in ControllerPrivilege.objects.filter(user=user)]
+            qs = ControllerPrivilege.objects.filter(id__in=cpriv_ids)
         return qs 
 
 class SiteDeployments(PlCoreBase):
-    objects = DeploymentLinkManager()
-    deleted_objects = DeploymentLinkDeletionManager()
+    #objects = DeploymentLinkManager()
+    #deleted_objects = DeploymentLinkDeletionManager()
+    objects = ControllerManager()
+    deleted_objects = ControllerDeletionManager()
 
     site = models.ForeignKey(Site,related_name='sitedeployments')
     deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
-    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
+    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
+    #tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
+    def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
 
-    #class Meta:
-    #    db_table = 'core_site_deployments'
-    #    #auto_created = Site
+class Controller(PlCoreBase):
+    site_deployment = models.ForeignKey(SiteDeployments,related_name='controller')
 
+    backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
+    auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
+    admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
+    admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
+    admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
+
+    def __unicode__(self):  return u'%s %s' % (self.site_deployment, self.backend_type)
+
+class ControllerSites(PlCoreBase):
+    objects = ControllerLinkManager()
+    deleted_objects = ControllerLinkDeletionManager() 
+
+    controller = models.ForeignKey(Controller, related_name='controllersites')
+    site_deployment = models.ForeignKey(SiteDeployments, related_name='controllersites')
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
