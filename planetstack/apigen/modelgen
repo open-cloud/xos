@@ -62,10 +62,10 @@ class GenObj(object):
             # These are things that either for historic reasons or due to incorrect naming,
             # got called something different than the autogen thinks they should be
             # called.
-            REST_FIXUP = {'networkdeploymentses': 'networkdeployments',
-                            'imagedeploymentses': 'imagedeployments',
-                            'slicedeploymentses': 'slicedeployments',
-                            'userdeploymentses': 'userdeployments',
+            REST_FIXUP = {'controllernetworkses': 'controllernetworks',
+                            'controllerimageses': 'controllerimages',
+                            'controllersliceses': 'controllerslices',
+                            'controlleruserses': 'controllerusers',
                             'sitedeploymentses': 'sitedeployments',
                             'siteroles': 'site_roles',
                             'sliceprivileges': 'slice_privileges',

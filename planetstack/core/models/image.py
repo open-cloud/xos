@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
+from core.models import Deployment,Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
 # Create your models here.
 
@@ -12,6 +12,12 @@ class Image(PlCoreBase):
     path = models.CharField(max_length=256, null=True, blank=True, help_text="Path to image on local disk")
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+class ImageDeployments(PlCoreBase):
+    image = models.ForeignKey(Image,related_name='imagedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
+
+    def __unicode__(self):  return u'%s %s' % (self.image, self.deployment)
 
 class ControllerImages(PlCoreBase):
     objects = ControllerLinkManager()

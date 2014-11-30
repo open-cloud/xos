@@ -1,23 +1,23 @@
 from core.models import *
 
 def handle(network):
-	from core.models import SliceDeployments,NetworkDeployments
+	from core.models import ControllerSlices,ControllerNetworks
 	from collections import defaultdict
-	# network deployments are not visible to users. We must ensure
+	# network controllers are not visible to users. We must ensure
 	# networks are deployed at all deploymets available to their slices.
-	slice_deployments = SliceDeployments.objects.all()
+	slice_controllers = ControllerSlices.objects.all()
 	slice_deploy_lookup = defaultdict(list)
-	for slice_deployment in slice_deployments:
-		slice_deploy_lookup[slice_deployment.slice].append(slice_deployment.deployment)
+	for slice_controller in slice_controllers:
+		slice_deploy_lookup[slice_controller.slice].append(slice_controller.controller)
 
-	network_deployments = NetworkDeployments.objects.all()
+	network_controllers = ControllerNetworks.objects.all()
 	network_deploy_lookup = defaultdict(list)
-	for network_deployment in network_deployments:
-		network_deploy_lookup[network_deployment.network].append(network_deployment.deployment)
+	for network_controller in network_controllers:
+		network_deploy_lookup[network_controller.network].append(network_controller.controller)
 
-	expected_deployments = slice_deploy_lookup[network.owner]
-	for expected_deployment in expected_deployments:
+	expected_controllers = slice_deploy_lookup[network.owner]
+	for expected_controller in expected_controllers:
 		if network not in network_deploy_lookup or \
-		  expected_deployment not in network_deploy_lookup[network]:
-			nd = NetworkDeployments(network=network, deployment=expected_deployment)
+		  expected_controller not in network_deploy_lookup[network]:
+			nd = ControllerNetworks(network=network, controller=expected_controller)
 			nd.save()

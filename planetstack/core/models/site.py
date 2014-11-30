@@ -12,7 +12,7 @@ config = Config()
 
 class ControllerLinkDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
-        parent=super(DeploymentLinkDeletionManager, self)
+        parent=super(ControllerLinkDeletionManager, self)
         try:
             backend_type = config.observer_backend_type
         except AttributeError:
@@ -72,7 +72,7 @@ class ControllerLinkManager(PlCoreBaseManager):
 
 class ControllerManager(PlCoreBaseManager):
     def get_queryset(self):
-        parent=super(DeploymentManager, self)
+        parent=super(ControllerManager, self)
 
         try:
             backend_type = config.observer_backend_type
@@ -166,7 +166,7 @@ class SitePrivilege(PlCoreBase):
         return qs
 
 class Deployment(PlCoreBase):
-    #objects = DeploymentManager()
+    #objects = Controllermanager()
     #deleted_objects = DeploymentDeletionManager()
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
     #admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
@@ -217,8 +217,8 @@ class Deployment(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class ControllerRole(PlCoreBase):
-    #objects = DeploymentLinkManager()
-    #deleted_objects = DeploymentLinkDeletionManager()
+    #objects = ControllerLinkManager()
+    #deleted_objects = ControllerLinkDeletionManager()
 
     ROLE_CHOICES = (('admin','Admin'),)
     role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
@@ -256,8 +256,8 @@ class ControllerPrivilege(PlCoreBase):
         return qs 
 
 class SiteDeployments(PlCoreBase):
-    #objects = DeploymentLinkManager()
-    #deleted_objects = DeploymentLinkDeletionManager()
+    #objects = ControllerLinkManager()
+    #deleted_objects = ControllerLinkDeletionManager()
     objects = ControllerManager()
     deleted_objects = ControllerDeletionManager()
 

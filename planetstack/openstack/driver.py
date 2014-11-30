@@ -1,7 +1,7 @@
 import commands
 import hashlib
 from planetstack.config import Config
-from core.models import Deployment
+from core.models import Controller
 
 try:
     from openstack.client import OpenStackClient
@@ -24,30 +24,30 @@ class OpenStackDriver:
 
         self.enabled = manager_enabled
         self.has_openstack = has_openstack
-        self.deployment = None
+        self.controller = None
         self.admin_user = None
 
-    def client_driver(self, caller=None, tenant=None, deployment=None):
+    def client_driver(self, caller=None, tenant=None, controller=None):
         if caller:
             auth = {'username': caller.email,
                     'password': hashlib.md5(caller.password).hexdigest()[:6],
                     'tenant': tenant}
-            client = OpenStackClient(deployment=deployment, **auth)
+            client = OpenStackClient(controller=controller, **auth)
         else:
-            admin_driver = self.admin_driver(tenant=tenant, deployment=deployment)
-            client = OpenStackClient(tenant=tenant, deployment=admin_driver.deployment)
+            admin_driver = self.admin_driver(tenant=tenant, controller=controller)
+            client = OpenStackClient(tenant=tenant, controller=admin_driver.controller)
 
         driver = OpenStackDriver(client=client)
         #driver.admin_user = admin_driver.admin_user
-        #driver.deployment = admin_driver.deployment
+        #driver.controller = admin_driver.controller
         return driver
 
-    def admin_driver(self, tenant=None, deployment=None):
-        deployment = Deployment.objects.get(name=deployment)
-        client = OpenStackClient(tenant=tenant, deployment=deployment)
+    def admin_driver(self, tenant=None, controller=None):
+        controller = Controller.objects.get(id=controller.id)
+        client = OpenStackClient(tenant=tenant, controller=controller)
         driver = OpenStackDriver(client=client)
-        driver.admin_user = client.keystone.users.find(name=deployment.admin_user)
-        driver.deployment = deployment
+        driver.admin_user = client.keystone.users.find(name=controller.admin_user)
+        driver.controller = controller
         return driver    
 
     def create_role(self, name):
