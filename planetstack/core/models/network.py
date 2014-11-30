@@ -1,8 +1,8 @@
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
-from core.models import DeploymentLinkManager,DeploymentLinkDeletionManager
+from core.models import PlCoreBase, Site, Slice, Sliver, Controller
+from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.core.exceptions import ValidationError
@@ -128,13 +128,13 @@ class Network(PlCoreBase):
             qs = Network.objects.filter(owner__in=slices)
         return qs
 
-class NetworkDeployments(PlCoreBase):
-    objects = DeploymentLinkManager()
-    deleted_objects = DeploymentLinkDeletionManager()
+class ControllerNetworks(PlCoreBase):
+    objects = ControllerLinkManager()
+    deleted_objects = ControllerLinkDeletionManager()
 
-    # Stores the openstack ids at various deployments
-    network = models.ForeignKey(Network, related_name='networkdeployments')
-    deployment = models.ForeignKey(Deployment, related_name='networkdeployments')
+    # Stores the openstack ids at various controllers
+    network = models.ForeignKey(Network, related_name='controllernetworks')
+    controller = models.ForeignKey(Controller, related_name='controllernetworks')
     net_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
@@ -146,11 +146,11 @@ class NetworkDeployments(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = NetworkDeployments.objects.all()
+            qs = NetworkControllers.objects.all()
         else:
             slices = Slice.select_by_user(user)
             networks = Network.objects.filter(owner__in=slices)
-            qs = NetworkDeployments.objects.filter(network__in=networks)
+            qs = NetworkControllers.objects.filter(network__in=networks)
         return qs
 
 class NetworkSlice(PlCoreBase):

@@ -4,7 +4,6 @@ from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
 from core.models import PlCoreBase,Site, DashboardView, DiffModelMixIn
-from core.models.site import Deployment
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
