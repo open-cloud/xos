@@ -5,7 +5,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
 from util.logger import Logger, logging
-from observer.steps.sync_network_deployments import *
+from observer.steps.sync_controller_networks import *
 
 logger = Logger(level=logging.INFO)
 
@@ -17,10 +17,10 @@ class SyncNetworks(OpenStackSyncStep):
         network.save()
 
     def delete_record(self, network):
-        network_deployment_deleter = SyncNetworkDeployments().delete_record
-        for network_deployment in NetworkDeployments.objects.filter(network=network):
+        controller_networks_deleter = SyncControllerNetworks().delete_record
+        for controller_network in ControllerNetworks.objects.filter(network=network):
             try:
-                network_deployment_deleter(network_deployment)    
+                controller_network_deleter(controller_network)    
             except Exception,e:
-                logger.log_exc("Failed to delete network deployment %s" % network_deployment)
+                logger.log_exc("Failed to delete controller network %s" % controller_network)
                 raise e

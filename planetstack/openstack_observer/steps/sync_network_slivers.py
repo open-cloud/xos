@@ -3,6 +3,7 @@ import base64
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from core.models import Controller
 from core.models.network import *
 from util.logger import Logger, logging
 
@@ -29,7 +30,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         networks = Network.objects.all()
         networks_by_id = {}
         for network in networks:
-            for nd in network.networkdeployments.all():
+            for nd in network.controllernetworks.all():
                 networks_by_id[nd.net_id] = network
 
         #logger.info("networks_by_id = ")
@@ -41,18 +42,18 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         for sliver in slivers:
             slivers_by_instance_id[sliver.instance_id] = sliver
 
-        # Get all ports in all deployments
+        # Get all ports in all controllers
 
         ports_by_id = {}
-        for deployment in Deployment.objects.all():
-            if not deployment.admin_tenant:
-                logger.info("deployment %s has no admin_tenant" % deployment.name)
+        for controller in Controller.objects.all():
+            if not controller.admin_tenant:
+                logger.info("controller %s has no admin_tenant" % controller)
                 continue
             try:
-                driver = self.driver.admin_driver(deployment=deployment.name,tenant='admin')
+                driver = self.driver.admin_driver(controller = controller,tenant='admin')
                 ports = driver.shell.quantum.list_ports()["ports"]
             except:
-                logger.log_exc("failed to get ports from deployment %s" % deployment.name)
+                logger.log_exc("failed to get ports from controller %s" % controller)
                 continue
 
             for port in ports:
@@ -139,7 +140,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
             if (neutron_nat_list != nat_list):
                 logger.info("Setting nat:forward_ports for port %s network %s sliver %s to %s" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
                 try:
-                    driver = self.driver.admin_driver(deployment=networkSliver.sliver.node.deployment,tenant='admin')
+                    driver = self.driver.admin_driver(controller=networkSliver.sliver.node.site_deployment.controller,tenant='admin')
                     driver.shell.quantum.update_port(networkSliver.port_id, {"port": {"nat:forward_ports": nat_list}})
                 except:
                     logger.log_exc("failed to update port with nat_list %s" % str(nat_list))
