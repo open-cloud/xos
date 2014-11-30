@@ -4,9 +4,9 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.slice import Slice, SliceDeployments
+from core.models.slice import Slice, ControllerSlices
 from util.logger import Logger, logging
-from observer.steps.sync_slice_deployments import *
+from observer.steps.sync_controller_slices import *
 
 logger = Logger(level=logging.INFO)
 
@@ -15,16 +15,16 @@ class SyncSlices(OpenStackSyncStep):
     requested_interval=0
 
     def sync_record(self, slice):
-        for slice_deployment in SliceDeployments.objects.filter(slice=slice):
+        for controller_slice in ControllerSlices.objects.filter(slice=slice):
             # bump the 'updated' timestamp and trigger observer to update
-            # slice across all deployments 
-            slice_deployment.save()    
+            # slice across all controllers 
+            controller_slice.save()    
 
     def delete_record(self, slice):
-        slice_deployment_deleter = SyncSliceDeployments().delete_record
-        for slice_deployment in SliceDeployments.objects.filter(slice=slice):
+        controller_slice_deleter = SyncControllerSlices().delete_record
+        for controller_slice in ControllerSlices.objects.filter(slice=slice):
             try:
-                slice_deployment_deleter(slice_deployment)
+                controller_slice_deleter(controller_slice)
             except Exception,e:
-                logger.log_exc("Failed to delete slice_deployment %s" % slice_deployment) 
+                logger.log_exc("Failed to delete controller_slice %s" % controller_slice) 
                 raise e

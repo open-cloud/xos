@@ -17,13 +17,13 @@ from monitor import driver as monitor
 
 config = Config()
 
-def get_default_flavor(deployment = None):
+def get_default_flavor(controller = None):
     # Find a default flavor that can be used for a sliver. This is particularly
     # useful in evolution. It's also intended this helper function can be used
     # for admin.py when users
 
-    if deployment:
-        flavors = deployment.flavors.all()
+    if controller:
+        flavors = controller.flavors.all()
     else:
         flavors = Flavor.objects.all()
 
@@ -88,7 +88,7 @@ class Sliver(PlCoreBase):
     creator = models.ForeignKey(User, related_name='slivers', blank=True, null=True)
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
+    controllerNetwork = models.ForeignKey(Deployment, verbose_name='controller', related_name='sliver_controllerNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
     flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
     tags = generic.GenericRelation(Tag)
@@ -108,11 +108,11 @@ class Sliver(PlCoreBase):
         self.name = self.slice.slicename
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
-        self.deploymentNetwork = self.node.deployment
+        self.controllerNetwork = self.node.controller
 
 # XXX smbaker - disabled for now, was causing fault in tenant view create slice
-#        if not self.deploymentNetwork.test_acl(slice=self.slice):
-#            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.deploymentNetwork.name, self.slice.name))
+#        if not self.controllerNetwork.test_acl(slice=self.slice):
+#            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.controllerNetwork.name, self.slice.name))
 
         super(Sliver, self).save(*args, **kwds)
 

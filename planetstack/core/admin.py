@@ -394,15 +394,15 @@ class NodeInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'name','deployment','site']
     readonly_fields = ('backend_status_icon', )
 
-class DeploymentPrivilegeInline(PlStackTabularInline):
-    model = DeploymentPrivilege
+class ControllerPrivilegeInline(PlStackTabularInline):
+    model = ControllerPrivilege
     extra = 0
-    suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['backend_status_icon', 'user','role','deployment']
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['backend_status_icon', 'user','role','controller']
     readonly_fields = ('backend_status_icon', )
 
     def queryset(self, request):
-        return DeploymentPrivilege.select_by_user(request.user)
+        return ControllerPrivilege.select_by_user(request.user)
 
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
@@ -440,6 +440,24 @@ class SiteDeploymentsInline(PlStackTabularInline):
     def queryset(self, request):
         return SiteDeployments.select_by_user(request.user)
 
+class ControllerSitesInline(PlStackTabularInline):
+    model = ControllerSites
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['backend_status_icon', 'controller','site']
+    readonly_fields = ('backend_status_icon', )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'site':
+            kwargs['queryset'] = Site.select_by_user(request.user)
+
+        if db_field.name == 'controller':
+            kwargs['queryset'] = Controller.select_by_user(request.user)
+        return super(ControllerSitesInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def queryset(self, request):
+        return ControllerSites.select_by_user(request.user)
+
 
 class SlicePrivilegeInline(PlStackTabularInline):
     model = SlicePrivilege
@@ -475,7 +493,16 @@ class ImageDeploymentsInline(PlStackTabularInline):
     verbose_name = "Image Deployments"
     verbose_name_plural = "Image Deployments"
     suit_classes = 'suit-tab suit-tab-imagedeployments'
-    fields = ['backend_status_icon', 'image', 'deployment', 'glance_image_id']
+    fields = ['backend_status_icon', 'image', 'deployment']
+    readonly_fields = ['backend_status_icon']
+
+class ControllerImagesInline(PlStackTabularInline):
+    model = ControllerImages
+    extra = 0
+    verbose_name = "Controller Images"
+    verbose_name_plural = "Controller Images"
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['backend_status_icon', 'image', 'controller', 'glance_image_id']
     readonly_fields = ['backend_status_icon', 'glance_image_id']
 
 class SliceRoleAdmin(PlanetStackBaseAdmin):
@@ -575,7 +602,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    a better way...
 
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ControllerImages, "deployment", "image")
 
       self.save_m2m()
 
@@ -594,7 +621,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
     fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
+    inlines = [ControllerPrivilegeInline,NodeInline,TagInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
@@ -762,13 +789,13 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class SliceDeploymentsInline(PlStackTabularInline):
-    model = SliceDeployments
+class ControllerSlicesInline(PlStackTabularInline):
+    model = ControllerSlices
     extra = 0
-    verbose_name = "Slice Deployment"
-    verbose_name_plural = "Slice Deployments"
+    verbose_name = "Controller Slices"
+    verbose_name_plural = "Controller Slices"
     suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['backend_status_icon', 'deployment', 'tenant_id']
+    fields = ['backend_status_icon', 'controller', 'tenant_id']
     readonly_fields = ('backend_status_icon', )
 
 class SliceAdmin(PlanetStackBaseAdmin):
@@ -779,7 +806,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
-    admin_inlines = [SliceDeploymentsInline]
+    admin_inlines = [ControllerSlicesInline]
 
     user_readonly_fields = fieldList
 
@@ -821,10 +848,10 @@ class SliceAdmin(PlanetStackBaseAdmin):
             for deployment in flavor.deployments.all():
                 deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
 
-        deployment_images = []
+        controller_images = []
         for image in Image.objects.all():
-            for imageDeployment in image.imagedeployments.all():
-                deployment_images.append( (imageDeployment.deployment.id, image.id, image.name) )
+            for controller_image in image.controllerimages.all():
+                controller_images.append( (controller_image.controller.id, image.id, image.name) )
 
         site_login_bases = []
         for site in Site.objects.all():
@@ -904,9 +931,9 @@ class ImageAdmin(PlanetStackBaseAdmin):
                ]
     readonly_fields = ('backend_status_text', )
 
-    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
+    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
 
-    inlines = [SliverInline, ImageDeploymentsInline]
+    inlines = [SliverInline, ControllerImagesInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
@@ -1085,7 +1112,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     # that reference specific fields on auth.User.
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
     list_filter = ('site',)
-    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline,UserDashboardViewInline]
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline,ControllerPrivilegeInline,UserDashboardViewInline]
 
     fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
@@ -1118,7 +1145,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
                          ('contact','Contact Information'),
                          ('sliceprivileges','Slice Privileges'),
                          ('siteprivileges','Site Privileges'),
-                         ('deploymentprivileges','Deployment Privileges'),
+                         ('controllerprivileges','Controller Privileges'),
                          ('dashboards','Dashboard Views'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -1339,13 +1366,13 @@ class NetworkSlicesInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network','slice']
     readonly_fields = ('backend_status_icon', )
 
-class NetworkDeploymentsInline(PlStackTabularInline):
-    model = NetworkDeployments
+class ControllerNetworksInline(PlStackTabularInline):
+    model = ControllerNetworks
     extra = 0
-    verbose_name_plural = "Network Deployments"
-    verbose_name = "Network Deployment"
+    verbose_name_plural = "Controller Networks"
+    verbose_name = "Controller Network"
     suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['backend_status_icon', 'deployment','net_id','subnet_id']
+    fields = ['backend_status_icon', 'controller','net_id','subnet_id']
     readonly_fields = ('backend_status_icon', )
 
 class NetworkForm(forms.ModelForm):
@@ -1362,7 +1389,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     readonly_fields = ("subnet", )
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
-    admin_inlines = [NetworkDeploymentsInline]
+    admin_inlines = [ControllerNetworksInline]
 
     form=NetworkForm
 
@@ -1544,6 +1571,7 @@ from django_evolution.models import Version, Evolution
 showAll = False
 
 admin.site.register(Deployment, DeploymentAdmin)
+admin.site.register(Controller, ControllerAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
@@ -1559,7 +1587,7 @@ if True:
     admin.site.register(ServiceClass, ServiceClassAdmin)
     #admin.site.register(PlanetStack)
     admin.site.register(Tag, TagAdmin)
-    admin.site.register(DeploymentRole)
+    admin.site.register(ControllerRole)
     admin.site.register(SiteRole)
     admin.site.register(SliceRole)
     admin.site.register(PlanetStackRole)

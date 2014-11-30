@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.node import Node
-from core.models.site import Site, Deployment
+from core.models.site import SiteDeployments, Controller
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -22,28 +22,28 @@ class SyncNodes(OpenStackSyncStep):
             return []
 
         # collect local nodes
-        sites = Site.objects.all()
+        site_deployments = SiteDeployments.objects.all()
         nodes = Node.objects.all()
         node_hostnames = [node.name for node in nodes]
 
-        # fetch all nodes from each deployment
-        deployments = Deployment.objects.all()
+        # fetch all nodes from each controller
+        controllers = Controller.objects.all()
         new_nodes = []
-        for deployment in deployments:
+        for controller in controllers:
             try:
-                driver = self.driver.admin_driver(deployment=deployment.name)
+                driver = self.driver.admin_driver(controller=controller.name)
                 compute_nodes = driver.shell.nova.hypervisors.list()
             except:
-                logger.log_exc("Failed to get nodes from deployment %s" % str(deployment))
+                logger.log_exc("Failed to get nodes from controller %s" % str(controller))
                 continue
 
             for compute_node in compute_nodes:
                 if compute_node.hypervisor_hostname not in node_hostnames:
                     # XX TODO:figure out how to correctly identify a node's site.
                     # XX pick a random site to add the node to for now
-                    site_index = random.randint(0, len(sites))
+                    site_index = random.randint(0, len(site_deployments))
                     node = Node(name=compute_node.hypervisor_hostname,
-                                site=sites[site_index], deployment=deployment)
+                                site_deployment=site_deployments[site_index], controller=controller)
                     new_nodes.append(node)
 
         return new_nodes    
