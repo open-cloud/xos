@@ -243,6 +243,7 @@ XOSApplication = Marionette.Application.extend({
     /* end error handling callbacks */
 
     destroyModel: function(model) {
+         //console.log("destroyModel"); console.log(model);
          this.hideError();
          var infoMsgId = this.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
          var that = this;
@@ -252,7 +253,9 @@ XOSApplication = Marionette.Application.extend({
 
     deleteDialog: function(model, navToListAfterDelete) {
         var that=this;
-        this.confirmDialog(this, callback=function() {
+        //console.log("deleteDialog"); console.log(model);
+        this.confirmDialog(null, null, function() {
+            //console.log("deleteConfirm"); console.log(model);
             modelName = model.modelName;
             that.destroyModel(model);
             if (navToListAfterDelete) {
@@ -278,9 +281,9 @@ XOSDetailView = Marionette.ItemView.extend({
                      "click button.btn-xos-delete": "deleteClicked",
                      "change input": "inputChanged"},
 
-            initialize: function() {
+            /*initialize: function() {
                 this.on('deleteConfirmed', this.deleteConfirmed);
-            },
+            },*/
 
             /* inputChanged is watching the onChange events of the input controls. We
                do this to track when this view is 'dirty', so we can throw up a warning
@@ -343,7 +346,7 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.dirty = false;
             },
 
-            destroyModel: function() {
+            /*destroyModel: function() {
                  this.app.hideError();
                  var infoMsgId = this.app.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
                  var that = this;
@@ -353,14 +356,19 @@ XOSDetailView = Marionette.ItemView.extend({
 
              deleteClicked: function(e) {
                  e.preventDefault();
-                 this.app.confirmDialog(this, "deleteConfirmed");
-             },
+                 this.app.confirmDialog(this, "deleteConfirmed");
+             },
 
-             deleteConfirmed: function() {
-                 modelName = this.model.modelName;
-                 this.destroyModel();
-                 this.app.navigate("list", modelName);
-             },
+             deleteConfirmed: function() {
+                 modelName = this.model.modelName;
+                 this.destroyModel();
+                 this.app.navigate("list", modelName);
+             }, */
+
+             deleteClicked: function(e) {
+                 e.preventDefault();
+                 this.app.deleteDialog(this.model, true);
+             },
 
             tabClick: function(tabId, regionName) {
                     region = this.app[regionName];
@@ -482,13 +490,13 @@ XOSListView = Marionette.CompositeView.extend({
                 this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName), {trigger: true});
              },
 
-             refreshClicked: function(e) {
-                 e.preventDefault();
-                 this.collection.refresh(refreshRelated=true);
-             },
+             refreshClicked: function(e) {
+                 e.preventDefault();
+                 this.collection.refresh(refreshRelated=true);
+             },
 
-             initialize: function() {
-                 this.listenTo(this.collection, 'change', this._renderChildren)
+             initialize: function() {
+                 this.listenTo(this.collection, 'change', this._renderChildren)
                  this.listenTo(this.collection, 'fetchStateChange', this._fetchStateChange);
 
                  // Because many of the templates use idToName(), we need to
