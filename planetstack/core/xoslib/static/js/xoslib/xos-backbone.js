@@ -70,7 +70,7 @@ if (! window.XOSLIB_LOADED ) {
                 return res;
             },
 
-            validate: function(attrs, options) {
+            xosValidate: function(attrs, options) {
                 errors = {};
                 foundErrors = false;
                 _.each(this.validators, function(validatorList, fieldName) {

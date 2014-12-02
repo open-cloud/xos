@@ -22,7 +22,7 @@ function limitTableRows(tableSelector, maxRows) {
     }
 }
 
-function validateField(validatorName, value) {
+function validateField(validatorName, value, obj) {
     if (validatorName=="notBlank") {
         if ((value==undefined) || (value=="")) {
             return "can not be blank";
@@ -41,5 +41,6 @@ function validateField(validatorName, value) {
             }
             break;
     }
+
     return true;
 }
