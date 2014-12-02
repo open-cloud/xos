@@ -90,6 +90,18 @@
     </tr>
 </script>
 
+<script type="text/template" id="xos-delete-button-template">
+    <a href="#delete?model=<%= modelName %>&id=<%= id %>">delete</a>
+</script>
+
+<script type="text/template" id="xos-delete-button-template">
+    <a href="#delete?model=<%= modelName %>&id=<%= id %>">delete</a>
+</script>
+
+<script type="text/template" id="xos-detail-link-template">
+    <a href="#<%= collectionName %>/<%= id %>"><%= text %></a>
+</script>
+
 <!-- Deployment -->
 
 <script type="text/template" id="xosAdmin-deployment-list-template">
@@ -102,6 +114,7 @@
      <th>backend</th>
      <th>admin_tenant</th>
      <th># sites</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -109,11 +122,12 @@
 
 
 <script type="text/template" id="xosAdmin-deployment-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= backend_type %></td>
   <td><%= admin_tenant %></td>
   <td><%= typeof sites != 'undefined' && sites.length || 0 %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-deployment-detail-template">
@@ -146,8 +160,8 @@
 </script>
 
 <script type="text/template" id="xosAdmin-image-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= disk_format %></td>
   <td><%= container_format %></td>
   <td><%= path %></td>
@@ -186,8 +200,8 @@
 
 
 <script type="text/template" id="xosAdmin-networkTemplate-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= description %></td>
   <td><%= visibility %></td>
   <td><%= translation %></td>
@@ -229,8 +243,8 @@
 </script>
 
 <script type="text/template" id="xosAdmin-network-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= idToName(template,"networkTemplates","name") %></td>
   <td><%= ports %></td>
   <td><%= labels %></td>
@@ -269,7 +283,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-networkSliver-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= idToName(network,"networks","name") %></td>
   <td><%= idToName(sliver,"slivers","name") %></td>
   <td><%= ip %></td>
@@ -306,7 +320,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-networkDeployment-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= idToName(network,"networks","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= net_id %></td>
@@ -342,8 +356,8 @@
 
 
 <script type="text/template" id="xosAdmin-node-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= idToName(site,"sites","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
 </script>
@@ -376,7 +390,7 @@
 
 
 <script type="text/template" id="xosAdmin-sliceRole-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= role %></td>
 </script>
 
@@ -410,8 +424,8 @@
 
 
 <script type="text/template" id="xosAdmin-service-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= description %></td>
   <td><%= enabled %></td>
   <td><%= versionNumber %></td>
@@ -450,8 +464,8 @@
 </script>
 
 <script type="text/template" id="xosAdmin-site-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= site_url %></td>
   <td><%= enabled %></td>
   <td><%= login_base %></td>
@@ -496,8 +510,8 @@
 </script>
 
 <script type="text/template" id="xosAdmin-slice-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= enabled %></td>
   <td><%= omf_friendly %></td>
   <td><%= description %></td>
@@ -539,7 +553,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-sliceDeployment-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= idToName(slice,"slices","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= tenant_id %></td>
@@ -574,7 +588,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-slicePrivilege-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= idToName(user,"users","username") %></td>
   <td><%= idToName(slice,"slices","name") %></td>
   <td><%= idToName(role,"sliceRoles","role") %></td>
@@ -617,8 +631,8 @@
 
 
 <script type="text/template" id="xosAdmin-sliver-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= name %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= instance_id %></td>
   <td><%= instance_name %></td>
   <td><%= idToName(image,"images","name") %></td>
@@ -667,8 +681,8 @@
 
 
 <script type="text/template" id="xosAdmin-user-listitem-template">
-  <td class="objectLink"><%= id %></td>
-  <td class="objectLink"><%= username %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: username}) %></td>
   <td><%= firstname %></td>
   <td><%= lastname %></td>
   <td><%= phone %></td>
@@ -708,7 +722,7 @@
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-listitem-template">
-  <td class="objectLink"><%= id %></td>
+  <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= idToName(user,"users","username") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= kuser_id %></td>
@@ -729,4 +743,6 @@
 <script>
 xosInlineDetailButtonsTemplate = _.template($("#xos-inline-detail-buttons-template").html());
 xosInlineListButtonsTemplate = _.template($("#xos-inline-list-buttons-template").html());
+xosDeleteButtonTemplate = _.template($("#xos-delete-button-template").html());
+xosDetailLinkTemplate = _.template($("#xos-detail-link-template").html());
 </script>

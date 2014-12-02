@@ -231,6 +231,7 @@ XOSDetailView = Marionette.ItemView.extend({
             },
 
             saveError: function(model, result, xhr, infoMsgId) {
+                console.log("saveError");
                 result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
                 this.app.showError(result);
@@ -306,7 +307,6 @@ XOSDetailView = Marionette.ItemView.extend({
                 var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
 
                 this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
-                                       invalid: function(model, result, xhr) { console.log("invalid!"); that.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId, isNew);}});
                 /*if (isNew) {
                     this.collection.add(this.model);
@@ -420,15 +420,9 @@ XOSItemView = Marionette.ItemView.extend({
              tagName: 'tr',
              className: 'test-tablerow',
 
-             events: {"click": "changeItem"},
-
-             changeItem: function(e) {
-                    this.app.hideError();
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    this.app.navigateToModel(this.app, this.detailClass, this.detailNavLink, this.model);
-             },
+             templateHelpers: function() { return { modelName: this.model.modelName,
+                                                    collectionName: this.model.collectionName,
+                                         }},
 });
 
 /* XOSListView:
