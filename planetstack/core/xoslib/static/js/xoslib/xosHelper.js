@@ -28,14 +28,19 @@ XOSApplication = Marionette.Application.extend({
     successTemplate: "#xos-success-template",
     logMessageCount: 0,
 
-    confirmDialog: function(view, event) {
+    confirmDialog: function(view, event, callback) {
         $("#xos-confirm-dialog").dialog({
            autoOpen: false,
            modal: true,
            buttons : {
                 "Confirm" : function() {
                   $(this).dialog("close");
-                  view.trigger(event);
+                  if (event) {
+                      view.trigger(event);
+                  }
+                  if (callback) {
+                      callback();
+                  }
                 },
                 "Cancel" : function() {
                   $(this).dialog("close");
@@ -44,6 +49,86 @@ XOSApplication = Marionette.Application.extend({
             });
         $("#xos-confirm-dialog").dialog("open");
     },
+
+    popupErrorDialog: function(responseText) {
+        try {
+            parsed_error=$.parseJSON(responseText);
+            width=300;
+        }
+        catch(err) {
+            parsed_error=undefined;
+            width=640;    // django stacktraces like wide width
+        }
+        if (parsed_error) {
+            $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
+        } else {
+            $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: responseText}))
+        }
+
+        $("#xos-error-dialog").dialog({
+            modal: true,
+            width: width,
+            buttons: {
+                Ok: function() { $(this).dialog("close"); }
+            }
+        });
+    },
+
+    hideLinkedItems: function(result) {
+        var index=0;
+        while (index<4) {
+            this["linkedObjs" + (index+1)].empty();
+            index = index + 1;
+        }
+    },
+
+    listViewShower: function(listViewName, collection_name, regionName, title) {
+        var app=this;
+        return function() {
+            app[regionName].show(new app[listViewName]);
+            app.hideLinkedItems();
+            $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
+            $("#detail").show();
+            $("#xos-listview-button-box").show();
+            $("#tabs").hide();
+            $("#xos-detail-button-box").hide();
+        }
+    },
+
+    addShower: function(detailName, collection_name, regionName, title) {
+        var app=this;
+        return function() {
+            model = new xos[collection_name].model();
+            detailViewClass = app[detailName];
+            detailView = new detailViewClass({model: model, collection:xos[collection_name]});
+            app[regionName].show(detailView);
+            $("#xos-detail-button-box").show();
+            $("#xos-listview-button-box").hide();
+        }
+    },
+
+    detailShower: function(detailName, collection_name, regionName, title) {
+        var app=this;
+        showModelId = function(model_id) {
+            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
+
+            collection = xos[collection_name];
+            model = collection.get(model_id);
+            if (model == undefined) {
+                app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
+            } else {
+                detailViewClass = app[detailName];
+                detailView = new detailViewClass({model: model});
+                app[regionName].show(detailView);
+                detailView.showLinkedItems();
+                $("#xos-detail-button-box").show();
+                $("#xos-listview-button-box").hide();
+            }
+        }
+        return showModelId;
+    },
+
+    /* error handling callbacks */
 
     hideError: function() {
         if (this.logWindowId) {
@@ -65,30 +150,6 @@ XOSApplication = Marionette.Application.extend({
                  $(that.successBoxId).hide();
              });
          }
-    },
-
-    popupErrorDialog: function(responseText) {
-        try {
-            parsed_error=$.parseJSON(responseText);
-            width=300;
-        }
-        catch(err) {
-            parsed_error=undefined;
-            width=640;    // django stacktraces like wide width
-        }
-        if (parsed_error) {
-            $("#xos-error-dialog").html(templateFromId("#xos-error-response")(json));
-        } else {
-            $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: responseText}))
-        }
-
-        $("#xos-error-dialog").dialog({
-            modal: true,
-            width: width,
-            buttons: {
-                Ok: function() { $(this).dialog("close"); }
-            }
-        });
     },
 
     showError: function(result) {
@@ -147,58 +208,58 @@ XOSApplication = Marionette.Application.extend({
         return logMessageId;
     },
 
-    hideLinkedItems: function(result) {
-        var index=0;
-        while (index<4) {
-            this["linkedObjs" + (index+1)].empty();
-            index = index + 1;
-        }
+    saveError: function(model, result, xhr, infoMsgId) {
+        console.log("saveError");
+        result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
+        result["infoMsgId"] = infoMsgId;
+        this.showError(result);
     },
 
-    listViewShower: function(listViewName, collection_name, regionName, title) {
-        var app=this;
-        return function() {
-            app[regionName].show(new app[listViewName]);
-            app.hideLinkedItems();
-            $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
-            $("#detail").show();
-            $("#xos-listview-button-box").show();
-            $("#tabs").hide();
-            $("#xos-detail-button-box").hide();
+    saveSuccess: function(model, result, xhr, infoMsgId, addToCollection) {
+        console.log("saveSuccess");
+        if (addToCollection) {
+            addToCollection.add(model);
+            addToCollection.sort();
         }
+        result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
+        result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
+        result["infoMsgId"] = infoMsgId;
+        this.showSuccess(result);
     },
 
-    addShower: function(detailName, collection_name, regionName, title) {
-        var app=this;
-        return function() {
-            model = new xos[collection_name].model();
-            detailViewClass = app[detailName];
-            detailView = new detailViewClass({model: model, collection:xos[collection_name]});
-            app[regionName].show(detailView);
-            $("#xos-detail-button-box").show();
-            $("#xos-listview-button-box").hide();
-        }
+    destroyError: function(model, result, xhr, infoMsgId) {
+        result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
+        result["infoMsgId"] = infoMsgId;
+        this.showError(result);
     },
 
-    detailShower: function(detailName, collection_name, regionName, title) {
-        var app=this;
-        showModelId = function(model_id) {
-            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
+    destroySuccess: function(model, result, xhr, infoMsgId) {
+        result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
+        result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
+        result["infoMsgId"] = infoMsgId;
+        this.showSuccess(result);
+    },
 
-            collection = xos[collection_name];
-            model = collection.get(model_id);
-            if (model == undefined) {
-                app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
-            } else {
-                detailViewClass = app[detailName];
-                detailView = new detailViewClass({model: model});
-                app[regionName].show(detailView);
-                detailView.showLinkedItems();
-                $("#xos-detail-button-box").show();
-                $("#xos-listview-button-box").hide();
+    /* end error handling callbacks */
+
+    destroyModel: function(model) {
+         this.hideError();
+         var infoMsgId = this.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
+         var that = this;
+         model.destroy({error: function(model, result, xhr) { that.destroyError(model,result,xhr,infoMsgId);},
+                        success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
+    },
+
+    deleteDialog: function(model, navToListAfterDelete) {
+        var that=this;
+        this.confirmDialog(this, callback=function() {
+            modelName = model.modelName;
+            that.destroyModel(model);
+            if (navToListAfterDelete) {
+                that.navigate("list", modelName);
             }
-        }
-        return showModelId;
+
+        });
     },
 });
 
@@ -228,38 +289,6 @@ XOSDetailView = Marionette.ItemView.extend({
 
             inputChanged: function(e) {
                 this.dirty = true;
-            },
-
-            saveError: function(model, result, xhr, infoMsgId) {
-                console.log("saveError");
-                result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
-                result["infoMsgId"] = infoMsgId;
-                this.app.showError(result);
-            },
-
-            saveSuccess: function(model, result, xhr, infoMsgId, isNew) {
-                console.log("saveSuccess");
-                if (isNew) {
-                    this.collection.add(model);
-                    this.collection.sort();
-                }
-                result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
-                result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
-                result["infoMsgId"] = infoMsgId;
-                this.app.showSuccess(result);
-            },
-
-            destroyError: function(model, result, xhr, infoMsgId) {
-                result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
-                result["infoMsgId"] = infoMsgId;
-                this.app.showError(result);
-            },
-
-            destroySuccess: function(model, result, xhr, infoMsgId) {
-                result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
-                result["what"] = "destroy " + model.modelName + " " + model.attributes.humanReadableName;
-                result["infoMsgId"] = infoMsgId;
-                this.app.showSuccess(result);
             },
 
             submitContinueClicked: function(e) {
@@ -302,16 +331,15 @@ XOSDetailView = Marionette.ItemView.extend({
 
                 if (isNew) {
                     this.model.attributes.humanReadableName = "new " + model.modelName;
+                    this.model.addToCollection = this.collection;
+                } else {
+                    this.model.addToCollection = undefined;
                 }
 
                 var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
 
-                this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
-                                       success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId, isNew);}});
-                /*if (isNew) {
-                    this.collection.add(this.model);
-                    this.collection.sort();
-                }*/
+                this.model.save(data, {error: function(model, result, xhr) { that.app.saveError(model,result,xhr,infoMsgId);},
+                                       success: function(model, result, xhr) { that.app.saveSuccess(model,result,xhr,infoMsgId);}});
                 this.dirty = false;
             },
 
@@ -319,8 +347,8 @@ XOSDetailView = Marionette.ItemView.extend({
                  this.app.hideError();
                  var infoMsgId = this.app.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
                  var that = this;
-                 this.model.destroy({error: function(model, result, xhr) { that.destroyError(model,result,xhr,infoMsgId);},
-                                     success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
+                 this.model.destroy({error: function(model, result, xhr) { that.app.destroyError(model,result,xhr,infoMsgId);},
+                                     success: function(model, result, xhr) { that.app.destroySuccess(model,result,xhr,infoMsgId);}});
             },
 
              deleteClicked: function(e) {
