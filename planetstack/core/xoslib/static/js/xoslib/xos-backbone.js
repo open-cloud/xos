@@ -70,6 +70,14 @@ if (! window.XOSLIB_LOADED ) {
                 return res;
             },
 
+            /* If a 'validate' method is supplied, then it will be called
+               automatically on save. Unfortunately, save calls neither the
+               'error' nor the 'success' callback if the validator fails.
+
+               For now, we're calling our validator 'xosValidate' so this
+               autoamtic validation doesn't occur.
+            */
+
             xosValidate: function(attrs, options) {
                 errors = {};
                 foundErrors = false;
@@ -88,7 +96,15 @@ if (! window.XOSLIB_LOADED ) {
                     return errors;
                 }
                 // backbone.js semantics -- on successful validate, return nothing
-            }
+            },
+
+            /* uncommenting this would make validate() call xosValidate()
+            validate: function(attrs, options) {
+                r = this.xosValidate(attrs, options);
+                console.log("validate");
+                console.log(r);
+                return r;
+            }, */
     });
 
     XOSCollection = Backbone.Collection.extend({
@@ -295,10 +311,10 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName", "validate"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "validate"])>=0) {
                 modelAttrs[key] = value;
             }
-            if ($.inArray(key, ["urlRoot", "modelName", "relatedCollections", "foreignCollections"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "relatedCollections", "foreignCollections"])>=0) {
                 collectionAttrs[key] = value;
             }
         }
