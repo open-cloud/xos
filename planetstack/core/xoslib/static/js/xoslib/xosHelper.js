@@ -68,9 +68,23 @@ XOSApplication = Marionette.Application.extend({
     },
 
     popupErrorDialog: function(responseText) {
-        $("#xos-error-dialog").html(templateFromId("#xos-error-response")($.parseJSON(responseText)));
+        try {
+            parsed_error=$.parseJSON(responseText);
+            width=300;
+        }
+        catch(err) {
+            parsed_error=undefined;
+            width=640;    // django stacktraces like wide width
+        }
+        if (parsed_error) {
+            $("#xos-error-dialog").html(templateFromId("#xos-error-response")(json));
+        } else {
+            $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: responseText}))
+        }
+
         $("#xos-error-dialog").dialog({
             modal: true,
+            width: width,
             buttons: {
                 Ok: function() { $(this).dialog("close"); }
             }
@@ -222,7 +236,12 @@ XOSDetailView = Marionette.ItemView.extend({
                 this.app.showError(result);
             },
 
-            saveSuccess: function(model, result, xhr, infoMsgId) {
+            saveSuccess: function(model, result, xhr, infoMsgId, isNew) {
+                console.log("saveSuccess");
+                if (isNew) {
+                    this.collection.add(model);
+                    this.collection.sort();
+                }
                 result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
                 result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
                 result["infoMsgId"] = infoMsgId;
@@ -274,21 +293,25 @@ XOSDetailView = Marionette.ItemView.extend({
                    model.save, we call it ourselves, so we can throw up our
                    validation error before creating the infoMsg in the log
                 */
-                errors =  this.model.validate(data);
+                errors =  this.model.xosValidate(data);
                 if (errors) {
                     this.onFormDataInvalid(errors);
                     return;
                 }
 
+                if (isNew) {
+                    this.model.attributes.humanReadableName = "new " + model.modelName;
+                }
+
                 var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
 
                 this.model.save(data, {error: function(model, result, xhr) { that.saveError(model,result,xhr,infoMsgId);},
-                                       success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId);}});
-                if (isNew) {
-                    console.log(this.model);
+                                       invalid: function(model, result, xhr) { console.log("invalid!"); that.saveError(model,result,xhr,infoMsgId);},
+                                       success: function(model, result, xhr) { that.saveSuccess(model,result,xhr,infoMsgId, isNew);}});
+                /*if (isNew) {
                     this.collection.add(this.model);
                     this.collection.sort();
-                }
+                }*/
                 this.dirty = false;
             },
 
