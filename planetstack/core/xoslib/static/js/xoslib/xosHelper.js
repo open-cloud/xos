@@ -1,22 +1,24 @@
-function assert(outcome, description) {
-    if (!outcome) {
-        console.log(description);
-    }
-}
-
-function templateFromId(id) {
-    return _.template($(id).html());
-}
-
-function firstCharUpper(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 HTMLView = Marionette.ItemView.extend({
   render: function() {
       this.$el.append(this.options.html);
   },
 });
+
+XOSRouter = Marionette.AppRouter.extend({
+        initialize: function() {
+            this.routeStack=[];
+        },
+
+        onRoute: function(x,y,z) {
+             this.routeStack.push(Backbone.history.fragment);
+        },
+
+        prevPage: function() {
+             return this.routeStack.slice(-2)[0];
+        },
+    });
+
+
 
 XOSApplication = Marionette.Application.extend({
     detailBoxId: "#detailBox",
@@ -104,6 +106,17 @@ XOSApplication = Marionette.Application.extend({
             app[regionName].show(detailView);
             $("#xos-detail-button-box").show();
             $("#xos-listview-button-box").hide();
+        }
+    },
+
+    deleteShower: function(collection_name) {
+        var app=this;
+        return function(model_id) {
+            console.log("deleteCalled");
+            collection = xos[collection_name];
+            model = collection.get(model_id);
+            assert(model!=undefined, "failed to get model " + model_id + " from collection " + collection_name);
+            app.deleteDialog(model,"back");
         }
     },
 
@@ -217,9 +230,11 @@ XOSApplication = Marionette.Application.extend({
 
     saveSuccess: function(model, result, xhr, infoMsgId, addToCollection) {
         console.log("saveSuccess");
-        if (addToCollection) {
-            addToCollection.add(model);
-            addToCollection.sort();
+        if (model.addToCollection) {
+            console.log("addToCollection");
+            model.addToCollection.add(model);
+            model.addToCollection.sort();
+            model.addToCollection = undefined;
         }
         result = {status: xhr.xhr.status, statusText: xhr.xhr.statusText};
         result["what"] = "save " + model.modelName + " " + model.attributes.humanReadableName;
@@ -251,15 +266,23 @@ XOSApplication = Marionette.Application.extend({
                         success: function(model, result, xhr) { that.destroySuccess(model,result,xhr,infoMsgId);}});
     },
 
-    deleteDialog: function(model, navToListAfterDelete) {
+    deleteDialog: function(model, afterDelete) {
         var that=this;
+        console.log("XXX");
+        console.log(Backbone.history.fragment);
+        assert(model!=undefined, "deleteDialog's model is undefined");
         //console.log("deleteDialog"); console.log(model);
         this.confirmDialog(null, null, function() {
             //console.log("deleteConfirm"); console.log(model);
             modelName = model.modelName;
             that.destroyModel(model);
-            if (navToListAfterDelete) {
+            if (afterDelete=="list") {
                 that.navigate("list", modelName);
+            } else if (afterDelete=="back") {
+                prevPage = that.Router.prevPage();
+                if (prevPage) {
+                    that.Router.navigate("#"+prevPage, {trigger: false, replace: true} );
+                }
             }
 
         });
@@ -367,7 +390,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
              deleteClicked: function(e) {
                  e.preventDefault();
-                 this.app.deleteDialog(this.model, true);
+                 this.app.deleteDialog(this.model, "list");
              },
 
             tabClick: function(tabId, regionName) {
