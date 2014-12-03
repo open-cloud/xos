@@ -96,9 +96,7 @@ XOSAdminApp.buildViews = function() {
 };
 
 XOSAdminApp.initRouter = function() {
-    router = Marionette.AppRouter.extend({
-    });
-
+    router = XOSRouter;
     var api = {};
     var routes = {};
 
@@ -122,6 +120,11 @@ XOSAdminApp.initRouter = function() {
         nav_url = "add" + firstCharUpper(name);
         api_command = "add" + firstCharUpper(name);
         api[api_command] = XOSAdminApp.addShower(detailViewName, collection_name, "detail", name);
+        routes[nav_url] = api_command;
+
+        nav_url = "delete" + firstCharUpper(name) + "/:id";
+        api_command = "delete" + firstCharUpper(name);
+        api[api_command] = XOSAdminApp.deleteShower(collection_name, name);
         routes[nav_url] = api_command;
     };
 
