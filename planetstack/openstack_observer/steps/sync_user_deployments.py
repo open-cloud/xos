@@ -67,7 +67,7 @@ class SyncUserDeployments(OpenStackSyncStep):
 		       'tenant':tenant_name}    
 	
 	rendered = template.render(user_fields)
-	res = run_template('sync_user_deployments.yaml', user_fields)
+	res = run_template('sync_user_deployments.yaml', user_fields, 'user_deployments')
 
 	# results is an array in which each element corresponds to an 
 	# "ok" string received per operation. If we get as many oks as
