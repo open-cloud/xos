@@ -48,42 +48,43 @@ class SyncSliceDeployments(OpenStackSyncStep):
             logger.info("deployment %r has no admin_user, skipping" % slice_deployment.deployment)
             return
 
-        deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
-                                                             deployment=slice_deployment.deployment)
-        if not deployment_users:
-            logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
-            roles = ['admin']
-			deployment_user = 'Undefined'
-        else:
-            deployment_user = deployment_users[0].user.email
-            roles = ['admin']
+	deployment_users = UserDeployments.objects.filter(user=slice_deployment.slice.creator,
+                                                             deployment=slice_deployment.deployment)            
+    	if not deployment_users:
+	    logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
+	    roles = ['admin']
+	    deployment_user = 'Unknown user'
+    	else:
+	    deployment_user = deployment_users[0].user.email
+	    roles = ['admin']
+	    
+	max_instances=int(slice_deployment.slice.max_slivers)
+	tenant_fields = {'endpoint':slice_deployment.deployment.auth_url,
+		         'admin_user': slice_deployment.deployment.admin_user,
+		         'admin_password': slice_deployment.deployment.admin_password,
+		         'admin_tenant': 'admin',
+		         'tenant': slice_deployment.slice.name,
+		         'tenant_description': slice_deployment.slice.description,
+			 'roles':roles,
+			 'name':deployment_user,
+			 'ansible_tag':'%s@%s'%(slice_deployment.slice.name,slice_deployment.deployment.name),
+			 'max_instances':max_instances}
 
-        max_instances=int(slice_deployment.slice.max_slivers)
-        tenant_fields = {'endpoint':slice_deployment.deployment.auth_url,
-                         'admin_user': slice_deployment.deployment.admin_user,
-                         'admin_password': slice_deployment.deployment.admin_password,
-                         'admin_tenant': 'admin',
-                         'tenant': slice_deployment.slice.name,
-                         'tenant_description': slice_deployment.slice.description,
-                         'roles':roles,
-                         'name':deployment_user
-                         'max_instances':max_instances}
-
-        res = run_template('sync_slice_deployments.yaml', tenant_fields)
-        expected_num = len(roles)+1
-        if (len(res)!=expected_num):
-            raise Exception('Could not sync tenants for slice %s'%slice_deployment.slice.name)
-        else:
-            tenant_id = res[0]['id']
-            if (not slice_deployment.tenant_id):
-                handle = os.popen('nova quota-update --instances %d %s'%(max_instances,tenant_id))
-                output = handle.read()
-                result = handle.close()
-                if (result):
-                    logging.info('Could not update quota for %s'%slice_deployment.slice.name)
-                slice_deployment.tenant_id = tenant_id
-                slice_deployment.save()
-
+	res = run_template('sync_slice_deployments.yaml', tenant_fields, path='slice_deployments')
+	expected_num = len(roles)+1
+	if (len(res)!=expected_num):
+	    raise Exception('Could not sync tenants for slice %s'%slice_deployment.slice.name)
+	else:
+	    tenant_id = res[0]['id']
+	    if (not slice_deployment.tenant_id):
+	        handle = os.popen('nova quota-update --instances %d %s'%(max_instances,tenant_id))
+		output = handle.read()
+		result = handle.close()
+		if (result):
+		    logging.info('Could not update quota for %s'%slice_deployment.slice.name)
+		slice_deployment.tenant_id = tenant_id
+		slice_deployment.save()
+			
 
 
     def delete_record(self, slice_deployment):
@@ -97,9 +98,10 @@ class SyncSliceDeployments(OpenStackSyncStep):
             client_driver.delete_router_interface(slice_deployment.router_id, slice_deployment.subnet_id)
         if slice_deployment.subnet_id:
             client_driver.delete_subnet(slice_deployment.subnet_id)
-        if slice_deployment.router_id:
+        if slice_deployment.router_id:    
             client_driver.delete_router(slice_deployment.router_id)
         if slice_deployment.network_id:
             client_driver.delete_network(slice_deployment.network_id)
         if slice_deployment.tenant_id:
             driver.delete_tenant(slice_deployment.tenant_id)
+        
