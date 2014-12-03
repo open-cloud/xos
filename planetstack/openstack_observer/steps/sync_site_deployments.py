@@ -18,10 +18,11 @@ class SyncSiteDeployments(OpenStackSyncStep):
 		         'admin_password': site_deployment.deployment.admin_password,
 		         'admin_tenant': 'admin',
 		         'tenant': site_deployment.site.login_base,
+				 'ansible_tag': '%s@%s'%(site_deployment.site.login_base,site_deployment.deployment.name), # name of ansible playbook
 		         'tenant_description': site_deployment.site.name}
 
 	rendered = template.render(tenant_fields)
-	res = run_template('sync_site_deployments.yaml', tenant_fields)
+	res = run_template('sync_site_deployments.yaml', tenant_fields, path='site_deployments')
 
 	if (len(res)==1):
 		site_deployment.tenant_id = res[0]['id']
