@@ -1,0 +1,8 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+
+  - nova_compute:
+      state: absent
+      name: {{ name }}
