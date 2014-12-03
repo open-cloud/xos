@@ -1,36 +1,37 @@
 ---
 - hosts: 127.0.0.1
-  connection: local
-  tasks:
-  - nova_keypair:
-       state: present
-       auth_url: {{ endpoint }}
-       login_username: {{ admin_user }}
-       login_password: {{ admin_password }}
-       login_tenant_name: {{ admin_tenant }}
-       name: {{ key_name }}
-       public_key: "{{ key.public_key}}"
-       
-  - nova_compute:
-       state: present
-       auth_url: {{ endpoint }}
-       login_username: {{ admin_user }}
-       login_password: {{ admin_password }}
-       login_tenant_name: {{ admin_tenant }}
-       name: {{ name }}
-       image_id: {{ image_id }}
-       key_name: {{ key_name }}
-       wait_for: 200
-       flavor_id: {{ flavor_id }}
-       user_data: "{{ user_data }}"
-       nics:
-       {% for net in nics %}  
-         - net-id: {{ net }}
-       {% endfor %}
+    connection: local
+    tasks:
+    - nova_keypair:
+        state: present
+        auth_url: {{ endpoint }}
+        login_username: {{ admin_user }}
+        login_password: {{ admin_password }}
+        login_tenant_name: {{ admin_tenant }}
+        name: {{ key_name }}
+        public_key: "{{ key.public_key}}"
 
-       {% if meta %}
-       meta:
-       {% for k,v in meta.items() %}  
-         {{ k }} : "{{ v }}"
-       {% endfor %}
-       {% endif %}
+    - nova_compute:
+        state: present
+        auth_url: {{ endpoint }}
+        login_username: {{ admin_user }}
+        login_password: {{ admin_password }}
+        login_tenant_name: {{ admin_tenant }}
+        availability_zone: {{ availability_zone }}
+        name: {{ name }}
+        image_id: {{ image_id }}
+        key_name: {{ key_name }}
+        wait_for: 200
+        flavor_id: {{ flavor_id }}
+        user_data: "{{ user_data }}"
+        nics:
+        {% for net in nics %}
+            - net-id: {{ net }}
+        {% endfor %}
+
+        {% if meta %}
+        meta:
+        {% for k,v in meta.items() %}
+            {{ k }} : "{{ v }}"
+        {% endfor %}
+        {% endif %}
