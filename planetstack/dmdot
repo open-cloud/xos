@@ -67,6 +67,7 @@ elif (output=='-json'):
 					d[c.__name__].append(linked_class.__name__)
 				except KeyError:
 					d[c.__name__]=[linked_class.__name__]
+	d['NetworkDeployments'].append('SliceDeployments')
 	print json.dumps(d,indent=4)
 	
 	
