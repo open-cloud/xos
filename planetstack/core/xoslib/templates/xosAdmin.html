@@ -150,6 +150,7 @@
      <th>disk_format</th>
      <th>container_format</th>
      <th>path</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -161,6 +162,7 @@
   <td><%= disk_format %></td>
   <td><%= container_format %></td>
   <td><%= path %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-image-detail-template">
@@ -189,6 +191,7 @@
      <th>translation</th>
      <th>sharedNetworkName</th>
      <th>sharedNetworkId</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -203,6 +206,7 @@
   <td><%= translation %></td>
   <td><%= sharedNetworkName %></td>
   <td><%= sharedNetworkId %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-networkTemplate-detail-template">
@@ -233,6 +237,7 @@
      <th>ports</th>
      <th>labels</th>
      <th>owner</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -245,6 +250,7 @@
   <td><%= ports %></td>
   <td><%= labels %></td>
   <td><%= idToName(owner,"slices","name") %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-network-detail-template">
@@ -273,6 +279,7 @@
      <th>sliver</th>
      <th>ip</th>
      <th>port_id</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -284,6 +291,7 @@
   <td><%= idToName(sliver,"slivers","name") %></td>
   <td><%= ip %></td>
   <td><%= port_id %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-networkSliver-detail-template">
@@ -310,6 +318,7 @@
      <th>network</th>
      <th>deployment</th>
      <th>net_id</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -320,6 +329,7 @@
   <td><%= idToName(network,"networks","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= net_id %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-networkDeployment-detail-template">
@@ -345,6 +355,7 @@
      <th>name</th>
      <th>site</th>
      <th>deployment</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -356,6 +367,7 @@
   <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: name}) %></td>
   <td><%= idToName(site,"sites","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-node-detail-template">
@@ -379,6 +391,7 @@
   <thead><tr>
      <th>id</th>
      <th>role</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -388,6 +401,7 @@
 <script type="text/template" id="xosAdmin-sliceRole-listitem-template">
   <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= role %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-sliceRole-detail-template">
@@ -413,6 +427,7 @@
      <th>enabled</th>
      <th>versionNumber</th>
      <th>published</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -426,6 +441,7 @@
   <td><%= enabled %></td>
   <td><%= versionNumber %></td>
   <td><%= published %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-service-detail-template">
@@ -454,6 +470,7 @@
      <th>login_base</th>
      <th>is_public</th>
      <th>abbreviated_name</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -467,6 +484,7 @@
   <td><%= login_base %></td>
   <td><%= is_public %></td>
   <td><%= abbreviated_name %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-site-detail-template">
@@ -500,6 +518,7 @@
      <th>site</th>
      <th>max_slivers</th>
      <th>service</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -515,6 +534,7 @@
   <td><%= idToName(site,"sites","name") %></td>
   <td><%= max_slivers %></td>
   <td><%= idToName(service,"services","name") %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-slice-detail-template">
@@ -543,6 +563,7 @@
      <th>slice</th>
      <th>deployment</th>
      <th>tenant_id</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -553,6 +574,7 @@
   <td><%= idToName(slice,"slices","name") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= tenant_id %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-sliceDeployment-detail-template">
@@ -578,6 +600,7 @@
      <th>user</th>
      <th>slice</th>
      <th>role</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -588,6 +611,7 @@
   <td><%= idToName(user,"users","username") %></td>
   <td><%= idToName(slice,"slices","name") %></td>
   <td><%= idToName(role,"sliceRoles","role") %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-slicePrivilege-detail-template">
@@ -620,6 +644,7 @@
      <th>deploymentNetwork</th>
      <th>flavor</th>
      <th>userData</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -638,6 +663,7 @@
   <td><%= idToName(deploymentNetwork,"deployments","name") %></td>
   <td><%= flavor %></td>
   <td><%= userData %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-sliver-detail-template">
@@ -670,6 +696,7 @@
      <th>phone</th>
      <th>user_url</th>
      <th>site</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -684,6 +711,7 @@
   <td><%= phone %></td>
   <td><%= user_url %></td>
   <td><%= idToName(site,"sites","name") %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-user-detail-template">
@@ -712,6 +740,7 @@
      <th>user</th>
      <th>deployment</th>
      <th>kuser_id</th>
+     <th>delete</th>
   </tr></thead>
   <tbody></tbody>
   </table>
@@ -722,6 +751,7 @@
   <td><%= idToName(user,"users","username") %></td>
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= kuser_id %></td>
+  <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-detail-template">
