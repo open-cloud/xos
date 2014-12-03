@@ -57,7 +57,7 @@ class SyncUserDeployments(OpenStackSyncStep):
 
         user_fields = {'endpoint':user_deployment.deployment.auth_url,
 		       'name': user_deployment.user.email,
-		       'ansible_tag': '%s @ %s'%(user_deployment.user.email,user_deployment.deployment.name),
+		       'ansible_tag': '%s@%s'%(user_deployment.user.email,user_deployment.deployment.name),
                        'email': user_deployment.user.email,
                        'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
                        'admin_user': user_deployment.deployment.admin_user,
