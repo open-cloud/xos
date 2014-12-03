@@ -130,8 +130,9 @@ class SyncSlivers(OpenStackSyncStep):
             sliver.save()
 
     def delete_record(self, sliver):
-        if sliver.instance_id:
-            driver = self.driver.client_driver(caller=sliver.creator,
-                                               tenant=sliver.slice.name,
-                                               deployment=sliver.deploymentNetwork.name)
-            driver.destroy_instance(sliver.instance_id)
+        sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
+        tenant_fields = {'name':sliver_name,
+                         'ansible_tag':sliver_name
+                        }
+        res = run_template('delete_slivers.yaml', tenant_fields, path='slivers')
+
