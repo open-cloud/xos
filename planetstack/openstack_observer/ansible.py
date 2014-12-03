@@ -61,7 +61,7 @@ def run_template(name, opts,path=''):
     f.write(buffer)
     f.flush()
 
-    os.system('cp %s %s-backup'%(fqp,fqp))
+    #os.system('cp %s %s-backup'%(fqp,fqp))
     run = os.popen('/opt/planetstack/observer/run_ansible '+fqp)
     msg = run.read()
     status = run.close()
