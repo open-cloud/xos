@@ -1,5 +1,19 @@
 // misc utility functions
 
+function assert(outcome, description) {
+    if (!outcome) {
+        console.log(description);
+    }
+}
+
+function templateFromId(id) {
+    return _.template($(id).html());
+}
+
+function firstCharUpper(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 // http://stackoverflow.com/questions/2117320/set-maximum-displayed-rows-count-for-html-table
 function limitTableRows(tableSelector, maxRows) {
     var table = $(tableSelector)[0] //document.getElementById(tableId);
