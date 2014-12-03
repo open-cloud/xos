@@ -91,11 +91,7 @@
 </script>
 
 <script type="text/template" id="xos-delete-button-template">
-    <a href="#delete?model=<%= modelName %>&id=<%= id %>">delete</a>
-</script>
-
-<script type="text/template" id="xos-delete-button-template">
-    <a href="#delete?model=<%= modelName %>&id=<%= id %>">delete</a>
+    <a href="#delete<%= firstCharUpper(modelName) %>/<%= id %>">delete</a>
 </script>
 
 <script type="text/template" id="xos-detail-link-template">
