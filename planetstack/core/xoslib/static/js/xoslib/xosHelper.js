@@ -16,6 +16,13 @@ XOSRouter = Marionette.AppRouter.extend({
         prevPage: function() {
              return this.routeStack.slice(-2)[0];
         },
+
+        showPreviousURL: function() {
+            prevPage = this.prevPage();
+            if (prevPage) {
+                this.navigate("#"+prevPage, {trigger: false, replace: true} );
+            }
+        },
     });
 
 
@@ -84,7 +91,7 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
-    listViewShower: function(listViewName, collection_name, regionName, title) {
+    createListHandler: function(listViewName, collection_name, regionName, title) {
         var app=this;
         return function() {
             app[regionName].show(new app[listViewName]);
@@ -97,7 +104,7 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
-    addShower: function(detailName, collection_name, regionName, title) {
+    createAddHandler: function(detailName, collection_name, regionName, title) {
         var app=this;
         return function() {
             model = new xos[collection_name].model();
@@ -109,7 +116,41 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
-    deleteShower: function(collection_name) {
+    createAddChildHandler: function(detailName, collection_name) {
+        var app=this;
+        return function(parent_modelName, parent_fieldName, parent_id) {
+            app.Router.showPreviousURL();
+            console.log("acs");
+            console.log(modelName);
+            console.log(parent_fieldName);
+            console.log(parent_id);
+            model = new xos[collection_name].model();
+            model.attributes[parent_fieldName] = parent_id;
+            detailViewClass = app[detailName];
+            var detailView = new detailViewClass({model: model, collection:xos[collection_name]});
+            detailView.dialog = $("xos-addchild-dialog");
+            app["addChildDetail"].show(detailView);
+            $("#xos-addchild-dialog").dialog({
+               autoOpen: false,
+               modal: true,
+               width: 640,
+               buttons : {
+                    "Save" : function() {
+                      detailView.save();
+
+                      $(this).dialog("close");
+                      // do something here
+                    },
+                    "Cancel" : function() {
+                      $(this).dialog("close");
+                    }
+                  }
+                });
+            $("#xos-addchild-dialog").dialog("open");
+        }
+    },
+
+    createDeleteHandler: function(collection_name) {
         var app=this;
         return function(model_id) {
             console.log("deleteCalled");
@@ -120,7 +161,7 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
-    detailShower: function(detailName, collection_name, regionName, title) {
+    createDetailHandler: function(detailName, collection_name, regionName, title) {
         var app=this;
         showModelId = function(model_id) {
             $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
@@ -279,10 +320,7 @@ XOSApplication = Marionette.Application.extend({
             if (afterDelete=="list") {
                 that.navigate("list", modelName);
             } else if (afterDelete=="back") {
-                prevPage = that.Router.prevPage();
-                if (prevPage) {
-                    that.Router.navigate("#"+prevPage, {trigger: false, replace: true} );
-                }
+                that.Router.showPreviousURL();
             }
 
         });
@@ -304,14 +342,18 @@ XOSDetailView = Marionette.ItemView.extend({
                      "click button.btn-xos-delete": "deleteClicked",
                      "change input": "inputChanged"},
 
-            /*initialize: function() {
-                this.on('deleteConfirmed', this.deleteConfirmed);
-            },*/
-
             /* inputChanged is watching the onChange events of the input controls. We
                do this to track when this view is 'dirty', so we can throw up a warning
                if the user tries to change his slices without saving first.
             */
+
+            initialize: function() {
+                this.on("saveSuccess", this.afterSave);
+                this.synchronous = false;
+            },
+
+            afterSave: function(e) {
+            },
 
             inputChanged: function(e) {
                 this.dirty = true;
@@ -320,21 +362,28 @@ XOSDetailView = Marionette.ItemView.extend({
             submitContinueClicked: function(e) {
                 console.log("saveContinue");
                 e.preventDefault();
+                this.afterSave = function() {};
                 this.save();
             },
 
             submitLeaveClicked: function(e) {
                 console.log("saveLeave");
                 e.preventDefault();
+                var that=this;
+                this.afterSave = function() {
+                    that.app.navigate("list", that.model.modelName);
+                }
                 this.save();
-                this.app.navigate("list", this.model.modelName);
             },
 
             submitAddAnotherClicked: function(e) {
                 console.log("saveAnother");
                 e.preventDefault();
+                var that=this;
+                this.afterSave = function() {
+                    that.app.navigate("add", that.model.modelName);
+                }
                 this.save();
-                this.app.navigate("add", this.model.modelName);
             },
 
             save: function() {
@@ -365,33 +414,22 @@ XOSDetailView = Marionette.ItemView.extend({
                 var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
 
                 this.model.save(data, {error: function(model, result, xhr) { that.app.saveError(model,result,xhr,infoMsgId);},
-                                       success: function(model, result, xhr) { that.app.saveSuccess(model,result,xhr,infoMsgId);}});
+                                       success: function(model, result, xhr) { that.app.saveSuccess(model,result,xhr,infoMsgId);
+                                                                               if (that.synchronous) {
+                                                                                   that.trigger("saveSuccess");
+                                                                               }
+                                                                             }});
                 this.dirty = false;
+
+                if (!this.synchronous) {
+                    this.afterSave();
+                }
             },
 
-            /*destroyModel: function() {
-                 this.app.hideError();
-                 var infoMsgId = this.app.showInformational( {what: "destroy " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
-                 var that = this;
-                 this.model.destroy({error: function(model, result, xhr) { that.app.destroyError(model,result,xhr,infoMsgId);},
-                                     success: function(model, result, xhr) { that.app.destroySuccess(model,result,xhr,infoMsgId);}});
+            deleteClicked: function(e) {
+                e.preventDefault();
+                this.app.deleteDialog(this.model, "list");
             },
-
-             deleteClicked: function(e) {
-                 e.preventDefault();
-                 this.app.confirmDialog(this, "deleteConfirmed");
-             },
-
-             deleteConfirmed: function() {
-                 modelName = this.model.modelName;
-                 this.destroyModel();
-                 this.app.navigate("list", modelName);
-             }, */
-
-             deleteClicked: function(e) {
-                 e.preventDefault();
-                 this.app.deleteDialog(this.model, "list");
-             },
 
             tabClick: function(tabId, regionName) {
                     region = this.app[regionName];
