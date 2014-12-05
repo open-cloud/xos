@@ -14,7 +14,7 @@ logger = Logger(level=logging.INFO)
 def escape(s):
     s = s.replace('\n',r'\n').replace('"',r'\"')
     return s
-    
+
 class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
@@ -27,7 +27,7 @@ class SyncSlivers(OpenStackSyncStep):
         logger.info("sync'ing sliver:%s slice:%s deployment:%s " % (sliver, sliver.slice.name, sliver.node.deployment))
 
         metadata_update = {}
-	if (sliver.numberCores):
+        if (sliver.numberCores):
             metadata_update["cpu_cores"] = str(sliver.numberCores)
 
         for tag in sliver.slice.tags.all():
@@ -37,88 +37,102 @@ class SyncSlivers(OpenStackSyncStep):
         # public keys
         slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
         pubkeys = set([sm.user.public_key for sm in slice_memberships if sm.user.public_key])
-    	if sliver.creator.public_key:
-	    pubkeys.add(sliver.creator.public_key)
+        if sliver.creator.public_key:
+            pubkeys.add(sliver.creator.public_key)
 
         if sliver.slice.creator.public_key:
-            pubkeys.add(sliver.slice.creator.public_key) 
+            pubkeys.add(sliver.slice.creator.public_key)
 
-	nics = []
-	networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]   
-	network_deployments = NetworkDeployments.objects.filter(network__in=networks, 
-								deployment=sliver.node.deployment)
+        nics = []
+        networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]
+        network_deployments = NetworkDeployments.objects.filter(network__in=networks,
+                                                                deployment=sliver.node.deployment)
 
-	for network_deployment in network_deployments:
-	    if network_deployment.network.template.visibility == 'private' and \
-	       network_deployment.network.template.translation == 'none' and network_deployment.net_id: 
-		nics.append(network_deployment.net_id)
+        for network_deployment in network_deployments:
+            if network_deployment.network.template.visibility == 'private' and \
+               network_deployment.network.template.translation == 'none' and network_deployment.net_id:
+                nics.append(network_deployment.net_id)
 
-	# now include network template
-	network_templates = [network.template.sharedNetworkName for network in networks \
-			     if network.template.sharedNetworkName]
+        # now include network template
+        network_templates = [network.template.sharedNetworkName for network in networks \
+                             if network.template.sharedNetworkName]
 
         #driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, deployment=sliver.deploymentNetwork)
         driver = self.driver.admin_driver(tenant='admin', deployment=sliver.deploymentNetwork)
-	nets = driver.shell.quantum.list_networks()['networks']
-	for net in nets:
-	    if net['name'] in network_templates: 
-		nics.append(net['id']) 
+        nets = driver.shell.quantum.list_networks()['networks']
+        for net in nets:
+            if net['name'] in network_templates:
+                nics.append(net['id'])
 
-	if (not nics):
-	    for net in nets:
-	        if net['name']=='public':
-	    	    nics.append(net['id'])
+        if (not nics):
+            for net in nets:
+                if net['name']=='public':
+                    nics.append(net['id'])
 
-	# look up image id
-	deployment_driver = self.driver.admin_driver(deployment=sliver.deploymentNetwork.name)
-	image_id = None
-	images = deployment_driver.shell.glanceclient.images.list()
-	for image in images:
-	    if image.name == sliver.image.name or not image_id:
-		image_id = image.id
-		
-	# look up key name at the deployment
-	# create/fetch keypair
-	keyname = None
-	keyname = sliver.creator.email.lower().replace('@', 'AT').replace('.', '') +\
-		  sliver.slice.name
-	key_fields =  {'name': keyname,
-		       'public_key': sliver.creator.public_key}
-	    
+        # look up image id
+        deployment_driver = self.driver.admin_driver(deployment=sliver.deploymentNetwork.name)
+        image_id = None
+        images = deployment_driver.shell.glanceclient.images.list()
+        for image in images:
+            if image.name == sliver.image.name or not image_id:
+                image_id = image.id
 
-	userData = self.get_userdata(sliver)
-	if sliver.userData:
-	    userData = sliver.userData
-	    
-	sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
-	tenant_fields = {'endpoint':sliver.node.deployment.auth_url,
-		     'admin_user': sliver.node.deployment.admin_user,
-		     'admin_password': sliver.node.deployment.admin_password,
-		     'admin_tenant': 'admin',
-		     'tenant': sliver.slice.name,
-		     'tenant_description': sliver.slice.description,
-		     'name':sliver_name,
-		     'image_id':image_id,
-		     'key_name':keyname,
-		     'flavor_id':1,
-		     'nics':nics,
-		     'meta':metadata_update,
-		     'key':key_fields,
-		     'user_data':r'%s'%escape(userData)}
+        # look up key name at the deployment
+        # create/fetch keypair
+        keyname = None
+        keyname = sliver.creator.email.lower().replace('@', 'AT').replace('.', '') +\
+                  sliver.slice.name
+        key_fields =  {'name': keyname,
+                       'public_key': sliver.creator.public_key}
 
-	res = run_template('sync_slivers.yaml', tenant_fields)
-	if (len(res)!=2):
-	    raise Exception('Could not sync sliver %s'%sliver.slice.name)
-	else:
-	    sliver_id = res[1]['id'] # 0 is for the key
+
+        userData = self.get_userdata(sliver)
+        if sliver.userData:
+            userData = sliver.userData
+
+        try:
+            legacy = Config().observer_legacy
+        except:
+            legacy = False
+
+        if (legacy):
+            host_filter = sliver.node.name.split('.',1)[0]
+        else:
+            host_filter = sliver.node.name
+
+        availability_zone_filter = 'nova:%s'%host_filter
+        sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
+        tenant_fields = {'endpoint':sliver.node.deployment.auth_url,
+                     'admin_user': sliver.node.deployment.admin_user,
+                     'admin_password': sliver.node.deployment.admin_password,
+                     'admin_tenant': 'admin',
+                     'tenant': sliver.slice.name,
+                     'availability_zone': availability_zone_filter,
+                     'tenant_description': sliver.slice.description,
+                     'name':sliver_name,
+                     'ansible_tag':sliver_name,
+                     'image_id':image_id,
+                     'key_name':keyname,
+                     'flavor_id':3,
+                     'nics':nics,
+                     'meta':metadata_update,
+                     'key':key_fields,
+                     'user_data':r'%s'%escape(userData)}
+
+        res = run_template('sync_slivers.yaml', tenant_fields, path='slivers')
+        if (len(res)!=2):
+            raise Exception('Could not sync sliver %s'%sliver.slice.name)
+        else:
+            sliver_id = res[1]['id'] # 0 is for the key
 
             sliver.instance_id = sliver_id
             sliver.instance_name = sliver_name
-            sliver.save()    
+            sliver.save()
 
     def delete_record(self, sliver):
-        if sliver.instance_id:
-            driver = self.driver.client_driver(caller=sliver.creator, 
-                                               tenant=sliver.slice.name,
-                                               deployment=sliver.deploymentNetwork.name)
-            driver.destroy_instance(sliver.instance_id)
+        sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
+        tenant_fields = {'name':sliver_name,
+                         'ansible_tag':sliver_name
+                        }
+        res = run_template('delete_slivers.yaml', tenant_fields, path='slivers')
+
