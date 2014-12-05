@@ -83,11 +83,13 @@
     </tr>
 </script>
 
-<script type="text/template" id="xos-inline-list-buttons-template">
-           <button class="btn js-submit btn-xos-list btn-xos-add">Add</button>
-           <button class="btn js-submit btn-xos-list btn-xos-refresh">Refresh</button>
-       </td>
-    </tr>
+<script type="text/template" id="xos-list-header-template">
+    <button class="btn js-submit btn-xos-list btn-xos-add">Add</button>
+    <button class="btn js-submit btn-xos-list btn-xos-refresh">Refresh</button>
+</script>
+
+<script type="text/template" id="xos-list-footer-template">
+    <a href="#addChildSliver/slice/slice/23">Add another...</a>
 </script>
 
 <script type="text/template" id="xos-delete-button-template">
@@ -102,7 +104,7 @@
 
 <script type="text/template" id="xosAdmin-deployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -114,6 +116,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -142,7 +145,7 @@
 
 <script type="text/template" id="xosAdmin-image-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -154,6 +157,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-image-listitem-template">
@@ -181,7 +185,7 @@
 
 <script type="text/template" id="xosAdmin-networkTemplate-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -195,6 +199,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -228,7 +233,7 @@
 
 <script type="text/template" id="xosAdmin-network-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -241,6 +246,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-network-listitem-template">
@@ -271,7 +277,7 @@
 
 <script type="text/template" id="xosAdmin-networkSliver-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -283,6 +289,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-networkSliver-listitem-template">
@@ -311,7 +318,7 @@
 
 <script type="text/template" id="xosAdmin-networkDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -322,6 +329,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-networkDeployment-listitem-template">
@@ -348,7 +356,7 @@
 
 <script type="text/template" id="xosAdmin-node-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -359,6 +367,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -386,7 +395,7 @@
 
 <script type="text/template" id="xosAdmin-sliceRole-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -395,6 +404,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -418,7 +428,7 @@
 
 <script type="text/template" id="xosAdmin-service-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -431,6 +441,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -460,7 +471,7 @@
 
 <script type="text/template" id="xosAdmin-site-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -474,6 +485,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-site-listitem-template">
@@ -506,7 +518,7 @@
 
 <script type="text/template" id="xosAdmin-slice-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -522,6 +534,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-slice-listitem-template">
@@ -556,7 +569,7 @@
 
 <script type="text/template" id="xosAdmin-sliceDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -567,6 +580,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-sliceDeployment-listitem-template">
@@ -593,7 +607,7 @@
 
 <script type="text/template" id="xosAdmin-slicePrivilege-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -604,6 +618,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-slicePrivilege-listitem-template">
@@ -630,7 +645,7 @@
 
 <script type="text/template" id="xosAdmin-sliver-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -648,6 +663,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -686,7 +702,7 @@
 
 <script type="text/template" id="xosAdmin-user-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -700,6 +716,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 
@@ -733,7 +750,7 @@
 
 <script type="text/template" id="xosAdmin-userDeployment-list-template">
   <h3 class="xos-list-title"><%= title %></h3>
-  <%= xosInlineListButtonsTemplate() %>
+  <%= xosListHeaderTemplate() %>
   <table class="test-table">
   <thead><tr>
      <th>id</th>
@@ -744,6 +761,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
+  <%= xosListFooterTemplate() %>
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-listitem-template">
@@ -768,7 +786,8 @@
 
 <script>
 xosInlineDetailButtonsTemplate = _.template($("#xos-inline-detail-buttons-template").html());
-xosInlineListButtonsTemplate = _.template($("#xos-inline-list-buttons-template").html());
+xosListHeaderTemplate = _.template($("#xos-list-header-template").html());
+xosListFooterTemplate = _.template($("#xos-list-footer-template").html());
 xosDeleteButtonTemplate = _.template($("#xos-delete-button-template").html());
 xosDetailLinkTemplate = _.template($("#xos-detail-link-template").html());
 </script>
