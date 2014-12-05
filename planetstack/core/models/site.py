@@ -255,33 +255,38 @@ class ControllerPrivilege(PlCoreBase):
             qs = ControllerPrivilege.objects.filter(id__in=cpriv_ids)
         return qs 
 
-class SiteDeployments(PlCoreBase):
-    #objects = ControllerLinkManager()
-    #deleted_objects = ControllerLinkDeletionManager()
+class Controller(PlCoreBase):
+
     objects = ControllerManager()
     deleted_objects = ControllerDeletionManager()
 
-    site = models.ForeignKey(Site,related_name='sitedeployments')
-    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
-    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
-    #tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")    
-    def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
-
-class Controller(PlCoreBase):
-    site_deployment = models.ForeignKey(SiteDeployments,related_name='controller')
-
+    name = models.CharField(max_length=200, unique=True, help_text="Name of the Controller")
+    version = models.CharField(max_length=200, unique=True, help_text="Controller version")
     backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
     auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
     admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
 
-    def __unicode__(self):  return u'%s %s' % (self.site_deployment, self.backend_type)
+    def __unicode__(self):  return u'%s %s' % (self.name, self.backend_type)
 
-class ControllerSites(PlCoreBase):
+class SiteDeployments(PlCoreBase):
     objects = ControllerLinkManager()
-    deleted_objects = ControllerLinkDeletionManager() 
+    deleted_objects = ControllerLinkDeletionManager()
 
-    controller = models.ForeignKey(Controller, related_name='controllersites')
-    site_deployment = models.ForeignKey(SiteDeployments, related_name='controllersites')
+    site = models.ForeignKey(Site,related_name='sitedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
+    controller = models.ForeignKey(Controller, relaed_name='sitedeployments')
+    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
+
+    def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
+
+class ControllerSiteDeployments(PlCoreBase):
+    objects = ControllerLinkManager()
+    deleted_objects = ControllerLinkDeletionManager()
+    
+    controller = models.ForeignKey(Controller, related_name='controllersitedeployments')
+    site_deployment = models.ForeignKey(SiteDeployments, related _name='controllersitedeployments') 
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
+
+    def __unicode__(self):  return u'%s %s' % (self.controller, self.site_deployment)

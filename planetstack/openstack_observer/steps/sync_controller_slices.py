@@ -5,7 +5,6 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, ControllerSites
 from core.models.slice import Slice, ControllerSlices
 from core.models.usercontrollers import ControllerUsers
 from util.logger import Logger, logging
