@@ -6,7 +6,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.ansible import *
 
-class SyncControllerSites(OpenStackSyncStep):
+class SyncControllerSiteDeployments(OpenStackSyncStep):
     requested_interval=0
     provides=[ControllerSiteDeployments, SiteDeployments]
 

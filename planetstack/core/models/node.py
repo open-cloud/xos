@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import SiteDeployments, Controller
+from core.models import SiteDeployments
 from core.models import Tag
 from django.contrib.contenttypes import generic
 

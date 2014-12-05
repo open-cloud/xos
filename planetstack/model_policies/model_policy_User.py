@@ -1,19 +1,17 @@
 from core.models import *
 
 def handle(user):
-	from core.models import Controller,ControllerSites,ControllerUsers
+	from core.models import Controller, ControllerSiteDeployments, ControllerUsers
 	from collections import defaultdict
-	controllers = Controller.objects.all()
-	controller_sitements = ControllerSites.objects.all()
-	controller_site_lookup = defaultdict(list)
-	for controller_sitement in controller_sitements:
-		controller_site_lookup[controller_sitement.site].append(controller_sitement.controller)
+	ctrl_site_deployments = ControllerSiteDeployments.objects.all()
+	controller_lookup = defaultdict(list)
+	for ctrl_site_deployment in ctrl_site_deployments:
+		controller_site_lookup[ctrl_site_deployment.site_deployment].append(ctrl_site_deployment)
 
 	controller_user_lookup = defaultdict(list)
-	for controller_userment in ControllerUsers.objects.all():
-		controller_user_lookup[controller_userment.user].append(controller_userment.controller)
+	for controller_user in ControllerUsers.objects.all():
+		controller_user_lookup[controller_user.user].append(controller_user.controller)
    
-	all_controllers = Controller.objects.filter() 
 	if user.is_admin:
 		# admins should have an account at all controllers
 		expected_controllers = controllers
