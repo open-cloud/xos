@@ -19,7 +19,9 @@ XOSAdminApp.addRegions({
     linkedObjs1: "#linkedObjs1",
     linkedObjs2: "#linkedObjs2",
     linkedObjs3: "#linkedObjs3",
-    linkedObjs4: "#linkedObjs4"
+    linkedObjs4: "#linkedObjs4",
+
+    addChildDetail: "#xos-addchild-detail"
 });
 
 XOSAdminApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
@@ -108,23 +110,28 @@ XOSAdminApp.initRouter = function() {
         listViewName = collection_name + "ListView";
         detailViewName = collection_name + "DetailView";
 
-        api[api_command] = XOSAdminApp.listViewShower(listViewName, collection_name, "detail", collection_name);
+        api[api_command] = XOSAdminApp.createListHandler(listViewName, collection_name, "detail", collection_name);
         routes[nav_url] = api_command;
 
         nav_url = collection_name + "/:id";
         api_command = "detail" + firstCharUpper(collection_name);
 
-        api[api_command] = XOSAdminApp.detailShower(detailViewName, collection_name, "detail", name);
+        api[api_command] = XOSAdminApp.createDetailHandler(detailViewName, collection_name, "detail", name);
         routes[nav_url] = api_command;
 
         nav_url = "add" + firstCharUpper(name);
         api_command = "add" + firstCharUpper(name);
-        api[api_command] = XOSAdminApp.addShower(detailViewName, collection_name, "detail", name);
+        api[api_command] = XOSAdminApp.createAddHandler(detailViewName, collection_name, "detail", name);
+        routes[nav_url] = api_command;
+
+        nav_url = "addChild" + firstCharUpper(name) + "/:parentModel/:parentField/:parentId";
+        api_command = "addChild" + firstCharUpper(name);
+        api[api_command] = XOSAdminApp.createAddChildHandler(detailViewName, collection_name);
         routes[nav_url] = api_command;
 
         nav_url = "delete" + firstCharUpper(name) + "/:id";
         api_command = "delete" + firstCharUpper(name);
-        api[api_command] = XOSAdminApp.deleteShower(collection_name, name);
+        api[api_command] = XOSAdminApp.createDeleteHandler(collection_name, name);
         routes[nav_url] = api_command;
     };
 
