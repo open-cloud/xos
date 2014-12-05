@@ -52,9 +52,10 @@ class SyncSliceDeployments(OpenStackSyncStep):
                                                              deployment=slice_deployment.deployment)            
     	if not deployment_users:
 	    logger.info("slice createor %s has not accout at deployment %s" % (slice_deployment.slice.creator, slice_deployment.deployment.name))
-	    roles = []
+	    roles = ['admin']
+	    deployment_user = 'Unknown user'
     	else:
-	    deployment_user = deployment_users[0]
+	    deployment_user = deployment_users[0].user.email
 	    roles = ['admin']
 	    
 	max_instances=int(slice_deployment.slice.max_slivers)
@@ -65,10 +66,11 @@ class SyncSliceDeployments(OpenStackSyncStep):
 		         'tenant': slice_deployment.slice.name,
 		         'tenant_description': slice_deployment.slice.description,
 			 'roles':roles,
-			 'name':deployment_user.user.email,
+			 'name':deployment_user,
+			 'ansible_tag':'%s@%s'%(slice_deployment.slice.name,slice_deployment.deployment.name),
 			 'max_instances':max_instances}
 
-	res = run_template('sync_slice_deployments.yaml', tenant_fields)
+	res = run_template('sync_slice_deployments.yaml', tenant_fields, path='slice_deployments')
 	expected_num = len(roles)+1
 	if (len(res)!=expected_num):
 	    raise Exception('Could not sync tenants for slice %s'%slice_deployment.slice.name)
