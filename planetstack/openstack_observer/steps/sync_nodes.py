@@ -31,7 +31,7 @@ class SyncNodes(OpenStackSyncStep):
         new_nodes = []
         for controller in controllers:
             try:
-                driver = self.driver.admin_driver(controller=controller.name)
+                driver = self.driver.admin_driver(controller=controller)
                 compute_nodes = driver.shell.nova.hypervisors.list()
             except:
                 logger.log_exc("Failed to get nodes from controller %s" % str(controller))
@@ -43,7 +43,7 @@ class SyncNodes(OpenStackSyncStep):
                     # XX pick a random site to add the node to for now
                     site_index = random.randint(0, len(site_deployments))
                     node = Node(name=compute_node.hypervisor_hostname,
-                                site_deployment=site_deployments[site_index], controller=controller)
+                                site_deployment=site_deployments[site_index])
                     new_nodes.append(node)
 
         return new_nodes    

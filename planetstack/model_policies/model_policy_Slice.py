@@ -1,22 +1,20 @@
 
 def handle(slice):
-	from core.models import ControllerSites,ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
+	from core.models import Controller, ControllerSiteDeployments, ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
-	site_controllers = ControllerSites.objects.all()
+	ctrl_site_deployments = ControllerSiteDeployments.objects.all()
 	site_deploy_lookup = defaultdict(list)
-	for site_controller in site_controllers:
-		site_deploy_lookup[site_controller.site].append(site_controller.controller)
+	for ctrl_site_deployment in ctrl_site_deployments:
+		site_deploy_lookup[ctrl_site_deployment.site_deployment].append(ctrl_site_deployment)
 	
 	slice_controllers = ControllerSlices.objects.all()
 	slice_deploy_lookup = defaultdict(list)
 	for slice_controller in slice_controllers:
-		slice_deploy_lookup[slice_controller.slice].append(slice_controller.controller)
+		slice_deploy_lookup[slice_controller.slice].append(slice_controller)
 	
-	all_controllers = Controller.objects.all() 
-	# slices are added to all controllers for now
-	expected_controllers = all_controllers
 	#expected_controllers = site_deploy_lookup[slice.site]
-	for expected_controller in expected_controllers:
+        all_controllers = Controller.objects.all() 
+	for expected_controller in controllers:
 		if slice not in slice_deploy_lookup or \
 		   expected_controller not in slice_deploy_lookup[slice]:
 			sd = ControllerSlices(slice=slice, controller=expected_controller)

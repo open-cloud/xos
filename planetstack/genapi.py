@@ -164,8 +164,6 @@ def get_REST_patterns():
     
         url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
         url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
-        url(r'plstackapi/controllersites/$', ControllerSitesList.as_view(), name='sitedeployments-list'),
-        url(r'plstackapi/controllersites/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSitesDetail.as_view(), name ='sitedeployments-detail'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
@@ -1474,24 +1472,6 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
         model = Deployment
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','sites','sites','flavors','flavors',)
 
-
-class ControllerSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    site_deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sitedeployment-detail')
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','admin_user','admin_password','admin_tenant','auth_url','backend_type','availability_zone','accessControl',)
-
-
 class DeploymentIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     
@@ -1544,7 +1524,7 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
 
 class ControllerIdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
-    sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    site_deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sitedeployment-detail')
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1975,39 +1955,6 @@ class SiteDeploymentsIdSerializer(serializers.ModelSerializer):
     class Meta:
         model = SiteDeployments
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment')
-
-
-class ControllerSitesSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSites
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site_deployment','controller','tenant_id',)
-
-class ControllerSitesIdSerializer(serializers.ModelSerializer):
-    id = serializers.Field()
-
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSites
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site_deployment','controller','tenant_id',)
 
 
 class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
@@ -5007,58 +4954,6 @@ class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-class ControllerSitesList(generics.ListCreateAPIView):
-    queryset = ControllerSites.objects.select_related().all()
-    serializer_class = ControllerSitesSerializer
-    id_serializer_class = ControllerSiteIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site_deployment','controller','tenant_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ControllerSites.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSitesList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSitesList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-class ControllerSitesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerSites.objects.select_related().all()
-    serializer_class = ControllerSitesSerializer
-    id_serializer_class = ControllerSitesIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ControllerSites.select_by_user(self.request.user)
 
 class SliceTagList(generics.ListCreateAPIView):
     queryset = SliceTag.objects.select_related().all()
