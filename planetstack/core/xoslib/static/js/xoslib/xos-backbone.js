@@ -351,8 +351,8 @@ if (! window.XOSLIB_LOADED ) {
                            relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
                            modelName: "slice",
-                           validate: function(attrs, options) {
-                               errors = XOSModel.prototype.validate(this, attrs, options);
+                           xosValidate: function(attrs, options) {
+                               errors = XOSModel.prototype.xosValidate(this, attrs, options);
                                // validate that slice.name starts with site.login_base
                                site = attrs.site || this.site;
                                if ((site!=undefined) && (attrs.name!=undefined)) {
