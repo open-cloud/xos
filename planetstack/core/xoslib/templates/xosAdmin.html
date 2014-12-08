@@ -105,7 +105,7 @@
   <form>
   <table>
   <% _.each(addFields, function(fieldName) { %>
-     <tr><td><%= fieldName %>
+     <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% if (fieldName in foreignFields) { %>
             <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
@@ -125,7 +125,7 @@
   <form>
   <table>
   <% console.log(model); _.each(detailFields, function(fieldName) { %>
-     <tr><td><%= fieldName %>
+     <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% if (fieldName in foreignFields) { %>
             <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
