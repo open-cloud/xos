@@ -89,7 +89,8 @@
 </script>
 
 <script type="text/template" id="xos-list-footer-template">
-    <a href="#addChildSliver/slice/slice/23">Add another...</a>
+    <% console.log(model); %>
+    <a href="<%= addChildHash %>">Add...</a>
 </script>
 
 <script type="text/template" id="xos-delete-button-template">
@@ -156,7 +157,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -185,7 +186,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-image-listitem-template">
@@ -215,7 +216,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -247,7 +248,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-network-listitem-template">
@@ -276,7 +277,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-networkSliver-listitem-template">
@@ -303,7 +304,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-networkDeployment-listitem-template">
@@ -329,7 +330,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -354,7 +355,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-sliceRole-listitem-template">
@@ -380,7 +381,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -412,7 +413,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-site-listitem-template">
@@ -477,7 +478,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-sliceDeployment-listitem-template">
@@ -503,7 +504,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-slicePrivilege-listitem-template">
@@ -537,7 +538,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -574,7 +575,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 
@@ -604,7 +605,7 @@
   </tr></thead>
   <tbody></tbody>
   </table>
-  <%= xosListFooterTemplate() %>
+  <%= xosListFooterTemplate({addChildHash: addChildHash}) %>
 </script>
 
 <script type="text/template" id="xosAdmin-userDeployment-listitem-template">
