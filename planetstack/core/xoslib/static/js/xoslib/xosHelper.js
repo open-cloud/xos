@@ -4,6 +4,20 @@ HTMLView = Marionette.ItemView.extend({
   },
 });
 
+FilteredCompositeView = Marionette.CompositeView.extend( {
+    showCollection: function() {
+      var ChildView;
+      this.collection.each(function(child, index) {
+        if (this.filter && !this.filter(child)) {
+            return;
+        }
+        ChildView = this.getChildView(child);
+        this.addChild(child, ChildView, index);
+      }, this);
+
+    },
+});
+
 XOSRouter = Marionette.AppRouter.extend({
         initialize: function() {
             this.routeStack=[];
@@ -14,11 +28,13 @@ XOSRouter = Marionette.AppRouter.extend({
         },
 
         prevPage: function() {
-             return this.routeStack.slice(-2)[0];
+             return this.routeStack.slice(-1)[0];
         },
 
         showPreviousURL: function() {
             prevPage = this.prevPage();
+            console.log("showPreviousURL");
+            console.log(this.routeStack);
             if (prevPage) {
                 this.navigate("#"+prevPage, {trigger: false, replace: true} );
             }
@@ -139,7 +155,7 @@ XOSApplication = Marionette.Application.extend({
                     "Save" : function() {
                       var addDialog = this;
                       detailView.synchronous = true;
-                      detailView.afterSave = function() { $(addDialog).dialog("close"); }
+                      detailView.afterSave = function() { console.log("afterSave"); $(addDialog).dialog("close"); }
                       detailView.save();
 
                       //$(this).dialog("close");
@@ -160,7 +176,8 @@ XOSApplication = Marionette.Application.extend({
             collection = xos[collection_name];
             model = collection.get(model_id);
             assert(model!=undefined, "failed to get model " + model_id + " from collection " + collection_name);
-            app.deleteDialog(model,"back");
+            app.Router.showPreviousURL();
+            app.deleteDialog(model);
         }
     },
 
@@ -276,6 +293,7 @@ XOSApplication = Marionette.Application.extend({
         console.log("saveSuccess");
         if (model.addToCollection) {
             console.log("addToCollection");
+            console.log(model.addToCollection);
             model.addToCollection.add(model);
             model.addToCollection.sort();
             model.addToCollection = undefined;
@@ -312,8 +330,6 @@ XOSApplication = Marionette.Application.extend({
 
     deleteDialog: function(model, afterDelete) {
         var that=this;
-        console.log("XXX");
-        console.log(Backbone.history.fragment);
         assert(model!=undefined, "deleteDialog's model is undefined");
         //console.log("deleteDialog"); console.log(model);
         this.confirmDialog(null, null, function() {
@@ -322,10 +338,7 @@ XOSApplication = Marionette.Application.extend({
             that.destroyModel(model);
             if (afterDelete=="list") {
                 that.navigate("list", modelName);
-            } else if (afterDelete=="back") {
-                that.Router.showPreviousURL();
             }
-
         });
     },
 });
@@ -351,11 +364,15 @@ XOSDetailView = Marionette.ItemView.extend({
             */
 
             initialize: function() {
-                this.on("saveSuccess", this.afterSave);
+                this.on("saveSuccess", this.onAfterSave);
                 this.synchronous = false;
             },
 
             afterSave: function(e) {
+            },
+
+            onAfterSave: function(e) {
+                this.afterSave(e);
             },
 
             inputChanged: function(e) {
@@ -470,12 +487,14 @@ XOSDetailView = Marionette.ItemView.extend({
 
                     var index=0;
                     for (relatedName in this.model.collection.relatedCollections) {
-                        relatedField = this.model.collection.relatedCollections[relatedName];
+                        var relatedField = this.model.collection.relatedCollections[relatedName];
+                        var relatedId = this.model.id;
                         regionName = "linkedObjs" + (index+1);
 
                         relatedListViewClassName = relatedName + "ListView";
                         assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
-                        relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id),
+                        relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName],
+                                                                                          filter: function(model) { return model.attributes[relatedField]==relatedId;},
                                                                                           parentModel: this.model});
                         this.app[regionName].show(new relatedListViewClass());
                         if (this.app.hideTabsByDefault) {
@@ -549,7 +568,7 @@ XOSItemView = Marionette.ItemView.extend({
          title - title to display in template
 */
 
-XOSListView = Marionette.CompositeView.extend({
+XOSListView = FilteredCompositeView.extend({
              childViewContainer: 'tbody',
              parentModel: null,
 
@@ -577,6 +596,8 @@ XOSListView = Marionette.CompositeView.extend({
 
              initialize: function() {
                  this.listenTo(this.collection, 'change', this._renderChildren)
+                 this.listenTo(this.collection, 'sort', function() { console.log("sort"); })
+                 this.listenTo(this.collection, 'add', function() { console.log("add"); })
                  this.listenTo(this.collection, 'fetchStateChange', this._fetchStateChange);
 
                  // Because many of the templates use idToName(), we need to
