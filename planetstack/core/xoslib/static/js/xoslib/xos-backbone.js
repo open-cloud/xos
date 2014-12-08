@@ -258,6 +258,14 @@ if (! window.XOSLIB_LOADED ) {
             model.fetch(options);
         },
 
+        /* filterBy: note that this yields a new collection. If you pass that
+              collection to a CompositeView, then the CompositeView won't get
+              any events that trigger on the original collection.
+
+              Using this function is probably wrong, and I wrote
+              FilteredCompositeView() to replace it.
+        */
+
         filterBy: function(fieldName, value) {
              filtered = this.filter(function(obj) {
                  return obj.get(fieldName) == value;
