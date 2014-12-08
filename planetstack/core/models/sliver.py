@@ -8,6 +8,7 @@ from core.models import Slice
 from core.models import Node
 from core.models import Site
 from core.models import Deployment
+from core.models import Controller
 from core.models import User
 from core.models import Tag
 from core.models import Flavor
@@ -88,7 +89,7 @@ class Sliver(PlCoreBase):
     creator = models.ForeignKey(User, related_name='slivers', blank=True, null=True)
     slice = models.ForeignKey(Slice, related_name='slivers')
     node = models.ForeignKey(Node, related_name='slivers')
-    controllerNetwork = models.ForeignKey(Deployment, verbose_name='controller', related_name='sliver_controllerNetwork')
+    controllerNetwork = models.ForeignKey(Controller, verbose_name='controller', related_name='sliver_controllerNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
     flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
     tags = generic.GenericRelation(Tag)
