@@ -89,7 +89,6 @@
 </script>
 
 <script type="text/template" id="xos-list-footer-template">
-    <% console.log(model); %>
     <a href="<%= addChildHash %>">Add...</a>
 </script>
 
@@ -108,7 +107,7 @@
   <% _.each(addFields, function(fieldName) { %>
      <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% if (fieldName in foreignFields) { %>
-            <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
+            <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %>></td>
         <% } else { %>
@@ -128,7 +127,7 @@
   <% console.log(model); _.each(detailFields, function(fieldName) { %>
      <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% if (fieldName in foreignFields) { %>
-            <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
+            <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %>></td>
         <% } else { %>
