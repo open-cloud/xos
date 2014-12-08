@@ -121,11 +121,12 @@ XOSApplication = Marionette.Application.extend({
         return function(parent_modelName, parent_fieldName, parent_id) {
             app.Router.showPreviousURL();
             console.log("acs");
-            console.log(modelName);
+            console.log(parent_modelName);
             console.log(parent_fieldName);
             console.log(parent_id);
             model = new xos[collection_name].model();
             model.attributes[parent_fieldName] = parent_id;
+            console.log(model);
             detailViewClass = app[addChildName];
             var detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             detailView.dialog = $("xos-addchild-dialog");
