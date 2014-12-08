@@ -157,7 +157,7 @@ def getCDNOperatorData(randomizeData = False, wait=True):
         new_row = {"lat": lat,
                "long": long,
                "health": 0,
-               "numNodes": int(site.nodes.count()),
+               #"numNodes": int(site.nodes.count()),
                "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),     # measured number of slivers, from bigquery statistics
                "numHPCSlivers": allocated_slivers,                              # allocated number of slivers, from data model
                "siteUrl": str(site.site_url),
