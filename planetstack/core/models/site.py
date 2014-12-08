@@ -216,6 +216,44 @@ class Deployment(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+class DeploymentRole(PlCoreBase):
+    #objects = DeploymentLinkManager()
+    #deleted_objects = DeploymentLinkDeletionManager()
+    ROLE_CHOICES = (('admin','Admin'),)
+    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+
+    def __unicode__(self):  return u'%s' % (self.role)
+
+class DeploymentPrivilege(PlCoreBase):
+    #objects = DeploymentLinkManager()
+    #deleted_objects = DeploymentLinkDeletionManager()
+
+    user = models.ForeignKey('User', related_name='deploymentprivileges')
+    deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
+    role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
+
+    def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
+
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        dprivs = DeploymentPrivilege.objects.filter(user=user)
+        for dpriv in dprivs:
+            if dpriv.role.role == 'admin':
+                return True
+        return False
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = DeploymentPrivilege.objects.all()
+        else:
+            dpriv_ids = [dp.id for dp in DeploymentPrivilege.objects.filter(user=user)]
+            qs = DeploymentPrivilege.objects.filter(id__in=dpriv_ids)
+        return qs
+
 class ControllerRole(PlCoreBase):
     #objects = ControllerLinkManager()
     #deleted_objects = ControllerLinkDeletionManager()
@@ -276,7 +314,7 @@ class SiteDeployments(PlCoreBase):
 
     site = models.ForeignKey(Site,related_name='sitedeployments')
     deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
-    controller = models.ForeignKey(Controller, relaed_name='sitedeployments')
+    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
     availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
@@ -286,7 +324,7 @@ class ControllerSiteDeployments(PlCoreBase):
     deleted_objects = ControllerLinkDeletionManager()
     
     controller = models.ForeignKey(Controller, related_name='controllersitedeployments')
-    site_deployment = models.ForeignKey(SiteDeployments, related _name='controllersitedeployments') 
+    site_deployment = models.ForeignKey(SiteDeployments, related_name='controllersitedeployments') 
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.site_deployment)

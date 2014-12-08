@@ -340,7 +340,7 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'deploymentNetwork', 'flavor', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'controllerNetwork', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -349,7 +349,7 @@ class SliverInline(PlStackTabularInline):
         return Sliver.select_by_user(request.user)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        if db_field.name == 'deploymentNetwork':
+        if db_field.name == 'controllerNetwork':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
         elif db_field.name == 'flavor':
@@ -391,8 +391,18 @@ class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['backend_status_icon', 'name','deployment','site']
+    fields = ['backend_status_icon', 'name', 'site_deployment']
     readonly_fields = ('backend_status_icon', )
+
+class DeploymentPrivilegeInline(PlStackTabularInline):
+    model = DeploymentPrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['backend_status_icon', 'user','role','deployment']
+    readonly_fields = ('backend_status_icon', )
+
+    def queryset(self, request):
+        return DeploymentPrivilege.select_by_user(request.user)
 
 class ControllerPrivilegeInline(PlStackTabularInline):
     model = ControllerPrivilege
@@ -403,6 +413,12 @@ class ControllerPrivilegeInline(PlStackTabularInline):
 
     def queryset(self, request):
         return ControllerPrivilege.select_by_user(request.user)
+
+class ControllerSiteDeploymentsInline(PlStackTabularInline):
+    model = ControllerSiteDeployments
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['controller', 'site_deployment', 'tenant_id']
 
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
@@ -588,7 +604,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    a better way...
 
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ControllerImages, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), DeploymentImages, "deployment", "image")
 
       self.save_m2m()
 
@@ -605,16 +621,20 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name', 'availability_zone', 'sites', 'images', 'flavors', 'accessControl']
+    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [ControllerPrivilegeInline,NodeInline,TagInline] # ,ControllerImagesInline]
+    # node no longer directly connected to deployment
+    #inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
+    inlines = [DeploymentPrivilegeInline,TagInline,ImageDeploymentsInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name']
 
-    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags')) # ,('imagedeployments','Images'))
+    # nodes no longer direclty connected to deployments
+    #suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
+    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
@@ -634,7 +654,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
 class ControllerAdminForm(forms.ModelForm):
     site_deployments = forms.ModelMultipleChoiceField(
-        queryset=SiteDeployment.objects.all(),
+        queryset=SiteDeployments.objects.all(),
         required=False,
         help_text="Select which sites deployments are managed by this controller",
         widget=FilteredSelectMultiple(
@@ -645,14 +665,14 @@ class ControllerAdminForm(forms.ModelForm):
     class Meta: 
         model = Controller
         
-    def __init__(self, *args, **kwds):
+    def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
         super(ControllerAdminForm, self).__init__(*args, **kwargs)  
 
         if self.instance and self.instance.pk:
             self.fields['site_deployments'].initial = [x.site_deployment for x in self.instance.controllersitedeployments.all()]
 
-        def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
+    def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
             this_obj: the source object we want to link from
             selected_objs: a list of destination objects we want to link to
@@ -679,27 +699,26 @@ class ControllerAdminForm(forms.ModelForm):
                 relation = relation_class(**kwargs)
                 relation.save()
 
-        def save(self, commit=True):
-            controller = super(ControllerAdminForm, self).save(commit=False)
+    def save(self, commit=True):
+        controller = super(ControllerAdminForm, self).save(commit=False)
+        if commit:
+            controller.save()
 
-            if commit:
-                controller.save()
-
-            if controller.pk:
-                # save_m2m() doesn't seem to work with 'through' relations. So we
-                #    create/destroy the through models ourselves. There has to be
-                #    a better way...
+        if controller.pk:
+            # save_m2m() doesn't seem to work with 'through' relations. So we
+            #    create/destroy the through models ourselves. There has to be
+            #    a better way...
             self.manipulate_m2m_objs(controller, self.cleaned_data['site_deployments'], controller.controllersitedeployments.all(), ControllerSiteDeployments, "controller", "site_deployment")
 
-            self.save_m2m()
+        self.save_m2m()
 
-            return controller 
+        return controller 
       
 class ControllerAdmin(PlanetStackBaseAdmin):
     model = Controller 
-    fieldList = ['name', 'version', 'backend_type', 'auth_url', 'admin_user', 'admin_tenant',]
-    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-admin-only']})]
-    inlines = [ControllerPrivilegeInline, ContrllerSiteInline] # ,ControllerImagesInline]
+    fieldList = ['name', 'version', 'backend_type', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
+    #fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
+    inlines = [ControllerSiteDeploymentsInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text',)
@@ -707,11 +726,12 @@ class ControllerAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = []
 
     def get_form(self, request, obj=None, **kwargs):
+        print self.fieldsets
         if request.user.isReadOnlyUser():
             kwargs["form"] = ControllerAdminROForm
         else:
             kwargs["form"] = ControllerAdminForm
-        adminForm = super(DeploymentAdmin,self).get_form(request, obj, **kwargs)
+        adminForm = super(ControllerAdmin,self).get_form(request, obj, **kwargs)
 
         # from stackexchange: pass the request object into the form
 
@@ -754,7 +774,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
         ('siteprivileges','Privileges'),
         ('deployments','Deployments'),
         ('slices','Slices'),
-        ('nodes','Nodes'),
+        #('nodes','Nodes'),
         ('tags','Tags'),
     )
     readonly_fields = ['backend_status_text', 'accountLink']
@@ -764,7 +784,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, NodeInline, SitePrivilegeInline, SiteDeploymentsInline]
+    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentsInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -908,7 +928,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
         return super(SliceAdmin, self).add_view(request, form_url, extra_context=extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        print object_id
         # cannot change the site of an existing slice so make the site field read only
         if object_id:
             self.readonly_fields = ('backend_status_text','site')
@@ -924,10 +943,10 @@ class SliceAdmin(PlanetStackBaseAdmin):
             for deployment in flavor.deployments.all():
                 deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
 
-        controller_images = []
+        deployment_images = []
         for image in Image.objects.all():
-            for controller_image in image.controllerimages.all():
-                controller_images.append( (controller_image.controller.id, image.id, image.name) )
+            for deployment_image in image.imagedeployments.all():
+                deployment_images.append( (deployment_image.controller.id, image.id, image.name) )
 
         site_login_bases = []
         for site in Site.objects.all():
@@ -1025,15 +1044,15 @@ class NodeForm(forms.ModelForm):
 
 class NodeAdmin(PlanetStackBaseAdmin):
     form = NodeForm
-    list_display = ('backend_status_icon', 'name', 'site', 'deployment')
+    list_display = ('backend_status_icon', 'name', 'site_deployment')
     list_display_links = ('backend_status_icon', 'name', )
-    list_filter = ('deployment',)
+    list_filter = ('site_deployment',)
 
     inlines = [TagInline,SliverInline]
-    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name','site','deployment'], 'classes':['suit-tab suit-tab-details']})]
+    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name','site_deployment'], 'classes':['suit-tab suit-tab-details']})]
     readonly_fields = ('backend_status_text', )
 
-    user_readonly_fields = ['name','site','deployment']
+    user_readonly_fields = ['name','site_deployment']
     user_readonly_inlines = [TagInline,SliverInline]
 
     suit_form_tabs =(('details','Node Details'),('slivers','Slivers'),('tags','Tags'))
@@ -1048,7 +1067,7 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
             'slice': LinkedSelect,
-            'deploymentNetwork': LinkedSelect,
+            'controllerNetwork': LinkedSelect,
             'node': LinkedSelect,
             'image': LinkedSelect
         }
@@ -1062,10 +1081,10 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'controllerNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deploymentNetwork']
+    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'controllerNetwork']
     list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),
@@ -1074,7 +1093,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
 
     inlines = [TagInline]
 
-    user_readonly_fields = ['slice', 'deploymentNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image']
+    user_readonly_fields = ['slice', 'controllerNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
