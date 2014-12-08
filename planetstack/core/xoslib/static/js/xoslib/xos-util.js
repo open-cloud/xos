@@ -14,6 +14,17 @@ function firstCharUpper(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function toTitleCase(str)
+{
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+function fieldNameToHumanReadable(str)
+{
+    str = str.replace("_", " ");
+    return toTitleCase(str);
+}
+
 // http://stackoverflow.com/questions/2117320/set-maximum-displayed-rows-count-for-html-table
 function limitTableRows(tableSelector, maxRows) {
     var table = $(tableSelector)[0] //document.getElementById(tableId);
