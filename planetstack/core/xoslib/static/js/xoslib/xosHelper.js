@@ -474,7 +474,8 @@ XOSDetailView = Marionette.ItemView.extend({
 
                         relatedListViewClassName = relatedName + "ListView";
                         assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
-                        relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id)});
+                        relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName].filterBy(relatedField,this.model.id),
+                                                                                          parentModel: this.model});
                         this.app[regionName].show(new relatedListViewClass());
                         if (this.app.hideTabsByDefault) {
                             this.app[regionName].$el.hide();
@@ -511,6 +512,7 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     detailFields: this.model.detailFields,
                                                     foreignFields: this.model.foreignFields,
                                                     inputType: this.model.inputType,
+                                                    model: this.model,
                                          }},
 
 });
@@ -533,6 +535,7 @@ XOSItemView = Marionette.ItemView.extend({
                                                     detailFields: this.model.detailFields,
                                                     foreignFields: this.model.foreignFields,
                                                     inputType: this.model.inputType,
+                                                    model: this.model,
                                          }},
 });
 
@@ -547,6 +550,7 @@ XOSItemView = Marionette.ItemView.extend({
 
 XOSListView = Marionette.CompositeView.extend({
              childViewContainer: 'tbody',
+             parentModel: null,
 
              events: {"click button.btn-xos-add": "addClicked",
                       "click button.btn-xos-refresh": "refreshClicked",
@@ -587,8 +591,27 @@ XOSListView = Marionette.CompositeView.extend({
                  }
              },
 
+             getAddChildHash: function() {
+                if (this.parentModel) {
+                    // Find the field name in the model that should point to
+                    // the parent object. For example, when adding a sliver, the
+                    // fieldName that should point to 'users' is 'creator'.
+                    parentFieldName = "unknown";
+                    for (fieldName in this.collection.foreignFields) {
+                        cname = this.collection.foreignFields[fieldName];
+                        if (cname = this.collection.collectionName) {
+                            parentFieldName = fieldName;
+                        }
+                    }
+                    return "#addChild" + firstCharUpper(this.collection.modelName) + "/" + this.parentModel.modelName + "/" + parentFieldName + "/" + this.parentModel.id; // modelName, fieldName, id
+                } else {
+                    return null;
+                }
+             },
+
              templateHelpers: function() {
-                return { title: this.title };
+                return { title: this.title,
+                         addChildHash: this.getAddChildHash() };
              },
 });
 
