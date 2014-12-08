@@ -116,7 +116,7 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
-    createAddChildHandler: function(detailName, collection_name) {
+    createAddChildHandler: function(addChildName, collection_name) {
         var app=this;
         return function(parent_modelName, parent_fieldName, parent_id) {
             app.Router.showPreviousURL();
@@ -126,7 +126,7 @@ XOSApplication = Marionette.Application.extend({
             console.log(parent_id);
             model = new xos[collection_name].model();
             model.attributes[parent_fieldName] = parent_id;
-            detailViewClass = app[detailName];
+            detailViewClass = app[addChildName];
             var detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             detailView.dialog = $("xos-addchild-dialog");
             app["addChildDetail"].show(detailView);
@@ -136,10 +136,12 @@ XOSApplication = Marionette.Application.extend({
                width: 640,
                buttons : {
                     "Save" : function() {
+                      var addDialog = this;
+                      detailView.synchronous = true;
+                      detailView.afterSave = function() { $(addDialog).dialog("close"); }
                       detailView.save();
 
-                      $(this).dialog("close");
-                      // do something here
+                      //$(this).dialog("close");
                     },
                     "Cancel" : function() {
                       $(this).dialog("close");
@@ -503,6 +505,14 @@ XOSDetailView = Marionette.ItemView.extend({
                 _.each(errors, markErrors);
             },
 
+             templateHelpers: function() { return { modelName: this.model.modelName,
+                                                    collectionName: this.model.collectionName,
+                                                    addFields: this.model.addFields,
+                                                    detailFields: this.model.detailFields,
+                                                    foreignFields: this.model.foreignFields,
+                                                    inputType: this.model.inputType,
+                                         }},
+
 });
 
 /* XOSItemView
@@ -519,6 +529,10 @@ XOSItemView = Marionette.ItemView.extend({
 
              templateHelpers: function() { return { modelName: this.model.modelName,
                                                     collectionName: this.model.collectionName,
+                                                    addFields: this.model.addFields,
+                                                    detailFields: this.model.detailFields,
+                                                    foreignFields: this.model.foreignFields,
+                                                    inputType: this.model.inputType,
                                          }},
 });
 

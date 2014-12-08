@@ -100,6 +100,46 @@
     <a href="#<%= collectionName %>/<%= id %>"><%= text %></a>
 </script>
 
+<script type="text/template" id="xos-add-template">
+  <h3 class="xos-detail-title">Add Object: <%= modelName %></h3>
+  <form>
+  <table>
+  <% _.each(addFields, function(fieldName) { %>
+     <tr><td><%= fieldName %>
+        <% if (fieldName in foreignFields) { %>
+            <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
+        <% } else if (inputType[fieldName] == "checkbox") { %>
+            <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %>></td>
+        <% } else { %>
+            <td><input type="text" name="<%= fieldName %>" value="<%= model.attributes[fieldName] %>"></td>
+        <% } %>
+     </tr>
+  <% }); %>
+  <%= xosInlineDetailButtonsTemplate() %>
+  </table>
+  </form>
+</script>
+
+<script type="text/template" id="xos-detail-template">
+  <h3 class="xos-detail-title">Add Object: <%= modelName %></h3>
+  <form>
+  <table>
+  <% console.log(model); _.each(detailFields, function(fieldName) { %>
+     <tr><td><%= fieldName %>
+        <% if (fieldName in foreignFields) { %>
+            <td><%= idToSelect(fieldName, window[fieldName], foreignFields[fieldName], "humanReadableName") %></td>
+        <% } else if (inputType[fieldName] == "checkbox") { %>
+            <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %>></td>
+        <% } else { %>
+            <td><input type="text" name="<%= fieldName %>" value="<%= model.attributes[fieldName] %>"></td>
+        <% } %>
+     </tr>
+  <% }); %>
+  <%= xosInlineDetailButtonsTemplate() %>
+  </table>
+  </form>
+</script>
+
 <!-- Deployment -->
 
 <script type="text/template" id="xosAdmin-deployment-list-template">
@@ -129,18 +169,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-deployment-detail-template">
-  <h3 class="xos-detail-title">Detail View: Deployment</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Backend:</td><td><input type="text" name="backend_type" value="<%= backend_type %>"></td></tr>
-  <tr><td>Admin Tenant:</td><td><input type="text" name="admin_tenant" value="<%= admin_tenant %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- Image -->
 
 <script type="text/template" id="xosAdmin-image-list-template">
@@ -167,18 +195,6 @@
   <td><%= container_format %></td>
   <td><%= path %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-image-detail-template">
-  <h3 class="xos-detail-title">Detail View: Image</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Disk Format:</td><td><input type="text" name="backend_type" value="<%= disk_format %>"></td></tr>
-  <tr><td>Container Format:</td><td><input type="text" name="admin_tenant" value="<%= container_format %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <!-- NetworkTemplate -->
@@ -214,21 +230,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-networkTemplate-detail-template">
-  <h3 class="xos-detail-title">Detail View: NetworkTemplate</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
-  <tr><td>Visibility:</td><td><input type="text" name="visibility" value="<%= visibility %>"></td></tr>
-  <tr><td>Translation:</td><td><input type="text" name="translation" value="<%= translation %>"></td></tr>
-  <tr><td>Shared Network Name:</td><td><input type="text" name="sharedNetworkName" value="<%= sharedNetworkName %>"></td></tr>
-  <tr><td>Shared Network Id:</td><td><input type="text" name="sharedNetworkId" value="<%= sharedNetworkId %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- Network -->
 
 <script type="text/template" id="xosAdmin-network-list-template">
@@ -259,20 +260,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-network-detail-template">
-  <h3 class="xos-detail-title">Detail View: Network</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Template:</td><td><%= idToSelect("template",template,"networkTemplates","name") %></td></tr>
-  <tr><td>Ports:</td><td><input type="text" name="ports" value="<%= ports %>"></td></tr>
-  <tr><td>Labels:</td><td><input type="text" name="labels" value="<%= labels %>"></td></tr>
-  <tr><td>Owner:</td><td><%= idToSelect("owner",owner,"slices","name") %></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- NetworkSliver -->
 
 <script type="text/template" id="xosAdmin-networkSliver-list-template">
@@ -301,19 +288,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-networkSliver-detail-template">
-  <h3 class="xos-detail-title">Detail View: Network</h3>
-  <form>
-  <table>
-  <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
-  <tr><td>Sliver:</td><td><input type="text" name="sliver" value="<%= sliver %>"></td></tr>
-  <tr><td>Ip:</td><td><input type="text" name="ip" value="<%= ip %>"></td></tr>
-  <tr><td>Port_id:</td><td><input type="text" name="port_id" value="<%= port_id %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- NetworkDeployment -->
 
 <script type="text/template" id="xosAdmin-networkDeployment-list-template">
@@ -338,18 +312,6 @@
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= net_id %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-networkDeployment-detail-template">
-  <h3 class="xos-detail-title">Detail View: Network</h3>
-  <form>
-  <table>
-  <tr><td>Network:</td><td><input type="text" name="network" value="<%= network %>"></td></tr>
-  <tr><td>Sliver:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
-  <tr><td>Ip:</td><td><input type="text" name="net_id" value="<%= net_id %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <!-- Node -->
@@ -379,18 +341,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-node-detail-template">
-  <h3 class="xos-detail-title">Detail View: Node</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
-  <tr><td>Deployment:</td><td><%= idToSelect("deployment",deployment,"deployments","name") %></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- SliceRole -->
 
 <script type="text/template" id="xosAdmin-sliceRole-list-template">
@@ -407,21 +357,10 @@
   <%= xosListFooterTemplate() %>
 </script>
 
-
 <script type="text/template" id="xosAdmin-sliceRole-listitem-template">
   <td> <%= xosDetailLinkTemplate({collectionName: collectionName, id: id, text: id}) %></td>
   <td><%= role %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-sliceRole-detail-template">
-  <h3 class="xos-detail-title">Detail View: Service</h3>
-  <form>
-  <table>
-  <tr><td>Role:</td><td><input type="text" name="role" value="<%= role %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <!-- Service -->
@@ -455,18 +394,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-service-detail-template">
-  <h3 class="xos-detail-title">Detail View: Service</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
-  <tr><td>Version Number:</td><td><input type="text" name="versionNumber" value="<%= versionNumber %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- Site -->
 
 <script type="text/template" id="xosAdmin-site-list-template">
@@ -497,21 +424,6 @@
   <td><%= is_public %></td>
   <td><%= abbreviated_name %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-site-detail-template">
-  <h3 class="xos-detail-title">Detail View: Site</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>abbreviated_name:</td><td><input type="text" name="abbreviated_name" value="<%= abbreviated_name %>"></td></tr>
-  <tr><td>url:</td><td><input type="text" name="site_url" value="<%= site_url %>"></td></tr>
-  <tr><td>Enabled:</td><td><input type="checkbox" name="enabled" <% if (enabled) print("checked"); %>></td></tr>
-  <tr><td>Is Public:</td><td><input type="checkbox" name="is_public" <% if (is_public) print("checked"); %>></td></tr>
-  <tr><td>login_base:</td><td><input type="text" name="login_base" value="<%= login_base %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <!-- Slice -->
@@ -550,21 +462,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-slice-detail-template">
-  <h3 class="xos-detail-title">Detail View: Slice</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
-  <tr><td>Enabled:</td><td><input type="checkbox" name="enabled" <% if (enabled) print("checked"); %>></td></tr>
-  <tr><td>Description:</td><td><input type="text" name="description" value="<%= description %>"></td></tr>
-  <tr><td>Url:</td><td><input type="text" name="slice_url" value="<%= slice_url %>"></td></tr>
-  <tr><td>Max Slivers:</td><td><input type="text" name="max_slivers" value="<%= max_slivers %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- SliceDeployment -->
 
 <script type="text/template" id="xosAdmin-sliceDeployment-list-template">
@@ -589,18 +486,6 @@
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= tenant_id %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-sliceDeployment-detail-template">
-  <h3 class="xos-detail-title">Detail View: Slice Deployment</h3>
-  <form>
-  <table>
-  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
-  <tr><td>Deployment:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
-  <tr><td>Tenant Id:</td><td><input type="text" name="tenant_id" value="<%= tenant_id %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <!-- SlicePrivilege -->
@@ -629,17 +514,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-slicePrivilege-detail-template">
-  <h3 class="xos-detail-title">Detail View: Slice Privilege</h3>
-  <form>
-  <table>
-  <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>
-  <tr><td>Slice:</td><td><input type="text" name="slice" value="<%= slice %>"></td></tr>
-  <tr><td>Role:</td><td><input type="text" name="role" value="<%= role %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
 
 <!-- Sliver -->
 
@@ -682,22 +556,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-sliver-detail-template">
-  <h3 class="xos-detail-title">Detail View: Sliver</h3>
-  <form>
-  <table>
-  <tr><td>Name:</td><td><input type="text" name="name" value="<%= name %>"></td></tr>
-  <tr><td>instance_id:</td><td><input type="text" name="instance_id" value="<%= instance_id %>"></td></tr>
-  <tr><td>instance_name:</td><td><input type="text" name="instance_name" value="<%= instance_name %>"></td></tr>
-  <tr><td>Image:</td><td><%= idToSelect("image",image,"images","name") %></td></tr>
-  <tr><td>Creator:</td><td><%= idToSelect("creator",creator,"users","username") %></td></tr>
-  <tr><td>Slice:</td><td><%= idToSelect("slice",slice,"slices","name") %></td></tr>
-  <tr><td>Deployment:</td><td><%= idToSelect("deploymentNetwork",deploymentNetwork,"deployments","name") %></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- User -->
 
 <script type="text/template" id="xosAdmin-user-list-template">
@@ -731,21 +589,6 @@
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
 </script>
 
-<script type="text/template" id="xosAdmin-user-detail-template">
-  <h3 class="xos-detail-title">Detail View: User</h3>
-  <form>
-  <table>
-  <tr><td>User Name:</td><td><input type="text" name="username" value="<%= username %>"></td></tr>
-  <tr><td>First Name:</td><td><input type="text" name="firstname" value="<%= firstname %>"></td></tr>
-  <tr><td>Last Name:</td><td><input type="text" name="lastname" value="<%= lastname %>"></td></tr>
-  <tr><td>Phone:</td><td><input type="text" name="phone" value="<%= phone %>"></td></tr>
-  <tr><td>Url:</td><td><input type="text" name="user_url" value="<%= user_url %>"></td></tr>
-  <tr><td>Site:</td><td><%= idToSelect("site",site,"sites","name") %></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
-</script>
-
 <!-- UserDeployments -->
 
 <script type="text/template" id="xosAdmin-userDeployment-list-template">
@@ -770,18 +613,6 @@
   <td><%= idToName(deployment,"deployments","name") %></td>
   <td><%= kuser_id %></td>
   <td><%= xosDeleteButtonTemplate({modelName: modelName, id: id}) %></td>
-</script>
-
-<script type="text/template" id="xosAdmin-userDeployment-detail-template">
-  <h3 class="xos-detail-title">Detail View: UserDeployment</h3>
-  <form>
-  <table>
-  <tr><td>User:</td><td><input type="text" name="user" value="<%= user %>"></td></tr>
-  <tr><td>Deployment:</td><td><input type="text" name="deployment" value="<%= deployment %>"></td></tr>
-  <tr><td>kuser_id:</td><td><input type="text" name="kuser_id" value="<%= kuser_id %>"></td></tr>
-  <%= xosInlineDetailButtonsTemplate() %>
-  </table>
-  </form>
 </script>
 
 <script>

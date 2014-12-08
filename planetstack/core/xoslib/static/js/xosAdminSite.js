@@ -61,20 +61,43 @@ XOSAdminApp.updateNavigationPanel = function() {
 };
 
 XOSAdminApp.buildViews = function() {
+     genericAddChildClass = XOSDetailView.extend({template: "#xos-add-template",
+                                                        app: XOSAdminApp});
+     XOSAdminApp["genericAddChildView"] = genericAddChildClass;
+
+     genericDetailClass = XOSDetailView.extend({template: "#xos-detail-template",
+                                                           app: XOSAdminApp});
+     XOSAdminApp["genericDetailView"] = genericDetailClass;
+
      for (var index in OBJS) {
          name = OBJS[index];
          tr_template = '#xosAdmin-' + name + '-listitem-template';
          table_template = '#xosAdmin-' + name + '-list-template';
          detail_template = '#xosAdmin-' + name + '-detail-template';
+         add_child_template = '#xosAdmin-' + name + '-add-child-template';
          collection_name = name + "s";
          region_name = name + "List";
          detailNavLink = collection_name;
 
-         detailClass = XOSDetailView.extend({
-            template: detail_template,
-            app: XOSAdminApp,
-         });
+         if ($(detail_template).length) {
+             detailClass = XOSDetailView.extend({
+                template: detail_template,
+                app: XOSAdminApp,
+             });
+         } else {
+             detailClass = genericDetailClass;
+         }
          XOSAdminApp[collection_name + "DetailView"] = detailClass;
+
+         if ($(add_child_template).length) {
+             addClass = XOSDetailView.extend({
+                template: add_child_template,
+                app: XOSAdminApp,
+             });
+         } else {
+             addClass = genericAddChildClass;
+         }
+         XOSAdminApp[collection_name + "AddChildView"] = addClass;
 
          itemViewClass = XOSItemView.extend({
              detailClass: detailClass,
@@ -109,6 +132,7 @@ XOSAdminApp.initRouter = function() {
         api_command = "list" + firstCharUpper(collection_name);
         listViewName = collection_name + "ListView";
         detailViewName = collection_name + "DetailView";
+        addChildViewName = collection_name + "AddChildView";
 
         api[api_command] = XOSAdminApp.createListHandler(listViewName, collection_name, "detail", collection_name);
         routes[nav_url] = api_command;
@@ -126,7 +150,7 @@ XOSAdminApp.initRouter = function() {
 
         nav_url = "addChild" + firstCharUpper(name) + "/:parentModel/:parentField/:parentId";
         api_command = "addChild" + firstCharUpper(name);
-        api[api_command] = XOSAdminApp.createAddChildHandler(detailViewName, collection_name);
+        api[api_command] = XOSAdminApp.createAddChildHandler(addChildViewName, collection_name);
         routes[nav_url] = api_command;
 
         nav_url = "delete" + firstCharUpper(name) + "/:id";
