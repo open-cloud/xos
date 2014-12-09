@@ -637,17 +637,8 @@ XOSListView = FilteredCompositeView.extend({
              },
 });
 
-/* Give an id, the name of a collection, and the name of a field for models
-   within that collection, lookup the id and return the value of the field.
-*/
-
 idToName = function(id, collectionName, fieldName) {
-    linkedObject = xos[collectionName].get(id);
-    if (linkedObject == undefined) {
-        return "#" + id;
-    } else {
-        return linkedObject.attributes[fieldName];
-    }
+    return xos.idToName(id, collectionName, fieldName);
 };
 
 /* Constructs lists of <option> html blocks for items in a collection.
