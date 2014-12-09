@@ -320,13 +320,9 @@ if (! window.XOSLIB_LOADED ) {
             attrs.addFields = attrs.detailFields;
         }
 
-        if (!attrs.inputType) {
-            attrs.inputType = {};
-        }
-
-        if (!attrs.foreignFields) {
-            attrs.foreignFields = {};
-        }
+        attrs.inputType = attrs.inputType || {};
+        attrs.foreignFields = attrs.foreignFields || {};
+        attrs.readOnlyFields = attrs.readOnlyFields || [];
 
         if (!attrs.collectionName) {
             attrs.collectionName = modelName + "s";
@@ -342,7 +338,7 @@ if (! window.XOSLIB_LOADED ) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
-            if ($.inArray(key, ["validate", "preSave"])) {
+            if ($.inArray(key, ["validate", "preSave", "readOnlyFields"])) {
                 modelAttrs[key] = value;
             }
         }
