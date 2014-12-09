@@ -70,6 +70,13 @@ if (! window.XOSLIB_LOADED ) {
                 return res;
             },
 
+            save: function(attributes, options) {
+                if (this.preSave) {
+                    this.preSave();
+                }
+                return Backbone.Model.prototype.save.call(this, attributes, options);
+            },
+
             /* If a 'validate' method is supplied, then it will be called
                automatically on save. Unfortunately, save calls neither the
                'error' nor the 'success' callback if the validator fails.
@@ -335,7 +342,7 @@ if (! window.XOSLIB_LOADED ) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
-            if ($.inArray(key, ["validate"])) {
+            if ($.inArray(key, ["validate", "preSave"])) {
                 modelAttrs[key] = value;
             }
         }
@@ -363,6 +370,19 @@ if (! window.XOSLIB_LOADED ) {
         this.allCollectionNames = [];
         this.allCollections = [];
 
+        /* Give an id, the name of a collection, and the name of a field for models
+           within that collection, lookup the id and return the value of the field.
+        */
+
+        this.idToName = function(id, collectionName, fieldName) {
+            linkedObject = xos[collectionName].get(id);
+            if (linkedObject == undefined) {
+                return "#" + id;
+            } else {
+                return linkedObject.attributes[fieldName];
+            }
+        };
+
         define_model(this, {urlRoot: SLIVER_API,
                             relatedCollections: {"networkSlivers": "sliver"},
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
@@ -370,6 +390,7 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "sliver",
                             addFields: ["slice", "deploymentNetwork", "image", "node"],
                             detailFields: ["name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "creator"],
+                            preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
                             });
 
         define_model(this, {urlRoot: SLICE_API,
