@@ -142,6 +142,7 @@ XOSApplication = Marionette.Application.extend({
             console.log(parent_id);
             model = new xos[collection_name].model();
             model.attributes[parent_fieldName] = parent_id;
+            model.readOnlyFields.push(parent_fieldName);
             console.log(model);
             detailViewClass = app[addChildName];
             var detailView = new detailViewClass({model: model, collection:xos[collection_name]});
@@ -672,10 +673,16 @@ idToOptions = function(selectedId, collectionName, fieldName) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToSelect = function(variable, selectedId, collectionName, fieldName) {
-    result = '<select name="' + variable + '">' +
+idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly) {
+    if (readOnly) {
+        readOnly = " readonly";
+    } else {
+        readOnly = "";
+    }
+    result = '<select name="' + variable + '"' + readOnly + '>' +
              idToOptions(selectedId, collectionName, fieldName) +
              '</select>';
+    console.log(result);
     return result;
 }
 
