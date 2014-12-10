@@ -21,7 +21,9 @@ XOSAdminApp.addRegions({
     linkedObjs3: "#linkedObjs3",
     linkedObjs4: "#linkedObjs4",
 
-    addChildDetail: "#xos-addchild-detail"
+    addChildDetail: "#xos-addchild-detail",
+
+    rightButtonPanel: "#rightButtonPanel"
 });
 
 XOSAdminApp.navigate = function(what, modelName, modelId) {
