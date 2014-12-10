@@ -24,10 +24,6 @@ XOSAdminApp.addRegions({
     addChildDetail: "#xos-addchild-detail"
 });
 
-XOSAdminApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
-     XOSAdminApp.Router.navigate(detailNavLink + "/" + model.id, {trigger: true});
-};
-
 XOSAdminApp.navigate = function(what, modelName, modelId) {
     collection_name = modelName + "s";
     if (what=="list") {
@@ -69,6 +65,14 @@ XOSAdminApp.buildViews = function() {
                                                            app: XOSAdminApp});
      XOSAdminApp["genericDetailView"] = genericDetailClass;
 
+     genericItemViewClass = XOSItemView.extend({template: "#xos-listitem-template",
+                                                app: XOSAdminApp});
+     XOSAdminApp["genericItemView"] = genericItemViewClass;
+
+     genericListViewClass = XOSListView.extend({template: "#xos-list-template",
+                                                app: XOSAdminApp});
+     XOSAdminApp["genericListView"] = genericListViewClass;
+
      for (var index in OBJS) {
          name = OBJS[index];
          tr_template = '#xosAdmin-' + name + '-listitem-template';
@@ -77,7 +81,6 @@ XOSAdminApp.buildViews = function() {
          add_child_template = '#xosAdmin-' + name + '-add-child-template';
          collection_name = name + "s";
          region_name = name + "List";
-         detailNavLink = collection_name;
 
          if ($(detail_template).length) {
              detailClass = XOSDetailView.extend({
@@ -99,20 +102,29 @@ XOSAdminApp.buildViews = function() {
          }
          XOSAdminApp[collection_name + "AddChildView"] = addClass;
 
-         itemViewClass = XOSItemView.extend({
-             detailClass: detailClass,
-             template: tr_template,
-             app: XOSAdminApp,
-             detailNavLink: detailNavLink,
-         });
+         if ($(tr_template).length) {
+             itemViewClass = XOSItemView.extend({
+                 template: tr_template,
+                 app: XOSAdminApp,
+             });
+         } else {
+             itemViewClass = genericItemViewClass;
+         }
 
-         listViewClass = XOSListView.extend({
-             childView: itemViewClass,
-             template: table_template,
-             collection: xos[collection_name],
-             title: name + "s",
-             app: XOSAdminApp,
-         });
+         if ($(table_template).length) {
+             listViewClass = XOSListView.extend({
+                 childView: itemViewClass,
+                 template: table_template,
+                 collection: xos[collection_name],
+                 title: name + "s",
+                 app: XOSAdminApp,
+             });
+         } else {
+             listViewClass = genericListViewClass.extend( { childView: itemViewClass,
+                                                            collection: xos[collection_name],
+                                                            title: name + "s",
+                                                           } );
+         }
 
          XOSAdminApp[collection_name + "ListView"] = listViewClass;
 
