@@ -110,13 +110,15 @@ XOSApplication = Marionette.Application.extend({
     createListHandler: function(listViewName, collection_name, regionName, title) {
         var app=this;
         return function() {
-            app[regionName].show(new app[listViewName]);
+            listView = new app[listViewName];
+            app[regionName].show(listView);
             app.hideLinkedItems();
             $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
             $("#detail").show();
-            $("#xos-listview-button-box").show();
             $("#tabs").hide();
-            $("#xos-detail-button-box").hide();
+
+            listButtons = new XOSListButtonView({linkedView: listView});
+            app["rightButtonPanel"].show(listButtons);
         }
     },
 
@@ -196,8 +198,11 @@ XOSApplication = Marionette.Application.extend({
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
                 detailView.showLinkedItems();
-                $("#xos-detail-button-box").show();
-                $("#xos-listview-button-box").hide();
+                //$("#xos-detail-button-box").show();
+                //$("#xos-listview-button-box").hide();
+
+                detailButtons = new XOSDetailButtonView({linkedView: detailView});
+                app["rightButtonPanel"].show(detailButtons);
             }
         }
         return showModelId;
@@ -344,6 +349,43 @@ XOSApplication = Marionette.Application.extend({
     },
 });
 
+XOSButtonView = Marionette.ItemView.extend({
+            events: {"click button.btn-xos-save-continue": "submitContinueClicked",
+                     "click button.btn-xos-save-leave": "submitLeaveClicked",
+                     "click button.btn-xos-save-another": "submitAddAnotherClicked",
+                     "click button.btn-xos-delete": "deleteClicked",
+                     "click button.btn-xos-add": "addClicked",
+                     "click button.btn-xos-refresh": "refreshClicked",
+                     },
+
+            submitLeaveClicked: function(e) {
+                     this.options.linkedView.submitLeaveClicked.call(this.options.linkedView, e);
+                     },
+
+            submitContinueClicked: function(e) {
+                     this.options.linkedView.submitContinueClicked.call(this.options.linkedView, e);
+                     },
+
+            submitAddAnotherClicked: function(e) {
+                     this.options.linkedView.submitAddAnotherClicked.call(this.options.linkedView, e);
+                     },
+
+            submitDeleteClicked: function(e) {
+                     this.options.linkedView.submitDeleteClicked.call(this.options.linkedView, e);
+                     },
+
+            addClicked: function(e) {
+                     this.options.linkedView.addClicked.call(this.options.linkedView, e);
+                     },
+
+            refreshClicked: function(e) {
+                     this.options.linkedView.refreshClicked.call(this.options.linkedView, e);
+                     },
+            });
+
+XOSDetailButtonView = XOSButtonView.extend({ template: "#xos-savebuttons-template" });
+XOSListButtonView = XOSButtonView.extend({ template: "#xos-listbuttons-template" });
+
 /* XOSDetailView
       extend with:
          app - MarionetteApplication
@@ -399,6 +441,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
             submitAddAnotherClicked: function(e) {
                 console.log("saveAnother");
+                console.log(this);
                 e.preventDefault();
                 var that=this;
                 this.afterSave = function() {
@@ -499,7 +542,7 @@ XOSDetailView = Marionette.ItemView.extend({
                         relatedListViewClassName = relatedName + "ListView";
                         assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
                         relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName],
-                                                                                          filter: makeFilter(relatedField, relatedId), //function(model) { return model.attributes[relatedField]==relatedId; },
+                                                                                          filter: makeFilter(relatedField, relatedId),
                                                                                           parentModel: this.model});
                         this.app[regionName].show(new relatedListViewClass());
                         if (this.app.hideTabsByDefault) {
