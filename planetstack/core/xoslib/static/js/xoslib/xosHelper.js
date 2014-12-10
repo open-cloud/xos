@@ -383,7 +383,7 @@ XOSDetailView = Marionette.ItemView.extend({
             submitContinueClicked: function(e) {
                 console.log("saveContinue");
                 e.preventDefault();
-                this.afterSave = function() {};
+                this.afterSave = function() { };
                 this.save();
             },
 
@@ -486,6 +486,10 @@ XOSDetailView = Marionette.ItemView.extend({
 
                     tabs.push({name: "details", region: "detail"});
 
+                    makeFilter = function(relatedField, relatedId) {
+                        return function(model) { return model.attributes[relatedField] == relatedId; }
+                    };
+
                     var index=0;
                     for (relatedName in this.model.collection.relatedCollections) {
                         var relatedField = this.model.collection.relatedCollections[relatedName];
@@ -495,7 +499,7 @@ XOSDetailView = Marionette.ItemView.extend({
                         relatedListViewClassName = relatedName + "ListView";
                         assert(this.app[relatedListViewClassName] != undefined, relatedListViewClassName + " not found");
                         relatedListViewClass = this.app[relatedListViewClassName].extend({collection: xos[relatedName],
-                                                                                          filter: function(model) { return model.attributes[relatedField]==relatedId;},
+                                                                                          filter: makeFilter(relatedField, relatedId), //function(model) { return model.attributes[relatedField]==relatedId; },
                                                                                           parentModel: this.model});
                         this.app[regionName].show(new relatedListViewClass());
                         if (this.app.hideTabsByDefault) {
@@ -619,16 +623,17 @@ XOSListView = FilteredCompositeView.extend({
 
              getAddChildHash: function() {
                 if (this.parentModel) {
-                    // Find the field name in the model that should point to
-                    // the parent object. For example, when adding a sliver, the
-                    // fieldName that should point to 'users' is 'creator'.
-                    parentFieldName = "unknown";
+                    parentFieldName = this.parentModel.relatedCollections[this.collection.collectionName];
+                    parentFieldName = parentFieldName || "unknown";
+
+                    /*parentFieldName = "unknown";
+
                     for (fieldName in this.collection.foreignFields) {
                         cname = this.collection.foreignFields[fieldName];
                         if (cname = this.collection.collectionName) {
                             parentFieldName = fieldName;
                         }
-                    }
+                    }*/
                     return "#addChild" + firstCharUpper(this.collection.modelName) + "/" + this.parentModel.modelName + "/" + parentFieldName + "/" + this.parentModel.id; // modelName, fieldName, id
                 } else {
                     return null;
