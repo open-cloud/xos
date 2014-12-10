@@ -530,8 +530,10 @@ XOSDetailView = Marionette.ItemView.extend({
              templateHelpers: function() { return { modelName: this.model.modelName,
                                                     collectionName: this.model.collectionName,
                                                     addFields: this.model.addFields,
+                                                    listFields: this.model.listFields,
                                                     detailFields: this.model.detailFields,
                                                     foreignFields: this.model.foreignFields,
+                                                    detailLinkFields: this.model.detailLinkFields,
                                                     inputType: this.model.inputType,
                                                     model: this.model,
                                          }},
@@ -543,7 +545,6 @@ XOSDetailView = Marionette.ItemView.extend({
       extend with:
          app - MarionetteApplication
          template - template (See XOSHelper.html)
-         detailClass - class of detail view, probably an XOSDetailView
 */
 
 XOSItemView = Marionette.ItemView.extend({
@@ -552,9 +553,11 @@ XOSItemView = Marionette.ItemView.extend({
 
              templateHelpers: function() { return { modelName: this.model.modelName,
                                                     collectionName: this.model.collectionName,
+                                                    listFields: this.model.listFields,
                                                     addFields: this.model.addFields,
                                                     detailFields: this.model.detailFields,
                                                     foreignFields: this.model.foreignFields,
+                                                    detailLinkFields: this.model.detailLinkFields,
                                                     inputType: this.model.inputType,
                                                     model: this.model,
                                          }},
@@ -634,7 +637,10 @@ XOSListView = FilteredCompositeView.extend({
 
              templateHelpers: function() {
                 return { title: this.title,
-                         addChildHash: this.getAddChildHash() };
+                         addChildHash: this.getAddChildHash(),
+                         foreignFields: this.collection.foreignFields,
+                         listFields: this.collection.listFields,
+                         detailLinkFields: this.collection.detailLinkFields, };
              },
 });
 
