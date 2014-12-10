@@ -27,13 +27,14 @@ XOSAdminApp.addRegions({
 });
 
 XOSAdminApp.navigate = function(what, modelName, modelId) {
+    console.log("XOSAsminApp.navigate");
     collection_name = modelName + "s";
     if (what=="list") {
         XOSAdminApp.Router.navigate(collection_name, {trigger: true})
     } else if (what=="detail") {
         XOSAdminApp.Router.navigate(collection_name + "/" + modelId, {trigger: true})
     } else if (what=="add") {
-        XOSAdminApp.Router.navigate("add" + firstCharUpper(modelName), {trigger: true})
+        XOSAdminApp.Router.navigate("add" + firstCharUpper(modelName), {trigger: true, force: true})
     }
 }
 
