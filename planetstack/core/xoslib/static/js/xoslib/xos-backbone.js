@@ -323,6 +323,7 @@ if (! window.XOSLIB_LOADED ) {
         attrs.inputType = attrs.inputType || {};
         attrs.foreignFields = attrs.foreignFields || {};
         attrs.readOnlyFields = attrs.readOnlyFields || [];
+        attrs.detailLinkFields = attrs.detailLinkFields || ["id","name"];
 
         if (!attrs.collectionName) {
             attrs.collectionName = modelName + "s";
@@ -334,7 +335,7 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "addFields", "detailFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections"])>=0) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
@@ -384,6 +385,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
                             foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deploymentNetwork": "deployments", "slice": "slices"},
                             modelName: "sliver",
+                            listFields: ["id", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "flavor"],
                             addFields: ["slice", "deploymentNetwork", "image", "node"],
                             detailFields: ["name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "creator"],
                             preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
@@ -393,7 +395,8 @@ if (! window.XOSLIB_LOADED ) {
                            relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
-                           detailFields: ["name", "site", "enabled", "description", "url", "max_slivers"],
+                           listFields: ["id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
+                           detailFields: ["name", "site", "enabled", "description", "slice_url", "max_slivers"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slice",
                            xosValidate: function(attrs, options) {
@@ -415,6 +418,7 @@ if (! window.XOSLIB_LOADED ) {
                            foreignCollections: ["slices", "deployments"],
                            modelName: "sliceDeployment",
                            foreignFields: {"slice": "slices", "deployment": "deployments"},
+                           listFields: ["id", "slice", "deployment", "tenant_id"],
                            detailFields: ["slice", "deployment", "tenant_id"],
                            });
 
@@ -422,11 +426,13 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["slices", "users", "sliceRoles"],
                             modelName: "slicePrivilege",
                             foreignFields: {"user": "users", "slice": "slices", "role": "sliceRoles"},
+                            listFields: ["id", "user", "slice", "role"],
                             detailFields: ["user", "slice", "role"],
                             });
 
         define_model(this, {urlRoot: SLICEROLE_API,
                             modelName: "sliceRole",
+                            listFields: ["id", "role"],
                             detailFields: ["role"],
                             });
 
@@ -434,12 +440,14 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["sites", "deployments"],
                             modelName: "node",
                             foreignFields: {"site": "sites", "deployment": "deployments"},
+                            listFields: ["id", "name", "site", "deployment"],
                             detailFields: ["name", "site", "deployment"],
                             });
 
         define_model(this, {urlRoot: SITE_API,
                             relatedCollections: {"users": "site", "slices": "site", "nodes": "site"},
                             modelName: "site",
+                            listFields: ["id", "name", "site_url", "enabled", "login_base", "is_public", "abbreviated_name"],
                             detailFields: ["name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
                             inputType: {"enabled": "checkbox", "is_public": "checkbox"},
                             });
@@ -449,6 +457,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["sites"],
                             modelName: "user",
                             foreignFields: {"site": "sites"},
+                            listFields: ["id", "username", "firstname", "lastname", "phone", "user_url", "site"],
                             detailFields: ["username", "firstname", "lastname", "phone", "user_url", "site"],
                             });
 
@@ -456,23 +465,27 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["users","deployments"],
                             modelName: "userDeployment",
                             foreignFields: {"deployment": "deployments", "user": "users"},
+                            listFields: ["id", "user", "deployment", "kuser_id"],
                             detailFields: ["user", "deployment", "kuser_id"],
                             });
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
                              relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
                              modelName: "deployment",
+                             listFields: ["id", "name", "backend_type", "admin_tenant"],
                              detailFields: ["name", "backend_type", "admin_tenant"],
                              });
 
         define_model(this, {urlRoot: IMAGE_API,
                             model: this.image,
                             modelName: "image",
+                            listFields: ["id", "name", "disk_format", "container_format", "path"],
                             detailFields: ["name", "disk_format", "admin_tenant"],
                             });
 
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
+                            listFields: ["id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
                             detailFields: ["name", "description", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
                             });
 
@@ -481,27 +494,32 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["slices", "networkTemplates"],
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
+                            listFields: ["id", "name", "template", "ports", "labels", "owner"],
                             detailFields: ["name", "template", "ports", "labels", "owner"],
                             });
 
         define_model(this, {urlRoot: NETWORKSLIVER_API,
                             modelName: "networkSliver",
                             foreignFields: {"network": "networks", "sliver": "slivers"},
+                            listFields: ["id", "network", "sliver", "ip", "port_id"],
                             detailFields: ["network", "sliver", "ip", "port_id"],
                             });
 
         define_model(this, {urlRoot: NETWORKDEPLOYMENT_API,
                             modelName: "networkDeployment",
                             foreignFields: {"network": "networks", "deployment": "deployments"},
+                            listFields: ["id", "network", "deployment", "net_id"],
                             detailFields: ["network", "deployment", "net_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,
                             modelName: "service",
+                            listFields: ["id", "name", "enabled", "versionNumber", "published"],
                             detailFields: ["name", "description", "versionNumber"],
                             });
 
         // enhanced REST
+        // XXX this really needs to somehow be combined with Slice, to avoid duplication
         define_model(this, {urlRoot: SLICEPLUS_API,
                             relatedCollections: {'slivers': "slice"},
                             modelName: "slicePlus",
