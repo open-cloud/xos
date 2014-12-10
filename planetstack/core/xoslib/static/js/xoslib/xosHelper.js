@@ -39,6 +39,13 @@ XOSRouter = Marionette.AppRouter.extend({
                 this.navigate("#"+prevPage, {trigger: false, replace: true} );
             }
         },
+
+        navigate: function(href, options) {
+            if (options.force) {
+                Marionette.AppRouter.prototype.navigate.call(this, "nowhere", {trigger: false, replace: true});
+            }
+            Marionette.AppRouter.prototype.navigate.call(this, href, options);
+        },
     });
 
 
@@ -107,6 +114,9 @@ XOSApplication = Marionette.Application.extend({
         }
     },
 
+    hideTabs: function() { $("#tabs").hide(); },
+    showTabs: function() { $("#tabs").show(); },
+
     createListHandler: function(listViewName, collection_name, regionName, title) {
         var app=this;
         return function() {
@@ -115,7 +125,7 @@ XOSApplication = Marionette.Application.extend({
             app.hideLinkedItems();
             $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
             $("#detail").show();
-            $("#tabs").hide();
+            app.hideTabs();
 
             listButtons = new XOSListButtonView({linkedView: listView});
             app["rightButtonPanel"].show(listButtons);
@@ -125,12 +135,18 @@ XOSApplication = Marionette.Application.extend({
     createAddHandler: function(detailName, collection_name, regionName, title) {
         var app=this;
         return function() {
+            console.log("addHandler");
+
+            app.hideLinkedItems();
+            app.hideTabs();
+
             model = new xos[collection_name].model();
             detailViewClass = app[detailName];
             detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             app[regionName].show(detailView);
-            $("#xos-detail-button-box").show();
-            $("#xos-listview-button-box").hide();
+
+            detailButtons = new XOSDetailButtonView({linkedView: detailView});
+            app["rightButtonPanel"].show(detailButtons);
         }
     },
 
@@ -138,14 +154,9 @@ XOSApplication = Marionette.Application.extend({
         var app=this;
         return function(parent_modelName, parent_fieldName, parent_id) {
             app.Router.showPreviousURL();
-            console.log("acs");
-            console.log(parent_modelName);
-            console.log(parent_fieldName);
-            console.log(parent_id);
             model = new xos[collection_name].model();
             model.attributes[parent_fieldName] = parent_id;
             model.readOnlyFields.push(parent_fieldName);
-            console.log(model);
             detailViewClass = app[addChildName];
             var detailView = new detailViewClass({model: model, collection:xos[collection_name]});
             detailView.dialog = $("xos-addchild-dialog");
@@ -158,7 +169,7 @@ XOSApplication = Marionette.Application.extend({
                     "Save" : function() {
                       var addDialog = this;
                       detailView.synchronous = true;
-                      detailView.afterSave = function() { console.log("afterSave"); $(addDialog).dialog("close"); }
+                      detailView.afterSave = function() { console.log("addChild afterSave"); $(addDialog).dialog("close"); }
                       detailView.save();
 
                       //$(this).dialog("close");
@@ -198,8 +209,6 @@ XOSApplication = Marionette.Application.extend({
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
                 detailView.showLinkedItems();
-                //$("#xos-detail-button-box").show();
-                //$("#xos-listview-button-box").hide();
 
                 detailButtons = new XOSDetailButtonView({linkedView: detailView});
                 app["rightButtonPanel"].show(detailButtons);
@@ -445,6 +454,7 @@ XOSDetailView = Marionette.ItemView.extend({
                 e.preventDefault();
                 var that=this;
                 this.afterSave = function() {
+                    console.log("addAnother afterSave");
                     that.app.navigate("add", that.model.modelName);
                 }
                 this.save();
@@ -736,7 +746,6 @@ idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly)
     result = '<select name="' + variable + '"' + readOnly + '>' +
              idToOptions(selectedId, collectionName, fieldName) +
              '</select>';
-    console.log(result);
     return result;
 }
 
