@@ -702,6 +702,124 @@ XOSListView = FilteredCompositeView.extend({
              },
 });
 
+XOSDataTableViewOld = Marionette.View.extend( {
+    //tagName: "table",
+    el: "<div><table></table></div>",
+
+    initialize: function() {
+         //$(this.el).html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamicusersliceinfo' + dtcounter + '"></table><p>scott was here</p>' );
+    },
+
+    render: function() {
+        //this.el = "<div><table></table></div>";
+        console.log(this.el);
+        console.log(this.$el);
+        console.log("render!");
+        actualEntries = [];
+        actualEntries.push(["foo", "bar", "1", "2"]);
+        actualEntries.push(["zoo", "zar", "0", "9"]);
+
+        oTable = $(this.el).find("table").dataTable( {
+            "bJQueryUI": true,
+            "aaData":  actualEntries,
+            "bStateSave": true,
+            "aoColumns": [
+                { "sTitle": "Slice" },
+                { "sTitle": "Privilege" , sClass: "alignCenter"},
+                { "sTitle": "Number of Slivers" , sClass: "alignCenter"},
+                { "sTitle": "Number of Sites" , sClass: "alignCenter"},
+            ]
+        } );
+        dtcounter = dtcounter + 1;
+
+        return this;
+    },
+
+});
+
+XOSDataTableView = Marionette.View.extend( {
+    el: '<div style="overflow: hidden"><table></table></div>',
+
+    filter: undefined,
+
+    initialize: function() {
+    },
+
+    render: function() {
+        var view = this;
+
+        view.aoColumns = [];
+        _.each(this.collection.listFields, function(fieldName) {
+            mRender = undefined;
+            if (fieldName in view.collection.foreignFields) {
+                var foreignCollection = view.collection.foreignFields[fieldName];
+                mRender = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
+            } else if ($.inArray(fieldName, view.collection.detailLinkFields)>=0) {
+                var collectionName = view.collection.collectionName;
+                mRender = function(x,y,z) { return '<a href="#' + collectionName + '/' + z.id + '">' + x + '</a>'; };
+            }
+            view.aoColumns.push( {sTitle: fieldNameToHumanReadable(fieldName), mData: fieldName, mRender: mRender} );
+        });
+
+        oTable = $(this.el).find("table").dataTable( {
+            "bJQueryUI": true,
+            "bStateSave": true,
+            "bServerSide": true,
+            "aoColumns": view.aoColumns,
+
+            fnServerData: function(sSource, aoData, fnCallback, settings) {
+                var compareColumns = function(sortCols, sortDirs, a, b) {
+                    result = a[sortCols[0]] < b[sortCols[0]];
+                    if (sortDirs[0] == "desc") {
+                        result = -result;
+                    }
+                    return result;
+                };
+
+                // function used to populate the DataTable with the current
+                // content of the collection
+                var populateTable = function()
+                {
+                  // clear out old row views
+                  rows = [];
+
+                  sortDirs = [];
+                  sortCols = [];
+                  _.each(aoData, function(param) {
+                      if (param.name == "sSortDir_0") {
+                          sortDirs = [param.value];
+                      } else if (param.name == "iSortCol_0") {
+                          sortCols = [view.aoColumns[param.value].mData];
+                      }
+                  });
+
+                  aaData = view.collection.toJSON();
+
+                  if (view.filter) {
+                      aaData = aaData.filter( function(row) { model = {}; model.attributes = row; return view.filter(model); } );
+                  }
+
+                  aaData.sort(function(a,b) { return compareColumns(sortCols, sortDirs, a, b); });
+
+                  // these 'meta' attributes are set by the collection's parse method
+                  var totalSize = view.collection.length;
+                  var filteredSize = view.collection.length;
+
+                  return fnCallback({iTotalRecords: totalSize,
+                         iTotalDisplayRecords: filteredSize,
+                         aaData: aaData});
+                };
+
+                aoData.shift(); // ignore sEcho
+                populateTable();
+            },
+        } );
+
+        return this;
+    },
+
+});
+
 idToName = function(id, collectionName, fieldName) {
     return xos.idToName(id, collectionName, fieldName);
 };
