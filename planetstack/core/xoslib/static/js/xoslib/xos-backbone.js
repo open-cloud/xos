@@ -385,9 +385,9 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
                             foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deploymentNetwork": "deployments", "slice": "slices"},
                             modelName: "sliver",
-                            listFields: ["id", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "flavor"],
+                            listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "flavor"],
                             addFields: ["slice", "deploymentNetwork", "image", "node"],
-                            detailFields: ["name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "creator"],
+                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "creator"],
                             preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
                             });
 
@@ -395,8 +395,8 @@ if (! window.XOSLIB_LOADED ) {
                            relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
-                           listFields: ["id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
-                           detailFields: ["name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
+                           detailFields: ["backend_status", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slice",
                            xosValidate: function(attrs, options) {
@@ -418,37 +418,37 @@ if (! window.XOSLIB_LOADED ) {
                            foreignCollections: ["slices", "deployments"],
                            modelName: "sliceDeployment",
                            foreignFields: {"slice": "slices", "deployment": "deployments"},
-                           listFields: ["id", "slice", "deployment", "tenant_id"],
-                           detailFields: ["slice", "deployment", "tenant_id"],
+                           listFields: ["backend_status", "id", "slice", "deployment", "tenant_id"],
+                           detailFields: ["backend_status", "slice", "deployment", "tenant_id"],
                            });
 
         define_model(this, {urlRoot: SLICEPRIVILEGE_API,
                             foreignCollections: ["slices", "users", "sliceRoles"],
                             modelName: "slicePrivilege",
                             foreignFields: {"user": "users", "slice": "slices", "role": "sliceRoles"},
-                            listFields: ["id", "user", "slice", "role"],
-                            detailFields: ["user", "slice", "role"],
+                            listFields: ["backend_status", "id", "user", "slice", "role"],
+                            detailFields: ["backend_status", "user", "slice", "role"],
                             });
 
         define_model(this, {urlRoot: SLICEROLE_API,
                             modelName: "sliceRole",
-                            listFields: ["id", "role"],
-                            detailFields: ["role"],
+                            listFields: ["backend_status", "id", "role"],
+                            detailFields: ["backend_status", "role"],
                             });
 
         define_model(this, {urlRoot: NODE_API,
                             foreignCollections: ["sites", "deployments"],
                             modelName: "node",
                             foreignFields: {"site": "sites", "deployment": "deployments"},
-                            listFields: ["id", "name", "site", "deployment"],
-                            detailFields: ["name", "site", "deployment"],
+                            listFields: ["backend_status", "id", "name", "site", "deployment"],
+                            detailFields: ["backend_status", "name", "site", "deployment"],
                             });
 
         define_model(this, {urlRoot: SITE_API,
                             relatedCollections: {"users": "site", "slices": "site", "nodes": "site"},
                             modelName: "site",
-                            listFields: ["id", "name", "site_url", "enabled", "login_base", "is_public", "abbreviated_name"],
-                            detailFields: ["name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
+                            listFields: ["backend_status", "id", "name", "site_url", "enabled", "login_base", "is_public", "abbreviated_name"],
+                            detailFields: ["backend_status", "name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
                             inputType: {"enabled": "checkbox", "is_public": "checkbox"},
                             });
 
@@ -457,36 +457,36 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["sites"],
                             modelName: "user",
                             foreignFields: {"site": "sites"},
-                            listFields: ["id", "username", "firstname", "lastname", "phone", "user_url", "site"],
-                            detailFields: ["username", "firstname", "lastname", "phone", "user_url", "site"],
+                            listFields: ["backend_status", "id", "username", "firstname", "lastname", "phone", "user_url", "site"],
+                            detailFields: ["backend_status", "username", "firstname", "lastname", "phone", "user_url", "site"],
                             });
 
         define_model(this, {urlRoot: USERDEPLOYMENT_API,
                             foreignCollections: ["users","deployments"],
                             modelName: "userDeployment",
                             foreignFields: {"deployment": "deployments", "user": "users"},
-                            listFields: ["id", "user", "deployment", "kuser_id"],
-                            detailFields: ["user", "deployment", "kuser_id"],
+                            listFields: ["backend_status", "id", "user", "deployment", "kuser_id"],
+                            detailFields: ["backend_status", "user", "deployment", "kuser_id"],
                             });
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
                              relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
                              modelName: "deployment",
-                             listFields: ["id", "name", "backend_type", "admin_tenant"],
-                             detailFields: ["name", "backend_type", "admin_tenant"],
+                             listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
+                             detailFields: ["backend_status", "name", "backend_type", "admin_tenant"],
                              });
 
         define_model(this, {urlRoot: IMAGE_API,
                             model: this.image,
                             modelName: "image",
-                            listFields: ["id", "name", "disk_format", "container_format", "path"],
-                            detailFields: ["name", "disk_format", "admin_tenant"],
+                            listFields: ["backend_status", "id", "name", "disk_format", "container_format", "path"],
+                            detailFields: ["backend_status", "name", "disk_format", "admin_tenant"],
                             });
 
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
-                            listFields: ["id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
-                            detailFields: ["name", "description", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
+                            listFields: ["backend_status", "id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
+                            detailFields: ["backend_status", "name", "description", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
@@ -494,28 +494,28 @@ if (! window.XOSLIB_LOADED ) {
                             foreignCollections: ["slices", "networkTemplates"],
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
-                            listFields: ["id", "name", "template", "ports", "labels", "owner"],
-                            detailFields: ["name", "template", "ports", "labels", "owner"],
+                            listFields: ["backend_status", "id", "name", "template", "ports", "labels", "owner"],
+                            detailFields: ["backend_status", "name", "template", "ports", "labels", "owner"],
                             });
 
         define_model(this, {urlRoot: NETWORKSLIVER_API,
                             modelName: "networkSliver",
                             foreignFields: {"network": "networks", "sliver": "slivers"},
-                            listFields: ["id", "network", "sliver", "ip", "port_id"],
-                            detailFields: ["network", "sliver", "ip", "port_id"],
+                            listFields: ["backend_status", "id", "network", "sliver", "ip", "port_id"],
+                            detailFields: ["backend_status", "network", "sliver", "ip", "port_id"],
                             });
 
         define_model(this, {urlRoot: NETWORKDEPLOYMENT_API,
                             modelName: "networkDeployment",
                             foreignFields: {"network": "networks", "deployment": "deployments"},
-                            listFields: ["id", "network", "deployment", "net_id"],
-                            detailFields: ["network", "deployment", "net_id"],
+                            listFields: ["backend_status", "id", "network", "deployment", "net_id"],
+                            detailFields: ["backend_status", "network", "deployment", "net_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,
                             modelName: "service",
-                            listFields: ["id", "name", "enabled", "versionNumber", "published"],
-                            detailFields: ["name", "description", "versionNumber"],
+                            listFields: ["backend_status", "id", "name", "enabled", "versionNumber", "published"],
+                            detailFields: ["backend_status", "name", "description", "versionNumber"],
                             });
 
         // enhanced REST
