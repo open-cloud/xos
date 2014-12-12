@@ -758,6 +758,9 @@ XOSDataTableView = Marionette.View.extend( {
                 var collectionName = view.collection.collectionName;
                 mRender = function(x,y,z) { return '<a href="#' + collectionName + '/' + z.id + '">' + x + '</a>'; };
             }
+            if (fieldName=="backend_status") {
+                mRender = function(x,y,z) { return xosBackendStatusIconTemplate(z); };
+            }
             thisColumn = {sTitle: fieldNameToHumanReadable(fieldName), mData: fieldName, mRender: mRender, mSearchText: mSearchText};
             view.columnsByIndex.push( thisColumn );
             view.columnsByFieldName[fieldName] = thisColumn;
