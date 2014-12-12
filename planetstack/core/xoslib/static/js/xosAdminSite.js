@@ -72,8 +72,10 @@ XOSAdminApp.buildViews = function() {
                                                 app: XOSAdminApp});
      XOSAdminApp["genericItemView"] = genericItemViewClass;
 
-     genericListViewClass = XOSListView.extend({template: "#xos-list-template",
-                                                app: XOSAdminApp});
+     //genericListViewClass = XOSListView.extend({template: "#xos-list-template",
+     //                                           app: XOSAdminApp});
+
+     genericListViewClass = XOSDataTableView.extend({template: "#xos-list-template", app: XOSAdminApp});
      XOSAdminApp["genericListView"] = genericListViewClass;
 
      for (var index in OBJS) {
