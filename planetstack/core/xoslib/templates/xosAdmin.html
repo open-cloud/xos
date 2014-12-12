@@ -95,6 +95,15 @@
     <% } %>
 </script>
 
+<script type="text/template" id="xos-backend-status-text-template">
+    <%= xosBackendStatusIconTemplate.apply(this,arguments) %>
+    <% if ((enacted) && (enacted >= updated)) { %>
+        Successfully enacted
+    <% } else { %>
+        <%= _.escape(backend_status) %>
+    <% } %>
+</script>
+
 <script type="text/template" id="xos-list-header-template">
     <button class="btn js-submit btn-xos-list btn-xos-add">Add</button>
     <button class="btn js-submit btn-xos-list btn-xos-refresh">Refresh</button>
@@ -118,6 +127,7 @@
   <h3 class="xos-detail-title">Add Object: <%= modelName %></h3>
   <form>
   <table>
+  <% args = arguments; %>
   <% _.each(addFields, function(fieldName) { %>
      <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  %>
@@ -125,6 +135,8 @@
             <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
+        <% } else if (fieldName=="backend_status") { %>
+            <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
         <% } else { %>
             <td><input type="text" name="<%= fieldName %>" value="<%= model.attributes[fieldName] %>"<%= readOnly %>></td>
         <% } %>
@@ -139,13 +151,16 @@
   <h3 class="xos-detail-title">Edit Object: <%= modelName %></h3>
   <form>
   <table>
-  <% console.log(model); _.each(detailFields, function(fieldName) { %>
+  <% args = arguments; %>
+  <% _.each(detailFields, function(fieldName) { %>
      <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
         <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  console.log(fieldName + " " + readOnly); console.log(model.readOnlyFields); %>
         <% if (fieldName in foreignFields) { %>
             <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
+        <% } else if (fieldName=="backend_status") { %>
+            <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
         <% } else { %>
             <td><input type="text" name="<%= fieldName %>" value="<%= model.attributes[fieldName] %>"<%= readOnly %>></td>
         <% } %>
@@ -208,5 +223,6 @@ xosListFooterTemplate = _.template($("#xos-list-footer-template").html());
 xosDeleteButtonTemplate = _.template($("#xos-delete-button-template").html());
 xosDetailLinkTemplate = _.template($("#xos-detail-link-template").html());
 xosBackendStatusIconTemplate = _.template($("#xos-backend-status-icon-template").html());
+xosBackendStatusTextTemplate = _.template($("#xos-backend-status-text-template").html());
 </script>
 
