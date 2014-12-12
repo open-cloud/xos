@@ -748,33 +748,58 @@ XOSDataTableView = Marionette.View.extend( {
     render: function() {
         var view = this;
 
-        view.aoColumns = [];
+        view.columnsByIndex = [];
+        view.columnsByFieldName = {};
         _.each(this.collection.listFields, function(fieldName) {
             mRender = undefined;
+            mSearchText = undefined;
             if (fieldName in view.collection.foreignFields) {
                 var foreignCollection = view.collection.foreignFields[fieldName];
-                mRender = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
-            } else if ($.inArray(fieldName, view.collection.detailLinkFields)>=0) {
+                mSearchText = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
+            }
+            if ($.inArray(fieldName, view.collection.detailLinkFields)>=0) {
                 var collectionName = view.collection.collectionName;
                 mRender = function(x,y,z) { return '<a href="#' + collectionName + '/' + z.id + '">' + x + '</a>'; };
             }
-            view.aoColumns.push( {sTitle: fieldNameToHumanReadable(fieldName), mData: fieldName, mRender: mRender} );
+            thisColumn = {sTitle: fieldNameToHumanReadable(fieldName), mData: fieldName, mRender: mRender, mSearchText: mSearchText};
+            view.columnsByIndex.push( thisColumn );
+            view.columnsByFieldName[fieldName] = thisColumn;
         });
 
         oTable = $(this.el).find("table").dataTable( {
             "bJQueryUI": true,
             "bStateSave": true,
             "bServerSide": true,
-            "aoColumns": view.aoColumns,
+            "aoColumns": view.columnsByIndex,
 
             fnServerData: function(sSource, aoData, fnCallback, settings) {
                 var compareColumns = function(sortCols, sortDirs, a, b) {
-                    result = a[sortCols[0]] < b[sortCols[0]];
+                    a = a[sortCols[0]];
+                    b = b[sortCols[0]];
+                    result = (a==b) ? 0 : ((a<b) ? -1 : 1);
                     if (sortDirs[0] == "desc") {
                         result = -result;
                     }
                     return result;
                 };
+
+                var searchMatch = function(row, sSearch) {
+                    for (fieldName in row) {
+                        if (fieldName in view.columnsByFieldName) {
+                            try {
+                                value = row[fieldName].toString();
+                            } catch(e) {
+                                continue;
+                            }
+                            if (value.indexOf(sSearch) >= 0) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+
+                console.log(aoData);
 
                 // function used to populate the DataTable with the current
                 // content of the collection
@@ -783,27 +808,59 @@ XOSDataTableView = Marionette.View.extend( {
                   // clear out old row views
                   rows = [];
 
+                  sSearch = null;
+                  iDisplayStart = 0;
+                  iDisplayLength = 1000;
                   sortDirs = [];
                   sortCols = [];
                   _.each(aoData, function(param) {
                       if (param.name == "sSortDir_0") {
                           sortDirs = [param.value];
                       } else if (param.name == "iSortCol_0") {
-                          sortCols = [view.aoColumns[param.value].mData];
+                          sortCols = [view.columnsByIndex[param.value].mData];
+                      } else if (param.name == "iDisplayStart") {
+                          iDisplayStart = param.value;
+                      } else if (param.name == "iDisplayLength") {
+                          iDisplayLength = param.value;
+                      } else if (param.name == "sSearch") {
+                          sSearch = param.value;
                       }
                   });
 
                   aaData = view.collection.toJSON();
 
+                  // apply backbone filtering on the models
                   if (view.filter) {
                       aaData = aaData.filter( function(row) { model = {}; model.attributes = row; return view.filter(model); } );
                   }
 
+                  var totalSize = aaData.length;
+
+                  // turn the ForeignKey fields into human readable things
+                  for (rowIndex in aaData) {
+                      row = aaData[rowIndex];
+                      for (fieldName in row) {
+                          if (fieldName in view.columnsByFieldName) {
+                              mSearchText = view.columnsByFieldName[fieldName].mSearchText;
+                              if (mSearchText) {
+                                  row[fieldName] = mSearchText(row[fieldName]);
+                              }
+                          }
+                      }
+                  }
+
+                  // apply datatables search
+                  if (sSearch) {
+                      aaData = aaData.filter( function(row) { return searchMatch(row, sSearch); });
+                  }
+
+                  var filteredSize = aaData.length;
+
+                  // apply datatables sort
                   aaData.sort(function(a,b) { return compareColumns(sortCols, sortDirs, a, b); });
 
-                  // these 'meta' attributes are set by the collection's parse method
-                  var totalSize = view.collection.length;
-                  var filteredSize = view.collection.length;
+                  // slice it for pagination
+                  aaData = aaData.slice(iDisplayStart, iDisplayStart+iDisplayLength);
 
                   return fnCallback({iTotalRecords: totalSize,
                          iTotalDisplayRecords: filteredSize,

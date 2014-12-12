@@ -335,7 +335,7 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "detailLinkFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections"])>=0) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
