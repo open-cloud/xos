@@ -750,7 +750,13 @@ XOSDataTableView = Marionette.View.extend( {
         _.each(this.collection.listFields, function(fieldName) {
             mRender = undefined;
             mSearchText = undefined;
-            if (fieldName in view.collection.foreignFields) {
+            sTitle = fieldNameToHumanReadable(fieldName);
+            bSortable = true;
+            if (fieldName=="backend_status") {
+                mRender = function(x,y,z) { return xosBackendStatusIconTemplate(z); };
+                sTitle = "";
+                bSortable = false;
+            } else if (fieldName in view.collection.foreignFields) {
                 var foreignCollection = view.collection.foreignFields[fieldName];
                 mSearchText = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
             }
@@ -758,15 +764,12 @@ XOSDataTableView = Marionette.View.extend( {
                 var collectionName = view.collection.collectionName;
                 mRender = function(x,y,z) { return '<a href="#' + collectionName + '/' + z.id + '">' + x + '</a>'; };
             }
-            if (fieldName=="backend_status") {
-                mRender = function(x,y,z) { return xosBackendStatusIconTemplate(z); };
-            }
-            thisColumn = {sTitle: fieldNameToHumanReadable(fieldName), mData: fieldName, mRender: mRender, mSearchText: mSearchText};
+            thisColumn = {sTitle: sTitle, bSortable: bSortable, mData: fieldName, mRender: mRender, mSearchText: mSearchText};
             view.columnsByIndex.push( thisColumn );
             view.columnsByFieldName[fieldName] = thisColumn;
         });
 
-        deleteColumn = {sTitle: "delete", mRender: function(x,y,z) { return xosDeleteButtonTemplate({modelName: view.collection.modelName, id: z.id}); }, mData: function() { return "delete"; }};
+        deleteColumn = {sTitle: "", bSortable: false, mRender: function(x,y,z) { return xosDeleteButtonTemplate({modelName: view.collection.modelName, id: z.id}); }, mData: function() { return "delete"; }};
         view.columnsByIndex.push(deleteColumn);
         view.columnsByFieldName["delete"] = deleteColumn;
 
