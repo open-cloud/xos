@@ -702,47 +702,44 @@ XOSListView = FilteredCompositeView.extend({
              },
 });
 
-XOSDataTableViewOld = Marionette.View.extend( {
-    //tagName: "table",
-    el: "<div><table></table></div>",
-
-    initialize: function() {
-         //$(this.el).html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamicusersliceinfo' + dtcounter + '"></table><p>scott was here</p>' );
-    },
-
-    render: function() {
-        //this.el = "<div><table></table></div>";
-        console.log(this.el);
-        console.log(this.$el);
-        console.log("render!");
-        actualEntries = [];
-        actualEntries.push(["foo", "bar", "1", "2"]);
-        actualEntries.push(["zoo", "zar", "0", "9"]);
-
-        oTable = $(this.el).find("table").dataTable( {
-            "bJQueryUI": true,
-            "aaData":  actualEntries,
-            "bStateSave": true,
-            "aoColumns": [
-                { "sTitle": "Slice" },
-                { "sTitle": "Privilege" , sClass: "alignCenter"},
-                { "sTitle": "Number of Slivers" , sClass: "alignCenter"},
-                { "sTitle": "Number of Sites" , sClass: "alignCenter"},
-            ]
-        } );
-        dtcounter = dtcounter + 1;
-
-        return this;
-    },
-
-});
-
 XOSDataTableView = Marionette.View.extend( {
-    el: '<div style="overflow: hidden"><table></table></div>',
+    el: '<div style="overflow: hidden">' +
+        '<h3 class="xos-list-title title_placeholder"></h3>' +
+        '<div class="header_placeholder"></div>' +
+        '<table></table>' +
+        '<div class="footer_placeholder"></div>' +
+        '</div>',
 
     filter: undefined,
 
+     events: {"click button.btn-xos-add": "addClicked",
+              "click button.btn-xos-refresh": "refreshClicked",
+             },
+
+     _fetchStateChange: function() {
+         if (this.collection.fetching) {
+            $("#xos-list-title-spinner").show();
+         } else {
+            $("#xos-list-title-spinner").hide();
+         }
+     },
+
+     addClicked: function(e) {
+        e.preventDefault();
+        this.app.Router.navigate("add" + firstCharUpper(this.collection.modelName), {trigger: true});
+     },
+
+     refreshClicked: function(e) {
+         e.preventDefault();
+         this.collection.refresh(refreshRelated=true);
+     },
+
+
     initialize: function() {
+        $(this.el).find(".footer_placeholder").html( xosListFooterTemplate({addChildHash: this.getAddChildHash()}) );
+        $(this.el).find(".header_placeholder").html( xosListHeaderTemplate() );
+
+        this.listenTo(this.collection, 'fetchStateChange', this._fetchStateChange);
     },
 
     render: function() {
@@ -765,6 +762,10 @@ XOSDataTableView = Marionette.View.extend( {
             view.columnsByIndex.push( thisColumn );
             view.columnsByFieldName[fieldName] = thisColumn;
         });
+
+        deleteColumn = {sTitle: "delete", mRender: function(x,y,z) { return xosDeleteButtonTemplate({modelName: view.collection.modelName, id: z.id}); }, mData: function() { return "delete"; }};
+        view.columnsByIndex.push(deleteColumn);
+        view.columnsByFieldName["delete"] = deleteColumn;
 
         oTable = $(this.el).find("table").dataTable( {
             "bJQueryUI": true,
@@ -799,12 +800,14 @@ XOSDataTableView = Marionette.View.extend( {
                     return false;
                 };
 
-                console.log(aoData);
+                //console.log(aoData);
 
                 // function used to populate the DataTable with the current
                 // content of the collection
                 var populateTable = function()
                 {
+                  console.log("populatetable!");
+
                   // clear out old row views
                   rows = [];
 
@@ -869,11 +872,34 @@ XOSDataTableView = Marionette.View.extend( {
 
                 aoData.shift(); // ignore sEcho
                 populateTable();
+
+                view.listenTo(view.collection, 'change', populateTable);
+                view.listenTo(view.collection, 'add', populateTable);
+                view.listenTo(view.collection, 'remove', populateTable);
             },
         } );
 
         return this;
     },
+
+     getAddChildHash: function() {
+        if (this.parentModel) {
+            parentFieldName = this.parentModel.relatedCollections[this.collection.collectionName];
+            parentFieldName = parentFieldName || "unknown";
+
+            /*parentFieldName = "unknown";
+
+            for (fieldName in this.collection.foreignFields) {
+                cname = this.collection.foreignFields[fieldName];
+                if (cname = this.collection.collectionName) {
+                    parentFieldName = fieldName;
+                }
+            }*/
+            return "#addChild" + firstCharUpper(this.collection.modelName) + "/" + this.parentModel.modelName + "/" + parentFieldName + "/" + this.parentModel.id; // modelName, fieldName, id
+        } else {
+            return null;
+        }
+     },
 
 });
 
