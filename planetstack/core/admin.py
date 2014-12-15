@@ -604,7 +604,15 @@ class DeploymentAdminForm(forms.ModelForm):
         #    a better way...
 
         self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), DeploymentImages, "deployment", "image")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
+        # manipulate_m2m_objs doesn't work for Flavor/Deployment relationship
+        # so well handle that manually here
+        for flavor in deployment.flavors.all():
+            if getattr(flavor, 'name') not in self.cleaned_data['flavors']:
+                flavor.delete()
+        for flavor in self.cleaned_data['flavors']:
+            if flavor not in deployment.flavors.all():
+                flavor.deployments.add(deployment)
 
       self.save_m2m()
 
