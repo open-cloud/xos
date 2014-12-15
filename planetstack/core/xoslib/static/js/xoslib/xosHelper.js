@@ -595,6 +595,34 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     model: this.model,
                                          }},
 
+             applyConstraints: function() {
+                 for (constraint in this.model.constraints) {
+                     // constraint syntax: "operator,destField.destSubField,srcField.srcSubField"
+                     //   i.e. equal,node.deployment,deploymentNetwork.id
+                     parts = constraints.split(",");
+                     operator = parts[0];
+                     parts1 = parts[1].split(".");
+                     destField = parts1[0];
+                     destSubField = parts1[1];
+                     parts2 = parts[2].split(".");
+                     srcField = parts2[0];
+                     srcID = this.$el.find(srcModel).val();
+                     if (operator == "equal"):
+                         filterMaker = function makeFilter(destSubField,srcID) { return function(linkedObj) { return (linkedObj.attributes[destSubField] == srcID); } };
+                         filterFunc = filterMaker(destSubField, srcID);
+                     else:
+                         continue;
+
+                     newSelect = idToSelect(destField,
+                                            model.attributes[destField],
+                                            model.foreignFields[destField],
+                                            "humanReadableName",
+                                            false,
+                                            filterFunc);
+
+                     this.$el.find(destFieldName).html(newSelect);
+                 },
+
 });
 
 /* XOSItemView
@@ -920,7 +948,7 @@ idToName = function(id, collectionName, fieldName) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToOptions = function(selectedId, collectionName, fieldName) {
+idToOptions = function(selectedId, collectionName, fieldName, filterFunc) {
     result=""
     for (index in xos[collectionName].models) {
         linkedObject = xos[collectionName].models[index];
@@ -930,6 +958,9 @@ idToOptions = function(selectedId, collectionName, fieldName) {
             selected = " selected";
         } else {
             selected = "";
+        }
+        if ((filterFunc) && (!filterFunc(linkedObject)) {
+            continue;
         }
         result = result + '<option value="' + linkedId + '"' + selected + '>' + linkedName + '</option>';
     }
@@ -944,14 +975,14 @@ idToOptions = function(selectedId, collectionName, fieldName) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly) {
+idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly. filterFunc) {
     if (readOnly) {
         readOnly = " readonly";
     } else {
         readOnly = "";
     }
     result = '<select name="' + variable + '"' + readOnly + '>' +
-             idToOptions(selectedId, collectionName, fieldName) +
+             idToOptions(selectedId, collectionName, fieldName, filterFunc) +
              '</select>';
     return result;
 }
