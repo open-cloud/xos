@@ -609,7 +609,7 @@ class DeploymentAdminForm(forms.ModelForm):
         # so well handle that manually here
         for flavor in deployment.flavors.all():
             if getattr(flavor, 'name') not in self.cleaned_data['flavors']:
-                flavor.delete()
+                deployment.flavors.remove(flavor)
         for flavor in self.cleaned_data['flavors']:
             if flavor not in deployment.flavors.all():
                 flavor.deployments.add(deployment)
