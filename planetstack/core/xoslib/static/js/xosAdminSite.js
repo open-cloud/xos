@@ -1,4 +1,4 @@
-OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
+OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment', 'flavor', 'imageDeployment'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
 REWRITES = {"/admin/core/deployment/": "#deployments",
@@ -87,23 +87,29 @@ XOSAdminApp.buildViews = function() {
          collection_name = name + "s";
          region_name = name + "List";
 
-         if ($(detail_template).length) {
-             detailClass = XOSDetailView.extend({
-                template: detail_template,
-                app: XOSAdminApp,
-             });
+         if (window["XOSDetailView_" + name]) {
+             detailClass = window["XOSDetailView_" + name].extend({template: "#xos-detail-template",
+                                                                    app: XOSAdminApp});
          } else {
              detailClass = genericDetailClass;
          }
+         if ($(detail_template).length) {
+             detailClass = detailClass.extend({
+                template: detail_template,
+             });
+         }
          XOSAdminApp[collection_name + "DetailView"] = detailClass;
 
-         if ($(add_child_template).length) {
-             addClass = XOSDetailView.extend({
-                template: add_child_template,
-                app: XOSAdminApp,
-             });
+         if (window["XOSDetailView_" + name]) {
+             addClass = window["XOSDetailView_" + name].extend({template: "#xos-add-template",
+                                                                    app: XOSAdminApp});
          } else {
              addClass = genericAddChildClass;
+         }
+         if ($(add_child_template).length) {
+             addClass = detailClass.extend({
+                template: add_child_template,
+             });
          }
          XOSAdminApp[collection_name + "AddChildView"] = addClass;
 

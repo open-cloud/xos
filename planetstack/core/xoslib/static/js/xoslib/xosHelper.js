@@ -594,7 +594,66 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     inputType: this.model.inputType,
                                                     model: this.model,
                                          }},
+});
 
+XOSDetailView_sliver = XOSDetailView.extend( {
+    events: $.extend(XOSDetailView.events,
+        {"change #field_deploymentNetwork": "onDeploymentNetworkChange"}
+    ),
+
+    onShow: function() {
+        // Note that this causes the selects to be updated a second time. The
+        // first time was when the template was originally invoked, and the
+        // selects will all have the full unfiltered set of candidates. Then
+        // onShow will fire, and we'll update them with the filtered values.
+        this.onDeploymentNetworkChange();
+    },
+
+    onDeploymentNetworkChange: function(e) {
+        var deploymentID = this.$el.find("#field_deploymentNetwork").val();
+
+        console.log("onDeploymentNetworkChange");
+        console.log(deploymentID);
+
+        filterFunc = function(model) { return (model.attributes.deployment==deploymentID); }
+        newSelect = idToSelect("node",
+                               this.model.attributes.node,
+                               this.model.foreignFields["node"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_node").html(newSelect);
+
+        filterFunc = function(model) { for (index in model.attributes.deployments) {
+                                          item=model.attributes.deployments[index];
+                                          if (item.toString()==deploymentID.toString()) return true;
+                                        };
+                                        return false;
+                                     }
+        newSelect = idToSelect("flavor",
+                               this.model.attributes.flavor,
+                               this.model.foreignFields["flavor"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_flavor").html(newSelect);
+
+        filterFunc = function(model) { for (index in xos.imageDeployments.models) {
+                                           imageDeployment = xos.imageDeployments.models[index];
+                                           if ((imageDeployment.attributes.deployment == deploymentID) && (imageDeployment.attributes.image == model.id)) {
+                                               return true;
+                                           }
+                                       }
+                                       return false;
+                                     };
+        newSelect = idToSelect("image",
+                               this.model.attributes.image,
+                               this.model.foreignFields["image"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_image").html(newSelect);
+    },
 });
 
 /* XOSItemView
@@ -920,7 +979,7 @@ idToName = function(id, collectionName, fieldName) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToOptions = function(selectedId, collectionName, fieldName) {
+idToOptions = function(selectedId, collectionName, fieldName, filterFunc) {
     result=""
     for (index in xos[collectionName].models) {
         linkedObject = xos[collectionName].models[index];
@@ -930,6 +989,9 @@ idToOptions = function(selectedId, collectionName, fieldName) {
             selected = " selected";
         } else {
             selected = "";
+        }
+        if ((filterFunc) && (!filterFunc(linkedObject))) {
+            continue;
         }
         result = result + '<option value="' + linkedId + '"' + selected + '>' + linkedName + '</option>';
     }
@@ -944,14 +1006,14 @@ idToOptions = function(selectedId, collectionName, fieldName) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly) {
+idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly, filterFunc) {
     if (readOnly) {
         readOnly = " readonly";
     } else {
         readOnly = "";
     }
-    result = '<select name="' + variable + '"' + readOnly + '>' +
-             idToOptions(selectedId, collectionName, fieldName) +
+    result = '<select name="' + variable + '" id="field_' + variable + '"' + readOnly + '>' +
+             idToOptions(selectedId, collectionName, fieldName, filterFunc) +
              '</select>';
     return result;
 }
