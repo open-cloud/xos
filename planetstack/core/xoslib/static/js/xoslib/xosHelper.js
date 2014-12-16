@@ -594,35 +594,66 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     inputType: this.model.inputType,
                                                     model: this.model,
                                          }},
+});
 
-             applyConstraints: function() {
-                 for (constraint in this.model.constraints) {
-                     // constraint syntax: "operator,destField.destSubField,srcField.srcSubField"
-                     //   i.e. equal,node.deployment,deploymentNetwork.id
-                     parts = constraints.split(",");
-                     operator = parts[0];
-                     parts1 = parts[1].split(".");
-                     destField = parts1[0];
-                     destSubField = parts1[1];
-                     parts2 = parts[2].split(".");
-                     srcField = parts2[0];
-                     srcID = this.$el.find(srcModel).val();
-                     if (operator == "equal"):
-                         filterMaker = function makeFilter(destSubField,srcID) { return function(linkedObj) { return (linkedObj.attributes[destSubField] == srcID); } };
-                         filterFunc = filterMaker(destSubField, srcID);
-                     else:
-                         continue;
+XOSDetailView_sliver = XOSDetailView.extend( {
+    events: $.extend(XOSDetailView.events,
+        {"change #field_deploymentNetwork": "onDeploymentNetworkChange"}
+    ),
 
-                     newSelect = idToSelect(destField,
-                                            model.attributes[destField],
-                                            model.foreignFields[destField],
-                                            "humanReadableName",
-                                            false,
-                                            filterFunc);
+    onShow: function() {
+        // Note that this causes the selects to be updated a second time. The
+        // first time was when the template was originally invoked, and the
+        // selects will all have the full unfiltered set of candidates. Then
+        // onShow will fire, and we'll update them with the filtered values.
+        this.onDeploymentNetworkChange();
+    },
 
-                     this.$el.find(destFieldName).html(newSelect);
-                 },
+    onDeploymentNetworkChange: function(e) {
+        var deploymentID = this.$el.find("#field_deploymentNetwork").val();
 
+        console.log("onDeploymentNetworkChange");
+        console.log(deploymentID);
+
+        filterFunc = function(model) { return (model.attributes.deployment==deploymentID); }
+        newSelect = idToSelect("node",
+                               this.model.attributes.node,
+                               this.model.foreignFields["node"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_node").html(newSelect);
+
+        filterFunc = function(model) { for (index in model.attributes.deployments) {
+                                          item=model.attributes.deployments[index];
+                                          if (item.toString()==deploymentID.toString()) return true;
+                                        };
+                                        return false;
+                                     }
+        newSelect = idToSelect("flavor",
+                               this.model.attributes.flavor,
+                               this.model.foreignFields["flavor"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_flavor").html(newSelect);
+
+        filterFunc = function(model) { for (index in xos.imageDeployments.models) {
+                                           imageDeployment = xos.imageDeployments.models[index];
+                                           if ((imageDeployment.attributes.deployment == deploymentID) && (imageDeployment.attributes.image == model.id)) {
+                                               return true;
+                                           }
+                                       }
+                                       return false;
+                                     };
+        newSelect = idToSelect("image",
+                               this.model.attributes.image,
+                               this.model.foreignFields["image"],
+                               "humanReadableName",
+                               false,
+                               filterFunc);
+        this.$el.find("#field_image").html(newSelect);
+    },
 });
 
 /* XOSItemView
@@ -959,7 +990,7 @@ idToOptions = function(selectedId, collectionName, fieldName, filterFunc) {
         } else {
             selected = "";
         }
-        if ((filterFunc) && (!filterFunc(linkedObject)) {
+        if ((filterFunc) && (!filterFunc(linkedObject))) {
             continue;
         }
         result = result + '<option value="' + linkedId + '"' + selected + '>' + linkedName + '</option>';
@@ -975,13 +1006,13 @@ idToOptions = function(selectedId, collectionName, fieldName, filterFunc) {
    fieldName = name of field within models of collection that will be displayed
 */
 
-idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly. filterFunc) {
+idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly, filterFunc) {
     if (readOnly) {
         readOnly = " readonly";
     } else {
         readOnly = "";
     }
-    result = '<select name="' + variable + '"' + readOnly + '>' +
+    result = '<select name="' + variable + '" id="field_' + variable + '"' + readOnly + '>' +
              idToOptions(selectedId, collectionName, fieldName, filterFunc) +
              '</select>';
     return result;
