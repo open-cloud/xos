@@ -111,8 +111,6 @@ class Generator(dict):
 						cobj = copy.deepcopy(obj)
 						cobj.multi = True
 						cobj.plural_name = related_name
-						#if (str(refobj)=='slice' and related_name=='networks'):
-						#	pdb.set_trace()
 						refobj.refs.append(cobj)
 				else:
 					obj.props.append(f.name)
@@ -126,7 +124,7 @@ class Generator(dict):
 
 				related_name = f.related_query_name()
 				if related_model_name in self.keys():
-			#		pdb.set_trace()
+                                        #print "XXX1", obj, f, related_name, related_model_name
 					refobj = self[related_model_name]
 					cobj = copy.deepcopy(obj)
 					cobj.multi=True
@@ -137,17 +135,12 @@ class Generator(dict):
                                     continue
 
 				if (related_name!='+' and related_name.lower()!=str(obj).lower()):
-					cobj = copy.deepcopy(obj)
+                                        #print "XXX2", obj, f, related_name, related_model_name, refobj.plural_name
+                                        refobj = self[related_model_name]
+					cobj = copy.deepcopy(refobj)
 					cobj.multi = True
-					cobj.plural_name = related_name
 
-					#if (str(refobj)=='slice' and related_name=='networks'):
-					#	pdb.set_trace()
-					refobj.refs.append(cobj)
-
-					#if (related_name=='networks'):
-						#pdb.set_trace()
-						#print str(refobj)
+					obj.refs.append(cobj)
 
 
 
