@@ -10,12 +10,14 @@ if (! window.XOSLIB_LOADED ) {
     USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
     DEPLOYMENT_API = "/plstackapi/deployments/";
     IMAGE_API = "/plstackapi/images/";
+    IMAGEDEPLOYMENTS_API = "/plstackapi/imagedeployments/";
     NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
     NETWORK_API = "/plstackapi/networks/";
     NETWORKSLIVER_API = "/plstackapi/networkslivers/";
     SERVICE_API = "/plstackapi/services/";
     SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
     NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
+    FLAVOR_API = "/plstackapi/flavors/";
 
     /* changed as a side effect of the big rename
     SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
@@ -382,12 +384,12 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: SLIVER_API,
                             relatedCollections: {"networkSlivers": "sliver"},
-                            foreignCollections: ["slices", "deployments", "images", "nodes", "users"],
-                            foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deploymentNetwork": "deployments", "slice": "slices"},
+                            foreignCollections: ["slices", "deployments", "images", "nodes", "users", "flavors"],
+                            foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deploymentNetwork": "deployments", "slice": "slices", "flavor": "flavors"},
                             modelName: "sliver",
                             listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "flavor"],
-                            addFields: ["slice", "deploymentNetwork", "image", "node"],
-                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "creator"],
+                            addFields: ["slice", "deploymentNetwork", "flavor", "image", "node"],
+                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "flavor", "image", "node", "creator"],
                             preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
                             });
 
@@ -483,6 +485,13 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: ["backend_status", "name", "disk_format", "admin_tenant"],
                             });
 
+        define_model(this, {urlRoot: IMAGEDEPLOYMENTS_API,
+                            modelName: "imageDeployment",
+                            foreignCollections: ["images", "deployments"],
+                            listFields: ["backend_status", "id", "image", "deployment", "glance_image_id"],
+                            detailFields: ["backend_status", "image", "deployment", "glance_image_id"],
+                            });
+
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
                             listFields: ["backend_status", "id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
@@ -516,6 +525,13 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "service",
                             listFields: ["backend_status", "id", "name", "enabled", "versionNumber", "published"],
                             detailFields: ["backend_status", "name", "description", "versionNumber"],
+                            });
+
+        define_model(this, {urlRoot: FLAVOR_API,
+                            modelName: "flavor",
+                            listFields: ["backend_status", "id", "name", "flavor", "order", "default"],
+                            detailFields: ["backend_status", "name", "description", "flavor", "order", "default"],
+                            inputType: {"default": "checkbox"},
                             });
 
         // enhanced REST
