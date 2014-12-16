@@ -70,9 +70,9 @@ class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
     id = serializers.Field()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
+    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True, read_only=True) #, view_name='{{ ref }}-detail')
     {% else %}
-    {{ ref }} = serializers.HyperlinkedRelatedField(read_only=True, view_name='{{ ref }}-detail')
+    {{ ref }} = serializers.PrimaryKeyRelatedField(read_only=True) #, view_name='{{ ref }}-detail')
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
