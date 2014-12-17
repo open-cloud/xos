@@ -404,6 +404,8 @@ XOSListButtonView = XOSButtonView.extend({ template: "#xos-listbuttons-template"
 XOSDetailView = Marionette.ItemView.extend({
             tagName: "div",
 
+            viewInitializers: [],
+
             events: {"click button.btn-xos-save-continue": "submitContinueClicked",
                      "click button.btn-xos-save-leave": "submitLeaveClicked",
                      "click button.btn-xos-save-another": "submitAddAnotherClicked",
@@ -418,6 +420,12 @@ XOSDetailView = Marionette.ItemView.extend({
             initialize: function() {
                 this.on("saveSuccess", this.onAfterSave);
                 this.synchronous = false;
+            },
+
+            onShow: function() {
+                _.each(this.viewInitializers, function(initializer) {
+                    initializer();
+                });
             },
 
             afterSave: function(e) {
@@ -574,7 +582,6 @@ XOSDetailView = Marionette.ItemView.extend({
             onFormDataInvalid: function(errors) {
                 var self=this;
                 var markErrors = function(value, key) {
-                    console.log("name='" + key + "'");
                     var $inputElement = self.$el.find("[name='" + key + "']");
                     var $inputContainer = $inputElement.parent();
                     //$inputContainer.find(".help-inline").remove();
@@ -593,6 +600,7 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     detailLinkFields: this.model.detailLinkFields,
                                                     inputType: this.model.inputType,
                                                     model: this.model,
+                                                    detailView: this,
                                          }},
 });
 
@@ -970,6 +978,10 @@ XOSDataTableView = Marionette.View.extend( {
 
 idToName = function(id, collectionName, fieldName) {
     return xos.idToName(id, collectionName, fieldName);
+};
+
+makeIdToName = function(collectionName, fieldName) {
+    return function(id) { return idToName(id, collectionName, fieldName); }
 };
 
 /* Constructs lists of <option> html blocks for items in a collection.

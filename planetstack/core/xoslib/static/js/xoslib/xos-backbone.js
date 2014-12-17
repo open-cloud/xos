@@ -79,6 +79,20 @@ if (! window.XOSLIB_LOADED ) {
                 return Backbone.Model.prototype.save.call(this, attributes, options);
             },
 
+            getChoices: function(fieldName, excludeChosen) {
+                choices=[];
+                if (fieldName in this.m2mFields) {
+                    for (index in xos[this.m2mFields[fieldName]].models) {
+                        candidate = xos[this.m2mFields[fieldName]].models[index];
+                        if (excludeChosen && idInArray(candidate.id, this.attributes[fieldName])) {
+                            continue;
+                        }
+                        choices.push(candidate.id);
+                    }
+                }
+                return choices;
+            },
+
             /* If a 'validate' method is supplied, then it will be called
                automatically on save. Unfortunately, save calls neither the
                'error' nor the 'success' callback if the validator fails.
@@ -324,6 +338,7 @@ if (! window.XOSLIB_LOADED ) {
 
         attrs.inputType = attrs.inputType || {};
         attrs.foreignFields = attrs.foreignFields || {};
+        attrs.m2mFields = attrs.m2mFields || {};
         attrs.readOnlyFields = attrs.readOnlyFields || [];
         attrs.detailLinkFields = attrs.detailLinkFields || ["id","name"];
 
@@ -473,9 +488,11 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
                              relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
+                             m2mFields: {"flavors": "flavors", "sites": "sites", "images": "images"},
                              modelName: "deployment",
                              listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
-                             detailFields: ["backend_status", "name", "backend_type", "admin_tenant"],
+                             detailFields: ["backend_status", "name", "backend_type", "admin_tenant", "flavors", "sites", "images"],
+                             inputType: {"flavors": "picker", "sites": "picker", "images": "picker"},
                              });
 
         define_model(this, {urlRoot: IMAGE_API,
@@ -529,9 +546,10 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: FLAVOR_API,
                             modelName: "flavor",
+                            m2mFields: {"deployments": "deployments"},
                             listFields: ["backend_status", "id", "name", "flavor", "order", "default"],
-                            detailFields: ["backend_status", "name", "description", "flavor", "order", "default"],
-                            inputType: {"default": "checkbox"},
+                            detailFields: ["backend_status", "name", "description", "flavor", "order", "default", "deployments"],
+                            inputType: {"default": "checkbox", "deployments": "picker"},
                             });
 
         // enhanced REST

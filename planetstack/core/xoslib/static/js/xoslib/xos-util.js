@@ -1,5 +1,15 @@
 // misc utility functions
 
+function idInArray(id, arr) {
+    // because sometimes ids are strings and sometimes they're integers
+    for (index in arr) {
+        if (id.toString() == arr[index].toString()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function assert(outcome, description) {
     if (!outcome) {
         console.log(description);

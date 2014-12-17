@@ -107,3 +107,11 @@
 #xos-confirm-dialog {
     display: none;
 }
+
+.picker_row {
+  display: table;
+}
+.picker_column {
+  display: table-cell;
+  padding: 10px;
+}
