@@ -159,6 +159,9 @@
             <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
+        <% } else if (inputType[fieldName] == "picker") { %>
+            <% lookupFunc = makeIdToName(model.m2mFields[fieldName], "humanReadableName"); %>
+            <td><%= xosPickerTemplate({pickedItems: model.attributes[fieldName], unpickedItems: model.getChoices(fieldName,true), id: "picker_" + fieldName, detailView: detailView, lookupFunc: lookupFunc}) %></td>
         <% } else if (fieldName=="backend_status") { %>
             <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
         <% } else { %>
@@ -216,6 +219,42 @@
   </div>
 </script>
 
+
+<script type="text/template" id="xos-picker-template">
+    <!-- arguments: unpickedItems, pickedItems -->
+    <div id="<%= id %>">
+    <div class="picker_row">
+    <div class="picker_column">
+    <div>Available</div>
+    <select name="pickerfrom" class="select-picker-from" multiple size="5">
+        <% _.each(unpickedItems, function(item) { %>
+           <option value="<%= item %>"><%= lookupFunc? lookupFunc(item) : item %></option>
+        <% });%>
+    </select>
+    </div>
+    <div class="picker_column">
+    <br>
+    <div class="btn btn-success btn-picker-add">Add &raquo;</div><br><br>
+    <div class="btn btn-success btn-picker-remove">&laquo; Remove</div>
+    </div>
+    <div class="picker_column">
+    <div>Selected</div>
+    <select name="pickerto" class="select-picker-to" multiple size="5">
+        <% _.each(pickedItems, function(item) { %>
+           <option value="<%= item %>"><%= lookupFunc ? lookupFunc(item) : item %></option>
+        <% }); %>
+    </select>
+    </div>
+    <div class="picker_column">
+    <br>
+    <div class="btn btn-success btn-picker-up">Up</div><br><br>
+    <div class="btn btn-success btn-picker-down">Down</div>
+    </div>
+    </div>
+    </div>
+    <% detailView.viewInitializers.push( function() { init_picker("#" + id); } ); %>
+</script>
+
 <script>
 xosInlineDetailButtonsTemplate = _.template($("#xos-inline-detail-buttons-template").html());
 xosListHeaderTemplate = _.template($("#xos-list-header-template").html());
@@ -224,5 +263,6 @@ xosDeleteButtonTemplate = _.template($("#xos-delete-button-template").html());
 xosDetailLinkTemplate = _.template($("#xos-detail-link-template").html());
 xosBackendStatusIconTemplate = _.template($("#xos-backend-status-icon-template").html());
 xosBackendStatusTextTemplate = _.template($("#xos-backend-status-text-template").html());
+xosPickerTemplate = _.template($("#xos-picker-template").html());
 </script>
 
