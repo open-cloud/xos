@@ -70,11 +70,29 @@ class XOSModelSerializer(serializers.ModelSerializer):
             (relatedObject, data) = stuff
             through = relatedObject.field.rel.through
             local_fieldName = relatedObject.field.m2m_reverse_field_name()
-            print "XXX", accessor, relatedObject, data
+            remote_fieldName = relatedObject.field.m2m_field_name()
+
+            # get the current set of existing relations
             existing = through.objects.filter(**{local_fieldName: obj});
-            print "existing", existing
 
+            data_ids = [item.id for item in data]
+            existing_ids = [getattr(item,remote_fieldName).id for item in existing]
 
+            #print "data_ids", data_ids
+            #print "existing_ids", existing_ids
+
+            # remove relations that are in 'existing' but not in 'data'
+            for item in list(existing):
+               if (getattr(item,remote_fieldName).id not in data_ids):
+                   print "delete", getattr(item,remote_fieldName)
+                   item.delete() #(purge=True)
+
+            # add relations that are in 'data' but not in 'existing'
+            for item in data:
+               if (item.id not in existing_ids):
+                   #print "add", item
+                   newModel = through(**{local_fieldName: obj, remote_fieldName: item})
+                   newModel.save()
 
 {% for object in generator.all %}
 
