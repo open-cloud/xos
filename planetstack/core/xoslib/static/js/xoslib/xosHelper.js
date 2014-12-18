@@ -48,7 +48,19 @@ XOSRouter = Marionette.AppRouter.extend({
         },
     });
 
-
+Backbone.Syphon.InputReaders.register('select', function(el) {
+    // Modify syphon so that if a select has "syphonall" in the class, then
+    // the value of every option will be returned, regardless of whether of
+    // not it is selected.
+    if (el.hasClass("syphonall")) {
+        result = [];
+        _.each(el.find("option"), function(option) {
+            result.push($(option).val());
+        });
+        return result;
+    }
+    return el.val();
+});
 
 XOSApplication = Marionette.Application.extend({
     detailBoxId: "#detailBox",
@@ -473,6 +485,8 @@ XOSDetailView = Marionette.ItemView.extend({
                 var data = Backbone.Syphon.serialize(this);
                 var that = this;
                 var isNew = !this.model.id;
+
+                console.log(data);
 
                 this.$el.find(".help-inline").remove();
 
