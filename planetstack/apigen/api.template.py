@@ -42,6 +42,40 @@ def api_root(request, format=None):
 
 # Based on serializers.py
 
+class XOSModelSerializer(serializers.ModelSerializer):
+    def save_object(self, obj, **kwargs):
+
+        """ rest_framework can't deal with ManyToMany relations that have a
+            through table. In plstackapi, most of the through tables we have
+            use defaults or blank fields, so there's no reason why we shouldn't
+            be able to save these objects.
+
+            So, let's strip out these m2m relations, and deal with them ourself.
+        """
+        obj._complex_m2m_data={};
+        if getattr(obj, '_m2m_data', None):
+            for relatedObject in obj._meta.get_all_related_many_to_many_objects():
+                if (relatedObject.field.rel.through._meta.auto_created):
+                    # These are non-trough ManyToMany relations and
+                    # can be updated just fine
+                    continue
+                fieldName = relatedObject.get_accessor_name()
+                if fieldName in obj._m2m_data.keys():
+                    obj._complex_m2m_data[fieldName] = (relatedObject, obj._m2m_data[fieldName])
+                    del obj._m2m_data[fieldName]
+
+        serializers.ModelSerializer.save_object(self, obj, **kwargs);
+
+        for (accessor, stuff) in obj._complex_m2m_data.items():
+            (relatedObject, data) = stuff
+            through = relatedObject.field.rel.through
+            local_fieldName = relatedObject.field.m2m_reverse_field_name()
+            print "XXX", accessor, relatedObject, data
+            existing = through.objects.filter(**{local_fieldName: obj});
+            print "existing", existing
+
+
+
 {% for object in generator.all %}
 
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
@@ -66,13 +100,13 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
         model = {{ object.camel }}
         fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
-class {{ object.camel }}IdSerializer(serializers.ModelSerializer):
+class {{ object.camel }}IdSerializer(XOSModelSerializer):
     id = serializers.Field()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True, read_only=True) #, view_name='{{ ref }}-detail')
+    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='{{ ref }}-detail')
     {% else %}
-    {{ ref }} = serializers.PrimaryKeyRelatedField(read_only=True) #, view_name='{{ ref }}-detail')
+    {{ ref }} = serializers.PrimaryKeyRelatedField() # read_only=True) #, view_name='{{ ref }}-detail')
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
