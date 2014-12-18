@@ -161,7 +161,7 @@
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
         <% } else if (inputType[fieldName] == "picker") { %>
             <% lookupFunc = makeIdToName(model.m2mFields[fieldName], "humanReadableName"); %>
-            <td><%= xosPickerTemplate({pickedItems: model.attributes[fieldName], unpickedItems: model.getChoices(fieldName,true), id: "picker_" + fieldName, detailView: detailView, lookupFunc: lookupFunc}) %></td>
+            <td><%= xosPickerTemplate({pickedItems: model.attributes[fieldName], unpickedItems: model.getChoices(fieldName,true), id: "picker_" + fieldName, fieldName: fieldName, detailView: detailView, lookupFunc: lookupFunc}) %></td>
         <% } else if (fieldName=="backend_status") { %>
             <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
         <% } else { %>
@@ -239,7 +239,7 @@
     </div>
     <div class="picker_column">
     <div>Selected</div>
-    <select name="pickerto" class="select-picker-to" multiple size="5">
+    <select name=<%= fieldName %> class="select-picker-to syphonall" multiple size="5">
         <% _.each(pickedItems, function(item) { %>
            <option value="<%= item %>"><%= lookupFunc ? lookupFunc(item) : item %></option>
         <% }); %>
