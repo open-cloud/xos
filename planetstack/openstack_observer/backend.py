@@ -9,7 +9,6 @@ logger = Logger(level=logging.INFO)
 class Backend:
     
     def run(self):
-        try:
             # start the openstack observer
             observer = PlanetStackObserver()
             observer_thread = threading.Thread(target=observer.run)
@@ -19,6 +18,4 @@ class Backend:
             event_manager = EventListener(wake_up=observer.wake_up)
             event_manager_thread = threading.Thread(target=event_manager.run)
             event_manager_thread.start()
-        except:
-            logger.log_exc("Exception in child thread")
 
