@@ -34,11 +34,13 @@ clean:
 	rm -f $(NAME)-$(VERSION).tar.gz $(NAME)-$(VERSION)-$(RELEASE).src.rpm $(NAME)-$(VERSION)-$(RELEASE).noarch.rpm
 	rm -rf build
 
-install: $(NAME)-$(VERSION)-$(RELEASE).rpm
+upload: $(NAME)-$(VERSION)-$(RELEASE).rpm
 ifndef UPLOAD_HOST
 	$(error please specify UPLOAD_HOST=<hostname> on make command line)
 endif
 	scp $(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm $(UPLOAD_SLICE)@$(UPLOAD_HOST):/root/
+
+install: upload
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) yum -y install gcc graphviz-devel graphviz-python postgresql postgresql-server python-pip python-psycopg2 libxslt-devel python-httplib2 GeoIP
 	ssh $(UPLOAD_SLICE)@$(UPLOAD_HOST) rpm --install --upgrade --replacefiles --replacepkgs /root/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm   
 	scp /opt/planetstack/hpc_wizard/bigquery_credentials.dat /opt/planetstack/hpc_wizard/client_secrets.json $(UPLOAD_SLICE)@$(UPLOAD_HOST):/opt/planetstack/hpc_wizard/ 
