@@ -1,6 +1,7 @@
 import os
 import datetime
 from collections import defaultdict
+from django.forms.models import model_to_dict
 from django.db import models
 from django.db.models import F, Q
 from core.models import PlCoreBase,Site, DashboardView, DiffModelMixIn
@@ -80,7 +81,36 @@ class DeletedUserManager(UserManager):
     def get_query_set(self):
         return self.get_queryset()
 
-class User(AbstractBaseUser, DiffModelMixIn):
+class User(AbstractBaseUser): #, DiffModelMixIn):
+
+    # ---- copy stuff from DiffModelMixin ----
+
+    @property
+    def _dict(self):
+        return model_to_dict(self, fields=[field.name for field in
+                             self._meta.fields])
+
+    @property
+    def diff(self):
+        d1 = self._initial
+        d2 = self._dict
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        return dict(diffs)
+
+    @property
+    def has_changed(self):
+        return bool(self.diff)
+
+    @property
+    def changed_fields(self):
+        return self.diff.keys()
+
+    def has_field_changed(self, field_name):
+        return field_name in self.diff.keys()
+
+    def get_field_diff(self, field_name):
+        return self.diff.get(field_name, None)
+    # ---- end copy stuff from DiffModelMixin ----
 
     class Meta:
         app_label = "core"
