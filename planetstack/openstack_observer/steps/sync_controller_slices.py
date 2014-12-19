@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice, ControllerSlices
-from core.models.usercontrollers import ControllerUsers
+from core.models.controllerusers import ControllerUsers
 from util.logger import Logger, logging
 from observer.ansible import *
 
@@ -21,24 +21,6 @@ class SyncControllerSlices(OpenStackSyncStep):
             return ControllerSlices.deleted_objects.all()
         else:
             return ControllerSlices.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
-    def get_next_subnet(self, controller=None):
-        # limit ourself to 10.0.x.x for now
-        valid_subnet = lambda net: net.startswith('10.0')
-        driver = self.driver.admin_driver(controller=controller)
-        subnets = driver.shell.quantum.list_subnets()['subnets']
-        ints = [int(IPNetwork(subnet['cidr']).ip) for subnet in subnets \
-                if valid_subnet(subnet['cidr'])]
-        ints.sort()
-        if ints:
-            last_ip = IPAddress(ints[-1])
-        else:
-            last_ip = IPAddress('10.0.0.1')
-        last_ip = IPAddress(ints[-1])
-        last_network = IPNetwork(str(last_ip) + "/24")
-        next_network = IPNetwork(str(IPAddress(last_network) + last_network.size) + "/24")
-        return next_network
-
 
     def sync_record(self, controller_slice):
         logger.info("sync'ing slice controller %s" % controller_slice)
