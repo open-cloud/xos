@@ -7,7 +7,7 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import Controller, SiteDeployments
 from core.models.user import User
-from core.models.usercontrollers import ControllerUsers
+from core.models.controllerusers import ControllerUsers
 from util.logger import Logger, logging
 
 from observer.ansible import *
