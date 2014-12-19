@@ -2,6 +2,7 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
+  {% if not delete %}
   - nova_keypair:
       state: present
       auth_url: {{ endpoint }}
@@ -10,15 +11,18 @@
       login_tenant_name: {{ admin_tenant }}
       name: {{ key_name }}
       public_key: "{{ key.public_key}}"
-
+  {% endif %}
   - nova_compute:
-      state: present
       auth_url: {{ endpoint }}
       login_username: {{ admin_user }}
       login_password: {{ admin_password }}
       login_tenant_name: {{ admin_tenant }}
-      availability_zone: {{ availability_zone }}
       name: {{ name }}
+      {% if delete %}
+      state: absent
+      {% else %}
+      state: present
+      availability_zone: {{ availability_zone }}
       image_id: {{ image_id }}
       key_name: {{ key_name }}
       wait_for: 200
@@ -34,4 +38,23 @@
       {% for k,v in meta.items() %}
           {{ k }} : "{{ v }}"
       {% endfor %}
+      {% endif %}
+      {% else %}
+      state: present
+      image_id: {{ image_id }}
+      key_name: {{ key_name }}
+      wait_for: 200
+      flavor_id: {{ flavor_id }}
+      user_data: "{{ user_data }}"
+      nics:
+      {% for net in nics %}  
+        - net-id: {{ net }}
+      {% endfor %}
+
+      {% if meta %}
+      meta:
+      {% for k,v in meta.items() %}  
+        {{ k }} : "{{ v }}"
+      {% endfor %}
+      {% endif %}
       {% endif %}
