@@ -92,9 +92,9 @@ class SyncSlivers(OpenStackSyncStep):
 	    
 	sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
 	tenant_fields = {'endpoint':sliver.node.controller.auth_url,
-		     'admin_user': sliver.node.controller.admin_user,
-		     'admin_password': sliver.node.controller.admin_password,
-		     'admin_tenant': 'admin',
+		     'admin_user': sliver.creator.username,
+		     'admin_password': sliver.creator.password,
+		     'admin_tenant': sliver.slice.name,
 		     'tenant': sliver.slice.name,
 		     'tenant_description': sliver.slice.description,
 		     'name':sliver_name,
