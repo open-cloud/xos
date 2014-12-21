@@ -46,7 +46,6 @@ def run_template(name, opts,path=''):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
-    import pdb
 
     #f = open('/tmp/obsans','w')
     try:
@@ -61,7 +60,6 @@ def run_template(name, opts,path=''):
     f.write(buffer)
     f.flush()
 
-    #os.system('cp %s %s-backup'%(fqp,fqp))
     run = os.popen('/opt/planetstack/observer/run_ansible '+fqp)
     msg = run.read()
     status = run.close()
@@ -69,8 +67,17 @@ def run_template(name, opts,path=''):
     try:
         ok_results = parse_output(msg)
     except ValueError,e:
-        print str(e)
-        raise e
+        all_fatal = re.findall(r'^msg: (.*)',msg,re.MULTILINE)
+        all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
+	
+	
+	all_fatal.extend(all_fatal2)
+        try:
+            error = ' // '.join(all_fatal)
+        except:
+            pass
+        raise Exception(error)
+
     return ok_results
 
 def main():
