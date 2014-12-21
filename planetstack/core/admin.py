@@ -1260,14 +1260,22 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
+class ControllerDashboardInline(PlStackTabularInline):
+    model = ControllerDashboard
+    extra = 0
+    fields = ["controller", "url"]
+    suit_classes = 'suit-tab suit-tab-controllers'
+
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',
                    {'fields': ['backend_status_text', 'name', 'url'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
+    inlines = [ControllerDashboardInline]
 
-    suit_form_tabs =(('general','Dashboard View Details'),)
+    suit_form_tabs =(('general','Dashboard View Details'),
+                     ('controllers', 'Per-controller Dashboard Details'))
 
 class ServiceResourceInline(PlStackTabularInline):
     model = ServiceResource
