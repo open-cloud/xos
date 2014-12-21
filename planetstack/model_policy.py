@@ -12,8 +12,12 @@ def EnableModelPolicy(x):
     modelPolicyEnabled = x
 
 def update_dep(d, o):
-	if (d.updated < o.updated):
-		d.save(update_fields=['updated'])
+	try:
+		if (d.updated < o.updated):
+			d.save(update_fields=['updated'])
+	except AttributeError,e:
+		pdb.set_trace()
+		raise e
 	
 def delete_if_inactive(d, o):
 	#print "Deleting %s (%s)"%(d,d.__class__.__name__)
