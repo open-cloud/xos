@@ -361,11 +361,11 @@ if (! window.XOSLIB_LOADED ) {
             }
         }
 
-        if (xosdefaults && xosdefaults[modelName]) {
+        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
             modelAttrs["defaults"] = xosdefaults[modelName];
         }
 
-        if (xosvalidators && xosvalidators[modelName]) {
+        if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
             modelAttrs["validators"] = xosvalidators[modelName];
         }
 
