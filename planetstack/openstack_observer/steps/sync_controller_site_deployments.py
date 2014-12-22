@@ -33,8 +33,6 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
 		raise Exception('Could not create or update user %s'%tenant_fields['tenant'])
             
     def delete_record(self, controller_site_deployment):
-	import pdb
-	pdb.set_trace()
 	if controller_site_deployment.tenant_id:
             driver = self.driver.admin_driver(controller=controller_site_deployment.controller)
             driver.delete_tenant(controller_site_deployment.tenant_id)
