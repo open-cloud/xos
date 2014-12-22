@@ -428,21 +428,9 @@ class ControllerImagesIdSerializer(XOSModelSerializer):
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Image
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
-
-class ImageIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    
+    deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+    
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -455,7 +443,27 @@ class ImageIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Image
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
+
+class ImageIdSerializer(XOSModelSerializer):
+    id = serializers.Field()
+    
+    
+    deployments = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='deployment-detail')
+    
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Image
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
 
 
@@ -1711,6 +1719,10 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
     
     
     
+    images = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='image-detail')
+    
+    
+    
     sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
     
     
@@ -1725,13 +1737,17 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','sites',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
 
 class DeploymentIdSerializer(XOSModelSerializer):
     id = serializers.Field()
     
     
     flavors = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='flavor-detail')
+    
+    
+    
+    images = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='image-detail')
     
     
     
@@ -1749,7 +1765,7 @@ class DeploymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','sites',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
 
 
 
@@ -2714,7 +2730,7 @@ class ImageList(generics.ListCreateAPIView):
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4720,7 +4736,7 @@ class DeploymentList(generics.ListCreateAPIView):
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','sites',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
