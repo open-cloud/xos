@@ -5,7 +5,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployments
+from core.models.site import Controller, SiteDeployments, ControllerSiteDeployments
 from core.models.user import User
 from core.models.controllerusers import ControllerUsers
 from util.logger import Logger, logging
@@ -36,6 +36,8 @@ class SyncControllerUsers(OpenStackSyncStep):
 	
         name = controller_user.user.email[:controller_user.user.email.find('@')]
 
+        import pdb
+        pdb.set_trace()
 	roles = ['user']
         if controller_user.user.is_admin:
             roles.append('admin')
@@ -54,7 +56,7 @@ class SyncControllerUsers(OpenStackSyncStep):
             if ctrl_site_deployments:
                 # need the correct tenant id for site at the controller
                 tenant_id = ctrl_site_deployments[0].tenant_id  
-		tenant_name = ctrl_site_deployment[0].site_deployment.site.login_base
+		tenant_name = ctrl_site_deployments[0].site_deployment.site.login_base
 
                 user_fields = {'endpoint':controller_user.controller.auth_url,
 		       'name': controller_user.user.email,
@@ -62,12 +64,13 @@ class SyncControllerUsers(OpenStackSyncStep):
                        'password': hashlib.md5(controller_user.user.password).hexdigest()[:6],
                        'admin_user': controller_user.controller.admin_user,
 		       'admin_password': controller_user.controller.admin_password,
+	               'ansible_tag':'%s@%s'%(controller_user.user.email.replace('@','-at-'),controller_user.controller.name),
 		       'admin_tenant': 'admin',
 		       'roles':roles,
 		       'tenant':tenant_name}    
 	
 	        rendered = template.render(user_fields)
-	        res = run_template('sync_controller_users.yaml', user_fields)
+	        res = run_template('sync_controller_users.yaml', user_fields,path='controller_users')
 
 	        # results is an array in which each element corresponds to an 
 	        # "ok" string received per operation. If we get as many oks as
