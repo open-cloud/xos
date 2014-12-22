@@ -31,7 +31,7 @@ requires: wget
 
 %pre
 pip-python install django==1.7
-pip-python install djangorestframework
+pip-python install djangorestframework==2.4.4
 pip-python install markdown  # Markdown support for the browseable API.
 pip-python install pyyaml    # YAML content-type support.
 pip-python install django-filter  # Filtering support
