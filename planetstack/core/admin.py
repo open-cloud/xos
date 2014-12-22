@@ -944,7 +944,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         deployment_nodes = []
         for node in Node.objects.all():
-            deployment_nodes.append( (node.deployment.id, node.id, node.name) )
+            deployment_nodes.append( (node.site_deployment.id, node.id, node.name) )
 
         deployment_flavors = []
         for flavor in Flavor.objects.all():
