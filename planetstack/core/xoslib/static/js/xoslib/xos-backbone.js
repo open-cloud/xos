@@ -409,7 +409,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SLICE_API,
-                           relatedCollections: {"slivers": "slice", "sliceDeployments": "slice", "slicePrivileges": "slice", "networks": "owner"},
+                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
@@ -429,14 +429,6 @@ if (! window.XOSLIB_LOADED ) {
                                }
                                return errors;
                              },
-                           });
-
-        define_model(this, {urlRoot: SLICEDEPLOYMENT_API,
-                           foreignCollections: ["slices", "deployments"],
-                           modelName: "sliceDeployment",
-                           foreignFields: {"slice": "slices", "deployment": "deployments"},
-                           listFields: ["backend_status", "id", "slice", "deployment", "tenant_id"],
-                           detailFields: ["backend_status", "slice", "deployment", "tenant_id"],
                            });
 
         define_model(this, {urlRoot: SLICEPRIVILEGE_API,
@@ -470,7 +462,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: USER_API,
-                            relatedCollections: {"slicePrivileges": "user", "slices": "owner", "userDeployments": "user"},
+                            relatedCollections: {"slicePrivileges": "user", "slices": "owner"},
                             foreignCollections: ["sites"],
                             modelName: "user",
                             foreignFields: {"site": "sites"},
@@ -478,16 +470,8 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: ["backend_status", "username", "firstname", "lastname", "phone", "user_url", "site"],
                             });
 
-        define_model(this, {urlRoot: USERDEPLOYMENT_API,
-                            foreignCollections: ["users","deployments"],
-                            modelName: "userDeployment",
-                            foreignFields: {"deployment": "deployments", "user": "users"},
-                            listFields: ["backend_status", "id", "user", "deployment", "kuser_id"],
-                            detailFields: ["backend_status", "user", "deployment", "kuser_id"],
-                            });
-
         define_model(this, { urlRoot: DEPLOYMENT_API,
-                             relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork", "networkDeployments": "deployment", "userDeployments": "deployment"},
+                             relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork"},
                              m2mFields: {"flavors": "flavors", "sites": "sites", "images": "images"},
                              modelName: "deployment",
                              listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
@@ -502,13 +486,6 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: ["backend_status", "name", "disk_format", "admin_tenant"],
                             });
 
-        define_model(this, {urlRoot: IMAGEDEPLOYMENTS_API,
-                            modelName: "imageDeployment",
-                            foreignCollections: ["images", "deployments"],
-                            listFields: ["backend_status", "id", "image", "deployment", "glance_image_id"],
-                            detailFields: ["backend_status", "image", "deployment", "glance_image_id"],
-                            });
-
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
                             listFields: ["backend_status", "id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
@@ -516,7 +493,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
-                            relatedCollections: {"networkDeployments": "network", "networkSlivers": "network"},
+                            relatedCollections: {"networkSlivers": "network"},
                             foreignCollections: ["slices", "networkTemplates"],
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
@@ -529,13 +506,6 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"network": "networks", "sliver": "slivers"},
                             listFields: ["backend_status", "id", "network", "sliver", "ip", "port_id"],
                             detailFields: ["backend_status", "network", "sliver", "ip", "port_id"],
-                            });
-
-        define_model(this, {urlRoot: NETWORKDEPLOYMENT_API,
-                            modelName: "networkDeployment",
-                            foreignFields: {"network": "networks", "deployment": "deployments"},
-                            listFields: ["backend_status", "id", "network", "deployment", "net_id"],
-                            detailFields: ["backend_status", "network", "deployment", "net_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,
@@ -551,6 +521,44 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: ["backend_status", "name", "description", "flavor", "order", "default", "deployments"],
                             inputType: {"default": "checkbox", "deployments": "picker"},
                             });
+
+        /* DELETED in site-controller branch
+
+        define_model(this, {urlRoot: NETWORKDEPLOYMENT_API,
+                            modelName: "networkDeployment",
+                            foreignFields: {"network": "networks", "deployment": "deployments"},
+                            listFields: ["backend_status", "id", "network", "deployment", "net_id"],
+                            detailFields: ["backend_status", "network", "deployment", "net_id"],
+                            });
+
+        define_model(this, {urlRoot: SLICEDEPLOYMENT_API,
+                           foreignCollections: ["slices", "deployments"],
+                           modelName: "sliceDeployment",
+                           foreignFields: {"slice": "slices", "deployment": "deployments"},
+                           listFields: ["backend_status", "id", "slice", "deployment", "tenant_id"],
+                           detailFields: ["backend_status", "slice", "deployment", "tenant_id"],
+                           });
+
+        define_model(this, {urlRoot: USERDEPLOYMENT_API,
+                            foreignCollections: ["users","deployments"],
+                            modelName: "userDeployment",
+                            foreignFields: {"deployment": "deployments", "user": "users"},
+                            listFields: ["backend_status", "id", "user", "deployment", "kuser_id"],
+                            detailFields: ["backend_status", "user", "deployment", "kuser_id"],
+                            });
+
+        END stuff deleted in site-controller branch */
+
+        /* not deleted, but seems obsolete and should be replaced by ManyToMany
+
+        define_model(this, {urlRoot: IMAGEDEPLOYMENTS_API,
+                            modelName: "imageDeployment",
+                            foreignCollections: ["images", "deployments"],
+                            listFields: ["backend_status", "id", "image", "deployment", "glance_image_id"],
+                            detailFields: ["backend_status", "image", "deployment", "glance_image_id"],
+                            });
+
+        */
 
         // enhanced REST
         // XXX this really needs to somehow be combined with Slice, to avoid duplication
