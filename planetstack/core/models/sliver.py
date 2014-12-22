@@ -109,7 +109,7 @@ class Sliver(PlCoreBase):
         self.name = self.slice.slicename
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
-        self.controllerNetwork = self.node.controller
+        self.controllerNetwork = self.node.site_deployment.controller
 
 # XXX smbaker - disabled for now, was causing fault in tenant view create slice
 #        if not self.controllerNetwork.test_acl(slice=self.slice):
