@@ -10,6 +10,7 @@ class Image(PlCoreBase):
     disk_format = models.CharField(max_length=256)
     container_format = models.CharField(max_length=256)
     path = models.CharField(max_length=256, null=True, blank=True, help_text="Path to image on local disk")
+    deployments = models.ManyToManyField('Deployment', through='ImageDeployments', blank=True, help_text="Select which images should be instantiated on this deployment", related_name='images')
 
     def __unicode__(self):  return u'%s' % (self.name)
 
