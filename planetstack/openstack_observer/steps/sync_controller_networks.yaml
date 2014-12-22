@@ -3,28 +3,27 @@
   connection: local 
   tasks:
   - quantum_network:
-	auth_url: {{ endpoint }} 
-	username: {{ admin_user }}
-	tenant_name: {{ tenant_name }}
-	password: {{ admin_password }}
-	name: {{ name }}
-	{% if delete %}
-	state: absent
-	{% else %}
-	state: present
-	{% endif %}
-        
+        auth_url={{ endpoint }} 
+        login_username={{ admin_user }}
+        tenant_name={{ tenant_name }}
+        login_password={{ admin_password }}
+        name={{ name }}
+        {% if delete %}
+        state=absent
+        {% else %}
+        state=present
+        {% endif %}
         shared: true
   - quantum_subnet:
-	auth_url: {{ endpoint }} 
-	username: {{ admin_user }}
-	tenant_name: {{ tenant_name }}
-	password: {{ admin_password }}
-	name={{ subnet_name }} 
+        auth_url={{ endpoint }} 
+        login_username={{ admin_user }}
+        tenant_name={{ tenant_name }}
+        login_password={{ admin_password }}
+        name={{ subnet_name }} 
         network_name={{ name }} 
-	{% if delete %}
-	state: absent
-	{% else %}
-	state=present 
-	cidr = {{ cidr }}
-	{% endif %}
+        {% if delete %}
+        state=absent
+        {% else %}
+        state=present 
+        cidr = {{ cidr }}
+        {% endif %}
