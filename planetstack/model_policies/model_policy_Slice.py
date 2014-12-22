@@ -1,5 +1,7 @@
 
 def handle(slice):
+        import pdb
+        pdb.set_trace()
 	from core.models import Controller, ControllerSiteDeployments, ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
 	ctrl_site_deployments = ControllerSiteDeployments.objects.all()
@@ -14,7 +16,7 @@ def handle(slice):
 	
 	#expected_controllers = site_deploy_lookup[slice.site]
         all_controllers = Controller.objects.all() 
-	for expected_controller in controllers:
+	for expected_controller in all_controllers:
 		if slice not in slice_deploy_lookup or \
 		   expected_controller not in slice_deploy_lookup[slice]:
 			sd = ControllerSlices(slice=slice, controller=expected_controller)

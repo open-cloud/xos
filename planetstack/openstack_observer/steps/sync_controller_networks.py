@@ -9,6 +9,7 @@ from core.models.network import *
 from core.models.slice import *
 from core.models.sliver import Sliver
 from util.logger import Logger, logging
+from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
@@ -37,16 +38,19 @@ class SyncControllerNetworks(OpenStackSyncStep):
             network_name = controller_network.network.name
             subnet_name = '%s-%d'%(network_name,controller_network.pk)
 	    cidr = self.alloc_subnet(controller_network.pk)
+	    slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
+
 	    network_fields = {'endpoint':controller_network.controller.auth_url,
-			'admin_user':controller_network.network.slice.creator.email,
-			'tenant_name':controller_network.network.slice.slicename,
+			'admin_user':slice.creator.email, # XXX: FIXME
+			'tenant_name':slice.slicename, # XXX: FIXME
 			'admin_password':controller_network.controller.admin_password,
 			'name':network_name,
 			'subnet_name':subnet_name,
+			'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
 			'cidr':cidr
 			}
 
-	    res = run_template('sync_controller_networks.yaml', network_fields)
+	    res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks')
 
 	    if (len(res)!=2):
 		raise Exception('Could not sync network %s'%controller_network.network.name)
@@ -68,7 +72,6 @@ class SyncControllerNetworks(OpenStackSyncStep):
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)
             return
 
-        self.driver = self.driver.admin_driver(controller=controller_network.controller,tenant='admin')
         if controller_network.network.owner and controller_network.network.owner.creator:
             try:
                 # update manager context

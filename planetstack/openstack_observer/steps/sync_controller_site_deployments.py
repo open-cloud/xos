@@ -17,11 +17,12 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
 		         'admin_user': controller_site_deployment.controller.admin_user,
 		         'admin_password': controller_site_deployment.controller.admin_password,
 		         'admin_tenant': 'admin',
+	                 'ansible_tag': '%s@%s'%(controller_site_deployment.site_deployment.site.login_base,controller_site_deployment.site_deployment.deployment.name), # name of ansible playbook
 		         'tenant': controller_site_deployment.site_deployment.site.login_base,
 		         'tenant_description': controller_site_deployment.site_deployment.site.name}
 
 	rendered = template.render(tenant_fields)
-	res = run_template('sync_controller_site_deployments.yaml', tenant_fields)
+	res = run_template('sync_controller_site_deployments.yaml', tenant_fields, path='site_deployments')
 
 	if (len(res)==1):
 		controller_site_deployment.tenant_id = res[0]['id']
@@ -32,6 +33,27 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
 		raise Exception('Could not create or update user %s'%tenant_fields['tenant'])
             
     def delete_record(self, controller_site_deployment):
-        if controller_site_deployment.tenant_id:
+	if controller_site_deployment.tenant_id:
             driver = self.driver.admin_driver(controller=controller_site_deployment.controller)
             driver.delete_tenant(controller_site_deployment.tenant_id)
+
+	"""
+        Ansible does not support tenant deletion yet
+
+	import pdb
+	pdb.set_trace()
+        template = os_template_env.get_template('delete_controller_site_deployments.yaml')
+	tenant_fields = {'endpoint':controller_site_deployment.controller.auth_url,
+		         'admin_user': controller_site_deployment.controller.admin_user,
+		         'admin_password': controller_site_deployment.controller.admin_password,
+		         'admin_tenant': 'admin',
+	                 'ansible_tag': 'site_deployments/%s@%s'%(controller_site_deployment.site_deployment.site.login_base,controller_site_deployment.site_deployment.deployment.name), # name of ansible playbook
+		         'tenant': controller_site_deployment.site_deployment.site.login_base,
+		         'delete': True}
+
+	rendered = template.render(tenant_fields)
+	res = run_template('sync_controller_site_deployments.yaml', tenant_fields)
+
+	if (len(res)!=1):
+		raise Exception('Could not assign roles for user %s'%tenant_fields['tenant'])
+	"""

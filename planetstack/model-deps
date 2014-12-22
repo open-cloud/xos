@@ -96,7 +96,8 @@
     ], 
     "ControllerSlices": [
         "Controller", 
-        "Slice"
+        "Slice",
+        "ControllerUsers"
     ], 
     "SiteDeployments": [
         "Site", 
