@@ -38,8 +38,10 @@ def parse_novarc(filename):
     return opts
 
 class Client:
-    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, admin=True, *args, **kwds):
+    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, controller=None, admin=True, *args, **kwds):
        
+        deployment = controller
+
         self.has_openstack = has_openstack
         self.url = deployment.auth_url
         if admin:

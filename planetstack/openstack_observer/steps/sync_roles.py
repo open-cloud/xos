@@ -35,7 +35,7 @@ class SyncRoles(OpenStackSyncStep):
         if not role.enacted:
             controllers = Controller.objects.all()
        	    for controller in controllers:
-                driver = self.driver.admin_driver(controller=controller.name)
+                driver = self.driver.admin_driver(controller=controller)
                 driver.create_role(role.role)
             role.save()
     

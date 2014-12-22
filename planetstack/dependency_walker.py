@@ -55,7 +55,6 @@ def walk_inv_deps(fn, object):
 
 def __walk_deps(fn, object, deps):
 	model = object.__class__.__name__
-
 	for dep in deps:
 		#print "Checking dep %s"%dep
 		peer=None
@@ -74,8 +73,10 @@ def __walk_deps(fn, object, deps):
 		if (peer):
 			try:
 				peer_objects = peer.all()
-			except:
+			except AttributeError:
 				peer_objects = [peer]
+			except:
+				peer_objects = []
 
 			for o in peer_objects:
 				fn(o, object)
