@@ -8,6 +8,7 @@ from core.models.slice import Slice, SlicePrivilege, ControllerSlices
 from core.models.network import Network, NetworkSlice, ControllerNetworks
 from util.logger import Logger, logging
 from observer.ansible import *
+import pdb
 
 logger = Logger(level=logging.INFO)
 
@@ -24,7 +25,7 @@ class SyncSlivers(OpenStackSyncStep):
         return userdata
 
     def sync_record(self, sliver):
-        logger.info("sync'ing sliver:%s slice:%s controller:%s " % (sliver, sliver.slice.name, sliver.node.site_controller))
+        logger.info("sync'ing sliver:%s slice:%s controller:%s " % (sliver, sliver.slice.name, sliver.node.site_deployment.controller))
 
         metadata_update = {}
         if (sliver.numberCores):
@@ -46,7 +47,7 @@ class SyncSlivers(OpenStackSyncStep):
         nics = []
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]
         controller_networks = ControllerNetworks.objects.filter(network__in=networks,
-                                                                controller=sliver.node.site_controller.controller)
+                                                                controller=sliver.node.site_deployment.controller)
 
         for controller_network in controller_networks:
             if controller_network.network.template.visibility == 'private' and \
@@ -70,7 +71,7 @@ class SyncSlivers(OpenStackSyncStep):
                     nics.append(net['id'])
 
         # look up image id
-        controller_driver = self.driver.admin_driver(controller=sliver.controllerNetwork.name)
+        controller_driver = self.driver.admin_driver(controller=sliver.controllerNetwork)
         image_id = None
         images = controller_driver.shell.glanceclient.images.list()
         for image in images:
@@ -102,7 +103,8 @@ class SyncSlivers(OpenStackSyncStep):
         if sliver.userData:
             userData = sliver.userData
 
-        tenant_fields = {'endpoint':sliver.node.controller.auth_url,
+        controller = sliver.controllerNetwork
+        tenant_fields = {'endpoint':controller.auth_url,
                      'admin_user': sliver.creator.username,
                      'admin_password': sliver.creator.password,
                      'admin_tenant': sliver.slice.name,
