@@ -97,7 +97,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
 {% for object in generator.all %}
 
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     {% for ref in object.refs %}
     {% if ref.multi %}
     {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
@@ -119,12 +119,12 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 class {{ object.camel }}IdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     {% for ref in object.refs %}
     {% if ref.multi %}
-    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='{{ ref }}-detail')
+    {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  queryset = {{ ref.camel }}.objects.all())
     {% else %}
-    {{ ref }} = serializers.PrimaryKeyRelatedField() # read_only=True) #, view_name='{{ ref }}-detail')
+    {{ ref }} = serializers.PrimaryKeyRelatedField( queryset = {{ ref.camel }}.objects.all())
     {% endif %}
     {% endfor %}
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
