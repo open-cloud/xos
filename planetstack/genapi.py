@@ -313,7 +313,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
 
 
 class FlavorSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
@@ -333,10 +333,10 @@ class FlavorSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
 
 class FlavorIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    deployments = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='deployment-detail')
+    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -356,7 +356,7 @@ class FlavorIdSerializer(XOSModelSerializer):
 
 
 class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -372,7 +372,7 @@ class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','value','service',)
 
 class ServiceAttributeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -391,7 +391,7 @@ class ServiceAttributeIdSerializer(XOSModelSerializer):
 
 
 class ControllerImagesSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -407,7 +407,7 @@ class ControllerImagesSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','controller','glance_image_id',)
 
 class ControllerImagesIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -426,7 +426,7 @@ class ControllerImagesIdSerializer(XOSModelSerializer):
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
@@ -446,10 +446,10 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
 class ImageIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    deployments = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='deployment-detail')
+    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -469,7 +469,7 @@ class ImageIdSerializer(XOSModelSerializer):
 
 
 class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -485,7 +485,7 @@ class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
 
 class NetworkParameterIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -504,7 +504,7 @@ class NetworkParameterIdSerializer(XOSModelSerializer):
 
 
 class SiteSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
@@ -524,10 +524,10 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
 class SiteIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    deployments = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='deployment-detail')
+    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -547,7 +547,7 @@ class SiteIdSerializer(XOSModelSerializer):
 
 
 class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -563,7 +563,7 @@ class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class SliceRoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -582,7 +582,7 @@ class SliceRoleIdSerializer(XOSModelSerializer):
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -598,7 +598,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
 
 class TagIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -617,7 +617,7 @@ class TagIdSerializer(XOSModelSerializer):
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -633,7 +633,7 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','date','account',)
 
 class InvoiceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -652,7 +652,7 @@ class InvoiceIdSerializer(XOSModelSerializer):
 
 
 class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -668,7 +668,7 @@ class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','slice','role',)
 
 class SlicePrivilegeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -687,7 +687,7 @@ class SlicePrivilegeIdSerializer(XOSModelSerializer):
 
 
 class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -703,7 +703,7 @@ class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class PlanetStackRoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -722,7 +722,7 @@ class PlanetStackRoleIdSerializer(XOSModelSerializer):
 
 
 class ControllerPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -738,7 +738,7 @@ class ControllerPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','role',)
 
 class ControllerPrivilegeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -757,7 +757,7 @@ class ControllerPrivilegeIdSerializer(XOSModelSerializer):
 
 
 class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -773,7 +773,7 @@ class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
 
 class NetworkSliverIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -792,7 +792,7 @@ class NetworkSliverIdSerializer(XOSModelSerializer):
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -808,7 +808,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 class ProjectIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -827,7 +827,7 @@ class ProjectIdSerializer(XOSModelSerializer):
 
 
 class SliceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
@@ -851,14 +851,14 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    networks = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='network-detail')
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
     
     
     
-    networks = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='network-detail')
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -878,7 +878,7 @@ class SliceIdSerializer(XOSModelSerializer):
 
 
 class NetworkSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     slices = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='slice-detail')
@@ -914,26 +914,26 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
 class NetworkIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    slices = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='slice-detail')
-    
-    
-    
-    slices = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='slice-detail')
+    slices = serializers.PrimaryKeyRelatedField(many=True,  queryset = Slice.objects.all())
     
     
     
-    slivers = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='sliver-detail')
+    slices = serializers.PrimaryKeyRelatedField(many=True,  queryset = Slice.objects.all())
     
     
     
-    routers = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='router-detail')
+    slivers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Sliver.objects.all())
     
     
     
-    routers = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='router-detail')
+    routers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Router.objects.all())
+    
+    
+    
+    routers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Router.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -953,7 +953,7 @@ class NetworkIdSerializer(XOSModelSerializer):
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -969,7 +969,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 class ServiceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -988,7 +988,7 @@ class ServiceIdSerializer(XOSModelSerializer):
 
 
 class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1004,7 +1004,7 @@ class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 class ServiceClassIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1023,7 +1023,7 @@ class ServiceClassIdSerializer(XOSModelSerializer):
 
 
 class ControllerNetworksSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1039,7 +1039,7 @@ class ControllerNetworksSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
 class ControllerNetworksIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1058,7 +1058,7 @@ class ControllerNetworksIdSerializer(XOSModelSerializer):
 
 
 class ChargeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1074,7 +1074,7 @@ class ChargeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 class ChargeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1093,7 +1093,7 @@ class ChargeIdSerializer(XOSModelSerializer):
 
 
 class RoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1109,7 +1109,7 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
 
 class RoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1128,7 +1128,7 @@ class RoleIdSerializer(XOSModelSerializer):
 
 
 class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1144,7 +1144,7 @@ class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
 
 class UsableObjectIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1163,7 +1163,7 @@ class UsableObjectIdSerializer(XOSModelSerializer):
 
 
 class ControllerSiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1179,7 +1179,7 @@ class ControllerSiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_deployment','tenant_id',)
 
 class ControllerSiteDeploymentsIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1198,7 +1198,7 @@ class ControllerSiteDeploymentsIdSerializer(XOSModelSerializer):
 
 
 class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1214,7 +1214,7 @@ class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class SiteRoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1233,7 +1233,7 @@ class SiteRoleIdSerializer(XOSModelSerializer):
 
 
 class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1249,7 +1249,7 @@ class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
 
 class SliceCredentialIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1268,7 +1268,7 @@ class SliceCredentialIdSerializer(XOSModelSerializer):
 
 
 class SliverSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
@@ -1288,10 +1288,10 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','controllerNetwork','numberCores','flavor','userData','networks',)
 
 class SliverIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    networks = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='network-detail')
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1311,7 +1311,7 @@ class SliverIdSerializer(XOSModelSerializer):
 
 
 class NodeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1327,7 +1327,7 @@ class NodeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_deployment',)
 
 class NodeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1346,7 +1346,7 @@ class NodeIdSerializer(XOSModelSerializer):
 
 
 class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     controllers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='controller-detail')
@@ -1366,10 +1366,10 @@ class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','url','controllers',)
 
 class DashboardViewIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    controllers = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='controller-detail')
+    controllers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Controller.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1389,7 +1389,7 @@ class DashboardViewIdSerializer(XOSModelSerializer):
 
 
 class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1405,7 +1405,7 @@ class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','deployment',)
 
 class ImageDeploymentsIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1424,7 +1424,7 @@ class ImageDeploymentsIdSerializer(XOSModelSerializer):
 
 
 class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1440,7 +1440,7 @@ class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 class ReservedResourceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1459,7 +1459,7 @@ class ReservedResourceIdSerializer(XOSModelSerializer):
 
 
 class PaymentSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1475,7 +1475,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','amount','date',)
 
 class PaymentIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1494,7 +1494,7 @@ class PaymentIdSerializer(XOSModelSerializer):
 
 
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1510,7 +1510,7 @@ class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','slice',)
 
 class NetworkSliceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1529,7 +1529,7 @@ class NetworkSliceIdSerializer(XOSModelSerializer):
 
 
 class UserDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1545,7 +1545,7 @@ class UserDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
 
 class UserDashboardViewIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1564,7 +1564,7 @@ class UserDashboardViewIdSerializer(XOSModelSerializer):
 
 
 class ControllerSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     dashboardviews = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='dashboardview-detail')
@@ -1584,10 +1584,10 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','version','backend_type','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
 
 class ControllerIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    dashboardviews = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='dashboardview-detail')
+    dashboardviews = serializers.PrimaryKeyRelatedField(many=True,  queryset = DashboardView.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1607,7 +1607,7 @@ class ControllerIdSerializer(XOSModelSerializer):
 
 
 class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1623,7 +1623,7 @@ class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
 
 class PlanetStackPrivilegeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1642,7 +1642,7 @@ class PlanetStackPrivilegeIdSerializer(XOSModelSerializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1658,7 +1658,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
 
 class UserIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1677,7 +1677,7 @@ class UserIdSerializer(XOSModelSerializer):
 
 
 class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
@@ -1705,18 +1705,18 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
 
 class DeploymentIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    flavors = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='flavor-detail')
-    
-    
-    
-    images = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='image-detail')
+    flavors = serializers.PrimaryKeyRelatedField(many=True,  queryset = Flavor.objects.all())
     
     
     
-    sites = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='site-detail')
+    images = serializers.PrimaryKeyRelatedField(many=True,  queryset = Image.objects.all())
+    
+    
+    
+    sites = serializers.PrimaryKeyRelatedField(many=True,  queryset = Site.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1736,7 +1736,7 @@ class DeploymentIdSerializer(XOSModelSerializer):
 
 
 class ReservationSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1752,7 +1752,7 @@ class ReservationSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
 
 class ReservationIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1771,7 +1771,7 @@ class ReservationIdSerializer(XOSModelSerializer):
 
 
 class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1787,7 +1787,7 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','site','role',)
 
 class SitePrivilegeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1806,7 +1806,7 @@ class SitePrivilegeIdSerializer(XOSModelSerializer):
 
 
 class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1822,7 +1822,7 @@ class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
 
 class PlanetStackIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1841,7 +1841,7 @@ class PlanetStackIdSerializer(XOSModelSerializer):
 
 
 class ControllerDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1857,7 +1857,7 @@ class ControllerDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
 
 class ControllerDashboardViewIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1876,7 +1876,7 @@ class ControllerDashboardViewIdSerializer(XOSModelSerializer):
 
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1892,7 +1892,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site',)
 
 class AccountIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1911,7 +1911,7 @@ class AccountIdSerializer(XOSModelSerializer):
 
 
 class ControllerRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1927,7 +1927,7 @@ class ControllerRoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class ControllerRoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1946,7 +1946,7 @@ class ControllerRoleIdSerializer(XOSModelSerializer):
 
 
 class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1962,7 +1962,7 @@ class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description',)
 
 class NetworkParameterTypeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1981,7 +1981,7 @@ class NetworkParameterTypeIdSerializer(XOSModelSerializer):
 
 
 class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -1997,7 +1997,7 @@ class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
 
 class SiteCredentialIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2016,7 +2016,7 @@ class SiteCredentialIdSerializer(XOSModelSerializer):
 
 
 class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2032,7 +2032,7 @@ class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
 
 class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2051,7 +2051,7 @@ class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
 
 
 class ControllerUsersSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2067,7 +2067,7 @@ class ControllerUsersSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
 
 class ControllerUsersIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2086,7 +2086,7 @@ class ControllerUsersIdSerializer(XOSModelSerializer):
 
 
 class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2102,7 +2102,7 @@ class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
 
 class DeploymentRoleIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2121,7 +2121,7 @@ class DeploymentRoleIdSerializer(XOSModelSerializer):
 
 
 class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2137,7 +2137,7 @@ class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
 
 class UserCredentialIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2156,7 +2156,7 @@ class UserCredentialIdSerializer(XOSModelSerializer):
 
 
 class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2172,7 +2172,7 @@ class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 class SiteDeploymentsIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2191,7 +2191,7 @@ class SiteDeploymentsIdSerializer(XOSModelSerializer):
 
 
 class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2207,7 +2207,7 @@ class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','value',)
 
 class SliceTagIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2226,7 +2226,7 @@ class SliceTagIdSerializer(XOSModelSerializer):
 
 
 class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2242,7 +2242,7 @@ class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
 class NetworkTemplateIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2261,7 +2261,7 @@ class NetworkTemplateIdSerializer(XOSModelSerializer):
 
 
 class RouterSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
     networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
@@ -2285,14 +2285,14 @@ class RouterSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','owner','networks','networks',)
 
 class RouterIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     
-    networks = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='network-detail')
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
     
     
     
-    networks = serializers.PrimaryKeyRelatedField(many=True) #, read_only=True) #, view_name='network-detail')
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2312,7 +2312,7 @@ class RouterIdSerializer(XOSModelSerializer):
 
 
 class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2328,7 +2328,7 @@ class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 class ServiceResourceIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2347,7 +2347,7 @@ class ServiceResourceIdSerializer(XOSModelSerializer):
 
 
 class ControllerSlicesSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
@@ -2363,7 +2363,7 @@ class ControllerSlicesSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
 class ControllerSlicesIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
+    id = serializers.ReadOnlyField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
