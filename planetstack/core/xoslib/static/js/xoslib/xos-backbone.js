@@ -6,6 +6,7 @@ if (! window.XOSLIB_LOADED ) {
     SLICEROLE_API = "/plstackapi/slice_roles/";
     NODE_API = "/plstackapi/nodes/";
     SITE_API = "/plstackapi/sites/";
+    SITEDEPLOYMENT_API = "/plstackapi/sitedeployments/";
     USER_API = "/plstackapi/users/";
     USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
     DEPLOYMENT_API = "/plstackapi/deployments/";
@@ -490,10 +491,19 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SITE_API,
-                            relatedCollections: {"users": "site", "slices": "site", "nodes": "site"},
+                            relatedCollections: {"users": "site", "slices": "site", "nodes": "site", "siteDeployments": "site"},
                             modelName: "site",
                             listFields: ["backend_status", "id", "name", "site_url", "enabled", "login_base", "is_public", "abbreviated_name"],
                             detailFields: ["backend_status", "name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
+                            inputType: {"enabled": "checkbox", "is_public": "checkbox"},
+                            });
+
+        define_model(this, {urlRoot: SITEDEPLOYMENT_API,
+                            foreignCollections: ["sites", "deployments", "controllers"],
+                            foreignFields: {"site": "sites", "deployment": "deployments", "controller": "controllers"},
+                            modelName: "siteDeployment",
+                            listFields: ["backend_status", "id", "site", "deployment", "controller", "availability_zone"],
+                            detailFields: ["backend_status", "site", "deployment", "controller", "availability_zone"],
                             inputType: {"enabled": "checkbox", "is_public": "checkbox"},
                             });
 
