@@ -954,7 +954,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
         deployment_images = []
         for image in Image.objects.all():
             for deployment_image in image.imagedeployments.all():
-                deployment_images.append( (deployment_image.controller.id, image.id, image.name) )
+                deployment_images.append( (deployment_image.deployment.id, image.id, image.name) )
 
         site_login_bases = []
         for site in Site.objects.all():
@@ -1260,8 +1260,8 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
-class ControllerDashboardInline(PlStackTabularInline):
-    model = ControllerDashboard
+class ControllerDashboardViewInline(PlStackTabularInline):
+    model = ControllerDashboardView
     extra = 0
     fields = ["controller", "url"]
     suit_classes = 'suit-tab suit-tab-controllers'
@@ -1272,7 +1272,7 @@ class DashboardViewAdmin(PlanetStackBaseAdmin):
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
-    inlines = [ControllerDashboardInline]
+    inlines = [ControllerDashboardViewInline]
 
     suit_form_tabs =(('general','Dashboard View Details'),
                      ('controllers', 'Per-controller Dashboard Details'))

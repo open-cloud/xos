@@ -121,9 +121,6 @@ def get_REST_patterns():
         url(r'plstackapi/payments/$', PaymentList.as_view(), name='payment-list'),
         url(r'plstackapi/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
     
-        url(r'plstackapi/networktemplates/$', NetworkTemplateList.as_view(), name='networktemplate-list'),
-        url(r'plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkTemplateDetail.as_view(), name ='networktemplate-detail'),
-    
         url(r'plstackapi/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
         url(r'plstackapi/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
     
@@ -150,6 +147,9 @@ def get_REST_patterns():
     
         url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
         url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+    
+        url(r'plstackapi/controllerdashboardviews/$', ControllerDashboardViewList.as_view(), name='controllerdashboardview-list'),
+        url(r'plstackapi/controllerdashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerDashboardViewDetail.as_view(), name ='controllerdashboardview-detail'),
     
         url(r'plstackapi/accounts/$', AccountList.as_view(), name='account-list'),
         url(r'plstackapi/accounts/(?P<pk>[a-zA-Z0-9\-]+)/$', AccountDetail.as_view(), name ='account-detail'),
@@ -181,8 +181,8 @@ def get_REST_patterns():
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
     
-        url(r'plstackapi/controllerdashboards/$', ControllerDashboardList.as_view(), name='controllerdashboard-list'),
-        url(r'plstackapi/controllerdashboards/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerDashboardDetail.as_view(), name ='controllerdashboard-detail'),
+        url(r'plstackapi/networktemplates/$', NetworkTemplateList.as_view(), name='networktemplate-list'),
+        url(r'plstackapi/networktemplates/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkTemplateDetail.as_view(), name ='networktemplate-detail'),
     
         url(r'plstackapi/routers/$', RouterList.as_view(), name='router-list'),
         url(r'plstackapi/routers/(?P<pk>[a-zA-Z0-9\-]+)/$', RouterDetail.as_view(), name ='router-detail'),
@@ -229,7 +229,6 @@ def api_root(request, format=None):
         'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
         'reservedresources': reverse('reservedresource-list', request=request, format=format),
         'payments': reverse('payment-list', request=request, format=format),
-        'networktemplates': reverse('networktemplate-list', request=request, format=format),
         'networkslices': reverse('networkslice-list', request=request, format=format),
         'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
         'controllers': reverse('controller-list', request=request, format=format),
@@ -239,6 +238,7 @@ def api_root(request, format=None):
         'reservations': reverse('reservation-list', request=request, format=format),
         'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
         'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'controllerdashboardviews': reverse('controllerdashboardview-list', request=request, format=format),
         'accounts': reverse('account-list', request=request, format=format),
         'controllerroles': reverse('controllerrole-list', request=request, format=format),
         'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
@@ -249,7 +249,7 @@ def api_root(request, format=None):
         'usercredentials': reverse('usercredential-list', request=request, format=format),
         'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
         'slicetags': reverse('slicetag-list', request=request, format=format),
-        'controllerdashboards': reverse('controllerdashboard-list', request=request, format=format),
+        'networktemplates': reverse('networktemplate-list', request=request, format=format),
         'routers': reverse('router-list', request=request, format=format),
         'serviceresources': reverse('serviceresource-list', request=request, format=format),
         'controllersliceses': reverse('controllerslices-list', request=request, format=format),
@@ -1493,41 +1493,6 @@ class PaymentIdSerializer(XOSModelSerializer):
 
 
 
-class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.Field()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
-
-class NetworkTemplateIdSerializer(XOSModelSerializer):
-    id = serializers.Field()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
-
-
-
-
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
@@ -1871,6 +1836,41 @@ class PlanetStackIdSerializer(XOSModelSerializer):
     class Meta:
         model = PlanetStack
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
+
+
+
+
+class ControllerDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerDashboardView
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+
+class ControllerDashboardViewIdSerializer(XOSModelSerializer):
+    id = serializers.Field()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerDashboardView
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
 
 
 
@@ -2225,7 +2225,7 @@ class SliceTagIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerDashboardSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.Field()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2238,10 +2238,10 @@ class ControllerDashboardSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerDashboard
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+        model = NetworkTemplate
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
-class ControllerDashboardIdSerializer(XOSModelSerializer):
+class NetworkTemplateIdSerializer(XOSModelSerializer):
     id = serializers.Field()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2254,8 +2254,8 @@ class ControllerDashboardIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerDashboard
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+        model = NetworkTemplate
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
 
 
@@ -2445,8 +2445,6 @@ serializerLookUp = {
 
                  Payment: PaymentSerializer,
 
-                 NetworkTemplate: NetworkTemplateSerializer,
-
                  NetworkSlice: NetworkSliceSerializer,
 
                  UserDashboardView: UserDashboardViewSerializer,
@@ -2464,6 +2462,8 @@ serializerLookUp = {
                  SitePrivilege: SitePrivilegeSerializer,
 
                  PlanetStack: PlanetStackSerializer,
+
+                 ControllerDashboardView: ControllerDashboardViewSerializer,
 
                  Account: AccountSerializer,
 
@@ -2485,7 +2485,7 @@ serializerLookUp = {
 
                  SliceTag: SliceTagSerializer,
 
-                 ControllerDashboard: ControllerDashboardSerializer,
+                 NetworkTemplate: NetworkTemplateSerializer,
 
                  Router: RouterSerializer,
 
@@ -4377,65 +4377,6 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkTemplateList(generics.ListCreateAPIView):
-    queryset = NetworkTemplate.objects.select_related().all()
-    serializer_class = NetworkTemplateSerializer
-    id_serializer_class = NetworkTemplateIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return NetworkTemplate.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkTemplateList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkTemplateList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = NetworkTemplate.objects.select_related().all()
-    serializer_class = NetworkTemplateSerializer
-    id_serializer_class = NetworkTemplateIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return NetworkTemplate.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-
-
 class NetworkSliceList(generics.ListCreateAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
@@ -4960,6 +4901,65 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return PlanetStack.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ControllerDashboardViewList(generics.ListCreateAPIView):
+    queryset = ControllerDashboardView.objects.select_related().all()
+    serializer_class = ControllerDashboardViewSerializer
+    id_serializer_class = ControllerDashboardViewIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ControllerDashboardView.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ControllerDashboardViewList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ControllerDashboardViewList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerDashboardView.objects.select_related().all()
+    serializer_class = ControllerDashboardViewSerializer
+    id_serializer_class = ControllerDashboardViewIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ControllerDashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5557,12 +5557,12 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerDashboardList(generics.ListCreateAPIView):
-    queryset = ControllerDashboard.objects.select_related().all()
-    serializer_class = ControllerDashboardSerializer
-    id_serializer_class = ControllerDashboardIdSerializer
+class NetworkTemplateList(generics.ListCreateAPIView):
+    queryset = NetworkTemplate.objects.select_related().all()
+    serializer_class = NetworkTemplateSerializer
+    id_serializer_class = NetworkTemplateIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5572,7 +5572,7 @@ class ControllerDashboardList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerDashboard.select_by_user(self.request.user)
+        return NetworkTemplate.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -5584,21 +5584,21 @@ class ControllerDashboardList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerDashboardList, self).create(request, *args, **kwargs)
+            return super(NetworkTemplateList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerDashboardList, self).create(request, *args, **kwargs)
+        ret = super(NetworkTemplateList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerDashboardDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerDashboard.objects.select_related().all()
-    serializer_class = ControllerDashboardSerializer
-    id_serializer_class = ControllerDashboardIdSerializer
+class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = NetworkTemplate.objects.select_related().all()
+    serializer_class = NetworkTemplateSerializer
+    id_serializer_class = NetworkTemplateIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5608,7 +5608,7 @@ class ControllerDashboardDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerDashboard.select_by_user(self.request.user)
+        return NetworkTemplate.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 

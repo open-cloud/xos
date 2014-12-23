@@ -6,7 +6,7 @@ from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
 from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerPrivilege, SiteDeployments, ControllerSiteDeployments
-from .dashboard import DashboardView, ControllerDashboard
+from .dashboard import DashboardView, ControllerDashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
 from .site import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
