@@ -18,6 +18,7 @@ if (! window.XOSLIB_LOADED ) {
     SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
     NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
     FLAVOR_API = "/plstackapi/flavors/";
+    CONTROLLER_API = "/plstackapi/controllers/";
 
     /* changed as a side effect of the big rename
     SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
@@ -397,6 +398,41 @@ if (! window.XOSLIB_LOADED ) {
             }
         };
 
+        /* defining the models
+
+           modelName          - name of the model.
+
+           relatedCollections - collections which should be drawn as an inline
+                                list when the detail view is displayed.
+                                Format: <collection>:<collectionFieldName> where
+                                <collectionFieldName> is the name of the field
+                                in the collection that points back to the
+                                collection in the detail view.
+
+           foreignCollections - collections which are used in idToName() calls
+                                when presenting the data to the user. Used to
+                                create a listento event. Somewhat
+                                redundant with foreignFields.
+
+           foreignFields -      <localFieldName>:<collection>. Used to
+                                automatically map ids into humanReadableNames
+                                when presenting data to the user.
+
+           m2mfields -          <localFieldName>:<colleciton>. Used to
+                                populate choices in picker lists. Simalar to
+                                foreignFields.
+
+           listFields -         fields to display in lists
+
+           detailFields -       fields to display in detail views
+
+           addFields -          fields to display in popup add windows
+
+           inputType -          by default, "detailFields" will be displayed
+                                as text input controls. This will let you display
+                                a checkbox or a picker instead.
+        */
+
         define_model(this, {urlRoot: SLIVER_API,
                             relatedCollections: {"networkSlivers": "sliver"},
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users", "flavors"],
@@ -522,6 +558,12 @@ if (! window.XOSLIB_LOADED ) {
                             inputType: {"default": "checkbox", "deployments": "picker"},
                             });
 
+        define_model(this, {urlRoot: CONTROLLER_API,
+                            modelName: "controller",
+                            listFields: ["backend_status", "id", "name", "version", "backend_type"],
+                            detailFields: ["backend_status", "id", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
+                            });
+
         /* DELETED in site-controller branch
 
         define_model(this, {urlRoot: NETWORKDEPLOYMENT_API,
@@ -549,7 +591,7 @@ if (! window.XOSLIB_LOADED ) {
 
         END stuff deleted in site-controller branch */
 
-        /* not deleted, but seems obsolete and should be replaced by ManyToMany
+        /* not deleted, but obsolete since it has degenerated to a ManyToMany with no other fields
 
         define_model(this, {urlRoot: IMAGEDEPLOYMENTS_API,
                             modelName: "imageDeployment",

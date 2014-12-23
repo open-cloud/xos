@@ -1,4 +1,4 @@
-OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver', 'user', 'sliceRole',  'flavor', ];
+OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver', 'user', 'sliceRole',  'flavor', 'controller'];
 // 'networkDeployment', 'userDeployment', 'sliceDeployment', 'imageDeployment'
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
