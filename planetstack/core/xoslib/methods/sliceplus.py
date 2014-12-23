@@ -9,7 +9,7 @@ from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin
 
 class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-        id = serializers.Field()
+        id = serializers.ReadOnlyField()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
