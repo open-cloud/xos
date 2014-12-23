@@ -84,11 +84,11 @@ class DashboardDynamicView(TemplateView):
             body = body + '<div id="dashtab-%d">\n' % i
             if (view.controllers.all().count()>0):
                 body = body + '<select id="dashselect-%d">' % i;
-                for j,controllerdashboard in enumerate(view.controllerdashboards.all()):
+                for j,controllerdashboard in enumerate(view.controllerdashboardviews.all()):
                     body = body + '<option value="%d">%s</option>' % (j, controllerdashboard.controller.name)
                 body = body + '</select>'
 
-                for j,controllerdashboard in enumerate(view.controllerdashboards.all()):
+                for j,controllerdashboard in enumerate(view.controllerdashboardviews.all()):
                     body = body + '<div id="dashcontent-%d-%d" class="dashcontent-%d">\n' % (i,j,i)
                     body = body + self.embedDashboard(controllerdashboard.url);
                     body = body + '</div>\n';
