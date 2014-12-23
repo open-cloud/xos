@@ -8,8 +8,15 @@ from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin
 
+if hasattr(serializers, "ReadOnlyField"):
+    # rest_framework 3.x
+    IdField = serializers.ReadOnlyField
+else:
+    # rest_framework 2.x
+    IdField = serializers.Field
+
 class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-        id = serializers.ReadOnlyField()
+        id = IdField()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
