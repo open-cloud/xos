@@ -14,8 +14,8 @@ class DashboardView(PlCoreBase):
 class ControllerDashboardView(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
-    controller = models.ForeignKey(Controller, related_name='controllerdashboardViews')
-    dashboardView = models.ForeignKey(DashboardView, related_name='controllerdashboardViews')
+    controller = models.ForeignKey(Controller, related_name='controllerdashboardviews')
+    dashboardView = models.ForeignKey(DashboardView, related_name='controllerdashboardviews')
 
     url = models.CharField(max_length=1024, help_text="URL of Dashboard")
 
