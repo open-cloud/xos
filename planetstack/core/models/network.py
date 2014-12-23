@@ -78,6 +78,21 @@ class NetworkTemplate(PlCoreBase):
     topologyKind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
     controllerKind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
 
+    def __init__(self, *args, **kwargs):
+        super(NetworkTemplate, self).__init__(*args, **kwargs)
+
+        # somehow these got set wrong inside of the live database. Remove this
+        # code after all is well...
+        if (self.topologyKind=="BigSwitch"):
+            print "XXX warning: topologyKind invalid case"
+            self.topologyKind="bigswitch"
+        elif (self.topologyKind=="Physical"):
+            print "XXX warning: topologyKind invalid case"
+            self.topologyKind="physical"
+        elif (self.topologyKind=="Custom"):
+            print "XXX warning: topologyKind invalid case"
+            self.toplogyKind="custom"
+
     def __unicode__(self):  return u'%s' % (self.name)
 
 class Network(PlCoreBase):
