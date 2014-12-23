@@ -10,6 +10,13 @@ from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
 
+if hasattr(serializers, "ReadOnlyField"):
+    # rest_framework 3.x
+    IdField = serializers.ReadOnlyField
+else:
+    # rest_framework 2.x
+    IdField = serializers.Field
+
 """
     Schema of the generator object:
         all: Set of all Model objects
@@ -97,7 +104,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
 {% for object in generator.all %}
 
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
+    id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
     {{ ref.plural }} = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='{{ ref }}-detail')
@@ -119,7 +126,7 @@ class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
         fields = ('humanReadableName', 'validators', {% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
 class {{ object.camel }}IdSerializer(XOSModelSerializer):
-    id = serializers.ReadOnlyField()
+    id = IdField()
     {% for ref in object.refs %}
     {% if ref.multi %}
     {{ ref.plural }} = serializers.PrimaryKeyRelatedField(many=True,  queryset = {{ ref.camel }}.objects.all())
