@@ -84,7 +84,9 @@
 </script>
 
 <script type="text/template" id="xos-backend-status-icon-template">
-    <% if ((enacted) && (enacted >= updated)) { %>
+    <% if (model.enacted === undefined) { %>
+        <!-- enacted is undefined; this must be a new object -->
+    <% } else if ((enacted) && (enacted >= updated)) { %>
         <span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>
     <% } else { %>
         <% if ((backend_status == "Provisioning in progress") || (!backend_status)) { %>
@@ -97,7 +99,9 @@
 
 <script type="text/template" id="xos-backend-status-text-template">
     <%= xosBackendStatusIconTemplate.apply(this,arguments) %>
-    <% if ((enacted) && (enacted >= updated)) { %>
+    <% if (model.enacted === undefined) { %>
+        <!-- enacted is undefined; this must be a new object -->
+    <% } else if ((enacted) && (enacted >= updated)) { %>
         Successfully enacted
     <% } else { %>
         <%= _.escape(backend_status) %>
