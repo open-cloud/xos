@@ -20,6 +20,7 @@ if (! window.XOSLIB_LOADED ) {
     NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
     FLAVOR_API = "/plstackapi/flavors/";
     CONTROLLER_API = "/plstackapi/controllers/";
+    CONTROLLERSITEDEPLOYMENT_API = "/plstackapi/controllersitedeploymentses";
 
     /* changed as a side effect of the big rename
     SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
@@ -571,7 +572,15 @@ if (! window.XOSLIB_LOADED ) {
         define_model(this, {urlRoot: CONTROLLER_API,
                             modelName: "controller",
                             listFields: ["backend_status", "id", "name", "version", "backend_type"],
-                            detailFields: ["backend_status", "id", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
+                            detailFields: ["backend_status", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
+                            });
+
+        define_model(this, {urlRoot: CONTROLLERSITEDEPLOYMENT_API,
+                            modelName: "controllerSiteDeployment",
+                            foreignCollections: ["site_deployments", "controllers"],
+                            foreignFields: {"site_deployment": "siteDeployments", "controller": "controllers"},
+                            listFields: ["backend_status", "id", "site_deployment", "controller", "tenant_id"],
+                            detailFields: ["backend_status", "site_deployment", "controller", "tenant_id"],
                             });
 
         /* DELETED in site-controller branch
