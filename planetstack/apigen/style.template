@@ -1,0 +1,47 @@
+def is_camel_case(name):
+    for (i,char) in enumerate(name):
+        if (i>=1) and (name[i-1].islower()) and (char.isupper()):
+            return True
+    return False
+
+def is_missing_underscore(fieldName):
+   if (fieldName == "kuser_id"):
+       # this one is okay
+       return False
+
+   {% for model in generator.all %}
+       pos = fieldName.find("{{ model }}")
+       if (pos > 0) and (fieldName[pos-1] != "_"):
+           return True
+   {% endfor %}
+
+       return False
+
+def stylecheck_model_name(name):
+   if name.endswith("s"):
+       print "model '%s' name ends with 's'" % name
+
+def stylecheck_field_name(modelName, fieldName):
+   if is_camel_case(fieldName):
+       print "field '%s.%s' has camelcase" % (modelName, fieldName)
+   if is_missing_underscore(fieldName):
+       print "field '%s.%s' is missing underscore" % (modelName, fieldName)
+
+def stylecheck_field_plural(modelName, fieldName):
+   if is_camel_case(fieldName):
+       print "m2m field '%s.%s' has camelcase" % (modelName, fieldName)
+   if is_missing_underscore(fieldName):
+       print "m2m field '%s.%s' is missing underscore" % (modelName, fieldName)
+
+def main():
+{% for obj in generator.all %}
+   stylecheck_model_name("{{ obj.camel }}");
+{% for ref in obj.refs %}
+   stylecheck_field_plural("{{ obj.camel }}", "{{ ref.plural }}");
+{% endfor %}
+{% for prop in obj.props %}
+   stylecheck_field_name("{{ obj.camel }}", "{{ prop }}");
+{% endfor %}
+{% endfor %}
+
+main()
