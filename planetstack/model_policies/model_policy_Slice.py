@@ -1,7 +1,5 @@
 
 def handle(slice):
-        import pdb
-        pdb.set_trace()
 	from core.models import Controller, ControllerSiteDeployments, ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
 	ctrl_site_deployments = ControllerSiteDeployments.objects.all()
