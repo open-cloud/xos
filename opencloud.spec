@@ -53,6 +53,7 @@ pip-python install python-keystoneclient
 pip-python install python-novaclient
 pip-python install python-neutronclient 
 pip-python install python-glanceclient
+pip-python install python-ceilometerclient
 
 
 easy_install django_evolution
