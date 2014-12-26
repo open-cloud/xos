@@ -5,8 +5,6 @@ try:
     import glanceclient
     from novaclient.v1_1 import client as nova_client
     from neutronclient.v2_0 import client as quantum_client
-    from nova.db.sqlalchemy import api as nova_db_api 
-    from nova.context import get_admin_context
     has_openstack = True
 except:
     has_openstack = False
@@ -40,14 +38,12 @@ def parse_novarc(filename):
 class Client:
     def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, controller=None, admin=True, *args, **kwds):
        
-        deployment = controller
-
         self.has_openstack = has_openstack
-        self.url = deployment.auth_url
+        self.url = controller.auth_url
         if admin:
-            self.username = deployment.admin_user
-            self.password = deployment.admin_password
-            self.tenant = deployment.admin_tenant
+            self.username = controller.admin_user
+            self.password = controller.admin_password
+            self.tenant = controller.admin_tenant
         else:
             self.username = None
             self.password = None
