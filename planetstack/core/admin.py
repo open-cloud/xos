@@ -340,7 +340,7 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'controllerNetwork', 'flavor', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -349,10 +349,10 @@ class SliverInline(PlStackTabularInline):
         return Sliver.select_by_user(request.user)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        if db_field.name == 'controllerNetwork':
+        if db_field.name == 'deployment':
            kwargs['queryset'] = Deployment.select_by_acl(request.user)
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
-        elif db_field.name == 'flavor':
+        if db_field.name == 'flavor':
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
 
         field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -1075,7 +1075,7 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
             'slice': LinkedSelect,
-            'controllerNetwork': LinkedSelect,
+            'deployment': LinkedSelect,
             'node': LinkedSelect,
             'image': LinkedSelect
         }
@@ -1089,10 +1089,10 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'controllerNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'controllerNetwork']
+    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),
@@ -1101,7 +1101,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
 
     inlines = [TagInline]
 
-    user_readonly_fields = ['slice', 'controllerNetwork', 'node', 'ip', 'instance_name', 'flavor', 'image']
+    user_readonly_fields = ['slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
