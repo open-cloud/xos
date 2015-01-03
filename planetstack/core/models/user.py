@@ -1,6 +1,7 @@
 import os
 import datetime
 import sys
+import hashlib
 from collections import defaultdict
 from django.forms.models import model_to_dict
 from django.db import models
@@ -112,6 +113,10 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
     # ---- end copy stuff from DiffModelMixin ----
+
+    @property
+    def remote_password(self):
+        return hashlib.md5(self.password).hexdigest()[:12]
 
     class Meta:
         app_label = "core"
