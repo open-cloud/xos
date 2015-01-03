@@ -918,7 +918,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
 class NetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -954,7 +954,7 @@ class NetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
 
 
@@ -3445,7 +3445,7 @@ class NetworkList(generics.ListCreateAPIView):
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteedBandwidth','permitAllSlices','topologyParameters','controllerUrl','controllerParameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
