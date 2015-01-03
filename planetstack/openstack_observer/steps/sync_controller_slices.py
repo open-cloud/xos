@@ -9,7 +9,6 @@ from core.models.slice import Slice, ControllerSlices
 from core.models.controllerusers import ControllerUsers
 from util.logger import Logger, logging
 from observer.ansible import *
-import pdb
 
 logger = Logger(level=logging.INFO)
 
@@ -38,7 +37,6 @@ class SyncControllerSlices(OpenStackSyncStep):
             controller_user = controller_users[0]
             roles = ['admin']
 
-        pdb.set_trace()
         max_instances=int(controller_slice.slice.max_slivers)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,
                          'admin_user': controller_slice.controller.admin_user,

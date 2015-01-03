@@ -8,7 +8,6 @@ from core.models.slice import Slice, SlicePrivilege, ControllerSlices
 from core.models.network import Network, NetworkSlice, ControllerNetworks
 from util.logger import Logger, logging
 from observer.ansible import *
-import pdb
 
 logger = Logger(level=logging.INFO)
 
