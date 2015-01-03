@@ -414,12 +414,6 @@ class ControllerPrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return ControllerPrivilege.select_by_user(request.user)
 
-class ControllerSiteDeploymentsInline(PlStackTabularInline):
-    model = ControllerSiteDeployments
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['controller', 'site_deployment', 'tenant_id']
-
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
@@ -716,8 +710,9 @@ class ControllerAdminForm(forms.ModelForm):
             # save_m2m() doesn't seem to work with 'through' relations. So we
             #    create/destroy the through models ourselves. There has to be
             #    a better way...
-            self.manipulate_m2m_objs(controller, self.cleaned_data['site_deployments'], controller.controllersitedeployments.all(), ControllerSiteDeployments, "controller", "site_deployment")
-
+            #self.manipulate_m2m_objs(controller, self.cleaned_data['site_deployments'], controller.controllersitedeployments.all(), ControllerSiteDeployments, "controller", "site_deployment")
+            pass
+    	
         self.save_m2m()
 
         return controller 
@@ -726,7 +721,7 @@ class ControllerAdmin(PlanetStackBaseAdmin):
     model = Controller 
     fieldList = ['name', 'version', 'backend_type', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
     #fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
-    inlines = [ControllerSiteDeploymentsInline] # ,ControllerImagesInline]
+    inlines = [] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text',)
