@@ -16,7 +16,7 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
 	tenant_fields = {'endpoint':controller_site_deployment.controller.auth_url,
 		         'admin_user': controller_site_deployment.controller.admin_user,
 		         'admin_password': controller_site_deployment.controller.admin_password,
-		         'admin_tenant': 'admin',
+		         'admin_tenant': controller_site_deployment.controller.admin_tenant,
 	                 'ansible_tag': '%s@%s'%(controller_site_deployment.site_deployment.site.login_base,controller_site_deployment.site_deployment.deployment.name), # name of ansible playbook
 		         'tenant': controller_site_deployment.site_deployment.site.login_base,
 		         'tenant_description': controller_site_deployment.site_deployment.site.name}
