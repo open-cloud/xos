@@ -24,9 +24,6 @@ class SyncControllerImages(OpenStackSyncStep):
 
     def sync_record(self, controller_image):
         logger.info("Working on image %s on controller %s" % (controller_image.image.name, controller_image.controller))
-        import pdb
-        pdb.set_trace()
-
 	image_fields = {'endpoint':controller_image.controller.auth_url,
 			'admin_user':controller_image.controller.admin_user,
 			'admin_password':controller_image.controller.admin_password,
