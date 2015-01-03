@@ -70,28 +70,28 @@ class NetworkTemplate(PlCoreBase):
 
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
-    guaranteedBandwidth = models.IntegerField(default=0)
+    guaranteed_bandwidth = models.IntegerField(default=0)
     visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
     translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
-    sharedNetworkName = models.CharField(max_length=30, blank=True, null=True)
-    sharedNetworkId = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
-    topologyKind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
-    controllerKind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
+    shared_network_name = models.CharField(max_length=30, blank=True, null=True)
+    shared_network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
+    controller_kind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
 
     def __init__(self, *args, **kwargs):
         super(NetworkTemplate, self).__init__(*args, **kwargs)
 
         # somehow these got set wrong inside of the live database. Remove this
         # code after all is well...
-        if (self.topologyKind=="BigSwitch"):
-            print "XXX warning: topologyKind invalid case"
-            self.topologyKind="bigswitch"
-        elif (self.topologyKind=="Physical"):
-            print "XXX warning: topologyKind invalid case"
-            self.topologyKind="physical"
-        elif (self.topologyKind=="Custom"):
-            print "XXX warning: topologyKind invalid case"
-            self.toplogyKind="custom"
+        if (self.topology_kind=="BigSwitch"):
+            print "XXX warning: topology_kind invalid case"
+            self.topology_kind="bigswitch"
+        elif (self.topology_kind=="Physical"):
+            print "XXX warning: topology_kind invalid case"
+            self.topology_kind="physical"
+        elif (self.topology_kind=="Custom"):
+            print "XXX warning: topology_kind invalid case"
+            self.toplogy_kind="custom"
 
     def __unicode__(self):  return u'%s' % (self.name)
 

@@ -423,8 +423,8 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
-            if network.template.sharedNetworkName:
-                network.network_id = network.template.sharedNetworkId
+            if network.template.shared_network_name:
+                network.network_id = network.template.shared_network_id
                 (network.subnet_id, network.subnet) = self.driver.get_network_subnet(network.network_id)
             else:
                 network_name = network.name
@@ -471,10 +471,10 @@ class OpenStackManager:
             self.driver.delete_network(network.network_id)
 
     def save_network_template(self, template):
-        if (template.sharedNetworkName) and (not template.sharedNetworkId):
-            os_networks = self.driver.shell.quantum.list_networks(name=template.sharedNetworkName)['networks']
+        if (template.shared_network_name) and (not template.shared_network_id):
+            os_networks = self.driver.shell.quantum.list_networks(name=template.shared_network_name)['networks']
             if os_networks:
-                template.sharedNetworkId = os_networks[0]["id"]
+                template.shared_network_id = os_networks[0]["id"]
 
         template.save()
         template.enacted = datetime.now()
@@ -505,8 +505,8 @@ class OpenStackManager:
 
     def refresh_network_templates(self):
         for template in NetworkTemplate.objects.all():
-            if (template.sharedNetworkName) and (not template.sharedNetworkId):
-                 # this will cause us to try to fill in the sharedNetworkId
+            if (template.shared_network_name) and (not template.shared_network_id):
+                 # this will cause us to try to fill in the shared_network_id
                  self.save_network_template(template)
 
     def refresh_networks(self):
