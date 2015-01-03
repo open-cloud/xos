@@ -316,15 +316,6 @@ class SiteDeployments(PlCoreBase):
     deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
     availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
-
-    def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
-
-class ControllerSiteDeployments(PlCoreBase):
-    objects = ControllerLinkManager()
-    deleted_objects = ControllerLinkDeletionManager()
-    
-    controller = models.ForeignKey(Controller, related_name='controllersitedeployments')
-    site_deployment = models.ForeignKey(SiteDeployments, related_name='controllersitedeployments') 
     tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
 
-    def __unicode__(self):  return u'%s %s' % (self.controller, self.site_deployment)
+    def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
