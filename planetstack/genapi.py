@@ -101,9 +101,6 @@ def get_REST_patterns():
         url(r'plstackapi/usableobjects/$', UsableObjectList.as_view(), name='usableobject-list'),
         url(r'plstackapi/usableobjects/(?P<pk>[a-zA-Z0-9\-]+)/$', UsableObjectDetail.as_view(), name ='usableobject-detail'),
     
-        url(r'plstackapi/controllersitedeploymentses/$', ControllerSiteDeploymentsList.as_view(), name='controllersitedeployments-list'),
-        url(r'plstackapi/controllersitedeploymentses/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSiteDeploymentsDetail.as_view(), name ='controllersitedeployments-detail'),
-    
         url(r'plstackapi/site_roles/$', SiteRoleList.as_view(), name='siterole-list'),
         url(r'plstackapi/site_roles/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteRoleDetail.as_view(), name ='siterole-detail'),
     
@@ -1165,44 +1162,6 @@ class UsableObjectIdSerializer(XOSModelSerializer):
     class Meta:
         model = UsableObject
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
-
-
-
-
-class ControllerSiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSiteDeployments
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_deployment','tenant_id',)
-
-class ControllerSiteDeploymentsIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSiteDeployments
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_deployment','tenant_id',)
-
-
-
 
 class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
@@ -2433,8 +2392,6 @@ serializerLookUp = {
                  Role: RoleSerializer,
 
                  UsableObject: UsableObjectSerializer,
-
-                 ControllerSiteDeployments: ControllerSiteDeploymentsSerializer,
 
                  SiteRole: SiteRoleSerializer,
 
@@ -3850,66 +3807,6 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-
-
-class ControllerSiteDeploymentsList(generics.ListCreateAPIView):
-    queryset = ControllerSiteDeployments.objects.select_related().all()
-    serializer_class = ControllerSiteDeploymentsSerializer
-    id_serializer_class = ControllerSiteDeploymentsIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','site_deployment','tenant_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ControllerSiteDeployments.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSiteDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSiteDeploymentsList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class ControllerSiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerSiteDeployments.objects.select_related().all()
-    serializer_class = ControllerSiteDeploymentsSerializer
-    id_serializer_class = ControllerSiteDeploymentsIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ControllerSiteDeployments.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
 
 
 class SiteRoleList(generics.ListCreateAPIView):
