@@ -500,6 +500,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SITEDEPLOYMENT_API,
+                            relatedCollections: {"controllerSiteDeployments": "site_deployment"},
                             foreignCollections: ["sites", "deployments", "controllers"],
                             foreignFields: {"site": "sites", "deployment": "deployments", "controller": "controllers"},
                             modelName: "siteDeployment",
@@ -535,8 +536,8 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
-                            listFields: ["backend_status", "id", "name", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
-                            detailFields: ["backend_status", "name", "description", "visibility", "translation", "sharedNetworkName", "sharedNetworkId"],
+                            listFields: ["backend_status", "id", "name", "visibility", "translation", "shared_network_name", "shared_network_id"],
+                            detailFields: ["backend_status", "name", "description", "visibility", "translation", "shared_network_name", "shared_network_id"],
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
