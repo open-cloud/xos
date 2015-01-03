@@ -103,15 +103,15 @@ class Network(PlCoreBase):
     labels = models.CharField(max_length=1024, blank=True, null=True)
     owner = models.ForeignKey(Slice, related_name="ownedNetworks", help_text="Slice that owns control of this Network")
 
-    guaranteedBandwidth = models.IntegerField(default=0)
-    permitAllSlices = models.BooleanField(default=False)
-    permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
+    guaranteed_bandwidth = models.IntegerField(default=0)
+    permit_all_slices = models.BooleanField(default=False)
+    permitted_slices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
     slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
     slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
 
-    topologyParameters = models.TextField(null=True, blank=True)
-    controllerUrl = models.CharField(null=True, blank=True, max_length=1024)
-    controllerParameters = models.TextField(null=True, blank=True)
+    topology_parameters = models.TextField(null=True, blank=True)
+    controller_url = models.CharField(null=True, blank=True, max_length=1024)
+    controller_parameters = models.TextField(null=True, blank=True)
 
     # for observer/manager
     network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
@@ -177,7 +177,7 @@ class NetworkSlice(PlCoreBase):
 
     def save(self, *args, **kwds):
         slice = self.slice
-        if (slice not in self.network.permittedSlices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
+        if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
             # to add a sliver to the network, then one of the following must be true:
             #   1) sliver's slice is in network's permittedSlices list,
             #   2) sliver's slice is network's owner, or
@@ -208,7 +208,7 @@ class NetworkSliver(PlCoreBase):
 
     def save(self, *args, **kwds):
         slice = self.sliver.slice
-        if (slice not in self.network.permittedSlices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
+        if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permitAllSlices):
             # to add a sliver to the network, then one of the following must be true:
             #   1) sliver's slice is in network's permittedSlices list,
             #   2) sliver's slice is network's owner, or
