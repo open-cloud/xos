@@ -7,7 +7,6 @@ def handle(site):
     from core.models import SiteDeployments, Controller, ControllerSiteDeployments 
     from collections import defaultdict
     
-    
     # get current controller site deployments	
     ctrl_site_deployments = ControllerSiteDeployments.objects.filter(site_deployment__site = site)
     ctrl_site_deployments_dict = {} 
