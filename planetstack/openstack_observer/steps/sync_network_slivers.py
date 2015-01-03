@@ -85,7 +85,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
 
                 continue
 
-            if network.template.sharedNetworkName:
+            if network.template.shared_network_name:
                 # If it's a shared network template, then more than one network
                 # object maps to the quantum network. We have to do a whole bunch
                 # of extra work to find the right one.

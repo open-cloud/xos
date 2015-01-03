@@ -1532,12 +1532,12 @@ class NetworkAdmin(PlanetStackBaseAdmin):
 
 
 class NetworkTemplateAdmin(PlanetStackBaseAdmin):
-    list_display = ("backend_status_icon", "name", "guaranteedBandwidth", "visibility")
+    list_display = ("backend_status_icon", "name", "guaranteed_bandwidth", "visibility")
     list_display_links = ('backend_status_icon', 'name', )
-    user_readonly_fields = ["name", "guaranteedBandwidth", "visibility"]
+    user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
     user_readonly_inlines = []
     fieldsets = [
-        (None, {'fields': ['name', 'description', 'guaranteedBandwidth', 'visibility', 'translation', 'sharedNetworkName', 'sharedNetworkId', 'topologyKind', 'controllerKind'],
+        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), )
 

@@ -55,8 +55,8 @@ class SyncSlivers(OpenStackSyncStep):
                 nics.append(controller_network.net_id)
 
         # now include network template
-        network_templates = [network.template.sharedNetworkName for network in networks \
-                             if network.template.sharedNetworkName]
+        network_templates = [network.template.shared_network_name for network in networks \
+                             if network.template.shared_network_name]
 
         #driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, controller=sliver.controllerNetwork)
         driver = self.driver.admin_driver(tenant='admin', controller=sliver.controllerNetwork)
