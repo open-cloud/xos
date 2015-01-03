@@ -211,23 +211,6 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='ControllerSiteDeployments',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
-                ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
-                ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
-                ('deleted', models.BooleanField(default=False)),
-                ('tenant_id', models.CharField(help_text=b'Keystone tenant id', max_length=200, null=True, blank=True)),
-                ('controller', models.ForeignKey(related_name=b'controllersitedeployments', to='core.Controller')),
-            ],
-            options={
-                'abstract': False,
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='ControllerSlices',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -829,6 +812,7 @@ class Migration(migrations.Migration):
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
+                ('tenant_id', models.CharField(help_text=b'Keystone tenant id', max_length=200, null=True, blank=True)),
                 ('availability_zone', models.CharField(help_text=b'OpenStack availability zone', max_length=200, null=True, blank=True)),
                 ('controller', models.ForeignKey(related_name=b'sitedeployments', blank=True, to='core.Controller', null=True)),
                 ('deployment', models.ForeignKey(related_name=b'sitedeployments', to='core.Deployment')),
