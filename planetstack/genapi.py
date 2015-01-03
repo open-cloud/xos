@@ -1292,7 +1292,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Sliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','controllerNetwork','numberCores','flavor','userData','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
 class SliverIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1312,7 +1312,7 @@ class SliverIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Sliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','controllerNetwork','numberCores','flavor','userData','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
 
 
@@ -2246,7 +2246,7 @@ class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
 class NetworkTemplateIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2262,7 +2262,7 @@ class NetworkTemplateIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
 
 
@@ -4035,7 +4035,7 @@ class SliverList(generics.ListCreateAPIView):
     serializer_class = SliverSerializer
     id_serializer_class = SliverIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','node','controllerNetwork','numberCores','flavor','userData','networks',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5569,7 +5569,7 @@ class NetworkTemplateList(generics.ListCreateAPIView):
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteedBandwidth','visibility','translation','sharedNetworkName','sharedNetworkId','topologyKind','controllerKind',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
