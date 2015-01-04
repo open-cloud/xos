@@ -1997,7 +1997,7 @@
 {
     "fields": {
         "updated": "2014-09-19T21:11:00.746Z",
-        "imagePreference": null,
+        "image_preference": null,
         "name": "onlab_dnsdemux",
         "service": 10,
         "created": "2014-04-29T20:27:46.565Z",
@@ -2021,7 +2021,7 @@
 {
     "fields": {
         "updated": "2014-10-07T06:03:18.962Z",
-        "imagePreference": null,
+        "image_preference": null,
         "name": "onlab_dnsredir",
         "service": 10,
         "created": "2014-04-29T20:31:12.915Z",
@@ -2045,7 +2045,7 @@
 {
     "fields": {
         "updated": "2014-10-08T14:41:01.523Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_syndicate",
         "service": 5,
         "created": "2014-07-24T18:04:58.309Z",
@@ -2069,7 +2069,7 @@
 {
     "fields": {
         "updated": "2014-09-23T18:29:58.930Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_hpc",
         "service": 12,
         "created": "2014-08-01T21:13:08.385Z",
@@ -2093,7 +2093,7 @@
 {
     "fields": {
         "updated": "2014-09-19T21:12:35.800Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_cmi",
         "service": 12,
         "created": "2014-08-19T21:40:01.505Z",
@@ -2117,7 +2117,7 @@
 {
     "fields": {
         "updated": "2014-09-30T22:36:46.871Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_cacti",
         "service": null,
         "created": "2014-09-30T19:55:59.681Z",
@@ -2141,7 +2141,7 @@
 {
     "fields": {
         "updated": "2014-10-07T21:13:38.926Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_tmtest2",
         "service": null,
         "created": "2014-10-07T21:13:38.926Z",
@@ -2165,7 +2165,7 @@
 {
     "fields": {
         "updated": "2014-10-08T20:36:39.879Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "wash_test1",
         "service": null,
         "created": "2014-10-08T20:36:39.879Z",
@@ -2189,7 +2189,7 @@
 {
     "fields": {
         "updated": "2014-10-08T20:38:05.304Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "wash_test2",
         "service": null,
         "created": "2014-10-08T20:38:05.304Z",
@@ -2213,7 +2213,7 @@
 {
     "fields": {
         "updated": "2014-10-10T02:41:49.594Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_publicdata",
         "service": 5,
         "created": "2014-10-09T16:41:43.157Z",
@@ -2237,7 +2237,7 @@
 {
     "fields": {
         "updated": "2014-10-09T18:18:35.616Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_smbakertest3",
         "service": null,
         "created": "2014-10-09T18:18:35.616Z",
