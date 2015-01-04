@@ -11,7 +11,7 @@ logger = Logger(level=logging.INFO)
 class FailedDependency(Exception):
     pass
 
-class SyncStep:
+class SyncStep(object):
     """ A PlanetStack Sync step. 
 
     Attributes:

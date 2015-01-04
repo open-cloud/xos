@@ -10,6 +10,10 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
     requested_interval=0
     provides=[SiteDeployments]
 
+    def fetch_pending(self, deleted=False):
+        pending = super(OpenStackSyncStep, self).fetch_pending(deleted)
+        return pending.filter(controller__isnull=False)
+
     def sync_record(self, site_deployment):
 
 	template = os_template_env.get_template('sync_controller_site_deployments.yaml')
@@ -17,7 +21,7 @@ class SyncControllerSiteDeployments(OpenStackSyncStep):
 		         'admin_user': site_deployment.controller.admin_user,
 		         'admin_password': site_deployment.controller.admin_password,
 		         'admin_tenant': site_deployment.controller.admin_tenant,
-	                 'ansible_tag': '%s@%s'%(site_deployment.site.login_base,site_deployment.site_deployment.deployment.name), # name of ansible playbook
+	                 'ansible_tag': '%s@%s'%(site_deployment.site.login_base,site_deployment.deployment.name), # name of ansible playbook
 		         'tenant': site_deployment.site.login_base,
 		         'tenant_description': site_deployment.site.name}
 
