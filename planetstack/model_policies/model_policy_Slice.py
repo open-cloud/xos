@@ -1,18 +1,14 @@
 
 def handle(slice):
-	from core.models import Controller, ControllerSiteDeployments, ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
+	from core.models import Controller,ControllerSlices,Controller,Network,NetworkSlice,NetworkTemplate
 	from collections import defaultdict
-	ctrl_site_deployments = ControllerSiteDeployments.objects.all()
-	site_deploy_lookup = defaultdict(list)
-	for ctrl_site_deployment in ctrl_site_deployments:
-		site_deploy_lookup[ctrl_site_deployment.site_deployment].append(ctrl_site_deployment)
+	ctrl_site_deployments = SiteDeployments.objects.all()
 	
 	slice_controllers = ControllerSlices.objects.all()
 	slice_deploy_lookup = defaultdict(list)
 	for slice_controller in slice_controllers:
 		slice_deploy_lookup[slice_controller.slice].append(slice_controller)
 	
-	#expected_controllers = site_deploy_lookup[slice.site]
         all_controllers = Controller.objects.all() 
 	for expected_controller in all_controllers:
 		if slice not in slice_deploy_lookup or \
