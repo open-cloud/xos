@@ -3,7 +3,7 @@ import base64
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Site, SiteDeployments, ControllerSiteDeployments 
+from core.models.site import Site, SiteDeployments, SiteDeployments 
 from observer.steps.sync_controller_site_deployments import *
 
 class SyncSites(OpenStackSyncStep):
@@ -15,15 +15,11 @@ class SyncSites(OpenStackSyncStep):
 
     def delete_record(self, site):
         # delete associated controllers site deployments
-        ctrl_site_deployments = ControllerSiteDeployments.objects.filter(site_deployment__site=site)
-        ctrl_site_deploy_deleter = SyncControllerSiteDeployments().delete_record
-        for ctrl_site_deployment in ctrl_site_deployments:
-            ctrl_site_deployment_deleter(ctrl_site_deployment)
-
-        # delete site deployments
         site_deployments = SiteDeployments.objects.filter(site=site)
+        site_deploy_deleter = SyncControllerSiteDeployments().delete_record
         for site_deployment in site_deployments:
-            site_deployment.delete()    
+            site_deployment_deleter(site_deployment)
+
          
 
 	

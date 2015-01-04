@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployments, ControllerSiteDeployments
+from core.models.site import Controller, SiteDeployments, SiteDeployments
 from core.models.user import User
 from core.models.controllerusers import ControllerUsers
 from util.logger import Logger, logging
@@ -44,7 +44,7 @@ class SyncControllerUsers(OpenStackSyncStep):
             raise Exception('Siteless user %s'%controller_user.user.email)
         else:
             # look up tenant id for the user's site at the controller
-            #ctrl_site_deployments = ControllerSiteDeployments.objects.filter(
+            #ctrl_site_deployments = SiteDeployments.objects.filter(
             #  site_deployment__site=controller_user.user.site,
             #  controller=controller_user.controller)
 
