@@ -24,14 +24,15 @@ class Slice(PlCoreBase):
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     max_slivers = models.IntegerField(default=10)
-    imagePreference = models.CharField(default="Ubuntu 12.04 LTS", null=True, blank=True, max_length=256)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
     network = models.CharField(default="Private Only",null=True, blank=True, max_length=256)
-    mountDataSets = models.CharField(default="GenBank",null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
-
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
+
+    # for tenant view
+    image_preference = models.CharField(default="Ubuntu 12.04 LTS", null=True, blank=True, max_length=256)
+    mount_data_sets = models.CharField(default="GenBank",null=True, blank=True, max_length=256)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

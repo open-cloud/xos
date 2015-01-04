@@ -52,7 +52,7 @@ class TenantCreateSlice(View):
            serviceClass = ServiceClass.objects.get(name=serviceClass)
            site = request.user.site
            image = Image.objects.get(name=imageName)
-           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,imagePreference=image,mountDataSets=mountDataSets)
+           newSlice = Slice(name=sliceName,serviceClass=serviceClass,site=site,image_preference=image,mount_data_sets=mountDataSets)
            newSlice.save()
 	   privateTemplate="Private"
 	   publicTemplate="Public shared IPv4"
@@ -103,8 +103,8 @@ class TenantUpdateSlice(View):
                 if(entry.name==sliceName):
                          if (actionToDo == "update"):
                                 setattr(entry,'serviceClass',serviceClass)
-                                setattr(entry,'imagePreference',imageName)
-                                setattr(entry,'mountDataSets',dataSet)
+                                setattr(entry,'image_preference',imageName)
+                                setattr(entry,'mount_data_sets',dataSet)
                                 entry.save()
                                 break
 	addOrModifyPorts(networkPorts,sliceName)
@@ -179,8 +179,8 @@ def getTenantInfo(user):
            sliceName = Slice.objects.get(id=entry.id).name
            slice = Slice.objects.get(name=Slice.objects.get(id=entry.id).name)
            sliceServiceClass = entry.serviceClass.name
-           preferredImage =  entry.imagePreference
-           #sliceDataSet = entry.mountDataSets
+           preferredImage =  entry.image_preference
+           #sliceDataSet = entry.mount_data_sets
            sliceNetwork = {}
            numSliver = 0
            sliceImage=""
