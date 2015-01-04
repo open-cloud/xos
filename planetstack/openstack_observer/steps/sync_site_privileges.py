@@ -3,7 +3,7 @@ import base64
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models import User, ControllerUsers, SitePrivilege, ControllerSiteDeployments   
+from core.models import User, ControllerUsers, SitePrivilege, SiteDeployments   
 
 class SyncSitePrivileges(OpenStackSyncStep):
     requested_interval=0
@@ -18,7 +18,7 @@ class SyncSitePrivileges(OpenStackSyncStep):
 
     def sync_record(self, site_priv):
         # sync site privileges at all site controllers
-        ctrl_site_deployments = ControllerSiteDeployments.objects.filter(site_deployment__site=site_priv.site)
+        ctrl_site_deployments = SiteDeployments.objects.filter(site_deployment__site=site_priv.site)
         for ctrl_site_deployment in ctrl_site_deployments:
             controller_users = ControllerUsers.objects.filter(controller=ctrl_site_deployment.controller,
                                                               user=site_priv.user)
