@@ -150,6 +150,8 @@ INSTALLED_APPS = (
     'cassandra',
     'kairos',
     'nagios',
+#    'urlfilter',
+    'servcomp',
     'syndicate_storage',
     'geoposition',
 )
@@ -217,6 +219,8 @@ SUIT_CONFIG = {
 #        {'label': 'Cassandra', 'icon':'icon-cog', 'app': 'cassandra'},
 #        {'label': 'KairosDB', 'icon':'icon-cog', 'app': 'kairos'},
 #        {'label': 'Nagios', 'icon':'icon-cog', 'app': 'nagios'},
+#       {'label': 'URL Filter', 'icon': 'icon-cog', 'app': 'urlfilter'},
+       {'label': 'Service Comp', 'icon': 'icon-cog', 'app': 'servcomp'},
 
         #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
     #     'sites',
@@ -264,6 +268,8 @@ BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = '/opt/planetstack/private_keys'
 ENCRYPTED_FIELD_MODE = 'ENCRYPT'
+
+STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
 
 # prevents warnings on django 1.7                                                                                                 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
