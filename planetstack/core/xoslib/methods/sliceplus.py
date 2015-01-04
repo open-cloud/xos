@@ -32,7 +32,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
