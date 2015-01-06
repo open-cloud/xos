@@ -662,12 +662,12 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
         return AdminFormMetaClass
 
 class ControllerAdminForm(forms.ModelForm):
-    site_deployments = forms.ModelMultipleChoiceField(
-        queryset=SiteDeployment.objects.all(),
+    sites = forms.ModelMultipleChoiceField(
+        queryset=Site.objects.all(),
         required=False,
-        help_text="Select which sites deployments are managed by this controller",
+        help_text="Select which sites are managed by this controller",
         widget=FilteredSelectMultiple(
-            verbose_name=('Site Deployments'), is_stacked=False
+            verbose_name=('Sites'), is_stacked=False
         )
     )
 
@@ -679,7 +679,7 @@ class ControllerAdminForm(forms.ModelForm):
         super(ControllerAdminForm, self).__init__(*args, **kwargs)  
 
         if self.instance and self.instance.pk:
-            self.fields['site_deployments'].initial = [x.site_deployment for x in self.instance.controllersitedeployments.all()]
+            self.fields['sites'].initial = [x.site_deployment for x in self.instance.controllersite.all()]
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
@@ -717,7 +717,7 @@ class ControllerAdminForm(forms.ModelForm):
             # save_m2m() doesn't seem to work with 'through' relations. So we
             #    create/destroy the through models ourselves. There has to be
             #    a better way...
-            self.manipulate_m2m_objs(controller, self.cleaned_data['site_deployments'], controller.controllersitedeployments.all(), ControllerSite, "controller", "site_deployment")
+            self.manipulate_m2m_objs(controller, self.cleaned_data['sites'], controller.controllersite.all(), ControllerSite, "controller", "site")
             pass
     	
         self.save_m2m()
