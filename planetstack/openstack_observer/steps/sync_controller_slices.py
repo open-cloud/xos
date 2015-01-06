@@ -7,8 +7,9 @@ from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice, ControllerSlice
 from core.models.controlleruser import ControllerUser
-from util.logger import Logger, logging
+from util.logger import Logger, logging, logger
 from observer.ansible import *
+from openstack.driver import OpenStackDriver
 
 logger = Logger(level=logging.INFO)
 
@@ -35,7 +36,7 @@ class SyncControllerSlices(OpenStackSyncStep):
             raise Exception("slice createor %s has not accout at controller %s" % (controller_slice.slice.creator, controller_slice.controller.name))
         else:
             controller_user = controller_users[0]
-            roles = ['admin']
+            roles = ['Admin']
 
         max_instances=int(controller_slice.slice.max_slivers)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,
@@ -57,17 +58,14 @@ class SyncControllerSlices(OpenStackSyncStep):
             tenant_id = res[0]['id']
             if (not controller_slice.tenant_id):
                 try:
-                        driver = OpenStackDriver().client_driver(caller=controller_slice.controller.admin_user,
-                                                         tenant=controller_slice.controller.admin_tenant,
-                                                         controller=controller_network.controller)
-                        driver.shell.nova.quotas.update(tenant_id=controller_slice.slice.name, instances=int(controller_slice.slice.max_slivers))
+                        driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
+                        driver.shell.nova.quotas.update(tenant_id=controller_slice.tenant_id, instances=int(controller_slice.slice.max_slivers))
                 except:
-                        logging.info('Could not update quota for %s'%controller_slice.slice.name)
+                        logger.log_exc('Could not update quota for %s'%controller_slice.slice.name)
                         raise Exception('Could not update quota for %s'%controller_slice.slice.name)
-
+                
                 controller_slice.tenant_id = tenant_id
                 controller_slice.save()
-
 
 
     def delete_record(self, controller_slice):
