@@ -6,13 +6,13 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice, ControllerSlice
-from core.models.controllerusers import ControllerUser
+from core.models.controlleruser import ControllerUser
 from util.logger import Logger, logging
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncControllerSlice(OpenStackSyncStep):
+class SyncControllerSlices(OpenStackSyncStep):
     provides=[ControllerSlice]
     requested_interval=0
 
