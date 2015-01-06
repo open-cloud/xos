@@ -105,7 +105,7 @@ class Site(PlCoreBase):
     abbreviated_name = models.CharField(max_length=80)
 
     #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
-    deployments = models.ManyToManyField('Deployment', through='SiteDeployments', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
+    deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -299,7 +299,7 @@ class Controller(PlCoreBase):
     deleted_objects = ControllerDeletionManager()
 
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Controller")
-    version = models.CharField(max_length=200, unique=True, help_text="Controller version")
+    version = models.CharField(max_length=200, help_text="Controller version")
     backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
     auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
@@ -308,14 +308,19 @@ class Controller(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
 
-class SiteDeployments(PlCoreBase):
+class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 
-    site = models.ForeignKey(Site,related_name='sitedeployments')
-    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
-    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
+    site = models.ForeignKey(Site,related_name='sitedeployment')
+    deployment = models.ForeignKey(Deployment,related_name='sitedeployment')
+    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployment')
     availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
-    tenant_id = models.CharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
 
     def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
+    
+class ControllerSite(PlCoreBase):
+     
+    site = models.ForeignKey(Site,related_name='controllersite')
+    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='controllersite')
+    tenant_id = models.CharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")

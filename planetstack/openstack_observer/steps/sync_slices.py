@@ -4,7 +4,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.slice import Slice, ControllerSlices
+from core.models.slice import Slice, ControllerSlice
 from util.logger import Logger, logging
 from observer.steps.sync_controller_slices import *
 
@@ -15,14 +15,14 @@ class SyncSlices(OpenStackSyncStep):
     requested_interval=0
 
     def sync_record(self, slice):
-        for controller_slice in ControllerSlices.objects.filter(slice=slice):
+        for controller_slice in ControllerSlice.objects.filter(slice=slice):
             # bump the 'updated' timestamp and trigger observer to update
             # slice across all controllers 
             controller_slice.save()    
 
     def delete_record(self, slice):
-        controller_slice_deleter = SyncControllerSlices().delete_record
-        for controller_slice in ControllerSlices.objects.filter(slice=slice):
+        controller_slice_deleter = SyncControllerSlice().delete_record
+        for controller_slice in ControllerSlice.objects.filter(slice=slice):
             try:
                 controller_slice_deleter(controller_slice)
             except Exception,e:

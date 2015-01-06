@@ -4,16 +4,16 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployment, SiteDeployment
+from core.models.site import Controller, SiteDeployment
 from core.models.user import User
-from core.models.controlleruser import ControllerUser
+from core.models.controllerusers import ControllerUser
 from util.logger import Logger, logging
 
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncControllerUsers(OpenStackSyncStep):
+class SyncControllerUser(OpenStackSyncStep):
     provides=[ControllerUser, User]
     requested_interval=0
 
@@ -37,7 +37,7 @@ class SyncControllerUsers(OpenStackSyncStep):
         # We must also check if the user should have the admin role 		 		
 	roles = ['user']
         if controller_user.user.is_admin:
-            roles.append('Admin')
+            roles.append('admin')
    
 	# setup user home site roles at controller 
         if not controller_user.user.site:

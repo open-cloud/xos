@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from core.models import PlCoreBase,User,Controller
 from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
-class ControllerUsers(PlCoreBase):
+class ControllerUser(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 
@@ -19,8 +19,8 @@ class ControllerUsers(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = ControllerUsers.objects.all()
+            qs = ControllerUser.objects.all()
         else:
             users = Users.select_by_user(user)
-            qs = ControllerUsers.objects.filter(user__in=users)
+            qs = ControllerUser.objects.filter(user__in=users)
         return qs
