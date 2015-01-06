@@ -68,6 +68,7 @@ def __walk_deps(fn, object, deps):
 			except AttributeError:
 				if not missing_links.has_key(model+'.'+link):
 					print "Model %s missing link for dependency %s"%(model, link)
+                                        logger.log_exc("Model %s missing link for dependency %s"%(model, link))
 					missing_links[model+'.'+link]=True
 
 		if (peer):

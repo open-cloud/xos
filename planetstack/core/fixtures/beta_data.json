@@ -668,7 +668,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:28.687Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 19
 },
 {
@@ -681,7 +681,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:34.657Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 20
 },
 {
@@ -694,7 +694,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:40.604Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 21
 },
 {
@@ -707,7 +707,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:47.047Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 22
 },
 {
@@ -720,7 +720,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-08-08T03:49:32.318Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 27
 },
 {
@@ -733,7 +733,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:03.289Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 28
 },
 {
@@ -746,7 +746,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:07.804Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 29
 },
 {
@@ -759,7 +759,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:12.521Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 30
 },
 {
@@ -772,7 +772,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 31
 },
 {
@@ -785,7 +785,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 32
 },
 {
@@ -798,7 +798,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 33
 },
 {
@@ -811,7 +811,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 34
 },
 {
@@ -824,7 +824,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 35
 },
 {
@@ -837,7 +837,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 36
 },
 {
@@ -850,7 +850,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 37
 },
 {
@@ -863,7 +863,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 38
 },
 {
@@ -876,7 +876,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 39
 },
 {
@@ -889,7 +889,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 40
 },
 {
@@ -902,7 +902,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 41
 },
 {
@@ -915,7 +915,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 42
 },
 {
@@ -928,7 +928,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 43
 },
 {
@@ -941,7 +941,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 44
 },
 {
@@ -954,7 +954,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 45
 },
 {
@@ -967,7 +967,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 46
 },
 {
@@ -980,7 +980,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 47
 },
 {
@@ -993,7 +993,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 48
 },
 {
@@ -1931,7 +1931,7 @@
 {
     "fields": {
         "updated": "2014-09-19T21:11:00.746Z",
-        "imagePreference": null,
+        "image_preference": null,
         "name": "onlab_dnsdemux",
         "service": 10,
         "created": "2014-04-29T20:27:46.565Z",
@@ -1944,7 +1944,7 @@
         "omf_friendly": false,
         "network": null,
         "max_slivers": 10,
-        "mountDataSets": null,
+        "mount_data_sets": null,
         "backend_status": "Provisioning in progress",
         "creator": 7,
         "enacted": "2014-09-19T21:20:35.271Z"
@@ -1955,7 +1955,7 @@
 {
     "fields": {
         "updated": "2014-10-07T06:03:18.962Z",
-        "imagePreference": null,
+        "image_preference": null,
         "name": "onlab_dnsredir",
         "service": 10,
         "created": "2014-04-29T20:31:12.915Z",
@@ -1968,7 +1968,7 @@
         "omf_friendly": false,
         "network": null,
         "max_slivers": 10,
-        "mountDataSets": null,
+        "mount_data_sets": null,
         "backend_status": "Provisioning in progress",
         "creator": 7,
         "enacted": "2014-10-09T18:47:35.832Z"
@@ -1979,7 +1979,7 @@
 {
     "fields": {
         "updated": "2014-10-08T14:41:01.523Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_syndicate",
         "service": 5,
         "created": "2014-07-24T18:04:58.309Z",
@@ -1992,7 +1992,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 100,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "Provisioning in progress",
         "creator": 6,
         "enacted": "2014-10-09T18:48:00.386Z"
@@ -2003,7 +2003,7 @@
 {
     "fields": {
         "updated": "2014-09-23T18:29:58.930Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_hpc",
         "service": 12,
         "created": "2014-08-01T21:13:08.385Z",
@@ -2016,7 +2016,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "Provisioning in progress",
         "creator": 8,
         "enacted": "2014-09-23T19:06:55.420Z"
@@ -2027,7 +2027,7 @@
 {
     "fields": {
         "updated": "2014-09-19T21:12:35.800Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_cmi",
         "service": 12,
         "created": "2014-08-19T21:40:01.505Z",
@@ -2040,7 +2040,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "",
         "creator": 8,
         "enacted": "2014-09-19T21:20:04.708Z"
@@ -2051,7 +2051,7 @@
 {
     "fields": {
         "updated": "2014-09-30T22:36:46.871Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_cacti",
         "service": null,
         "created": "2014-09-30T19:55:59.681Z",
@@ -2064,7 +2064,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "Provisioning in progress",
         "creator": 8,
         "enacted": "2014-09-30T22:43:42.489Z"
@@ -2075,7 +2075,7 @@
 {
     "fields": {
         "updated": "2014-10-07T21:13:38.926Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_tmtest2",
         "service": null,
         "created": "2014-10-07T21:13:38.926Z",
@@ -2088,7 +2088,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "NameError(\"global name 'User' is not defined\",)",
         "creator": null,
         "enacted": null
@@ -2099,7 +2099,7 @@
 {
     "fields": {
         "updated": "2014-10-08T20:36:39.879Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "wash_test1",
         "service": null,
         "created": "2014-10-08T20:36:39.879Z",
@@ -2112,7 +2112,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "NameError(\"global name 'User' is not defined\",)",
         "creator": null,
         "enacted": null
@@ -2123,7 +2123,7 @@
 {
     "fields": {
         "updated": "2014-10-08T20:38:05.304Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "wash_test2",
         "service": null,
         "created": "2014-10-08T20:38:05.304Z",
@@ -2136,7 +2136,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "NameError(\"global name 'User' is not defined\",)",
         "creator": null,
         "enacted": null
@@ -2147,7 +2147,7 @@
 {
     "fields": {
         "updated": "2014-10-10T02:41:49.594Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "princeton_publicdata",
         "service": 5,
         "created": "2014-10-09T16:41:43.157Z",
@@ -2160,7 +2160,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "Provisioning in progress",
         "creator": 6,
         "enacted": "2014-10-10T14:57:41.282Z"
@@ -2171,7 +2171,7 @@
 {
     "fields": {
         "updated": "2014-10-09T18:18:35.616Z",
-        "imagePreference": "Ubuntu 12.04 LTS",
+        "image_preference": "Ubuntu 12.04 LTS",
         "name": "onlab_smbakertest3",
         "service": null,
         "created": "2014-10-09T18:18:35.616Z",
@@ -2184,7 +2184,7 @@
         "omf_friendly": false,
         "network": "Private Only",
         "max_slivers": 10,
-        "mountDataSets": "GenBank",
+        "mount_data_sets": "GenBank",
         "backend_status": "NameError(\"global name 'User' is not defined\",)",
         "creator": 8,
         "enacted": null
@@ -2966,10 +2966,10 @@
         "created": "2013-12-09T14:15:16.899Z",
         "deleted": false,
         "description": "Connect a sliver to the public network using dedicated public IPv4 address",
-        "sharedNetworkName": "ext-net",
-        "guaranteedBandwidth": 0,
+        "shared_network_name": "ext-net",
+        "guaranteed_bandwidth": 0,
         "visibility": "public",
-        "sharedNetworkId": "",
+        "shared_network_id": "",
         "translation": "none",
         "backend_status": "Provisioning in progress",
         "enacted": "2014-05-21T15:36:30Z"
@@ -2984,10 +2984,10 @@
         "created": "2013-12-09T14:17:29.551Z",
         "deleted": false,
         "description": "Connect a sliver to the public network via NAT",
-        "sharedNetworkName": "nat-net",
-        "guaranteedBandwidth": 0,
+        "shared_network_name": "nat-net",
+        "guaranteed_bandwidth": 0,
         "visibility": "private",
-        "sharedNetworkId": "",
+        "shared_network_id": "",
         "translation": "NAT",
         "backend_status": "Provisioning in progress",
         "enacted": "2014-05-21T15:36:03Z"
@@ -3002,10 +3002,10 @@
         "created": "2013-12-09T14:18:02.336Z",
         "deleted": false,
         "description": "A private virtual network",
-        "sharedNetworkName": "",
-        "guaranteedBandwidth": 0,
+        "shared_network_name": "",
+        "guaranteed_bandwidth": 0,
         "visibility": "private",
-        "sharedNetworkId": "",
+        "shared_network_id": "",
         "translation": "none",
         "backend_status": "Provisioning in progress",
         "enacted": "2014-05-21T15:35:54Z"
@@ -3023,10 +3023,10 @@
         "created": "2014-06-03T07:15:01.403Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 32,
         "backend_status": "Provisioning in progress",
@@ -3046,10 +3046,10 @@
         "created": "2014-06-03T07:15:33.377Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 32,
         "backend_status": "Provisioning in progress",
@@ -3069,12 +3069,12 @@
         "created": "2014-07-25T03:48:20.878Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [
+        "permitted_slices": [
             40
         ],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3094,12 +3094,12 @@
         "created": "2014-07-25T03:50:31.250Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [
+        "permitted_slices": [
             40
         ],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3119,12 +3119,12 @@
         "created": "2014-07-25T03:51:22.976Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [
+        "permitted_slices": [
             40
         ],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3144,12 +3144,12 @@
         "created": "2014-07-25T03:51:25.979Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [
+        "permitted_slices": [
             40
         ],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3169,10 +3169,10 @@
         "created": "2014-08-01T23:37:00.625Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 1,
         "owner": 31,
         "backend_status": "Provisioning in progress",
@@ -3192,10 +3192,10 @@
         "created": "2014-08-01T23:37:47.334Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 31,
         "backend_status": "Provisioning in progress",
@@ -3215,10 +3215,10 @@
         "created": "2014-08-02T16:43:45.571Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 31,
         "backend_status": "Provisioning in progress",
@@ -3238,10 +3238,10 @@
         "created": "2014-08-02T17:29:06.716Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 45,
         "backend_status": "Provisioning in progress",
@@ -3261,10 +3261,10 @@
         "created": "2014-08-02T17:29:38.618Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 45,
         "backend_status": "Provisioning in progress",
@@ -3284,10 +3284,10 @@
         "created": "2014-08-04T17:24:54.199Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 1,
         "owner": 31,
         "backend_status": "Provisioning in progress",
@@ -3307,10 +3307,10 @@
         "created": "2014-08-19T21:40:48.549Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 53,
         "backend_status": "Provisioning in progress",
@@ -3330,10 +3330,10 @@
         "created": "2014-08-19T21:41:26.950Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 53,
         "backend_status": "Provisioning in progress",
@@ -3353,10 +3353,10 @@
         "created": "2014-09-30T19:56:42.970Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 76,
         "backend_status": "Provisioning in progress",
@@ -3376,10 +3376,10 @@
         "created": "2014-09-30T19:57:30.963Z",
         "deleted": false,
         "network_id": "",
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": "",
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 3,
         "owner": 76,
         "backend_status": "Provisioning in progress",
@@ -3399,10 +3399,10 @@
         "created": "2014-10-08T14:41:03.309Z",
         "deleted": false,
         "network_id": null,
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": null,
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 1,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3422,10 +3422,10 @@
         "created": "2014-10-08T14:41:17.387Z",
         "deleted": false,
         "network_id": null,
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": null,
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 40,
         "backend_status": "Provisioning in progress",
@@ -3445,10 +3445,10 @@
         "created": "2014-10-09T16:41:54.752Z",
         "deleted": false,
         "network_id": null,
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": null,
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 1,
         "owner": 97,
         "backend_status": "Provisioning in progress",
@@ -3468,10 +3468,10 @@
         "created": "2014-10-09T16:42:09.773Z",
         "deleted": false,
         "network_id": null,
-        "permittedSlices": [],
+        "permitted_slices": [],
         "labels": null,
-        "guaranteedBandwidth": 0,
-        "permitAllSlices": false,
+        "guaranteed_bandwidth": 0,
+        "permit_all_slices": false,
         "template": 4,
         "owner": 97,
         "backend_status": "Provisioning in progress",
