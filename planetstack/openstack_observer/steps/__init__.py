@@ -1,1 +1,3 @@
 from .sync_controller_sites import SyncControllerSites
+from .sync_controller_slices import SyncControllerSlices
+from .sync_controller_users import SyncControllerUsers

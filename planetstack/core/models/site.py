@@ -299,7 +299,7 @@ class Controller(PlCoreBase):
     deleted_objects = ControllerDeletionManager()
 
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Controller")
-    version = models.CharField(max_length=200, unique=True, help_text="Controller version")
+    version = models.CharField(max_length=200, help_text="Controller version")
     backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
     auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")

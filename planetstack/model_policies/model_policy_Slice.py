@@ -8,7 +8,7 @@ def handle(slice):
     all_controllers = Controller.objects.all() 
     for controller in all_controllers:
         if controller not in existing_controllers:
-            sd = ControllerSlice(slice=slice, controller=controller_controller)
+            sd = ControllerSlice(slice=slice, controller=controller)
             sd.save()
 
     # make sure slice has at least 1 public and 1 private networkd
