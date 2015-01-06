@@ -500,7 +500,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SITEDEPLOYMENT_API,
-                            relatedCollections: {"controllerSiteDeployments": "site_deployment"},
+                            relatedCollections: {"controllerSiteDeployment": "site_deployment"},
                             foreignCollections: ["sites", "deployments", "controllers"],
                             foreignFields: {"site": "sites", "deployment": "deployments", "controller": "controllers"},
                             modelName: "siteDeployment",

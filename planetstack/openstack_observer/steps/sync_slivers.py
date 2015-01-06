@@ -4,8 +4,8 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
-from core.models.slice import Slice, SlicePrivilege, ControllerSlices
-from core.models.network import Network, NetworkSlice, ControllerNetworks
+from core.models.slice import Slice, SlicePrivilege, ControllerSlice
+from core.models.network import Network, NetworkSlice, ControllerNetwork
 from util.logger import Logger, logging
 from observer.ansible import *
 
@@ -45,7 +45,7 @@ class SyncSlivers(OpenStackSyncStep):
 
         nics = []
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]
-        controller_networks = ControllerNetworks.objects.filter(network__in=networks,
+        controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=sliver.node.site_deployment.controller)
 
         for controller_network in controller_networks:

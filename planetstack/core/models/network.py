@@ -143,7 +143,7 @@ class Network(PlCoreBase):
             qs = Network.objects.filter(owner__in=slices)
         return qs
 
-class ControllerNetworks(PlCoreBase):
+class ControllerNetwork(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 

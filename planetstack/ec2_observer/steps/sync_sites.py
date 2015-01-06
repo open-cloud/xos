@@ -16,7 +16,7 @@ class SyncSites(SyncStep):
             return []
 
         deployment = Deployment.objects.filter(Q(name="Amazon EC2"))[0]
-        current_site_deployments = SiteDeployments.objects.filter(Q(deployment=deployment))
+        current_site_deployments = SiteDeployment.objects.filter(Q(deployment=deployment))
 
         zone_ret = aws_run('ec2 describe-availability-zones')
         zones = zone_ret['AvailabilityZones']

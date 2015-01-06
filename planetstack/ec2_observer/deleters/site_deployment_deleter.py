@@ -1,11 +1,11 @@
-from core.models import Site, SiteDeployments
+from core.models import Site, SiteDeployment
 from observer.deleter import Deleter
 
-class SiteDeploymentsDeleter(Deleter):
-    model='SiteDeployments'
+class SiteDeploymentDeleter(Deleter):
+    model='SiteDeployment'
 
     def call(self, pk):
-        site_deployment = SiteDeployments.objects.get(pk=pk)
+        site_deployment = SiteDeployment.objects.get(pk=pk)
         if site_deployment.tenant_id:
             driver = self.driver.admin_driver(deployment=site_deployment.deployment.name)
             driver.delete_tenant(site_deployment.tenant_id)
