@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployment, SiteDeployment
+from core.models.site import Controller, SiteDeployment
 from core.models.user import User
 from core.models.controllerusers import ControllerUser
 from util.logger import Logger, logging

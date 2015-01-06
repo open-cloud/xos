@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.node import Node
-from core.models.site import SiteDeployments, Controller, SiteDeployments
+from core.models.site import SiteDeployment, Controller
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -30,7 +30,7 @@ class SyncNodes(OpenStackSyncStep):
         new_nodes = []
         for controller in controllers:
             try:
-            	controller_site_deployments = SiteDeployments.objects.filter(controller=controller)[0]
+            	controller_site_deployments = SiteDeployment.objects.filter(controller=controller)[0]
 	    except IndexError:
                 raise Exception("Controller %s not bound to any site deployments"%controller.name)
 
