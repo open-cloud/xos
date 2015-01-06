@@ -2,11 +2,11 @@ import os
 import base64
 from django.db.models import F, Q
 from planetstack.config import Config
-from observer.openstacksyncstep import OpenStackSyncStep
+from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.ansible import *
 
-class SyncControllerSite(OpenStackSyncStep):
+class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0
     provides=[ControllerSite]
 
@@ -21,7 +21,7 @@ class SyncControllerSite(OpenStackSyncStep):
 		         'admin_user': controller_site.controller.admin_user,
 		         'admin_password': controller_site.controller.admin_password,
 		         'admin_tenant': controller_site.controller.admin_tenant,
-	                 'ansible_tag': '%s@%s'%(controller_site.site.login_base,controller_site.deployment.name), # name of ansible playbook
+	                 'ansible_tag': '%s@%s'%(controller_site.site.login_base,controller_site.controller.name), # name of ansible playbook
 		         'tenant': controller_site.site.login_base,
 		         'tenant_description': controller_site.site.name}
 
