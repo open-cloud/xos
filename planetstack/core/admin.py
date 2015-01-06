@@ -418,7 +418,7 @@ class ControllerSiteInline(PlStackTabularInline):
     model = ControllerSite
     extra = 0
     suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['controller', 'site_deployment', 'tenant_id']
+    fields = ['controller', 'site', 'tenant_id']
 
 
 class SitePrivilegeInline(PlStackTabularInline):

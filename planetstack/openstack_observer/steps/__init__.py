@@ -1,1 +1,1 @@
-from .sync_controller_sites import SyncControllerSite
+from .sync_controller_sites import SyncControllerSites
