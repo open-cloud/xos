@@ -89,8 +89,8 @@ def get_REST_patterns():
         url(r'plstackapi/serviceclasses/$', ServiceClassList.as_view(), name='serviceclass-list'),
         url(r'plstackapi/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
     
-        url(r'plstackapi/controllernetworks/$', ControllerNetworksList.as_view(), name='controllernetworks-list'),
-        url(r'plstackapi/controllernetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerNetworksDetail.as_view(), name ='controllernetworks-detail'),
+        url(r'plstackapi/controllernetworks/$', ControllerNetworkList.as_view(), name='controllernetworks-list'),
+        url(r'plstackapi/controllernetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerNetworkDetail.as_view(), name ='controllernetworks-detail'),
     
         url(r'plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
@@ -170,8 +170,8 @@ def get_REST_patterns():
         url(r'plstackapi/deploymentprivileges/$', DeploymentPrivilegeList.as_view(), name='deploymentprivilege-list'),
         url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
     
-        url(r'plstackapi/controllerusers/$', ControllerUsersList.as_view(), name='controllerusers-list'),
-        url(r'plstackapi/controllerusers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerUsersDetail.as_view(), name ='controllerusers-detail'),
+        url(r'plstackapi/controllerusers/$', ControllerUserList.as_view(), name='controllerusers-list'),
+        url(r'plstackapi/controllerusers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerUserDetail.as_view(), name ='controllerusers-detail'),
     
         url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
@@ -179,8 +179,8 @@ def get_REST_patterns():
         url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
         url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
     
-        url(r'plstackapi/sitedeployments/$', SiteDeploymentsList.as_view(), name='sitedeployments-list'),
-        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentsDetail.as_view(), name ='sitedeployments-detail'),
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployments-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployments-detail'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
@@ -194,8 +194,8 @@ def get_REST_patterns():
         url(r'plstackapi/serviceresources/$', ServiceResourceList.as_view(), name='serviceresource-list'),
         url(r'plstackapi/serviceresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceResourceDetail.as_view(), name ='serviceresource-detail'),
     
-        url(r'plstackapi/controllerslices/$', ControllerSlicesList.as_view(), name='controllerslices-list'),
-        url(r'plstackapi/controllerslices/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSlicesDetail.as_view(), name ='controllerslices-detail'),
+        url(r'plstackapi/controllerslices/$', ControllerSliceList.as_view(), name='controllerslices-list'),
+        url(r'plstackapi/controllerslices/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSliceDetail.as_view(), name ='controllerslices-detail'),
     
     )
 
@@ -1026,7 +1026,7 @@ class ServiceClassIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerNetworksSerializer(serializers.HyperlinkedModelSerializer):
+class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1039,10 +1039,10 @@ class ControllerNetworksSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerNetworks
+        model = ControllerNetwork
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
-class ControllerNetworksIdSerializer(XOSModelSerializer):
+class ControllerNetworkIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1055,7 +1055,7 @@ class ControllerNetworksIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerNetworks
+        model = ControllerNetwork
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
 
@@ -2016,7 +2016,7 @@ class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerUsersSerializer(serializers.HyperlinkedModelSerializer):
+class ControllerUserSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2029,10 +2029,10 @@ class ControllerUsersSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerUsers
+        model = ControllerUser
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
 
-class ControllerUsersIdSerializer(XOSModelSerializer):
+class ControllerUserIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2045,7 +2045,7 @@ class ControllerUsersIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerUsers
+        model = ControllerUser
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
 
 
@@ -2121,7 +2121,7 @@ class UserCredentialIdSerializer(XOSModelSerializer):
 
 
 
-class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
+class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2134,10 +2134,10 @@ class SiteDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = SiteDeployments
+        model = SiteDeployment
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
-class SiteDeploymentsIdSerializer(XOSModelSerializer):
+class SiteDeploymentIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2150,7 +2150,7 @@ class SiteDeploymentsIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = SiteDeployments
+        model = SiteDeployment
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 
@@ -2312,7 +2312,7 @@ class ServiceResourceIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerSlicesSerializer(serializers.HyperlinkedModelSerializer):
+class ControllerSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2325,10 +2325,10 @@ class ControllerSlicesSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerSlices
+        model = ControllerSlice
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
-class ControllerSlicesIdSerializer(XOSModelSerializer):
+class ControllerSliceIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2341,7 +2341,7 @@ class ControllerSlicesIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerSlices
+        model = ControllerSlice
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
 
@@ -2385,7 +2385,7 @@ serializerLookUp = {
 
                  ServiceClass: ServiceClassSerializer,
 
-                 ControllerNetworks: ControllerNetworksSerializer,
+                 ControllerNetwork: ControllerNetworkSerializer,
 
                  Charge: ChargeSerializer,
 
@@ -2439,13 +2439,13 @@ serializerLookUp = {
 
                  DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
-                 ControllerUsers: ControllerUsersSerializer,
+                 ControllerUser: ControllerUserSerializer,
 
                  DeploymentRole: DeploymentRoleSerializer,
 
                  UserCredential: UserCredentialSerializer,
 
-                 SiteDeployments: SiteDeploymentsSerializer,
+                 SiteDeployment: SiteDeploymentSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -2455,7 +2455,7 @@ serializerLookUp = {
 
                  ServiceResource: ServiceResourceSerializer,
 
-                 ControllerSlices: ControllerSlicesSerializer,
+                 ControllerSlice: ControllerSliceSerializer,
 
                  None: None,
                 }
@@ -3574,10 +3574,10 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerNetworksList(generics.ListCreateAPIView):
-    queryset = ControllerNetworks.objects.select_related().all()
-    serializer_class = ControllerNetworksSerializer
-    id_serializer_class = ControllerNetworksIdSerializer
+class ControllerNetworkList(generics.ListCreateAPIView):
+    queryset = ControllerNetwork.objects.select_related().all()
+    serializer_class = ControllerNetworkSerializer
+    id_serializer_class = ControllerNetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
@@ -3589,7 +3589,7 @@ class ControllerNetworksList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerNetworks.select_by_user(self.request.user)
+        return ControllerNetwork.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -3601,21 +3601,21 @@ class ControllerNetworksList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerNetworksList, self).create(request, *args, **kwargs)
+            return super(ControllerNetworkList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerNetworksList, self).create(request, *args, **kwargs)
+        ret = super(ControllerNetworkList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerNetworksDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerNetworks.objects.select_related().all()
-    serializer_class = ControllerNetworksSerializer
-    id_serializer_class = ControllerNetworksIdSerializer
+class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerNetwork.objects.select_related().all()
+    serializer_class = ControllerNetworkSerializer
+    id_serializer_class = ControllerNetworkIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3625,7 +3625,7 @@ class ControllerNetworksDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerNetworks.select_by_user(self.request.user)
+        return ControllerNetwork.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5166,10 +5166,10 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerUsersList(generics.ListCreateAPIView):
-    queryset = ControllerUsers.objects.select_related().all()
-    serializer_class = ControllerUsersSerializer
-    id_serializer_class = ControllerUsersIdSerializer
+class ControllerUserList(generics.ListCreateAPIView):
+    queryset = ControllerUser.objects.select_related().all()
+    serializer_class = ControllerUserSerializer
+    id_serializer_class = ControllerUserIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
 
@@ -5181,7 +5181,7 @@ class ControllerUsersList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerUsers.select_by_user(self.request.user)
+        return ControllerUser.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -5193,21 +5193,21 @@ class ControllerUsersList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerUsersList, self).create(request, *args, **kwargs)
+            return super(ControllerUserList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerUsersList, self).create(request, *args, **kwargs)
+        ret = super(ControllerUserList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerUsersDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerUsers.objects.select_related().all()
-    serializer_class = ControllerUsersSerializer
-    id_serializer_class = ControllerUsersIdSerializer
+class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerUser.objects.select_related().all()
+    serializer_class = ControllerUserSerializer
+    id_serializer_class = ControllerUserIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5217,7 +5217,7 @@ class ControllerUsersDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerUsers.select_by_user(self.request.user)
+        return ControllerUser.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5343,10 +5343,10 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteDeploymentsList(generics.ListCreateAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
+class SiteDeploymentList(generics.ListCreateAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
@@ -5358,7 +5358,7 @@ class SiteDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
+        return SiteDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -5370,21 +5370,21 @@ class SiteDeploymentsList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(SiteDeploymentsList, self).create(request, *args, **kwargs)
+        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployments.objects.select_related().all()
-    serializer_class = SiteDeploymentsSerializer
-    id_serializer_class = SiteDeploymentsIdSerializer
+class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5394,7 +5394,7 @@ class SiteDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return SiteDeployments.select_by_user(self.request.user)
+        return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5638,10 +5638,10 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerSlicesList(generics.ListCreateAPIView):
-    queryset = ControllerSlices.objects.select_related().all()
-    serializer_class = ControllerSlicesSerializer
-    id_serializer_class = ControllerSlicesIdSerializer
+class ControllerSliceList(generics.ListCreateAPIView):
+    queryset = ControllerSlice.objects.select_related().all()
+    serializer_class = ControllerSliceSerializer
+    id_serializer_class = ControllerSliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
@@ -5653,7 +5653,7 @@ class ControllerSlicesList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerSlices.select_by_user(self.request.user)
+        return ControllerSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -5665,21 +5665,21 @@ class ControllerSlicesList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerSlicesList, self).create(request, *args, **kwargs)
+            return super(ControllerSliceList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerSlicesList, self).create(request, *args, **kwargs)
+        ret = super(ControllerSliceList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerSlicesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerSlices.objects.select_related().all()
-    serializer_class = ControllerSlicesSerializer
-    id_serializer_class = ControllerSlicesIdSerializer
+class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerSlice.objects.select_related().all()
+    serializer_class = ControllerSliceSerializer
+    id_serializer_class = ControllerSliceIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5689,7 +5689,7 @@ class ControllerSlicesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerSlices.select_by_user(self.request.user)
+        return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 

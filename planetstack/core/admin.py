@@ -414,6 +414,13 @@ class ControllerPrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return ControllerPrivilege.select_by_user(request.user)
 
+class ControllerSiteInline(PlStackTabularInline):
+    model = ControllerSite
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['controller', 'site', 'tenant_id']
+
+
 class SitePrivilegeInline(PlStackTabularInline):
     model = SitePrivilege
     extra = 0
@@ -432,8 +439,8 @@ class SitePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
-class SiteDeploymentsInline(PlStackTabularInline):
-    model = SiteDeployments
+class SiteDeploymentInline(PlStackTabularInline):
+    model = SiteDeployment
     extra = 0
     suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['backend_status_icon', 'deployment','site', 'controller']
@@ -449,10 +456,10 @@ class SiteDeploymentsInline(PlStackTabularInline):
         if db_field.name == 'controller':
             kwargs['queryset'] = Controller.select_by_user(request.user)
 
-        return super(SiteDeploymentsInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        return SiteDeployments.select_by_user(request.user)
+        return SiteDeployment.select_by_user(request.user)
 
 
 class SlicePrivilegeInline(PlStackTabularInline):
@@ -597,7 +604,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployments, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployment, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
         # manipulate_m2m_objs doesn't work for Flavor/Deployment relationship
         # so well handle that manually here
@@ -655,12 +662,12 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
         return AdminFormMetaClass
 
 class ControllerAdminForm(forms.ModelForm):
-    site_deployments = forms.ModelMultipleChoiceField(
-        queryset=SiteDeployments.objects.all(),
+    sites = forms.ModelMultipleChoiceField(
+        queryset=Site.objects.all(),
         required=False,
-        help_text="Select which sites deployments are managed by this controller",
+        help_text="Select which sites are managed by this controller",
         widget=FilteredSelectMultiple(
-            verbose_name=('Site Deployments'), is_stacked=False
+            verbose_name=('Sites'), is_stacked=False
         )
     )
 
@@ -672,7 +679,7 @@ class ControllerAdminForm(forms.ModelForm):
         super(ControllerAdminForm, self).__init__(*args, **kwargs)  
 
         if self.instance and self.instance.pk:
-            self.fields['site_deployments'].initial = [x.site_deployment for x in self.instance.controllersitedeployments.all()]
+            self.fields['sites'].initial = [x.site_deployment for x in self.instance.controllersite.all()]
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
@@ -710,7 +717,7 @@ class ControllerAdminForm(forms.ModelForm):
             # save_m2m() doesn't seem to work with 'through' relations. So we
             #    create/destroy the through models ourselves. There has to be
             #    a better way...
-            #self.manipulate_m2m_objs(controller, self.cleaned_data['site_deployments'], controller.controllersitedeployments.all(), ControllerSiteDeployments, "controller", "site_deployment")
+            self.manipulate_m2m_objs(controller, self.cleaned_data['sites'], controller.controllersite.all(), ControllerSite, "controller", "site")
             pass
     	
         self.save_m2m()
@@ -721,7 +728,7 @@ class ControllerAdmin(PlanetStackBaseAdmin):
     model = Controller 
     fieldList = ['name', 'version', 'backend_type', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
     #fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
-    inlines = [] # ,ControllerImagesInline]
+    inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text',)
@@ -787,7 +794,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentsInline]
+    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline]
     search_fields = ['name']
 
     def queryset(self, request):
@@ -888,8 +895,8 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class ControllerSlicesInline(PlStackTabularInline):
-    model = ControllerSlices
+class ControllerSliceInline(PlStackTabularInline):
+    model = ControllerSlice
     extra = 0
     verbose_name = "Controller Slices"
     verbose_name_plural = "Controller Slices"
@@ -905,7 +912,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
-    admin_inlines = [ControllerSlicesInline]
+    admin_inlines = [ControllerSliceInline]
 
     user_readonly_fields = fieldList
 
@@ -1472,8 +1479,8 @@ class NetworkSlicesInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network','slice']
     readonly_fields = ('backend_status_icon', )
 
-class ControllerNetworksInline(PlStackTabularInline):
-    model = ControllerNetworks
+class ControllerNetworkInline(PlStackTabularInline):
+    model = ControllerNetwork
     extra = 0
     verbose_name_plural = "Controller Networks"
     verbose_name = "Controller Network"
@@ -1495,7 +1502,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
     readonly_fields = ("subnet", )
 
     inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
-    admin_inlines = [ControllerNetworksInline]
+    admin_inlines = [ControllerNetworkInline]
 
     form=NetworkForm
 

@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployment, SiteDeployment
+from core.models.site import Controller, SitePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser
 from util.logger import Logger, logging
@@ -13,14 +13,14 @@ from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncControllerUsers(OpenStackSyncStep):
-    provides=[ControllerUser, User]
+class SyncControllerUser(OpenStackSyncStep):
+    provides=[SitePrivilege]
     requested_interval=0
 
     def fetch_pending(self, deleted):
 
         if (deleted):
-            return ControllerUser.deleted_objects.all()
+            return SitePrivilege.deleted_objects.all()
         else:
             return ControllerUser.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
@@ -37,7 +37,7 @@ class SyncControllerUsers(OpenStackSyncStep):
         # We must also check if the user should have the admin role 		 		
 	roles = ['user']
         if controller_user.user.is_admin:
-            roles.append('Admin')
+            roles.append('admin')
    
 	# setup user home site roles at controller 
         if not controller_user.user.site:

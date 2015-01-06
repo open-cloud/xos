@@ -5,22 +5,22 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.slice import Slice, ControllerSlices
-from core.models.controllerusers import ControllerUsers
+from core.models.slice import Slice, ControllerSlice
+from core.models.controlleruser import ControllerUser
 from util.logger import Logger, logging
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
 class SyncControllerSlices(OpenStackSyncStep):
-    provides=[ControllerSlices]
+    provides=[ControllerSlice]
     requested_interval=0
 
     def fetch_pending(self, deleted):
         if (deleted):
-            return ControllerSlices.deleted_objects.all()
+            return ControllerSlice.deleted_objects.all()
         else:
-            return ControllerSlices.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            return ControllerSlice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
     def sync_record(self, controller_slice):
         logger.info("sync'ing slice controller %s" % controller_slice)
@@ -29,7 +29,7 @@ class SyncControllerSlices(OpenStackSyncStep):
             logger.info("controller %r has no admin_user, skipping" % controller_slice.controller)
             return
 
-        controller_users = ControllerUsers.objects.filter(user=controller_slice.slice.creator,
+        controller_users = ControllerUser.objects.filter(user=controller_slice.slice.creator,
                                                              controller=controller_slice.controller)
         if not controller_users:
             raise Exception("slice createor %s has not accout at controller %s" % (controller_slice.slice.creator, controller_slice.controller.name))
