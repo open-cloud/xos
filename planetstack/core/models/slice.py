@@ -94,7 +94,7 @@ class Slice(PlCoreBase):
         nets = Network.objects.filter(slices=self)
         nets.delete() 
         # delete slice controllers
-        slice_controllers = ControllerSlices.objects.filter(slice=self)
+        slice_controllers = ControllerSlice.objects.filter(slice=self)
         slice_controllers.delete()
         # delete slice privilege
         slice_privileges = SlicePrivilege.objects.filter(slice=self)
@@ -129,7 +129,7 @@ class SlicePrivilege(PlCoreBase):
             qs = SlicePrivilege.objects.filter(id__in=sp_ids)
         return qs
 
-class ControllerSlices(PlCoreBase):
+class ControllerSlice(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 
@@ -142,10 +142,10 @@ class ControllerSlices(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = ControllerSlices.objects.all()
+            qs = ControllerSlice.objects.all()
         else:
             slices = Slice.select_by_user(user)
-            qs = ControllerSlices.objects.filter(slice__in=slices)
+            qs = ControllerSlice.objects.filter(slice__in=slices)
         return qs    
 
     def get_cpu_stats(self):

@@ -4,6 +4,7 @@ import pdb
 from core.models import *
 from dependency_walker import *
 import model_policies
+from util.logger import logger
 
 modelPolicyEnabled = True
 
@@ -41,7 +42,7 @@ def post_save_handler(sender, instance, **kwargs):
 			if policy_handler is not None:
 				policy_handler.handle(instance)
 		except:
-			pass
+			logger.log_exc("Model Policy Error:") 
 	elif 'deleted' in kwargs['update_fields']:
 		walk_inv_deps(delete_if_inactive, instance)
 	
