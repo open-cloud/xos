@@ -5,13 +5,13 @@ from .service import Service
 from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
-from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerPrivilege, ControllerSite, SiteDeployment
+from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerSite, SiteDeployment
 from .dashboard import DashboardView, ControllerDashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
 from .site import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
 from .slice import Slice, ControllerSlice
-from .controlleruser import ControllerUser
+from .controlleruser import ControllerUser, ControllerSitePrivilege, ControllerSlicePrivilege
 from .image import Image, ImageDeployments, ControllerImages
 from .node import Node
 from .serviceresource import ServiceResource

@@ -404,16 +404,6 @@ class DeploymentPrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
 
-class ControllerPrivilegeInline(PlStackTabularInline):
-    model = ControllerPrivilege
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['backend_status_icon', 'user','role','controller']
-    readonly_fields = ('backend_status_icon', )
-
-    def queryset(self, request):
-        return ControllerPrivilege.select_by_user(request.user)
-
 class ControllerSiteInline(PlStackTabularInline):
     model = ControllerSite
     extra = 0
@@ -1217,7 +1207,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     # that reference specific fields on auth.User.
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
     list_filter = ('site',)
-    inlines = [SlicePrivilegeInline,SitePrivilegeInline,ControllerPrivilegeInline,UserDashboardViewInline]
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline,UserDashboardViewInline]
 
     fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
