@@ -10,8 +10,8 @@ class SlicePlus(Slice, PlusObjectMixin):
         used_deployments = {}
         sliverCount = 0
         for sliver in self.slivers.all():
-            site = sliver.node.site
-            deployment = sliver.node.deployment
+            site = sliver.node.site_deployment.site
+            deployment = sliver.node.site_deployment.deployment
             used_sites[site.name] = used_sites.get(site.name, 0) + 1
             used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
             sliverCount = sliverCount + 1
