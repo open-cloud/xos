@@ -35,7 +35,7 @@
         "Node", 
         "Flavor"
     ], 
-    "ControllerNetworks": [
+    "ControllerNetwork": [
         "Network", 
         "Controller"
     ], 
@@ -70,7 +70,7 @@
     "ServiceAttribute": [
         "Service"
     ], 
-    "ControllerSiteDeployments": [
+    "ControllerSites": [
         "Controller"
     ], 
     "SlicePrivilege": [
@@ -87,17 +87,17 @@
         "Site", 
         "Role"
     ], 
-    "ControllerUsers": [
+    "ControllerUser": [
         "User", 
         "Controller"
     ], 
     "SiteCredential": [
         "Site"
     ], 
-    "ControllerSlices": [
+    "ControllerSlice": [
         "Controller", 
         "Slice",
-        "ControllerUsers"
+        "ControllerUser"
     ], 
     "SiteDeployments": [
         "Site", 

@@ -15,7 +15,7 @@ function xos_get_defaults() {
   this.networkParameterType = {"updated": null, "description": "", "created": null, "deleted": false, "enacted": null, "backend_status": "Provisioning in progress", "name": ""};
   this.networkSlice = {"updated": null, "slice": null, "network": null, "created": null, "deleted": false, "backend_status": "Provisioning in progress", "enacted": null};
   this.networkSliver = {"updated": null, "network": null, "created": null, "deleted": false, "ip": null, "enacted": null, "backend_status": "Provisioning in progress", "port_id": null, "sliver": null};
-  this.networkTemplate = {"enacted": null, "updated": null, "backend_status": "Provisioning in progress", "description": null, "created": null, "deleted": false, "shared_network_name": null, "guaranteed_bandwidth": 0, "visibility": "private", "translation": "none", "shared_network_id": null, "name": ""};
+  this.networkTemplate = {"enacted": null, "updated": null, "backend_status": "Provisioning in progress", "description": null, "created": null, "deleted": false, "sharedNetworkName": null, "guaranteedBandwidth": 0, "visibility": "private", "translation": "none", "sharedNetworkId": null, "name": ""};
   this.node = {"updated": null, "name": "", "created": null, "deleted": false, "site": null, "deployment": null, "backend_status": "Provisioning in progress", "enacted": null};
   this.payment = {"updated": null, "created": null, "deleted": false, "account": null, "amount": 0.0, "date": "2014-11-12T01:19:50.077Z", "backend_status": "Provisioning in progress", "enacted": null};
   this.planetStack = {"updated": null, "description": "PlanetStack", "created": null, "deleted": false, "backend_status": "Provisioning in progress", "enacted": null};

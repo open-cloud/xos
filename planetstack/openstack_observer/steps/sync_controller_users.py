@@ -4,9 +4,9 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import Controller, SiteDeployments, SiteDeployments
+from core.models.site import Controller, SiteDeployment, SiteDeployment
 from core.models.user import User
-from core.models.controllerusers import ControllerUsers
+from core.models.controlleruser import ControllerUser
 from util.logger import Logger, logging
 
 from observer.ansible import *
@@ -14,15 +14,15 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerUsers(OpenStackSyncStep):
-    provides=[ControllerUsers, User]
+    provides=[ControllerUser, User]
     requested_interval=0
 
     def fetch_pending(self, deleted):
 
         if (deleted):
-            return ControllerUsers.deleted_objects.all()
+            return ControllerUser.deleted_objects.all()
         else:
-            return ControllerUsers.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
+            return ControllerUser.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, controller_user):
         logger.info("sync'ing user %s at controller %s" % (controller_user.user, controller_user.controller))
@@ -37,14 +37,14 @@ class SyncControllerUsers(OpenStackSyncStep):
         # We must also check if the user should have the admin role 		 		
 	roles = ['user']
         if controller_user.user.is_admin:
-            roles.append('admin')
+            roles.append('Admin')
    
 	# setup user home site roles at controller 
         if not controller_user.user.site:
             raise Exception('Siteless user %s'%controller_user.user.email)
         else:
             # look up tenant id for the user's site at the controller
-            #ctrl_site_deployments = SiteDeployments.objects.filter(
+            #ctrl_site_deployments = SiteDeployment.objects.filter(
             #  site_deployment__site=controller_user.user.site,
             #  controller=controller_user.controller)
 

@@ -721,7 +721,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:28.687Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 19
 },
 {
@@ -734,7 +734,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:34.657Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 20
 },
 {
@@ -747,7 +747,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:40.604Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 21
 },
 {
@@ -760,7 +760,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-06-20T01:53:47.047Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 22
 },
 {
@@ -773,7 +773,7 @@
         "backend_status": "Authorization Failed: unsupported operand type(s) for +: 'NoneType' and 'str'",
         "enacted": "2014-08-08T03:49:32.318Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 27
 },
 {
@@ -786,7 +786,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:03.289Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 28
 },
 {
@@ -799,7 +799,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:07.804Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 29
 },
 {
@@ -812,7 +812,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": "2014-08-06T17:46:12.521Z"
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 30
 },
 {
@@ -825,7 +825,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 31
 },
 {
@@ -838,7 +838,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 32
 },
 {
@@ -851,7 +851,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 33
 },
 {
@@ -864,7 +864,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 34
 },
 {
@@ -877,7 +877,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 35
 },
 {
@@ -890,7 +890,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 36
 },
 {
@@ -903,7 +903,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 37
 },
 {
@@ -916,7 +916,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 38
 },
 {
@@ -929,7 +929,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 39
 },
 {
@@ -942,7 +942,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 40
 },
 {
@@ -955,7 +955,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 41
 },
 {
@@ -968,7 +968,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 42
 },
 {
@@ -981,7 +981,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 43
 },
 {
@@ -994,7 +994,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 44
 },
 {
@@ -1007,7 +1007,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 45
 },
 {
@@ -1020,7 +1020,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 46
 },
 {
@@ -1033,7 +1033,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 47
 },
 {
@@ -1046,7 +1046,7 @@
         "backend_status": "Provisioning in progress",
         "enacted": null
     },
-    "model": "core.sitedeployments",
+    "model": "core.sitedeployment",
     "pk": 48
 },
 {

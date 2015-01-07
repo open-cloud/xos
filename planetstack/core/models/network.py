@@ -1,5 +1,6 @@
 import os
 import socket
+import sys
 from django.db import models
 from core.models import PlCoreBase, Site, Slice, Sliver, Controller
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
@@ -84,13 +85,13 @@ class NetworkTemplate(PlCoreBase):
         # somehow these got set wrong inside of the live database. Remove this
         # code after all is well...
         if (self.topology_kind=="BigSwitch"):
-            print "XXX warning: topology_kind invalid case"
+            print >> sys.stderr, "XXX warning: topology_kind invalid case"
             self.topology_kind="bigswitch"
         elif (self.topology_kind=="Physical"):
-            print "XXX warning: topology_kind invalid case"
+            print >> sys.stderr, "XXX warning: topology_kind invalid case"
             self.topology_kind="physical"
         elif (self.topology_kind=="Custom"):
-            print "XXX warning: topology_kind invalid case"
+            print >> sys.stderr, "XXX warning: topology_kind invalid case"
             self.toplogy_kind="custom"
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -143,7 +144,7 @@ class Network(PlCoreBase):
             qs = Network.objects.filter(owner__in=slices)
         return qs
 
-class ControllerNetworks(PlCoreBase):
+class ControllerNetwork(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 

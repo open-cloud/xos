@@ -17,8 +17,8 @@ class SyncNetworks(OpenStackSyncStep):
         network.save()
 
     def delete_record(self, network):
-        controller_networks_deleter = SyncControllerNetworks().delete_record
-        for controller_network in ControllerNetworks.objects.filter(network=network):
+        controller_networks_deleter = SyncControllerNetwork().delete_record
+        for controller_network in ControllerNetwork.objects.filter(network=network):
             try:
                 controller_network_deleter(controller_network)    
             except Exception,e:

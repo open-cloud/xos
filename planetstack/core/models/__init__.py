@@ -5,13 +5,13 @@ from .service import Service
 from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
-from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerPrivilege, SiteDeployments
+from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerSite, SiteDeployment
 from .dashboard import DashboardView, ControllerDashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
 from .site import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
-from .slice import Slice, ControllerSlices
-from .controllerusers import ControllerUsers
+from .slice import Slice, ControllerSlice
+from .controlleruser import ControllerUser, ControllerSitePrivilege, ControllerSlicePrivilege
 from .image import Image, ImageDeployments, ControllerImages
 from .node import Node
 from .serviceresource import ServiceResource
@@ -26,6 +26,6 @@ from .flavor import Flavor
 from .sliver import Sliver
 from .reservation import ReservedResource
 from .reservation import Reservation
-from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, NetworkTemplate, Router, NetworkSlice, ControllerNetworks
+from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, NetworkTemplate, Router, NetworkSlice, ControllerNetwork
 from .billing import Account, Invoice, Charge, UsableObject, Payment
 

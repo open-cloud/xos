@@ -43,7 +43,8 @@ class OpenStackDriver:
         return driver
 
     def admin_driver(self, tenant=None, controller=None):
-        controller = Controller.objects.get(id=controller.id)
+        if isinstance(controller, int):
+            controller = Controller.objects.get(id=controller.id)
         client = OpenStackClient(tenant=tenant, controller=controller)
         driver = OpenStackDriver(client=client)
         driver.admin_user = client.keystone.users.find(name=controller.admin_user)
