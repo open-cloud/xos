@@ -13,9 +13,9 @@ from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncControllerNetworks(OpenStackSyncStep):
+class SyncControllerNetwork(OpenStackSyncStep):
     requested_interval = 0
-    provides=[Network, ControllerNetworks, Sliver]
+    provides=[Network, ControllerNetwork, Sliver]
 
     def alloc_subnet(self, uuid):
         a = 10
@@ -29,9 +29,9 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
     def fetch_pending(self, deleted):
         if (deleted):
-            return ControllerNetworks.deleted_objects.all()
+            return ControllerNetwork.deleted_objects.all()
         else:
-            return ControllerNetworks.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            return ControllerNetwork.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
 
     def save_controller_network(self, controller_network):

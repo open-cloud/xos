@@ -112,6 +112,22 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
 
     def get_field_diff(self, field_name):
         return self.diff.get(field_name, None)
+
+    #classmethod
+    def getValidators(cls):
+        """ primarily for REST API, return a dictionary of field names mapped
+            to lists of the type of validations that need to be applied to
+            those fields.
+        """
+        validators = {}
+        for field in cls._meta.fields:
+            l = []
+            if field.blank==False:
+                l.append("notBlank")
+            if field.__class__.__name__=="URLField":
+                l.append("url")
+            validators[field.name] = l
+        return validators
     # ---- end copy stuff from DiffModelMixin ----
 
     @property
