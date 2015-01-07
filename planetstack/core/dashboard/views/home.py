@@ -89,18 +89,16 @@ class DashboardDynamicView(TemplateView):
                 body = body + '</select>'
 
                 for j,controllerdashboard in enumerate(view.controllerdashboardviews.all()):
-                    body = body + '<div id="dashcontent-%d-%d" class="dashcontent-%d">\n' % (i,j,i)
-                    body = body + self.embedDashboard(controllerdashboard.url);
-                    body = body + '</div>\n';
+                    body = body + '<script type="text/template" id="dashtemplate-%d-%d">\n%s\n</script>\n' % (i,j, self.embedDashboard(controllerdashboard.url));
+
+                body = body + '<div id="dashcontent-%d" class="dashcontent"></div>\n' % i
 
                 body = body + """<script>
-                                 $("#dashselect-%d").change(function() { console.log("change!");
+                                 $("#dashselect-%d").change(function() {
                                      v=$("#dashselect-%d").val();
-                                     $(".dashcontent-%d").hide();
-                                     $("#dashcontent-%d-" + v).show();
+                                     $("#dashcontent-%d").html( $("#dashtemplate-%d-" + v).html() );
                                  });
-                                 $(".dashcontent-%d").hide();
-                                 $("#dashcontent-%d-0").show();
+                                 $("#dashcontent-%d").html( $("#dashtemplate-%d-0").html() );
                                  </script>
                               """ % (i,i,i,i,i,i);
             else:
