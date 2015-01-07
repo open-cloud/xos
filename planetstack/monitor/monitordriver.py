@@ -15,5 +15,5 @@ class MonitorDriver:
     def __init__(self):
         pass
 
-    def get_meter(self, meter_name, credentials):
+    def get_meter(self, meter_name, obj, pk, credentials=None):
         pass
