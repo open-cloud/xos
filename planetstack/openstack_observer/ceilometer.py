@@ -95,14 +95,14 @@ class CeilometerDriver(MonitorDriver):
         token = ceilometer_client.auth_token
 
         ceilo_endpoint = client._get_endpoint(ceilometer_client, **keystone)
-            #ceilometer = client.get_client(2, username=keystone['username'], password=keystone['password'], tenant_name=keystone['tenant_name'], auth_url=keystone['auth_url'])
+        #ceilometer = client.get_client(2, username=keystone['username'], password=keystone['password'], tenant_name=keystone['tenant_name'], auth_url=keystone['auth_url'])
 
         ceilometer = client.Client('2',endpoint = ceilo_endpoint, token = lambda: token)
 
         cur_ts = datetime.datetime.fromtimestamp(time.time()-86400)
         str_ts = cur_ts.strftime('%Y-%m-%dT%H:%M:%S')
 
-            object_filter = object_to_filter(obj, pk)
+        object_filter = object_to_filter(obj, pk)
         filter=';'.join([object_filter,'timestamp>%s'%str_ts])
         #query = cli_to_array("project_id=124de34266b24f57957345cdb43cc9ff;timestamp>2014-12-11T00:00:00")
         query = cli_to_array(filter)
