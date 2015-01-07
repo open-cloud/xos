@@ -68,9 +68,6 @@ def get_REST_patterns():
         url(r'plstackapi/planetstackroles/$', PlanetStackRoleList.as_view(), name='planetstackrole-list'),
         url(r'plstackapi/planetstackroles/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackRoleDetail.as_view(), name ='planetstackrole-detail'),
     
-        url(r'plstackapi/controllerprivileges/$', ControllerPrivilegeList.as_view(), name='controllerprivilege-list'),
-        url(r'plstackapi/controllerprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerPrivilegeDetail.as_view(), name ='controllerprivilege-detail'),
-    
         url(r'plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
         url(r'plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
     
@@ -721,41 +718,6 @@ class PlanetStackRoleIdSerializer(XOSModelSerializer):
     class Meta:
         model = PlanetStackRole
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
-
-
-
-
-class ControllerPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','role',)
-
-class ControllerPrivilegeIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','role',)
 
 
 
@@ -2371,8 +2333,6 @@ serializerLookUp = {
 
                  PlanetStackRole: PlanetStackRoleSerializer,
 
-                 ControllerPrivilege: ControllerPrivilegeSerializer,
-
                  NetworkSliver: NetworkSliverSerializer,
 
                  Project: ProjectSerializer,
@@ -3154,65 +3114,6 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return PlanetStackRole.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-
-
-class ControllerPrivilegeList(generics.ListCreateAPIView):
-    queryset = ControllerPrivilege.objects.select_related().all()
-    serializer_class = ControllerPrivilegeSerializer
-    id_serializer_class = ControllerPrivilegeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','controller','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ControllerPrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerPrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerPrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class ControllerPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerPrivilege.objects.select_related().all()
-    serializer_class = ControllerPrivilegeSerializer
-    id_serializer_class = ControllerPrivilegeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ControllerPrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
