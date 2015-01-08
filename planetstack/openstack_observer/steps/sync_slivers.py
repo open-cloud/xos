@@ -58,7 +58,7 @@ class SyncSlivers(OpenStackSyncStep):
                              if network.template.shared_network_name]
 
         #driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, controller=sliver.controllerNetwork)
-        driver = self.driver.admin_driver(tenant='admin', controller=sliver.controllerNetwork)
+        driver = self.driver.admin_driver(tenant='admin', controller=sliver.node.site_deployment.controller)
         nets = driver.shell.quantum.list_networks()['networks']
         for net in nets:
             if net['name'] in network_templates:
@@ -70,7 +70,7 @@ class SyncSlivers(OpenStackSyncStep):
                     nics.append(net['id'])
 
         # look up image id
-        controller_driver = self.driver.admin_driver(controller=sliver.controllerNetwork)
+        controller_driver = self.driver.admin_driver(controller=sliver.node.site_deployment.controller)
         image_id = None
         images = controller_driver.shell.glanceclient.images.list()
         for image in images:
@@ -102,7 +102,7 @@ class SyncSlivers(OpenStackSyncStep):
         if sliver.userData:
             userData = sliver.userData
 
-        controller = sliver.controllerNetwork
+        controller = sliver.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
                      'admin_user': sliver.creator.username,
                      'admin_password': sliver.creator.password,

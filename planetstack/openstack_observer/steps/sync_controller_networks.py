@@ -13,7 +13,7 @@ from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncControllerNetwork(OpenStackSyncStep):
+class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
     provides=[Network, ControllerNetwork, Sliver]
 
@@ -42,8 +42,8 @@ class SyncControllerNetwork(OpenStackSyncStep):
 
 	    network_fields = {'endpoint':controller_network.controller.auth_url,
 			'admin_user':slice.creator.email, # XXX: FIXME
-			'tenant_name':slice.slicename, # XXX: FIXME
-			'admin_password':controller_network.controller.admin_password,
+			'tenant_name':slice.name, # XXX: FIXME
+			'admin_password':slice.creator.remote_password,
 			'name':network_name,
 			'subnet_name':subnet_name,
 			'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),

@@ -176,7 +176,7 @@ class OpenStackClient:
         token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
         #self.glance = GlanceClient(*args, **kwds)
         
-        self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id, **kwds)
+        self.glanceclient = GlanceClientNew('1', endpoint='https://%s:9292' % hostname, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         # self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
