@@ -3,3 +3,4 @@ from .sync_controller_slices import SyncControllerSlices
 from .sync_controller_users import SyncControllerUsers
 from .sync_controller_site_privileges import SyncControllerSitePrivileges
 from .sync_controller_slice_privileges import SyncControllerSlicePrivileges
+from .sync_controller_networks import SyncControllerNetworks
