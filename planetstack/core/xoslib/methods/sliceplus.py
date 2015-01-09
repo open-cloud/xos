@@ -15,11 +15,19 @@ else:
     # rest_framework 2.x
     IdField = serializers.Field
 
+class NetworkPortsField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+    def to_representation(self, obj):
+        return obj
+
+    def to_internal_value(self, data):
+        return data
+
 class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = IdField()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+        networkPorts = NetworkPortsField()
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
@@ -27,12 +35,12 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         def getHumanReadableName(self, obj):
             return str(obj)
 
-        networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-        availableNetworks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+        networks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+#        availableNetworks = serializers.PrimaryKeyRelatedField(many=True, read_only=True, view_name='network-detail')
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','availableNetworks','sliceInfo','backendIcon','backendHtml')
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','sliceInfo','networkPorts','backendIcon','backendHtml')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
