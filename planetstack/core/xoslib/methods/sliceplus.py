@@ -27,7 +27,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        networkPorts = NetworkPortsField()
+        network_ports = NetworkPortsField()
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
@@ -40,7 +40,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','sliceInfo','networkPorts','backendIcon','backendHtml')
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()

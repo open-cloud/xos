@@ -27,7 +27,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                 "roles": roles}
 
     @property
-    def networkPorts(self):
+    def network_ports(self):
         # XXX this assumes there is only one network that can have ports bound
         # to it for a given slice. This is intended for the tenant view, which
         # will obey this field.
@@ -39,8 +39,8 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         return networkPorts
 
-    @networkPorts.setter
-    def networkPorts(self, value):
+    @network_ports.setter
+    def network_ports(self, value):
         print "XXX set networkPorts to", value
 
     @staticmethod
