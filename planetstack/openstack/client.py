@@ -84,7 +84,7 @@ class KeystoneClient(Client):
         return getattr(self.client, name)
 
 
-class GlanceClient(Client):
+class Glance(Client):
     def __init__(self, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
@@ -97,11 +97,15 @@ class GlanceClient(Client):
     def __getattr__(self, name):
         return getattr(self.client, name)
 
-class GlanceClientNew(Client):
-    def __init__(self, version, endpoint, token, *args, **kwds):
+class GlanceClient(Client):
+    def __init__(self, version, endpoint, token, cacert=None, *args, **kwds):
         Client.__init__(self, *args, **kwds)
         if has_openstack:
-            self.client = glanceclient.Client(version, endpoint=endpoint, token=token)
+            self.client = glanceclient.Client(version, 
+                endpoint=endpoint, 
+                token=token,
+                cacert=cacert
+            )
 
     @require_enabled
     def __getattr__(self, name):
@@ -174,9 +178,9 @@ class OpenStackClient:
         url_parsed = urlparse.urlparse(self.keystone.url)
         hostname = url_parsed.netloc.split(':')[0]
         token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
-        #self.glance = GlanceClient(*args, **kwds)
+        glance_endpoint = self.keystone.service_catalog.url_for(service_type='image', endpoint_type='publicURL')
         
-        self.glanceclient = GlanceClientNew('1', endpoint='https://%s:9292' % hostname, token=token.id, **kwds)
+        self.glanceclient = GlanceClient('1', endpoint=glance_endpoint, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         # self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
