@@ -542,7 +542,7 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments.all()]
+        self.fields['sites'].initial = [x for x in self.instance.sites.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
@@ -594,7 +594,7 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployment, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployment.all(), SiteDeployment, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
         # manipulate_m2m_objs doesn't work for Flavor/Deployment relationship
         # so well handle that manually here
