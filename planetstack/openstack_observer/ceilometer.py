@@ -8,9 +8,10 @@ import re
 import datetime
 import time
 from monitor.monitordriver import *
-from core.models import *
+import pdb
 
 def object_to_filter(model_name, pk):
+    from core.models import *
     filter_dict = {
             'Slice':[Slice, 'tenant_id', 'project_id'],
             'Sliver':[Sliver, 'instance_id', 'resource_id'],
@@ -19,7 +20,7 @@ def object_to_filter(model_name, pk):
 
     mod,field,tag = filter_dict[model_name]
     obj = mod.objects.get(pk=pk)
-    return '%s=%s'%(tag,mod[field])
+    return '%s=%s'%(tag,getattr(obj,field))
 
 
 def cli_to_array(cli_query):
@@ -70,35 +71,37 @@ def cli_to_array(cli_query):
 def meters_to_stats(meters):
     stats = DashboardStatistics()
     for m in meters:
-        timestamp = datetime.datetime.strptime(m.duration_start,'%Y-%m-%dT%H:%M:%S')
-        stats.stat_list.append({'timestamp':timestamp, 'value':m.sum})
-        stats.sum+=m.sum
-        stats.average+=m.sum
-        stats.unit = 'ns'
+        timestamp = m.duration_start
+        stats['stat_list'].append({'timestamp':timestamp, 'value':m.sum})
+        stats['sum']+=m.sum
+        stats['average']+=m.sum
+        stats['unit'] = 'ns'
 
-    stats.average/=len(meters)
+    stats['average']/=len(meters)
     return stats
-
 
 
 class CeilometerDriver(MonitorDriver):
     def get_meter(self, meter, obj, pk, keystone=None):
-        if (not keystone):
-            keystone = {}
-            keystone['username']=env['OS_USERNAME']
-            keystone['password']=env['OS_PASSWORD']
-            keystone['auth_url']=env['OS_AUTH_URL']
-            keystone['tenant_name']=env['OS_TENANT_NAME']
-            keystone['os_cacert']=env['OS_CACERT']
+        keystone = {}
+        keystone['os_username']=env['OS_USERNAME']
+        keystone['os_password']=env['OS_PASSWORD']
+        keystone['os_auth_url']=env['OS_AUTH_URL']
+        keystone['os_tenant_name']=env['OS_TENANT_NAME']
+        keystone['os_cacert']=env['OS_CACERT']
+        keystone['os_region_name']=env['OS_REGION_NAME']
 
-        ceilometer_client = client._get_ksclient(**keystone)
-        token = ceilometer_client.auth_token
+        keystone['username']=env['OS_USERNAME']
+        keystone['password']=env['OS_PASSWORD']
+        keystone['auth_url']=env['OS_AUTH_URL']
+        keystone['tenant_name']=env['OS_TENANT_NAME']
+        keystone['cacert']=env['OS_CACERT']
+        keystone['region_name']=env['OS_REGION_NAME']
 
-        ceilo_endpoint = client._get_endpoint(ceilometer_client, **keystone)
-        #ceilometer = client.get_client(2, username=keystone['username'], password=keystone['password'], tenant_name=keystone['tenant_name'], auth_url=keystone['auth_url'])
+        keystone['auth_plugin']=client.AuthPlugin(**keystone)
 
-        ceilometer = client.Client('2',endpoint = ceilo_endpoint, token = lambda: token)
-
+        ceilometer = client.get_client(2,**keystone)
+        
         cur_ts = datetime.datetime.fromtimestamp(time.time()-86400)
         str_ts = cur_ts.strftime('%Y-%m-%dT%H:%M:%S')
 
