@@ -32,7 +32,7 @@ class OpenStackDriver:
             auth = {'username': caller.email,
                     'password': hashlib.md5(caller.password).hexdigest()[:6],
                     'tenant': tenant}
-            client = OpenStackClient(controller=controller, **auth)
+            client = OpenStackClient(controller=controller, cacert=self.config.nova_ca_ssl_cert, **auth)
         else:
             admin_driver = self.admin_driver(tenant=tenant, controller=controller)
             client = OpenStackClient(tenant=tenant, controller=admin_driver.controller)
@@ -45,7 +45,7 @@ class OpenStackDriver:
     def admin_driver(self, tenant=None, controller=None):
         if isinstance(controller, int):
             controller = Controller.objects.get(id=controller.id)
-        client = OpenStackClient(tenant=tenant, controller=controller)
+        client = OpenStackClient(tenant=tenant, controller=controller, cacert=self.config.nova_ca_ssl_cert)
         driver = OpenStackDriver(client=client)
         driver.admin_user = client.keystone.users.find(name=controller.admin_user)
         driver.controller = controller

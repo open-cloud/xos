@@ -26,6 +26,23 @@ class SlicePlus(Slice, PlusObjectMixin):
                 "siteCount": len(used_sites.keys()),
                 "roles": roles}
 
+    @property
+    def network_ports(self):
+        # XXX this assumes there is only one network that can have ports bound
+        # to it for a given slice. This is intended for the tenant view, which
+        # will obey this field.
+        networkPorts = ""
+        for networkSlice in self.networkslices.all():
+            network = networkSlice.network
+            if network.ports:
+                networkPorts = network.ports
+
+        return networkPorts
+
+    @network_ports.setter
+    def network_ports(self, value):
+        print "XXX set networkPorts to", value
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
