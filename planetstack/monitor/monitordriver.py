@@ -7,6 +7,7 @@ class DashboardStatistics(dict):
         self['average'] = 0
         self['sum'] = 0
         self['unit'] = 'units'
+        self['stat_list']=[]
         # stat_list is a list of dicts
         # [ {'timestamp': datetime, 'value': value} ]
 
