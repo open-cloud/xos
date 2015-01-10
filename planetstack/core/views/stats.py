@@ -5,7 +5,8 @@ import json
 def Stats(request):
     model = request.GET['model_name']
     pk = int(request.GET['pk'])
-    meter = int(request.GET['meter'])
+    meter = request.GET['meter']
+    controller_name = request.GET['controller_name']
     
-    meters = monitor.get_meters(meter, model, pk)
-    return json.dumps(meters)
+    meters = driver.get_meter(meter, model, pk)
+    return HttpResponse(json.dumps(meters))
