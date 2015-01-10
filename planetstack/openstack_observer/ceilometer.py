@@ -77,7 +77,10 @@ def meters_to_stats(meters):
         stats['average']+=m.sum
         stats['unit'] = 'ns'
 
-    stats['average']/=len(meters)
+    if (len(meters)):
+        stats['average']/=len(meters)
+    else:
+        stats['average']=0
     return stats
 
 
