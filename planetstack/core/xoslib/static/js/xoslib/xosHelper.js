@@ -4,6 +4,41 @@ HTMLView = Marionette.ItemView.extend({
   },
 });
 
+SliceSelectorOption = Marionette.ItemView.extend({
+    template: "#xos-sliceselector-option",
+    tagName: "option",
+    attributes: function() {
+        console.log("XXX");
+        console.log(this.options.selectedID);
+        console.log(this.model.get("id"));
+        if (this.options.selectedID == this.model.get("id")) {
+            return { value: this.model.get("id"), selected: 1 };
+        } else {
+            return { value: this.model.get("id") };
+        }
+    },
+});
+
+SliceSelectorView = Marionette.CompositeView.extend({
+    template: "#xos-sliceselector-select",
+    childViewContainer: "select",
+    childView: SliceSelectorOption,
+
+    events: {"change select": "onSliceChanged"},
+
+    childViewOptions: function() {
+        return { selectedID: this.options.selectedID || this.selectedID || null };
+    },
+
+    onSliceChanged: function() {
+        this.sliceChanged(this.$el.find("select").val());
+    },
+
+    sliceChanged: function(id) {
+        console.log("sliceChanged " + id);
+    },
+});
+
 FilteredCompositeView = Marionette.CompositeView.extend( {
     showCollection: function() {
       var ChildView;
@@ -25,6 +60,7 @@ XOSRouter = Marionette.AppRouter.extend({
 
         onRoute: function(x,y,z) {
              this.routeStack.push(Backbone.history.fragment);
+             this.routeStack = this.routeStack.slice(-32);   // limit the size of routeStack to something reasonable
         },
 
         prevPage: function() {
@@ -33,8 +69,8 @@ XOSRouter = Marionette.AppRouter.extend({
 
         showPreviousURL: function() {
             prevPage = this.prevPage();
-            console.log("showPreviousURL");
-            console.log(this.routeStack);
+            //console.log("showPreviousURL");
+            //console.log(this.routeStack);
             if (prevPage) {
                 this.navigate("#"+prevPage, {trigger: false, replace: true} );
             }
@@ -103,6 +139,8 @@ XOSApplication = Marionette.Application.extend({
             parsed_error=undefined;
             width=640;    // django stacktraces like wide width
         }
+        console.log(responseText);
+        console.log(parsed_error);
         if (parsed_error) {
             $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
         } else {
@@ -392,7 +430,7 @@ XOSButtonView = Marionette.ItemView.extend({
                      },
 
             submitDeleteClicked: function(e) {
-                     this.options.linkedView.submitDeleteClicked.call(this.options.linkedView, e);
+                     this.options.linkedView.deleteClicked.call(this.options.linkedView, e);
                      },
 
             addClicked: function(e) {
@@ -501,13 +539,13 @@ XOSDetailView = Marionette.ItemView.extend({
                 }
 
                 if (isNew) {
-                    this.model.attributes.humanReadableName = "new " + model.modelName;
+                    this.model.attributes.humanReadableName = "new " + this.model.modelName;
                     this.model.addToCollection = this.collection;
                 } else {
                     this.model.addToCollection = undefined;
                 }
 
-                var infoMsgId = this.app.showInformational( {what: "save " + model.modelName + " " + model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
+                var infoMsgId = this.app.showInformational( {what: "save " + this.model.modelName + " " + this.model.attributes.humanReadableName, status: "", statusText: "in progress..."} );
 
                 this.model.save(data, {error: function(model, result, xhr) { that.app.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.app.saveSuccess(model,result,xhr,infoMsgId);
@@ -609,12 +647,13 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     collectionName: this.model.collectionName,
                                                     addFields: this.model.addFields,
                                                     listFields: this.model.listFields,
-                                                    detailFields: this.model.detailFields,
+                                                    detailFields: this.options.detailFields || this.detailFields || this.model.detailFields,
                                                     foreignFields: this.model.foreignFields,
                                                     detailLinkFields: this.model.detailLinkFields,
                                                     inputType: this.model.inputType,
                                                     model: this.model,
                                                     detailView: this,
+                                                    choices: this.options.choices || this.choices || this.model.choices || {},
                                          }},
 });
 
@@ -829,6 +868,7 @@ XOSDataTableView = Marionette.View.extend( {
         view.columnsByIndex = [];
         view.columnsByFieldName = {};
         _.each(this.collection.listFields, function(fieldName) {
+            inputType = view.options.inputType || view.inputType || {};
             mRender = undefined;
             mSearchText = undefined;
             sTitle = fieldNameToHumanReadable(fieldName);
@@ -840,6 +880,8 @@ XOSDataTableView = Marionette.View.extend( {
             } else if (fieldName in view.collection.foreignFields) {
                 var foreignCollection = view.collection.foreignFields[fieldName];
                 mSearchText = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
+            } else if (inputType[fieldName] == "spinner") {
+                mRender = function(x,y,z) { return xosDataTableSpinnerTemplate( {value: x, collectionName: view.collection.collectionName, fieldName: fieldName, id: z.id} ); };
             }
             if ($.inArray(fieldName, view.collection.detailLinkFields)>=0) {
                 var collectionName = view.collection.collectionName;
@@ -850,9 +892,11 @@ XOSDataTableView = Marionette.View.extend( {
             view.columnsByFieldName[fieldName] = thisColumn;
         });
 
-        deleteColumn = {sTitle: "", bSortable: false, mRender: function(x,y,z) { return xosDeleteButtonTemplate({modelName: view.collection.modelName, id: z.id}); }, mData: function() { return "delete"; }};
-        view.columnsByIndex.push(deleteColumn);
-        view.columnsByFieldName["delete"] = deleteColumn;
+        if (!view.noDeleteColumn) {
+            deleteColumn = {sTitle: "", bSortable: false, mRender: function(x,y,z) { return xosDeleteButtonTemplate({modelName: view.collection.modelName, id: z.id}); }, mData: function() { return "delete"; }};
+            view.columnsByIndex.push(deleteColumn);
+            view.columnsByFieldName["delete"] = deleteColumn;
+        };
 
         oTable = $(this.el).find("table").dataTable( {
             "bJQueryUI": true,
@@ -893,7 +937,7 @@ XOSDataTableView = Marionette.View.extend( {
                 // content of the collection
                 var populateTable = function()
                 {
-                  console.log("populatetable!");
+                  //console.log("populatetable!");
 
                   // clear out old row views
                   rows = [];
@@ -1044,3 +1088,25 @@ idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly,
     return result;
 }
 
+choicesToOptions = function(selectedValue, choices) {
+    result="";
+    for (index in choices) {
+        choice = choices[index];
+        displayName = choice[0];
+        value = choice[1];
+        if (value == selectedValue) {
+            selected = " selected";
+        } else {
+            selected = "";
+        }
+        result = result + '<option value="' + value + '"' + selected + '>' + displayName + '</option>';
+    }
+    return result;
+}
+
+choicesToSelect = function(variable, selectedValue, choices) {
+    result = '<select name="' + variable + '" id="field_' + variable + '">' +
+             choicesToOptions(selectedValue, choices) +
+             '</select>';
+    return result;
+}
