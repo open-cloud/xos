@@ -104,8 +104,8 @@ class SyncSlivers(OpenStackSyncStep):
 
         controller = sliver.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
-                     'admin_user': sliver.creator.username,
-                     'admin_password': sliver.creator.password,
+                     'admin_user': sliver.creator.email,
+                     'admin_password': sliver.creator.reomote_password,
                      'admin_tenant': sliver.slice.name,
                      'tenant': sliver.slice.name,
                      'tenant_description': sliver.slice.description,
