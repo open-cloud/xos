@@ -282,9 +282,9 @@ class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
 
-    site = models.ForeignKey(Site,related_name='sitedeployment')
-    deployment = models.ForeignKey(Deployment,related_name='sitedeployment')
-    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployment')
+    site = models.ForeignKey(Site,related_name='sitedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
+    controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
     availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
