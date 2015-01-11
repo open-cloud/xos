@@ -27,6 +27,14 @@ class SlicePlus(Slice, PlusObjectMixin):
                 "roles": roles}
 
     @property
+    def site_allocation(self):
+        return self.getSliceInfo()["sitesUsed"]
+
+    @site_allocation.setter
+    def site_allocation(self, value):
+        print "XXX set sitesUsed to", value
+
+    @property
     def network_ports(self):
         # XXX this assumes there is only one network that can have ports bound
         # to it for a given slice. This is intended for the tenant view, which

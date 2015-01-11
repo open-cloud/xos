@@ -6,7 +6,7 @@ from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
-from plus import PlusSerializerMixin
+from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -22,12 +22,20 @@ class NetworkPortsField(serializers.WritableField):   # note: maybe just Field i
     def to_internal_value(self, data):
         return data
 
+class SiteAllocationField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+    def to_representation(self, obj):
+        return json.dumps(obj)
+
+    def to_internal_value(self, data):
+        return json.loads(data)
+
 class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = IdField()
 
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-        network_ports = NetworkPortsField()
+        network_ports = NetworkPortsField(required=False)
+        site_allocation = SiteAllocationField(required=False)
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
@@ -40,7 +48,8 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets','serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml')
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets',
+                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation')
 
 class SlicePlusList(generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
@@ -60,7 +69,7 @@ class SlicePlusList(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SlicePlusDetail(generics.RetrieveUpdateDestroyAPIView):
+class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
 
