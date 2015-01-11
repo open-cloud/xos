@@ -158,9 +158,14 @@
   <% args = arguments; %>
   <% _.each(detailFields, function(fieldName) { %>
      <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
-        <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  console.log(fieldName + " " + readOnly); console.log(model.readOnlyFields); %>
-        <% if (fieldName in foreignFields) { %>
+        <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  %>
+        <% if (fieldName in choices) { %>
+            <td><%= choicesToSelect(fieldName, model.attributes[fieldName], choices[fieldName]) %></td>
+        <% } else if (fieldName in foreignFields) { %>
             <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
+        <% } else if (inputType[fieldName] == "spinner") { %>
+            <!-- note: I never finished working on this spinner stuff! -->
+            <td><%= xosSpinnerTemplate({id: "picker_" + fieldName, fieldName: fieldName, value: model.attributes[fieldName]}) %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
         <% } else if (inputType[fieldName] == "picker") { %>
@@ -223,9 +228,19 @@
   </div>
 </script>
 
+<script type="text/template" id="xos-datatable-spinner-template">
+    <!-- arguments: value, id, collectionName, fieldName -->
+    <%= value %> <a href='#increase/<%= collectionName %>/<%= id %>/<%= fieldName %>'>more</a> <a href='#decrease/<%= collectionName %>/<%= id %>/<%= fieldName %>'>less</a>
+</script>
+
+<script type="text/template" id="xos-spinner-template">
+    <!-- arguments: fieldName, id, value -->
+    <input name="<%= fieldName %>" class="xos-spinner" id="<%= id %>">
+    <% detailView.viewInitializers.push( function() { init_spinner("#" + id, value); } ); %>
+</script>
 
 <script type="text/template" id="xos-picker-template">
-    <!-- arguments: unpickedItems, pickedItems -->
+    <!-- arguments: unpickedItems, pickedItems, fieldName, id -->
     <div id="<%= id %>">
     <div class="picker_row">
     <div class="picker_column">
@@ -259,6 +274,15 @@
     <% detailView.viewInitializers.push( function() { init_picker("#" + id); } ); %>
 </script>
 
+<script type="text/template" id="xos-sliceselector-option">
+   <%= name %>
+</script>
+
+<script type="text/template" id="xos-sliceselector-select">
+    <select>
+    </select>
+</script>
+
 <script>
 xosInlineDetailButtonsTemplate = _.template($("#xos-inline-detail-buttons-template").html());
 xosListHeaderTemplate = _.template($("#xos-list-header-template").html());
@@ -268,5 +292,7 @@ xosDetailLinkTemplate = _.template($("#xos-detail-link-template").html());
 xosBackendStatusIconTemplate = _.template($("#xos-backend-status-icon-template").html());
 xosBackendStatusTextTemplate = _.template($("#xos-backend-status-text-template").html());
 xosPickerTemplate = _.template($("#xos-picker-template").html());
+xosSpinnerTemplate = _.template($("#xos-spinner-template").html());
+xosDataTableSpinnerTemplate = _.template($("#xos-datatable-spinner-template").html());
 </script>
 
