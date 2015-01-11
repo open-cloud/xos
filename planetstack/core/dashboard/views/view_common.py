@@ -73,7 +73,7 @@ def getSliceInfo(user):
         for sliver in slice.slivers.all():
              #sites_used['deploymentSites'] = sliver.node.deployment.name
              # sites_used[sliver.image.name] = sliver.image.name
-             sites_used[sliver.node.site_deployment.site.name] = 1 #sliver.numberCores
+             sites_used[sliver.node.site_deployment.site] = 1 #sliver.numberCores
         sliceid = Slice.objects.get(id=entry.slice.id).id
         try:
             sliverList = Sliver.objects.filter(slice=entry.slice.id)
