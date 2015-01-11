@@ -48,3 +48,7 @@ function init_picker(selector, ordered) {
         });
     });
 };
+
+function init_spinner(selector, value) {
+     var spinner = $(selector).spinner( "value", value);
+};

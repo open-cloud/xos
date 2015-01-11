@@ -34,8 +34,16 @@ if (! window.XOSLIB_LOADED ) {
     USERDEPLOYMENT_API = "/plstackapi/userdeployments/";
 
     SLICEPLUS_API = "/xoslib/slicesplus/";
+    TENANTVIEW_API = "/xoslib/tenantview/"
 
     XOSModel = Backbone.Model.extend({
+        relatedCollections: [],
+        foreignCollections: [],
+        foreignFields: {},
+        m2mFields: {},
+        readonlyFields: [],
+        detailLinkFields: [],
+
         /* from backbone-tastypie.js */
         //idAttribute: 'resource_uri',
 
@@ -152,6 +160,10 @@ if (! window.XOSLIB_LOADED ) {
 
         relatedCollections: [],
         foreignCollections: [],
+        foreignFields: {},
+        m2mFields: {},
+        readonlyFields: [],
+        detailLinkFields: [],
 
         sorted: function() {
             //console.log("sorted " + this.modelName);
@@ -333,6 +345,22 @@ if (! window.XOSLIB_LOADED ) {
             },
     });
 
+    function get_defaults(modelName) {
+        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
+            return xosdefaults[modelName];
+        }
+        return undefined;
+    }
+
+    function extend_defaults(modelName, stuff) {
+        defaults = get_defaults(modelName);
+        if (defaults) {
+            return $.extend({}, defaults, stuff);
+        } else {
+            return stuff;
+        }
+    }
+
     function define_model(lib, attrs) {
         modelName = attrs.modelName;
         modelClassName = modelName;
@@ -358,7 +386,7 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "detailLinkFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "detailLinkFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections", "defaults"])>=0) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
@@ -367,9 +395,15 @@ if (! window.XOSLIB_LOADED ) {
             }
         }
 
-        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
-            modelAttrs["defaults"] = xosdefaults[modelName];
+        if (!modelAttrs.defaults) {
+            modelAttrs.defaults = get_defaults(modelName);
         }
+        console.log(modelName);
+        console.log(modelAttrs);
+
+//        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
+//            modelAttrs["defaults"] = xosdefaults[modelName];
+//        }
 
         if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
             modelAttrs["validators"] = xosvalidators[modelName];
@@ -629,9 +663,36 @@ if (! window.XOSLIB_LOADED ) {
         // enhanced REST
         // XXX this really needs to somehow be combined with Slice, to avoid duplication
         define_model(this, {urlRoot: SLICEPLUS_API,
-                            relatedCollections: {'slivers': "slice"},
-                            modelName: "slicePlus",
-                            collectionName: "slicesPlus"});
+                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner"},
+                           foreignCollections: ["services", "sites"],
+                           foreignFields: {"service": "services", "site": "sites"},
+                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
+                           detailFields: ["backend_status", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           inputType: {"enabled": "checkbox"},
+                           modelName: "slicePlus",
+                           collectionName: "slicesPlus",
+                           defaults: extend_defaults("slice", {"network_ports": "", "site_allocation": []}),
+                           xosValidate: function(attrs, options) {
+                               errors = XOSModel.prototype.xosValidate(this, attrs, options);
+                               // validate that slice.name starts with site.login_base
+                               site = attrs.site || this.site;
+                               if ((site!=undefined) && (attrs.name!=undefined)) {
+                                   site = xos.sites.get(site);
+                                   if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
+                                        errors = errors || {};
+                                        errors["name"] = "must start with " + site.attributes.login_base + "_";
+                                   }
+                               }
+                               return errors;
+                             },
+                           });
+
+        define_model(this, {urlRoot: TENANTVIEW_API,
+                            modelName: "tenantview",
+                            collectionName: "tenantview",
+                            listFields: [],
+                            detailFields: [],
+                            });
 
         this.listObjects = function() { return this.allCollectionNames; };
 
