@@ -769,14 +769,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
-    suit_form_tabs =(('general', 'Site Details'),
-        ('users','Users'),
-        ('siteprivileges','Privileges'),
-        ('deployments','Deployments'),
-        ('slices','Slices'),
-        #('nodes','Nodes'),
-        ('tags','Tags'),
-    )
     readonly_fields = ['backend_status_text', 'accountLink']
 
     user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
@@ -785,7 +777,25 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
     inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline]
+    admin_inlines = [ControllerSite]
     search_fields = ['name']
+
+    @property
+    def suit_form_tabs(self):
+        tabs = [('general', 'Site Details'),
+            ('users','Users'),
+            ('siteprivileges','Privileges'),
+            ('deployments','Deployments'),
+            ('slices','Slices'),
+            #('nodes','Nodes'),
+            ('tags','Tags'),
+        ]
+
+        request=getattr(_thread_locals, "request", None)
+        if request and request.user.is_admin:
+            tabs.append( ('admin-only', 'Admin-Only') )
+
+        return tabs
 
     def queryset(self, request):
         return Site.select_by_user(request.user)
@@ -892,7 +902,7 @@ class ControllerSliceInline(PlStackTabularInline):
     verbose_name_plural = "Controller Slices"
     suit_classes = 'suit-tab suit-tab-admin-only'
     fields = ['backend_status_icon', 'controller', 'tenant_id']
-    readonly_fields = ('backend_status_icon', )
+    readonly_fields = ('backend_status_icon', 'controller' )
 
 class SliceAdmin(PlanetStackBaseAdmin):
     form = SliceForm
@@ -1191,6 +1201,14 @@ class UserDashboardViewInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-dashboards'
     fields = ['user', 'dashboardView', 'order']
 
+class ControllerUserInline(PlStackTabularInline):
+    model = ControllerUser
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-admin-only'
+    fields = ['controller', 'user', 'kuser_id']
+    readonly_fields=['controller']
+
+
 class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     # Note: Make sure PermissionCheckingAdminMixin is listed before
     # admin.ModelAdmin in the class declaration.
@@ -1208,7 +1226,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,UserDashboardViewInline]
-
+    admin_inlines = [ControllerUserInline]
     fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
@@ -1236,12 +1254,17 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
         if getattr(_thread_locals, "obj", None) is None:
             return []
         else:
-            return (('general','Login Details'),
+            tabs = [('general','Login Details'),
                          ('contact','Contact Information'),
                          ('sliceprivileges','Slice Privileges'),
                          ('siteprivileges','Site Privileges'),
-                         ('controllerprivileges','Controller Privileges'),
-                         ('dashboards','Dashboard Views'))
+                         ('dashboards','Dashboard Views')]
+
+            request=getattr(_thread_locals, "request", None)
+            if request and request.user.is_admin:
+                tabs.append( ('admin-only', 'Admin-Only') )
+
+            return tabs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
