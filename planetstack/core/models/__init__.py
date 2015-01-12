@@ -10,9 +10,11 @@ from .dashboard import DashboardView, ControllerDashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
 from .site import ControllerManager, ControllerDeletionManager, ControllerLinkManager,ControllerLinkDeletionManager
+from .flavor import Flavor
+from .image import Image
 from .slice import Slice, ControllerSlice
 from .controlleruser import ControllerUser, ControllerSitePrivilege, ControllerSlicePrivilege
-from .image import Image, ImageDeployments, ControllerImages
+from .image import ImageDeployments, ControllerImages
 from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole
@@ -22,7 +24,6 @@ from .site import SiteRole
 from .site import SitePrivilege
 from .planetstackspecific import PlanetStack,PlanetStackRole,PlanetStackPrivilege
 from .slicetag import SliceTag
-from .flavor import Flavor
 from .sliver import Sliver
 from .reservation import ReservedResource
 from .reservation import Reservation
