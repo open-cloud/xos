@@ -13,9 +13,9 @@ import pdb
 def object_to_filter(model_name, pk):
     from core.models import *
     filter_dict = {
-            'Slice':[Slice, 'tenant_id', 'project_id'],
+            'ControllerSlice':[ControllerSlice, 'tenant_id', 'project_id'],
             'Sliver':[Sliver, 'instance_id', 'resource_id'],
-            'Site':[Site, 'tenant_id', 'project_id']
+            'ControllerSite':[ControllerSite, 'tenant_id', 'project_id']
     }
 
     mod,field,tag = filter_dict[model_name]
@@ -86,20 +86,21 @@ def meters_to_stats(meters):
 
 class CeilometerDriver(MonitorDriver):
     def get_meter(self, meter, obj, pk, keystone=None):
-        keystone = {}
-        keystone['os_username']=env['OS_USERNAME']
-        keystone['os_password']=env['OS_PASSWORD']
-        keystone['os_auth_url']=env['OS_AUTH_URL']
-        keystone['os_tenant_name']=env['OS_TENANT_NAME']
-        keystone['os_cacert']=env['OS_CACERT']
-        keystone['os_region_name']=env['OS_REGION_NAME']
+        if (not keystone):
+                keystone={}
+                keystone['os_username']=env['OS_USERNAME']
+                keystone['os_password']=env['OS_PASSWORD']
+                keystone['os_auth_url']=env['OS_AUTH_URL']
+                keystone['os_tenant_name']=env['OS_TENANT_NAME']
+                keystone['os_cacert']=env['OS_CACERT']
+                keystone['os_region_name']=env['OS_REGION_NAME']
 
-        keystone['username']=env['OS_USERNAME']
-        keystone['password']=env['OS_PASSWORD']
-        keystone['auth_url']=env['OS_AUTH_URL']
-        keystone['tenant_name']=env['OS_TENANT_NAME']
-        keystone['cacert']=env['OS_CACERT']
-        keystone['region_name']=env['OS_REGION_NAME']
+                keystone['username']=env['OS_USERNAME']
+                keystone['password']=env['OS_PASSWORD']
+                keystone['auth_url']=env['OS_AUTH_URL']
+                keystone['tenant_name']=env['OS_TENANT_NAME']
+                keystone['cacert']=env['OS_CACERT']
+                keystone['region_name']=env['OS_REGION_NAME']
 
         keystone['auth_plugin']=client.AuthPlugin(**keystone)
 
