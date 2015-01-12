@@ -42,7 +42,7 @@ XOSTenantButtonView = Marionette.ItemView.extend({
                      },
 
             deleteClicked: function(e) {
-                     this.options.linkedView.deleteClicked.call(this.options.linkedView, e);
+                     XOSTenantApp.deleteSlice(this.options.linkedView.model);
                      },
 
             addUserClicked: function(e) {
@@ -154,6 +154,11 @@ XOSTenantApp.addSlice = function() {
           }
         });
     $("#tenant-addslice-dialog").dialog("open");
+};
+
+XOSTenantApp.deleteSlice = function(model) {
+    var app=this;
+    app.deleteDialog(model, function() { console.log("afterDelete"); app.viewSlice(undefined); });
 };
 
 XOSTenantApp.viewSlice = function(model) {
