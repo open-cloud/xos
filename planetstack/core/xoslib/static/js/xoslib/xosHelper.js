@@ -8,9 +8,6 @@ SliceSelectorOption = Marionette.ItemView.extend({
     template: "#xos-sliceselector-option",
     tagName: "option",
     attributes: function() {
-        console.log("XXX");
-        console.log(this.options.selectedID);
-        console.log(this.model.get("id"));
         if (this.options.selectedID == this.model.get("id")) {
             return { value: this.model.get("id"), selected: 1 };
         } else {
@@ -881,7 +878,7 @@ XOSDataTableView = Marionette.View.extend( {
                 var foreignCollection = view.collection.foreignFields[fieldName];
                 mSearchText = function(x) { return idToName(x, foreignCollection, "humanReadableName"); };
             } else if (inputType[fieldName] == "spinner") {
-                mRender = function(x,y,z) { return xosDataTableSpinnerTemplate( {value: x, collectionName: view.collection.collectionName, fieldName: fieldName, id: z.id} ); };
+                mRender = function(x,y,z) { return xosDataTableSpinnerTemplate( {value: x, collectionName: view.collection.collectionName, fieldName: fieldName, id: z.id, app: view.app} ); };
             }
             if ($.inArray(fieldName, view.collection.detailLinkFields)>=0) {
                 var collectionName = view.collection.collectionName;
