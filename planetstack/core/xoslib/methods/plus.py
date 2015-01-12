@@ -25,6 +25,28 @@ class PlusSerializerMixin():
     def getBackendHtml(self, obj):
         return obj.getBackendHtml()
 
+# XXX this was lifted and hacked up a bit from genapi.py
+class PlusListCreateAPIView(generics.ListCreateAPIView):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(PlusListCreateAPIView, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(PlusListCreateAPIView, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
 # XXX this is taken from genapi.py
 # XXX find a better way to re-use the code
 class PlusRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
