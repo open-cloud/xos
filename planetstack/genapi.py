@@ -35,14 +35,14 @@ def get_REST_patterns():
     return patterns('',
         url(r'^plstackapi/$', api_root),
     
-        url(r'plstackapi/flavors/$', FlavorList.as_view(), name='flavor-list'),
-        url(r'plstackapi/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
-    
         url(r'plstackapi/serviceattributes/$', ServiceAttributeList.as_view(), name='serviceattribute-list'),
         url(r'plstackapi/serviceattributes/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceAttributeDetail.as_view(), name ='serviceattribute-detail'),
     
         url(r'plstackapi/controllerimages/$', ControllerImagesList.as_view(), name='controllerimages-list'),
         url(r'plstackapi/controllerimages/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerImagesDetail.as_view(), name ='controllerimages-detail'),
+    
+        url(r'plstackapi/controllersiteprivileges/$', ControllerSitePrivilegeList.as_view(), name='controllersiteprivilege-list'),
+        url(r'plstackapi/controllersiteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSitePrivilegeDetail.as_view(), name ='controllersiteprivilege-detail'),
     
         url(r'plstackapi/images/$', ImageList.as_view(), name='image-list'),
         url(r'plstackapi/images/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDetail.as_view(), name ='image-detail'),
@@ -71,6 +71,12 @@ def get_REST_patterns():
         url(r'plstackapi/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
         url(r'plstackapi/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
     
+        url(r'plstackapi/flavors/$', FlavorList.as_view(), name='flavor-list'),
+        url(r'plstackapi/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
+    
+        url(r'plstackapi/controllersites/$', ControllerSiteList.as_view(), name='controllersite-list'),
+        url(r'plstackapi/controllersites/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSiteDetail.as_view(), name ='controllersite-detail'),
+    
         url(r'plstackapi/projects/$', ProjectList.as_view(), name='project-list'),
         url(r'plstackapi/projects/(?P<pk>[a-zA-Z0-9\-]+)/$', ProjectDetail.as_view(), name ='project-detail'),
     
@@ -86,8 +92,8 @@ def get_REST_patterns():
         url(r'plstackapi/serviceclasses/$', ServiceClassList.as_view(), name='serviceclass-list'),
         url(r'plstackapi/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
     
-        url(r'plstackapi/controllernetworks/$', ControllerNetworkList.as_view(), name='controllernetworks-list'),
-        url(r'plstackapi/controllernetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerNetworkDetail.as_view(), name ='controllernetworks-detail'),
+        url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
+        url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
     
         url(r'plstackapi/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'plstackapi/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
@@ -113,8 +119,14 @@ def get_REST_patterns():
         url(r'plstackapi/dashboardviews/$', DashboardViewList.as_view(), name='dashboardview-list'),
         url(r'plstackapi/dashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', DashboardViewDetail.as_view(), name ='dashboardview-detail'),
     
+        url(r'plstackapi/controllernetworks/$', ControllerNetworkList.as_view(), name='controllernetwork-list'),
+        url(r'plstackapi/controllernetworks/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerNetworkDetail.as_view(), name ='controllernetwork-detail'),
+    
         url(r'plstackapi/imagedeploymentses/$', ImageDeploymentsList.as_view(), name='imagedeployments-list'),
         url(r'plstackapi/imagedeploymentses/(?P<pk>[a-zA-Z0-9\-]+)/$', ImageDeploymentsDetail.as_view(), name ='imagedeployments-detail'),
+    
+        url(r'plstackapi/controllerusers/$', ControllerUserList.as_view(), name='controlleruser-list'),
+        url(r'plstackapi/controllerusers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerUserDetail.as_view(), name ='controlleruser-detail'),
     
         url(r'plstackapi/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
         url(r'plstackapi/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
@@ -146,8 +158,8 @@ def get_REST_patterns():
         url(r'plstackapi/siteprivileges/$', SitePrivilegeList.as_view(), name='siteprivilege-list'),
         url(r'plstackapi/siteprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SitePrivilegeDetail.as_view(), name ='siteprivilege-detail'),
     
-        url(r'plstackapi/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
-        url(r'plstackapi/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+        url(r'plstackapi/controllerslices/$', ControllerSliceList.as_view(), name='controllerslice-list'),
+        url(r'plstackapi/controllerslices/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSliceDetail.as_view(), name ='controllerslice-detail'),
     
         url(r'plstackapi/controllerdashboardviews/$', ControllerDashboardViewList.as_view(), name='controllerdashboardview-list'),
         url(r'plstackapi/controllerdashboardviews/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerDashboardViewDetail.as_view(), name ='controllerdashboardview-detail'),
@@ -167,17 +179,17 @@ def get_REST_patterns():
         url(r'plstackapi/deploymentprivileges/$', DeploymentPrivilegeList.as_view(), name='deploymentprivilege-list'),
         url(r'plstackapi/deploymentprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentPrivilegeDetail.as_view(), name ='deploymentprivilege-detail'),
     
-        url(r'plstackapi/controllerusers/$', ControllerUserList.as_view(), name='controllerusers-list'),
-        url(r'plstackapi/controllerusers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerUserDetail.as_view(), name ='controllerusers-detail'),
+        url(r'plstackapi/controllersliceprivileges/$', ControllerSlicePrivilegeList.as_view(), name='controllersliceprivilege-list'),
+        url(r'plstackapi/controllersliceprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSlicePrivilegeDetail.as_view(), name ='controllersliceprivilege-detail'),
+    
+        url(r'plstackapi/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployment-list'),
+        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployment-detail'),
     
         url(r'plstackapi/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'plstackapi/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
     
         url(r'plstackapi/usercredentials/$', UserCredentialList.as_view(), name='usercredential-list'),
         url(r'plstackapi/usercredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', UserCredentialDetail.as_view(), name ='usercredential-detail'),
-    
-        url(r'plstackapi/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployments-list'),
-        url(r'plstackapi/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployments-detail'),
     
         url(r'plstackapi/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'plstackapi/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
@@ -191,17 +203,14 @@ def get_REST_patterns():
         url(r'plstackapi/serviceresources/$', ServiceResourceList.as_view(), name='serviceresource-list'),
         url(r'plstackapi/serviceresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceResourceDetail.as_view(), name ='serviceresource-detail'),
     
-        url(r'plstackapi/controllerslices/$', ControllerSliceList.as_view(), name='controllerslices-list'),
-        url(r'plstackapi/controllerslices/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSliceDetail.as_view(), name ='controllerslices-detail'),
-    
     )
 
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'flavors': reverse('flavor-list', request=request, format=format),
         'serviceattributes': reverse('serviceattribute-list', request=request, format=format),
         'controllerimageses': reverse('controllerimages-list', request=request, format=format),
+        'controllersiteprivileges': reverse('controllersiteprivilege-list', request=request, format=format),
         'images': reverse('image-list', request=request, format=format),
         'networkparameters': reverse('networkparameter-list', request=request, format=format),
         'sites': reverse('site-list', request=request, format=format),
@@ -210,24 +219,26 @@ def api_root(request, format=None):
         'invoices': reverse('invoice-list', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
         'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
-        'controllerprivileges': reverse('controllerprivilege-list', request=request, format=format),
         'networkslivers': reverse('networksliver-list', request=request, format=format),
+        'flavors': reverse('flavor-list', request=request, format=format),
+        'controllersites': reverse('controllersite-list', request=request, format=format),
         'projects': reverse('project-list', request=request, format=format),
         'slices': reverse('slice-list', request=request, format=format),
         'networks': reverse('network-list', request=request, format=format),
         'services': reverse('service-list', request=request, format=format),
         'serviceclasses': reverse('serviceclass-list', request=request, format=format),
-        'controllernetworkses': reverse('controllernetworks-list', request=request, format=format),
+        'planetstacks': reverse('planetstack-list', request=request, format=format),
         'charges': reverse('charge-list', request=request, format=format),
         'roles': reverse('role-list', request=request, format=format),
         'usableobjects': reverse('usableobject-list', request=request, format=format),
-        'controllersitedeploymentses': reverse('controllersitedeployments-list', request=request, format=format),
         'siteroles': reverse('siterole-list', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list', request=request, format=format),
         'slivers': reverse('sliver-list', request=request, format=format),
         'nodes': reverse('node-list', request=request, format=format),
         'dashboardviews': reverse('dashboardview-list', request=request, format=format),
+        'controllernetworks': reverse('controllernetwork-list', request=request, format=format),
         'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
+        'controllerusers': reverse('controlleruser-list', request=request, format=format),
         'reservedresources': reverse('reservedresource-list', request=request, format=format),
         'payments': reverse('payment-list', request=request, format=format),
         'networkslices': reverse('networkslice-list', request=request, format=format),
@@ -238,22 +249,21 @@ def api_root(request, format=None):
         'deployments': reverse('deployment-list', request=request, format=format),
         'reservations': reverse('reservation-list', request=request, format=format),
         'siteprivileges': reverse('siteprivilege-list', request=request, format=format),
-        'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'controllerslices': reverse('controllerslice-list', request=request, format=format),
         'controllerdashboardviews': reverse('controllerdashboardview-list', request=request, format=format),
         'accounts': reverse('account-list', request=request, format=format),
         'controllerroles': reverse('controllerrole-list', request=request, format=format),
         'networkparametertypes': reverse('networkparametertype-list', request=request, format=format),
         'sitecredentials': reverse('sitecredential-list', request=request, format=format),
         'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
-        'controlleruserses': reverse('controllerusers-list', request=request, format=format),
+        'controllersliceprivileges': reverse('controllersliceprivilege-list', request=request, format=format),
+        'sitedeployments': reverse('sitedeployment-list', request=request, format=format),
         'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
         'usercredentials': reverse('usercredential-list', request=request, format=format),
-        'sitedeploymentses': reverse('sitedeployments-list', request=request, format=format),
         'slicetags': reverse('slicetag-list', request=request, format=format),
         'networktemplates': reverse('networktemplate-list', request=request, format=format),
         'routers': reverse('router-list', request=request, format=format),
         'serviceresources': reverse('serviceresource-list', request=request, format=format),
-        'controllersliceses': reverse('controllerslices-list', request=request, format=format),
         
     })
 
@@ -310,49 +320,6 @@ class XOSModelSerializer(serializers.ModelSerializer):
                    #print "add", item
                    newModel = through(**{local_fieldName: obj, remote_fieldName: item})
                    newModel.save()
-
-
-
-class FlavorSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    
-    deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
-    
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Flavor
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
-
-class FlavorIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    
-    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
-    
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Flavor
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
-
 
 
 
@@ -422,6 +389,41 @@ class ControllerImagesIdSerializer(XOSModelSerializer):
     class Meta:
         model = ControllerImages
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','controller','glance_image_id',)
+
+
+
+
+class ControllerSitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerSitePrivilege
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
+
+class ControllerSitePrivilegeIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerSitePrivilege
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
 
 
 
@@ -757,6 +759,84 @@ class NetworkSliverIdSerializer(XOSModelSerializer):
 
 
 
+class FlavorSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    
+    deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+    
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Flavor
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+
+class FlavorIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    
+    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
+    
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Flavor
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+
+
+
+
+class ControllerSiteSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerSite
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+
+class ControllerSiteIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerSite
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+
+
+
+
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -814,7 +894,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -838,7 +918,7 @@ class SliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 
 
@@ -988,7 +1068,7 @@ class ServiceClassIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
+class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1001,10 +1081,10 @@ class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+        model = PlanetStack
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
 
-class ControllerNetworkIdSerializer(XOSModelSerializer):
+class PlanetStackIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1017,8 +1097,8 @@ class ControllerNetworkIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+        model = PlanetStack
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
 
 
 
@@ -1124,6 +1204,9 @@ class UsableObjectIdSerializer(XOSModelSerializer):
     class Meta:
         model = UsableObject
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
+
+
+
 
 class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
@@ -1316,6 +1399,41 @@ class DashboardViewIdSerializer(XOSModelSerializer):
 
 
 
+class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerNetwork
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+
+class ControllerNetworkIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerNetwork
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+
+
+
+
 class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -1347,6 +1465,41 @@ class ImageDeploymentsIdSerializer(XOSModelSerializer):
     class Meta:
         model = ImageDeployments
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','deployment',)
+
+
+
+
+class ControllerUserSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerUser
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+
+class ControllerUserIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = ControllerUser
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
 
 
 
@@ -1608,15 +1761,15 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     
-    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
-    
-    
-    
     images = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='image-detail')
     
     
     
     sites = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='site-detail')
+    
+    
+    
+    flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
     
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1630,14 +1783,10 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
 class DeploymentIdSerializer(XOSModelSerializer):
     id = IdField()
-    
-    
-    flavors = serializers.PrimaryKeyRelatedField(many=True,  queryset = Flavor.objects.all())
-    
     
     
     images = serializers.PrimaryKeyRelatedField(many=True,  queryset = Image.objects.all())
@@ -1647,6 +1796,10 @@ class DeploymentIdSerializer(XOSModelSerializer):
     sites = serializers.PrimaryKeyRelatedField(many=True,  queryset = Site.objects.all())
     
     
+    
+    flavors = serializers.PrimaryKeyRelatedField(many=True,  queryset = Flavor.objects.all())
+    
+    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1658,7 +1811,7 @@ class DeploymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
 
 
@@ -1733,7 +1886,7 @@ class SitePrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
+class ControllerSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1746,10 +1899,10 @@ class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
+        model = ControllerSlice
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
-class PlanetStackIdSerializer(XOSModelSerializer):
+class ControllerSliceIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1762,8 +1915,8 @@ class PlanetStackIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
+        model = ControllerSlice
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
 
 
@@ -1978,7 +2131,7 @@ class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerUserSerializer(serializers.HyperlinkedModelSerializer):
+class ControllerSlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1991,10 +2144,10 @@ class ControllerUserSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerUser
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+        model = ControllerSlicePrivilege
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
 
-class ControllerUserIdSerializer(XOSModelSerializer):
+class ControllerSlicePrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -2007,8 +2160,43 @@ class ControllerUserIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = ControllerUser
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+        model = ControllerSlicePrivilege
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
+
+
+
+
+class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = SiteDeployment
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
+
+class SiteDeploymentIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = SiteDeployment
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 
 
@@ -2079,41 +2267,6 @@ class UserCredentialIdSerializer(XOSModelSerializer):
     class Meta:
         model = UserCredential
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
-
-
-
-
-class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = SiteDeployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
-
-class SiteDeploymentIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = SiteDeployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 
 
@@ -2274,48 +2427,13 @@ class ServiceResourceIdSerializer(XOSModelSerializer):
 
 
 
-class ControllerSliceSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
-
-class ControllerSliceIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = ControllerSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
-
-
-
-
 serializerLookUp = { 
-
-                 Flavor: FlavorSerializer,
 
                  ServiceAttribute: ServiceAttributeSerializer,
 
                  ControllerImages: ControllerImagesSerializer,
+
+                 ControllerSitePrivilege: ControllerSitePrivilegeSerializer,
 
                  Image: ImageSerializer,
 
@@ -2335,6 +2453,10 @@ serializerLookUp = {
 
                  NetworkSliver: NetworkSliverSerializer,
 
+                 Flavor: FlavorSerializer,
+
+                 ControllerSite: ControllerSiteSerializer,
+
                  Project: ProjectSerializer,
 
                  Slice: SliceSerializer,
@@ -2345,7 +2467,7 @@ serializerLookUp = {
 
                  ServiceClass: ServiceClassSerializer,
 
-                 ControllerNetwork: ControllerNetworkSerializer,
+                 PlanetStack: PlanetStackSerializer,
 
                  Charge: ChargeSerializer,
 
@@ -2363,7 +2485,11 @@ serializerLookUp = {
 
                  DashboardView: DashboardViewSerializer,
 
+                 ControllerNetwork: ControllerNetworkSerializer,
+
                  ImageDeployments: ImageDeploymentsSerializer,
+
+                 ControllerUser: ControllerUserSerializer,
 
                  ReservedResource: ReservedResourceSerializer,
 
@@ -2385,7 +2511,7 @@ serializerLookUp = {
 
                  SitePrivilege: SitePrivilegeSerializer,
 
-                 PlanetStack: PlanetStackSerializer,
+                 ControllerSlice: ControllerSliceSerializer,
 
                  ControllerDashboardView: ControllerDashboardViewSerializer,
 
@@ -2399,13 +2525,13 @@ serializerLookUp = {
 
                  DeploymentPrivilege: DeploymentPrivilegeSerializer,
 
-                 ControllerUser: ControllerUserSerializer,
+                 ControllerSlicePrivilege: ControllerSlicePrivilegeSerializer,
+
+                 SiteDeployment: SiteDeploymentSerializer,
 
                  DeploymentRole: DeploymentRoleSerializer,
 
                  UserCredential: UserCredentialSerializer,
-
-                 SiteDeployment: SiteDeploymentSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -2414,8 +2540,6 @@ serializerLookUp = {
                  Router: RouterSerializer,
 
                  ServiceResource: ServiceResourceSerializer,
-
-                 ControllerSlice: ControllerSliceSerializer,
 
                  None: None,
                 }
@@ -2470,65 +2594,6 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
 
 
 # Based on core/views/*.py
-
-
-class FlavorList(generics.ListCreateAPIView):
-    queryset = Flavor.objects.select_related().all()
-    serializer_class = FlavorSerializer
-    id_serializer_class = FlavorIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return Flavor.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(FlavorList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(FlavorList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = Flavor.objects.select_related().all()
-    serializer_class = FlavorSerializer
-    id_serializer_class = FlavorIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return Flavor.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
 
 
 class ServiceAttributeList(generics.ListCreateAPIView):
@@ -2642,6 +2707,65 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return ControllerImages.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ControllerSitePrivilegeList(generics.ListCreateAPIView):
+    queryset = ControllerSitePrivilege.objects.select_related().all()
+    serializer_class = ControllerSitePrivilegeSerializer
+    id_serializer_class = ControllerSitePrivilegeIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ControllerSitePrivilege.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ControllerSitePrivilegeList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ControllerSitePrivilegeList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerSitePrivilege.objects.select_related().all()
+    serializer_class = ControllerSitePrivilegeSerializer
+    id_serializer_class = ControllerSitePrivilegeIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ControllerSitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -3180,6 +3304,124 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
+class FlavorList(generics.ListCreateAPIView):
+    queryset = Flavor.objects.select_related().all()
+    serializer_class = FlavorSerializer
+    id_serializer_class = FlavorIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return Flavor.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(FlavorList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(FlavorList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = Flavor.objects.select_related().all()
+    serializer_class = FlavorSerializer
+    id_serializer_class = FlavorIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return Flavor.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ControllerSiteList(generics.ListCreateAPIView):
+    queryset = ControllerSite.objects.select_related().all()
+    serializer_class = ControllerSiteSerializer
+    id_serializer_class = ControllerSiteIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ControllerSite.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ControllerSiteList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ControllerSiteList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerSite.objects.select_related().all()
+    serializer_class = ControllerSiteSerializer
+    id_serializer_class = ControllerSiteIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ControllerSite.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
@@ -3244,7 +3486,7 @@ class SliceList(generics.ListCreateAPIView):
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','imagePreference','service','network','mountDataSets','serviceClass','creator','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3475,12 +3717,12 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerNetworkList(generics.ListCreateAPIView):
-    queryset = ControllerNetwork.objects.select_related().all()
-    serializer_class = ControllerNetworkSerializer
-    id_serializer_class = ControllerNetworkIdSerializer
+class PlanetStackList(generics.ListCreateAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3490,7 +3732,7 @@ class ControllerNetworkList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerNetwork.select_by_user(self.request.user)
+        return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -3502,21 +3744,21 @@ class ControllerNetworkList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerNetworkList, self).create(request, *args, **kwargs)
+            return super(PlanetStackList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerNetworkList, self).create(request, *args, **kwargs)
+        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerNetwork.objects.select_related().all()
-    serializer_class = ControllerNetworkSerializer
-    id_serializer_class = ControllerNetworkIdSerializer
+class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = PlanetStack.objects.select_related().all()
+    serializer_class = PlanetStackSerializer
+    id_serializer_class = PlanetStackIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -3526,7 +3768,7 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerNetwork.select_by_user(self.request.user)
+        return PlanetStack.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -3708,6 +3950,7 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
 
 
 class SiteRoleList(generics.ListCreateAPIView):
@@ -4005,6 +4248,65 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
+class ControllerNetworkList(generics.ListCreateAPIView):
+    queryset = ControllerNetwork.objects.select_related().all()
+    serializer_class = ControllerNetworkSerializer
+    id_serializer_class = ControllerNetworkIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ControllerNetwork.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ControllerNetworkList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ControllerNetworkList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerNetwork.objects.select_related().all()
+    serializer_class = ControllerNetworkSerializer
+    id_serializer_class = ControllerNetworkIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ControllerNetwork.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
 class ImageDeploymentsList(generics.ListCreateAPIView):
     queryset = ImageDeployments.objects.select_related().all()
     serializer_class = ImageDeploymentsSerializer
@@ -4057,6 +4359,65 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return ImageDeployments.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class ControllerUserList(generics.ListCreateAPIView):
+    queryset = ControllerUser.objects.select_related().all()
+    serializer_class = ControllerUserSerializer
+    id_serializer_class = ControllerUserIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return ControllerUser.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(ControllerUserList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(ControllerUserList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerUser.objects.select_related().all()
+    serializer_class = ControllerUserSerializer
+    id_serializer_class = ControllerUserIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return ControllerUser.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -4482,7 +4843,7 @@ class DeploymentList(generics.ListCreateAPIView):
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','accessControl','flavors','images','sites',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4654,12 +5015,12 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackList(generics.ListCreateAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class ControllerSliceList(generics.ListCreateAPIView):
+    queryset = ControllerSlice.objects.select_related().all()
+    serializer_class = ControllerSliceSerializer
+    id_serializer_class = ControllerSliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4669,7 +5030,7 @@ class PlanetStackList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
+        return ControllerSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -4681,21 +5042,21 @@ class PlanetStackList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(PlanetStackList, self).create(request, *args, **kwargs)
+            return super(ControllerSliceList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
+        ret = super(ControllerSliceList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerSlice.objects.select_related().all()
+    serializer_class = ControllerSliceSerializer
+    id_serializer_class = ControllerSliceIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -4705,7 +5066,7 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return PlanetStack.select_by_user(self.request.user)
+        return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5067,12 +5428,12 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerUserList(generics.ListCreateAPIView):
-    queryset = ControllerUser.objects.select_related().all()
-    serializer_class = ControllerUserSerializer
-    id_serializer_class = ControllerUserIdSerializer
+class ControllerSlicePrivilegeList(generics.ListCreateAPIView):
+    queryset = ControllerSlicePrivilege.objects.select_related().all()
+    serializer_class = ControllerSlicePrivilegeSerializer
+    id_serializer_class = ControllerSlicePrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5082,7 +5443,7 @@ class ControllerUserList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
-        return ControllerUser.select_by_user(self.request.user)
+        return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -5094,21 +5455,21 @@ class ControllerUserList(generics.ListCreateAPIView):
         obj = serializer.object
         obj.caller = request.user
         if obj.can_update(request.user):
-            return super(ControllerUserList, self).create(request, *args, **kwargs)
+            return super(ControllerSlicePrivilegeList, self).create(request, *args, **kwargs)
         else:
             raise Exception("failed obj.can_update")
 
-        ret = super(ControllerUserList, self).create(request, *args, **kwargs)
+        ret = super(ControllerSlicePrivilegeList, self).create(request, *args, **kwargs)
         if (ret.status_code%100 != 200):
             raise Exception(ret.data)
 
         return ret
 
 
-class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerUser.objects.select_related().all()
-    serializer_class = ControllerUserSerializer
-    id_serializer_class = ControllerUserIdSerializer
+class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = ControllerSlicePrivilege.objects.select_related().all()
+    serializer_class = ControllerSlicePrivilegeSerializer
+    id_serializer_class = ControllerSlicePrivilegeIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
@@ -5118,7 +5479,66 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
     
     def get_queryset(self):
-        return ControllerUser.select_by_user(self.request.user)
+        return ControllerSlicePrivilege.select_by_user(self.request.user)
+
+    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+
+
+
+class SiteDeploymentList(generics.ListCreateAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        return SiteDeployment.select_by_user(self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.object
+        obj.caller = request.user
+        if obj.can_update(request.user):
+            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
+        else:
+            raise Exception("failed obj.can_update")
+
+        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
+        if (ret.status_code%100 != 200):
+            raise Exception(ret.data)
+
+        return ret
+
+
+class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+    queryset = SiteDeployment.objects.select_related().all()
+    serializer_class = SiteDeploymentSerializer
+    id_serializer_class = SiteDeploymentIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+    
+    def get_queryset(self):
+        return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5237,65 +5657,6 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return UserCredential.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-
-
-class SiteDeploymentList(generics.ListCreateAPIView):
-    queryset = SiteDeployment.objects.select_related().all()
-    serializer_class = SiteDeploymentSerializer
-    id_serializer_class = SiteDeploymentIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return SiteDeployment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = SiteDeployment.objects.select_related().all()
-    serializer_class = SiteDeploymentSerializer
-    id_serializer_class = SiteDeploymentIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
@@ -5532,65 +5893,6 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return ServiceResource.select_by_user(self.request.user)
-
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
-
-
-
-class ControllerSliceList(generics.ListCreateAPIView):
-    queryset = ControllerSlice.objects.select_related().all()
-    serializer_class = ControllerSliceSerializer
-    id_serializer_class = ControllerSliceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        return ControllerSlice.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSliceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSliceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
-
-class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
-    queryset = ControllerSlice.objects.select_related().all()
-    serializer_class = ControllerSliceSerializer
-    id_serializer_class = ControllerSliceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-    
-    def get_queryset(self):
-        return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
 
