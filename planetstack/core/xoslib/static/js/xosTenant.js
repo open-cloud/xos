@@ -38,6 +38,7 @@ XOSTenantButtonView = Marionette.ItemView.extend({
                      },
 
             createClicked: function(e) {
+                     XOSTenantApp.addSlice();
                      },
 
             deleteClicked: function(e) {
@@ -55,7 +56,8 @@ XOSTenantButtonView = Marionette.ItemView.extend({
 XOSTenantApp = new XOSApplication({
     logTableId: "#logTable",
     statusMsgId: "#statusMsg",
-    hideTabsByDefault: true
+    hideTabsByDefault: true,
+    varName: "XOSTenantApp",
 });
 
 XOSTenantApp.addRegions({
@@ -63,6 +65,7 @@ XOSTenantApp.addRegions({
     tenantSummary: "#tenantSummary",
     tenantSiteList: "#tenantSiteList",
     tenantButtons: "#tenantButtons",
+    tenantAddSliceInterior: "#tenant-addslice-interior",
 });
 
 XOSTenantApp.buildViews = function() {
@@ -73,6 +76,12 @@ XOSTenantApp.buildViews = function() {
                                                 detailFields: ["serviceClass", "image_preference", "network_ports", "mount_data_sets"]});
 
      XOSTenantApp.tenantSummaryView = tenantSummaryClass;
+
+     tenantAddClass = XOSDetailView.extend({template: "#xos-detail-template",
+                                                app: XOSTenantApp,
+                                                detailFields: ["name", "description"]});
+
+     XOSTenantApp.tenantAddView = tenantAddClass;
 
      tenantSiteItemClass = XOSItemView.extend({template: "#xos-listitem-template",
                                                app: XOSTenantApp});
@@ -92,8 +101,7 @@ XOSTenantApp.buildViews = function() {
 
      XOSTenantApp.tenantSliceSelectorView = SliceSelectorView.extend( {
          sliceChanged: function(id) {
-             //console.log("navigate to " + id);
-             XOSTenantApp.Router.navigate("slice/" + id, {trigger: true});
+             XOSTenantApp.navToSlice(id);
          },
      });
 
@@ -111,6 +119,41 @@ make_choices = function(list_of_names, list_of_values) {
         }
     }
     return result;
+};
+
+XOSTenantApp.navToSlice = function(id) {
+    XOSTenantApp.viewSlice(xos.slicesPlus.get(id));
+};
+
+XOSTenantApp.adjustCollectionField = function(collectionName, id, fieldName, amount) {
+    model = XOSTenantApp[collectionName].get(id);
+    model.set(fieldName, Math.max(model.get(fieldName) + amount, 0));
+};
+
+XOSTenantApp.addSlice = function() {
+    var app=this;
+    model = new xos.slicesPlus.model({site: xos.tenant().current_user_site_id});
+    console.log(model);
+    var detailView = new XOSTenantApp.tenantAddView({model: model, collection: xos.slicesPlus});
+    detailView.dialog = $("tenant-addslice-dialog");
+    app.tenantAddSliceInterior.show(detailView);
+    $("#tenant-addslice-dialog").dialog({
+       autoOpen: false,
+       modal: true,
+       width: 640,
+       buttons : {
+            "Save" : function() {
+              var addDialog = this;
+              detailView.synchronous = true;
+              detailView.afterSave = function() { $(addDialog).dialog("close"); XOSTenantApp.navToSlice(detailView.model.id); }
+              detailView.save();
+            },
+            "Cancel" : function() {
+              $(this).dialog("close");
+            }
+          }
+        });
+    $("#tenant-addslice-dialog").dialog("open");
 };
 
 XOSTenantApp.viewSlice = function(model) {
@@ -142,42 +185,6 @@ XOSTenantApp.viewSlice = function(model) {
                                                                 linkedView: tenantSummary } ) );
 };
 
-XOSTenantApp.initRouter = function() {
-    router = XOSRouter;
-    var api = {};
-    var routes = {};
-
-    nav_url = "slice/:id";
-    api_command = "viewSlice";
-    api[api_command] = function(id) { XOSTenantApp.viewSlice(xos.slicesPlus.get(id)); };
-    routes[nav_url] = api_command;
-
-    nav_url = "increase/:collectionName/:id/:fieldName";
-    api_command = "increase";
-    api[api_command] = function(collectionName, id, fieldName) {
-                           XOSTenantApp.Router.showPreviousURL();
-                           model = XOSTenantApp[collectionName].get(id);
-                           model.set(fieldName, model.get(fieldName) + 1);
-                       };
-    routes[nav_url] = api_command;
-
-    nav_url = "decrease/:collectionName/:id/:fieldName";
-    api_command = "decrease";
-    api[api_command] = function(collectionName, id, fieldName) {
-                           XOSTenantApp.Router.showPreviousURL();
-                           model = XOSTenantApp[collectionName].get(id);
-                           model.set(fieldName, Math.max(0, model.get(fieldName) - 1));
-                       };
-    routes[nav_url] = api_command;
-
-    nav_url = "*path";
-    api_command = "defaultRoute";
-    api[api_command] = function() { XOSTenantApp.viewSlice(undefined); };
-    routes[nav_url] = api_command;
-
-    XOSTenantApp.Router = new router({ appRoutes: routes, controller: api });
-};
-
 XOSTenantApp.startNavigation = function() {
     Backbone.history.start();
     XOSTenantApp.navigationStarted = true;
@@ -188,11 +195,7 @@ XOSTenantApp.collectionLoadChange = function() {
 
     if (!XOSTenantApp.navigationStarted) {
         if (stats["isLoaded"] + stats["failedLoad"] >= stats["startedLoad"]) {
-            XOSTenantApp.startNavigation();
-
-            //if (xos.slicesPlus.models.length > 0) {
-            //    XOSTenantApp.Router.navigate("slice/" + xos.slicesPlus.models[0].id, {trigger:true});
-            //}
+            XOSTenantApp.viewSlice(undefined);
         } else {
             $("#tenantSummary").html("<h3>Loading...</h3><div id='xos-startup-progress'></div>");
             $("#xos-startup-progress").progressbar({value: stats["completedLoad"], max: stats["startedLoad"]});
@@ -202,8 +205,6 @@ XOSTenantApp.collectionLoadChange = function() {
 
 XOSTenantApp.on("start", function() {
      XOSTenantApp.buildViews();
-
-     XOSTenantApp.initRouter();
 
      // fire it once to initially show the progress bar
      XOSTenantApp.collectionLoadChange();

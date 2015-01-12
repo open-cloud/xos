@@ -398,8 +398,6 @@ if (! window.XOSLIB_LOADED ) {
         if (!modelAttrs.defaults) {
             modelAttrs.defaults = get_defaults(modelName);
         }
-        console.log(modelName);
-        console.log(modelAttrs);
 
 //        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
 //            modelAttrs["defaults"] = xosdefaults[modelName];
@@ -693,6 +691,8 @@ if (! window.XOSLIB_LOADED ) {
                             listFields: [],
                             detailFields: [],
                             });
+
+        this.tenant = function() { return this.tenantview.models[0].attributes; }
 
         this.listObjects = function() { return this.allCollectionNames; };
 
