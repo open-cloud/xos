@@ -32,10 +32,21 @@ def getTenantViewDict(user):
         if good:
             blessed_images.append(image)
 
+    blessed_flavors=[]
+    for flavor in Flavor.objects.all():
+        good = False
+        for deployment in flavor.deployments.all():
+            if deployment.name in BLESSED_DEPLOYMENTS:
+                 good=True
+        if good:
+            blessed_flavors.append(flavor)
+
     volumes=[]
     for volume in Volume.objects.all():
         if not volume.private:
             volumes.append(volume)
+
+    blessed_service_classes = [ServiceClass.objects.get(name="Best Effort")]
 
     return {"id": 0,
             "blessed_deployment_names": BLESSED_DEPLOYMENTS,
@@ -43,6 +54,10 @@ def getTenantViewDict(user):
             "blessed_sites": [site.id for site in blessed_sites],
             "blessed_image_names": [image.name for image in blessed_images],
             "blessed_images": [image.id for image in blessed_images],
+            "blessed_flavor_names": [flavor.name for flavor in blessed_flavors],
+            "blessed_flavors": [flavor.id for flavor in blessed_flavors],
+            "blessed_service_class_names": [serviceclass.name for serviceclass in blessed_service_classes],
+            "blessed_service_classes": [serviceclass.id for serviceclass in blessed_service_classes],
             "public_volume_names": [volume.name for volume in volumes],
             "public_volumes": [volume.id for volume in volumes],
             "current_user_site_id": user.site.id,
