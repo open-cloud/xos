@@ -12,6 +12,7 @@ from core.models import Tag
 from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Controller
+from core.models import Flavor, Image
 from django.core.exceptions import ValidationError
 
 # Create your models here.
@@ -31,7 +32,8 @@ class Slice(PlCoreBase):
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
 
     # for tenant view
-    image_preference = models.CharField(default="Ubuntu 12.04 LTS", null=True, blank=True, max_length=256)
+    default_flavor = models.ForeignKey(Flavor, related_name = "slices", null=True, blank=True)
+    default_image = models.ForeignKey(Image, related_name = "slices", null=True, blank=True);
     mount_data_sets = models.CharField(default="GenBank",null=True, blank=True, max_length=256)
 
     def __unicode__(self):  return u'%s' % (self.name)
