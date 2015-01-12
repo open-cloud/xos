@@ -73,7 +73,7 @@ XOSTenantApp.buildViews = function() {
 
      tenantSummaryClass = XOSDetailView.extend({template: "#xos-detail-template",
                                                 app: XOSTenantApp,
-                                                detailFields: ["serviceClass", "image_preference", "network_ports", "mount_data_sets"]});
+                                                detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"]});
 
      XOSTenantApp.tenantSummaryView = tenantSummaryClass;
 
@@ -116,6 +116,12 @@ make_choices = function(list_of_names, list_of_values) {
         for (index in list_of_names) {
             displayName = list_of_names[index];
             result.push( [displayName, displayName] );
+        }
+    } else {
+        for (index in list_of_names) {
+            displayName = list_of_names[index];
+            id = list_of_values[index];
+            result.push( [displayName, id] );
         }
     }
     return result;
@@ -173,8 +179,10 @@ XOSTenantApp.viewSlice = function(model) {
     XOSTenantApp.tenantSliceSelector.show(sliceSelector);
 
     tenantSummary = new XOSTenantApp.tenantSummaryView({model: model,
-                                                        choices: {mount_data_sets: make_choices(xos.tenantview.models[0].attributes.public_volume_names, null),
-                                                                  image_preference: make_choices(xos.tenantview.models[0].attributes.blessed_image_names, null)},
+                                                        choices: {mount_data_sets: make_choices(xos.tenant().public_volume_names, null),
+                                                                  serviceClass: make_choices(xos.tenant().blessed_service_class_names, xos.tenant().blessed_service_classes),
+                                                                  default_image: make_choices(xos.tenant().blessed_image_names, xos.tenant().blessed_image_ids),
+                                                                  default_flavor: make_choices(xos.tenant().blessed_flavor_names, xos.tenant().blessed_flavor_ids),},
                                                        });
     XOSTenantApp.tenantSummary.show(tenantSummary);
 
@@ -190,9 +198,27 @@ XOSTenantApp.viewSlice = function(model) {
                                                                 linkedView: tenantSummary } ) );
 };
 
-XOSTenantApp.startNavigation = function() {
-    Backbone.history.start();
-    XOSTenantApp.navigationStarted = true;
+XOSTenantApp.sanityCheck = function() {
+    errors = [];
+    if (xos.tenant().blessed_service_classes.length == 0) {
+        errors.push("no blessed service classes");
+    }
+    if (xos.tenant().blessed_flavors.length == 0) {
+        errors.push("no blessed flavors");
+    }
+    if (xos.tenant().blessed_images.length == 0) {
+        errors.push("no blessed images");
+    }
+    if (xos.tenant().blessed_sites.length == 0) {
+        errors.push("no blessed sites");
+    }
+
+    if (errors.length > 0) {
+         $("#tenantSummary").html("Tenant view sanity check failed<br>" + errors.join("<br>"));
+         return false;
+    }
+
+    return true;
 }
 
 XOSTenantApp.collectionLoadChange = function() {
@@ -200,7 +226,9 @@ XOSTenantApp.collectionLoadChange = function() {
 
     if (!XOSTenantApp.navigationStarted) {
         if (stats["isLoaded"] + stats["failedLoad"] >= stats["startedLoad"]) {
-            XOSTenantApp.viewSlice(undefined);
+            if (XOSTenantApp.sanityCheck()) {
+                XOSTenantApp.viewSlice(undefined);
+            }
         } else {
             $("#tenantSummary").html("<h3>Loading...</h3><div id='xos-startup-progress'></div>");
             $("#xos-startup-progress").progressbar({value: stats["completedLoad"], max: stats["startedLoad"]});
