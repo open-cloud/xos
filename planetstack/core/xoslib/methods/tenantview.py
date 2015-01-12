@@ -13,8 +13,7 @@ from syndicate_storage.models import Volume
 
 BLESSED_DEPLOYMENTS = ["ViCCI"] # ["US-MaxPlanck", "US-GeorgiaTech", "US-Princeton", "US-Washington", "US-Stanford"]
 
-
-def getTenantViewDict():
+def getTenantViewDict(user):
     blessed_sites = []
     for site in Site.objects.all():
         good=False
@@ -46,6 +45,8 @@ def getTenantViewDict():
             "blessed_images": [image.id for image in blessed_images],
             "public_volume_names": [volume.name for volume in volumes],
             "public_volumes": [volume.id for volume in volumes],
+            "current_user_site_id": user.site.id,
+            "current_user_login_base": user.site.login_base,
             }
 
 class TenantList(APIView):
@@ -53,12 +54,12 @@ class TenantList(APIView):
     method_name = "tenantview"
 
     def get(self, request, format=None):
-        return Response( getTenantViewDict() )
+        return Response( getTenantViewDict(request.user) )
 
 class TenantDetail(APIView):
     method_kind = "detail"
     method_name = "tenantview"
 
     def get(self, request, format=None, pk=0):
-        return Response( [getTenantViewDict()] )
+        return Response( [getTenantViewDict(request.user)] )
 
