@@ -6,7 +6,7 @@ from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
-from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView
+from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView, PlusListCreateAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -51,7 +51,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','image_preference','service','network','mount_data_sets',
                       'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation')
 
-class SlicePlusList(generics.ListCreateAPIView):
+class SlicePlusList(PlusListCreateAPIView): #generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
 
@@ -60,14 +60,6 @@ class SlicePlusList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return SlicePlus.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        obj = self.get_object()
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceList, self).create(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
