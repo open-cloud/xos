@@ -400,6 +400,8 @@ XOSApplication = Marionette.Application.extend({
             that.destroyModel(model);
             if (afterDelete=="list") {
                 that.navigate("list", modelName);
+            } else if (afterDelete) {
+                afterDelete();
             }
         });
     },
