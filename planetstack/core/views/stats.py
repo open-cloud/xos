@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from monitor import driver
+from core.models import *
 import json
 
 def Stats(request):
@@ -8,5 +9,11 @@ def Stats(request):
     meter = request.GET['meter']
     controller_name = request.GET['controller_name']
     
-    meters = driver.get_meter(meter, model, pk)
+    controller = Controller.objects.filter(name=controller_name)[0]
+    keystone = {'username':controller.admin_user, 'password':controller.admin_password, 'tenant_name':controller.admin_tenant, 'auth_url':controller.auth_url, 'cacert':'/etc/ssl/certs/ca-certificates.crt'}
+
+    for k,v in keystone.items():
+        keystone['os_'+k] = v
+    
+    meters = driver.get_meter(meter, model, pk, keystone)
     return HttpResponse(json.dumps(meters))
