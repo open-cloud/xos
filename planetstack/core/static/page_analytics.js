@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------------
 // node count and average cpu utilization
 
-function updatePageCPU() {
-    var url="/stats/?model_name=" + admin_object_name + "&pk=" + admin_object_id + "&meter=cpu" + "&controller_name=" + admin_object_controller;
+function updateMiniDashStatistic(meter, buttonSelector) {
+    var url="/stats/?model_name=" + admin_object_name + "&pk=" + admin_object_id + "&meter=" + meter + "&controller_name=" + admin_object_controller;
     console.log("fetching stats url " + url);
     $.ajax({
     url: url,
@@ -10,7 +10,14 @@ function updatePageCPU() {
     type : 'GET',
     success: function(newData) {
         console.log(newData);
-        setTimeout(updatePageAnalytics, 30000);
+        if (newData.stat_list.length > 0) {
+            value = newData.stat_list.slice(-1)[0].value;
+            console.log(value);
+            $(buttonSelector).text(Math.round(value)).show();
+        } else {
+            $(buttonSelector).text("no data").show();
+        }
+        setTimeout(function() { updateMiniDashStatistic(meter, buttonSelector); }, 30000);
     },
     error: function() {
     }
@@ -19,7 +26,9 @@ function updatePageCPU() {
 
 $( document ).ready(function() {
     if (admin_object_name == "Sliver" && admin_object_id != undefined) {
-        updatePageCPU();
+        updateMiniDashStatistic("cpu", "#miniDashCPU");
+        updateMiniDashStatistic("network.outgoing.bytes", "#miniDashBandwidthIn");
+        updateMiniDashStatistic("network.incoming.bytes", "#miniDashBandwidthOut");
     }
 });
 
