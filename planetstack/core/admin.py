@@ -633,7 +633,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
     # nodes no longer direclty connected to deployments
     #suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
-    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
+    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'),,('imagedeployments','Images'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
@@ -788,7 +788,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
             ('deployments','Deployments'),
             ('slices','Slices'),
             #('nodes','Nodes'),
-            ('tags','Tags'),
         ]
 
         request=getattr(_thread_locals, "request", None)
@@ -922,7 +921,6 @@ class SliceAdmin(PlanetStackBaseAdmin):
           ('slicenetworks','Networks'),
           ('sliceprivileges','Privileges'),
           ('slivers','Slivers'),
-          ('tags','Tags'),
           ('reservations','Reservations'),
           ]
 
@@ -1065,7 +1063,7 @@ class NodeAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ['name','site_deployment']
     user_readonly_inlines = [TagInline,SliverInline]
 
-    suit_form_tabs =(('details','Node Details'),('slivers','Slivers'),('tags','Tags'))
+    suit_form_tabs =(('details','Node Details'),('slivers','Slivers'))
 
 
 class SliverForm(forms.ModelForm):
@@ -1097,9 +1095,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
     list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'ip',)
 
-    suit_form_tabs =(('general', 'Sliver Details'),
-        ('tags','Tags'),
-    )
+    suit_form_tabs =(('general', 'Sliver Details'))
 
     inlines = [TagInline]
 
