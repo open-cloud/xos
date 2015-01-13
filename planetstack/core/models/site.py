@@ -278,6 +278,13 @@ class Controller(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
 
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        return False
+
 class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
