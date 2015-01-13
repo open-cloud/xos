@@ -742,6 +742,13 @@ class ControllerAdmin(PlanetStackBaseAdmin):
 
         return AdminFormMetaClass
 
+    def save_model(self, request, obj, form, change):
+        # update openstack connection to use this site/tenant
+        obj.save_by_user(request.user)
+                    
+    def delete_model(self, request, obj):
+        obj.delete_by_user(request.user)    
+
 class ServiceAttrAsTabInline(PlStackTabularInline):
     model = ServiceAttribute
     fields = ['name','value']
