@@ -3,7 +3,7 @@
 <script>
     admin_object_name = "{{ opts.object_name }}";
     admin_object_id = "{{ original.id }}";
-    admin_object_controller = "princeton"; // XXX fix this
+    admin_object_controller = "princeton-beta"; // XXX fix this
     if (admin_object_id == "") {
         admin_object_id = undefined;
     } else {
@@ -29,17 +29,21 @@
     <div class="hide" id="selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
     <div class="hide" id="currentOriginalNode">{{ original|truncatewords:"18" }}</div>
     <div class="hide" id="minidashStatus"></div>
-    <div class="miniDashPair">
+    <!-- <div class="miniDashPair">
         <button type="button" name="nodeCount" id="miniDashNodeCount" class="minidashbutton">--</button>
         <label for="nodeCount" id="miniDashNodeCountLabel">Active Nodes</label>
+    </div> -->
+    <div class="miniDashPair">
+        <button type="button" name="CPU" id="miniDashCPU" class="minidashbutton">--</button>
+        <label for="CPU" id="miniDashAvgLoadLabel">CPU</label>
     </div>
     <div class="miniDashPair">
-        <button type="button" name="avgLoad" id="miniDashAvgLoad" class="minidashbutton">--</button>
-        <label for="avgLoad" id="miniDashAvgLoadLabel">Average Load</label>
+        <button type="button" name="bandwidthIn" id="miniDashBandwidthIn" class="minidashbutton">--</button>
+        <label for="bandwidthIn" id="miniDashBandwidthLabel">Bandwidth In</label>
     </div>
     <div class="miniDashPair">
-        <button type="button" name="bandwidth" id="miniDashBandwidth" class="minidashbutton">--</button>
-        <label for="bandwidth" id="miniDashBandwidthLabel">Bandwidth</label>
+        <button type="button" name="bandwidthOut" id="miniDashBandwidthOut" class="minidashbutton">--</button>
+        <label for="bandwidthOut" id="miniDashBandwidthLabel">Bandwidth Out</label>
     </div>
     <div class="endDashPair">
     </div>
