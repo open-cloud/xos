@@ -157,7 +157,7 @@
   <table>
   <% args = arguments; %>
   <% _.each(detailFields, function(fieldName) { %>
-     <tr><td><%= fieldNameToHumanReadable(fieldName) %>:</td>
+     <tr><td><%= fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName) %>:</td>
         <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  %>
         <% if (fieldName in choices) { %>
             <td><%= choicesToSelect(fieldName, model.attributes[fieldName], choices[fieldName]) %></td>
@@ -165,7 +165,7 @@
             <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
         <% } else if (inputType[fieldName] == "spinner") { %>
             <!-- note: I never finished working on this spinner stuff! -->
-            <td><%= xosSpinnerTemplate({id: "picker_" + fieldName, fieldName: fieldName, value: model.attributes[fieldName]}) %></td>
+            <td><%= xosSpinnerTemplate({id: "spinner_" + fieldName, fieldName: fieldName, value: model.attributes[fieldName]}) %></td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
             <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
         <% } else if (inputType[fieldName] == "picker") { %>

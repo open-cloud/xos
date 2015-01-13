@@ -9,7 +9,7 @@ XOSTenantSiteCollection = XOSCollection.extend( {
     modelName: "tenantSite",
     collectionName: "tenantSites",
 
-    updateFromSlice: function(slice) {
+    getFromSlice: function(slice) {
         var tenantSites = [];
         var id = 0;
         for (siteName in slice.attributes.site_allocation) {
@@ -26,7 +26,30 @@ XOSTenantSiteCollection = XOSCollection.extend( {
         }
         this.set(tenantSites);
     },
+
+    putToSlice: function(slice) {
+        slice.attributes.site_allocation = {};
+        for (index in this.models) {
+            model = this.models[index];
+            slice.attributes.site_allocation[ model.attributes.name ] = model.attributes.allocated;
+        }
+    },
 });
+
+XOSEditUsersView = Marionette.ItemView.extend({
+            template: "#tenant-edit-users",
+            viewInitializers: [],
+
+            onShow: function() {
+                _.each(this.viewInitializers, function(initializer) {
+                    initializer();
+                });
+            },
+
+            templateHelpers: function() { return { detailView: this, model: this.model }; },
+
+            });
+
 
 XOSTenantButtonView = Marionette.ItemView.extend({
             template: "#xos-tenant-buttons-template",
@@ -46,9 +69,12 @@ XOSTenantButtonView = Marionette.ItemView.extend({
                      },
 
             addUserClicked: function(e) {
+                     XOSTenantApp.editUsers(this.options.linkedView.model);
                      },
 
             saveClicked: function(e) {
+                     model = this.options.linkedView.model;
+                     model.tenantSiteCollection.putToSlice(model);
                      this.options.linkedView.submitContinueClicked.call(this.options.linkedView, e);
                      },
             });
@@ -66,6 +92,7 @@ XOSTenantApp.addRegions({
     tenantSiteList: "#tenantSiteList",
     tenantButtons: "#tenantButtons",
     tenantAddSliceInterior: "#tenant-addslice-interior",
+    tenantEditUsersInterior: "#tenant-edit-users-interior",
 });
 
 XOSTenantApp.buildViews = function() {
@@ -73,7 +100,9 @@ XOSTenantApp.buildViews = function() {
 
      tenantSummaryClass = XOSDetailView.extend({template: "#xos-detail-template",
                                                 app: XOSTenantApp,
-                                                detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"]});
+                                                detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
+                                                fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image"},
+                                                });
 
      XOSTenantApp.tenantSummaryView = tenantSummaryClass;
 
@@ -138,10 +167,14 @@ XOSTenantApp.adjustCollectionField = function(collectionName, id, fieldName, amo
 
 XOSTenantApp.addSlice = function() {
     var app=this;
-    model = new xos.slicesPlus.model({site: xos.tenant().current_user_site_id});
+    model = new xos.slicesPlus.model({site: xos.tenant().current_user_site_id,
+                                      name: xos.tenant().current_user_login_base + "_"});
     console.log(model);
-    var detailView = new XOSTenantApp.tenantAddView({model: model, collection: xos.slicesPlus});
-    detailView.dialog = $("tenant-addslice-dialog");
+    var detailView = new XOSTenantApp.tenantAddView({model: model,
+                                                    collection: xos.slicesPlus,
+                                                    noSubmitButton: true,
+                                                    });
+    detailView.dialog = $("#tenant-addslice-dialog");
     app.tenantAddSliceInterior.show(detailView);
     $("#tenant-addslice-dialog").dialog({
        autoOpen: false,
@@ -150,6 +183,7 @@ XOSTenantApp.addSlice = function() {
        buttons : {
             "Save" : function() {
               var addDialog = this;
+              console.log("SAVE!!!");
               detailView.synchronous = true;
               detailView.afterSave = function() { $(addDialog).dialog("close"); XOSTenantApp.navToSlice(detailView.model.id); }
               detailView.save();
@@ -160,6 +194,31 @@ XOSTenantApp.addSlice = function() {
           }
         });
     $("#tenant-addslice-dialog").dialog("open");
+};
+
+XOSTenantApp.editUsers = function(model) {
+    var app=this;
+    var detailView = new XOSEditUsersView({model: model, collection: xos.slicesPlus});
+    detailView.dialog = $("#tenant-edit-users-dialog");
+    app.tenantEditUsersInterior.show(detailView);
+    $("#tenant-edit-users-dialog").dialog({
+       autoOpen: false,
+       modal: true,
+       width: 640,
+       buttons : {
+            "Save" : function() {
+              var editDialog = this;
+              user_ids = all_options($("#tenant-edit-users-dialog").find(".select-picker-to"));
+              user_ids = user_ids.map( function(x) { return parseInt(x,10); } );
+              model.attributes.users = user_ids;
+              $(editDialog).dialog("close");
+            },
+            "Cancel" : function() {
+              $(this).dialog("close");
+            }
+          }
+        });
+    $("#tenant-edit-users-dialog").dialog("open");
 };
 
 XOSTenantApp.deleteSlice = function(model) {
@@ -181,13 +240,14 @@ XOSTenantApp.viewSlice = function(model) {
     tenantSummary = new XOSTenantApp.tenantSummaryView({model: model,
                                                         choices: {mount_data_sets: make_choices(xos.tenant().public_volume_names, null),
                                                                   serviceClass: make_choices(xos.tenant().blessed_service_class_names, xos.tenant().blessed_service_classes),
-                                                                  default_image: make_choices(xos.tenant().blessed_image_names, xos.tenant().blessed_image_ids),
-                                                                  default_flavor: make_choices(xos.tenant().blessed_flavor_names, xos.tenant().blessed_flavor_ids),},
+                                                                  default_image: make_choices(xos.tenant().blessed_image_names, xos.tenant().blessed_images),
+                                                                  default_flavor: make_choices(xos.tenant().blessed_flavor_names, xos.tenant().blessed_flavors),},
                                                        });
     XOSTenantApp.tenantSummary.show(tenantSummary);
 
     tenantSites = new XOSTenantSiteCollection();
-    tenantSites.updateFromSlice(model);
+    tenantSites.getFromSlice(model);
+    model.tenantSiteCollection = tenantSites;
     XOSTenantApp.tenantSites = tenantSites;
 
     tenantSiteList = new XOSTenantApp.tenantSiteListView({collection: tenantSites });

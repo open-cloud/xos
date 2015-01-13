@@ -14,13 +14,14 @@
 <script src="{{ STATIC_URL }}/js/xoslib/xos-validators.js"></script>
 <script src="{{ STATIC_URL }}/js/xoslib/xos-backbone.js"></script>
 <script src="{{ STATIC_URL }}/js/xoslib/xosHelper.js"></script>
+<script src="{{ STATIC_URL }}/js/picker.js"></script>
 <script src="{{ STATIC_URL }}/js/xosTenant.js"></script>
 
 <script type="text/template" id="xos-tenant-buttons-template">
   <div class="box save-box">
     <button class="btn btn-high btn-tenant-create">Create New Slice</button>
     <button class="btn btn-high btn-tenant-delete">Delete Slice</button>
-    <button class="btn btn-high btn-tenant-add-user">Add User</button>
+    <button class="btn btn-high btn-tenant-add-user">Edit Users</button>
     <button class="btn btn-high btn-tenant-save">Save</button>
   </div>
 </script>
@@ -33,12 +34,26 @@
   </tr>
 </script>
 
+<script type="text/template" id="tenant-edit-users">
+    <%= xosPickerTemplate({pickedItems: model.attributes.users,
+                          unpickedItems: array_diff(xos.tenant().current_user_site_users, model.attributes.users),
+                          id: "users",
+                          fieldName: "users",
+                          detailView: detailView,
+                          lookupFunc: function(x) { return array_pair_lookup(x, xos.tenant().current_user_site_user_names, xos.tenant().current_user_site_users); },
+                          } ) %>
+</script>
+
 <div id="xos-confirm-dialog" title="Confirmation Required">
   Are you sure about this?
 </div>
 
 <div id="tenant-addslice-dialog" title="Add Child">
 <div id="tenant-addslice-interior"></div>
+</div>
+
+<div id="tenant-edit-users-dialog" title="Add Child">
+<div id="tenant-edit-users-interior"></div>
 </div>
 
 <div id="xos-error-dialog" title="Error Message">
