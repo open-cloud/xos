@@ -1,4 +1,4 @@
-from core.models.slice import Slice
+from core.models.slice import Slice, SlicePrivilege
 from plus import PlusObjectMixin
 
 class SlicePlus(Slice, PlusObjectMixin):
@@ -33,6 +33,18 @@ class SlicePlus(Slice, PlusObjectMixin):
     @site_allocation.setter
     def site_allocation(self, value):
         print "XXX set sitesUsed to", value
+
+    @property
+    def users(self):
+        user_ids = []
+        for priv in SlicePrivilege.objects.filter(slice=self):
+            if not (priv.user.id in user_ids):
+                user_ids.append(priv.user.id)
+        return user_ids
+
+    @users.setter
+    def users(self, value):
+        print "XXX set users to", value
 
     @property
     def network_ports(self):
