@@ -1,5 +1,27 @@
 {% load admin_static %}
 
+<script>
+    admin_object_name = "{{ opts.object_name }}";
+    admin_object_id = "{{ original.id }}";
+    if (admin_object_id == "") {
+        admin_object_id = undefined;
+    } else {
+        admin_object_id = parseInt(admin_object_id, 10);
+    }
+    {% if opts.object_name == "Site" %}
+        admin_controller_sites = [];
+        {% for record in original.controllersite.all %}
+            admin_controller_sites.push( {{ record.id }} );
+        {% endfor %}
+    {% endif %}
+    {% if opts.object_name == "Slice" %}
+        admin_controller_slices = [];
+        {% for record in original.controllerslice.all %}
+            admin_controller_slices.push( {{ record.id }} );
+        {% endfor %}
+    {% endif %}
+</script>
+
 {% if not DISABLE_MINIDASHBOARD %}
 
 <div id="newMiniDashboard">
