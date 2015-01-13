@@ -46,6 +46,10 @@ def getTenantViewDict(user):
         if not volume.private:
             volumes.append(volume)
 
+    site_users=[]
+    for auser in user.site.users.all():
+        site_users.append(auser)
+
     blessed_service_classes = [ServiceClass.objects.get(name="Best Effort")]
 
     return {"id": 0,
@@ -62,6 +66,8 @@ def getTenantViewDict(user):
             "public_volumes": [volume.id for volume in volumes],
             "current_user_site_id": user.site.id,
             "current_user_login_base": user.site.login_base,
+            "current_user_site_users": [auser.id for auser in site_users],
+            "current_user_site_user_names": [auser.email for auser in site_users],
             }
 
 class TenantList(APIView):

@@ -22,7 +22,14 @@ class NetworkPortsField(serializers.WritableField):   # note: maybe just Field i
     def to_internal_value(self, data):
         return data
 
-class SiteAllocationField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+class DictionaryField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
+    def to_representation(self, obj):
+        return json.dumps(obj)
+
+    def to_internal_value(self, data):
+        return json.loads(data)
+
+class ListField(serializers.WritableField):   # note: maybe just Field in rest_framework 3.x instead of WritableField
     def to_representation(self, obj):
         return json.dumps(obj)
 
@@ -35,7 +42,8 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         sliceInfo = serializers.SerializerMethodField("getSliceInfo")
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
         network_ports = NetworkPortsField(required=False)
-        site_allocation = SiteAllocationField(required=False)
+        site_allocation = DictionaryField(required=False)
+        users = ListField(required=False)
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
@@ -44,13 +52,12 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             return str(obj)
 
         networks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-#        availableNetworks = serializers.PrimaryKeyRelatedField(many=True, read_only=True, view_name='network-detail')
 
         class Meta:
             model = SlicePlus
             fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation')
+                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','users')
 
 class SlicePlusList(PlusListCreateAPIView): #generics.ListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()

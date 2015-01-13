@@ -81,7 +81,12 @@ XOSRouter = Marionette.AppRouter.extend({
         },
     });
 
-Backbone.Syphon.InputReaders.register('select', function(el) {
+// XXX - We import backbone multiple times (BAD!) since the import happens
+//   inside of the view's html. The second time it's imported (developer
+//   view), it wipes out Backbone.Syphon. So, save it as Backbone_Syphon for
+//   now.
+Backbone_Syphon = Backbone.Syphon
+Backbone_Syphon.InputReaders.register('select', function(el) {
     // Modify syphon so that if a select has "syphonall" in the class, then
     // the value of every option will be returned, regardless of whether of
     // not it is selected.
@@ -498,6 +503,9 @@ XOSDetailView = Marionette.ItemView.extend({
             submitLeaveClicked: function(e) {
                 console.log("saveLeave");
                 e.preventDefault();
+                if (this.options.noSubmitButton || this.noSubmitButton) {
+                    return;
+                }
                 var that=this;
                 this.afterSave = function() {
                     that.app.navigate("list", that.model.modelName);
@@ -519,7 +527,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
             save: function() {
                 this.app.hideError();
-                var data = Backbone.Syphon.serialize(this);
+                var data = Backbone_Syphon.serialize(this);
                 var that = this;
                 var isNew = !this.model.id;
 
@@ -647,6 +655,7 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     addFields: this.model.addFields,
                                                     listFields: this.model.listFields,
                                                     detailFields: this.options.detailFields || this.detailFields || this.model.detailFields,
+                                                    fieldDisplayNames: this.options.fieldDisplayNames || this.fieldDisplayNames || this.model.fieldDisplayNames || {},
                                                     foreignFields: this.model.foreignFields,
                                                     detailLinkFields: this.model.detailLinkFields,
                                                     inputType: this.model.inputType,
