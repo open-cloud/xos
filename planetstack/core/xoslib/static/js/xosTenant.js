@@ -231,31 +231,40 @@ XOSTenantApp.viewSlice = function(model) {
         model = xos.slicesPlus.models[0];
     }
 
-    sliceSelector = new XOSTenantApp.tenantSliceSelectorView({collection: xos.slicesPlus,
-                                                              selectedID: model.id,
-                                                             } );
-    XOSTenantApp.sliceSelector = sliceSelector;
-    XOSTenantApp.tenantSliceSelector.show(sliceSelector);
+    if (model) {
+        sliceSelector = new XOSTenantApp.tenantSliceSelectorView({collection: xos.slicesPlus,
+                                                                  selectedID: model ? model.id : null,
+                                                                 } );
+        XOSTenantApp.sliceSelector = sliceSelector;
+        XOSTenantApp.tenantSliceSelector.show(sliceSelector);
 
-    tenantSummary = new XOSTenantApp.tenantSummaryView({model: model,
-                                                        choices: {mount_data_sets: make_choices(xos.tenant().public_volume_names, null),
-                                                                  serviceClass: make_choices(xos.tenant().blessed_service_class_names, xos.tenant().blessed_service_classes),
-                                                                  default_image: make_choices(xos.tenant().blessed_image_names, xos.tenant().blessed_images),
-                                                                  default_flavor: make_choices(xos.tenant().blessed_flavor_names, xos.tenant().blessed_flavors),},
-                                                       });
-    XOSTenantApp.tenantSummary.show(tenantSummary);
+        tenantSummary = new XOSTenantApp.tenantSummaryView({model: model,
+                                                            choices: {mount_data_sets: make_choices(xos.tenant().public_volume_names, null),
+                                                                      serviceClass: make_choices(xos.tenant().blessed_service_class_names, xos.tenant().blessed_service_classes),
+                                                                      default_image: make_choices(xos.tenant().blessed_image_names, xos.tenant().blessed_images),
+                                                                      default_flavor: make_choices(xos.tenant().blessed_flavor_names, xos.tenant().blessed_flavors),},
+                                                           });
+        XOSTenantApp.tenantSummary.show(tenantSummary);
 
-    tenantSites = new XOSTenantSiteCollection();
-    tenantSites.getFromSlice(model);
-    model.tenantSiteCollection = tenantSites;
-    XOSTenantApp.tenantSites = tenantSites;
+        tenantSites = new XOSTenantSiteCollection();
+        tenantSites.getFromSlice(model);
+        model.tenantSiteCollection = tenantSites;
+        XOSTenantApp.tenantSites = tenantSites;
 
-    tenantSiteList = new XOSTenantApp.tenantSiteListView({collection: tenantSites });
-    XOSTenantApp.tenantSiteList.show(tenantSiteList);
-    // on xos.slicePlus.sort, need to update xostenantapp.tenantSites
+        tenantSiteList = new XOSTenantApp.tenantSiteListView({collection: tenantSites });
+        XOSTenantApp.tenantSiteList.show(tenantSiteList);
+        // on xos.slicePlus.sort, need to update xostenantapp.tenantSites
 
-    XOSTenantApp.tenantButtons.show( new XOSTenantButtonView( { app: XOSTenantApp,
-                                                                linkedView: tenantSummary } ) );
+        XOSTenantApp.tenantButtons.show( new XOSTenantButtonView( { app: XOSTenantApp,
+                                                                    linkedView: tenantSummary } ) );
+    } else {
+        XOSTenantApp.tenantSliceSelector.show(new HTMLView({html: ""}));
+        XOSTenantApp.tenantSummary.show(new HTMLView({html: "You have no slices"}));
+        XOSTenantApp.tenantSiteList.show(new HTMLView({html: ""}));
+        XOSTenantApp.tenantButtons.show( new XOSTenantButtonView( { template: "#xos-tenant-buttons-noslice-template",
+                                                                    app: XOSTenantApp,
+                                                                    linkedView: tenantSummary } ) );
+    }
 };
 
 XOSTenantApp.sanityCheck = function() {
