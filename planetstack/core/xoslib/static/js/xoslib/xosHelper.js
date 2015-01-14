@@ -20,6 +20,7 @@ SliceSelectorView = Marionette.CompositeView.extend({
     template: "#xos-sliceselector-select",
     childViewContainer: "select",
     childView: SliceSelectorOption,
+    caption: "Slice",
 
     events: {"change select": "onSliceChanged"},
 
@@ -34,6 +35,8 @@ SliceSelectorView = Marionette.CompositeView.extend({
     sliceChanged: function(id) {
         console.log("sliceChanged " + id);
     },
+
+    templateHelpers: function() { return {caption: this.options.caption || this.caption }; },
 });
 
 FilteredCompositeView = Marionette.CompositeView.extend( {
