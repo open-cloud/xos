@@ -285,8 +285,11 @@
 </script>
 
 <script type="text/template" id="xos-sliceselector-select">
-    <select>
-    </select>
+    <% if (caption) { %>
+    <table><tr><td><%= caption %>: </td><td><select></select></td></tr></table>
+    <% } else { %>
+    <select></select>
+    <% } %>
 </script>
 
 <script>
