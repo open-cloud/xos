@@ -542,7 +542,7 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x for x in self.instance.sites.all()]
+        self.fields['sites'].initial = [x for x in self.instance.sitesdeployments.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
@@ -669,7 +669,7 @@ class ControllerAdminForm(forms.ModelForm):
         super(ControllerAdminForm, self).__init__(*args, **kwargs)  
 
         if self.instance and self.instance.pk:
-            self.fields['sites'].initial = [x.site_deployment for x in self.instance.controllersite.all()]
+            self.fields['sites'].initial = [x.site for x in self.instance.controllersite.all()]
 
     def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
         """ helper function for handling m2m relations from the MultipleChoiceField
@@ -784,7 +784,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
     inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline]
-    admin_inlines = [ControllerSite]
+    admin_inlines = [ControllerSiteInline]
     search_fields = ['name']
 
     @property
