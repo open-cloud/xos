@@ -913,6 +913,8 @@ XOSDataTableView = Marionette.View.extend( {
             "bJQueryUI": true,
             "bStateSave": true,
             "bServerSide": true,
+            "bFilter": ! (view.options.disableFilter || view.disableFilter),
+            "bPaginate": ! (view.options.disablePaginate || view.disablePaginate),
             "aoColumns": view.columnsByIndex,
 
             fnServerData: function(sSource, aoData, fnCallback, settings) {
