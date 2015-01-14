@@ -1,9 +1,15 @@
-from core.models.slice import Slice, SlicePrivilege
+from core.models import Slice, SlicePrivilege, Sliver, Site, Node
 from plus import PlusObjectMixin
+from operator import itemgetter, attrgetter
 
 class SlicePlus(Slice, PlusObjectMixin):
     class Meta:
         proxy = True
+
+    def __init__(self, *args, **kwargs):
+        super(SlicePlus, self).__init__(*args, **kwargs)
+        self._update_site_allocation = None
+        self._update_users = None
 
     def getSliceInfo(self, user=None):
         used_sites = {}
@@ -32,7 +38,8 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @site_allocation.setter
     def site_allocation(self, value):
-        print "XXX set sitesUsed to", value
+        self._update_site_allocation = value
+        #print "XXX set sitesUsed to", value
 
     @property
     def users(self):
@@ -44,7 +51,8 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @users.setter
     def users(self, value):
-        print "XXX set users to", value
+        self._update_users = value
+        #print "XXX set users to", value
 
     @property
     def network_ports(self):
@@ -71,3 +79,72 @@ class SlicePlus(Slice, PlusObjectMixin):
             slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
             qs = SlicePlus.objects.filter(id__in=slice_ids)
         return qs
+
+    def get_site_node_allocation(self, siteList):
+        siteIDList = [site.id for site in siteList]
+        nodeList = []
+        for node in Node.objects.all():
+            if (node.site_deployment.site.id in siteIDList):
+                node.sliverCount = 0
+                for sliver in node.slivers.all():
+                     if sliver.slice.id == self.id:
+                         node.sliverCount = node.sliverCount + 1
+                nodeList.append(node)
+        return nodeList
+
+    def save(self, *args, **kwargs):
+        super(SlicePlus, self).save(*args, **kwargs)
+
+        if self._update_site_allocation:
+            self.save_site_allocation()
+
+    def save_site_allocation(self, noAct = False):
+        new_site_allocation = self._update_site_allocation
+
+        all_slice_slivers = self.slivers.all() # Sliver.objects.filter(slice=self)
+        for site_name in new_site_allocation.keys():
+            desired_allocation = new_site_allocation[site_name]
+
+            # make a list of the slivers for this site
+            slivers = []
+            for sliver in all_slice_slivers:
+                if sliver.node.site_deployment.site.name == site_name:
+                    slivers.append(sliver)
+
+            # delete extra slivers
+            while (len(slivers) > desired_allocation):
+                sliver = slivers.pop()
+                print "deleting sliver", sliver
+                if (not noAct):
+                    sliver.delete()
+
+            # add more slivers
+            if (len(slivers) < desired_allocation):
+                site = Site.objects.get(name = site_name)
+                nodes = self.get_site_node_allocation([site])
+
+                if (not nodes):
+                    print "XXX no nodes in site", site_name
+                    continue
+
+                while (len(slivers) < desired_allocation):
+                    # pick the least allocated node
+                    nodes = sorted(nodes, key=attrgetter("sliverCount"))
+                    node = nodes[0]
+
+                    sliver = Sliver(name=node.name,
+                            slice=self,
+                            node=node,
+                            image = self.default_image,
+                            flavor = self.default_flavor,
+                            creator = self.creator,
+                            deployment = node.site_deployment.deployment)
+                    slivers.append(sliver)
+                    if (not noAct):
+                        sliver.save()
+
+                    print "added sliver", sliver
+
+                    node.sliverCount = node.sliverCount + 1
+
+
