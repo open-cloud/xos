@@ -1007,7 +1007,9 @@ XOSDataTableView = Marionette.View.extend( {
                   aaData.sort(function(a,b) { return compareColumns(sortCols, sortDirs, a, b); });
 
                   // slice it for pagination
-                  aaData = aaData.slice(iDisplayStart, iDisplayStart+iDisplayLength);
+                  if (iDisplayLength >= 0) {
+                      aaData = aaData.slice(iDisplayStart, iDisplayStart+iDisplayLength);
+                  }
 
                   return fnCallback({iTotalRecords: totalSize,
                          iTotalDisplayRecords: filteredSize,
