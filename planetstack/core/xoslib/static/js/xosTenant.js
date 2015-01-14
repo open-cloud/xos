@@ -102,7 +102,7 @@ XOSTenantApp.buildViews = function() {
      tenantSummaryClass = XOSDetailView.extend({template: "#xos-detail-template",
                                                 app: XOSTenantApp,
                                                 detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
-                                                fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image"},
+                                                fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
                                                 });
 
      XOSTenantApp.tenantSummaryView = tenantSummaryClass;
@@ -125,6 +125,8 @@ XOSTenantApp.buildViews = function() {
                                                title: "sites",
                                                inputType: {allocated: "spinner"},
                                                noDeleteColumn: true,
+                                               disablePaginate: true,
+                                               disableFilter: true,
                                                });
 
      XOSTenantApp.tenantSiteListView = tenantSiteListClass;
