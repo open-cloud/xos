@@ -96,6 +96,7 @@ class SlicePlus(Slice, PlusObjectMixin):
         super(SlicePlus, self).save(*args, **kwargs)
 
         if self._update_site_allocation:
+            self.save_site_allocation(noAct=True)
             self.save_site_allocation()
 
     def save_site_allocation(self, noAct = False):
@@ -124,8 +125,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                 nodes = self.get_site_node_allocation([site])
 
                 if (not nodes):
-                    print "XXX no nodes in site", site_name
-                    continue
+                    raise ValueError("no nodes in site %s" % site_name)
 
                 while (len(slivers) < desired_allocation):
                     # pick the least allocated node
