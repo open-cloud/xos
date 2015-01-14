@@ -41,8 +41,8 @@
 </script>
 
 <script type="text/template" id="tenant-edit-users">
-    <%= xosPickerTemplate({pickedItems: model.attributes.users,
-                          unpickedItems: array_diff(xos.tenant().current_user_site_users, model.attributes.users),
+    <%= xosPickerTemplate({pickedItems: model.usersBuffer,
+                          unpickedItems: array_diff(xos.tenant().current_user_site_users, model.usersBuffer),
                           id: "users",
                           fieldName: "users",
                           detailView: detailView,

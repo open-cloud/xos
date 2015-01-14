@@ -1,4 +1,4 @@
-from core.models import Slice, SlicePrivilege, Sliver, Site, Node
+from core.models import Slice, SlicePrivilege, SliceRole, Sliver, Site, Node, User
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
 
@@ -80,7 +80,7 @@ class SlicePlus(Slice, PlusObjectMixin):
             qs = SlicePlus.objects.filter(id__in=slice_ids)
         return qs
 
-    def get_site_node_allocation(self, siteList):
+    def get_node_allocation(self, siteList):
         siteIDList = [site.id for site in siteList]
         nodeList = []
         for node in Node.objects.all():
@@ -97,12 +97,20 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         if self._update_site_allocation:
             self.save_site_allocation(noAct=True)
+
+        if self._update_users:
+            self.save_users(noAct=True)
+
+        if self._update_site_allocation:
             self.save_site_allocation()
+
+        if self._update_users:
+            self.save_users()
 
     def save_site_allocation(self, noAct = False):
         new_site_allocation = self._update_site_allocation
 
-        all_slice_slivers = self.slivers.all() # Sliver.objects.filter(slice=self)
+        all_slice_slivers = self.slivers.all()
         for site_name in new_site_allocation.keys():
             desired_allocation = new_site_allocation[site_name]
 
@@ -122,7 +130,7 @@ class SlicePlus(Slice, PlusObjectMixin):
             # add more slivers
             if (len(slivers) < desired_allocation):
                 site = Site.objects.get(name = site_name)
-                nodes = self.get_site_node_allocation([site])
+                nodes = self.get_node_allocation([site])
 
                 if (not nodes):
                     raise ValueError("no nodes in site %s" % site_name)
@@ -146,5 +154,36 @@ class SlicePlus(Slice, PlusObjectMixin):
                     print "added sliver", sliver
 
                     node.sliverCount = node.sliverCount + 1
+
+    def save_users(self, noAct = False):
+        new_users = self._update_users
+
+        default_role = SliceRole.objects.get(role="default")
+
+        slice_privs = self.sliceprivileges.all()
+        slice_user_ids = [priv.user.id for priv in slice_privs]
+
+        for user_id in new_users:
+            if (user_id not in slice_user_ids):
+                print "XXX", user_id
+                priv = SlicePrivilege(slice=self, user=User.objects.get(id=user_id), role=default_role)
+                if (not noAct):
+                    priv.save()
+
+                print "added user id", user_id
+
+        for priv in slice_privs:
+             if (priv.role.id != default_role.id):
+                 # only mess with 'default' users; don't kill an admin
+                 continue
+
+             if (priv.user.id not in new_users):
+                 if (not noAct):
+                     priv.delete()
+
+                 print "deleted user id", user_id
+
+
+
 
 

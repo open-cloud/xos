@@ -30,7 +30,7 @@ XOSTenantSiteCollection = XOSCollection.extend( {
     putToSlice: function(slice) {
         slice.attributes.site_allocation = {};
         for (index in this.models) {
-            model = this.models[index];
+            var model = this.models[index];
             slice.attributes.site_allocation[ model.attributes.name ] = model.attributes.allocated;
         }
     },
@@ -75,6 +75,7 @@ XOSTenantButtonView = Marionette.ItemView.extend({
             saveClicked: function(e) {
                      model = this.options.linkedView.model;
                      model.tenantSiteCollection.putToSlice(model);
+                     model.attributes.users = model.usersBuffer;
                      this.options.linkedView.submitContinueClicked.call(this.options.linkedView, e);
                      },
             });
@@ -181,7 +182,7 @@ XOSTenantApp.addSlice = function() {
        modal: true,
        width: 640,
        buttons : {
-            "Save" : function() {
+            "Create Slice" : function() {
               var addDialog = this;
               console.log("SAVE!!!");
               detailView.synchronous = true;
@@ -206,11 +207,11 @@ XOSTenantApp.editUsers = function(model) {
        modal: true,
        width: 640,
        buttons : {
-            "Save" : function() {
+            "Ok" : function() {
               var editDialog = this;
               user_ids = all_options($("#tenant-edit-users-dialog").find(".select-picker-to"));
               user_ids = user_ids.map( function(x) { return parseInt(x,10); } );
-              model.attributes.users = user_ids;
+              model.usersBuffer = user_ids;
               $(editDialog).dialog("close");
             },
             "Cancel" : function() {
@@ -248,6 +249,7 @@ XOSTenantApp.viewSlice = function(model) {
 
         tenantSites = new XOSTenantSiteCollection();
         tenantSites.getFromSlice(model);
+        model.usersBuffer = model.attributes.users; /* save a copy of 'users' that we can edit. This prevents another view (developer) from overwriting our copy with a fetch from the server */
         model.tenantSiteCollection = tenantSites;
         XOSTenantApp.tenantSites = tenantSites;
 
