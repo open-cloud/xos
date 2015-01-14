@@ -50,6 +50,10 @@ def getTenantViewDict(user):
     for auser in user.site.users.all():
         site_users.append(auser)
 
+    user_site_roles=[]
+    for priv in user.site.siteprivileges.filter(user=user):
+        user_site_roles.append(priv.role.role)
+
     blessed_service_classes = [ServiceClass.objects.get(name="Best Effort")]
 
     return {"id": 0,
@@ -68,6 +72,7 @@ def getTenantViewDict(user):
             "current_user_login_base": user.site.login_base,
             "current_user_site_users": [auser.id for auser in site_users],
             "current_user_site_user_names": [auser.email for auser in site_users],
+            "current_user_can_create_slice": user.is_admin or ("pi" in user_site_roles) or ("admin" in user_site_roles),
             }
 
 class TenantList(APIView):

@@ -170,6 +170,12 @@ XOSTenantApp.adjustCollectionField = function(collectionName, id, fieldName, amo
 
 XOSTenantApp.addSlice = function() {
     var app=this;
+
+    if (!xos.tenant().current_user_can_create_slice) {
+        window.alert("You do not have sufficient rights to create a slice on your site");
+        return;
+    }
+
     model = new xos.slicesPlus.model({site: xos.tenant().current_user_site_id,
                                       name: xos.tenant().current_user_login_base + "_"});
     console.log(model);
