@@ -103,6 +103,11 @@ XOSTenantApp.buildViews = function() {
                                                 app: XOSTenantApp,
                                                 detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
                                                 fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
+
+                                                onShow: function() {
+                                                    // the slice selector is in a different table, so make every label cell the maximal width
+                                                    make_same_width("#xos-tenant-view-panel", ".xos-label-cell");
+                                                },
                                                 });
 
      XOSTenantApp.tenantSummaryView = tenantSummaryClass;
@@ -127,6 +132,7 @@ XOSTenantApp.buildViews = function() {
                                                noDeleteColumn: true,
                                                disablePaginate: true,
                                                disableFilter: true,
+                                               fieldDisplayNames: {"name": "Site"},
                                                });
 
      XOSTenantApp.tenantSiteListView = tenantSiteListClass;

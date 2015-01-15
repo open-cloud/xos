@@ -157,7 +157,7 @@
   <table>
   <% args = arguments; %>
   <% _.each(detailFields, function(fieldName) { %>
-     <tr><td><%= fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName) %>:</td>
+     <tr><td class="xos-label-cell"><%= fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName) %>:</td>
         <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  %>
         <% if (fieldName in choices) { %>
             <td><%= choicesToSelect(fieldName, model.attributes[fieldName], choices[fieldName]) %></td>
@@ -287,7 +287,7 @@
 
 <script type="text/template" id="xos-sliceselector-select">
     <% if (caption) { %>
-    <table><tr><td><%= caption %>: </td><td><select></select></td></tr></table>
+    <table><tr><td class="xos-label-cell"><%= caption %>: </td><td><select></select></td></tr></table>
     <% } else { %>
     <select></select>
     <% } %>
