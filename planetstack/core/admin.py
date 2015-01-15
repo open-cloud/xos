@@ -935,6 +935,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
           ('sliceprivileges','Privileges'),
           ('slivers','Slivers'),
           ('reservations','Reservations'),
+          ('tags','Tags'),
           ]
 
         request=getattr(_thread_locals, "request", None)
