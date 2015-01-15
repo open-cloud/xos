@@ -93,7 +93,7 @@ class SyncSlivers(OpenStackSyncStep):
         if (legacy):
             host_filter = sliver.node.name.split('.',1)[0]
         else:
-            host_filter = sliver.node.name
+            host_filter = sliver.node.name.strip()
 
         availability_zone_filter = 'nova:%s'%host_filter
         sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
