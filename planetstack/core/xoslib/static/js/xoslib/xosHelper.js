@@ -875,6 +875,7 @@ XOSDataTableView = Marionette.View.extend( {
 
     render: function() {
         var view = this;
+        var fieldDisplayNames = view.options.fieldDisplayNames || view.fieldDisplayNames || {};
 
         view.columnsByIndex = [];
         view.columnsByFieldName = {};
@@ -882,7 +883,7 @@ XOSDataTableView = Marionette.View.extend( {
             inputType = view.options.inputType || view.inputType || {};
             mRender = undefined;
             mSearchText = undefined;
-            sTitle = fieldNameToHumanReadable(fieldName);
+            sTitle = fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName);
             bSortable = true;
             if (fieldName=="backend_status") {
                 mRender = function(x,y,z) { return xosBackendStatusIconTemplate(z); };
