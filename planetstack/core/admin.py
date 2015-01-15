@@ -770,6 +770,12 @@ class ServiceAdmin(PlanetStackBaseAdmin):
         ('serviceattrs','Additional Attributes'),
     )
 
+class SiteNodeInline(PlStackTabularInline):
+    model = Node
+    fields = ['name', 'site_deployment']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-nodes'
+
 class SiteAdmin(PlanetStackBaseAdmin):
     fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldsets = [
@@ -783,7 +789,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline]
+    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline, SiteNodeInline]
     admin_inlines = [ControllerSiteInline]
     search_fields = ['name']
 
@@ -794,7 +800,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
             ('siteprivileges','Privileges'),
             ('deployments','Deployments'),
             ('slices','Slices'),
-            #('nodes','Nodes'),
+            ('nodes','Nodes'),
         ]
 
         request=getattr(_thread_locals, "request", None)
