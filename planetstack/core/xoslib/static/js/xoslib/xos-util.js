@@ -111,3 +111,10 @@ function all_options(selector) {
     });
     return result;
 }
+
+function make_same_width(containerSelector, itemSelector) {
+    var maxWidth = 0;
+    $(containerSelector).find(itemSelector).each( function(index) { maxWidth = Math.max(maxWidth, $(this).width()); });
+    console.log(maxWidth);
+    $(containerSelector).find(itemSelector).each( function(index) { $(this).width(maxWidth); });
+}
