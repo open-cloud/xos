@@ -14,7 +14,7 @@ from openstack.driver import OpenStackDriver
 logger = Logger(level=logging.INFO)
 
 class SyncControllerSlices(OpenStackSyncStep):
-    provides=[ControllerSlice]
+    provides=[ControllerSlice, Slice]
     requested_interval=0
 
     def fetch_pending(self, deleted):
