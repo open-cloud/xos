@@ -2,6 +2,10 @@
 def handle(controller):
     from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser
     from collections import defaultdict
+
+    #controller = Controller.get(controller_id)
+
+	
     # relations for all sites
     ctrls_by_site = defaultdict(list)
     ctrl_sites = ControllerSite.objects.all()
@@ -12,7 +16,7 @@ def handle(controller):
         if site not in ctrls_by_site or \
             controller not in ctrls_by_site[site]:
             controller_site = ControllerSite(controller=controller, site=site)
-            controller_site.save()	
+            controller_site.save()
     # relations for all slices
     ctrls_by_slice = defaultdict(list)
     ctrl_slices = ControllerSlice.objects.all()
@@ -23,7 +27,7 @@ def handle(controller):
         if slice not in ctrls_by_slice or \
             controller not in ctrls_by_slice:
             controller_slice = ControllerSlice(controller=controller, slice=slice)
-            controller_slice.save()    
+            controller_slice.save()
     # relations for all users
     ctrls_by_user = defaultdict(list)
     ctrl_users = ControllerUser.objects.all()
@@ -34,8 +38,4 @@ def handle(controller):
         if user not in ctrls_by_user or \
             controller not in ctrls_by_user[user]:
             controller_user = ControllerUser(controller=controller, user=user)
-            controller_user.save()         
-
-
-
-
+            controller_user.save()
