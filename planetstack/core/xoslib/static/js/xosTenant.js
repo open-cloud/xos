@@ -264,6 +264,8 @@ XOSTenantApp.viewSlice = function(model) {
         tenantSites = new XOSTenantSiteCollection();
         tenantSites.getFromSlice(model);
         model.usersBuffer = model.attributes.users; /* save a copy of 'users' that we can edit. This prevents another view (developer) from overwriting our copy with a fetch from the server */
+        model.usersOrig = model.attributes.users;   /* save an immutable copy that we'll use for username lookups */
+        model.user_namesOrig = model.attributes.user_names;
         model.tenantSiteCollection = tenantSites;
         XOSTenantApp.tenantSites = tenantSites;
 

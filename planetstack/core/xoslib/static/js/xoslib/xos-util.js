@@ -93,6 +93,18 @@ function array_diff(a1, a2)
   return diff;
 }
 
+function array_subtract(a1, a2)
+{
+    result=[]
+    for (index in a1) {
+        value = a1[index];
+        if (!$.inArray(value, a2) >= 0) {
+            result.push(value);
+        }
+    }
+    return result;
+}
+
 function array_pair_lookup(x, names, values)
 {
     for (index in values) {

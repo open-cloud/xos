@@ -57,6 +57,10 @@ class SlicePlus(Slice, PlusObjectMixin):
     def user_names(self):
         return [user["name"] for user in self.getSliceInfo()["users"].values()]
 
+    @user_names.setter
+    def user_names(self, value):
+        pass # it's read-only
+
     @property
     def users(self):
         return [user["id"] for user in self.getSliceInfo()["users"].values()]
