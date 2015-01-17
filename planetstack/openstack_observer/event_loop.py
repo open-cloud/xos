@@ -108,7 +108,7 @@ class PlanetStackObserver:
 					# provides field (this eliminates the abstract base classes
 					# since they don't have a provides)
 
-					if inspect.isclass(c) and issubclass(c, SyncStep) and hasattr(c,"provides") and (c not in self.sync_steps):
+					if inspect.isclass(c) and (issubclass(c, SyncStep) or issubclass(c,OpenStackSyncStep)) and hasattr(c,"provides") and (c not in self.sync_steps):
 						self.sync_steps.append(c)
 		logger.info('loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps]))
 		# print 'loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps])
