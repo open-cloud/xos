@@ -15,7 +15,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
-    provides=[Network, ControllerNetwork, Sliver]
+    provides=[ControllerNetwork, Network]
 
     def alloc_subnet(self, uuid):
         a = 10

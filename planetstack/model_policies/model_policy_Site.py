@@ -1,6 +1,8 @@
 
 def handle(site):
-    from core.models import Controller, ControllerSite 
+    from core.models import Controller, ControllerSite, Site 
+
+    # site = Site.get(site_id)
     # make sure site has a ControllerSite record for each controller
     ctrl_sites = ControllerSite.objects.filter(site=site)
     existing_controllers = [cs.controller for cs in ctrl_sites]

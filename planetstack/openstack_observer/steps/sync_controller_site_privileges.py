@@ -14,7 +14,7 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerSitePrivileges(OpenStackSyncStep):
-    provides=[ControllerSitePrivilege]
+    provides=[ControllerSitePrivilege, SitePrivilege]
     requested_interval=0
 
     def fetch_pending(self, deleted):

@@ -1,6 +1,7 @@
 def handle(site_privilege):
     from core.models import Controller, SitePrivilege, ControllerSitePrivilege
     
+    # site_privilege = SitePrivilege.get(site_privilege_id)
     # apply site privilage at all controllers
     controller_site_privileges = ControllerSitePrivilege.objects.filter(
         site_privilege = site_privilege,
