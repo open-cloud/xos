@@ -42,11 +42,13 @@
 
 <script type="text/template" id="tenant-edit-users">
     <%= xosPickerTemplate({pickedItems: model.usersBuffer,
-                          unpickedItems: array_diff(xos.tenant().current_user_site_users, model.usersBuffer),
+                          unpickedItems: array_subtract(xos.tenant().current_user_site_users, model.usersBuffer),
                           id: "users",
                           fieldName: "users",
                           detailView: detailView,
-                          lookupFunc: function(x) { return array_pair_lookup(x, xos.tenant().current_user_site_user_names, xos.tenant().current_user_site_users); },
+                          lookupFunc: function(x) { return array_pair_lookup(x,
+                                                     $.merge($.merge([], xos.tenant().current_user_site_user_names), model.user_namesOrig),
+                                                     $.merge($.merge([], xos.tenant().current_user_site_users), model.usersOrig)); },
                           } ) %>
 </script>
 
