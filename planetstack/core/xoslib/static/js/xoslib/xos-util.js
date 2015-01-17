@@ -100,7 +100,7 @@ function array_pair_lookup(x, names, values)
             return names[index];
         }
     }
-    return undefined;
+    return "object #" + x;
 }
 
 function all_options(selector) {
