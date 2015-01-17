@@ -1,6 +1,8 @@
 def handle(user):
-    from core.models import Controller, ControllerSite, ControllerUser
+    from core.models import Controller, ControllerSite, ControllerUser, User
     from collections import defaultdict
+
+    # user = User.get(user_id)
     
     controller_users = ControllerUser.objects.filter(user=user)
     existing_controllers = [cu.controller for cu in controller_users]
