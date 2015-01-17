@@ -1,6 +1,7 @@
 def handle(slice_privilege):
     from core.models import Controller, SlicePrivilege, ControllerSlicePrivilege
-    
+   
+    # slice_privilege = SlicePrivilege.get(slice_privilege_id) 
     # apply slice privilage at all controllers
     controller_slice_privileges = ControllerSlicePrivilege.objects.filter(
         slice_privilege = slice_privilege,
