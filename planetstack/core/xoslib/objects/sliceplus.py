@@ -10,27 +10,39 @@ class SlicePlus(Slice, PlusObjectMixin):
         super(SlicePlus, self).__init__(*args, **kwargs)
         self._update_site_allocation = None
         self._update_users = None
+        self._sliceInfo = None
 
     def getSliceInfo(self, user=None):
-        used_sites = {}
-        used_deployments = {}
-        sliverCount = 0
-        for sliver in self.slivers.all():
-            site = sliver.node.site_deployment.site
-            deployment = sliver.node.site_deployment.deployment
-            used_sites[site.name] = used_sites.get(site.name, 0) + 1
-            used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
-            sliverCount = sliverCount + 1
+        if not self._sliceInfo:
+            used_sites = {}
+            used_deployments = {}
+            sliverCount = 0
+            for sliver in self.slivers.all():
+                site = sliver.node.site_deployment.site
+                deployment = sliver.node.site_deployment.deployment
+                used_sites[site.name] = used_sites.get(site.name, 0) + 1
+                used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
+                sliverCount = sliverCount + 1
 
-        roles = []
-        if (user!=None):
-            roles = [x.role.role for x in self.sliceprivileges.filter(user=user)]
+            users = {}
+            for priv in SlicePrivilege.objects.filter(slice=self):
+                if not (priv.user.id in users.keys()):
+                    users[priv.user.id] = {"name": priv.user.email, "id": priv.user.id, "roles": []}
+                users[priv.user.id]["roles"].append(priv.role.role)
 
-        return {"sitesUsed": used_sites,
-                "deploymentsUsed": used_deployments,
-                "sliverCount": sliverCount,
-                "siteCount": len(used_sites.keys()),
-                "roles": roles}
+            self._sliceInfo= {"sitesUsed": used_sites,
+                    "deploymentsUsed": used_deployments,
+                    "sliverCount": sliverCount,
+                    "siteCount": len(used_sites.keys()),
+                    "users": users,
+                    "roles": []}
+
+        if user:
+            auser = self._sliceInfo["users"].get(user.id, None)
+            if (auser):
+                self._sliceInfo["roles"] = auser["roles"]
+
+        return self._sliceInfo
 
     @property
     def site_allocation(self):
@@ -42,12 +54,12 @@ class SlicePlus(Slice, PlusObjectMixin):
         #print "XXX set sitesUsed to", value
 
     @property
+    def user_names(self):
+        return [user["name"] for user in self.getSliceInfo()["users"].values()]
+
+    @property
     def users(self):
-        user_ids = []
-        for priv in SlicePrivilege.objects.filter(slice=self):
-            if not (priv.user.id in user_ids):
-                user_ids.append(priv.user.id)
-        return user_ids
+        return [user["id"] for user in self.getSliceInfo()["users"].values()]
 
     @users.setter
     def users(self, value):
@@ -165,7 +177,6 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         for user_id in new_users:
             if (user_id not in slice_user_ids):
-                print "XXX", user_id
                 priv = SlicePrivilege(slice=self, user=User.objects.get(id=user_id), role=default_role)
                 if (not noAct):
                     priv.save()
