@@ -93,7 +93,7 @@ class SyncSlivers(OpenStackSyncStep):
         if (legacy):
             host_filter = sliver.node.name.split('.',1)[0]
         else:
-            host_filter = sliver.node.name
+            host_filter = sliver.node.name.strip()
 
         availability_zone_filter = 'nova:%s'%host_filter
         sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
@@ -105,7 +105,7 @@ class SyncSlivers(OpenStackSyncStep):
         controller = sliver.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
                      'admin_user': sliver.creator.email,
-                     'admin_password': sliver.creator.reomote_password,
+                     'admin_password': sliver.creator.remote_password,
                      'admin_tenant': sliver.slice.name,
                      'tenant': sliver.slice.name,
                      'tenant_description': sliver.slice.description,

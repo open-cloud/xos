@@ -633,7 +633,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
     # nodes no longer direclty connected to deployments
     #suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
-    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'),,('imagedeployments','Images'))
+    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
@@ -935,6 +935,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
           ('sliceprivileges','Privileges'),
           ('slivers','Slivers'),
           ('reservations','Reservations'),
+          ('tags','Tags'),
           ]
 
         request=getattr(_thread_locals, "request", None)
