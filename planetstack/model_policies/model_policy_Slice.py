@@ -1,7 +1,10 @@
 
 def handle(slice):
-    from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate
+    from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate, Slice
     from collections import defaultdict
+
+    # slice = Slice.get(slice_id)
+
     controller_slices = ControllerSlice.objects.filter(slice=slice)
     existing_controllers = [cs.controller for cs in controller_slices] 
     

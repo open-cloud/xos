@@ -1,8 +1,10 @@
 from core.models import *
 
 def handle(network):
-	from core.models import ControllerSlice,ControllerNetwork
+	from core.models import ControllerSlice,ControllerNetwork, Network
 	from collections import defaultdict
+
+        # network = Network.get(network_id)
 	# network controllers are not visible to users. We must ensure
 	# networks are deployed at all deploymets available to their slices.
 	slice_controllers = ControllerSlice.objects.all()
