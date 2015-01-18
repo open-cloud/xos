@@ -106,7 +106,7 @@ class Sliver(PlCoreBase):
             return u'unsaved-sliver'
 
     def save(self, *args, **kwds):
-        self.name = self.slice.slicename
+        self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
 
