@@ -299,6 +299,9 @@ XOSTenantApp.sanityCheck = function() {
     if (xos.tenant().blessed_sites.length == 0) {
         errors.push("no blessed sites");
     }
+    if (xos.tenant().current_user_site_id == null) {
+        errors.push("current user does not have a site");
+    }
 
     if (errors.length > 0) {
          $("#tenantSummary").html("Tenant view sanity check failed<br>" + errors.join("<br>"));
