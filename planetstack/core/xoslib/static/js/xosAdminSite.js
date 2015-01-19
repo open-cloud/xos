@@ -183,6 +183,8 @@ XOSAdminApp.initRouter = function() {
         routes[nav_url] = api_command;
     };
 
+    routes["*part"] = "listSlices";
+
     XOSAdminApp.Router = new router({ appRoutes: routes, controller: api });
 };
 
