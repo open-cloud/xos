@@ -50,6 +50,9 @@ def getDashboards(user):
 
     unused_dashboard_names = []
     for dashboardView in DashboardView.objects.all():
+        # do not show disabled dashboard views
+        if not dashboardView.enabled:
+            continue
         if not dashboardView.name in dashboard_names:
             unused_dashboard_names.append(dashboardView.name)
 
