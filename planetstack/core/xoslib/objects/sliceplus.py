@@ -131,6 +131,11 @@ class SlicePlus(Slice, PlusObjectMixin):
     def save_site_allocation(self, noAct = False, reset=False):
         print "save_site_allocation, reset=",reset
 
+        if (not self._site_allocation):
+            # Must be a sliver that was just created, and has not site_allocation
+            # field.
+            return
+
         all_slice_slivers = self.slivers.all()
         for site_name in self._site_allocation.keys():
             desired_allocation = self._site_allocation[site_name]
