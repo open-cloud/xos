@@ -340,9 +340,9 @@ class NetworkLookerUpper:
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
-    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_name']
+    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
 
     def queryset(self, request):
@@ -1088,6 +1088,7 @@ class SliverForm(forms.ModelForm):
         widgets = {
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
+            'instance_id': PlainTextWidget(),
             'slice': LinkedSelect,
             'deployment': LinkedSelect,
             'node': LinkedSelect,
@@ -1103,10 +1104,10 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_id', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
+    list_display = ['backend_status_icon', 'ip', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'ip',)
 
     suit_form_tabs =(('general', 'Sliver Details'),)
