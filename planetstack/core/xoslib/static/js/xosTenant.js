@@ -183,11 +183,12 @@ XOSTenantApp.addSlice = function() {
     }
 
     model = new xos.slicesPlus.model({site: xos.tenant().current_user_site_id,
-                                      name: xos.tenant().current_user_login_base + "_"});
+                                      name: xos.tenant().current_user_login_base + "_",
+                                      creator: xos.tenant().current_user_id});
     console.log(model);
     var detailView = new XOSTenantApp.tenantAddView({model: model,
-                                                    collection: xos.slicesPlus,
-                                                    noSubmitButton: true,
+                                                     collection: xos.slicesPlus,
+                                                     noSubmitButton: true,
                                                     });
     detailView.dialog = $("#tenant-addslice-dialog");
     app.tenantAddSliceInterior.show(detailView);

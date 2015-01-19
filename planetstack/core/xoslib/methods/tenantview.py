@@ -80,6 +80,7 @@ def getTenantViewDict(user):
             "current_user_site_users": [auser.id for auser in site_users],
             "current_user_site_user_names": [auser.email for auser in site_users],
             "current_user_can_create_slice": user.is_admin or ("pi" in user_site_roles) or ("admin" in user_site_roles),
+            "current_user_id": user.id,
             }
 
 class TenantList(APIView):
