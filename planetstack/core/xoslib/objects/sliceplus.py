@@ -8,9 +8,11 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     def __init__(self, *args, **kwargs):
         super(SlicePlus, self).__init__(*args, **kwargs)
-        self._update_site_allocation = None
         self._update_users = None
         self._sliceInfo = None
+        self.getSliceInfo()
+        self._site_allocation = self._sliceInfo["sitesUsed"]
+        self._initial_site_allocation = self._site_allocation
 
     def getSliceInfo(self, user=None):
         if not self._sliceInfo:
@@ -46,12 +48,11 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @property
     def site_allocation(self):
-        return self.getSliceInfo()["sitesUsed"]
+        return self._site_allocation
 
     @site_allocation.setter
     def site_allocation(self, value):
-        self._update_site_allocation = value
-        #print "XXX set sitesUsed to", value
+        self._site_allocation = value
 
     @property
     def user_names(self):
@@ -109,26 +110,30 @@ class SlicePlus(Slice, PlusObjectMixin):
         return nodeList
 
     def save(self, *args, **kwargs):
+        updated_image = self.has_field_changed("default_image")
+        updated_flavor = self.has_field_changed("default_flavor")
+
         super(SlicePlus, self).save(*args, **kwargs)
 
-        if self._update_site_allocation:
-            self.save_site_allocation(noAct=True)
+        updated_sites = (self._site_allocation != self._initial_site_allocation) or updated_image or updated_flavor
+        if updated_sites:
+            self.save_site_allocation(noAct=True, reset=(updated_image or updated_flavor))
 
         if self._update_users:
             self.save_users(noAct=True)
 
-        if self._update_site_allocation:
-            self.save_site_allocation()
+        if updated_sites:
+            self.save_site_allocation(reset=(updated_image or updated_flavor))
 
         if self._update_users:
             self.save_users()
 
-    def save_site_allocation(self, noAct = False):
-        new_site_allocation = self._update_site_allocation
+    def save_site_allocation(self, noAct = False, reset=False):
+        print "save_site_allocation, reset=",reset
 
         all_slice_slivers = self.slivers.all()
-        for site_name in new_site_allocation.keys():
-            desired_allocation = new_site_allocation[site_name]
+        for site_name in self._site_allocation.keys():
+            desired_allocation = self._site_allocation[site_name]
 
             # make a list of the slivers for this site
             slivers = []
@@ -137,11 +142,13 @@ class SlicePlus(Slice, PlusObjectMixin):
                     slivers.append(sliver)
 
             # delete extra slivers
-            while (len(slivers) > desired_allocation):
+            while (reset and len(slivers)>0) or (len(slivers) > desired_allocation):
                 sliver = slivers.pop()
-                print "deleting sliver", sliver
                 if (not noAct):
+                    print "deleting sliver", sliver
                     sliver.delete()
+                else:
+                    print "would delete sliver", sliver
 
             # add more slivers
             if (len(slivers) < desired_allocation):
@@ -165,9 +172,10 @@ class SlicePlus(Slice, PlusObjectMixin):
                             deployment = node.site_deployment.deployment)
                     slivers.append(sliver)
                     if (not noAct):
+                        print "added sliver", sliver
                         sliver.save()
-
-                    print "added sliver", sliver
+                    else:
+                        print "would add sliver", sliver
 
                     node.sliverCount = node.sliverCount + 1
 
