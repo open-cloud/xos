@@ -1109,7 +1109,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
     list_display = ['backend_status_icon', 'ip', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'ip',)
 
-    suit_form_tabs =(('general', 'Sliver Details'))
+    suit_form_tabs =(('general', 'Sliver Details'),)
 
     inlines = [TagInline]
 
