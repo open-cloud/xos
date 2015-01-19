@@ -1293,7 +1293,7 @@ class ControllerDashboardViewInline(PlStackTabularInline):
 
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',
-                   {'fields': ['backend_status_text', 'name', 'url'],
+                   {'fields': ['backend_status_text', 'name', 'url', 'enabled'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )

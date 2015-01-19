@@ -75,11 +75,18 @@ class DashboardDynamicView(TemplateView):
             dashboards.append(customize[0])
 
         for i,view in enumerate(dashboards):
+            # don't display disabled dashboards
+            if (not view.enabled):
+                continue
             body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name)
 
         body = body + "</ul>\n"
 
         for i,view in enumerate(dashboards):
+            # don't display disabled dashboards
+            if (not view.enabled):
+                continue
+
             url = view.url
             body = body + '<div id="dashtab-%d">\n' % i
             if (view.controllers.all().count()>0):
