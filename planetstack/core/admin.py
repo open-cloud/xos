@@ -1296,6 +1296,7 @@ class DashboardViewAdmin(PlanetStackBaseAdmin):
                    {'fields': ['backend_status_text', 'name', 'url', 'enabled'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
+    list_display = ["name", "enabled", "url"]
     readonly_fields = ('backend_status_text', )
     inlines = [ControllerDashboardViewInline]
 
