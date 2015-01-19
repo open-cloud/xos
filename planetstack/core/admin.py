@@ -716,7 +716,7 @@ class ControllerAdminForm(forms.ModelForm):
       
 class ControllerAdmin(PlanetStackBaseAdmin):
     model = Controller 
-    fieldList = ['name', 'version', 'backend_type', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
+    fieldList = ['name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
     #fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
