@@ -47,12 +47,19 @@ def getTenantViewDict(user):
             volumes.append(volume)
 
     site_users=[]
-    for auser in user.site.users.all():
-        site_users.append(auser)
-
     user_site_roles=[]
-    for priv in user.site.siteprivileges.filter(user=user):
-        user_site_roles.append(priv.role.role)
+    user_site_id=None
+    user_site_login_base=None
+    if not user.site:
+        pass # this is probably an error
+    else:
+        user_site_id = user.site.id
+        user_site_login_base = user.site.login_base
+        for auser in user.site.users.all():
+            site_users.append(auser)
+
+        for priv in user.site.siteprivileges.filter(user=user):
+            user_site_roles.append(priv.role.role)
 
     blessed_service_classes = [ServiceClass.objects.get(name="Best Effort")]
 
@@ -68,8 +75,8 @@ def getTenantViewDict(user):
             "blessed_service_classes": [serviceclass.id for serviceclass in blessed_service_classes],
             "public_volume_names": [volume.name for volume in volumes],
             "public_volumes": [volume.id for volume in volumes],
-            "current_user_site_id": user.site.id,
-            "current_user_login_base": user.site.login_base,
+            "current_user_site_id": user_site_id,
+            "current_user_login_base": user_site_login_base,
             "current_user_site_users": [auser.id for auser in site_users],
             "current_user_site_user_names": [auser.email for auser in site_users],
             "current_user_can_create_slice": user.is_admin or ("pi" in user_site_roles) or ("admin" in user_site_roles),
