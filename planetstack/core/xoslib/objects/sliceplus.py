@@ -19,12 +19,17 @@ class SlicePlus(Slice, PlusObjectMixin):
             used_sites = {}
             used_deployments = {}
             sliverCount = 0
+            sshCommands = []
             for sliver in self.slivers.all():
                 site = sliver.node.site_deployment.site
                 deployment = sliver.node.site_deployment.deployment
                 used_sites[site.name] = used_sites.get(site.name, 0) + 1
                 used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
                 sliverCount = sliverCount + 1
+
+                if (sliver.instance_id and sliver.instance_name):
+                    sshCommand = 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (sliver.instance_id, sliver.node.name, sliver.instance_name)
+                    sshCommands.append(sshCommand);
 
             users = {}
             for priv in SlicePrivilege.objects.filter(slice=self):
@@ -37,7 +42,8 @@ class SlicePlus(Slice, PlusObjectMixin):
                     "sliverCount": sliverCount,
                     "siteCount": len(used_sites.keys()),
                     "users": users,
-                    "roles": []}
+                    "roles": [],
+                    "sshCommands": sshCommands}
 
         if user:
             auser = self._sliceInfo["users"].get(user.id, None)

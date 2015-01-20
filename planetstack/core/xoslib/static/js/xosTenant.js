@@ -72,6 +72,7 @@ XOSTenantButtonView = Marionette.ItemView.extend({
                      "click button.btn-tenant-delete": "deleteClicked",
                      "click button.btn-tenant-add-user": "addUserClicked",
                      "click button.btn-tenant-save": "saveClicked",
+                     "click button.btn-tenant-download-ssh": "downloadClicked",
                      },
 
             createClicked: function(e) {
@@ -84,6 +85,10 @@ XOSTenantButtonView = Marionette.ItemView.extend({
 
             addUserClicked: function(e) {
                      XOSTenantApp.editUsers(this.options.linkedView.model);
+                     },
+
+            downloadClicked: function(e) {
+                     XOSTenantApp.downloadSSH(this.options.linkedView.model);
                      },
 
             saveClicked: function(e) {
@@ -113,6 +118,7 @@ XOSTenantApp.addRegions({
     tenantButtons: "#tenantButtons",
     tenantAddSliceInterior: "#tenant-addslice-interior",
     tenantEditUsersInterior: "#tenant-edit-users-interior",
+    tenantSSHCommandsInterior: "#tenant-ssh-commands-interior",
 });
 
 XOSTenantApp.setDirty = function(dirty) {
@@ -267,6 +273,51 @@ XOSTenantApp.editUsers = function(model) {
           }
         });
     $("#tenant-edit-users-dialog").dialog("open");
+};
+
+XOSTenantApp.downloadSSHOld = function(model) {
+    sshCommands = "";
+    for (index in model.attributes.sliceInfo.sshCommands) {
+         sshCommand = model.attributes.sliceInfo.sshCommands[index];
+         sshCommands = sshCommands + sshCommand + "\n";
+    }
+
+    if (sshCommands.length == 0) {
+         alert("this slice has no instantiated slivers yet");
+         return;
+    }
+
+    var myWindow = window.open("", "ssh_command_list",""); // "width=640, height=480");
+    myWindow.document.write("<html><head><title>SSH Commands</title></head><body><pre>" + sshCommands + "</pre></body></html>");
+    myWindow.document.close();
+};
+
+XOSTenantApp.downloadSSH = function(model) {
+    sshCommands = "";
+    for (index in model.attributes.sliceInfo.sshCommands) {
+         sshCommand = model.attributes.sliceInfo.sshCommands[index];
+         sshCommands = sshCommands + sshCommand + "\n";
+    }
+
+    if (sshCommands.length == 0) {
+         alert("this slice has no instantiated slivers yet");
+         return;
+    }
+
+    var htmlView = new HTMLView({html: "<pre>" + sshCommands + "</pre>"});
+    XOSTenantApp.tenantSSHCommandsInterior.show(htmlView);
+
+    $("#tenant-ssh-commands-dialog").dialog({
+       autoOpen: false,
+       modal: true,
+       width: 640,
+       buttons : {
+            "Ok" : function() {
+              $(this).dialog("close");
+            },
+          }
+        });
+    $("#tenant-ssh-commands-dialog").dialog("open");
 };
 
 XOSTenantApp.deleteSlice = function(model) {
