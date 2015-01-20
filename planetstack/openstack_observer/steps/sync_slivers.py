@@ -114,7 +114,7 @@ class SyncSlivers(OpenStackSyncStep):
                      'availability_zone': availability_zone_filter,
                      'image_id':image_id,
                      'key_name':keyname,
-                     'flavor_id':3,
+                     'flavor_id':sliver.flavor.id,
                      'nics':nics,
                      'meta':metadata_update,
                      'key':key_fields,
