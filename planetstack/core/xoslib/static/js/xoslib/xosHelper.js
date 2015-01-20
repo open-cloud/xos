@@ -672,6 +672,7 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     model: this.model,
                                                     detailView: this,
                                                     choices: this.options.choices || this.choices || this.model.choices || {},
+                                                    helpText: this.options.helpText || this.helpText || this.model.helpText || {},
                                          }},
 });
 

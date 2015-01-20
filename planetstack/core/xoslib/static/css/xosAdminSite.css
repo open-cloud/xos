@@ -1,3 +1,14 @@
+.xos-help-cell {
+    font-size: 11px;
+    color: #999;
+    padding-bottom: 1%;
+}
+
+.xos-detail-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .test-table td, th {
     border: 1px solid black;
 }
