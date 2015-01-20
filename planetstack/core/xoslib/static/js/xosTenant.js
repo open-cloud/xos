@@ -137,7 +137,8 @@ XOSTenantApp.buildViews = function() {
                                                 app: XOSTenantApp,
                                                 detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
                                                 fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
-                                                helpText: {"default_image": "Existing slivers will be re-instantiated if changed",
+                                                helpText: {"serviceClass": "Existing slivers will be re-instantiated if changed",
+                                                           "default_image": "Existing slivers will be re-instantiated if changed",
                                                            "default_flavor": "Existing slivers will be re-instantiated if changed"},
 
                                                 onShow: function() {
