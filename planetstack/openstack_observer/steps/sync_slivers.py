@@ -124,9 +124,18 @@ class SyncSlivers(OpenStackSyncStep):
         if (len(res)!=2):
             raise Exception('Could not sync sliver %s'%sliver.slice.name)
         else:
-            sliver_id = res[1]['id'] # 0 is for the key
+            sliver_id = res[1]['info']['OS-EXT-SRV-ATTR:instance_name'] # 0 is for the key
+            sliver_uuid = res[1]['id'] # 0 is for the key
+
+            try:
+                hostname = res[1]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
+                ip = socket.gethostbyname(hostname)
+                sliver.ip = ip
+            except:
+                pass
 
             sliver.instance_id = sliver_id
+            sliver.instance_uuid = sliver_uuid
             sliver.instance_name = sliver_name
             sliver.save()
 
