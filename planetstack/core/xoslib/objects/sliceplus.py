@@ -13,6 +13,8 @@ class SlicePlus(Slice, PlusObjectMixin):
         self.getSliceInfo()
         self._site_allocation = self._sliceInfo["sitesUsed"]
         self._initial_site_allocation = self._site_allocation
+        self._network_ports = self._sliceInfo["networkPorts"]
+        self._initial_network_ports = self._network_ports
 
     def getSliceInfo(self, user=None):
         if not self._sliceInfo:
@@ -37,13 +39,25 @@ class SlicePlus(Slice, PlusObjectMixin):
                     users[priv.user.id] = {"name": priv.user.email, "id": priv.user.id, "roles": []}
                 users[priv.user.id]["roles"].append(priv.role.role)
 
+            # XXX this assumes there is only one network that can have ports bound
+            # to it for a given slice. This is intended for the tenant view, which
+            # will obey this field.
+            networkPorts = ""
+            for networkSlice in self.networkslices.all():
+                network = networkSlice.network
+                if (network.owner.id != self.id):
+                    continue
+                if network.ports:
+                    networkPorts = network.ports
+
             self._sliceInfo= {"sitesUsed": used_sites,
                     "deploymentsUsed": used_deployments,
                     "sliverCount": sliverCount,
                     "siteCount": len(used_sites.keys()),
                     "users": users,
                     "roles": [],
-                    "sshCommands": sshCommands}
+                    "sshCommands": sshCommands,
+                    "networkPorts": networkPorts}
 
         if user:
             auser = self._sliceInfo["users"].get(user.id, None)
@@ -79,20 +93,12 @@ class SlicePlus(Slice, PlusObjectMixin):
 
     @property
     def network_ports(self):
-        # XXX this assumes there is only one network that can have ports bound
-        # to it for a given slice. This is intended for the tenant view, which
-        # will obey this field.
-        networkPorts = ""
-        for networkSlice in self.networkslices.all():
-            network = networkSlice.network
-            if network.ports:
-                networkPorts = network.ports
-
-        return networkPorts
+        return self._network_ports
 
     @network_ports.setter
     def network_ports(self, value):
-        print "XXX set networkPorts to", value
+        self._network_ports = value
+        #print "XXX set networkPorts to", value
 
     @staticmethod
     def select_by_user(user):
@@ -121,6 +127,8 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         super(SlicePlus, self).save(*args, **kwargs)
 
+        # try things out first
+
         updated_sites = (self._site_allocation != self._initial_site_allocation) or updated_image or updated_flavor
         if updated_sites:
             self.save_site_allocation(noAct=True, reset=(updated_image or updated_flavor))
@@ -128,11 +136,19 @@ class SlicePlus(Slice, PlusObjectMixin):
         if self._update_users:
             self.save_users(noAct=True)
 
+        if (self._network_ports != self._initial_network_ports):
+            self.save_network_ports(noAct=True)
+
+        # now actually save them
+
         if updated_sites:
             self.save_site_allocation(reset=(updated_image or updated_flavor))
 
         if self._update_users:
             self.save_users()
+
+        if (self._network_ports != self._initial_network_ports):
+            self.save_network_ports()
 
     def save_site_allocation(self, noAct = False, reset=False):
         print "save_site_allocation, reset=",reset
@@ -216,6 +232,36 @@ class SlicePlus(Slice, PlusObjectMixin):
                      priv.delete()
 
                  print "deleted user id", user_id
+
+    def save_network_ports(self, noAct=False):
+        # First search for any network that already has a filled in 'ports'
+        # field. We'll assume there can only be one, so it must be the right
+        # one.
+        for networkSlice in self.networkslices.all():
+            network = networkSlice.network
+            if (network.owner.id != self.id):
+                continue
+            if network.ports:
+                network.ports = self._network_ports
+                if (not noAct):
+                    network.save()
+                return
+
+        # Now try a network that is a "NAT", since setting ports on a non-NAT
+        # network doesn't make much sense.
+        for networkSlice in self.networkslices.all():
+            network = networkSlice.network
+            if (network.owner.id != self.id):
+                continue
+            if network.template.translation=="NAT":
+                network.ports = self._network_ports
+                if (not noAct):
+                    network.save()
+                return
+
+        # uh oh, we didn't find a network
+
+        raise ValueError("No network was found that ports could be set on")
 
 
 
