@@ -304,7 +304,7 @@ XOSTenantApp.downloadSSH = function(model) {
          return;
     }
 
-    var htmlView = new HTMLView({html: "<pre>" + sshCommands + "</pre>"});
+    var htmlView = new HTMLView({html: '<pre style="overflow: auto; word-wrap: normal; white-space: pre; word-wrap: normal;">' + sshCommands + '</pre>'});
     XOSTenantApp.tenantSSHCommandsInterior.show(htmlView);
 
     $("#tenant-ssh-commands-dialog").dialog({
