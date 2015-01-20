@@ -50,6 +50,20 @@ XOSEditUsersView = Marionette.ItemView.extend({
 
             });
 
+XOSTenantSummaryView = XOSDetailView.extend({
+            events: {"change": "onChange"},
+
+            onChange: function(e) {
+                XOSTenantApp.setDirty(true);
+            },
+
+            saveSuccess: function() {
+                console.log("saveSuccess!");
+                XOSTenantApp.setDirty(false);
+            },
+
+            });
+
 
 XOSTenantButtonView = Marionette.ItemView.extend({
             template: "#xos-tenant-buttons-template",
@@ -76,7 +90,11 @@ XOSTenantButtonView = Marionette.ItemView.extend({
                      model = this.options.linkedView.model;
                      model.tenantSiteCollection.putToSlice(model);
                      model.attributes.users = model.usersBuffer;
-                     this.options.linkedView.submitContinueClicked.call(this.options.linkedView, e);
+
+                     e.preventDefault();
+                     this.options.linkedView.save();
+                     //this.options.linkedView.submitContinueClicked.call(this.options.linkedView, e);
+                     //XOSTenantApp.setDirty(false);
                      },
             });
 
@@ -96,10 +114,18 @@ XOSTenantApp.addRegions({
     tenantEditUsersInterior: "#tenant-edit-users-interior",
 });
 
+XOSTenantApp.setDirty = function(dirty) {
+    if (dirty) {
+        $("button.btn-tenant-save").addClass("btn-success");
+    } else {
+        $("button.btn-tenant-save").removeClass("btn-success");
+    }
+};
+
 XOSTenantApp.buildViews = function() {
      XOSTenantApp.tenantSites = new XOSTenantSiteCollection();
 
-     tenantSummaryClass = XOSDetailView.extend({template: "#xos-detail-template",
+     tenantSummaryClass = XOSTenantSummaryView.extend({template: "#xos-detail-template",
                                                 app: XOSTenantApp,
                                                 detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
                                                 fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
@@ -172,6 +198,7 @@ XOSTenantApp.navToSlice = function(id) {
 XOSTenantApp.adjustCollectionField = function(collectionName, id, fieldName, amount) {
     model = XOSTenantApp[collectionName].get(id);
     model.set(fieldName, Math.max(model.get(fieldName) + amount, 0));
+    XOSTenantApp.setDirty(true);
 };
 
 XOSTenantApp.addSlice = function() {
