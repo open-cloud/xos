@@ -102,6 +102,7 @@ XOSTenantApp = new XOSApplication({
     logTableId: "#logTable",
     statusMsgId: "#statusMsg",
     hideTabsByDefault: true,
+    dirty: false,
     varName: "XOSTenantApp",
 });
 
@@ -115,6 +116,7 @@ XOSTenantApp.addRegions({
 });
 
 XOSTenantApp.setDirty = function(dirty) {
+    XOSTenantApp.dirty = dirty;
     if (dirty) {
         $("button.btn-tenant-save").addClass("btn-success");
     } else {
@@ -253,6 +255,9 @@ XOSTenantApp.editUsers = function(model) {
               var editDialog = this;
               user_ids = all_options($("#tenant-edit-users-dialog").find(".select-picker-to"));
               user_ids = user_ids.map( function(x) { return parseInt(x,10); } );
+              if (!array_same_elements(user_ids, model.usersBuffer)) {
+                  XOSTenantApp.setDirty(true);
+              }
               model.usersBuffer = user_ids;
               $(editDialog).dialog("close");
             },
@@ -270,6 +275,15 @@ XOSTenantApp.deleteSlice = function(model) {
 };
 
 XOSTenantApp.viewSlice = function(model) {
+    if (XOSTenantApp.dirty) {
+        if (!confirm("The current sliver has unsaved data -- view new sliver anyway ?")) {
+            $("#tenantSliceSelector select").val(XOSTenantApp.currentSlice.id);
+            return;
+        }
+    }
+
+    XOSTenantApp.setDirty(false);
+
     if (!model && xos.slicesPlus.models.length > 0) {
         model = xos.slicesPlus.models[0];
     }
@@ -303,6 +317,8 @@ XOSTenantApp.viewSlice = function(model) {
 
         XOSTenantApp.tenantButtons.show( new XOSTenantButtonView( { app: XOSTenantApp,
                                                                     linkedView: tenantSummary } ) );
+
+        XOSTenantApp.currentSlice = model;
     } else {
         XOSTenantApp.tenantSliceSelector.show(new HTMLView({html: ""}));
         XOSTenantApp.tenantSummary.show(new HTMLView({html: "You have no slices"}));

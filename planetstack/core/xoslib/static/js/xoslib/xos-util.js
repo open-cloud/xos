@@ -105,6 +105,12 @@ function array_subtract(a1, a2)
     return result;
 }
 
+function array_same_elements(arr1, arr2)
+{
+    // return true if arrays have same elements, even if order is different
+    return ($(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0);
+}
+
 function array_pair_lookup(x, names, values)
 {
     for (index in values) {
