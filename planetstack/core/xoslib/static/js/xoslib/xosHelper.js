@@ -475,7 +475,7 @@ XOSDetailView = Marionette.ItemView.extend({
             */
 
             initialize: function() {
-                this.on("saveSuccess", this.onAfterSave);
+                this.on("saveSuccess", this.onSaveSuccess);
                 this.synchronous = false;
             },
 
@@ -485,11 +485,20 @@ XOSDetailView = Marionette.ItemView.extend({
                 });
             },
 
-            afterSave: function(e) {
+            saveSuccess: function(e) {
+                // always called after a save succeeds
             },
 
-            onAfterSave: function(e) {
-                this.afterSave(e);
+            afterSave: function(e) {
+                // if this.synchronous, then called after the save succeeds
+                // if !this.synchronous, then called after save is initiated
+            },
+
+            onSaveSuccess: function(e) {
+                this.saveSuccess(e);
+                if (this.synchronous) {
+                    this.afterSave(e);
+                }
             },
 
             inputChanged: function(e) {
@@ -559,9 +568,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
                 this.model.save(data, {error: function(model, result, xhr) { that.app.saveError(model,result,xhr,infoMsgId);},
                                        success: function(model, result, xhr) { that.app.saveSuccess(model,result,xhr,infoMsgId);
-                                                                               if (that.synchronous) {
-                                                                                   that.trigger("saveSuccess");
-                                                                               }
+                                                                               that.trigger("saveSuccess");
                                                                              }});
                 this.dirty = false;
 
