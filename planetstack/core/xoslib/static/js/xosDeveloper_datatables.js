@@ -12,12 +12,16 @@
         row = data.models[rowkey];
         slicename = row.get("name");
         sliceid = row.get("id");
-        role = row.get("sliceInfo").roles[0];
+        role = row.get("sliceInfo").roles[0] || "";
         slivercount = row.get("sliceInfo").sliverCount;
         sitecount = row.get("sliceInfo").siteCount;
         backendHtml = row.get("backendHtml")
 
-        if (! role) {
+        //if (! role) {
+        //    continue;
+        //}
+
+        if (! row.get("current_user_can_see") ) {
             continue;
         }
 

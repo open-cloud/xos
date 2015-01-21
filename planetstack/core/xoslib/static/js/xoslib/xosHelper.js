@@ -4,6 +4,21 @@ HTMLView = Marionette.ItemView.extend({
   },
 });
 
+FilteredCompositeView = Marionette.CompositeView.extend( {
+    showCollection: function() {
+      var ChildView;
+      this.collection.each(function(child, index) {
+        filterFunc = this.options.filter || this.filter;
+        if (filterFunc && !filterFunc(child)) {
+            return;
+        }
+        ChildView = this.getChildView(child);
+        this.addChild(child, ChildView, index);
+      }, this);
+
+    },
+});
+
 SliceSelectorOption = Marionette.ItemView.extend({
     template: "#xos-sliceselector-option",
     tagName: "option",
@@ -16,7 +31,7 @@ SliceSelectorOption = Marionette.ItemView.extend({
     },
 });
 
-SliceSelectorView = Marionette.CompositeView.extend({
+SliceSelectorView = FilteredCompositeView.extend({
     template: "#xos-sliceselector-select",
     childViewContainer: "select",
     childView: SliceSelectorOption,
@@ -37,20 +52,6 @@ SliceSelectorView = Marionette.CompositeView.extend({
     },
 
     templateHelpers: function() { return {caption: this.options.caption || this.caption }; },
-});
-
-FilteredCompositeView = Marionette.CompositeView.extend( {
-    showCollection: function() {
-      var ChildView;
-      this.collection.each(function(child, index) {
-        if (this.filter && !this.filter(child)) {
-            return;
-        }
-        ChildView = this.getChildView(child);
-        this.addChild(child, ChildView, index);
-      }, this);
-
-    },
 });
 
 XOSRouter = Marionette.AppRouter.extend({
