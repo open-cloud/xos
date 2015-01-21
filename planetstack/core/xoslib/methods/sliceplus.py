@@ -45,6 +45,14 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         site_allocation = DictionaryField(required=False)
         users = ListField(required=False)
         user_names = ListField(required=False) # readonly = True ?
+        current_user_can_see = serializers.SerializerMethodField("getCurrentUserCanSee")
+
+        def getCurrentUserCanSee(self, slice):
+            # user can 'see' the slice if he is the creator or he has a role
+            current_user = self.context['request'].user
+            if (slice.creator and slice.creator==current_user):
+                return True;
+            return (len(slice.getSliceInfo(current_user)["roles"]) > 0)
 
         def getSliceInfo(self, slice):
             return slice.getSliceInfo(user=self.context['request'].user)
@@ -58,9 +66,9 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             model = SlicePlus
             fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','users',"user_names")
+                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','users',"user_names","current_user_can_see")
 
-class SlicePlusList(PlusListCreateAPIView): #generics.ListCreateAPIView):
+class SlicePlusList(PlusListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
 
@@ -68,7 +76,22 @@ class SlicePlusList(PlusListCreateAPIView): #generics.ListCreateAPIView):
     method_name = "slicesplus"
 
     def get_queryset(self):
-        return SlicePlus.select_by_user(self.request.user)
+        current_user_can_see = self.request.QUERY_PARAMS.get('current_user_can_see', False)
+
+        slices = SlicePlus.select_by_user(self.request.user)
+
+        # If current_user_can_see is set, then filter the queryset to return
+        # only those slices that the user is either creator or has privilege
+        # on.
+        if (current_user_can_see):
+            slice_ids = []
+            for slice in slices:
+                if (self.request.user == slice.creator) or (len(slice.getSliceInfo(self.request.user)["roles"]) > 0):
+                    slice_ids.append(slice.id)
+
+            slices = SlicePlus.objects.filter(id__in=slice_ids)
+
+        return slices
 
 class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()

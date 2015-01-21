@@ -319,17 +319,11 @@ if (! window.XOSLIB_LOADED ) {
                     var url = this.urlRoot || ( models && models.length && models[0].urlRoot );
                     url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
 
-                    // Build a url to retrieve a set of models. This assume the last part of each model's idAttribute
-                    // (set to 'resource_uri') contains the model's id.
-                    if ( models && models.length ) {
-                            var ids = _.map( models, function( model ) {
-                                            var parts = _.compact( model.id.split('/') );
-                                            return parts[ parts.length - 1 ];
-                                    });
-                            url += 'set/' + ids.join(';') + '/';
-                    }
-
                     url && ( url += "?no_hyperlinks=1" );
+
+                    if (this.currentUserCanSee) {
+                        url && ( url += "&current_user_can_see=1" );
+                    }
 
                     return url;
             },
@@ -364,6 +358,7 @@ if (! window.XOSLIB_LOADED ) {
     function define_model(lib, attrs) {
         modelName = attrs.modelName;
         modelClassName = modelName;
+        collectionClass = attrs.collectionClass || XOSCollection;
         collectionClassName = modelName + "Collection";
 
         if (!attrs.addFields) {
@@ -411,7 +406,7 @@ if (! window.XOSLIB_LOADED ) {
 
         collectionAttrs["model"] = lib[modelName];
 
-        lib[collectionClassName] = XOSCollection.extend(collectionAttrs);
+        lib[collectionClassName] = collectionClass.extend(collectionAttrs);
         lib[collectionName] = new lib[collectionClassName]();
 
         lib.allCollectionNames.push(collectionName);
@@ -692,7 +687,10 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: [],
                             });
 
-        this.tenant = function() { return this.tenantview.models[0].attributes; }
+        /* by default, have slicePlus only fetch the slices the user can see */
+        this.slicesPlus.currentUserCanSee = true;
+
+        this.tenant = function() { return this.tenantview.models[0].attributes; };
 
         this.listObjects = function() { return this.allCollectionNames; };
 
