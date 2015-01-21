@@ -542,7 +542,7 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x for x in self.instance.sitedeployments.all()]
+        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
