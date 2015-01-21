@@ -178,6 +178,9 @@ XOSTenantApp.buildViews = function() {
          sliceChanged: function(id) {
              XOSTenantApp.navToSlice(id);
          },
+         filter: function(slice) {
+             return slice.attributes.current_user_can_see;
+         },
      });
 
      xos.sites.fetch();
