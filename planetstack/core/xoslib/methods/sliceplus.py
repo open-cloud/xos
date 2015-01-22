@@ -43,6 +43,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
         network_ports = NetworkPortsField(required=False)
         site_allocation = DictionaryField(required=False)
+        site_ready = DictionaryField(required=False)
         users = ListField(required=False)
         user_names = ListField(required=False) # readonly = True ?
         current_user_can_see = serializers.SerializerMethodField("getCurrentUserCanSee")
@@ -66,7 +67,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             model = SlicePlus
             fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','mount_data_sets',
                       'default_image', 'default_flavor',
-                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','users',"user_names","current_user_can_see")
+                      'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','site_ready','users',"user_names","current_user_can_see")
 
 class SlicePlusList(PlusListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
