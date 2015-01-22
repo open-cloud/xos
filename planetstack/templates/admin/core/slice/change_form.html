@@ -86,19 +86,19 @@ function update_images(deployment_select, image_select) {
 }
 
 function sliver_deployment_changed(any_control) {
-   /* This function handles someone changing the deploymentNetwork control
+   /* This function handles someone changing the deployment control
       in the add-sliver line. It updats the flavors and nodes dialogs
       accordingly.
    */
 
    /* the inscrutable jquery selector below says:
       find the closest parent "tr" to the current element
-      then find the child with class "field-deploymentNetwork"
+      then find the child with class "field-deployment"
       then find the child with that is a select
       then return it's id
       then turn it into a jquery object
     */
-    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deploymentNetwork select')[0].id);
+    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deployment select')[0].id);
     node_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-node select')[0].id);
     flavor_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-flavor select')[0].id);
     image_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-image select')[0].id);
@@ -111,7 +111,7 @@ function sliver_flavor_changed(any_control) {
     /* this is like sliver_flavor changed, but does not update the flavors
        control
     */
-    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deploymentNetwork select')[0].id);
+    deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deployment select')[0].id);
     node_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-node select')[0].id);
     flavor_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-flavor select')[0].id);
     update_nodes(deployment_select, flavor_select, node_select);
