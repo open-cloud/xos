@@ -19,6 +19,7 @@ class SlicePlus(Slice, PlusObjectMixin):
     def getSliceInfo(self, user=None):
         if not self._sliceInfo:
             used_sites = {}
+            ready_sites = {}
             used_deployments = {}
             sliverCount = 0
             sshCommands = []
@@ -32,6 +33,8 @@ class SlicePlus(Slice, PlusObjectMixin):
                 if (sliver.instance_id and sliver.instance_name):
                     sshCommand = 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (sliver.instance_id, sliver.node.name, sliver.instance_name)
                     sshCommands.append(sshCommand);
+
+                    ready_sites[site.name] = ready_sites.get(site.name, 0) + 1
 
             users = {}
             for priv in SlicePrivilege.objects.filter(slice=self):
@@ -51,6 +54,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                     networkPorts = network.ports
 
             self._sliceInfo= {"sitesUsed": used_sites,
+                    "sitesReady": ready_sites,
                     "deploymentsUsed": used_deployments,
                     "sliverCount": sliverCount,
                     "siteCount": len(used_sites.keys()),
@@ -65,6 +69,14 @@ class SlicePlus(Slice, PlusObjectMixin):
                 self._sliceInfo["roles"] = auser["roles"]
 
         return self._sliceInfo
+
+    @property
+    def site_ready(self):
+        return self.getSliceInfo()["sitesReady"]
+
+    @site_ready.setter
+    def site_ready(self, value):
+        pass
 
     @property
     def site_allocation(self):

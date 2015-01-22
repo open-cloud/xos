@@ -5,7 +5,7 @@ XOSTenantSite = XOSModel.extend( {
 });
 
 XOSTenantSiteCollection = XOSCollection.extend( {
-    listFields: ["name", "allocated"],
+    listFields: ["name", "allocated", "ready"],
     modelName: "tenantSite",
     collectionName: "tenantSites",
 
@@ -14,17 +14,33 @@ XOSTenantSiteCollection = XOSCollection.extend( {
         var id = 0;
         for (siteName in slice.attributes.site_allocation) {
             allocated = slice.attributes.site_allocation[siteName];
-            tenantSites.push(new XOSTenantSite( { name: siteName, allocated: allocated, id: id} ));
+            ready = slice.attributes.site_ready[siteName] || 0;
+            tenantSites.push(new XOSTenantSite( { name: siteName, allocated: allocated, ready: ready, id: id} ));
             id = id + 1;
         }
         for (index in xos.tenantview.models[0].attributes.blessed_site_names) {
             siteName = xos.tenantview.models[0].attributes.blessed_site_names[index];
             if (! (siteName in slice.attributes.site_allocation)) {
-                tenantSites.push(new XOSTenantSite( { name: siteName, allocated: 0, id: id} ));
+                tenantSites.push(new XOSTenantSite( { name: siteName, allocated: 0, ready: 0, id: id} ));
                 id = id + 1;
             }
         }
         this.set(tenantSites);
+
+        var that=this;
+        this.listenTo(slice, 'change', function() { that.getReadyFromSlice(slice); })
+    },
+
+    getReadyFromSlice: function(slice) {
+        for (siteName in slice.attributes.site_ready) {
+            ready = slice.attributes.site_ready[siteName];
+            for (index in this.models) {
+                tenantSite = this.models[index];
+                if (tenantSite.attributes.name == siteName) {
+                    tenantSite.set("ready", ready);
+                }
+            }
+        }
     },
 
     putToSlice: function(slice) {
@@ -135,7 +151,7 @@ XOSTenantApp.buildViews = function() {
 
      tenantSummaryClass = XOSTenantSummaryView.extend({template: "#xos-detail-template",
                                                 app: XOSTenantApp,
-                                                detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports", "mount_data_sets"],
+                                                detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports"],
                                                 fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
                                                 helpText: {"serviceClass": "Existing slivers will be re-instantiated if changed",
                                                            "default_image": "Existing slivers will be re-instantiated if changed",
