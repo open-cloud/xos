@@ -31,7 +31,7 @@ def backend_icon(obj): # backend_status, enacted, updated):
     if (obj.enacted is not None) and obj.enacted >= obj.updated:
         return '<span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>'
     else:
-        if obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
+        if ((obj.backend_status is not None) and obj.backend_status.startswith("0 -")) or obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
             return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
         else:
             return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % html_escape(obj.backend_status, quote=True)
