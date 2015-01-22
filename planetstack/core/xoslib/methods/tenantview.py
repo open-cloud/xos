@@ -19,7 +19,11 @@ def getTenantViewDict(user):
         good=False
         for deployment in site.deployments.all():
             if deployment.name in BLESSED_DEPLOYMENTS:
-                good=True
+                # only bless sites that have at least one node in the deployment
+                sitedeployments = SiteDeployment.objects.filter(site=site, deployment=deployment)
+                for sd in sitedeployments.all():
+                    if sd.nodes.count()>0:
+                        good=True
         if good:
             blessed_sites.append(site)
 
