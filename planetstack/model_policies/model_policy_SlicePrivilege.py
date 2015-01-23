@@ -6,7 +6,7 @@ def handle(slice_privilege):
     controller_slice_privileges = ControllerSlicePrivilege.objects.filter(
         slice_privilege = slice_privilege,
         )
-    existing_controllers = [csp.controller for sp in controller_slice_privileges]
+    existing_controllers = [sp.controller for sp in controller_slice_privileges]
     all_controllers = Controller.objects.all()
     for controller in all_controllers:
         if controller not in existing_controllers:
