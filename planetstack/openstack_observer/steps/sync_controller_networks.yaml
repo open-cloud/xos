@@ -27,5 +27,6 @@
         state=absent
         {% else %}
         state=present 
+        no_gateway=true 
         cidr={{ cidr }}
         {% endif %}
