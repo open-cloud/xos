@@ -63,7 +63,8 @@ def run_template(name, opts,path='', expected_num=None):
     f.write(buffer)
     f.flush()
 
-    run = os.popen('/opt/planetstack/observer/run_ansible '+fqp)
+    run = os.popen('/opt/planetstack/observer/run_ansible %s'%shellquote(fqp))
+    #run = os.popen('ansible-playbook -v %s'%shellquote(fqp))
     msg = run.read()
     status = run.close()
 
