@@ -136,3 +136,62 @@ function make_same_width(containerSelector, itemSelector) {
     console.log(maxWidth);
     $(containerSelector).find(itemSelector).each( function(index) { $(this).width(maxWidth); });
 }
+
+function parse_portlist(ports) {
+    /* Support a list of ports in the format "protocol:port, protocol:port, ..."
+        examples:
+            tcp 123
+            tcp 123:133
+            tcp 123, tcp 124, tcp 125, udp 201, udp 202
+
+        User can put either a "/" or a " " between protocol and ports
+        Port ranges can be specified with "-" or ":"
+
+        This is a straightforward port of the code in core/models/network.py
+    */
+
+    var nats = [];
+    if (ports) {
+        parts = ports.split(",")
+        $.each(parts, function(index, part) {
+            part = $.trim(part);
+            if (part.indexOf("/")>=0) {
+                parts2 = part.split("/",2);
+                protocol=parts2[0];
+                ports=parts2[1];
+            } else if (part.indexOf(" ")>=0) {
+                parts2 = part.split(" +",2);
+                protocol=parts2[0];
+                ports=parts2[1];
+            } else {
+                throw 'malformed port specifier ' + part + ', format example: "tcp 123, tcp 201:206, udp 333"';
+            }
+
+            protocol = $.trim(protocol);
+            ports = $.trim(ports);
+
+            console.log(ports);
+
+            if (protocol!="tcp" && protocol!="udp") {
+                throw 'unknown protocol ' + protocol;
+            }
+
+            if (ports.indexOf("-")>=0) {
+                parts2 = ports.split("-");
+                first = parseInt($.trim(parts2[0]));
+                last = parseInt($.trim(parts2[1]));
+                portStr = first + ":" + last;
+            } else if (ports.indexOf(":")>=0) {
+                parts2 = ports.split(":");
+                first = parseInt($.trim(parts2[0]));
+                last = parseInt($.trim(parts2[1]));
+                portStr = first + ":" + last;
+            } else {
+                portStr = parseInt(ports).toString();
+            }
+
+            nats.push( {l4_protocol: protocol, l4_port: portStr} );
+        }); /* end $.each(ports) */
+    }
+    return nats
+}
