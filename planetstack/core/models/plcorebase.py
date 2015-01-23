@@ -160,7 +160,7 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
     enacted = models.DateTimeField(null=True, blank=True, default=None)
     policed = models.DateTimeField(null=True, blank=True, default=None)
     backend_status = models.CharField(max_length=140,
-                                      default="Provisioning in progress")
+                                      default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
 
     class Meta:
