@@ -3,9 +3,6 @@ def handle(controller):
     from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser
     from collections import defaultdict
 
-    #controller = Controller.get(controller_id)
-
-	
     # relations for all sites
     ctrls_by_site = defaultdict(list)
     ctrl_sites = ControllerSite.objects.all()
