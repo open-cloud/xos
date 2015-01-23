@@ -18,14 +18,16 @@ class SyncControllerNetworks(OpenStackSyncStep):
     provides=[ControllerNetwork, Network]
 
     def alloc_subnet(self, uuid):
+        # 16 bits only
+        uuid_masked = uuid & 0xffff
         a = 10
-        b = uuid >> 32
-        c = uuid & 0xffffffff
-	d = 0
+        b = uuid_masked >> 8
+        c = uuid_masked & 0xff
+        d = 0
 
-	cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
-	return cidr
-	
+        cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
+        return cidr
+
 
     def fetch_pending(self, deleted):
         if (deleted):
