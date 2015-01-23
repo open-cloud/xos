@@ -35,34 +35,29 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
 
     def save_controller_network(self, controller_network):
-            network_name = controller_network.network.name
-            subnet_name = '%s-%d'%(network_name,controller_network.pk)
-	    cidr = self.alloc_subnet(controller_network.pk)
-	    slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
+        network_name = controller_network.network.name
+        subnet_name = '%s-%d'%(network_name,controller_network.pk)
+        cidr = self.alloc_subnet(controller_network.pk)
+        slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
 
-	    network_fields = {'endpoint':controller_network.controller.auth_url,
-			'admin_user':slice.creator.email, # XXX: FIXME
-			'tenant_name':slice.name, # XXX: FIXME
-			'admin_password':slice.creator.remote_password,
-			'name':network_name,
-			'subnet_name':subnet_name,
-			'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
-			'cidr':cidr
-			}
+        network_fields = {'endpoint':controller_network.controller.auth_url,
+                    'admin_user':slice.creator.email, # XXX: FIXME
+                    'tenant_name':slice.name, # XXX: FIXME
+                    'admin_password':slice.creator.remote_password,
+                    'name':network_name,
+                    'subnet_name':subnet_name,
+                    'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
+                    'cidr':cidr
+                    }
 
-	    res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks')
+        res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=2)
 
-	    if (len(res)!=2):
-		raise Exception('Could not sync network %s'%controller_network.network.name)
-	    else:
-		network_id = res[0]['id'] 
-		subnet_id = res[1]['id'] 
-		controller_network.net_id = network_id
-		controller_network.subnet = cidr
-		controller_network.subnet_id = subnet_id
-		controller_network.save()
-
-            	logger.info("sync'ed subnet (%s) for network: %s" % (controller_network.subnet, controller_network.network))
+        network_id = res[0]['id']
+        subnet_id = res[1]['id']
+        controller_network.net_id = network_id
+        controller_network.subnet = cidr
+        controller_network.subnet_id = subnet_id
+        controller_network.save()
 
 
     def sync_record(self, controller_network):
