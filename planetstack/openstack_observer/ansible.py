@@ -6,6 +6,7 @@ import json
 import pdb
 import string
 import random
+import re
 
 try:
     step_dir = Config().observer_steps_dir
@@ -42,16 +43,18 @@ def parse_output(msg):
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
-def run_template(name, opts,path=''):
+def shellquote(s):
+    return "'" + s.replace("'", "'\\''") + "'"
+
+def run_template(name, opts,path='', expected_num=None):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
-
-    #f = open('/tmp/obsans','w')
     try:
         objname = opts['ansible_tag']
     except:
         objname= id_generator()
+
     os.system('mkdir -p %s'%'/'.join([sys_dir,path]))
     fqp = '/'.join([sys_dir,path,objname])
 
@@ -66,6 +69,8 @@ def run_template(name, opts,path=''):
 
     try:
         ok_results = parse_output(msg)
+	if (len(ok_results) != expected_num):
+		raise ValueError('Unexpected num')
     except ValueError,e:
         all_fatal = re.findall(r'^msg: (.*)',msg,re.MULTILINE)
         all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
