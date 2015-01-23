@@ -70,15 +70,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
             return
 
         if controller_network.network.owner and controller_network.network.owner.creator:
-            try:
-                # update manager context
-		# Bring back
-                self.save_controller_network(controller_network)
-                logger.info("saved network controller: %s" % (controller_network))
-            except Exception,e:
-                logger.log_exc("save network controller failed: %s" % controller_network)
-                raise e
-
+	    self.save_controller_network(controller_network)
+	    logger.info("saved network controller: %s" % (controller_network))
 
     def delete_record(self, controller_network):
         driver = OpenStackDriver().client_driver(caller=controller_network.network.owner.creator,
