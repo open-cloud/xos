@@ -26,15 +26,10 @@ class SyncControllerSites(OpenStackSyncStep):
 		         'tenant_description': controller_site.site.name}
 
 	rendered = template.render(tenant_fields)
-	res = run_template('sync_controller_sites.yaml', tenant_fields, path='controller_sites')
+	res = run_template('sync_controller_sites.yaml', tenant_fields, path='controller_sites', expected_num=1)
 
-	if (len(res)==1):
-		controller_site.tenant_id = res[0]['id']
-        	controller_site.save()
-	elif (len(res)):
-		raise Exception('Could not assign roles for user %s'%tenant_fields['tenant'])
-	else:
-		raise Exception('Could not create or update user %s'%tenant_fields['tenant'])
+	controller_site.tenant_id = res[0]['id']
+        controller_site.save()
             
     def delete_record(self, controller_site):
 	if controller_site.tenant_id:

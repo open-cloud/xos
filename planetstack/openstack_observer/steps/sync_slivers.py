@@ -120,28 +120,35 @@ class SyncSlivers(OpenStackSyncStep):
                      'key':key_fields,
                      'user_data':r'%s'%escape(userData)}
 
-        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers')
-        if (len(res)!=2):
-            raise Exception('Could not sync sliver %s'%sliver.slice.name)
-        else:
-            sliver_id = res[1]['info']['OS-EXT-SRV-ATTR:instance_name'] # 0 is for the key
-            sliver_uuid = res[1]['id'] # 0 is for the key
+        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=2)
+        sliver_id = res[1]['info']['OS-EXT-SRV-ATTR:instance_name'] # 0 is for the key
+        sliver_uuid = res[1]['id'] # 0 is for the key
 
-            try:
-                hostname = res[1]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
-                ip = socket.gethostbyname(hostname)
-                sliver.ip = ip
-            except:
-                pass
+        try:
+            hostname = res[1]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
+            ip = socket.gethostbyname(hostname)
+            sliver.ip = ip
+        except:
+            pass
 
-            sliver.instance_id = sliver_id
-            sliver.instance_uuid = sliver_uuid
-            sliver.instance_name = sliver_name
-            sliver.save()
+        sliver.instance_id = sliver_id
+        sliver.instance_uuid = sliver_uuid
+        sliver.instance_name = sliver_name
+        sliver.save()
 
     def delete_record(self, sliver):
-        sliver_name = '@'.join([sliver.slice.name,sliver.node.name])
-        tenant_fields = {'name':sliver_name,
-                         'ansible_tag':sliver_name
-                        }
-        res = run_template('delete_slivers.yaml', tenant_fields, path='slivers')
+        sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
+        controller = sliver.node.site_deployment.controller
+        tenant_fields = {'endpoint':controller.auth_url,
+                     'admin_user': sliver.creator.email,
+                     'admin_password': sliver.creator.remote_password,
+                     'admin_tenant': sliver.slice.name,
+                     'tenant': sliver.slice.name,
+                     'tenant_description': sliver.slice.description,
+                     'name':sliver_name,
+                     'ansible_tag':sliver_name,
+                     'delete': True}
+
+        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers')
+        if (len(res)!=1):
+            raise Exception('Could not delete sliver %s'%sliver.slice.name)
