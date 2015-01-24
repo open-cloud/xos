@@ -59,20 +59,15 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
 		       'tenant':controller_slice_privilege.slice_privilege.slice.name}    
 	
 	    rendered = template.render(user_fields)
-	    res = run_template('sync_controller_users.yaml', user_fields,path='controller_slice_privileges')
+	    expected_length = len(roles) + 1
+	    res = run_template('sync_controller_users.yaml', user_fields, path='controller_slice_privileges', expected_num=expected_length)
 
 	    # results is an array in which each element corresponds to an 
 	    # "ok" string received per operation. If we get as many oks as
 	    # the number of operations we issued, that means a grand success.
 	    # Otherwise, the number of oks tell us which operation failed.
-	    expected_length = len(roles) + 1
-	    if (len(res)==expected_length):
-                controller_slice_privilege.role_id = res[0]['id']
-                controller_slice_privilege.save()
-	    elif (len(res)):
-	        raise Exception('Could not assign roles for user %s'%user_fields['name'])
-	    else:
-	        raise Exception('Could not create or update user %s'%user_fields['name'])
+            controller_slice_privilege.role_id = res[0]['id']
+            controller_slice_privilege.save()
 
     def delete_record(self, controller_slice_privilege):
         if controller_slice_privilege.role_id:

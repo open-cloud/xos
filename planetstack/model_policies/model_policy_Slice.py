@@ -7,7 +7,7 @@ def handle(slice):
 
     controller_slices = ControllerSlice.objects.filter(slice=slice)
     existing_controllers = [cs.controller for cs in controller_slices] 
-    
+        
     all_controllers = Controller.objects.all() 
     for controller in all_controllers:
         if controller not in existing_controllers:

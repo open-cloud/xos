@@ -83,15 +83,15 @@ class SyncStep(object):
                 else:
                     self.sync_record(o)
                     o.enacted = datetime.now() # Is this the same timezone? XXX
-                    o.backend_status = "OK"
+                    o.backend_status = "1 - OK"
                     o.save(update_fields=['enacted'])
             except Exception,e:
                 logger.log_exc("sync step failed!")
                 str_e = '%r'%e
                 try:
-                    o.backend_status = self.error_map.map(str_e)
+                    o.backend_status = '2 - %s'%self.error_map.map(str_e)
                 except:
-                    o.backend_status = str_e
+                    o.backend_status = '2 - %s'%str_e
 
                 # TOFIX:
                 # DatabaseError: value too long for type character varying(140)
