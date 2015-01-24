@@ -399,7 +399,11 @@ if (! window.XOSLIB_LOADED ) {
 //        }
 
         if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
-            modelAttrs["validators"] = xosvalidators[modelName];
+            modelAttrs["validators"] = $.extend({}, xosvalidators[modelName], attrs["validators"] || {});
+        } else if (attrs["validators"]) {
+            modelAttrs["validators"] = attrs["validators"];
+            console.log(attrs);
+            console.log(modelAttrs);
         }
 
         lib[modelName] = XOSModel.extend(modelAttrs);
@@ -485,7 +489,7 @@ if (! window.XOSLIB_LOADED ) {
                            inputType: {"enabled": "checkbox"},
                            modelName: "slice",
                            xosValidate: function(attrs, options) {
-                               errors = XOSModel.prototype.xosValidate(this, attrs, options);
+                               errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
                                // validate that slice.name starts with site.login_base
                                site = attrs.site || this.site;
                                if ((site!=undefined) && (attrs.name!=undefined)) {
@@ -665,8 +669,9 @@ if (! window.XOSLIB_LOADED ) {
                            modelName: "slicePlus",
                            collectionName: "slicesPlus",
                            defaults: extend_defaults("slice", {"network_ports": "", "site_allocation": []}),
+                           validators: {"network_ports": ["portspec"]},
                            xosValidate: function(attrs, options) {
-                               errors = XOSModel.prototype.xosValidate(this, attrs, options);
+                               errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
                                // validate that slice.name starts with site.login_base
                                site = attrs.site || this.site;
                                if ((site!=undefined) && (attrs.name!=undefined)) {
