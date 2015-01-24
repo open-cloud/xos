@@ -147,7 +147,15 @@ XOSApplication = Marionette.Application.extend({
         }
         console.log(responseText);
         console.log(parsed_error);
-        if (parsed_error) {
+
+        if (parsed_error && ("error" in parsed_error)) {
+            // this error comes from genapi views
+            $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
+        } else if (parsed_error && ("detail" in parsed_error)) {
+            // this error response comes from rest_framework APIException
+            parsed_error["error"] = "API Error";
+            parsed_error["specific_error"] = parsed_error["detail"];
+            parsed_error["reasons"] = [];
             $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
         } else {
             $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: strip_scripts(responseText)}))
