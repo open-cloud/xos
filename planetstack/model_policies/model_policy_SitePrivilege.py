@@ -6,7 +6,7 @@ def handle(site_privilege):
     controller_site_privileges = ControllerSitePrivilege.objects.filter(
         site_privilege = site_privilege,
         )
-    existing_controllers = [csp.controller for sp in controller_site_privileges]
+    existing_controllers = [sp.controller for sp in controller_site_privileges]
     all_controllers = Controller.objects.all()
     for controller in all_controllers:
         if controller not in existing_controllers:

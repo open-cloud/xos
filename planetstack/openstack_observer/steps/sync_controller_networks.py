@@ -18,14 +18,16 @@ class SyncControllerNetworks(OpenStackSyncStep):
     provides=[ControllerNetwork, Network]
 
     def alloc_subnet(self, uuid):
+        # 16 bits only
+        uuid_masked = uuid & 0xffff
         a = 10
-        b = uuid >> 32
-        c = uuid & 0xffffffff
-	d = 0
+        b = uuid_masked >> 8
+        c = uuid_masked & 0xff
+        d = 0
 
-	cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
-	return cidr
-	
+        cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
+        return cidr
+
 
     def fetch_pending(self, deleted):
         if (deleted):
@@ -35,34 +37,29 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
 
     def save_controller_network(self, controller_network):
-            network_name = controller_network.network.name
-            subnet_name = '%s-%d'%(network_name,controller_network.pk)
-	    cidr = self.alloc_subnet(controller_network.pk)
-	    slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
+        network_name = controller_network.network.name
+        subnet_name = '%s-%d'%(network_name,controller_network.pk)
+        cidr = self.alloc_subnet(controller_network.pk)
+        slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
 
-	    network_fields = {'endpoint':controller_network.controller.auth_url,
-			'admin_user':slice.creator.email, # XXX: FIXME
-			'tenant_name':slice.name, # XXX: FIXME
-			'admin_password':slice.creator.remote_password,
-			'name':network_name,
-			'subnet_name':subnet_name,
-			'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
-			'cidr':cidr
-			}
+        network_fields = {'endpoint':controller_network.controller.auth_url,
+                    'admin_user':slice.creator.email, # XXX: FIXME
+                    'tenant_name':slice.name, # XXX: FIXME
+                    'admin_password':slice.creator.remote_password,
+                    'name':network_name,
+                    'subnet_name':subnet_name,
+                    'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
+                    'cidr':cidr
+                    }
 
-	    res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks')
+        res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=2)
 
-	    if (len(res)!=2):
-		raise Exception('Could not sync network %s'%controller_network.network.name)
-	    else:
-		network_id = res[0]['id'] 
-		subnet_id = res[1]['id'] 
-		controller_network.net_id = network_id
-		controller_network.subnet = cidr
-		controller_network.subnet_id = subnet_id
-		controller_network.save()
-
-            	logger.info("sync'ed subnet (%s) for network: %s" % (controller_network.subnet, controller_network.network))
+        network_id = res[0]['id']
+        subnet_id = res[1]['id']
+        controller_network.net_id = network_id
+        controller_network.subnet = cidr
+        controller_network.subnet_id = subnet_id
+        controller_network.save()
 
 
     def sync_record(self, controller_network):
@@ -73,15 +70,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
             return
 
         if controller_network.network.owner and controller_network.network.owner.creator:
-            try:
-                # update manager context
-		# Bring back
-                self.save_controller_network(controller_network)
-                logger.info("saved network controller: %s" % (controller_network))
-            except Exception,e:
-                logger.log_exc("save network controller failed: %s" % controller_network)
-                raise e
-
+	    self.save_controller_network(controller_network)
+	    logger.info("saved network controller: %s" % (controller_network))
 
     def delete_record(self, controller_network):
         driver = OpenStackDriver().client_driver(caller=controller_network.network.owner.creator,
