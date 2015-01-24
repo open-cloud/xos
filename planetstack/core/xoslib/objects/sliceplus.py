@@ -1,6 +1,7 @@
 from core.models import Slice, SlicePrivilege, SliceRole, Sliver, Site, Node, User
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
+from rest_framework.exceptions import APIException
 
 class SlicePlus(Slice, PlusObjectMixin):
     class Meta:
@@ -195,7 +196,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                 nodes = self.get_node_allocation([site])
 
                 if (not nodes):
-                    raise ValueError("no nodes in site %s" % site_name)
+                    raise APIException(detail="no nodes in site %s" % site_name)
 
                 while (len(slivers) < desired_allocation):
                     # pick the least allocated node
@@ -273,7 +274,7 @@ class SlicePlus(Slice, PlusObjectMixin):
 
         # uh oh, we didn't find a network
 
-        raise ValueError("No network was found that ports could be set on")
+        raise APIException(detail="No network was found that ports could be set on")
 
 
 
