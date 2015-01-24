@@ -1234,7 +1234,8 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
+    list_display = ('backend_status_icon', 'email', 'firstname', 'lastname', 'site', 'last_login')
+    list_display_links = ("email",)
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline,UserDashboardViewInline]
     admin_inlines = [ControllerUserInline]
