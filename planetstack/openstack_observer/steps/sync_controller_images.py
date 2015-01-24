@@ -32,11 +32,9 @@ class SyncControllerImages(OpenStackSyncStep):
                         'ansible_tag': '%s@%s'%(controller_image.image.name,controller_image.controller.name), # name of ansible playbook
                         }
 
-        res = run_template('sync_controller_images.yaml', image_fields, path='controller_images')
 
-        if (len(res)!=1):
-            raise Exception('Could not sync image %s'%controller_image.image.name)
-        else:
-            image_id = res[0]['id']
-            controller_image.glance_image_id = image_id
-            controller_image.save()
+        res = run_template('sync_controller_images.yaml', image_fields, path='controller_images', expected_num=1)
+
+        image_id = res[0]['id']
+        controller_image.glance_image_id = image_id
+        controller_image.save()

@@ -50,22 +50,19 @@ class SyncControllerSlices(OpenStackSyncStep):
                          'ansible_tag':'%s@%s'%(controller_slice.slice.name,controller_slice.controller.name),
                          'max_instances':max_instances}
 
-        res = run_template('sync_controller_slices.yaml', tenant_fields, path='controller_slices')
         expected_num = len(roles)+1
-        if (len(res)!=expected_num):
-            raise Exception('Could not sync tenants for slice %s'%controller_slice.slice.name)
-        else:
-            tenant_id = res[0]['id']
-            if (not controller_slice.tenant_id):
-                try:
-                        driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
-                        driver.shell.nova.quotas.update(tenant_id=controller_slice.tenant_id, instances=int(controller_slice.slice.max_slivers))
-                except:
-                        logger.log_exc('Could not update quota for %s'%controller_slice.slice.name)
-                        raise Exception('Could not update quota for %s'%controller_slice.slice.name)
+        res = run_template('sync_controller_slices.yaml', tenant_fields, path='controller_slices', expected_num=expected_num)
+        tenant_id = res[0]['id']
+        if (not controller_slice.tenant_id):
+            try:
+                    driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
+                    driver.shell.nova.quotas.update(tenant_id=controller_slice.tenant_id, instances=int(controller_slice.slice.max_slivers))
+            except:
+                    logger.log_exc('Could not update quota for %s'%controller_slice.slice.name)
+                    raise Exception('Could not update quota for %s'%controller_slice.slice.name)
                 
-                controller_slice.tenant_id = tenant_id
-                controller_slice.save()
+            controller_slice.tenant_id = tenant_id
+            controller_slice.save()
 
 
     def delete_record(self, controller_slice):
