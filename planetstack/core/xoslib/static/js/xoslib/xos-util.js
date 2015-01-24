@@ -143,6 +143,17 @@ function make_same_width(containerSelector, itemSelector) {
     $(containerSelector).find(itemSelector).each( function(index) { $(this).width(maxWidth); });
 }
 
+function strip_scripts(s) {
+    var div = document.createElement('div');
+    div.innerHTML = s;
+    var scripts = div.getElementsByTagName('script');
+    var i = scripts.length;
+    while (i--) {
+      scripts[i].parentNode.removeChild(scripts[i]);
+    }
+    return div.innerHTML;
+  }
+
 function parse_portlist(ports) {
     /* Support a list of ports in the format "protocol:port, protocol:port, ..."
         examples:
