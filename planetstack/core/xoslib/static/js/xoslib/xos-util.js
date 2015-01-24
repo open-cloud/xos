@@ -75,6 +75,12 @@ function validateField(validatorName, value, obj) {
                 return "must be a valid url";
             }
             break;
+
+        case "portspec":
+            if (! $.trim(value).match(portlist_regexp())) {
+                return "must be a valid portspec (example: 'tcp 123, udp 456-789')"
+            }
+            break;
     }
 
     return true;
@@ -195,3 +201,47 @@ function parse_portlist(ports) {
     }
     return nats
 }
+
+function portlist_regexp() {
+    /* this constructs the big complicated regexp that validates port
+       specifiers. Saved here in long form, in case we need to change it
+       in the future.
+    */
+
+    paren = function(x) { return "(?:" + x + ")"; }
+    whitespace = " *";
+    protocol = paren("tcp|udp");
+    protocolSlash = protocol + paren(whitespace + "|\/");
+    numbers = paren("[0-9]+");
+    range = paren(numbers + paren("-|:") + numbers);
+    numbersOrRange = paren(numbers + "|" + range);
+    protoPorts = paren(protocolSlash + numbersOrRange);
+    protoPortsCommas = paren(paren(protoPorts + "," + whitespace)+"+");
+    multiProtoPorts = paren(protoPortsCommas + protoPorts);
+    portSpec = "^" + paren(protoPorts + "|" + multiProtoPorts) + "$";
+    return RegExp(portSpec);
+}
+
+function portlist_selftest() {
+    r = portlist_regexp();
+    assert(! "tcp".match(r), 'should not have matched: "tcp"');
+    assert("tcp 1".match(r), 'should have matched: "tcp 1"');
+    assert("tcp 123".match(r), 'should have matched: "tcp 123"');
+    assert("tcp  123".match(r), 'should have matched: "tcp 123"');
+    assert("tcp 123-456".match(r), 'should have matched: "tcp 123-456"');
+    assert("tcp 123:456".match(r), 'should have matched: "tcp 123:456"');
+    assert(! "tcp 123-".match(r), 'should have matched: "tcp 123-"');
+    assert(! "tcp 123:".match(r), 'should have matched: "tcp 123:"');
+    assert(! "foo 123".match(r), 'should not have matched "foo 123"');
+    assert("udp 123".match(r), 'should have matched: "udp 123"');
+    assert("tcp 123,udp 456".match(r), 'should have matched: "tcp 123,udp 456"');
+    assert("tcp 123, udp 456".match(r), 'should have matched: "tcp 123, udp 456"');
+    assert("tcp 123,  udp 456".match(r), 'should have matched: "tcp 123,  udp 456"');
+    assert("tcp 123-45, udp 456".match(r), 'should have matched: "tcp 123-45, udp 456"');
+    assert("tcp 123-45, udp 456, tcp 11, tcp 22:45, udp 76, udp 47:49, udp 60-61".match(r), 'should have matched: "tcp 123-45, udp 456, tcp 11, tcp 22:45, udp 76, udp 47:49, udp 60-61"');
+    return "done";
+}
+
+//portlist_selftest();
+
+
