@@ -150,7 +150,7 @@ XOSApplication = Marionette.Application.extend({
         if (parsed_error) {
             $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
         } else {
-            $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: responseText}))
+            $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: strip_scripts(responseText)}))
         }
 
         $("#xos-error-dialog").dialog({
