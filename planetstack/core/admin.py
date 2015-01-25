@@ -777,14 +777,17 @@ class SiteNodeInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-nodes'
 
 class SiteAdmin(PlanetStackBaseAdmin):
-    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
+    #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
+    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
     ]
-    readonly_fields = ['backend_status_text', 'accountLink']
+    #readonly_fields = ['backend_status_text', 'accountLink']
+    readonly_fields = ['backend_status_text']
 
-    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
+    #user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
+    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base']
 
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
@@ -934,7 +937,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
           ('slicenetworks','Networks'),
           ('sliceprivileges','Privileges'),
           ('slivers','Slivers'),
-          ('reservations','Reservations'),
+          #('reservations','Reservations'), 
           ('tags','Tags'),
           ]
 
@@ -1714,12 +1717,12 @@ admin.site.register(Controller, ControllerAdmin)
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
-admin.site.register(Reservation, ReservationAdmin)
+#admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
-admin.site.register(Account, AccountAdmin)
-admin.site.register(Invoice, InvoiceAdmin)
+#admin.site.register(Account, AccountAdmin)
+#admin.site.register(Invoice, InvoiceAdmin)
 
 if True:
     admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
