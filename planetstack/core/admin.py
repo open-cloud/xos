@@ -1296,6 +1296,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
                 ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password','public_key'], 'classes':['suit-tab suit-tab-general']}),
                 ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
             )
+            self.readonly_fields = ('backend_status_text', 'site') 
         return super(UserAdmin, self).get_form(request, obj, **kwargs)     
 
 class ControllerDashboardViewInline(PlStackTabularInline):
