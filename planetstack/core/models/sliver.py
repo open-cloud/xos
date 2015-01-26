@@ -155,3 +155,9 @@ class Sliver(PlCoreBase):
     def get_node_stats(self):
         # Note sure what should go back here
         return 1
+
+    def get_ssh_command(self):
+        if (not self.instance_id) or (not self.node) or (not self.instance_name):
+            return None
+        else:
+            return 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (self.instance_id, self.node.name, self.instance_name)

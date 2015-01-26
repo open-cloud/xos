@@ -31,9 +31,9 @@ class SlicePlus(Slice, PlusObjectMixin):
                 used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
                 sliverCount = sliverCount + 1
 
-                if (sliver.instance_id and sliver.instance_name):
-                    sshCommand = 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (sliver.instance_id, sliver.node.name, sliver.instance_name)
-                    sshCommands.append(sshCommand);
+                sshCommand = sliver.get_ssh_command()
+                if sshCommand:
+                    sshCommands.append(sshCommand)
 
                     ready_sites[site.name] = ready_sites.get(site.name, 0) + 1
 
