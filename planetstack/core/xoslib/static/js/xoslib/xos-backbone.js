@@ -472,11 +472,11 @@ if (! window.XOSLIB_LOADED ) {
         define_model(this, {urlRoot: SLIVER_API,
                             relatedCollections: {"networkSlivers": "sliver"},
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users", "flavors"],
-                            foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deploymentNetwork": "deployments", "slice": "slices", "flavor": "flavors"},
+                            foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deployment": "deployments", "slice": "slices", "flavor": "flavors"},
                             modelName: "sliver",
-                            listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "image", "node", "flavor"],
-                            addFields: ["slice", "deploymentNetwork", "flavor", "image", "node"],
-                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deploymentNetwork", "flavor", "image", "node", "creator"],
+                            listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deployment", "image", "node", "flavor"],
+                            addFields: ["slice", "deployment", "flavor", "image", "node"],
+                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deployment", "flavor", "image", "node", "creator"],
                             preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
                             });
 
@@ -552,7 +552,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
-                             relatedCollections: {"nodes": "deployment", "slivers": "deploymentNetwork"},
+                             relatedCollections: {"nodes": "deployment", "slivers": "deployment"},
                              m2mFields: {"flavors": "flavors", "sites": "sites", "images": "images"},
                              modelName: "deployment",
                              listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
