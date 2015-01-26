@@ -1107,9 +1107,9 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_id', 'instance_name', 'flavor', 'image', ], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
     ]
-    readonly_fields = ('backend_status_text', )
+    readonly_fields = ('backend_status_text', 'ssh_command', )
     list_display = ['backend_status_icon', 'ip', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'ip',)
 
@@ -1118,6 +1118,13 @@ class SliverAdmin(PlanetStackBaseAdmin):
     inlines = [TagInline]
 
     user_readonly_fields = ['slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image']
+
+    def ssh_command(self, obj):
+        ssh_command = obj.get_ssh_command()
+        if ssh_command:
+            return ssh_command
+        else:
+            return "(not available)"
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
@@ -1134,11 +1141,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
     def get_formsets(self, request, obj=None):
         # make some fields read only if we are updating an existing record
         if obj == None:
-            #self.readonly_fields = ('ip', 'instance_name')
-            self.readonly_fields = ('backend_status_text',)
+            self.readonly_fields = ('backend_status_text', 'ssh_command', )
         else:
-            self.readonly_fields = ('backend_status_text',)
-            #self.readonly_fields = ('ip', 'instance_name', 'slice', 'image', 'key')
+            self.readonly_fields = ('backend_status_text', 'ssh_command',)
 
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
