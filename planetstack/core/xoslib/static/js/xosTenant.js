@@ -297,25 +297,8 @@ XOSTenantApp.editUsers = function(model) {
     $("#tenant-edit-users-dialog").dialog("open");
 };
 
-XOSTenantApp.downloadSSHOld = function(model) {
-    sshCommands = "";
-    for (index in model.attributes.sliceInfo.sshCommands) {
-         sshCommand = model.attributes.sliceInfo.sshCommands[index];
-         sshCommands = sshCommands + sshCommand + "\n";
-    }
-
-    if (sshCommands.length == 0) {
-         alert("this slice has no instantiated slivers yet");
-         return;
-    }
-
-    var myWindow = window.open("", "ssh_command_list",""); // "width=640, height=480");
-    myWindow.document.write("<html><head><title>SSH Commands</title></head><body><pre>" + sshCommands + "</pre></body></html>");
-    myWindow.document.close();
-};
-
 XOSTenantApp.downloadSSH = function(model) {
-    sshCommands = "";
+    var sshCommands = "";
     for (index in model.attributes.sliceInfo.sshCommands) {
          sshCommand = model.attributes.sliceInfo.sshCommands[index];
          sshCommands = sshCommands + sshCommand + "\n";
@@ -334,7 +317,15 @@ XOSTenantApp.downloadSSH = function(model) {
        modal: true,
        width: 640,
        buttons : {
-            "Ok" : function() {
+            "Download": function() {
+                var dlLink = document.createElement('a');
+                dlLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(sshCommands));
+                dlLink.setAttribute('download', 'sshcommands.txt');
+                dlLink.click();
+
+                //window.open('data:text/text,' + encodeURIComponent(sshCommands));
+            },
+            "Close" : function() {
               $(this).dialog("close");
             },
           }
