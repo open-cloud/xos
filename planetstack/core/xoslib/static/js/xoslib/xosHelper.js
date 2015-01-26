@@ -687,7 +687,7 @@ XOSDetailView = Marionette.ItemView.extend({
 
 XOSDetailView_sliver = XOSDetailView.extend( {
     events: $.extend(XOSDetailView.events,
-        {"change #field_deploymentNetwork": "onDeploymentNetworkChange"}
+        {"change #field_deployment": "onDeploymentChange"}
     ),
 
     onShow: function() {
@@ -695,16 +695,23 @@ XOSDetailView_sliver = XOSDetailView.extend( {
         // first time was when the template was originally invoked, and the
         // selects will all have the full unfiltered set of candidates. Then
         // onShow will fire, and we'll update them with the filtered values.
-        this.onDeploymentNetworkChange();
+        this.onDeploymentChange();
     },
 
-    onDeploymentNetworkChange: function(e) {
-        var deploymentID = this.$el.find("#field_deploymentNetwork").val();
+    onDeploymentChange: function(e) {
+        var deploymentID = this.$el.find("#field_deployment").val();
 
-        console.log("onDeploymentNetworkChange");
-        console.log(deploymentID);
+        //console.log("onDeploymentChange");
 
-        filterFunc = function(model) { return (model.attributes.deployment==deploymentID); }
+        filterFunc = function(model) { for (index in xos.siteDeployments.models) {
+                                           site_deployment = xos.siteDeployments.models[index];
+                                           if (site_deployment.attributes.id == model.attributes.site_deployment) {
+                                               return (site_deployment.attributes.deployment == deploymentID);
+                                           }
+                                        }
+                                        return false;
+                                        // return (model.attributes.deployment==deploymentID); }
+                                      };
         newSelect = idToSelect("node",
                                this.model.attributes.node,
                                this.model.foreignFields["node"],
@@ -714,8 +721,7 @@ XOSDetailView_sliver = XOSDetailView.extend( {
         this.$el.find("#field_node").html(newSelect);
 
         filterFunc = function(model) { for (index in model.attributes.deployments) {
-                                          item=model.attributes.deployments[index];
-                                          if (item.toString()==deploymentID.toString()) return true;
+                                          if (model.attributes.deployments[index] == deploymentID) return true;
                                         };
                                         return false;
                                      }
@@ -727,12 +733,9 @@ XOSDetailView_sliver = XOSDetailView.extend( {
                                filterFunc);
         this.$el.find("#field_flavor").html(newSelect);
 
-        filterFunc = function(model) { for (index in xos.imageDeployments.models) {
-                                           imageDeployment = xos.imageDeployments.models[index];
-                                           if ((imageDeployment.attributes.deployment == deploymentID) && (imageDeployment.attributes.image == model.id)) {
-                                               return true;
-                                           }
-                                       }
+        filterFunc = function(model) { for (index in model.attributes.deployments) {
+                                           if (model.attributes.deployments[index] == deploymentID) return true;
+                                       };
                                        return false;
                                      };
         newSelect = idToSelect("image",
