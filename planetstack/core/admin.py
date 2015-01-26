@@ -1254,7 +1254,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('site', 'email', 'firstname', 'lastname', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
+            'fields': ('site', 'email', 'firstname', 'lastname', 'is_admin','is_admin', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
         ),
     )
     readonly_fields = ('backend_status_text', )
@@ -1289,6 +1289,14 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
 
     def queryset(self, request):
         return User.select_by_user(request.user)
+
+    def get_form(self, request, obj=None, **kwargs):
+        if not request.user.is_admin:
+            self.fieldsets = (
+                ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password','public_key'], 'classes':['suit-tab suit-tab-general']}),
+                ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
+            )
+        return super(UserAdmin, self).get_form(request, obj, **kwargs)     
 
 class ControllerDashboardViewInline(PlStackTabularInline):
     model = ControllerDashboardView
