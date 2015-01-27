@@ -29,6 +29,7 @@ class SyncControllerSites(OpenStackSyncStep):
 	res = run_template('sync_controller_sites.yaml', tenant_fields, path='controller_sites', expected_num=1)
 
 	controller_site.tenant_id = res[0]['id']
+	controller_site.backend_status = '1 - OK'
         controller_site.save()
             
     def delete_record(self, controller_site):
