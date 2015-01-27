@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
   <script type="text/javascript" src="{% static 'uploadTextarea.js' %}"></script>
+  <script type="text/javascript" src="{% static 'observer_status.js' %}"></script>
 
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
@@ -84,6 +85,7 @@
               <div id="user-tools">
                 {% trans 'Welcome,' %}
                 <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">{{user.email}}</a>
+                <span id="observer-status"></span>
                 <span class="user-links">
                 {% block userlinks %}
                   {% url 'django-admindocs-docroot' as docsroot %}
