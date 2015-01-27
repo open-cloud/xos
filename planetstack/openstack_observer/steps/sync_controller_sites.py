@@ -8,7 +8,7 @@ from observer.ansible import *
 
 class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0
-    provides=[ControllerSite, Site]
+    provides=[Site]
 
     def fetch_pending(self, deleted=False):
         pending = super(OpenStackSyncStep, self).fetch_pending(deleted)

@@ -14,7 +14,7 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerUsers(OpenStackSyncStep):
-    provides=[ControllerUser, User]
+    provides=[User]
     requested_interval=0
 
     def fetch_pending(self, deleted):

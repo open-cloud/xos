@@ -14,7 +14,7 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerSlicePrivileges(OpenStackSyncStep):
-    provides=[ControllerSlicePrivilege, SlicePrivilege]
+    provides=[SlicePrivilege]
     requested_interval=0
 
     def fetch_pending(self, deleted):
