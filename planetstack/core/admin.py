@@ -28,7 +28,7 @@ _thread_locals = threading.local()
 
 def backend_icon(obj): # backend_status, enacted, updated):
     #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
-    if (obj.enacted is not None) and obj.enacted >= obj.updated:
+    if (obj.enacted is not None) and obj.enacted >= obj.updated or obj.backend_status.startswith("1 -"):
         return '<span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>'
     else:
         if ((obj.backend_status is not None) and obj.backend_status.startswith("0 -")) or obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
