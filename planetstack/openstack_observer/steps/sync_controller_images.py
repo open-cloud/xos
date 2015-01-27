@@ -12,7 +12,7 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerImages(OpenStackSyncStep):
-    provides=[ControllerImages, Image]
+    provides=[ControllerImages]
     requested_interval=0
 
     def fetch_pending(self, deleted):
@@ -37,4 +37,5 @@ class SyncControllerImages(OpenStackSyncStep):
 
         image_id = res[0]['id']
         controller_image.glance_image_id = image_id
+	controller_image.backend_status = '1 - OK'
         controller_image.save()
