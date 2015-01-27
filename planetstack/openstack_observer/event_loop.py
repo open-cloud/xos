@@ -2,11 +2,14 @@ import os
 import imp
 import inspect
 import time
+import sys
 import traceback
 import commands
 import threading
 import json
 import pdb
+import pprint
+
 
 from datetime import datetime
 from collections import defaultdict
@@ -119,6 +122,12 @@ class PlanetStackObserver:
 		try:
 			# This contains dependencies between records, not sync steps
 			self.model_dependency_graph = json.loads(open(dep_path).read())
+			for lst in self.model_dependency_graph.values():
+				for k in lst:
+					try:
+						deps = self.model_dependency_graph[k]
+					except:
+						self.model_dependency_graph[k] = []
 		except Exception,e:
 			raise e
 
@@ -145,6 +154,9 @@ class PlanetStackObserver:
 		for k,v in self.model_dependency_graph.iteritems():
 			try:
 				for source in provides_dict[k]:
+					if (not v):
+						step_graph[source] = []
+		
 					for m in v:
 						try:
 							for dest in provides_dict[m]:
@@ -187,8 +199,14 @@ class PlanetStackObserver:
 		self.dependency_graph = step_graph
 		self.deletion_dependency_graph = invert_graph(step_graph)
 
+		pp = pprint.PrettyPrinter(indent=4)
+		pp.pprint(step_graph)
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
+		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncSlivers']
+		#self.ordered_steps = ['SyncControllerSites']
+
 		print "Order of steps=",self.ordered_steps
+
 		self.load_run_times()
 		
 
@@ -266,8 +284,9 @@ class PlanetStackObserver:
 		except KeyError:
 			has_deps = False
 
-		go = False
+		go = True
 
+                failed_dep = None
 		if (has_deps):
 			for d in deps:
                                 if d==step.__name__:
@@ -280,12 +299,19 @@ class PlanetStackObserver:
 				if (self.step_status[d] is STEP_STATUS_WORKING):
                                         logger.info("  step %s wait on dep %s" % (step.__name__, d))
 					cond.wait()
+				elif self.step_status[d] == STEP_STATUS_OK:
+					go = True
+				else:
+					go = False
+                        		failed_dep = d
 				cond.release()
-			go = go or self.step_status[d] == STEP_STATUS_OK
+				if (not go):
+					break
 		else:
 			go = True
 
 		if (not go):
+                        print bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC
                         # SMBAKER: sync_step was not defined here, so I changed
                         #    this from 'sync_step' to 'step'. Verify.
 			self.failed_steps.append(step)
@@ -326,6 +352,7 @@ class PlanetStackObserver:
 
 					logger.info('Executing step %s' % sync_step.__name__)
 
+					print bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC
 					failed_objects = sync_step(failed=list(self.failed_step_objects), deletion=deletion)
 
 					self.check_duration(sync_step, duration)
@@ -334,9 +361,11 @@ class PlanetStackObserver:
 						self.failed_step_objects.update(failed_objects)
 
                                         logger.info("Step %r succeeded" % step)
+                                        print bcolors.OKGREEN + "Step %r succeeded" % step + bcolors.ENDC
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
 				except Exception,e:
+                        		print bcolors.FAIL + "Model step %r failed" % (step) + bcolors.ENDC
 					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (step, e))
 					logger.log_exc(e)
 					self.failed_steps.append(S)

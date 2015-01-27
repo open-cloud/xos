@@ -41,8 +41,6 @@ def toposort(g, steps=None):
 
 		while (stack):
 			n = stack[0]
-			print stack
-			print "Trying %s"%n
 			add = True
 			try:
 				for m in g[n]:
