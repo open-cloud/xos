@@ -14,7 +14,7 @@ from observer.ansible import *
 logger = Logger(level=logging.INFO)
 
 class SyncControllerUsers(OpenStackSyncStep):
-    provides=[ControllerUser, User]
+    provides=[User]
     requested_interval=0
 
     def fetch_pending(self, deleted):
@@ -70,6 +70,7 @@ class SyncControllerUsers(OpenStackSyncStep):
 	    res = run_template('sync_controller_users.yaml', user_fields,path='controller_users', expected_num=expected_length)
 
             controller_user.kuser_id = res[0]['id']
+            controller_user.backend_status = '1 - OK'
             controller_user.save()
 
     def delete_record(self, controller_user):

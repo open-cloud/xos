@@ -14,7 +14,7 @@ from openstack.driver import OpenStackDriver
 logger = Logger(level=logging.INFO)
 
 class SyncControllerSlices(OpenStackSyncStep):
-    provides=[ControllerSlice, Slice]
+    provides=[Slice]
     requested_interval=0
 
     def fetch_pending(self, deleted):
@@ -62,6 +62,7 @@ class SyncControllerSlices(OpenStackSyncStep):
                     raise Exception('Could not update quota for %s'%controller_slice.slice.name)
                 
             controller_slice.tenant_id = tenant_id
+            controller_slice.backend_status = '1 - OK'
             controller_slice.save()
 
 

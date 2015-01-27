@@ -45,19 +45,18 @@ def toposort(g, steps=None):
 			try:
 				for m in g[n]:
 					if (m in unmarked):
-						if (m not in stack):
-							add = False
-							stack.insert(0,m)
-						else:
-							# Should not happen, if so there's a loop
-							print 'Loop at %s'%m
+					    add = False
+					    stack.insert(0,m)
 			except KeyError:
 				pass
 			if (add):
-				if (n in steps):
+				if (n in steps and n not in order):
 					order.append(n)
 				item = stack.pop(0)
-				unmarked.remove(item)
+				try:
+					unmarked.remove(item)
+				except ValueError:
+					pass
 
 	noorder = list(set(steps) - set(order))
 	return order + noorder
