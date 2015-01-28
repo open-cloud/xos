@@ -1259,7 +1259,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('site', 'email', 'firstname', 'lastname', 'is_admin','is_admin', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
+            'fields': ('site', 'email', 'firstname', 'lastname', 'is_admin', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
         ),
     )
     readonly_fields = ('backend_status_text', )
