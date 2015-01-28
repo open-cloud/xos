@@ -17,7 +17,8 @@ class RequestAccessView(View):
             email=BaseUserManager.normalize_email(email),
             firstname=firstname,
             lastname=lastname,
-	    is_active=False
+	    is_active=False,
+            is_admin=False
         )
         user.save()
 	user.site=Site.objects.get(name=site)
