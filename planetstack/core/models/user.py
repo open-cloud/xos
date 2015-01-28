@@ -155,7 +155,7 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
     is_readonly = models.BooleanField(default=False)
 
