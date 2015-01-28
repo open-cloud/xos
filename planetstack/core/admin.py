@@ -1298,15 +1298,15 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     def get_form(self, request, obj=None, **kwargs):
         # copy login details list
         login_details_fields = list(self.fieldListLoginDetails)
-        if not request.user.is_admin :
+        if not request.user.is_admin:
             # only admins can see 'is_admin' and 'is_readonly' fields 
             if 'is_admin' in login_details_fields:
                 login_details_fields.remove('is_admin')
             if 'is_readonly' in login_details_fields:
                 login_details_fields.remove('is_readonly') 
-            if not request.user.siteprivileges.filter(role__role = 'pi'):
+            #if len(request.user.siteprivileges.filter(role__role = 'pi')) > 0:
                 # only admins and pis can change a user's site  
-                self.readonly_fields = ('backend_status_text', 'site') 
+            #    self.readonly_fields = ('backend_status_text', 'site') 
         self.fieldsets = (
             ('Login Details', {'fields': login_details_fields, 'classes':['suit-tab suit-tab-general']}),
             ('Contact Information', {'fields': self.fieldListContactInfo, 'classes':['suit-tab suit-tab-contact']}),
