@@ -1296,12 +1296,21 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
         return User.select_by_user(request.user)
 
     def get_form(self, request, obj=None, **kwargs):
-        if not request.user.is_admin:
-            self.fieldsets = (
-                ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password','public_key'], 'classes':['suit-tab suit-tab-general']}),
-                ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
-            )
-            self.readonly_fields = ('backend_status_text', 'site') 
+        # copy login details list
+        login_details_fields = list(self.fieldListLoginDetails)
+        if not request.user.is_admin :
+            # only admins can see 'is_admin' and 'is_readonly' fields 
+            if 'is_admin' in login_details_fields:
+                login_details_fields.remove('is_admin')
+            if 'is_readonly' in login_details_fields:
+                login_details_fields.remove('is_readonly') 
+            if not request.user.siteprivileges.filter(role__role = 'pi'):
+                # only admins and pis can change a user's site  
+                self.readonly_fields = ('backend_status_text', 'site') 
+        self.fieldsets = (
+            ('Login Details', {'fields': login_details_fields, 'classes':['suit-tab suit-tab-general']}),
+            ('Contact Information', {'fields': self.fieldListContactInfo, 'classes':['suit-tab suit-tab-contact']}),
+        )
         return super(UserAdmin, self).get_form(request, obj, **kwargs)     
 
 class ControllerDashboardViewInline(PlStackTabularInline):
