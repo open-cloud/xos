@@ -5,5 +5,7 @@ from .model_policy_Site import *
 from .model_policy_SitePrivilege import *
 from .model_policy_SlicePrivilege import *
 from .model_policy_ControllerSlice import *
+from .model_policy_ControllerSite import *
+from .model_policy_ControllerUser import *
 from .model_policy_Controller import *
 from .model_policy_Image import *
