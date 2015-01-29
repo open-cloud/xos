@@ -1,0 +1,19 @@
+from django.http import HttpResponse
+from monitor import driver
+from core.models import *
+import json
+import time
+
+def Observer(request):
+    t = time.time()
+    status_str = open('/tmp/observer_last_run','r').read()    
+    d = json.loads(status_str)
+    comp = d['last_run'] + d['last_duration']*2 + 300
+    if comp>t:
+        d['health'] = ':-)'
+    else:
+        d['health'] = ':-X'
+    d['time'] = t
+    d['comp'] = comp
+
+    return HttpResponse(json.dumps(d))
