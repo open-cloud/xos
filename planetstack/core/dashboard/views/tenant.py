@@ -48,7 +48,7 @@ class RequestAccessView(View):
 		subject, from_email, to = 'Authorize OpenCloud User Account', 'support@opencloud.us', str(sp.user)
 		text_content = 'This is an important message.'
 		html_content = """<p>Please authorize the following user on site """+site+""": <br><br>User: """+firstname+""" """+lastname+"""<br>Email: """+email+"""<br><br>
-Check the checkbox next to Is Active property at <a href="""+userUrl+"""> this link</a> to authorize the user. If you do not recognize this individual, or otherwise do not want to approve this account, please ignore this email. If you do not approve this request in 48 hours, the account will automatically be deleted.</p>"""
+Check the checkbox next to Is Active property at <a href="""+userUrl+"""> this link</a> to authorize the user, and then click the Save button. If you do not recognize this individual, or otherwise do not want to approve this account, please ignore this email. If you do not approve this request in 48 hours, the account will automatically be deleted.</p>"""
 		msg = EmailMultiAlternatives(subject,text_content, from_email, [to])
 		msg.attach_alternative(html_content, "text/html")
 		msg.send()
