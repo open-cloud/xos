@@ -9,7 +9,7 @@ function updateObserverStatus() {
                   if (newData.health==":-)") {
                       html = '<span style="margin-left: 16px;" title="last observer run time = ' + Math.floor(newData.last_duration) + ' seconds"><img src="/static/img/green-cloud.gif" width=16 height=16></span>';
                   } else {
-                      html = '<span style="margin-left: 16px;" title="observer is offline"><img src="/static/img/red-cloud.gif"></span>';
+                      html = '<span style="margin-left: 16px;" title="observer is offline"><img src="/static/img/red-cloud.gif" width=16 height=16></span>';
                   }
                   $("#observer-status").html(html);
                   setTimeout(function() { updateObserverStatus(); }, 60000);
