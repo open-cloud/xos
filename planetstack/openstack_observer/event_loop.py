@@ -379,6 +379,7 @@ class PlanetStackObserver:
 
 		while True:
 			try:
+				loop_start = time.time()
 				error_map_file = getattr(Config(), "error_map_path", "/opt/planetstack/error_map.txt")
 				self.error_mapper = ErrorMapper(error_map_file)
 
@@ -430,6 +431,8 @@ class PlanetStackObserver:
 						t.join()
 
 				self.save_run_times()
+				loop_end = time.time()
+				open('/tmp/observer_last_run','w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
 			except Exception, e:
 				logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
 				logger.log_exc("Exception in observer run loop")
