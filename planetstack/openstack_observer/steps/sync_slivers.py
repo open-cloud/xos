@@ -19,6 +19,7 @@ def escape(s):
 class SyncSlivers(OpenStackSyncStep):
     provides=[Sliver]
     requested_interval=0
+    observes=Sliver
 
     def get_userdata(self, sliver):
         userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n' % (sliver.slice.name, sliver.node.name)

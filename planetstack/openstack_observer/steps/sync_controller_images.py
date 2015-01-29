@@ -13,6 +13,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncControllerImages(OpenStackSyncStep):
     provides=[ControllerImages]
+    observes = ControllerImages
     requested_interval=0
 
     def fetch_pending(self, deleted):

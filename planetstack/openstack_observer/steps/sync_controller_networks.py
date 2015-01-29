@@ -11,11 +11,14 @@ from core.models.sliver import Sliver
 from util.logger import Logger, logging
 from observer.ansible import *
 
+import pdb
+
 logger = Logger(level=logging.INFO)
 
 class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
     provides=[Network]
+    observes=ControllerNetwork	
 
     def alloc_subnet(self, uuid):
         # 16 bits only

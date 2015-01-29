@@ -51,7 +51,7 @@ class SyncStep(object):
         # This is the most common implementation of fetch_pending
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
-        main_obj = self.provides[0]
+        main_obj = self.observes
         if (not deletion):
             objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         else:
