@@ -159,6 +159,11 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
     updated = models.DateTimeField(auto_now=True, default=timezone.now)
     enacted = models.DateTimeField(null=True, blank=True, default=None)
     policed = models.DateTimeField(null=True, blank=True, default=None)
+
+    # This is a scratchpad used by the Observer
+    backend_register = models.CharField(max_length=140,
+                                      default="{}", null=True)
+
     backend_status = models.CharField(max_length=140,
                                       default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
