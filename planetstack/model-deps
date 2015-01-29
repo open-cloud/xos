@@ -2,7 +2,8 @@
     "Slice": [
         "Site", 
         "Service", 
-        "ServiceClass"
+        "ServiceClass", 
+        "User"
     ], 
     "ImageDeployments": [
         "Image", 
@@ -15,6 +16,10 @@
     "ReservedResource": [
         "Sliver"
     ], 
+    "ControllerNetwork": [
+        "Network", 
+        "Controller"
+    ], 
     "NetworkSlice": [
         "Network", 
         "Slice"
@@ -24,19 +29,22 @@
         "Slice", 
         "Invoice"
     ], 
-    "ControllerPrivilege": [
-        "User", 
+    "ControllerSite": [
+        "Site", 
+        "Controller"
+    ], 
+    "Node": [
+        "Site"
+    ], 
+    "ControllerSlice": [
         "Controller", 
-        "Role"
+        "Slice"
     ], 
-    "Sliver": [
-        "Image", 
-        "Slice", 
-        "Node", 
-        "Flavor"
+    "ControllerSitePrivilege": [
+        "Controller"
     ], 
-    "ControllerNetwork": [
-        "Network", 
+    "ControllerUser": [
+        "User", 
         "Controller"
     ], 
     "UserCredential": [
@@ -61,6 +69,15 @@
     "ServiceResource": [
         "ServiceClass"
     ], 
+    "Sliver": [
+        "Image", 
+        "User", 
+        "Slice", 
+        "Deployment", 
+        "Node", 
+        "Flavor",
+	"Network"	
+    ], 
     "Payment": [
         "Account"
     ], 
@@ -70,7 +87,12 @@
     "ServiceAttribute": [
         "Service"
     ], 
-    "ControllerSites": [
+    "ControllerSlicePrivilege": [
+        "Controller"
+    ], 
+    "SiteDeployment": [
+        "Site", 
+        "Deployment", 
         "Controller"
     ], 
     "SlicePrivilege": [
@@ -87,22 +109,17 @@
         "Site", 
         "Role"
     ], 
-    "ControllerUser": [
-        "User", 
-        "Controller"
-    ], 
     "SiteCredential": [
         "Site"
     ], 
-    "ControllerSlice": [
-        "Controller", 
-        "Slice",
-        "ControllerUser"
-    ], 
-    "SiteDeployments": [
-        "Site", 
+    "DeploymentPrivilege": [
+        "User", 
         "Deployment", 
-        "Controller"
+        "Role"
+    ], 
+    "ControllerDashboardView": [
+        "Controller", 
+        "DashboardView"
     ], 
     "PlanetStackPrivilege": [
         "User", 
@@ -111,11 +128,6 @@
     ], 
     "Invoice": [
         "Account"
-    ], 
-    "DeploymentPrivilege": [
-        "User", 
-        "Deployment", 
-        "Role"
     ], 
     "SliceCredential": [
         "Slice"
