@@ -16,6 +16,7 @@ logger = Logger(level=logging.INFO)
 class SyncControllerUsers(OpenStackSyncStep):
     provides=[User]
     requested_interval=0
+    observes=ControllerUser
 
     def fetch_pending(self, deleted):
 

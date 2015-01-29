@@ -9,13 +9,13 @@ from observer.ansible import *
 class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0
     provides=[Site]
+    observes=ControllerSite
 
     def fetch_pending(self, deleted=False):
         pending = super(OpenStackSyncStep, self).fetch_pending(deleted)
         return pending.filter(controller__isnull=False)
 
     def sync_record(self, controller_site):
-
 	template = os_template_env.get_template('sync_controller_sites.yaml')
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
 		         'admin_user': controller_site.controller.admin_user,
