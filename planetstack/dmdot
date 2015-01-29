@@ -34,40 +34,52 @@ for part in app.split(".")[1:]:
 
 PlCoreBase = getattr(models_module,"PlCoreBase")
 
+synonyms = {
+        'user':'creator'
+}
+
 model_classes = []
 class_names = []
 lower_class_names = {}
 for classname in dir(models_module):
         c = getattr(models_module, classname, None)
-	if type(c)==type(PlCoreBase):
-		model_classes.append(c)
-		class_names.append(c.__name__)
+        if type(c)==type(PlCoreBase):
+                model_classes.append(c)
+                class_names.append(c.__name__)
                 lower_class_names[c.__name__.lower()] = c
+                try:
+                        synonym = synonyms[c.__name__.lower()]
+                        lower_class_names[synonym] = c
+                except: 
+                        pass    
+                        
 
 # django doesn't use the correct case in field.name.title() for objects that
 # have CamelCased class names. So, compare everything in lower case.
 
 if (output=='-dot'):
-	print "digraph plstack {";
-	for c in model_classes:
-		fields = c._meta.fields
-		for f in fields:
-			if type(f)==ForeignKey and f.name.lower() in lower_class_names:
+        print "digraph plstack {";
+        for c in model_classes:
+                fields = c._meta.fields
+
+                for f in fields:
+                        if type(f)==ForeignKey and f.name.lower() in lower_class_names:
                                 linked_class = lower_class_names[f.name.lower()]
-				print '\t"%s"->"%s";'%(c.__name__,linked_class.__name__)
-	print "}\n";
+                                print '\t"%s"->"%s";'%(c.__name__,linked_class.__name__)
+        print "}\n";
 elif (output=='-json'):
-	d = {}
-	for c in model_classes:
-		fields = c._meta.fields
-		for f in fields:
-			if type(f)==ForeignKey and f.name.lower() in lower_class_names:
+        d = {}
+        for c in model_classes:
+                fields = c._meta.fields
+
+                for f in fields:
+                        if type(f)==ForeignKey and f.name.lower() in lower_class_names:
                                 linked_class = lower_class_names[f.name.lower()]
-				try:
-					d[c.__name__].append(linked_class.__name__)
-				except KeyError:
-					d[c.__name__]=[linked_class.__name__]
-	d['NetworkDeployments'].append('SliceDeployments')
-	print json.dumps(d,indent=4)
-	
-	
+                                try:
+                                        d[c.__name__].append(linked_class.__name__)
+                                except KeyError:
+                                        d[c.__name__]=[linked_class.__name__]
+        #d['ControllerNetwork'].append('SliceDeployments')
+        print json.dumps(d,indent=4)
+        
+        
