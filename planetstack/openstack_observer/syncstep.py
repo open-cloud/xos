@@ -5,6 +5,9 @@ from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
 from django.db.models import F, Q
+import json
+import time
+import pdb
 
 logger = Logger(level=logging.INFO)
 
@@ -74,34 +77,69 @@ class SyncStep(object):
     def call(self, failed=[], deletion=False):
         pending = self.fetch_pending(deletion)
         for o in pending:
+            sync_failed = False
             try:
-                for f in failed:
-                    self.check_dependencies(o,f) # Raises exception if failed
-                if (deletion):
-                    self.delete_record(o)
-                    o.delete(purge=True)
-                else:
-                    self.sync_record(o)
-                    o.enacted = datetime.now() # Is this the same timezone? XXX
-                    o.backend_status = "1 - OK"
-                    o.save(update_fields=['enacted'])
-            except Exception,e:
-                logger.log_exc("sync step failed!")
-                str_e = '%r'%e
+                scratchpad = json.loads(o.backend_register)
+                if (scratchpad):
+                    next_run = scratchpad['next_run']
+                    if (next_run>time.time()):
+                        sync_failed = True
+                        print "BACKING OFF, exponent = %d"%scratchpad['exponent']
+            except:
+                pass
+
+            if (not sync_failed):
                 try:
-                    o.backend_status = '2 - %s'%self.error_map.map(str_e)
-                except:
-                    o.backend_status = '2 - %s'%str_e
-
-                # TOFIX:
-                # DatabaseError: value too long for type character varying(140)
-                if (o.pk):
+                    for f in failed:
+                        self.check_dependencies(o,f) # Raises exception if failed
+                    if (deletion):
+                        self.delete_record(o)
+                        o.delete(purge=True)
+                    else:
+                        self.sync_record(o)
+                        o.enacted = datetime.now() # Is this the same timezone? XXX
+                        scratchpad = {'next_run':0, 'exponent':0}
+                        o.backend_register = json.dumps(scratchpad)
+                        o.backend_status = "1 - OK"
+                        o.save(update_fields=['enacted','backend_status','backend_register'])
+                except Exception,e:
+                    logger.log_exc("sync step failed!")
+                    str_e = '%r'%e
                     try:
-                        o.save(update_fields=['backend_status'])
+                        o.backend_status = '2 - %s'%self.error_map.map(str_e)
                     except:
-                        print "Could not update backend status field!"
-                        pass
+                        o.backend_status = '2 - %s'%str_e
 
+                    try:
+                        scratchpad = json.loads(o.backend_register)
+                        scratchpad['exponent']
+                    except:
+                        scratchpad = {'next_run':0, 'exponent':0}
+
+                    # Second failure
+                    if (scratchpad['exponent']):
+                        delay = scratchpad['exponent'] * 600 # 10 minutes
+                        if (delay<1440):
+                            delay = 1440
+                        scratchpad['next_run'] = time.time() + delay
+
+                    scratchpad['exponent']+=1
+
+                    o.backend_register = json.dumps(scratchpad)
+
+                    # TOFIX:
+                    # DatabaseError: value too long for type character varying(140)
+                    if (o.pk):
+                        try:
+                            o.backend_status = o.backend_status[:140]
+                            o.save(update_fields=['backend_status','backend_register'])
+                        except:
+                            print "Could not update backend status field!"
+                            pass
+                    sync_failed = True
+
+
+            if (sync_failed):
                 failed.append(o)
 
         return failed
