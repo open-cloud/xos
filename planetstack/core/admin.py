@@ -1245,7 +1245,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     list_display = ('backend_status_icon', 'email', 'firstname', 'lastname', 'site', 'last_login')
     list_display_links = ("email",)
     list_filter = ('site',)
-    inlines = [SlicePrivilegeInline,SitePrivilegeInline,UserDashboardViewInline]
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline]
     admin_inlines = [ControllerUserInline]
     fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
@@ -1253,7 +1253,6 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
     fieldsets = (
         ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
-        #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
@@ -1277,8 +1276,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
             tabs = [('general','Login Details'),
                          ('contact','Contact Information'),
                          ('sliceprivileges','Slice Privileges'),
-                         ('siteprivileges','Site Privileges'),
-                         ('dashboards','Dashboard Views')]
+                         ('siteprivileges','Site Privileges')]
 
             request=getattr(_thread_locals, "request", None)
             if request and request.user.is_admin:
@@ -1299,7 +1297,7 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
         # copy login details list
         login_details_fields = list(self.fieldListLoginDetails)
         if not request.user.is_admin:
-            # only admins can see 'is_admin' and 'is_readonly' fields 
+            # only admins can see 'is_admin' and 'is_readonly' fields
             if 'is_admin' in login_details_fields:
                 login_details_fields.remove('is_admin')
             if 'is_readonly' in login_details_fields:
