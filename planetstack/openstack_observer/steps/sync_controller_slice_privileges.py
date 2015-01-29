@@ -16,6 +16,7 @@ logger = Logger(level=logging.INFO)
 class SyncControllerSlicePrivileges(OpenStackSyncStep):
     provides=[SlicePrivilege]
     requested_interval=0
+    observes=ControllerSlicePrivilege
 
     def fetch_pending(self, deleted):
 
