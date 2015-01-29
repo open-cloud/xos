@@ -136,6 +136,12 @@ class PlanetStackObserver:
 			logger.info('Loading backend dependency graph from %s' % backend_path)
 			# This contains dependencies between backend records
 			self.backend_dependency_graph = json.loads(open(backend_path).read())
+			for k,v in self.backend_dependency_graph.items():
+				try:
+					self.model_dependency_graph[k].extend(v)
+				except KeyError:
+					self.model_dependency_graphp[k] = v
+
 		except Exception,e:
 			logger.info('Backend dependency graph not loaded')
 			# We can work without a backend graph
@@ -173,28 +179,6 @@ class PlanetStackObserver:
 				pass
 				# no dependencies, pass
 		
-		#import pdb
-		#pdb.set_trace()
-		if (self.backend_dependency_graph):
-			backend_dict = {}
-			for s in self.sync_steps:
-				for m in s.serves:
-					backend_dict[m]=s.__name__
-					
-			for k,v in backend_dependency_graph.iteritems():
-				try:
-					source = backend_dict[k]
-					for m in v:
-						try:
-							dest = backend_dict[m]
-						except KeyError:
-							# no deps, pass
-							pass
-						step_graph[source]=dest
-						
-				except KeyError:
-					pass
-					# no dependencies, pass
 
 		self.dependency_graph = step_graph
 		self.deletion_dependency_graph = invert_graph(step_graph)
