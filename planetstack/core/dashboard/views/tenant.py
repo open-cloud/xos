@@ -26,6 +26,10 @@ class RequestAccessView(View):
              else:
                  return HttpResponse(json.dumps({"error": "already_pending"}), content_type='application/javascript')
 
+        user=User.deleted_objects.filter(email=BaseUserManager.normalize_email(email))
+        if (user):
+            return HttpResponse(json.dumps({"error": "is_deleted"}), content_type='application/javascript')
+
 	user = User(
             email=BaseUserManager.normalize_email(email),
             firstname=firstname,
