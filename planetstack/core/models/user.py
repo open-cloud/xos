@@ -158,6 +158,7 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
     is_readonly = models.BooleanField(default=False)
+    is_registering = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -262,9 +263,10 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     def save(self, *args, **kwds):
         if not self.id:
             self.set_password(self.password)
-        if self.is_active:
-            if self.password=="!":
-                self.send_temporary_password()
+        print "XXX", self, self.is_active, self.is_registering
+        if self.is_active and self.is_registering:
+            self.send_temporary_password()
+            self.is_registering=False
 
         self.username = self.email
         super(User, self).save(*args, **kwds)
