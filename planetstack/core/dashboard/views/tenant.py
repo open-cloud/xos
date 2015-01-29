@@ -4,6 +4,7 @@ import functools
 from django.contrib.auth.models import BaseUserManager
 from django.core import serializers
 from django.core.mail import EmailMultiAlternatives
+import json
 
 BLESSED_DEPLOYMENTS = ["US-MaxPlanck", "US-GeorgiaTech", "US-Princeton", "US-Washington", "US-Stanford"]
 
@@ -13,12 +14,25 @@ class RequestAccessView(View):
 	firstname = request.POST.get("firstname", "0")
 	lastname = request.POST.get("lastname", "0")
 	site = request.POST.get("site","0")
+        # see if it already exists
+        user=User.objects.filter(email=BaseUserManager.normalize_email(email))
+        if (user):
+             user = user[0]
+             if user.is_active:
+                 # force a new email to be sent
+                 user.is_registering=True
+                 user.save()
+                 return HttpResponse(json.dumps({"error": "already_approved"}), content_type='application/javascript')
+             else:
+                 return HttpResponse(json.dumps({"error": "already_pending"}), content_type='application/javascript')
+
 	user = User(
             email=BaseUserManager.normalize_email(email),
             firstname=firstname,
             lastname=lastname,
 	    is_active=False,
-            is_admin=False
+            is_admin=False,
+            is_registering=True
         )
         user.save()
 	user.site=Site.objects.get(name=site)
