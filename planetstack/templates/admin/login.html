@@ -139,10 +139,13 @@ $("#request-signup").unbind().click(function(){
                                                                         } else if (response.error == "already_pending") {
                                                                             alert("Your request is already pending and awaiting approval");
                                                                             return;
+                                                                        } else if (response.error == "is_deleted") {
+                                                                            alert("Your user record is in a deleted state. Please contact OpenCloud support");
+                                                                            return;
                                                                         }
                                                                     }
-									$("#request-account-form").dialog("close");	
-									alert("Your request has been submitted");							
+								    $("#request-account-form").dialog("close");
+								    alert("Your request has been submitted");
 								},
 								error:function (xhr, textStatus, thrownError){
          							   alert("Error:", textStatus + " " + xhr.responseText);
