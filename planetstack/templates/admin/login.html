@@ -131,7 +131,16 @@ $("#request-signup").unbind().click(function(){
 								},
 								async: false,
 								type: 'POST',
-								success: function () {
+								success: function (response) {
+                                                                    if (response && response.error) {
+                                                                        if (response.error == "already_approved") {
+                                                                            alert("Your request has already been proccessed and approved. We are sending you another email with a new temporary password");
+                                                                            return;
+                                                                        } else if (response.error == "already_pending") {
+                                                                            alert("Your request is already pending and awaiting approval");
+                                                                            return;
+                                                                        }
+                                                                    }
 									$("#request-account-form").dialog("close");	
 									alert("Your request has been submitted");							
 								},
