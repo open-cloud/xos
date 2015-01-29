@@ -8,9 +8,9 @@ def handle(controller_slice):
         except:
             his_status_code = 0
  
-        print "My: %d His: %d"%(my_status_code, his_status_code)
         if (my_status_code not in [0,his_status_code]):
             controller_slice.slice.backend_status = controller_slice.backend_status
+            controller_slice.slice.save(update_fields = ['backend_status'])
     except Exception,e:
         print str(e)	
         pass
