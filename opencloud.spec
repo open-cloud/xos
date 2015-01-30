@@ -54,6 +54,7 @@ pip-python install python-novaclient
 pip-python install python-neutronclient 
 pip-python install python-glanceclient
 pip-python install python-ceilometerclient
+pip-python install django_rest_swagger
 
 
 easy_install django_evolution
