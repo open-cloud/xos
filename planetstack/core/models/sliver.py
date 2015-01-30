@@ -110,6 +110,8 @@ class Sliver(PlCoreBase):
         self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
+        if not self.creator:
+            raise ValidationError('sliver has no creator')
 
 # XXX smbaker - disabled for now, was causing fault in tenant view create slice
 #        if not self.controllerNetwork.test_acl(slice=self.slice):
