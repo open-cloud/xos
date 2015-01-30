@@ -337,7 +337,7 @@ class ServiceAttributeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ServiceAttribute
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','value','service',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','value','service',)
 
 class ServiceAttributeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -353,7 +353,7 @@ class ServiceAttributeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ServiceAttribute
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','value','service',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','value','service',)
 
 
 
@@ -372,7 +372,7 @@ class ControllerImagesSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerImages
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','controller','glance_image_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','controller','glance_image_id',)
 
 class ControllerImagesIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -388,7 +388,7 @@ class ControllerImagesIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerImages
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','controller','glance_image_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','controller','glance_image_id',)
 
 
 
@@ -407,7 +407,7 @@ class ControllerSitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerSitePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','site_privilege','role_id',)
 
 class ControllerSitePrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -423,7 +423,7 @@ class ControllerSitePrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerSitePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','site_privilege','role_id',)
 
 
 
@@ -446,7 +446,7 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Image
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
 class ImageIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -466,7 +466,7 @@ class ImageIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Image
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
 
 
@@ -485,7 +485,7 @@ class NetworkParameterSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkParameter
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','parameter','value','content_type','object_id',)
 
 class NetworkParameterIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -501,7 +501,7 @@ class NetworkParameterIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkParameter
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','parameter','value','content_type','object_id',)
 
 
 
@@ -524,7 +524,7 @@ class SiteSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Site
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
 class SiteIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -544,7 +544,7 @@ class SiteIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Site
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
 
 
@@ -563,7 +563,7 @@ class SliceRoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SliceRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 class SliceRoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -579,7 +579,7 @@ class SliceRoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SliceRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 
 
@@ -598,7 +598,7 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Tag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','service','name','value','content_type','object_id',)
 
 class TagIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -614,7 +614,7 @@ class TagIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Tag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','service','name','value','content_type','object_id',)
 
 
 
@@ -633,7 +633,7 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Invoice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','date','account',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','date','account',)
 
 class InvoiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -649,7 +649,7 @@ class InvoiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Invoice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','date','account',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','date','account',)
 
 
 
@@ -668,7 +668,7 @@ class SlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SlicePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','slice','role',)
 
 class SlicePrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -684,7 +684,7 @@ class SlicePrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SlicePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','slice','role',)
 
 
 
@@ -703,7 +703,7 @@ class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = PlanetStackRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 class PlanetStackRoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -719,7 +719,7 @@ class PlanetStackRoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = PlanetStackRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 
 
@@ -738,7 +738,7 @@ class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkSliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','sliver','ip','port_id',)
 
 class NetworkSliverIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -754,7 +754,7 @@ class NetworkSliverIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkSliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','sliver','ip','port_id',)
 
 
 
@@ -777,7 +777,7 @@ class FlavorSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Flavor
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','flavor','order','default','deployments',)
 
 class FlavorIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -797,7 +797,7 @@ class FlavorIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Flavor
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','flavor','order','default','deployments',)
 
 
 
@@ -816,7 +816,7 @@ class ControllerSiteSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerSite
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','controller','tenant_id',)
 
 class ControllerSiteIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -832,7 +832,7 @@ class ControllerSiteIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerSite
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','controller','tenant_id',)
 
 
 
@@ -851,7 +851,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Project
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
 class ProjectIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -867,7 +867,7 @@ class ProjectIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Project
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
 
 
@@ -894,7 +894,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -918,7 +918,7 @@ class SliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 
 
@@ -957,7 +957,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
 class NetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -993,7 +993,7 @@ class NetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
 
 
@@ -1012,7 +1012,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Service
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 class ServiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1028,7 +1028,7 @@ class ServiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Service
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
 
 
@@ -1047,7 +1047,7 @@ class ServiceClassSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ServiceClass
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 class ServiceClassIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1063,7 +1063,7 @@ class ServiceClassIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ServiceClass
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
 
 
@@ -1082,7 +1082,7 @@ class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
 
 class PlanetStackIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1098,7 +1098,7 @@ class PlanetStackIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
 
 
 
@@ -1117,7 +1117,7 @@ class ChargeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Charge
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 class ChargeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1133,7 +1133,7 @@ class ChargeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Charge
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
 
 
@@ -1152,7 +1152,7 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Role
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role_type','role','description','content_type',)
 
 class RoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1168,7 +1168,7 @@ class RoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Role
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role_type','role','description','content_type',)
 
 
 
@@ -1187,7 +1187,7 @@ class UsableObjectSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = UsableObject
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
 class UsableObjectIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1203,7 +1203,7 @@ class UsableObjectIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = UsableObject
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
 
 
@@ -1222,7 +1222,7 @@ class SiteRoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SiteRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 class SiteRoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1238,7 +1238,7 @@ class SiteRoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SiteRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 
 
@@ -1257,7 +1257,7 @@ class SliceCredentialSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SliceCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','key_id','enc_value',)
 
 class SliceCredentialIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1273,7 +1273,7 @@ class SliceCredentialIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SliceCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','key_id','enc_value',)
 
 
 
@@ -1296,7 +1296,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Sliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
 class SliverIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1316,7 +1316,7 @@ class SliverIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Sliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
 
 
@@ -1335,7 +1335,7 @@ class NodeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Node
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_deployment',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_deployment','site',)
 
 class NodeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1351,7 +1351,7 @@ class NodeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Node
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','site_deployment',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_deployment','site',)
 
 
 
@@ -1374,7 +1374,7 @@ class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','url','controllers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
 
 class DashboardViewIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1394,7 +1394,7 @@ class DashboardViewIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','url','controllers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
 
 
 
@@ -1413,7 +1413,7 @@ class ControllerNetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
 class ControllerNetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1429,7 +1429,7 @@ class ControllerNetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerNetwork
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
 
 
@@ -1448,7 +1448,7 @@ class ImageDeploymentsSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ImageDeployments
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','deployment',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','deployment',)
 
 class ImageDeploymentsIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1464,7 +1464,7 @@ class ImageDeploymentsIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ImageDeployments
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','image','deployment',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','deployment',)
 
 
 
@@ -1483,7 +1483,7 @@ class ControllerUserSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerUser
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','controller','kuser_id',)
 
 class ControllerUserIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1499,7 +1499,7 @@ class ControllerUserIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerUser
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','controller','kuser_id',)
 
 
 
@@ -1518,7 +1518,7 @@ class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ReservedResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 class ReservedResourceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1534,7 +1534,7 @@ class ReservedResourceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ReservedResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
 
 
@@ -1553,7 +1553,7 @@ class PaymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Payment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
 class PaymentIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1569,7 +1569,7 @@ class PaymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Payment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
 
 
@@ -1588,7 +1588,7 @@ class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','slice',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','slice',)
 
 class NetworkSliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1604,7 +1604,7 @@ class NetworkSliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','network','slice',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','slice',)
 
 
 
@@ -1623,7 +1623,7 @@ class UserDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = UserDashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','dashboardView','order',)
 
 class UserDashboardViewIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1639,7 +1639,7 @@ class UserDashboardViewIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = UserDashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','dashboardView','order',)
 
 
 
@@ -1662,7 +1662,7 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','version','backend_type','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
 
 class ControllerIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1682,7 +1682,7 @@ class ControllerIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','version','backend_type','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
 
 
 
@@ -1701,7 +1701,7 @@ class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = PlanetStackPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
 
 class PlanetStackPrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1717,7 +1717,7 @@ class PlanetStackPrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = PlanetStackPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
 
 
 
@@ -1736,7 +1736,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = User
-        fields = ('humanReadableName', 'validators', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+        fields = ('humanReadableName', 'validators', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','is_registering','created','updated','enacted','policed','backend_status','deleted','timezone',)
 
 class UserIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1752,7 +1752,7 @@ class UserIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = User
-        fields = ('humanReadableName', 'validators', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+        fields = ('humanReadableName', 'validators', 'id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','is_registering','created','updated','enacted','policed','backend_status','deleted','timezone',)
 
 
 
@@ -1783,7 +1783,7 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
 class DeploymentIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1811,7 +1811,7 @@ class DeploymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
 
 
@@ -1830,7 +1830,7 @@ class ReservationSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Reservation
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','startTime','slice','duration',)
 
 class ReservationIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1846,7 +1846,7 @@ class ReservationIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Reservation
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','startTime','slice','duration',)
 
 
 
@@ -1865,7 +1865,7 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SitePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','site','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','site','role',)
 
 class SitePrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1881,7 +1881,7 @@ class SitePrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SitePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','site','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','site','role',)
 
 
 
@@ -1900,7 +1900,7 @@ class ControllerSliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice','tenant_id',)
 
 class ControllerSliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1916,7 +1916,7 @@ class ControllerSliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerSlice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice','tenant_id',)
 
 
 
@@ -1935,7 +1935,7 @@ class ControllerDashboardViewSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerDashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','dashboardView','enabled','url',)
 
 class ControllerDashboardViewIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1951,7 +1951,7 @@ class ControllerDashboardViewIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerDashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','dashboardView','enabled','url',)
 
 
 
@@ -1970,7 +1970,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Account
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site',)
 
 class AccountIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1986,7 +1986,7 @@ class AccountIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Account
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site',)
 
 
 
@@ -2005,7 +2005,7 @@ class ControllerRoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ControllerRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 class ControllerRoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2021,7 +2021,7 @@ class ControllerRoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 
 
@@ -2040,7 +2040,7 @@ class NetworkParameterTypeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkParameterType
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description',)
 
 class NetworkParameterTypeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2056,7 +2056,7 @@ class NetworkParameterTypeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkParameterType
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description',)
 
 
 
@@ -2075,7 +2075,7 @@ class SiteCredentialSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SiteCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','name','key_id','enc_value',)
 
 class SiteCredentialIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2091,7 +2091,7 @@ class SiteCredentialIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SiteCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','name','key_id','enc_value',)
 
 
 
@@ -2110,7 +2110,7 @@ class DeploymentPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = DeploymentPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','deployment','role',)
 
 class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2126,7 +2126,7 @@ class DeploymentPrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = DeploymentPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','deployment','role',)
 
 
 
@@ -2145,7 +2145,7 @@ class ControllerSlicePrivilegeSerializer(serializers.HyperlinkedModelSerializer)
             return None
     class Meta:
         model = ControllerSlicePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice_privilege','role_id',)
 
 class ControllerSlicePrivilegeIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2161,7 +2161,7 @@ class ControllerSlicePrivilegeIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ControllerSlicePrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice_privilege','role_id',)
 
 
 
@@ -2180,7 +2180,7 @@ class SiteDeploymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SiteDeployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 class SiteDeploymentIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2196,7 +2196,7 @@ class SiteDeploymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SiteDeployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','deployment','controller','availability_zone',)
 
 
 
@@ -2215,7 +2215,7 @@ class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = DeploymentRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 class DeploymentRoleIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2231,7 +2231,7 @@ class DeploymentRoleIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = DeploymentRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
 
 
@@ -2250,7 +2250,7 @@ class UserCredentialSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = UserCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','name','key_id','enc_value',)
 
 class UserCredentialIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2266,7 +2266,7 @@ class UserCredentialIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = UserCredential
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','name','key_id','enc_value',)
 
 
 
@@ -2285,7 +2285,7 @@ class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = SliceTag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','value',)
 
 class SliceTagIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2301,7 +2301,7 @@ class SliceTagIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = SliceTag
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','value',)
 
 
 
@@ -2320,7 +2320,7 @@ class NetworkTemplateSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
 class NetworkTemplateIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2336,7 +2336,7 @@ class NetworkTemplateIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = NetworkTemplate
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
 
 
@@ -2363,7 +2363,7 @@ class RouterSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Router
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','owner','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','owner','networks','networks',)
 
 class RouterIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2387,7 +2387,7 @@ class RouterIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Router
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','name','owner','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','owner','networks','networks',)
 
 
 
@@ -2406,7 +2406,7 @@ class ServiceResourceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ServiceResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 class ServiceResourceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -2422,7 +2422,7 @@ class ServiceResourceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ServiceResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
 
 
@@ -2601,10 +2601,12 @@ class ServiceAttributeList(generics.ListCreateAPIView):
     serializer_class = ServiceAttributeSerializer
     id_serializer_class = ServiceAttributeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','value','service',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','value','service',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2640,12 +2642,14 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ServiceAttributeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ServiceAttribute.select_by_user(self.request.user)
 
@@ -2660,10 +2664,12 @@ class ControllerImagesList(generics.ListCreateAPIView):
     serializer_class = ControllerImagesSerializer
     id_serializer_class = ControllerImagesIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','controller','glance_image_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','controller','glance_image_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2699,12 +2705,14 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerImagesIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerImages.select_by_user(self.request.user)
 
@@ -2719,10 +2727,12 @@ class ControllerSitePrivilegeList(generics.ListCreateAPIView):
     serializer_class = ControllerSitePrivilegeSerializer
     id_serializer_class = ControllerSitePrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','site_privilege','role_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','site_privilege','role_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2758,12 +2768,14 @@ class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerSitePrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
@@ -2778,10 +2790,12 @@ class ImageList(generics.ListCreateAPIView):
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','disk_format','container_format','path','deployments',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','disk_format','container_format','path','deployments',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2817,12 +2831,14 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ImageIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Image.select_by_user(self.request.user)
 
@@ -2837,10 +2853,12 @@ class NetworkParameterList(generics.ListCreateAPIView):
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','parameter','value','content_type','object_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','parameter','value','content_type','object_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2876,12 +2894,14 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkParameterIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return NetworkParameter.select_by_user(self.request.user)
 
@@ -2896,10 +2916,12 @@ class SiteList(generics.ListCreateAPIView):
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_url','enabled','location','longitude','latitude','login_base','is_public','abbreviated_name','deployments',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2935,12 +2957,14 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SiteIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Site.select_by_user(self.request.user)
 
@@ -2955,10 +2979,12 @@ class SliceRoleList(generics.ListCreateAPIView):
     serializer_class = SliceRoleSerializer
     id_serializer_class = SliceRoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -2994,12 +3020,14 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SliceRoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SliceRole.select_by_user(self.request.user)
 
@@ -3014,10 +3042,12 @@ class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','service','name','value','content_type','object_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','service','name','value','content_type','object_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3053,12 +3083,14 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = TagIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Tag.select_by_user(self.request.user)
 
@@ -3073,10 +3105,12 @@ class InvoiceList(generics.ListCreateAPIView):
     serializer_class = InvoiceSerializer
     id_serializer_class = InvoiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','date','account',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','date','account',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3112,12 +3146,14 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = InvoiceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Invoice.select_by_user(self.request.user)
 
@@ -3132,10 +3168,12 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
     serializer_class = SlicePrivilegeSerializer
     id_serializer_class = SlicePrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','slice','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','slice','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3171,12 +3209,14 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SlicePrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SlicePrivilege.select_by_user(self.request.user)
 
@@ -3191,10 +3231,12 @@ class PlanetStackRoleList(generics.ListCreateAPIView):
     serializer_class = PlanetStackRoleSerializer
     id_serializer_class = PlanetStackRoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3230,12 +3272,14 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = PlanetStackRoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return PlanetStackRole.select_by_user(self.request.user)
 
@@ -3250,10 +3294,12 @@ class NetworkSliverList(generics.ListCreateAPIView):
     serializer_class = NetworkSliverSerializer
     id_serializer_class = NetworkSliverIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','sliver','ip','port_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','sliver','ip','port_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3289,12 +3335,14 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkSliverIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return NetworkSliver.select_by_user(self.request.user)
 
@@ -3309,10 +3357,12 @@ class FlavorList(generics.ListCreateAPIView):
     serializer_class = FlavorSerializer
     id_serializer_class = FlavorIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','flavor','order','default','deployments',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','flavor','order','default','deployments',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3348,12 +3398,14 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = FlavorIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Flavor.select_by_user(self.request.user)
 
@@ -3368,10 +3420,12 @@ class ControllerSiteList(generics.ListCreateAPIView):
     serializer_class = ControllerSiteSerializer
     id_serializer_class = ControllerSiteIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','controller','tenant_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','controller','tenant_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3407,12 +3461,14 @@ class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerSiteIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerSite.select_by_user(self.request.user)
 
@@ -3427,10 +3483,12 @@ class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     id_serializer_class = ProjectIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3466,12 +3524,14 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ProjectIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Project.select_by_user(self.request.user)
 
@@ -3486,10 +3546,12 @@ class SliceList(generics.ListCreateAPIView):
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3525,12 +3587,14 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SliceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Slice.select_by_user(self.request.user)
 
@@ -3545,10 +3609,12 @@ class NetworkList(generics.ListCreateAPIView):
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','slices','slices','slivers','routers','routers',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3584,12 +3650,14 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Network.select_by_user(self.request.user)
 
@@ -3604,10 +3672,12 @@ class ServiceList(generics.ListCreateAPIView):
     serializer_class = ServiceSerializer
     id_serializer_class = ServiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description','enabled','name','versionNumber','published',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','description','enabled','name','versionNumber','published',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3643,12 +3713,14 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ServiceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Service.select_by_user(self.request.user)
 
@@ -3663,10 +3735,12 @@ class ServiceClassList(generics.ListCreateAPIView):
     serializer_class = ServiceClassSerializer
     id_serializer_class = ServiceClassIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','commitment','membershipFee','membershipFeeMonths','upgradeRequiresApproval',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3702,12 +3776,14 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ServiceClassIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ServiceClass.select_by_user(self.request.user)
 
@@ -3722,10 +3798,12 @@ class PlanetStackList(generics.ListCreateAPIView):
     serializer_class = PlanetStackSerializer
     id_serializer_class = PlanetStackIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','description',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3761,12 +3839,14 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = PlanetStackIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return PlanetStack.select_by_user(self.request.user)
 
@@ -3781,10 +3861,12 @@ class ChargeList(generics.ListCreateAPIView):
     serializer_class = ChargeSerializer
     id_serializer_class = ChargeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','slice','kind','state','date','object','amount','coreHours','invoice',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3820,12 +3902,14 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ChargeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Charge.select_by_user(self.request.user)
 
@@ -3840,10 +3924,12 @@ class RoleList(generics.ListCreateAPIView):
     serializer_class = RoleSerializer
     id_serializer_class = RoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role_type','role','description','content_type',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role_type','role','description','content_type',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3879,12 +3965,14 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = RoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Role.select_by_user(self.request.user)
 
@@ -3899,10 +3987,12 @@ class UsableObjectList(generics.ListCreateAPIView):
     serializer_class = UsableObjectSerializer
     id_serializer_class = UsableObjectIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3938,12 +4028,14 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = UsableObjectIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return UsableObject.select_by_user(self.request.user)
 
@@ -3958,10 +4050,12 @@ class SiteRoleList(generics.ListCreateAPIView):
     serializer_class = SiteRoleSerializer
     id_serializer_class = SiteRoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -3997,12 +4091,14 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SiteRoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SiteRole.select_by_user(self.request.user)
 
@@ -4017,10 +4113,12 @@ class SliceCredentialList(generics.ListCreateAPIView):
     serializer_class = SliceCredentialSerializer
     id_serializer_class = SliceCredentialIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','key_id','enc_value',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','key_id','enc_value',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4056,12 +4154,14 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SliceCredentialIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SliceCredential.select_by_user(self.request.user)
 
@@ -4076,10 +4176,12 @@ class SliverList(generics.ListCreateAPIView):
     serializer_class = SliverSerializer
     id_serializer_class = SliverIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','instance_id','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4115,12 +4217,14 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SliverIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Sliver.select_by_user(self.request.user)
 
@@ -4135,10 +4239,12 @@ class NodeList(generics.ListCreateAPIView):
     serializer_class = NodeSerializer
     id_serializer_class = NodeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','site_deployment',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','site_deployment','site',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4174,12 +4280,14 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NodeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Node.select_by_user(self.request.user)
 
@@ -4194,10 +4302,12 @@ class DashboardViewList(generics.ListCreateAPIView):
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','url','controllers',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4233,12 +4343,14 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = DashboardViewIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return DashboardView.select_by_user(self.request.user)
 
@@ -4253,10 +4365,12 @@ class ControllerNetworkList(generics.ListCreateAPIView):
     serializer_class = ControllerNetworkSerializer
     id_serializer_class = ControllerNetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','controller','net_id','router_id','subnet_id','subnet',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4292,12 +4406,14 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerNetworkIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerNetwork.select_by_user(self.request.user)
 
@@ -4312,10 +4428,12 @@ class ImageDeploymentsList(generics.ListCreateAPIView):
     serializer_class = ImageDeploymentsSerializer
     id_serializer_class = ImageDeploymentsIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','image','deployment',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','image','deployment',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4351,12 +4469,14 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ImageDeploymentsIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ImageDeployments.select_by_user(self.request.user)
 
@@ -4371,10 +4491,12 @@ class ControllerUserList(generics.ListCreateAPIView):
     serializer_class = ControllerUserSerializer
     id_serializer_class = ControllerUserIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','controller','kuser_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','controller','kuser_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4410,12 +4532,14 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerUserIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerUser.select_by_user(self.request.user)
 
@@ -4430,10 +4554,12 @@ class ReservedResourceList(generics.ListCreateAPIView):
     serializer_class = ReservedResourceSerializer
     id_serializer_class = ReservedResourceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','sliver','resource','quantity','reservationSet',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','sliver','resource','quantity','reservationSet',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4469,12 +4595,14 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ReservedResourceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ReservedResource.select_by_user(self.request.user)
 
@@ -4489,10 +4617,12 @@ class PaymentList(generics.ListCreateAPIView):
     serializer_class = PaymentSerializer
     id_serializer_class = PaymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','account','amount','date',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4528,12 +4658,14 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = PaymentIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Payment.select_by_user(self.request.user)
 
@@ -4548,10 +4680,12 @@ class NetworkSliceList(generics.ListCreateAPIView):
     serializer_class = NetworkSliceSerializer
     id_serializer_class = NetworkSliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','network','slice',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','network','slice',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4587,12 +4721,14 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkSliceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return NetworkSlice.select_by_user(self.request.user)
 
@@ -4607,10 +4743,12 @@ class UserDashboardViewList(generics.ListCreateAPIView):
     serializer_class = UserDashboardViewSerializer
     id_serializer_class = UserDashboardViewIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','dashboardView','order',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','dashboardView','order',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4646,12 +4784,14 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = UserDashboardViewIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return UserDashboardView.select_by_user(self.request.user)
 
@@ -4666,10 +4806,12 @@ class ControllerList(generics.ListCreateAPIView):
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','version','backend_type','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4705,12 +4847,14 @@ class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Controller.select_by_user(self.request.user)
 
@@ -4725,10 +4869,12 @@ class PlanetStackPrivilegeList(generics.ListCreateAPIView):
     serializer_class = PlanetStackPrivilegeSerializer
     id_serializer_class = PlanetStackPrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','planetstack','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4764,12 +4910,14 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = PlanetStackPrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
@@ -4784,10 +4932,12 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     id_serializer_class = UserIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','created','updated','enacted','backend_status','deleted','timezone',)
+    filter_fields = ('id','password','last_login','email','username','firstname','lastname','phone','user_url','site','public_key','is_active','is_admin','is_staff','is_readonly','is_registering','created','updated','enacted','policed','backend_status','deleted','timezone',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4823,12 +4973,14 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = UserIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return User.select_by_user(self.request.user)
 
@@ -4843,10 +4995,12 @@ class DeploymentList(generics.ListCreateAPIView):
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','accessControl','images','sites','flavors',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4882,12 +5036,14 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = DeploymentIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Deployment.select_by_user(self.request.user)
 
@@ -4902,10 +5058,12 @@ class ReservationList(generics.ListCreateAPIView):
     serializer_class = ReservationSerializer
     id_serializer_class = ReservationIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','startTime','slice','duration',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','startTime','slice','duration',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -4941,12 +5099,14 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ReservationIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Reservation.select_by_user(self.request.user)
 
@@ -4961,10 +5121,12 @@ class SitePrivilegeList(generics.ListCreateAPIView):
     serializer_class = SitePrivilegeSerializer
     id_serializer_class = SitePrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','site','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','site','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5000,12 +5162,14 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SitePrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SitePrivilege.select_by_user(self.request.user)
 
@@ -5020,10 +5184,12 @@ class ControllerSliceList(generics.ListCreateAPIView):
     serializer_class = ControllerSliceSerializer
     id_serializer_class = ControllerSliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice','tenant_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice','tenant_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5059,12 +5225,14 @@ class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerSliceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerSlice.select_by_user(self.request.user)
 
@@ -5079,10 +5247,12 @@ class ControllerDashboardViewList(generics.ListCreateAPIView):
     serializer_class = ControllerDashboardViewSerializer
     id_serializer_class = ControllerDashboardViewIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','dashboardView','url',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','dashboardView','enabled','url',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5118,12 +5288,14 @@ class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerDashboardViewIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerDashboardView.select_by_user(self.request.user)
 
@@ -5138,10 +5310,12 @@ class AccountList(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
     id_serializer_class = AccountIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','site',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5177,12 +5351,14 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = AccountIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Account.select_by_user(self.request.user)
 
@@ -5197,10 +5373,12 @@ class ControllerRoleList(generics.ListCreateAPIView):
     serializer_class = ControllerRoleSerializer
     id_serializer_class = ControllerRoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5236,12 +5414,14 @@ class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerRoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerRole.select_by_user(self.request.user)
 
@@ -5256,10 +5436,12 @@ class NetworkParameterTypeList(generics.ListCreateAPIView):
     serializer_class = NetworkParameterTypeSerializer
     id_serializer_class = NetworkParameterTypeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5295,12 +5477,14 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkParameterTypeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return NetworkParameterType.select_by_user(self.request.user)
 
@@ -5315,10 +5499,12 @@ class SiteCredentialList(generics.ListCreateAPIView):
     serializer_class = SiteCredentialSerializer
     id_serializer_class = SiteCredentialIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','name','key_id','enc_value',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','name','key_id','enc_value',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5354,12 +5540,14 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SiteCredentialIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SiteCredential.select_by_user(self.request.user)
 
@@ -5374,10 +5562,12 @@ class DeploymentPrivilegeList(generics.ListCreateAPIView):
     serializer_class = DeploymentPrivilegeSerializer
     id_serializer_class = DeploymentPrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','deployment','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','deployment','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5413,12 +5603,14 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = DeploymentPrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return DeploymentPrivilege.select_by_user(self.request.user)
 
@@ -5433,10 +5625,12 @@ class ControllerSlicePrivilegeList(generics.ListCreateAPIView):
     serializer_class = ControllerSlicePrivilegeSerializer
     id_serializer_class = ControllerSlicePrivilegeIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','controller','slice_privilege','role_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','controller','slice_privilege','role_id',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5472,12 +5666,14 @@ class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ControllerSlicePrivilegeIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
@@ -5492,10 +5688,12 @@ class SiteDeploymentList(generics.ListCreateAPIView):
     serializer_class = SiteDeploymentSerializer
     id_serializer_class = SiteDeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','site','deployment','controller','availability_zone',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','site','deployment','controller','availability_zone',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5531,12 +5729,14 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SiteDeploymentIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SiteDeployment.select_by_user(self.request.user)
 
@@ -5551,10 +5751,12 @@ class DeploymentRoleList(generics.ListCreateAPIView):
     serializer_class = DeploymentRoleSerializer
     id_serializer_class = DeploymentRoleIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','role',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5590,12 +5792,14 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = DeploymentRoleIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return DeploymentRole.select_by_user(self.request.user)
 
@@ -5610,10 +5814,12 @@ class UserCredentialList(generics.ListCreateAPIView):
     serializer_class = UserCredentialSerializer
     id_serializer_class = UserCredentialIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','user','name','key_id','enc_value',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','name','key_id','enc_value',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5649,12 +5855,14 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = UserCredentialIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return UserCredential.select_by_user(self.request.user)
 
@@ -5669,10 +5877,12 @@ class SliceTagList(generics.ListCreateAPIView):
     serializer_class = SliceTagSerializer
     id_serializer_class = SliceTagIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','slice','name','value',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','slice','name','value',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5708,12 +5918,14 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = SliceTagIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return SliceTag.select_by_user(self.request.user)
 
@@ -5728,10 +5940,12 @@ class NetworkTemplateList(generics.ListCreateAPIView):
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5767,12 +5981,14 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = NetworkTemplateIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return NetworkTemplate.select_by_user(self.request.user)
 
@@ -5787,10 +6003,12 @@ class RouterList(generics.ListCreateAPIView):
     serializer_class = RouterSerializer
     id_serializer_class = RouterIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','name','owner','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','owner','networks','networks',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5826,12 +6044,14 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = RouterIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return Router.select_by_user(self.request.user)
 
@@ -5846,10 +6066,12 @@ class ServiceResourceList(generics.ListCreateAPIView):
     serializer_class = ServiceResourceSerializer
     id_serializer_class = ServiceResourceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','serviceClass','name','maxUnitsDeployment','maxUnitsNode','maxDuration','bucketInRate','bucketMaxSize','cost','calendarReservable',)
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -5885,12 +6107,14 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = ServiceResourceIdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return ServiceResource.select_by_user(self.request.user)
 

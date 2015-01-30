@@ -154,6 +154,7 @@ INSTALLED_APPS = (
     'servcomp',
     'syndicate_storage',
     'geoposition',
+    'rest_framework_swagger',
 )
 
 if DJANGO_VERSION[1]>=7:
