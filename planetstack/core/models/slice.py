@@ -48,7 +48,13 @@ class Slice(PlCoreBase):
         # allow preexisting slices to keep their original name for now
         if not self.id and not self.name.startswith(site.login_base):
             raise ValidationError('slice name must begin with %s' % site.login_base)
-        
+
+        if self.name == site.login_base+"_":
+            raise ValidationError('slice name is too short')
+
+        if " " in self.name:
+            raise ValidationError('slice name must not contain spaces')
+
         if self.serviceClass is None:
             # We allowed None=True for serviceClass because Django evolution
             # will fail unless it is allowed. But, we we really don't want it to
