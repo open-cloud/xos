@@ -432,7 +432,7 @@ class SitePrivilegeInline(PlStackTabularInline):
 class SiteDeploymentInline(PlStackTabularInline):
     model = SiteDeployment
     extra = 0
-    suit_classes = 'suit-tab suit-tab-deployments'
+    suit_classes = 'suit-tab suit-tab-sitedeployments'
     fields = ['backend_status_icon', 'deployment','site', 'controller']
     readonly_fields = ('backend_status_icon', )
 
@@ -624,7 +624,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
     # node no longer directly connected to deployment
     #inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
-    inlines = [DeploymentPrivilegeInline,TagInline,ImageDeploymentsInline]
+    inlines = [DeploymentPrivilegeInline,TagInline,ImageDeploymentsInline,SiteDeploymentInline]
     list_display = ['backend_status_icon', 'name']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text', )
@@ -633,7 +633,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
     # nodes no longer direclty connected to deployments
     #suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
-    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'))
+    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'), ('sitedeployments', 'Site Deployments'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser():
@@ -792,7 +792,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     filter_horizontal = ('deployments',)
-    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteDeploymentInline, SiteNodeInline]
+    inlines = [SliceInline,UserInline,TagInline, SitePrivilegeInline, SiteNodeInline]
     admin_inlines = [ControllerSiteInline]
     search_fields = ['name']
 
@@ -801,7 +801,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
         tabs = [('general', 'Site Details'),
             ('users','Users'),
             ('siteprivileges','Privileges'),
-            ('deployments','Deployments'),
             ('slices','Slices'),
             ('nodes','Nodes'),
         ]
@@ -1107,11 +1106,11 @@ class TagAdmin(PlanetStackBaseAdmin):
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'ip', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', )
-    list_display = ['backend_status_icon', 'ip', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
-    list_display_links = ('backend_status_icon', 'ip',)
+    list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
+    list_display_links = ('backend_status_icon', 'all_ips_string',)
 
     suit_form_tabs =(('general', 'Sliver Details'),)
 
