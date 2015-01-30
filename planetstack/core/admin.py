@@ -1140,9 +1140,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
     def get_formsets(self, request, obj=None):
         # make some fields read only if we are updating an existing record
         if obj == None:
-            self.readonly_fields = ('backend_status_text', 'ssh_command', )
+            self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
         else:
-            self.readonly_fields = ('backend_status_text', 'ssh_command',)
+            self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string', 'slice', 'flavor', 'image', 'node')
 
         for inline in self.get_inline_instances(request, obj):
             # hide MyInline in the add view
