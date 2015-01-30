@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     url(r'^stats', 'core.views.stats.Stats', name='stats'),
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
 
+    url(r'^docs/', include('rest_framework_swagger.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
