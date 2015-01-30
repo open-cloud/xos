@@ -43,7 +43,6 @@ class Slice(PlCoreBase):
         return "%s_%s" % (self.site.login_base, self.name)
 
     def save(self, *args, **kwds):
-        
         site = Site.objects.get(id=self.site.id)
         # allow preexisting slices to keep their original name for now
         if not self.id and not self.name.startswith(site.login_base):
@@ -62,6 +61,8 @@ class Slice(PlCoreBase):
             self.serviceClass = ServiceClass.get_default()
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
+        if not self.creator:
+            raise ValidationError('slice has no creator')
         super(Slice, self).save(*args, **kwds)
 
     def can_update(self, user):
