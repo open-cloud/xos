@@ -38,9 +38,9 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         #    logger.info("   %s: %s" % (network_id, network.name))
 
         slivers = Sliver.objects.all()
-        slivers_by_instance_id = {}
+        slivers_by_instance_uuid = {}
         for sliver in slivers:
-            slivers_by_instance_id[sliver.instance_id] = sliver
+            slivers_by_instance_uuid[sliver.instance_uuid] = sliver
 
         # Get all ports in all controllers
 
@@ -71,7 +71,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 #logger.info("port %s is not a compute port, it is a %s" % (port["id"], port["device_owner"]))
                 continue
 
-            sliver = slivers_by_instance_id.get(port['device_id'], None)
+            sliver = slivers_by_instance_uuid.get(port['device_id'], None)
             if not sliver:
                 logger.info("no sliver for port %s device_id %s" % (port["id"], port['device_id']))
                 continue
