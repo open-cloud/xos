@@ -90,7 +90,7 @@
                 {% block userlinks %}
                   {% url 'django-admindocs-docroot' as docsroot %}
                   {% if docsroot %}
-                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                    <a href="http://open-cloud.github.io/">{% trans 'Documentation' %}</a>
                    <span class="separator">|</span>
                   {% endif %}
                   <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
