@@ -217,7 +217,9 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
     filter_fields = ({% for prop in object.props %}'{{ prop }}',{% endfor %}{% for ref in object.refs %}{%if ref.multi %}'{{ ref.plural }}'{% else %}'{{ ref }}'{% endif %},{% endfor %})
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
@@ -253,12 +255,14 @@ class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
     id_serializer_class = {{ object.camel }}IdSerializer
 
     def get_serializer_class(self):
-        no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
         if (no_hyperlinks):
             return self.id_serializer_class
         else:
             return self.serializer_class
-    
+
     def get_queryset(self):
         return {{ object.camel }}.select_by_user(self.request.user)
 
