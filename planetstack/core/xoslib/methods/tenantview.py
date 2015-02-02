@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from syndicate_storage.models import Volume
+from django.core.exceptions import PermissionDenied
 
 # This REST API endpoint contains a bunch of misc information that the
 # tenant view needs to display
@@ -92,6 +93,8 @@ class TenantList(APIView):
     method_name = "tenantview"
 
     def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Response( getTenantViewDict(request.user) )
 
 class TenantDetail(APIView):
@@ -99,5 +102,7 @@ class TenantDetail(APIView):
     method_name = "tenantview"
 
     def get(self, request, format=None, pk=0):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Response( [getTenantViewDict(request.user)] )
 
