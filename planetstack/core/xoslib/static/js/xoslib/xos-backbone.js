@@ -1,40 +1,35 @@
 if (! window.XOSLIB_LOADED ) {
     window.XOSLIB_LOADED=true;
 
-    SLIVER_API = "/plstackapi/slivers/";
-    SLICE_API = "/plstackapi/slices/";
-    SLICEROLE_API = "/plstackapi/slice_roles/";
-    NODE_API = "/plstackapi/nodes/";
-    SITE_API = "/plstackapi/sites/";
-    SITEDEPLOYMENT_API = "/plstackapi/sitedeployments/";
-    USER_API = "/plstackapi/users/";
-    USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
-    DEPLOYMENT_API = "/plstackapi/deployments/";
-    IMAGE_API = "/plstackapi/images/";
-    IMAGEDEPLOYMENTS_API = "/plstackapi/imagedeployments/";
-    NETWORKTEMPLATE_API = "/plstackapi/networktemplates/";
-    NETWORK_API = "/plstackapi/networks/";
-    NETWORKSLIVER_API = "/plstackapi/networkslivers/";
-    SERVICE_API = "/plstackapi/services/";
-    SLICEPRIVILEGE_API = "/plstackapi/slice_privileges/";
-    NETWORKDEPLOYMENT_API = "/plstackapi/networkdeployments/";
-    FLAVOR_API = "/plstackapi/flavors/";
-    CONTROLLER_API = "/plstackapi/controllers/";
+    XOS_BASE = "/xos";
 
-    /* removed
-    CONTROLLERSITEDEPLOYMENT_API = "/plstackapi/controllersitedeploymentses";
-    */
+    SLIVER_API = XOS_BASE+"/slivers/";
+    SLICE_API = XOS_BASE+"/slices/";
+    SLICEROLE_API = XOS_BASE+"/slice_roles/";
+    NODE_API = XOS_BASE+"/nodes/";
+    SITE_API = XOS_BASE+"/sites/";
+    SITEDEPLOYMENT_API = XOS_BASE+"/sitedeployments/";
+    USER_API = XOS_BASE+"/users/";
+    USERDEPLOYMENT_API = XOS_BASE+"/user_deployments/";
+    DEPLOYMENT_API = XOS_BASE+"/deployments/";
+    IMAGE_API = XOS_BASE+"/images/";
+    IMAGEDEPLOYMENTS_API = XOS_BASE+"/imagedeployments/";
+    NETWORKTEMPLATE_API = XOS_BASE+"/networktemplates/";
+    NETWORK_API = XOS_BASE+"/networks/";
+    NETWORKSLIVER_API = XOS_BASE+"/networkslivers/";
+    SERVICE_API = XOS_BASE+"/services/";
+    SLICEPRIVILEGE_API = XOS_BASE+"/slice_privileges/";
+    NETWORKDEPLOYMENT_API = XOS_BASE+"/networkdeployments/";
+    FLAVOR_API = XOS_BASE+"/flavors/";
+    CONTROLLER_API = XOS_BASE+"/controllers/";
 
-    /* changed as a side effect of the big rename
-    SLICEDEPLOYMENT_API = "/plstackapi/slice_deployments/";
-    USERDEPLOYMENT_API = "/plstackapi/user_deployments/";
-    */
+    SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
+    USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
 
-    SLICEDEPLOYMENT_API = "/plstackapi/slicedeployments/";
-    USERDEPLOYMENT_API = "/plstackapi/userdeployments/";
+    XOSLIB_BASE = "/xoslib";
 
-    SLICEPLUS_API = "/xoslib/slicesplus/";
-    TENANTVIEW_API = "/xoslib/tenantview/"
+    SLICEPLUS_API = XOSLIB_BASE + "/slicesplus/";
+    TENANTVIEW_API = XOSLIB_BASE + "/tenantview/"
 
     XOSModel = Backbone.Model.extend({
         relatedCollections: [],

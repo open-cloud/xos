@@ -35,10 +35,10 @@ else:
 
 def get_REST_patterns():
     return patterns('',
-        url(r'^plstackapi/$', api_root),
+        url(r'^xos/$', api_root),
     {% for object in generator.all %}
-        url(r'plstackapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
-        url(r'plstackapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
+        url(r'xos/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
+        url(r'xos/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
     {% endfor %}
     )
 
@@ -55,7 +55,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
     def save_object(self, obj, **kwargs):
 
         """ rest_framework can't deal with ManyToMany relations that have a
-            through table. In plstackapi, most of the through tables we have
+            through table. In xos, most of the through tables we have
             use defaults or blank fields, so there's no reason why we shouldn't
             be able to save these objects.
 
