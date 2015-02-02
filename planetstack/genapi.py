@@ -9,6 +9,7 @@ from core.models import *
 from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
+from django.core.exceptions import PermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -2613,6 +2614,8 @@ class ServiceAttributeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2651,6 +2654,8 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2676,6 +2681,8 @@ class ControllerImagesList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2714,6 +2721,8 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2739,6 +2748,8 @@ class ControllerSitePrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2777,6 +2788,8 @@ class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2802,6 +2815,8 @@ class ImageList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2840,6 +2855,8 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2865,6 +2882,8 @@ class NetworkParameterList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2903,6 +2922,8 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2928,6 +2949,8 @@ class SiteList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2966,6 +2989,8 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2991,6 +3016,8 @@ class SliceRoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3029,6 +3056,8 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3054,6 +3083,8 @@ class TagList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3092,6 +3123,8 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3117,6 +3150,8 @@ class InvoiceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3155,6 +3190,8 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3180,6 +3217,8 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3218,6 +3257,8 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3243,6 +3284,8 @@ class PlanetStackRoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3281,6 +3324,8 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3306,6 +3351,8 @@ class NetworkSliverList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3344,6 +3391,8 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3369,6 +3418,8 @@ class FlavorList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3407,6 +3458,8 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3432,6 +3485,8 @@ class ControllerSiteList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3470,6 +3525,8 @@ class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3495,6 +3552,8 @@ class ProjectList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3533,6 +3592,8 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3558,6 +3619,8 @@ class SliceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3596,6 +3659,8 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3621,6 +3686,8 @@ class NetworkList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3659,6 +3726,8 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3684,6 +3753,8 @@ class ServiceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3722,6 +3793,8 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3747,6 +3820,8 @@ class ServiceClassList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3785,6 +3860,8 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3810,6 +3887,8 @@ class PlanetStackList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3848,6 +3927,8 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3873,6 +3954,8 @@ class ChargeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3911,6 +3994,8 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3936,6 +4021,8 @@ class RoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3974,6 +4061,8 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3999,6 +4088,8 @@ class UsableObjectList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4037,6 +4128,8 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4062,6 +4155,8 @@ class SiteRoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4100,6 +4195,8 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4125,6 +4222,8 @@ class SliceCredentialList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4163,6 +4262,8 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4188,6 +4289,8 @@ class SliverList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4226,6 +4329,8 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4251,6 +4356,8 @@ class NodeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4289,6 +4396,8 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4314,6 +4423,8 @@ class DashboardViewList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4352,6 +4463,8 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4377,6 +4490,8 @@ class ControllerNetworkList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4415,6 +4530,8 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4440,6 +4557,8 @@ class ImageDeploymentsList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4478,6 +4597,8 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4503,6 +4624,8 @@ class ControllerUserList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4541,6 +4664,8 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4566,6 +4691,8 @@ class ReservedResourceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4604,6 +4731,8 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4629,6 +4758,8 @@ class PaymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4667,6 +4798,8 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4692,6 +4825,8 @@ class NetworkSliceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4730,6 +4865,8 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4755,6 +4892,8 @@ class UserDashboardViewList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4793,6 +4932,8 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4818,6 +4959,8 @@ class ControllerList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4856,6 +4999,8 @@ class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4881,6 +5026,8 @@ class PlanetStackPrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4919,6 +5066,8 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4944,6 +5093,8 @@ class UserList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4982,6 +5133,8 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5007,6 +5160,8 @@ class DeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5045,6 +5200,8 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5070,6 +5227,8 @@ class ReservationList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5108,6 +5267,8 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5133,6 +5294,8 @@ class SitePrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5171,6 +5334,8 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5196,6 +5361,8 @@ class ControllerSliceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5234,6 +5401,8 @@ class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5259,6 +5428,8 @@ class ControllerDashboardViewList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5297,6 +5468,8 @@ class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5322,6 +5495,8 @@ class AccountList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5360,6 +5535,8 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5385,6 +5562,8 @@ class ControllerRoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5423,6 +5602,8 @@ class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5448,6 +5629,8 @@ class NetworkParameterTypeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5486,6 +5669,8 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5511,6 +5696,8 @@ class SiteCredentialList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5549,6 +5736,8 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5574,6 +5763,8 @@ class DeploymentPrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5612,6 +5803,8 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5637,6 +5830,8 @@ class ControllerSlicePrivilegeList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5675,6 +5870,8 @@ class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5700,6 +5897,8 @@ class SiteDeploymentList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5738,6 +5937,8 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5763,6 +5964,8 @@ class DeploymentRoleList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5801,6 +6004,8 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5826,6 +6031,8 @@ class UserCredentialList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5864,6 +6071,8 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5889,6 +6098,8 @@ class SliceTagList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5927,6 +6138,8 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5952,6 +6165,8 @@ class NetworkTemplateList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5990,6 +6205,8 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6015,6 +6232,8 @@ class RouterList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6053,6 +6272,8 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6078,6 +6299,8 @@ class ServiceResourceList(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6116,6 +6339,8 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView

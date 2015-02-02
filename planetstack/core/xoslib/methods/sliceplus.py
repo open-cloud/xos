@@ -7,6 +7,7 @@ from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView, PlusListCreateAPIView
+from django.core.exceptions import PermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -79,6 +80,9 @@ class SlicePlusList(PlusListCreateAPIView):
     def get_queryset(self):
         current_user_can_see = self.request.QUERY_PARAMS.get('current_user_can_see', False)
 
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+
         slices = SlicePlus.select_by_user(self.request.user)
 
         # If current_user_can_see is set, then filter the queryset to return
@@ -102,6 +106,8 @@ class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
     method_name = "slicesplus"
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return SlicePlus.select_by_user(self.request.user)
 
     def update(self, request, *args, **kwargs):
