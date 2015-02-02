@@ -9,6 +9,7 @@ from core.models import *
 from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
+from django.core.exceptions import PermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -226,6 +227,8 @@ class {{ object.camel }}List(generics.ListCreateAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return {{ object.camel }}.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -264,6 +267,8 @@ class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):
             return self.serializer_class
 
     def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
         return {{ object.camel }}.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
