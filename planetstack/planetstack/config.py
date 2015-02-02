@@ -12,7 +12,12 @@ default_config = \
 """
 """
 
-DEFAULT_CONFIG_FN = '/opt/planetstack/plstackapi_config'
+XOS_ROOT = "/opt/planetstack"
+DEFAULT_CONFIG_FN = os.path.join(XOS_ROOT, "xos_config")
+
+# warning for now, remove once we're sure everyone has made the change
+if (os.path.exists("/opt/planetstack/plstackapi_config") and (not os.path.exists(DEFAULT_CONFIG_FN))):
+    print >> sys.stderr, "WARNING: did you forget to rename plstackapi_config to xos_config ??"
 
 def isbool(v):
 	return v.lower() in ("true", "false")
