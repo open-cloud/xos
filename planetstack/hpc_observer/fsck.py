@@ -6,7 +6,7 @@ import os
 import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 sys.path.append("/opt/planetstack")
-from planetstack.config import Config
+from planetstack.config import Config, DEFAULT_CONFIG_FN
 from util.logger import Logger, logging
 from observer.syncstep import SyncStep
 
@@ -64,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
     # smbaker: util/config.py parses sys.argv[] directly to get config file name; include the option here to avoid
     #   throwing unrecognized argument exceptions
-    parser.add_argument('-C', '--config', dest='config_file', action='store', default="/opt/planetstack/plstackapi_config",
+    parser.add_argument('-C', '--config', dest='config_file', action='store', default=DEFAULT_CONFIG_FN,
                         help='Name of config file.')
     args = parser.parse_args()
 

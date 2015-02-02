@@ -3,7 +3,7 @@ import os
 import argparse
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from observer.backend import Backend
-from planetstack.config import Config
+from planetstack.config import Config, DEFAULT_CONFIG_FN
 
 try:
     from django import setup as django_setup # django 1.7
@@ -36,7 +36,7 @@ def main():
                         help='Run as daemon.')
     # smbaker: util/config.py parses sys.argv[] directly to get config file name; include the option here to avoid
     #   throwing unrecognized argument exceptions
-    parser.add_argument('-C', '--config', dest='config_file', action='store', default="/opt/planetstack/plstackapi_config",
+    parser.add_argument('-C', '--config', dest='config_file', action='store', default=DEFAULT_CONFIG_FN,
                         help='Name of config file.')
     args = parser.parse_args()
 
