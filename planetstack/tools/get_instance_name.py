@@ -5,7 +5,7 @@ import os
 import requests
 import sys
 
-REST_API="http://alpha.opencloud.us:8000/plstackapi/"
+REST_API="http://alpha.opencloud.us:8000/xos/"
 
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
