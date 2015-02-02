@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 from django.db import models
@@ -62,11 +63,17 @@ class DiffModelMixIn:
         return model_to_dict(self, fields=[field.name for field in
                              self._meta.fields])
 
+    def fields_differ(self,f1,f2):
+        if isinstance(f1,datetime.datetime) and isinstance(f2,datetime.datetime) and (timezone.is_aware(f1) != timezone.is_aware(f2)):
+            return True
+        else:
+            return (f1 != f2)
+
     @property
     def diff(self):
         d1 = self._initial
         d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
         return dict(diffs)
 
     @property
@@ -114,11 +121,17 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
         return model_to_dict(self, fields=[field.name for field in
                              self._meta.fields])
 
+    def fields_differ(self,f1,f2):
+        if isinstance(f1,datetime.datetime) and isinstance(f2,datetime.datetime) and (timezone.is_aware(f1) != timezone.is_aware(f2)):
+            return True
+        else:
+            return (f1 != f2)
+
     @property
     def diff(self):
         d1 = self._initial
         d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
         return dict(diffs)
 
     @property
