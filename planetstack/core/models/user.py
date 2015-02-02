@@ -6,6 +6,7 @@ from collections import defaultdict
 from django.forms.models import model_to_dict
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 from core.models import PlCoreBase,Site, DashboardView, DiffModelMixIn
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
@@ -92,11 +93,17 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
         return model_to_dict(self, fields=[field.name for field in
                              self._meta.fields])
 
+    def fields_differ(self,f1,f2):
+        if isinstance(f1,datetime.datetime) and isinstance(f2,datetime.datetime) and (timezone.is_aware(f1) != timezone.is_aware(f2)):
+            return True
+        else:
+            return (f1 != f2)
+
     @property
     def diff(self):
         d1 = self._initial
         d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if v != d2[k]]
+        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
         return dict(diffs)
 
     @property
