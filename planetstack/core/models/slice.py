@@ -13,7 +13,7 @@ from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Controller
 from core.models import Flavor, Image
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 
 # Create your models here.
 
@@ -59,10 +59,19 @@ class Slice(PlCoreBase):
             # will fail unless it is allowed. But, we we really don't want it to
             # ever save None, so fix it up here.
             self.serviceClass = ServiceClass.get_default()
+        
+        # set creator on first save
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
+
+        # only admins change a slice's creator
+        if 'creator' in self.changed_fields and \
+            (not hasattr(self, 'caller') or not self.caller.is_admin):
+            raise PermissionDenied("Insufficient privileges to change slice creator")
+        
         if not self.creator:
             raise ValidationError('slice has no creator')
+
         super(Slice, self).save(*args, **kwds)
 
     def can_update(self, user):
