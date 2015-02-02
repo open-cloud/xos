@@ -9,7 +9,7 @@ from core.models import *
 from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
-from django.core.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -2615,7 +2615,7 @@ class ServiceAttributeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2655,7 +2655,7 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2682,7 +2682,7 @@ class ControllerImagesList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2722,7 +2722,7 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2749,7 +2749,7 @@ class ControllerSitePrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2789,7 +2789,7 @@ class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2816,7 +2816,7 @@ class ImageList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2856,7 +2856,7 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2883,7 +2883,7 @@ class NetworkParameterList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2923,7 +2923,7 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -2950,7 +2950,7 @@ class SiteList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -2990,7 +2990,7 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3017,7 +3017,7 @@ class SliceRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3057,7 +3057,7 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3084,7 +3084,7 @@ class TagList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3124,7 +3124,7 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3151,7 +3151,7 @@ class InvoiceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3191,7 +3191,7 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3218,7 +3218,7 @@ class SlicePrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3258,7 +3258,7 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3285,7 +3285,7 @@ class PlanetStackRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3325,7 +3325,7 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3352,7 +3352,7 @@ class NetworkSliverList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3392,7 +3392,7 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3419,7 +3419,7 @@ class FlavorList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3459,7 +3459,7 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3486,7 +3486,7 @@ class ControllerSiteList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3526,7 +3526,7 @@ class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3553,7 +3553,7 @@ class ProjectList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3593,7 +3593,7 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3620,7 +3620,7 @@ class SliceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3660,7 +3660,7 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3687,7 +3687,7 @@ class NetworkList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3727,7 +3727,7 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3754,7 +3754,7 @@ class ServiceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3794,7 +3794,7 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3821,7 +3821,7 @@ class ServiceClassList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3861,7 +3861,7 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3888,7 +3888,7 @@ class PlanetStackList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3928,7 +3928,7 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -3955,7 +3955,7 @@ class ChargeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -3995,7 +3995,7 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4022,7 +4022,7 @@ class RoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4062,7 +4062,7 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4089,7 +4089,7 @@ class UsableObjectList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4129,7 +4129,7 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4156,7 +4156,7 @@ class SiteRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4196,7 +4196,7 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4223,7 +4223,7 @@ class SliceCredentialList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4263,7 +4263,7 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4290,7 +4290,7 @@ class SliverList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4330,7 +4330,7 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4357,7 +4357,7 @@ class NodeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4397,7 +4397,7 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4424,7 +4424,7 @@ class DashboardViewList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4464,7 +4464,7 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4491,7 +4491,7 @@ class ControllerNetworkList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4531,7 +4531,7 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4558,7 +4558,7 @@ class ImageDeploymentsList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4598,7 +4598,7 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4625,7 +4625,7 @@ class ControllerUserList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4665,7 +4665,7 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4692,7 +4692,7 @@ class ReservedResourceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4732,7 +4732,7 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4759,7 +4759,7 @@ class PaymentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4799,7 +4799,7 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4826,7 +4826,7 @@ class NetworkSliceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4866,7 +4866,7 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4893,7 +4893,7 @@ class UserDashboardViewList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -4933,7 +4933,7 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -4960,7 +4960,7 @@ class ControllerList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5000,7 +5000,7 @@ class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5027,7 +5027,7 @@ class PlanetStackPrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5067,7 +5067,7 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5094,7 +5094,7 @@ class UserList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5134,7 +5134,7 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5161,7 +5161,7 @@ class DeploymentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5201,7 +5201,7 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5228,7 +5228,7 @@ class ReservationList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5268,7 +5268,7 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5295,7 +5295,7 @@ class SitePrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5335,7 +5335,7 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5362,7 +5362,7 @@ class ControllerSliceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5402,7 +5402,7 @@ class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5429,7 +5429,7 @@ class ControllerDashboardViewList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5469,7 +5469,7 @@ class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5496,7 +5496,7 @@ class AccountList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5536,7 +5536,7 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5563,7 +5563,7 @@ class ControllerRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5603,7 +5603,7 @@ class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5630,7 +5630,7 @@ class NetworkParameterTypeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5670,7 +5670,7 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5697,7 +5697,7 @@ class SiteCredentialList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5737,7 +5737,7 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5764,7 +5764,7 @@ class DeploymentPrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5804,7 +5804,7 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5831,7 +5831,7 @@ class ControllerSlicePrivilegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5871,7 +5871,7 @@ class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5898,7 +5898,7 @@ class SiteDeploymentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -5938,7 +5938,7 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -5965,7 +5965,7 @@ class DeploymentRoleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6005,7 +6005,7 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6032,7 +6032,7 @@ class UserCredentialList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6072,7 +6072,7 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6099,7 +6099,7 @@ class SliceTagList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6139,7 +6139,7 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6166,7 +6166,7 @@ class NetworkTemplateList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6206,7 +6206,7 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6233,7 +6233,7 @@ class RouterList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6273,7 +6273,7 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
@@ -6300,7 +6300,7 @@ class ServiceResourceList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -6340,7 +6340,7 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
+            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
 
     # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView

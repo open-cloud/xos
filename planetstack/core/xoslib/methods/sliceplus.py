@@ -7,7 +7,7 @@ from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView, PlusListCreateAPIView
-from django.core.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
