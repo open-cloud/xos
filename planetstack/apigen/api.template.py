@@ -10,6 +10,7 @@ from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -202,15 +203,35 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.can_update(request.user):
-            return super(generics.RetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
+            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
+
+class PlanetStackListCreateAPIView(generics.ListCreateAPIView):
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(PlanetStackListCreateAPIView, self).handle_exception(exc)
 
 # Based on core/views/*.py
 {% for object in generator.all %}
 
-class {{ object.camel }}List(generics.ListCreateAPIView):
+class {{ object.camel }}List(PlanetStackListCreateAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
     serializer_class = {{ object.camel }}Serializer
     id_serializer_class = {{ object.camel }}IdSerializer
