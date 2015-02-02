@@ -10,6 +10,7 @@ from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -2589,15 +2590,35 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.can_update(request.user):
-            return super(generics.RetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
+            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
+
+class PlanetStackListCreateAPIView(generics.ListCreateAPIView):
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(PlanetStackListCreateAPIView, self).handle_exception(exc)
 
 # Based on core/views/*.py
 
 
-class ServiceAttributeList(generics.ListCreateAPIView):
+class ServiceAttributeList(PlanetStackListCreateAPIView):
     queryset = ServiceAttribute.objects.select_related().all()
     serializer_class = ServiceAttributeSerializer
     id_serializer_class = ServiceAttributeIdSerializer
@@ -2664,7 +2685,7 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerImagesList(generics.ListCreateAPIView):
+class ControllerImagesList(PlanetStackListCreateAPIView):
     queryset = ControllerImages.objects.select_related().all()
     serializer_class = ControllerImagesSerializer
     id_serializer_class = ControllerImagesIdSerializer
@@ -2731,7 +2752,7 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerSitePrivilegeList(generics.ListCreateAPIView):
+class ControllerSitePrivilegeList(PlanetStackListCreateAPIView):
     queryset = ControllerSitePrivilege.objects.select_related().all()
     serializer_class = ControllerSitePrivilegeSerializer
     id_serializer_class = ControllerSitePrivilegeIdSerializer
@@ -2798,7 +2819,7 @@ class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ImageList(generics.ListCreateAPIView):
+class ImageList(PlanetStackListCreateAPIView):
     queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
@@ -2865,7 +2886,7 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkParameterList(generics.ListCreateAPIView):
+class NetworkParameterList(PlanetStackListCreateAPIView):
     queryset = NetworkParameter.objects.select_related().all()
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
@@ -2932,7 +2953,7 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteList(generics.ListCreateAPIView):
+class SiteList(PlanetStackListCreateAPIView):
     queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
@@ -2999,7 +3020,7 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliceRoleList(generics.ListCreateAPIView):
+class SliceRoleList(PlanetStackListCreateAPIView):
     queryset = SliceRole.objects.select_related().all()
     serializer_class = SliceRoleSerializer
     id_serializer_class = SliceRoleIdSerializer
@@ -3066,7 +3087,7 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class TagList(generics.ListCreateAPIView):
+class TagList(PlanetStackListCreateAPIView):
     queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
@@ -3133,7 +3154,7 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class InvoiceList(generics.ListCreateAPIView):
+class InvoiceList(PlanetStackListCreateAPIView):
     queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
     id_serializer_class = InvoiceIdSerializer
@@ -3200,7 +3221,7 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SlicePrivilegeList(generics.ListCreateAPIView):
+class SlicePrivilegeList(PlanetStackListCreateAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
     serializer_class = SlicePrivilegeSerializer
     id_serializer_class = SlicePrivilegeIdSerializer
@@ -3267,7 +3288,7 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackRoleList(generics.ListCreateAPIView):
+class PlanetStackRoleList(PlanetStackListCreateAPIView):
     queryset = PlanetStackRole.objects.select_related().all()
     serializer_class = PlanetStackRoleSerializer
     id_serializer_class = PlanetStackRoleIdSerializer
@@ -3334,7 +3355,7 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkSliverList(generics.ListCreateAPIView):
+class NetworkSliverList(PlanetStackListCreateAPIView):
     queryset = NetworkSliver.objects.select_related().all()
     serializer_class = NetworkSliverSerializer
     id_serializer_class = NetworkSliverIdSerializer
@@ -3401,7 +3422,7 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class FlavorList(generics.ListCreateAPIView):
+class FlavorList(PlanetStackListCreateAPIView):
     queryset = Flavor.objects.select_related().all()
     serializer_class = FlavorSerializer
     id_serializer_class = FlavorIdSerializer
@@ -3468,7 +3489,7 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerSiteList(generics.ListCreateAPIView):
+class ControllerSiteList(PlanetStackListCreateAPIView):
     queryset = ControllerSite.objects.select_related().all()
     serializer_class = ControllerSiteSerializer
     id_serializer_class = ControllerSiteIdSerializer
@@ -3535,7 +3556,7 @@ class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ProjectList(generics.ListCreateAPIView):
+class ProjectList(PlanetStackListCreateAPIView):
     queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
     id_serializer_class = ProjectIdSerializer
@@ -3602,7 +3623,7 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliceList(generics.ListCreateAPIView):
+class SliceList(PlanetStackListCreateAPIView):
     queryset = Slice.objects.select_related().all()
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
@@ -3669,7 +3690,7 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkList(generics.ListCreateAPIView):
+class NetworkList(PlanetStackListCreateAPIView):
     queryset = Network.objects.select_related().all()
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
@@ -3736,7 +3757,7 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ServiceList(generics.ListCreateAPIView):
+class ServiceList(PlanetStackListCreateAPIView):
     queryset = Service.objects.select_related().all()
     serializer_class = ServiceSerializer
     id_serializer_class = ServiceIdSerializer
@@ -3803,7 +3824,7 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ServiceClassList(generics.ListCreateAPIView):
+class ServiceClassList(PlanetStackListCreateAPIView):
     queryset = ServiceClass.objects.select_related().all()
     serializer_class = ServiceClassSerializer
     id_serializer_class = ServiceClassIdSerializer
@@ -3870,7 +3891,7 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackList(generics.ListCreateAPIView):
+class PlanetStackList(PlanetStackListCreateAPIView):
     queryset = PlanetStack.objects.select_related().all()
     serializer_class = PlanetStackSerializer
     id_serializer_class = PlanetStackIdSerializer
@@ -3937,7 +3958,7 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ChargeList(generics.ListCreateAPIView):
+class ChargeList(PlanetStackListCreateAPIView):
     queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
     id_serializer_class = ChargeIdSerializer
@@ -4004,7 +4025,7 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class RoleList(generics.ListCreateAPIView):
+class RoleList(PlanetStackListCreateAPIView):
     queryset = Role.objects.select_related().all()
     serializer_class = RoleSerializer
     id_serializer_class = RoleIdSerializer
@@ -4071,7 +4092,7 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class UsableObjectList(generics.ListCreateAPIView):
+class UsableObjectList(PlanetStackListCreateAPIView):
     queryset = UsableObject.objects.select_related().all()
     serializer_class = UsableObjectSerializer
     id_serializer_class = UsableObjectIdSerializer
@@ -4138,7 +4159,7 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteRoleList(generics.ListCreateAPIView):
+class SiteRoleList(PlanetStackListCreateAPIView):
     queryset = SiteRole.objects.select_related().all()
     serializer_class = SiteRoleSerializer
     id_serializer_class = SiteRoleIdSerializer
@@ -4205,7 +4226,7 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliceCredentialList(generics.ListCreateAPIView):
+class SliceCredentialList(PlanetStackListCreateAPIView):
     queryset = SliceCredential.objects.select_related().all()
     serializer_class = SliceCredentialSerializer
     id_serializer_class = SliceCredentialIdSerializer
@@ -4272,7 +4293,7 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliverList(generics.ListCreateAPIView):
+class SliverList(PlanetStackListCreateAPIView):
     queryset = Sliver.objects.select_related().all()
     serializer_class = SliverSerializer
     id_serializer_class = SliverIdSerializer
@@ -4339,7 +4360,7 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NodeList(generics.ListCreateAPIView):
+class NodeList(PlanetStackListCreateAPIView):
     queryset = Node.objects.select_related().all()
     serializer_class = NodeSerializer
     id_serializer_class = NodeIdSerializer
@@ -4406,7 +4427,7 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class DashboardViewList(generics.ListCreateAPIView):
+class DashboardViewList(PlanetStackListCreateAPIView):
     queryset = DashboardView.objects.select_related().all()
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
@@ -4473,7 +4494,7 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerNetworkList(generics.ListCreateAPIView):
+class ControllerNetworkList(PlanetStackListCreateAPIView):
     queryset = ControllerNetwork.objects.select_related().all()
     serializer_class = ControllerNetworkSerializer
     id_serializer_class = ControllerNetworkIdSerializer
@@ -4540,7 +4561,7 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ImageDeploymentsList(generics.ListCreateAPIView):
+class ImageDeploymentsList(PlanetStackListCreateAPIView):
     queryset = ImageDeployments.objects.select_related().all()
     serializer_class = ImageDeploymentsSerializer
     id_serializer_class = ImageDeploymentsIdSerializer
@@ -4607,7 +4628,7 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerUserList(generics.ListCreateAPIView):
+class ControllerUserList(PlanetStackListCreateAPIView):
     queryset = ControllerUser.objects.select_related().all()
     serializer_class = ControllerUserSerializer
     id_serializer_class = ControllerUserIdSerializer
@@ -4674,7 +4695,7 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ReservedResourceList(generics.ListCreateAPIView):
+class ReservedResourceList(PlanetStackListCreateAPIView):
     queryset = ReservedResource.objects.select_related().all()
     serializer_class = ReservedResourceSerializer
     id_serializer_class = ReservedResourceIdSerializer
@@ -4741,7 +4762,7 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class PaymentList(generics.ListCreateAPIView):
+class PaymentList(PlanetStackListCreateAPIView):
     queryset = Payment.objects.select_related().all()
     serializer_class = PaymentSerializer
     id_serializer_class = PaymentIdSerializer
@@ -4808,7 +4829,7 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkSliceList(generics.ListCreateAPIView):
+class NetworkSliceList(PlanetStackListCreateAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
     id_serializer_class = NetworkSliceIdSerializer
@@ -4875,7 +4896,7 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class UserDashboardViewList(generics.ListCreateAPIView):
+class UserDashboardViewList(PlanetStackListCreateAPIView):
     queryset = UserDashboardView.objects.select_related().all()
     serializer_class = UserDashboardViewSerializer
     id_serializer_class = UserDashboardViewIdSerializer
@@ -4942,7 +4963,7 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerList(generics.ListCreateAPIView):
+class ControllerList(PlanetStackListCreateAPIView):
     queryset = Controller.objects.select_related().all()
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
@@ -5009,7 +5030,7 @@ class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackPrivilegeList(generics.ListCreateAPIView):
+class PlanetStackPrivilegeList(PlanetStackListCreateAPIView):
     queryset = PlanetStackPrivilege.objects.select_related().all()
     serializer_class = PlanetStackPrivilegeSerializer
     id_serializer_class = PlanetStackPrivilegeIdSerializer
@@ -5076,7 +5097,7 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class UserList(generics.ListCreateAPIView):
+class UserList(PlanetStackListCreateAPIView):
     queryset = User.objects.select_related().all()
     serializer_class = UserSerializer
     id_serializer_class = UserIdSerializer
@@ -5143,7 +5164,7 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class DeploymentList(generics.ListCreateAPIView):
+class DeploymentList(PlanetStackListCreateAPIView):
     queryset = Deployment.objects.select_related().all()
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
@@ -5210,7 +5231,7 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ReservationList(generics.ListCreateAPIView):
+class ReservationList(PlanetStackListCreateAPIView):
     queryset = Reservation.objects.select_related().all()
     serializer_class = ReservationSerializer
     id_serializer_class = ReservationIdSerializer
@@ -5277,7 +5298,7 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SitePrivilegeList(generics.ListCreateAPIView):
+class SitePrivilegeList(PlanetStackListCreateAPIView):
     queryset = SitePrivilege.objects.select_related().all()
     serializer_class = SitePrivilegeSerializer
     id_serializer_class = SitePrivilegeIdSerializer
@@ -5344,7 +5365,7 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerSliceList(generics.ListCreateAPIView):
+class ControllerSliceList(PlanetStackListCreateAPIView):
     queryset = ControllerSlice.objects.select_related().all()
     serializer_class = ControllerSliceSerializer
     id_serializer_class = ControllerSliceIdSerializer
@@ -5411,7 +5432,7 @@ class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerDashboardViewList(generics.ListCreateAPIView):
+class ControllerDashboardViewList(PlanetStackListCreateAPIView):
     queryset = ControllerDashboardView.objects.select_related().all()
     serializer_class = ControllerDashboardViewSerializer
     id_serializer_class = ControllerDashboardViewIdSerializer
@@ -5478,7 +5499,7 @@ class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class AccountList(generics.ListCreateAPIView):
+class AccountList(PlanetStackListCreateAPIView):
     queryset = Account.objects.select_related().all()
     serializer_class = AccountSerializer
     id_serializer_class = AccountIdSerializer
@@ -5545,7 +5566,7 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerRoleList(generics.ListCreateAPIView):
+class ControllerRoleList(PlanetStackListCreateAPIView):
     queryset = ControllerRole.objects.select_related().all()
     serializer_class = ControllerRoleSerializer
     id_serializer_class = ControllerRoleIdSerializer
@@ -5612,7 +5633,7 @@ class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkParameterTypeList(generics.ListCreateAPIView):
+class NetworkParameterTypeList(PlanetStackListCreateAPIView):
     queryset = NetworkParameterType.objects.select_related().all()
     serializer_class = NetworkParameterTypeSerializer
     id_serializer_class = NetworkParameterTypeIdSerializer
@@ -5679,7 +5700,7 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteCredentialList(generics.ListCreateAPIView):
+class SiteCredentialList(PlanetStackListCreateAPIView):
     queryset = SiteCredential.objects.select_related().all()
     serializer_class = SiteCredentialSerializer
     id_serializer_class = SiteCredentialIdSerializer
@@ -5746,7 +5767,7 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class DeploymentPrivilegeList(generics.ListCreateAPIView):
+class DeploymentPrivilegeList(PlanetStackListCreateAPIView):
     queryset = DeploymentPrivilege.objects.select_related().all()
     serializer_class = DeploymentPrivilegeSerializer
     id_serializer_class = DeploymentPrivilegeIdSerializer
@@ -5813,7 +5834,7 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ControllerSlicePrivilegeList(generics.ListCreateAPIView):
+class ControllerSlicePrivilegeList(PlanetStackListCreateAPIView):
     queryset = ControllerSlicePrivilege.objects.select_related().all()
     serializer_class = ControllerSlicePrivilegeSerializer
     id_serializer_class = ControllerSlicePrivilegeIdSerializer
@@ -5880,7 +5901,7 @@ class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SiteDeploymentList(generics.ListCreateAPIView):
+class SiteDeploymentList(PlanetStackListCreateAPIView):
     queryset = SiteDeployment.objects.select_related().all()
     serializer_class = SiteDeploymentSerializer
     id_serializer_class = SiteDeploymentIdSerializer
@@ -5947,7 +5968,7 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class DeploymentRoleList(generics.ListCreateAPIView):
+class DeploymentRoleList(PlanetStackListCreateAPIView):
     queryset = DeploymentRole.objects.select_related().all()
     serializer_class = DeploymentRoleSerializer
     id_serializer_class = DeploymentRoleIdSerializer
@@ -6014,7 +6035,7 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class UserCredentialList(generics.ListCreateAPIView):
+class UserCredentialList(PlanetStackListCreateAPIView):
     queryset = UserCredential.objects.select_related().all()
     serializer_class = UserCredentialSerializer
     id_serializer_class = UserCredentialIdSerializer
@@ -6081,7 +6102,7 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class SliceTagList(generics.ListCreateAPIView):
+class SliceTagList(PlanetStackListCreateAPIView):
     queryset = SliceTag.objects.select_related().all()
     serializer_class = SliceTagSerializer
     id_serializer_class = SliceTagIdSerializer
@@ -6148,7 +6169,7 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkTemplateList(generics.ListCreateAPIView):
+class NetworkTemplateList(PlanetStackListCreateAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
@@ -6215,7 +6236,7 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class RouterList(generics.ListCreateAPIView):
+class RouterList(PlanetStackListCreateAPIView):
     queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
     id_serializer_class = RouterIdSerializer
@@ -6282,7 +6303,7 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
 
 
 
-class ServiceResourceList(generics.ListCreateAPIView):
+class ServiceResourceList(PlanetStackListCreateAPIView):
     queryset = ServiceResource.objects.select_related().all()
     serializer_class = ServiceResourceSerializer
     id_serializer_class = ServiceResourceIdSerializer
