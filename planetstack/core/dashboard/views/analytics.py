@@ -1,5 +1,6 @@
 from view_common import *
 import random
+from planetstack_analytics import DoPlanetStackAnalytics
 
 class DashboardAnalyticsAjaxView(View):
     def get(self, request, name="hello_world", **kwargs):
