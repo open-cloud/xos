@@ -2579,9 +2579,7 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            raise Exception("Use the List API for creating objects")
 
         self.object = serializer.save(force_update=True)
         self.post_save(self.object, created=False)
@@ -2615,6 +2613,39 @@ class PlanetStackListCreateAPIView(generics.ListCreateAPIView):
         else:
             return super(PlanetStackListCreateAPIView, self).handle_exception(exc)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # now do XOS can_update permission checking
+
+        obj = serializer.object
+        obj.caller = request.user
+        if not obj.can_update(request.user):
+            response = {"error": "validation",
+                        "specific_error": "failed can_update",
+                        "reasons": []}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # stuff below is from generics.ListCreateAPIView
+
+        if (hasattr(self, "pre_save")):
+            # rest_framework 2.x
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+        else:
+            # rest_framework 3.x
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
 # Based on core/views/*.py
 
 
@@ -2638,26 +2669,6 @@ class ServiceAttributeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceAttributeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ServiceAttributeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -2706,26 +2717,6 @@ class ControllerImagesList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerImagesList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerImagesList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ControllerImages.objects.select_related().all()
@@ -2772,26 +2763,6 @@ class ControllerSitePrivilegeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSitePrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSitePrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -2840,26 +2811,6 @@ class ImageList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ImageList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ImageList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Image.objects.select_related().all()
@@ -2906,26 +2857,6 @@ class NetworkParameterList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkParameterList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkParameterList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -2974,26 +2905,6 @@ class SiteList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Site.objects.select_related().all()
@@ -3040,26 +2951,6 @@ class SliceRoleList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceRoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SliceRoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3108,26 +2999,6 @@ class TagList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(TagList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(TagList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.select_related().all()
@@ -3174,26 +3045,6 @@ class InvoiceList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(InvoiceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(InvoiceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3242,26 +3093,6 @@ class SlicePrivilegeList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SlicePrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SlicePrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
@@ -3308,26 +3139,6 @@ class PlanetStackRoleList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackRoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(PlanetStackRoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3376,26 +3187,6 @@ class NetworkSliverList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkSliverList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkSliverList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkSliver.objects.select_related().all()
@@ -3442,26 +3233,6 @@ class FlavorList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(FlavorList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(FlavorList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3510,26 +3281,6 @@ class ControllerSiteList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSiteList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSiteList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ControllerSite.objects.select_related().all()
@@ -3576,26 +3327,6 @@ class ProjectList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ProjectList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ProjectList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3644,26 +3375,6 @@ class SliceList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SliceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Slice.objects.select_related().all()
@@ -3710,26 +3421,6 @@ class NetworkList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3778,26 +3469,6 @@ class ServiceList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ServiceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Service.objects.select_related().all()
@@ -3844,26 +3515,6 @@ class ServiceClassList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceClassList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ServiceClassList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -3912,26 +3563,6 @@ class PlanetStackList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(PlanetStackList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = PlanetStack.objects.select_related().all()
@@ -3978,26 +3609,6 @@ class ChargeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ChargeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ChargeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4046,26 +3657,6 @@ class RoleList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(RoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(RoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Role.objects.select_related().all()
@@ -4112,26 +3703,6 @@ class UsableObjectList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UsableObjectList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(UsableObjectList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4180,26 +3751,6 @@ class SiteRoleList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteRoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteRoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SiteRole.objects.select_related().all()
@@ -4246,26 +3797,6 @@ class SliceCredentialList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceCredentialList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SliceCredentialList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4314,26 +3845,6 @@ class SliverList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliverList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SliverList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Sliver.objects.select_related().all()
@@ -4380,26 +3891,6 @@ class NodeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NodeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NodeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4448,26 +3939,6 @@ class DashboardViewList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DashboardViewList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(DashboardViewList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = DashboardView.objects.select_related().all()
@@ -4514,26 +3985,6 @@ class ControllerNetworkList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerNetworkList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerNetworkList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4582,26 +4033,6 @@ class ImageDeploymentsList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ImageDeploymentsList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ImageDeploymentsList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ImageDeployments.objects.select_related().all()
@@ -4648,26 +4079,6 @@ class ControllerUserList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerUserList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerUserList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4716,26 +4127,6 @@ class ReservedResourceList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ReservedResourceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ReservedResourceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ReservedResource.objects.select_related().all()
@@ -4782,26 +4173,6 @@ class PaymentList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PaymentList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(PaymentList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4850,26 +4221,6 @@ class NetworkSliceList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkSliceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkSliceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkSlice.objects.select_related().all()
@@ -4916,26 +4267,6 @@ class UserDashboardViewList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserDashboardViewList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(UserDashboardViewList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -4984,26 +4315,6 @@ class ControllerList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Controller.objects.select_related().all()
@@ -5050,26 +4361,6 @@ class PlanetStackPrivilegeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(PlanetStackPrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5118,26 +4409,6 @@ class UserList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(UserList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = User.objects.select_related().all()
@@ -5184,26 +4455,6 @@ class DeploymentList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(DeploymentList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5252,26 +4503,6 @@ class ReservationList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ReservationList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ReservationList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.select_related().all()
@@ -5318,26 +4549,6 @@ class SitePrivilegeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SitePrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SitePrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5386,26 +4597,6 @@ class ControllerSliceList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSliceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSliceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = ControllerSlice.objects.select_related().all()
@@ -5452,26 +4643,6 @@ class ControllerDashboardViewList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerDashboardViewList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerDashboardViewList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5520,26 +4691,6 @@ class AccountList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(AccountList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(AccountList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Account.objects.select_related().all()
@@ -5586,26 +4737,6 @@ class ControllerRoleList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerRoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerRoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5654,26 +4785,6 @@ class NetworkParameterTypeList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkParameterTypeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameterType.objects.select_related().all()
@@ -5720,26 +4831,6 @@ class SiteCredentialList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteCredentialList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteCredentialList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5788,26 +4879,6 @@ class DeploymentPrivilegeList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(DeploymentPrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = DeploymentPrivilege.objects.select_related().all()
@@ -5854,26 +4925,6 @@ class ControllerSlicePrivilegeList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ControllerSlicePrivilegeList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ControllerSlicePrivilegeList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -5922,26 +4973,6 @@ class SiteDeploymentList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SiteDeploymentList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SiteDeploymentList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = SiteDeployment.objects.select_related().all()
@@ -5988,26 +5019,6 @@ class DeploymentRoleList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(DeploymentRoleList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(DeploymentRoleList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -6056,26 +5067,6 @@ class UserCredentialList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(UserCredentialList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(UserCredentialList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = UserCredential.objects.select_related().all()
@@ -6122,26 +5113,6 @@ class SliceTagList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(SliceTagList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(SliceTagList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
@@ -6190,26 +5161,6 @@ class NetworkTemplateList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(NetworkTemplateList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(NetworkTemplateList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
@@ -6257,26 +5208,6 @@ class RouterList(PlanetStackListCreateAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(RouterList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(RouterList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
-
 
 class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
     queryset = Router.objects.select_related().all()
@@ -6323,26 +5254,6 @@ class ServiceResourceList(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(ServiceResourceList, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super(ServiceResourceList, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
