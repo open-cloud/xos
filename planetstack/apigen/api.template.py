@@ -192,9 +192,7 @@ class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            raise Exception("Use the List API for creating objects")
 
         self.object = serializer.save(force_update=True)
         self.post_save(self.object, created=False)
@@ -228,6 +226,39 @@ class PlanetStackListCreateAPIView(generics.ListCreateAPIView):
         else:
             return super(PlanetStackListCreateAPIView, self).handle_exception(exc)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # now do XOS can_update permission checking
+
+        obj = serializer.object
+        obj.caller = request.user
+        if not obj.can_update(request.user):
+            response = {"error": "validation",
+                        "specific_error": "failed can_update",
+                        "reasons": []}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # stuff below is from generics.ListCreateAPIView
+
+        if (hasattr(self, "pre_save")):
+            # rest_framework 2.x
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+        else:
+            # rest_framework 3.x
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
 # Based on core/views/*.py
 {% for object in generator.all %}
 
@@ -251,26 +282,6 @@ class {{ object.camel }}List(PlanetStackListCreateAPIView):
         if (not self.request.user.is_authenticated()):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return {{ object.camel }}.select_by_user(self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        obj = serializer.object
-        obj.caller = request.user
-        if obj.can_update(request.user):
-            return super({{ object.camel }}List, self).create(request, *args, **kwargs)
-        else:
-            raise Exception("failed obj.can_update")
-
-        ret = super({{ object.camel }}List, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
-
-        return ret
 
 
 class {{ object.camel }}Detail(PlanetStackRetrieveUpdateDestroyAPIView):

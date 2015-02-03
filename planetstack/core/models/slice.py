@@ -68,10 +68,9 @@ class Slice(PlCoreBase):
         if 'creator' in self.changed_fields and \
             (not hasattr(self, 'caller') or not self.caller.is_admin):
 
-            if (self._initial["creator"]==None): # and (self.creator==self.caller):
+            if (self._initial["creator"]==None) and (self.creator==getattr(self,"caller",None)):
                 # it's okay if the creator is being set by the caller to
                 # himeself on a new slice object.
-                #   TODO: self.caller is None when called from slicePlus REST API
                 pass
             else:
                 raise PermissionDenied("Insufficient privileges to change slice creator")

@@ -27,19 +27,6 @@ class PlusSerializerMixin():
 
 # XXX this was lifted and hacked up a bit from genapi.py
 class PlusListCreateAPIView(generics.ListCreateAPIView):
-    # rest_framework 2.x
-    #   create() calls pre_save, then serializer.save, then post_save
-    def pre_save(self, obj):
-        super(PlusListCreateAPIView,self).pre_save(obj)
-        obj.caller = self.request.user
-
-    # rest_framework 3.x
-    #   pre_save/serializer.save/post_save is replaced with perform_save
-    #   *** UNTESTED ***
-    def perform_create(self, serializer):
-        self.pre_save(serializer.object)
-        super(PlusListCreateAPIView,self).perform_save(serializer)
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if not (serializer.is_valid()):
@@ -47,14 +34,31 @@ class PlusListCreateAPIView(generics.ListCreateAPIView):
                         "specific_error": "not serializer.is_valid()",
                         "reasons": serializer.errors}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # now do XOS can_update permission checking
+
         obj = serializer.object
         obj.caller = request.user
         if not obj.can_update(request.user):
-            raise Exception("failed obj.can_update")
+            response = {"error": "validation",
+                        "specific_error": "failed can_update",
+                        "reasons": []}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        ret = super(PlusListCreateAPIView, self).create(request, *args, **kwargs)
+        # stuff below is from generics.ListCreateAPIView
 
-        return ret
+        if (hasattr(self, "pre_save")):
+            # rest_framework 2.x
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+        else:
+            # rest_framework 3.x
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 # XXX this is taken from genapi.py
 # XXX find a better way to re-use the code
@@ -91,10 +95,7 @@ class PlusRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.object.caller = request.user
-            self.post_save(self.object, created=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            raise Exception("Use the List API for creating objects")
 
         self.object = serializer.save(force_update=True)
         self.object.caller = request.user
