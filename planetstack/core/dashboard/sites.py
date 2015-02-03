@@ -12,9 +12,9 @@ class AdminMixin(object):
     def get_urls(self):
         """Add our dashboard view to the admin urlconf. Deleted the default index."""
         from django.conf.urls import patterns, url
-        from views import DashboardCustomize, DashboardDynamicView, DashboardWelcomeView, DashboardAjaxView, SimulatorView, \
-                          DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, \
-                          TenantViewData,TenantCreateSlice, TenantAddUser,TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
+        from views import DashboardCustomize, DashboardDynamicView, DashboardWelcomeView, SimulatorView, \
+                          DashboardUserSiteView,  \
+                          TenantViewData, TenantCreateSlice, TenantAddUser,TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
                           TenantUpdateSlice, DashboardSliceInteractions, RequestAccessView
 
         from views import view_urls
@@ -42,16 +42,8 @@ class AdminMixin(object):
                     name="hpcdashuserslices"),
                url(r'^welcome/$', self.admin_view(DashboardWelcomeView.as_view()),
                     name="welcome"),
-               url(r'^hpcdashboard/', self.admin_view(DashboardAjaxView.as_view()),        # DEPRECATED
-                    name="hpcdashboard"),
                url(r'^simulator/', self.admin_view(SimulatorView.as_view()),
                     name="simulator"),
-               url(r'^hpcsummary/', self.admin_view(DashboardSummaryAjaxView.as_view()),   # DEPRECATED
-                    name="hpcsummary"),
-               url(r'^analytics/(?P<name>\w+)/$', DashboardAnalyticsAjaxView.as_view(),
-                    name="analytics"),
-               url(r'^dashboardaddorremsliver/$', self.admin_view(DashboardAddOrRemoveSliverView.as_view()),
-                    name="addorremsliver"),
                url(r'^tenantaddorremsliver/$', self.admin_view(TenantAddOrRemoveSliverView.as_view()),
                     name="tenantaddorremsliver"),
                url(r'^tenantview/$', self.admin_view(TenantViewData.as_view()),
