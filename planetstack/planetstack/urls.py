@@ -48,7 +48,7 @@ urlpatterns = patterns('',
     url(r'^files/', redirect_to_apache),
 
     #Adding in rest_framework urls
-    url(r'^plstackapi/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^xos/', include('rest_framework.urls', namespace='rest_framework')),
 
     # XOSLib rest methods
     url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),

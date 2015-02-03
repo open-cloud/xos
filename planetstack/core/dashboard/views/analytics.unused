@@ -3,6 +3,8 @@ import random
 from planetstack_analytics import DoPlanetStackAnalytics
 
 class DashboardAnalyticsAjaxView(View):
+    url = r'^analytics/(?P<name>\w+)/$'
+
     def get(self, request, name="hello_world", **kwargs):
         if (name == "bigquery"):
             (mimetype, data) = DoPlanetStackAnalytics(request)
