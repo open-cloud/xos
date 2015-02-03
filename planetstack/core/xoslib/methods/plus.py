@@ -27,6 +27,19 @@ class PlusSerializerMixin():
 
 # XXX this was lifted and hacked up a bit from genapi.py
 class PlusListCreateAPIView(generics.ListCreateAPIView):
+    # rest_framework 2.x
+    #   create() calls pre_save, then serializer.save, then post_save
+    def pre_save(self, obj):
+        super(PlusListCreateAPIView,self).pre_save(obj)
+        obj.caller = self.request.user
+
+    # rest_framework 3.x
+    #   pre_save/serializer.save/post_save is replaced with perform_save
+    #   *** UNTESTED ***
+    def perform_create(self, serializer):
+        self.pre_save(serializer.object)
+        super(PlusListCreateAPIView,self).perform_save(serializer)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if not (serializer.is_valid()):
@@ -36,14 +49,10 @@ class PlusListCreateAPIView(generics.ListCreateAPIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         obj = serializer.object
         obj.caller = request.user
-        if obj.can_update(request.user):
-            return super(PlusListCreateAPIView, self).create(request, *args, **kwargs)
-        else:
+        if not obj.can_update(request.user):
             raise Exception("failed obj.can_update")
 
         ret = super(PlusListCreateAPIView, self).create(request, *args, **kwargs)
-        if (ret.status_code%100 != 200):
-            raise Exception(ret.data)
 
         return ret
 
@@ -83,10 +92,12 @@ class PlusRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
         if self.object is None:
             self.object = serializer.save(force_insert=True)
+            self.object.caller = request.user
             self.post_save(self.object, created=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         self.object = serializer.save(force_update=True)
+        self.object.caller = request.user
         self.post_save(self.object, created=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
