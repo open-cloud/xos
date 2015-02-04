@@ -1,4 +1,4 @@
-NAME = opencloud
+NAME = xos
 SPECFILE = $(NAME).spec
 VERSION = $(shell rpm -q --specfile $(SPECFILE) --qf '%{VERSION}\n' | head -n 1)
 RELEASE = $(shell rpm -q --specfile $(SPECFILE) --qf '%{RELEASE}\n' | head -n 1)
