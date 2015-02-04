@@ -16,7 +16,7 @@ import sys
 
 from operator import itemgetter, attrgetter
 
-REST_API="http://node43.princeton.vicci.org:8000/plstackapi/"
+REST_API="http://node43.princeton.vicci.org:8000/xos/"
 USERS_API = REST_API + "users/"
 SLICES_API = REST_API + "slices/"
 SITES_API = REST_API + "sites/"
