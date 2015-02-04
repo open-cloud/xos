@@ -5,11 +5,13 @@ if [ -z "$1" ]; then
     exit
 fi
 
+XOS_DIR=/opt/planetstack
 BACKUP_DIR=/opt/planetstack_backups
+DBNAME=planetstack
 
 DJANGO_17=`python -c "import django; from distutils.version import StrictVersion; print int(StrictVersion(django.get_version()) >= StrictVersion('1.7'))"`
 
-cd /opt/planetstack
+cd $XOS_DIR
 
 function ensure_postgres_running {
     # "sudo -u postgres pg_ctl -D /var/lib/postgres/data status" doesn't work
@@ -36,36 +38,36 @@ function ensure_postgres_running {
 
 }
 function createdb {
-    echo "Creating OpenCloud database..."
-    sudo -u postgres createdb planetstack
+    echo "Creating XOS database..."
+    sudo -u postgres createdb $DBNAME
 }
 function dropdb {
-    echo "Dropping OpenCloud database..."
-    sudo -u postgres dropdb planetstack
+    echo "Dropping XOS database..."
+    sudo -u postgres dropdb $DBNAME
 }
 function syncdb {
-    echo "Syncing OpenCloud services..."
-    python /opt/planetstack/manage.py syncdb --noinput
+    echo "Syncing XOS services..."
+    python $XOSDIR/manage.py syncdb --noinput
     if [[ $DJANGO_17 ]]; then
         echo "Loading initial data from fixture..."
-        python /opt/planetstack/manage.py --noobserver --nomodelpolicy loaddata /opt/planetstack/core/fixtures/initial_data.json
+        python $XOSDIR/manage.py --noobserver --nomodelpolicy loaddata $XOSDIR/core/fixtures/initial_data.json
     fi
 }
 function evolvedb {
-    echo "Evolving OpenCloud services..."
-    python /opt/planetstack/manage.py evolve --hint --execute --noinput
+    echo "Evolving XOS services..."
+    python $XOSDIR/manage.py evolve --hint --execute --noinput
 }
 function migratedb {
-    echo "Migrating OpenCloud services..."
-    python /opt/planetstack/manage.py migrate
+    echo "Migrating XOS services..."
+    python $XOSDIR/manage.py migrate
 }
 function stopserver {
-    echo "Stopping any running OpenCloud Service(s)"
+    echo "Stopping any running XOS Service(s)"
     pkill -f "python.*runserver"
 }
 function runserver {
-    PUBLIC_HOSTNAME=`/opt/planetstack/planetstack-config.py get server_hostname $HOSTNAME`
-    echo "Starting OpenCloud Service on $PUBLIC_HOSTNAME:8000"
+    PUBLIC_HOSTNAME=`$XOSDIR/xos-config.py get server_hostname $HOSTNAME`
+    echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
     python manage.py runserver  $PUBLIC_HOSTNAME:8000&
 }
 
@@ -115,8 +117,8 @@ if [ "$COMMAND" = "repairdb" ]; then
     dumpdata
     # TODO: This is where we could run migration scripts to upgrade the
     #   dumped data to the new models.
-    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    mv $XOSDIR/core/fixtures/initial_data.json $XOSDIR/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOSDIR/core/fixtures/initial_data.json
     dropdb
     createdb
     syncdb
@@ -128,8 +130,8 @@ if [ "$COMMAND" = "restoredb" ]; then
     fi
     stopserver
     ensure_postgres_running
-    mv /opt/planetstack/core/fixtures/initial_data.json /opt/planetstack/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json /opt/planetstack/core/fixtures/initial_data.json
+    mv $XOSDIR/core/fixtures/initial_data.json $XOSDIR/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOSDIR/core/fixtures/initial_data.json
     dropdb
     createdb
     syncdb
