@@ -8,10 +8,8 @@ import json
 import traceback
 import urllib2
 
-if os.path.exists("/home/smbaker/projects/vicci/plstackapi/planetstack"):
-    sys.path.append("/home/smbaker/projects/vicci/plstackapi/planetstack")
-else:
-    sys.path.append("/opt/planetstack")
+# XXX hardcoded path
+sys.path.append("/opt/planetstack")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from django.conf import settings
