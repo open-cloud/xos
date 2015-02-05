@@ -25,8 +25,8 @@ class DashboardDynamicView(TemplateView):
             return self.singleDashboardView(request, name, context)
 
     def readTemplate(self, fn):
-        TEMPLATE_DIRS = ["/opt/planetstack/templates/admin/dashboard/",
-                         "/opt/planetstack/core/xoslib/dashboards/"]
+        TEMPLATE_DIRS = [XOS_DIR + "/templates/admin/dashboard/",
+                         XOS_DIR + "/core/xoslib/dashboards/"]
 
         for template_dir in TEMPLATE_DIRS:
             pathname = os.path.join(template_dir, fn) + ".html"
