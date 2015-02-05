@@ -17,6 +17,8 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow,run
 
+from bigquery_config import BIGQUERY_SECRETS_FN, BIGQUERY_CREDENTIALS_FN
+
 """
 yum -y install python-httplib2
 easy_install python_gflags
@@ -27,7 +29,7 @@ easy_install google_api_python_client
 PROJECT_NUMBER = '549187599759'
 
 try:
-    FLOW = flow_from_clientsecrets('/opt/planetstack/hpc_wizard/client_secrets.json',
+    FLOW = flow_from_clientsecrets(BIGQUERY_SECRETS_FN,
                                    scope='https://www.googleapis.com/auth/bigquery')
 except:
     print "exception while initializing bigquery flow"
@@ -60,7 +62,7 @@ class HpcQuery:
         return resp
 
     def run_query(self, query):
-	storage = Storage('/opt/planetstack/hpc_wizard/bigquery_credentials.dat')
+	storage = Storage(BIGQUERY_CREDENTIALS_FN)
  	credentials = storage.get()
 
 	if credentials is None or credentials.invalid:
