@@ -259,7 +259,7 @@ LOGGING = {
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
-ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + "/private_keys'
+ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'
 ENCRYPTED_FIELD_MODE = 'ENCRYPT'
 
 STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
