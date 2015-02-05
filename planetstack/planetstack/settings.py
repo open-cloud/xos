@@ -6,6 +6,7 @@ from config import Config
 config = Config()
 
 GEOIP_PATH = "/usr/share/GeoIP"
+XOS_DIR = "/opt/xos"
  
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -80,11 +81,8 @@ STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = ( "/opt/planetstack/core/static/",
-                     "/opt/planetstack/core/xoslib/static/",
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+STATICFILES_DIRS = ( XOS_DIR + "/core/static/",
+                     XOS_DIR + "/core/xoslib/static/",
 )
 
 # List of finder classes that know how to find static files in
@@ -125,8 +123,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/opt/planetstack/templates",
-    "/opt/planetstack/core/xoslib/templates",    
+    XOS_DIR + "/templates",
+    XOS_DIR + "/core/xoslib/templates",    
 )
 
 INSTALLED_APPS = (
@@ -261,7 +259,7 @@ LOGGING = {
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
-ENCRYPTED_FIELDS_KEYDIR = '/opt/planetstack/private_keys'
+ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + "/private_keys'
 ENCRYPTED_FIELD_MODE = 'ENCRYPT'
 
 STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
