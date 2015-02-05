@@ -1,7 +1,7 @@
 import os
 import base64
 from django.db.models import F, Q
-from planetstack.config import Config
+from planetstack.config import Config, XOS_DIR
 from ec2_observer.syncstep import SyncStep
 from core.models.image import Image
 from ec2_observer.awslib import *
@@ -21,10 +21,10 @@ class SyncImages(SyncStep):
         new_images = []
 
         try:
-            aws_images = json.loads(open('/opt/planetstack/aws-images').read())
+            aws_images = json.loads(open(XOS_DIR + '/aws-images').read())
         except:
             aws_images = aws_run('ec2 describe-images --owner 099720109477')
-            open('/opt/planetstack/aws-images','w').write(json.dumps(aws_images))
+            open(XOS_DIR + '/aws-images','w').write(json.dumps(aws_images))
 
         
 
