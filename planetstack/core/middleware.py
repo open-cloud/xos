@@ -4,7 +4,7 @@ _active = local()
 
 def get_request():
     if not hasattr(_active, "request"):
-        raise Exception("Please add 'core.middleware.GlobalRequestMiddleware' to /opt/planetstack/planetstack/settings.py:MIDDLEWARE_CLASSES")
+        raise Exception("Please add 'core.middleware.GlobalRequestMiddleware' to <XOS_DIR>/planetstack/settings.py:MIDDLEWARE_CLASSES")
     return _active.request
 
 class GlobalRequestMiddleware(object):
