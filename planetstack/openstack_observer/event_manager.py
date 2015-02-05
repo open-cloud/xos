@@ -1,7 +1,7 @@
 import threading
 import requests, json
 
-from planetstack.config import Config
+from planetstack.config import Config, XOS_DIR
 
 import uuid
 import os
@@ -16,13 +16,13 @@ random_client_id=None
 def get_random_client_id():
     global random_client_id
 
-    if (random_client_id is None) and os.path.exists("/opt/planetstack/random_client_id"):
+    if (random_client_id is None) and os.path.exists(XOS_DIR + "/random_client_id"):
         # try to use the last one we used, if we saved it
         try:
-            random_client_id = open("/opt/planetstack/random_client_id","r").readline().strip()
+            random_client_id = open(XOS_DIR+"/random_client_id","r").readline().strip()
             print "get_random_client_id: loaded %s" % random_client_id
         except:
-            print "get_random_client_id: failed to read /opt/planetstack/random_client_id"
+            print "get_random_client_id: failed to read " + XOS_DIR + "/random_client_id"
 
     if random_client_id is None:
         random_client_id = base64.urlsafe_b64encode(os.urandom(12))
@@ -30,9 +30,9 @@ def get_random_client_id():
 
         # try to save it for later (XXX: could race with another client here)
         try:
-            open("/opt/planetstack/random_client_id","w").write("%s\n" % random_client_id)
+            open(XOS_DIR + "/random_client_id","w").write("%s\n" % random_client_id)
         except:
-            print "get_random_client_id: failed to write /opt/planetstack/random_client_id"
+            print "get_random_client_id: failed to write " + XOS_DIR + "/random_client_id"
 
     return random_client_id
 
