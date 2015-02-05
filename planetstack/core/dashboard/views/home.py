@@ -1,13 +1,5 @@
 from view_common import *
 
-class DashboardWelcomeView(TemplateView):
-    template_name = 'admin/dashboard/welcome.html'
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        context = getDashboardContext(request.user, context)
-        return self.render_to_response(context=context)
-
 class DashboardDynamicView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
        {% load admin_static %}
