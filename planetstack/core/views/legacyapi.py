@@ -6,10 +6,6 @@ import time
 import traceback
 import xmlrpclib
 
-#  XXX for testing
-#sys.path.append("/opt/planetstack")
-#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
-
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
 from django.http import HttpResponse
