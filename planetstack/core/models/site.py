@@ -214,6 +214,17 @@ class Deployment(PlCoreBase):
 
         return Deployment.objects.filter(id__in=ids)
 
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+            
+        if self.deploymentprivileges.filter(user=user, role__role='admin'):
+            return True
+          
+        return False    
+          
     def __unicode__(self):  return u'%s' % (self.name)
 
 class DeploymentRole(PlCoreBase):
