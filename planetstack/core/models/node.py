@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Site, SiteDeployment
+from core.models import Site, SiteDeployment, SitePrivilege
 from core.models import Tag
 from django.contrib.contenttypes import generic
 
@@ -20,3 +20,14 @@ class Node(PlCoreBase):
             self.site = self.site_deployment.site
 
         super(Node, self).save(*args, **kwds)
+
+    def can_update(self, user):
+        if user.is_readonly:
+            return False
+        if user.is_admin:
+            return True
+        if SitePrivilege.objects.filter(
+            user=user, site=self.site, role__role__in=['admin','tech']):
+            return True
+            
+        return False                    
