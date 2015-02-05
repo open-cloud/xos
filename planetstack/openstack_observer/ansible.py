@@ -10,7 +10,7 @@ import re
 
 # XXX hardcoded path
 #    is there any reason why we aren't importing planetstack.config ?
-XOS_DIR="/opt/planetstack"
+XOS_DIR="/opt/xos"
 
 try:
     step_dir = Config().observer_steps_dir

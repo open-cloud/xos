@@ -19,7 +19,7 @@ ratelimit_enabled=0
 omf_enabled=0
 mail_support_address=support@localhost
 nova_enabled=True
-logfile=/var/log/planetstack.log
+logfile=/var/log/xos.log
 
 [nova]
 admin_user=admin@domain.com
