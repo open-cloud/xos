@@ -1,4 +1,3 @@
-# /opt/planetstack/core/dashboard/views/helloworld.py
 import datetime
 import os
 import sys
