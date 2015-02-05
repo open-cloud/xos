@@ -9,7 +9,7 @@ import traceback
 import urllib2
 
 # XXX hardcoded path
-sys.path.append("/opt/planetstack")
+sys.path.append("/opt/xos")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from django.conf import settings

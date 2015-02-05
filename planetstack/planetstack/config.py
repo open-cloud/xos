@@ -12,7 +12,7 @@ default_config = \
 """
 """
 
-XOS_DIR = "/opt/planetstack"
+XOS_DIR = "/opt/xos"
 DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_config")
 
 # warning for now, remove once we're sure everyone has made the change
