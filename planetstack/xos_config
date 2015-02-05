@@ -32,6 +32,6 @@ default_security_group=default
 ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
 
 [observer]
-images_directory=/opt/planetstack/images
-dependency_graph=/opt/planetstack/model-deps
-logfile=/var/log/planetstack_backend.log
+images_directory=/opt/xos/images
+dependency_graph=/opt/xos/model-deps
+logfile=/var/log/xos_backend.log
