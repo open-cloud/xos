@@ -24,9 +24,9 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-dependency_graph=/opt/planetstack/syndicate_observer/model-deps
-steps_dir=/opt/planetstack/syndicate_observer/steps
-deleters_dir=/opt/planetstack/syndicate_observer/deleters
+dependency_graph=/opt/xos/syndicate_observer/model-deps
+steps_dir=/opt/xos/syndicate_observer/steps
+deleters_dir=/opt/xos/syndicate_observer/deleters
 log_file=console
 driver=None
 
