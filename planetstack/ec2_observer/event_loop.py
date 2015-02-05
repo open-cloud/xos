@@ -16,7 +16,7 @@ from django.db.models import F, Q
 from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
-from planetstack.config import Config
+from planetstack.config import Config, XOS_DIR
 from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort
@@ -82,7 +82,7 @@ class PlanetStackObserver:
 			if hasattr(Config(), "observer_steps_dir"):
 				step_dir = Config().observer_steps_dir
 			else:
-				step_dir = "/opt/planetstack/observer/steps"
+				step_dir = XOS_DIR + "/observer/steps"
 
 		for fn in os.listdir(step_dir):
 			pathname = os.path.join(step_dir,fn)
@@ -336,7 +336,7 @@ class PlanetStackObserver:
 
 		while True:
 			try:
-				error_map_file = getattr(Config(), "error_map_path", "/opt/planetstack/error_map.txt")
+				error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
 				self.error_mapper = ErrorMapper(error_map_file)
 
 				# Set of whole steps that failed
