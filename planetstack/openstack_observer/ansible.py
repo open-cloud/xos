@@ -8,11 +8,15 @@ import string
 import random
 import re
 
+# XXX hardcoded path
+#    is there any reason why we aren't importing planetstack.config ?
+XOS_DIR="/opt/planetstack"
+
 try:
     step_dir = Config().observer_steps_dir
     sys_dir = Config().observer_sys_dir
 except:
-    step_dir = '/opt/planetstack/observer/steps'
+    step_dir = XOS_DIR + '/observer/steps'
     sys_dir = '/opt/opencloud'
 
 os_template_loader = jinja2.FileSystemLoader( searchpath=step_dir)
@@ -63,7 +67,7 @@ def run_template(name, opts,path='', expected_num=None):
     f.write(buffer)
     f.flush()
 
-    run = os.popen('/opt/planetstack/observer/run_ansible %s'%shellquote(fqp))
+    run = os.popen(XOS_DIR + "/observer/run_ansible %s'%shellquote(fqp))
     #run = os.popen('ansible-playbook -v %s'%shellquote(fqp))
     msg = run.read()
     status = run.close()
