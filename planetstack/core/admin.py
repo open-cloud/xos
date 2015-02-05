@@ -636,7 +636,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'), ('sitedeployments', 'Site Deployments'))
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.user.isReadOnlyUser():
+        if request.user.isReadOnlyUser() or not request.user.is_admin:
             kwargs["form"] = DeploymentAdminROForm
         else:
             kwargs["form"] = DeploymentAdminForm
