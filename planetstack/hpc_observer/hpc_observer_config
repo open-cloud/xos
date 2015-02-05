@@ -22,9 +22,9 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-dependency_graph=/opt/planetstack/hpc_observer/model-deps
-steps_dir=/opt/planetstack/hpc_observer/steps
-deleters_dir=/opt/planetstack/hpc_observer/deleters
+dependency_graph=/opt/xos/hpc_observer/model-deps
+steps_dir=/opt/xos/hpc_observer/steps
+deleters_dir=/opt/xos/hpc_observer/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
