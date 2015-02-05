@@ -47,26 +47,26 @@ function dropdb {
 }
 function syncdb {
     echo "Syncing XOS services..."
-    python $XOSDIR/manage.py syncdb --noinput
+    python $XOS_DIR/manage.py syncdb --noinput
     if [[ $DJANGO_17 ]]; then
         echo "Loading initial data from fixture..."
-        python $XOSDIR/manage.py --noobserver --nomodelpolicy loaddata $XOSDIR/core/fixtures/initial_data.json
+        python $XOS_DIR/manage.py --noobserver --nomodelpolicy loaddata $XOS_DIR/core/fixtures/initial_data.json
     fi
 }
 function evolvedb {
     echo "Evolving XOS services..."
-    python $XOSDIR/manage.py evolve --hint --execute --noinput
+    python $XOS_DIR/manage.py evolve --hint --execute --noinput
 }
 function migratedb {
     echo "Migrating XOS services..."
-    python $XOSDIR/manage.py migrate
+    python $XOS_DIR/manage.py migrate
 }
 function stopserver {
     echo "Stopping any running XOS Service(s)"
     pkill -f "python.*runserver"
 }
 function runserver {
-    PUBLIC_HOSTNAME=`$XOSDIR/xos-config.py get server_hostname $HOSTNAME`
+    PUBLIC_HOSTNAME=`$XOS_DIR/xos-config.py get server_hostname $HOSTNAME`
     echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
     python manage.py runserver  $PUBLIC_HOSTNAME:8000&
 }
@@ -117,8 +117,8 @@ if [ "$COMMAND" = "repairdb" ]; then
     dumpdata
     # TODO: This is where we could run migration scripts to upgrade the
     #   dumped data to the new models.
-    mv $XOSDIR/core/fixtures/initial_data.json $XOSDIR/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json $XOSDIR/core/fixtures/initial_data.json
+    mv $XOS_DIR/core/fixtures/initial_data.json $XOS_DIR/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/initial_data.json
     dropdb
     createdb
     syncdb
@@ -130,8 +130,8 @@ if [ "$COMMAND" = "restoredb" ]; then
     fi
     stopserver
     ensure_postgres_running
-    mv $XOSDIR/core/fixtures/initial_data.json $XOSDIR/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json $XOSDIR/core/fixtures/initial_data.json
+    mv $XOS_DIR/core/fixtures/initial_data.json $XOS_DIR/core/fixtures/initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/initial_data.json
     dropdb
     createdb
     syncdb
