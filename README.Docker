@@ -1,0 +1,20 @@
+The Dockerfile in this directory will build a Docker image for running
+XOS using the Django development server.  Here's how to do it:
+
+1. Currently planetstack/core/fixtures/initial_data.json is broken!
+   Overwrite this file with a working fixture, e.g., by dumping
+   portal.opencloud.us's database:
+
+   $ sudo /opt/xos/scripts/opencloud dumpdata
+
+2. $ docker build -t xos .
+
+3. $ docker run -t -i -p 8000:8000 xos
+
+4. Now you will have a bash prompt as root inside the XOS container.
+   Start up XOS:
+   
+   # /opt/xos/scripts/opencloud runserver
+
+You can access the XOS login at http:<server>:8000, where <server> is
+the name of the server running Docker.
