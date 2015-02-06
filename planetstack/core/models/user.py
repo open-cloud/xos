@@ -171,7 +171,7 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     updated = models.DateTimeField(auto_now=True)
     enacted = models.DateTimeField(null=True, default=None)
     policed = models.DateTimeField(null=True, default=None)
-    backend_status = models.CharField(max_length=140,
+    backend_status = models.CharField(max_length=1024,
                                       default="Provisioning in progress")
     deleted = models.BooleanField(default=False)
 
