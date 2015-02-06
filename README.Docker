@@ -1,5 +1,6 @@
 The Dockerfile in this directory will build a Docker image for running
-XOS using the Django development server.  Here's how to do it:
+XOS using the Django development server.  It copies whatever files are 
+in the local repository into the image. Here's how to do it:
 
 1. Currently planetstack/core/fixtures/initial_data.json is broken!
    Overwrite this file with a working fixture, e.g., by dumping
