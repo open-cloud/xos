@@ -177,7 +177,7 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
     backend_register = models.CharField(max_length=140,
                                       default="{}", null=True)
 
-    backend_status = models.CharField(max_length=140,
+    backend_status = models.CharField(max_length=1024,
                                       default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
 
