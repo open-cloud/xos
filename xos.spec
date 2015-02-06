@@ -72,32 +72,34 @@ if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
 fi
 
 if [ "$1" == 2 ] ; then
-    if [[ -e /opt/planetstack/scripts/opencloud ]]; then
+    if [[ -e /opt/xos/scripts/opencloud ]]; then
         echo "UPGRADE - saving current state"
-        /opt/planetstack/scripts/opencloud dumpdata
+        /opt/xos/scripts/opencloud dumpdata
     fi
 fi
 
 %install
 rm -rf %{buildroot}
 mkdir -p  %{buildroot}
-install -d %{buildroot}/opt/planetstack
+install -d %{buildroot}/opt/xos
 install -d %{buildroot}/etc/init.d
 
 # in builddir
 
-
+rm -rf %{buildroot}/opt/xos
 # don't copy symbolic links (they are handled in %post)
 rsync -rptgoD ./planetstack %{buildroot}/opt/.  
+# XXX temporary - rename /opt/planetstack to /opt/xos
+mv %{buildroot}/opt/planetstack %{buildroot}/opt/xos
 cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
 
-find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
+find %{buildroot}/opt/xos -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
 echo /etc/init.d/plstackobserver >> %{_tmppath}/tmp-filelist
 
 # remove config files from the file list (see %config below)
 cat > %{_tmppath}/config-files << "EOF"
-/opt/planetstack/xos_config
-/opt/planetstack/deployment_auth.py
+/opt/xos/xos_config
+/opt/xos/deployment_auth.py
 EOF
 
 sort %{_tmppath}/tmp-filelist > %{_tmppath}/tmp-filelist.sorted
@@ -112,26 +114,26 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
-%config /opt/planetstack/xos_config
-%config /opt/planetstack/deployment_auth.py
-%config /opt/planetstack/model-deps
+%config /opt/xos/xos_config
+%config /opt/xos/deployment_auth.py
+%config /opt/xos/model-deps
 
 %post
-ln -s ec2_observer /opt/planetstack/observer
-ln -s config-opencloud.py /opt/planetstack/syndicate_observer/syndicatelib_config/config.py
+ln -s openstack_observer /opt/xos/observer
+#ln -s config-opencloud.py /opt/xos/syndicate_observer/syndicatelib_config/config.py
 
-if [ ! -e /opt/planetstack/public_keys ]; then
-    cd /opt/planetstack
+if [ ! -e /opt/xos/public_keys ]; then
+    cd /opt/xos
     scripts/opencloud genkeys
 fi
 
 if [ "$1" == 1 ] ; then
     echo "NEW INSTALL - initializing database"
-    /opt/planetstack/scripts/opencloud initdb
+    /opt/xos/scripts/opencloud initdb
 else
     # scripts/opencloud will choose evolve or migrate depending on django version
     echo "UPGRADE - doing evolution/migration"
-    /opt/planetstack/scripts/opencloud evolvedb
+    /opt/xos/scripts/opencloud evolvedb
 fi
 
 # Clone ansible with latest openstack modules
@@ -144,12 +146,12 @@ EOF
 
 
 # start the server
-/opt/planetstack/scripts/opencloud runserver
+/opt/xos/scripts/opencloud runserver
 
 %preun
 if [ "$1" = 0 ] ; then
     echo "UNINSTALL - destroying xos"
-    rm -rf /opt/planetstack
+    rm -rf /opt/xos
 fi
 
 %changelog
