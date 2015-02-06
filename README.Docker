@@ -18,3 +18,7 @@ XOS using the Django development server.  Here's how to do it:
 
 You can access the XOS login at http:<server>:8000, where <server> is
 the name of the server running Docker.
+
+STILL TO DO
+-----------
+* Test Observer
