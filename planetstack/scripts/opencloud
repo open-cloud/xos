@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "$1" ]; then
     echo usage: $0 "[initdb | createdb | dropdb | syncdb | runserver | resetdb | dumpdata]"
@@ -24,9 +24,8 @@ function ensure_postgres_running {
         return
     fi
 
-    /sbin/service postgresql initdb
-    /sbin/service postgresql start
-    /sbin/chkconfig postgresql on
+    service postgresql initdb
+    service postgresql start
 
     netstat -nl | grep -i ":5432 "
     if [[ $? != 0 ]]; then
@@ -66,6 +65,7 @@ function stopserver {
     pkill -f "python.*runserver"
 }
 function runserver {
+    ensure_postgres_running
     PUBLIC_HOSTNAME=`$XOS_DIR/xos-config.py get server_hostname $HOSTNAME`
     echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
     python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure&
