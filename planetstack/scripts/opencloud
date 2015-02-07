@@ -68,7 +68,7 @@ function stopserver {
 function runserver {
     PUBLIC_HOSTNAME=`$XOS_DIR/xos-config.py get server_hostname $HOSTNAME`
     echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
-    python manage.py runserver  $PUBLIC_HOSTNAME:8000&
+    python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure&
 }
 
 function dumpdata {
