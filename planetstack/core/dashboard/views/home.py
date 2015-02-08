@@ -1,13 +1,5 @@
 from view_common import *
 
-class DashboardWelcomeView(TemplateView):
-    template_name = 'admin/dashboard/welcome.html'
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        context = getDashboardContext(request.user, context)
-        return self.render_to_response(context=context)
-
 class DashboardDynamicView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
        {% load admin_static %}
@@ -33,8 +25,8 @@ class DashboardDynamicView(TemplateView):
             return self.singleDashboardView(request, name, context)
 
     def readTemplate(self, fn):
-        TEMPLATE_DIRS = ["/opt/planetstack/templates/admin/dashboard/",
-                         "/opt/planetstack/core/xoslib/dashboards/"]
+        TEMPLATE_DIRS = [XOS_DIR + "/templates/admin/dashboard/",
+                         XOS_DIR + "/core/xoslib/dashboards/"]
 
         for template_dir in TEMPLATE_DIRS:
             pathname = os.path.join(template_dir, fn) + ".html"

@@ -69,7 +69,7 @@ class APITestCase(TestCase):
 
 
 	def create(self, model, mplural, record):
-		request = self.client.put('/plstackapi/%s/'%mplural,record['fields'])
+		request = self.client.put('/xos/%s/'%mplural,record['fields'])
 
 		#if (len2==len1):
 		#	raise Exception('Could not delete %s/%d'%(model,pk))
@@ -81,7 +81,7 @@ class APITestCase(TestCase):
 		record_to_update = src_record['fields']
 		now = datetime.now()
 		record_to_update['enacted']=now
-		response = self.client.put('/plstackapi/%s/%d/'%(mplural,pk),record_to_update)
+		response = self.client.put('/xos/%s/%d/'%(mplural,pk),record_to_update)
 		self.assertEqual(response.data['enacted'],now)
 
 		return
@@ -89,14 +89,14 @@ class APITestCase(TestCase):
 	def delete(self, model, mplural, pk):
 		mclass = globals()[model]
 		len1 = len(mclass.objects.all())
-		response = self.client.delete('/plstackapi/%s/%d/'%(mplural,pk))
+		response = self.client.delete('/xos/%s/%d/'%(mplural,pk))
 		len2 = len(mclass.objects.all())
 		self.assertNotEqual(len1,len2)
 
 		return
 
 	def retrieve(self, m, mplural, mlower):
-		response = self.client.get('/plstackapi/%s/'%mplural)
+		response = self.client.get('/xos/%s/'%mplural)
 		#force_authenticate(request,user=self.calling_user)
 		self.check_items(response.data,self.data_dict[mlower])
 

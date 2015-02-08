@@ -85,16 +85,16 @@ class Slice(PlCoreBase):
             return False
         if user.is_admin:
             return True
+        if user == self.creator:
+            return True    
         # slice admins can update
-        slice_privs = SlicePrivilege.objects.filter(user=user, slice=self)
-        for slice_priv in slice_privs:
-            if slice_priv.role.role == 'admin':
-                return True
+        if SlicePrivilege.objects.filter(
+            user=user, slice=self, role__role='admin'):
+            return True
         # site pis can update
-        site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
-        for site_priv in site_privs:
-            if site_priv.role.role == 'pi':
-                return True
+        if SitePrivilege.objects.filter(
+            user=user, site=self.site, role__role__in=['admin', 'pi']):
+            return True
  
         return False
 

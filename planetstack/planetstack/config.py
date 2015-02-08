@@ -12,8 +12,8 @@ default_config = \
 """
 """
 
-XOS_ROOT = "/opt/planetstack"
-DEFAULT_CONFIG_FN = os.path.join(XOS_ROOT, "xos_config")
+XOS_DIR = "/opt/xos"
+DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_config")
 
 # warning for now, remove once we're sure everyone has made the change
 if (os.path.exists("/opt/planetstack/plstackapi_config") and (not os.path.exists(DEFAULT_CONFIG_FN))):

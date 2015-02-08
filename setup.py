@@ -23,4 +23,4 @@ setup(name='planetstack',
         ('/lib/systemd/system/', ['planetstack/redhat/planetstack-backend.service']),
         ])
 
-copytree('planetstack/', '/opt/planetstack')
+copytree('planetstack/', '/opt/xos')

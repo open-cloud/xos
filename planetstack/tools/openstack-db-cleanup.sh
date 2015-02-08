@@ -1,11 +1,13 @@
 #! /bin/bash
 
 # to install
-#    chmod 0755 /opt/planetstack/openstack/openstack-db-cleanup.sh
-#    ln -s /opt/planetstack/openstack/openstack-db-cleanup.sh /etc/cron.daily/openstack-db-cleanup.cron
+#    chmod 0755 /opt/xos/openstack/openstack-db-cleanup.sh
+#    ln -s /opt/xos/openstack/openstack-db-cleanup.sh /etc/cron.daily/openstack-db-cleanup.cron
 
-mkdir -p /opt/planetstack/ovs-backups
-BACKUP_NAME=/opt/planetstack/ovs-backups/backup-`date "+%Y-%M-%d"`.sql
+XOS_DIR="/opt/xos"
+
+mkdir -p $XOS_DIR/ovs-backups
+BACKUP_NAME=$XOS_DIR/ovs-backups/backup-`date "+%Y-%M-%d"`.sql
 mysqldump --create-options --routines --triggers --databases keystone ovs_quantum nova glance cinder > $BACKUP_NAME
 gzip $BACKUP_NAME
 

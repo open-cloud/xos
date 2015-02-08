@@ -1,13 +1,13 @@
 [Unit]
-Description=PlanetStack Observer
+Description=XOS Observer
 After=syslog.target network.target
 
 [Service]
 Type=forking
 User=root
-PIDFile=/var/run/planetstack-backend.pid
-ExecStart=/usr/sbin/daemonize -c /opt/planetstack -p /var/run/planetstack-backend.pid /opt/planetstack/planetstack-backend.py
-ExecStop=kill $(cat /var/run/planetstack-backend.pid)
+PIDFile=/var/run/xos-observer.pid
+ExecStart=/usr/sbin/daemonize -c /opt/xos -p /var/run/xos-observer.pid /opt/xos/xos-observer.py
+ExecStop=kill $(cat /var/run/xos-observer.pid)
 
 [Install]
 WantedBy=multi-user.target
