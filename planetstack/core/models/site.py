@@ -121,17 +121,6 @@ class Site(PlCoreBase):
                 return True
         return False 
 
-    @staticmethod
-    def select_by_user(user):
-        if user.is_admin:
-            qs = Site.objects.all()
-        else:
-            site_ids = [sp.site.id for sp in SitePrivilege.objects.filter(user=user)]
-            site_ids.append(user.site.id)
-            qs = Site.objects.filter(id__in=site_ids)
-        return qs
-
-
 class SiteRole(PlCoreBase):
 
     ROLE_CHOICES = (('admin','Admin'),('pi','PI'),('tech','Tech'),('billing','Billing'))
