@@ -104,7 +104,14 @@ class SyncStep(object):
                         o.save(update_fields=['enacted','backend_status','backend_register'])
                 except Exception,e:
                     logger.log_exc("sync step failed!")
-                    str_e = '%r'%e
+                    try:
+                        if (o.backend_status.startswith('2 - ')):
+                            str_e = '%s // %r'%(o.backend_status[4:],e)
+                        else:
+                            str_e = '%r'%e
+                    except:
+                        str_e = '%r'%e
+
                     try:
                         o.backend_status = '2 - %s'%self.error_map.map(str_e)
                     except:
@@ -131,7 +138,7 @@ class SyncStep(object):
                     # DatabaseError: value too long for type character varying(140)
                     if (o.pk):
                         try:
-                            o.backend_status = o.backend_status[:140]
+                            o.backend_status = o.backend_status[:1024]
                             o.save(update_fields=['backend_status','backend_register'])
                         except:
                             print "Could not update backend status field!"
