@@ -12,6 +12,16 @@ import pdb
 
 logger = Logger(level=logging.INFO)
 
+def f7(seq):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in seq if not (x in seen or seen_add(x))]
+
+def elim_dups(backend_str):
+    strs = backend_str.split(' // ')
+    strs2 = f7(strs)
+    return ' // '.join(strs2)
+    
 def deepgetattr(obj, attr):
     return reduce(getattr, attr.split('.'), obj)
 
@@ -116,6 +126,7 @@ class SyncStep(object):
                     try:
                         if (o.backend_status.startswith('2 - ')):
                             str_e = '%s // %r'%(o.backend_status[4:],e)
+			    str_e = elim_dups(str_e)
                         else:
                             str_e = '%r'%e
                     except:
