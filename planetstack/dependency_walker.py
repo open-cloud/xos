@@ -2,7 +2,7 @@
 
 import os
 import imp
-from planetstack.config import Config
+from planetstack.config import Config, XOS_DIR
 import inspect
 import time
 import traceback
@@ -20,7 +20,7 @@ missing_links={}
 try:
 	dep_data = open(Config().dependency_graph).read()
 except:
-	dep_data = open('/opt/planetstack/model-deps').read()
+	dep_data = open(XOS_DIR + '/model-deps').read()
 
 dependencies = json.loads(dep_data)
 
