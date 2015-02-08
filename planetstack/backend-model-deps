@@ -1,0 +1,11 @@
+{
+    "Sliver": [
+	["SlicePrivilege","slice.sliceprivileges"],
+	["SitePrivilege","slice.site.siteprivileges"],
+	["ControllerImages","image.controllerimages"]
+    ] 
+    ,
+    "Network": [
+        ["Slice","network.slices"]
+    ]
+}
