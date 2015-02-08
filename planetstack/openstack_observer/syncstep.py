@@ -5,11 +5,15 @@ from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
 from django.db.models import F, Q
+from core.models import * 
 import json
 import time
 import pdb
 
 logger = Logger(level=logging.INFO)
+
+def deepgetattr(obj, attr):
+    return reduce(getattr, attr.split('.'), obj)
 
 class FailedDependency(Exception):
     pass
@@ -63,14 +67,19 @@ class SyncStep(object):
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
+ 
             try:
-                peer_object = getattr(obj, peer_name)
+                peer_object = deepgetattr(obj, peer_name)
+                try: 
+                    peer_objects = peer_object.all() 
+                except AttributeError:
+                    peer_objects = [peer_object] 
             except:
-                peer_object = None
+                peer_objects = []
 
-            if (peer_object and peer_object.pk==failed.pk and type(peer_object)==type(failed)):
-                if (obj.backend_status!=peer_object.backend_status):
-                    obj.backend_status = peer_object.backend_status
+            if (failed in peer_objects):
+                if (obj.backend_status!=failed.backend_status):
+                    obj.backend_status = failed.backend_status
                     obj.save(update_fields=['backend_status'])
                 raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
 
