@@ -1,7 +1,8 @@
 import os
 import sys
-os.chdir("/opt/planetstack")
-sys.path.append("/opt/planetstack")
+XOS_DIR="/opt/xos"
+os.chdir(XOS_DIR)
+sys.path.append(XOS_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 import django
 import core.models

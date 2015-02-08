@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
-Name: opencloud
-Version: 1.0.29
-Release: 3
+Name: xos
+Version: 1.1.0
+Release: 1
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -96,7 +96,7 @@ echo /etc/init.d/plstackobserver >> %{_tmppath}/tmp-filelist
 
 # remove config files from the file list (see %config below)
 cat > %{_tmppath}/config-files << "EOF"
-/opt/planetstack/plstackapi_config
+/opt/planetstack/xos_config
 /opt/planetstack/deployment_auth.py
 EOF
 
@@ -112,7 +112,7 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
-%config /opt/planetstack/plstackapi_config
+%config /opt/planetstack/xos_config
 %config /opt/planetstack/deployment_auth.py
 %config /opt/planetstack/model-deps
 
@@ -148,7 +148,7 @@ EOF
 
 %preun
 if [ "$1" = 0 ] ; then
-    echo "UNINSTALL - destroying planetstack"
+    echo "UNINSTALL - destroying xos"
     rm -rf /opt/planetstack
 fi
 
