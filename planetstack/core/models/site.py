@@ -111,15 +111,7 @@ class Site(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-        site_privs = SitePrivilege.objects.filter(user=user, site=self)
-        for site_priv in site_privs:
-            if site_priv.role.role == 'pi':
-                return True
-        return False 
+        return user.can_update_site(self, allow=['pi'])
 
 class SiteRole(PlCoreBase):
 
@@ -143,7 +135,7 @@ class SitePrivilege(PlCoreBase):
         super(SitePrivilege, self).delete(*args, **kwds)
 
     def can_update(self, user):
-        return self.site.can_update(user)
+        return user.can_update_site(self, allow=['pi'])
 
     @staticmethod
     def select_by_user(user):
@@ -204,16 +196,8 @@ class Deployment(PlCoreBase):
         return Deployment.objects.filter(id__in=ids)
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-            
-        if self.deploymentprivileges.filter(user=user, role__role='admin'):
-            return True
-          
-        return False    
-          
+        return user.can_update_deploymemt(self)
+    
     def __unicode__(self):  return u'%s' % (self.name)
 
 class DeploymentRole(PlCoreBase):
@@ -235,15 +219,7 @@ class DeploymentPrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-        dprivs = DeploymentPrivilege.objects.filter(user=user)
-        for dpriv in dprivs:
-            if dpriv.role.role == 'admin':
-                return True
-        return False
+        return user.can_update_deploymemt(self)
 
     @staticmethod
     def select_by_user(user):
@@ -277,13 +253,6 @@ class Controller(PlCoreBase):
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
-
-    def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-        return False
 
 class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
