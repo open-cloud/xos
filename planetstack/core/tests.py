@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 from django.test import TestCase
 from core.models import *
 from rest_framework.test import *
