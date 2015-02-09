@@ -11,7 +11,7 @@ class SliceTag(PlCoreBase):
     value = models.CharField(help_text="The value of this tag", max_length=1024)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return user.can_update_slice(self.slice)
 
     @staticmethod
     def select_by_user(user):

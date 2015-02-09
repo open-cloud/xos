@@ -20,7 +20,7 @@ class Reservation(PlCoreBase):
         return self.startTime + datetime.timedelta(hours=self.duration)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return user.can_update_slice(self.slice)
 
     @staticmethod
     def select_by_user(user):
@@ -43,7 +43,7 @@ class ReservedResource(PlCoreBase):
     def __unicode__(self):  return u'%d %s on %s' % (self.quantity, self.resource, self.sliver)
 
     def can_update(self, user):
-        return self.sliver.slice.can_update(user)
+        return user.can_update(self.sliver.slice)
 
     @staticmethod
     def select_by_user(user):
