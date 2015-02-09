@@ -294,13 +294,14 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     def can_update(self, user):
         from core.models import SitePrivilege
         _cant_update_fieldName = None
-        if user.is_readonly:
-            return False
-        if user.is_admin:
+        if user.can_update_root():
             return True
+
         # site pis can update
         site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
         for site_priv in site_privs:
+            if site_priv.role.role == 'admin':
+                return True 
             if site_priv.role.role == 'pi':
                 for fieldName in self.diff.keys():
                     if fieldName in self.PI_FORBIDDEN_FIELDS:
