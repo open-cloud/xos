@@ -395,6 +395,9 @@ XOSTenantApp.viewSlice = function(model) {
 
 XOSTenantApp.sanityCheck = function() {
     errors = [];
+    if (xos.tenant().blessed_deployments && xos.tenant().blessed_deployments.length == 0) {
+        errors.push("no blessed deployments");
+    }
     if (xos.tenant().blessed_service_classes.length == 0) {
         errors.push("no blessed service classes");
     }
@@ -412,7 +415,10 @@ XOSTenantApp.sanityCheck = function() {
     }
 
     if (errors.length > 0) {
-         $("#tenantSummary").html("Tenant view sanity check failed<br>" + errors.join("<br>"));
+         $("#tenantSummary").html("Tenant view sanity check failed: <blockquote>" + errors.join("<br>") + "</blockquote>" +
+                "Usually errors in the Tenant view imply that nodes, sites, or " +
+                "images need to be added to a Deployment. The Deployment(s) that " +
+                "the tenant view is hardcoded to use are " +  xos.tenant().blessed_deployment_names.join(",") + ".");
          return false;
     }
 
