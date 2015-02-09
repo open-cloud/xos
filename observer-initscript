@@ -9,7 +9,7 @@
 [ -f /etc/sysconfig/plstackobserver ] && . /etc/sysconfig/plstackobserver
 
 
-plstackobserver=${NODEMANAGER-"python /opt/planetstack/planetstack-backend.py -d"}
+plstackobserver=${NODEMANAGER-"python /opt/xos/xos-observer.py -d"}
 prog="OpenCloud Observer"
 pidfile=${PIDFILE-/var/run/plstackobserver.pid}
 
