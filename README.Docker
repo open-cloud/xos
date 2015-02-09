@@ -2,11 +2,20 @@ The Dockerfile in this directory will build a Docker image for running
 XOS using the Django development server.  It copies whatever files are 
 in the local repository into the image. Here's how to do it:
 
-1. Currently planetstack/core/fixtures/initial_data.json is broken!
-   Overwrite this file with a working fixture, e.g., by dumping
-   portal.opencloud.us's database:
+1. A minimal initial_data.json is provided. The login credentials
+   for this initial_data.json are username=padmin@vicci.org, 
+   password=letmein.
 
-   $ sudo /opt/xos/scripts/opencloud dumpdata
+   This initial_data.json doesn't contain any nodes and is suitable
+   for fresh installations. To obtain an initial_data.json (for demo
+   purposes) that contains an interesting set of Nodes and Slices,
+   a dump can be made on portal.opencloud.us:
+
+   1) log in to portal, and run:
+         $ sudo /opt/xos/scripts/opencloud dumpdata
+
+   2) replace the initial_data.json file with the dumpdata
+      file produced above.
 
 2. $ docker build -t xos .
 
