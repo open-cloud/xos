@@ -15,6 +15,7 @@ RUN apt-get install -y python-httplib2
 RUN apt-get install -y geoip-database libgeoip1
 RUN apt-get install -y wget
 RUN apt-get install -y python-dev
+RUN apt-get install -y libyaml-dev
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
