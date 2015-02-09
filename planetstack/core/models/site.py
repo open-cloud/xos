@@ -196,7 +196,7 @@ class Deployment(PlCoreBase):
         return Deployment.objects.filter(id__in=ids)
 
     def can_update(self, user):
-        return user.can_update_deploymemt(self)
+        return user.can_update_deployment(self)
     
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -219,7 +219,7 @@ class DeploymentPrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
     def can_update(self, user):
-        return user.can_update_deploymemt(self)
+        return user.can_update_deployment(self)
 
     @staticmethod
     def select_by_user(user):
