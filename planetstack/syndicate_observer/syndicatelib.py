@@ -1332,7 +1332,7 @@ def ft_seal_and_unseal():
 
 # run functional tests
 if __name__ == "__main__":
-    sys.path.append("/opt/planetstack")
+    sys.path.append("/opt/xos")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 
     if len(sys.argv) < 2:

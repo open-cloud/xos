@@ -1,0 +1,34 @@
+The Dockerfile in this directory will build a Docker image for running
+XOS using the Django development server.  It copies whatever files are 
+in the local repository into the image. Here's how to do it:
+
+1. A minimal initial_data.json is provided. The login credentials
+   for this initial_data.json are username=padmin@vicci.org, 
+   password=letmein.
+
+   This initial_data.json doesn't contain any nodes and is suitable
+   for fresh installations. To obtain an initial_data.json (for demo
+   purposes) that contains an interesting set of Nodes and Slices,
+   a dump can be made on portal.opencloud.us:
+
+   1) log in to portal, and run:
+         $ sudo /opt/xos/scripts/opencloud dumpdata
+
+   2) replace the initial_data.json file with the dumpdata
+      file produced above.
+
+2. $ docker build -t xos .
+
+3. $ docker run -t -i -p 8000:8000 xos
+
+4. Now you will have a bash prompt as root inside the XOS container.
+   Start up XOS:
+   
+   # /opt/xos/scripts/opencloud runserver
+
+You can access the XOS login at http:<server>:8000, where <server> is
+the name of the server running Docker.
+
+STILL TO DO
+-----------
+* Test Observer

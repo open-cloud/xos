@@ -294,13 +294,14 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
     def can_update(self, user):
         from core.models import SitePrivilege
         _cant_update_fieldName = None
-        if user.is_readonly:
-            return False
-        if user.is_admin:
+        if user.can_update_root():
             return True
+
         # site pis can update
         site_privs = SitePrivilege.objects.filter(user=user, site=self.site)
         for site_priv in site_privs:
+            if site_priv.role.role == 'admin':
+                return True 
             if site_priv.role.role == 'pi':
                 for fieldName in self.diff.keys():
                     if fieldName in self.PI_FORBIDDEN_FIELDS:
@@ -314,6 +315,52 @@ class User(AbstractBaseUser): #, DiffModelMixIn):
                     return False
             return True
 
+        return False
+
+    def can_update_root(self):
+        """
+        Return True if user has root (global) write access. 
+        """
+        if self.is_readonly:
+            return False
+        if self.is_admin:
+            return True
+
+        return False 
+
+    def can_update_deployment(self, deployment):
+        from core.models.site import DeploymentPrivilege
+        if self.can_update_root():
+            return True    
+                          
+        if DeploymentPrivilege.objects.filter(
+            deployment=deployment,
+            user=self,
+            role__role__in=['admin', 'Admin']):
+            return True
+        return False    
+
+    def can_update_site(self, site, allow=[]):
+        from core.models.site import SitePrivilege
+        if self.can_update_root():
+            return True
+        if SitePrivilege.objects.filter(
+            site=site, user=self, role__role__in=['admin', 'Admin']+allow):
+            return True
+        return False
+    
+    def can_update_slice(self, slice):
+        from core.models.slice import SlicePrivilege
+        if self.can_update_root():
+            return True
+        if self == slice.creator:
+            return True
+        if self.can_update_site(slice.site, allow=['pi']):
+            return True
+                     
+        if SlicePrivilege.objects.filter(
+            slice=slice, user=self, role__role__in=['admin', 'Admin']):
+            return True
         return False
 
     @staticmethod

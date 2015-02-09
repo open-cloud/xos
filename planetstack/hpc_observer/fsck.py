@@ -5,8 +5,8 @@ import inspect
 import os
 import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
-sys.path.append("/opt/planetstack")
-from planetstack.config import Config, DEFAULT_CONFIG_FN
+sys.path.append("/opt/xos")
+from planetstack.config import Config, DEFAULT_CONFIG_FN, XOS_DIR
 from util.logger import Logger, logging
 from observer.syncstep import SyncStep
 
@@ -27,7 +27,7 @@ class PlanetStackConsistencyCheck:
 			if hasattr(Config(), "observer_steps_dir"):
 				step_dir = Config().observer_steps_dir
 			else:
-				step_dir = "/opt/planetstack/observer/steps"
+				step_dir = XOS_DIR+"/observer/steps"
 
 		for fn in os.listdir(step_dir):
 			pathname = os.path.join(step_dir,fn)
@@ -58,7 +58,7 @@ class PlanetStackConsistencyCheck:
 
 def main():
     if not "-C" in sys.argv:
-        print >> sys.stderr, "You probably wanted to use -C /opt/planetstack/hpc_observer/hpc_observer_config"
+        print >> sys.stderr, "You probably wanted to use -C " + XOS_DIR + "/hpc_observer/hpc_observer_config"
 
     # Generate command line parser
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')

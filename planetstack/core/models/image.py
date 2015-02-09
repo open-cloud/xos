@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Deployment,Controller,ControllerLinkManager,ControllerLinkDeletionManager
+from core.models import Deployment, DeploymentPrivilege, Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
 # Create your models here.
 
@@ -20,6 +20,9 @@ class ImageDeployments(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s' % (self.image, self.deployment)
 
+    def can_update(self, user):
+        return user.can_update_deployment(self.deployment)
+
 class ControllerImages(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
@@ -28,5 +31,3 @@ class ControllerImages(PlCoreBase):
     glance_image_id = models.CharField(null=True, blank=True, max_length=200, help_text="Glance image id") 
 
     def __unicode__(self):  return u'%s %s' % (self.image, self.controller)
-
-    

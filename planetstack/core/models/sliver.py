@@ -120,7 +120,7 @@ class Sliver(PlCoreBase):
         super(Sliver, self).save(*args, **kwds)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return user.can_update_slice(self.slice)
 
     def all_ips(self):
         ips={}

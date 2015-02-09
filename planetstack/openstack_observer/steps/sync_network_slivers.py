@@ -12,6 +12,7 @@ logger = Logger(level=logging.INFO)
 class SyncNetworkSlivers(OpenStackSyncStep):
     requested_interval = 0 # 3600
     provides=[NetworkSliver]
+    observes=NetworkSliver
 
     #     The way it works is to enumerate the all of the ports that quantum
     #     has, and then work backward from each port's network-id to determine

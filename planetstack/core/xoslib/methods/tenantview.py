@@ -15,6 +15,11 @@ from django.core.exceptions import PermissionDenied
 BLESSED_DEPLOYMENTS = ["ViCCI"] # ["US-MaxPlanck", "US-GeorgiaTech", "US-Princeton", "US-Washington", "US-Stanford"]
 
 def getTenantViewDict(user):
+    blessed_deployments = []
+    for deployment in Deployment.objects.all():
+        if deployment.name in BLESSED_DEPLOYMENTS:
+            blessed_deployments.append(deployment)
+
     blessed_sites = []
     for site in Site.objects.all():
         good=False
@@ -70,6 +75,7 @@ def getTenantViewDict(user):
 
     return {"id": 0,
             "blessed_deployment_names": BLESSED_DEPLOYMENTS,
+            "blessed_deployments": [deployment.id for deployment in blessed_deployments],
             "blessed_site_names": [site.name for site in blessed_sites],
             "blessed_sites": [site.id for site in blessed_sites],
             "blessed_image_names": [image.name for image in blessed_images],
