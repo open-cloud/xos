@@ -5,7 +5,7 @@ import sys
 import base64
 import traceback
 from django.db.models import F, Q
-from planetstack.config import Config
+from planetstack.config import Config, XOS_DIR
 from observer.syncstep import SyncStep
 from core.models import Service
 from requestrouter.models import ServiceMap
@@ -44,8 +44,8 @@ class SyncServiceMap(SyncStep, RequestRouterLibrary, ConfigurationPush):
 		self.gen_dnsdemux_serviceconf(servicemap)
         	# push generated files from temp_config
 		service_uid = self.get_servicemap_uid(servicemap)
-		self.config_push(service_uid, rrlib_config.REDIR_USER, "/opt/planetstack/rr_observer/playbook/site_redir.yml", "/etc/ansible/requestrouter/dnsredir/hosts")
-		self.config_push(service_uid, rrlib_config.DEMUX_USER, "/opt/planetstack/rr_observer/playbook/site_demux.yml", "/etc/ansible/requestrouter/dnsdemux/hosts")
+		self.config_push(service_uid, rrlib_config.REDIR_USER, XOS_DIR + "/rr_observer/playbook/site_redir.yml", "/etc/ansible/requestrouter/dnsredir/hosts")
+		self.config_push(service_uid, rrlib_config.DEMUX_USER, XOS_DIR + "/rr_observer/playbook/site_demux.yml", "/etc/ansible/requestrouter/dnsdemux/hosts")
 		self.teardown_temp_configfiles(service_uid)
 	except Exception, e:
                 traceback.print_exc()

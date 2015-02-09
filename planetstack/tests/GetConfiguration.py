@@ -4,7 +4,7 @@ import socket
 import sys
 import time
 
-sys.path.append("/opt/planetstack")
+sys.path.append("/opt/xos")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 from openstack.manager import OpenStackManager
