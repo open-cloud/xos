@@ -5,11 +5,25 @@ from planetstack.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
 from django.db.models import F, Q
+from core.models import * 
 import json
 import time
 import pdb
 
 logger = Logger(level=logging.INFO)
+
+def f7(seq):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in seq if not (x in seen or seen_add(x))]
+
+def elim_dups(backend_str):
+    strs = backend_str.split(' // ')
+    strs2 = f7(strs)
+    return ' // '.join(strs2)
+    
+def deepgetattr(obj, attr):
+    return reduce(getattr, attr.split('.'), obj)
 
 class FailedDependency(Exception):
     pass
@@ -63,14 +77,19 @@ class SyncStep(object):
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
+ 
             try:
-                peer_object = getattr(obj, peer_name)
+                peer_object = deepgetattr(obj, peer_name)
+                try: 
+                    peer_objects = peer_object.all() 
+                except AttributeError:
+                    peer_objects = [peer_object] 
             except:
-                peer_object = None
+                peer_objects = []
 
-            if (peer_object and peer_object.pk==failed.pk and type(peer_object)==type(failed)):
-                if (obj.backend_status!=peer_object.backend_status):
-                    obj.backend_status = peer_object.backend_status
+            if (failed in peer_objects):
+                if (obj.backend_status!=failed.backend_status):
+                    obj.backend_status = failed.backend_status
                     obj.save(update_fields=['backend_status'])
                 raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(obj.pk), peer_object.__class__.__name__, str(peer_object.pk), failed.__class__.__name__, str(failed.pk)))
 
@@ -104,7 +123,15 @@ class SyncStep(object):
                         o.save(update_fields=['enacted','backend_status','backend_register'])
                 except Exception,e:
                     logger.log_exc("sync step failed!")
-                    str_e = '%r'%e
+                    try:
+                        if (o.backend_status.startswith('2 - ')):
+                            str_e = '%s // %r'%(o.backend_status[4:],e)
+			    str_e = elim_dups(str_e)
+                        else:
+                            str_e = '%r'%e
+                    except:
+                        str_e = '%r'%e
+
                     try:
                         o.backend_status = '2 - %s'%self.error_map.map(str_e)
                     except:
@@ -131,7 +158,7 @@ class SyncStep(object):
                     # DatabaseError: value too long for type character varying(140)
                     if (o.pk):
                         try:
-                            o.backend_status = o.backend_status[:140]
+                            o.backend_status = o.backend_status[:1024]
                             o.save(update_fields=['backend_status','backend_register'])
                         except:
                             print "Could not update backend status field!"
