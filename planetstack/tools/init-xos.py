@@ -17,7 +17,7 @@ SITE_ROLES = ["admin", "pi", "tech"]
 SLICE_ROLES = ["admin", "access"]
 DEPLOYMENT_ROLES = ["admin"]
 
-d = Deployment(name="Enterprise")
+d = Deployment(name="ViCCI")
 d.save()
 
 s = Site(name="MySite", enabled=True, login_base="mysite", is_public=True, abbreviated_name="mysite")
