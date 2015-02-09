@@ -22,12 +22,4 @@ class Node(PlCoreBase):
         super(Node, self).save(*args, **kwds)
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-        if SitePrivilege.objects.filter(
-            user=user, site=self.site, role__role__in=['admin','tech']):
-            return True
-            
-        return False                    
+        return user.can_update_site(self.site, allow=['tech'])

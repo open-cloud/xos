@@ -122,12 +122,17 @@ class PlanetStackObserver:
 		try:
 			# This contains dependencies between records, not sync steps
 			self.model_dependency_graph = json.loads(open(dep_path).read())
-			for lst in self.model_dependency_graph.values():
+			for left,lst in self.model_dependency_graph.items():
+                                new_lst = [] 
 				for k in lst:
 					try:
+                                                tup = (k,k.lower())
+                                                new_lst.append(tup)
 						deps = self.model_dependency_graph[k]
 					except:
 						self.model_dependency_graph[k] = []
+
+                                self.model_dependency_graph[left] = new_lst
 		except Exception,e:
 			raise e
 
@@ -157,13 +162,13 @@ class PlanetStackObserver:
 					provides_dict[m.__name__]=[s.__name__]
 
 		step_graph = {}
-		for k,v in self.model_dependency_graph.iteritems():
+		for k,v in self.model_dependency_graph.items():
 			try:
 				for source in provides_dict[k]:
 					if (not v):
 						step_graph[source] = []
 		
-					for m in v:
+					for m,_ in v:
 						try:
 							for dest in provides_dict[m]:
 								# no deps, pass
@@ -187,7 +192,7 @@ class PlanetStackObserver:
 		pp.pprint(step_graph)
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
 		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncSlivers']
-		#self.ordered_steps = ['SyncControllerSites']
+		#self.ordered_steps = ['SyncControllerSites','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
 
 		print "Order of steps=",self.ordered_steps
 
@@ -247,7 +252,9 @@ class PlanetStackObserver:
 	def check_class_dependency(self, step, failed_steps):
 		step.dependenices = []
 		for obj in step.provides:
-			step.dependenices.extend(self.model_dependency_graph.get(obj.__name__, []))
+		        lst = self.model_dependency_graph.get(obj.__name__, [])
+			nlst = map(lambda(a,b):b,lst)
+			step.dependenices.extend(nlst)
 		for failed_step in failed_steps:
 			if (failed_step in step.dependencies):
 				raise StepNotReady
@@ -302,13 +309,15 @@ class PlanetStackObserver:
 			my_status = STEP_STATUS_KO
 		else:
 			sync_step = step(driver=self.driver,error_map=self.error_mapper)
-			sync_step.__name__ = step.__name__
+			sync_step. __name__= step.__name__
 			sync_step.dependencies = []
 			try:
 				mlist = sync_step.provides
 
 				for m in mlist:
-					sync_step.dependencies.extend(self.model_dependency_graph[m.__name__])
+				        lst =  self.model_dependency_graph[m.__name__]
+			                nlst = map(lambda(a,b):b,lst)
+					sync_step.dependencies.extend(nlst)
 			except KeyError:
 				pass
 			sync_step.debug_mode = debug_mode

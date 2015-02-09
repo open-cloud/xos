@@ -4,6 +4,7 @@ import traceback
 from requestrouter.models import ServiceMap
 from observer.deleter import Deleter
 from util.logger import Logger, logging
+from planetstack.config import Config, XOS_DIR
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)
@@ -27,8 +28,8 @@ class ServiceMapDeleter(Deleter, RequestRouterLibrary, ConfigurationPush):
           try:
               servicemap = ServiceMap.objects.get(pk=pk)
               service_uid = self.get_servicemap_uid(servicemap)
-              self.config_push(service_uid, rrlib_config.REDIR_USER, "/opt/planetstack/rr_observer/playbook/site_redir_delete.yml", "/etc/ansible/requestrouter/dnsredir/hosts")
-              self.config_push(service_uid, rrlib_config.DEMUX_USER, "/opt/planetstack/rr_observer/playbook/site_demux_delete.yml", "/etc/ansible/requestrouter/dnsdemux/hosts")
+              self.config_push(service_uid, rrlib_config.REDIR_USER, XOS_DIR + "/rr_observer/playbook/site_redir_delete.yml", "/etc/ansible/requestrouter/dnsredir/hosts")
+              self.config_push(service_uid, rrlib_config.DEMUX_USER, XOS_DIR + "/rr_observer/playbook/site_demux_delete.yml", "/etc/ansible/requestrouter/dnsdemux/hosts")
               print "XXX delete ServiceMap %s", servicemap.name
               return True
           except Exception, e:

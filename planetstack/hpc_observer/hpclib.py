@@ -5,7 +5,7 @@ import sys
 import xmlrpclib
 
 if __name__ == '__main__':
-    sys.path.append("/opt/planetstack")
+    sys.path.append("/opt/xos")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 
 from planetstack.config import Config

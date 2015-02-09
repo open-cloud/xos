@@ -24,9 +24,7 @@ class Tag(PlCoreBase):
 
 
     def can_update(self, user):
-        if user.is_admin:
-            return True
-        return False
+        return user.can_update_root()
 
     @staticmethod
     def select_by_user(user):

@@ -25,6 +25,9 @@ class ControllerUser(PlCoreBase):
             qs = ControllerUser.objects.filter(user__in=users)
         return qs
 
+    def can_update(self, user):
+        return user.can_update_root()    
+
 
 class ControllerSitePrivilege(PlCoreBase):
     objects = ControllerLinkManager()
