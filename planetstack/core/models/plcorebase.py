@@ -193,12 +193,7 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
         self.silent = False
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-
-        return False
+        return user.can_update_root()
 
     def delete(self, *args, **kwds):
         # so we have something to give the observer
