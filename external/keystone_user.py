@@ -220,6 +220,7 @@ def ensure_user_exists_and_is_current(keystone, endpoint, user_name, password, e
         user = get_user(keystone, user_name)
     except KeyError:
         # Tenant doesn't exist yet
+        user = None
         pass
     else:
         # User does exist, check if it's current

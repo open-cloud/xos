@@ -128,7 +128,7 @@ class Network(PlCoreBase):
         super(Network, self).save(*args, **kwds)
 
     def can_update(self, user):
-        return self.owner.can_update(user)
+        return user.can_update_slice(self.owner)
 
     @property
     def nat_list(self):
@@ -156,9 +156,6 @@ class ControllerNetwork(PlCoreBase):
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
        
-    def can_update(self, user):
-        return user.is_admin
-
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -190,7 +187,7 @@ class NetworkSlice(PlCoreBase):
     def __unicode__(self):  return u'%s-%s' % (self.network.name, self.slice.name)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return user.can_update_slice(self.slice)
 
     @staticmethod
     def select_by_user(user):
@@ -225,7 +222,7 @@ class NetworkSliver(PlCoreBase):
     def __unicode__(self):  return u'%s-%s' % (self.network.name, self.sliver.instance_name)
 
     def can_update(self, user):
-        return self.sliver.can_update(user)
+        return user.can_update_slice(self.sliver.slice)
 
     @staticmethod
     def select_by_user(user):
@@ -243,6 +240,9 @@ class Router(PlCoreBase):
     networks = models.ManyToManyField(Network, blank=True, related_name="routers")
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+    def can_update(self, user):
+        return user.can_update_slice(self.owner)
 
 class NetworkParameterType(PlCoreBase):
     name = models.SlugField(help_text="The name of this parameter", max_length=128)

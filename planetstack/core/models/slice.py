@@ -81,22 +81,8 @@ class Slice(PlCoreBase):
         super(Slice, self).save(*args, **kwds)
 
     def can_update(self, user):
-        if user.is_readonly:
-            return False
-        if user.is_admin:
-            return True
-        if user == self.creator:
-            return True    
-        # slice admins can update
-        if SlicePrivilege.objects.filter(
-            user=user, slice=self, role__role='admin'):
-            return True
-        # site pis can update
-        if SitePrivilege.objects.filter(
-            user=user, site=self.site, role__role__in=['admin', 'pi']):
-            return True
- 
-        return False
+        return user.can_update_slice(self)
+
 
     @staticmethod
     def select_by_user(user):
@@ -142,7 +128,7 @@ class SlicePrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 
     def can_update(self, user):
-        return self.slice.can_update(user)
+        return user.can_update_slice(self.slice)
 
     @staticmethod
     def select_by_user(user):
