@@ -21,7 +21,7 @@ DAY_SECONDS = HOUR_SECONDS * 24
 MONTH_SECONDS = DAY_SECONDS * 30
 
 # XXX hardcoded path
-sys.path.append("/opt/planetstack")
+sys.path.append("/opt/xos")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
 #from openstack.manager import OpenStackManager
