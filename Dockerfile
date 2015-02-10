@@ -1,6 +1,13 @@
 FROM       ubuntu:14.04.1
 MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 
+# XXX Workaround for docker bug:
+# https://github.com/docker/docker/issues/6345
+# Kernel 3.15 breaks docker, uss the line below as a workaround
+# until there is a fix 
+RUN ln -s -f /bin/true /usr/bin/chfn 
+# XXX End workaround
+
 # Install.
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
