@@ -58,6 +58,10 @@ ADD ansible-hosts /etc/ansible/hosts
 
 ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
+# For Observer
+RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum
+RUN cd /tmp/fofum; python setup.py install
+
 # Get XOS 
 ADD planetstack /opt/xos
 
