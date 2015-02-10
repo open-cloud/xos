@@ -507,14 +507,6 @@ class SiteRoleAdmin(PlanetStackBaseAdmin):
     pass
 
 class DeploymentAdminForm(forms.ModelForm):
-    sites = forms.ModelMultipleChoiceField(
-        queryset=Site.objects.all(),
-        required=False,
-        help_text="Select which sites are allowed to host nodes in this deployment",
-        widget=FilteredSelectMultiple(
-            verbose_name=('Sites'), is_stacked=False
-        )
-    )
     images = forms.ModelMultipleChoiceField(
         queryset=Image.objects.all(),
         required=False,
@@ -542,7 +534,6 @@ class DeploymentAdminForm(forms.ModelForm):
       self.fields['accessControl'].initial = "allow site " + request.user.site.name
 
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments.all()]
         self.fields['images'].initial = [x.image for x in self.instance.imagedeployments.all()]
         self.fields['flavors'].initial = self.instance.flavors.all()
 
@@ -594,7 +585,6 @@ class DeploymentAdminForm(forms.ModelForm):
         #    create/destroy the through models ourselves. There has to be
         #    a better way...
 
-        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments.all(), SiteDeployment, "deployment", "site")
         self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments.all(), ImageDeployments, "deployment", "image")
         # manipulate_m2m_objs doesn't work for Flavor/Deployment relationship
         # so well handle that manually here
@@ -620,8 +610,8 @@ class SiteAssocInline(PlStackTabularInline):
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
     model = Deployment
-    fieldList = ['backend_status_text', 'name', 'sites', 'images', 'flavors', 'accessControl']
-    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
+    fieldList = ['backend_status_text', 'name', 'images', 'flavors', 'accessControl']
+    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     # node no longer directly connected to deployment
     #inlines = [DeploymentPrivilegeInline,NodeInline,TagInline,ImageDeploymentsInline]
     inlines = [DeploymentPrivilegeInline,TagInline,ImageDeploymentsInline,SiteDeploymentInline]
@@ -632,8 +622,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ['name']
 
     # nodes no longer direclty connected to deployments
-    #suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'),('imagedeployments','Images'))
-    suit_form_tabs =(('sites','Deployment Details'),('deploymentprivileges','Privileges'), ('sitedeployments', 'Site Deployments'))
+    suit_form_tabs =(('general','Deployment Details'),('deploymentprivileges','Privileges'), ('sitedeployments', 'Sites'))
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.isReadOnlyUser() or not request.user.is_admin:
@@ -651,73 +640,10 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
         return AdminFormMetaClass
 
-class ControllerAdminForm(forms.ModelForm):
-    sites = forms.ModelMultipleChoiceField(
-        queryset=Site.objects.all(),
-        required=False,
-        help_text="Select which sites are managed by this controller",
-        widget=FilteredSelectMultiple(
-            verbose_name=('Sites'), is_stacked=False
-        )
-    )
-
-    class Meta: 
-        model = Controller
-        
-    def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request', None)
-        super(ControllerAdminForm, self).__init__(*args, **kwargs)  
-
-        if self.instance and self.instance.pk:
-            self.fields['sites'].initial = [x.site for x in self.instance.controllersite.all()]
-
-    def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
-        """ helper function for handling m2m relations from the MultipleChoiceField
-            this_obj: the source object we want to link from
-            selected_objs: a list of destination objects we want to link to
-            all_relations: the full set of relations involving this_obj, including ones we don't want
-            relation_class: the class that implements the relation from source to dest
-            local_attrname: field name representing this_obj in relation_class
-            foreign_attrname: field name representing selected_objs in relation_class
-            This function will remove all newobjclass relations from this_obj
-            that are not contained in selected_objs, and add any relations that
-            are in selected_objs but don't exist in the data model yet.
-        """
-        existing_dest_objs = []
-        for relation in list(all_relations):
-            if getattr(relation, foreign_attrname) not in selected_objs:
-                #print "deleting site", sdp.site
-                relation.delete()
-            else:
-                existing_dest_objs.append(getattr(relation, foreign_attrname))
-
-        for dest_obj in selected_objs:
-            if dest_obj not in existing_dest_objs:
-                #print "adding site", site
-                kwargs = {foreign_attrname: dest_obj, local_attrname: this_obj}
-                relation = relation_class(**kwargs)
-                relation.save()
-
-    def save(self, commit=True):
-        controller = super(ControllerAdminForm, self).save(commit=False)
-        if commit:
-            controller.save()
-
-        if controller.pk:
-            # save_m2m() doesn't seem to work with 'through' relations. So we
-            #    create/destroy the through models ourselves. There has to be
-            #    a better way...
-            self.manipulate_m2m_objs(controller, self.cleaned_data['sites'], controller.controllersite.all(), ControllerSite, "controller", "site")
-            pass
-    	
-        self.save_m2m()
-
-        return controller 
-      
 class ControllerAdmin(PlanetStackBaseAdmin):
-    model = Controller 
+    model = Controller
     fieldList = ['name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password']
-    #fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
     list_display_links = ('backend_status_icon', 'name', )
@@ -725,29 +651,23 @@ class ControllerAdmin(PlanetStackBaseAdmin):
 
     user_readonly_fields = []
 
-    def get_form(self, request, obj=None, **kwargs):
-        print self.fieldsets
-        if request.user.isReadOnlyUser():
-            kwargs["form"] = ControllerAdminROForm
-        else:
-            kwargs["form"] = ControllerAdminForm
-        adminForm = super(ControllerAdmin,self).get_form(request, obj, **kwargs)
-
-        # from stackexchange: pass the request object into the form
-
-        class AdminFormMetaClass(adminForm):
-           def __new__(cls, *args, **kwargs):
-               kwargs['request'] = request
-               return adminForm(*args, **kwargs)
-
-        return AdminFormMetaClass
-
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
         obj.save_by_user(request.user)
                     
     def delete_model(self, request, obj):
-        obj.delete_by_user(request.user)    
+        obj.delete_by_user(request.user)
+
+    @property
+    def suit_form_tabs(self):
+        tabs = [('general', 'Controller Details'),
+        ]
+
+        request=getattr(_thread_locals, "request", None)
+        if request and request.user.is_admin:
+            tabs.append( ('admin-only', 'Admin-Only') )
+
+        return tabs
 
 class ServiceAttrAsTabInline(PlStackTabularInline):
     model = ServiceAttribute
