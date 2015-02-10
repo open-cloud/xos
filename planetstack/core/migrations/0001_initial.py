@@ -103,7 +103,6 @@ class Migration(migrations.Migration):
                 ('admin_user', models.CharField(help_text=b'Username of an admin user at this controller', max_length=200, null=True, blank=True)),
                 ('admin_password', models.CharField(help_text=b'Password of theadmin user at this controller', max_length=200, null=True, blank=True)),
                 ('admin_tenant', models.CharField(help_text=b'Name of the tenant the admin user belongs to', max_length=200, null=True, blank=True)),
-                ('domain', models.CharField(help_text=b'Name of the domain this controller belongs to', max_length=200, null=True, blank=True)),
             ],
             options={
                 'abstract': False,
