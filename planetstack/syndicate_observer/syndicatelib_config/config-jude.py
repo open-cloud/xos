@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # configuration for syndicatelib
 SYNDICATE_SMI_URL="http://localhost:8080"

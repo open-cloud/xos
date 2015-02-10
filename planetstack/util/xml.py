@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 from types import StringTypes
 from lxml import etree
 from StringIO import StringIO
