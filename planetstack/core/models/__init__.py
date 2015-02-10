@@ -1,4 +1,4 @@
-from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,DiffModelMixIn
+from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn
 from .project import Project
 from .singletonmodel import SingletonModel
 from .service import Service

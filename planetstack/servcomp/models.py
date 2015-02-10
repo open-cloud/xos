@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import User, Service, SingletonModel, PlCoreBase, DiffModelMixIn
+from core.models import User, Service, SingletonModel, PlCoreBase
 import os
 from django.db import models
 from django.forms.models import model_to_dict
