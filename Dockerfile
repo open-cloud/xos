@@ -3,19 +3,19 @@ MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 
 # Install.
 RUN apt-get update
-RUN apt-get install -y git 
-RUN apt-get install -y postgresql
-RUN apt-get install -y python-psycopg2 
-RUN apt-get install -y graphviz graphviz-dev
-RUN apt-get install -y libxslt1.1 libxslt1-dev 
-RUN apt-get install -y python-pip 
-RUN apt-get install -y tar 
-RUN apt-get install -y gcc 
-RUN apt-get install -y python-httplib2 
-RUN apt-get install -y geoip-database libgeoip1
-RUN apt-get install -y wget
-RUN apt-get install -y python-dev
-RUN apt-get install -y libyaml-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-psycopg2
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y graphviz graphviz-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxslt1.1 libxslt1-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tar
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y gcc
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-httplib2
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y geoip-database libgeoip1
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libyaml-dev
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
@@ -37,22 +37,22 @@ RUN pip install django-ipware
 RUN pip install django-encrypted-fields
 RUN pip install python-keyczar
 
-RUN apt-get install -y python-keystoneclient
-RUN apt-get install -y python-novaclient
-RUN apt-get install -y python-neutronclient 
-RUN apt-get install -y python-glanceclient
-RUN apt-get install -y python-ceilometerclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-keystoneclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-novaclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-neutronclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-glanceclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-ceilometerclient
 
 RUN pip install django_rest_swagger
 
-RUN apt-get install -y python-setuptools
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-setuptools
 RUN easy_install django_evolution
 RUN easy_install python_gflags
 RUN easy_install google_api_python_client
 
 # Set up latest Ansible
 # Need to add our patches too
-RUN apt-get install -y ansible
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
 # RUN git clone --recursive git://github.com/ansible/ansible.git /opt/ansible
 ADD ansible-hosts /etc/ansible/hosts
 
