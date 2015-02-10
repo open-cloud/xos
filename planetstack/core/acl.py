@@ -16,6 +16,7 @@ from fnmatch import fnmatch
     deny user scott@onlab.us
     allow user *@onlab.us
 """
+class ACLValidationError(Exception): pass
 
 class AccessControlList:
     def __init__(self, aclText=None):
