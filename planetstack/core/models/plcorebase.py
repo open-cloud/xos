@@ -224,8 +224,8 @@ class PlCoreBase(models.Model): # , DiffModelMixIn):
         super(PlCoreBase, self).save(*args, **kwargs)
 
         # This is a no-op if observer_disabled is set
-        if not silent:
-            notify_observer()
+        # if not silent:
+        #    notify_observer()
 
         self._initial = self._dict
 
