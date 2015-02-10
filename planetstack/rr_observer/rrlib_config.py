@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 DNSREDIR_CONFIGDIR_PREFIX = "/etc/dnsredir/"
 DNSREDIR_LOGDIR_PREFIX = "/var/log/dnsredir/"

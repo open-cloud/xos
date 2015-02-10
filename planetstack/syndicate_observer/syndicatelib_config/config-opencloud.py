@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # ---------------------------------
 # This is the configuration file used by the Syndicate observer.

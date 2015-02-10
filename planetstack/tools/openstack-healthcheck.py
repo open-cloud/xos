@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 """
     Check the status of libvirt, openstack-nova-compute, and

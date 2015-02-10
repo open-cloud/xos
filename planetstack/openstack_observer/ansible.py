@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import jinja2
 import tempfile
 import os
