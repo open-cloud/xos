@@ -84,59 +84,7 @@ class DeletedUserManager(UserManager):
     def get_query_set(self):
         return self.get_queryset()
 
-class User(AbstractBaseUser): #, DiffModelMixIn):
-
-    # ---- copy stuff from DiffModelMixin ----
-
-    @property
-    def _dict(self):
-        return model_to_dict(self, fields=[field.name for field in
-                             self._meta.fields])
-
-    def fields_differ(self,f1,f2):
-        if isinstance(f1,datetime.datetime) and isinstance(f2,datetime.datetime) and (timezone.is_aware(f1) != timezone.is_aware(f2)):
-            return True
-        else:
-            return (f1 != f2)
-
-    @property
-    def diff(self):
-        d1 = self._initial
-        d2 = self._dict
-        diffs = [(k, (v, d2[k])) for k, v in d1.items() if self.fields_differ(v,d2[k])]
-        return dict(diffs)
-
-    @property
-    def has_changed(self):
-        return bool(self.diff)
-
-    @property
-    def changed_fields(self):
-        return self.diff.keys()
-
-    def has_field_changed(self, field_name):
-        return field_name in self.diff.keys()
-
-    def get_field_diff(self, field_name):
-        return self.diff.get(field_name, None)
-
-    #classmethod
-    def getValidators(cls):
-        """ primarily for REST API, return a dictionary of field names mapped
-            to lists of the type of validations that need to be applied to
-            those fields.
-        """
-        validators = {}
-        for field in cls._meta.fields:
-            l = []
-            if field.blank==False:
-                l.append("notBlank")
-            if field.__class__.__name__=="URLField":
-                l.append("url")
-            validators[field.name] = l
-        return validators
-    # ---- end copy stuff from DiffModelMixin ----
-
+class User(AbstractBaseUser, DiffModelMixIn):
     @property
     def remote_password(self):
         return hashlib.md5(self.password).hexdigest()[:12]
