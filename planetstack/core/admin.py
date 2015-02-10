@@ -397,7 +397,7 @@ class NodeInline(PlStackTabularInline):
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
-    suit_classes = 'suit-tab suit-tab-admin-only'
+    suit_classes = 'suit-tab suit-tab-deploymentprivileges'
     fields = ['backend_status_icon', 'user','role','deployment']
     readonly_fields = ('backend_status_icon', )
 
