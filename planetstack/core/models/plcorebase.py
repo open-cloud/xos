@@ -50,10 +50,12 @@ class PlCoreBaseManager(models.Manager):
     def get_query_set(self):
         return self.get_queryset()
 
-class DiffModelMixIn(object):
+class PlModelMixIn(object):
     # Provides useful methods for computing which objects in a model have
     # changed. Make sure to do self._initial = self._dict in the __init__
     # method.
+
+    # Also includes useful utility, like getValidators
 
     # This is broken out of PlCoreBase into a Mixin so the User model can
     # also make use of it.
@@ -106,7 +108,7 @@ class DiffModelMixIn(object):
             validators[field.name] = l
         return validators
 
-class PlCoreBase(models.Model, DiffModelMixIn):
+class PlCoreBase(models.Model, PlModelMixIn):
     objects = PlCoreBaseManager()
     deleted_objects = PlCoreBaseDeletionManager()
 
@@ -133,7 +135,7 @@ class PlCoreBase(models.Model, DiffModelMixIn):
 
     def __init__(self, *args, **kwargs):
         super(PlCoreBase, self).__init__(*args, **kwargs)
-        self._initial = self._dict # for DiffModelMixIn
+        self._initial = self._dict # for PlModelMixIn
         self.silent = False
 
     def can_update(self, user):
