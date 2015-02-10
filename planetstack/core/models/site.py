@@ -251,6 +251,7 @@ class Controller(PlCoreBase):
     admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
     admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
+    domain = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the domain this controller belongs to")
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
 
