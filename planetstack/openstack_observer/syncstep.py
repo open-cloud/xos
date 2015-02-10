@@ -98,7 +98,7 @@ class SyncStep(object):
         for o in pending:
             sync_failed = False
             try:
-                backoff_disabled = Config().observer_backoff_disabled):
+                backoff_disabled = Config().observer_backoff_disabled
             except:
                 backoff_disabled = 0
 
