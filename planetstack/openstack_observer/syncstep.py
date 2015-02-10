@@ -98,10 +98,15 @@ class SyncStep(object):
         for o in pending:
             sync_failed = False
             try:
+                backoff_disabled = Config().observer_backoff_disabled):
+            except:
+                backoff_disabled = 0
+
+            try:
                 scratchpad = json.loads(o.backend_register)
                 if (scratchpad):
                     next_run = scratchpad['next_run']
-                    if (next_run>time.time()):
+                    if (not backoff_disabled and next_run>time.time()):
                         sync_failed = True
                         print "BACKING OFF, exponent = %d"%scratchpad['exponent']
             except:
