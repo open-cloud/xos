@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
-from core.models import PlCoreBase,Site, DashboardView, DiffModelMixIn
+from core.models import PlCoreBase,Site, DashboardView, PlModelMixIn
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
@@ -84,7 +84,7 @@ class DeletedUserManager(UserManager):
     def get_query_set(self):
         return self.get_queryset()
 
-class User(AbstractBaseUser, DiffModelMixIn):
+class User(AbstractBaseUser, PlModelMixIn):
     @property
     def remote_password(self):
         return hashlib.md5(self.password).hexdigest()[:12]
@@ -138,7 +138,7 @@ class User(AbstractBaseUser, DiffModelMixIn):
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
-        self._initial = self._dict # for DiffModelMixIn
+        self._initial = self._dict # for PlModelMixIn
 
     def isReadOnlyUser(self):
         return self.is_readonly
