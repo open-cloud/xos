@@ -11,6 +11,7 @@ from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
+from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -2429,7 +2430,7 @@ class ServiceResourceIdSerializer(XOSModelSerializer):
 
 
 
-serializerLookUp = { 
+serializerLookUp = {
 
                  ServiceAttribute: ServiceAttributeSerializer,
 
@@ -2546,110 +2547,10 @@ serializerLookUp = {
                  None: None,
                 }
 
-class PlanetStackRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-
-    # To handle fine-grained field permissions, we have to check can_update
-    # the object has been updated but before it has been saved.
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        self.object = self.get_object_or_none()
-
-        serializer = self.get_serializer(self.object, data=request.DATA,
-                                         files=request.FILES, partial=partial)
-
-        if not serializer.is_valid():
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            self.pre_save(serializer.object)
-        except ValidationError as err:
-            # full_clean on model instance may be called in pre_save,
-            # so we have to handle eventual errors.
-            response = {"error": "validation",
-                         "specific_error": "ValidationError in pre_save",
-                         "reasons": err.message_dict}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        if serializer.object is not None:
-            if not serializer.object.can_update(request.user):
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        if self.object is None:
-            raise Exception("Use the List API for creating objects")
-
-        self.object = serializer.save(force_update=True)
-        self.post_save(self.object, created=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def handle_exception(self, exc):
-        # REST API drops the string attached to Django's PermissionDenied
-        # exception, and replaces it with a generic "Permission Denied"
-        if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
-            response.exception=True
-            return response
-        else:
-            return super(PlanetStackRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
-
-class PlanetStackListCreateAPIView(generics.ListCreateAPIView):
-    def handle_exception(self, exc):
-        # REST API drops the string attached to Django's PermissionDenied
-        # exception, and replaces it with a generic "Permission Denied"
-        if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
-            response.exception=True
-            return response
-        else:
-            return super(PlanetStackListCreateAPIView, self).handle_exception(exc)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        # now do XOS can_update permission checking
-
-        obj = serializer.object
-        obj.caller = request.user
-        if not obj.can_update(request.user):
-            response = {"error": "validation",
-                        "specific_error": "failed can_update",
-                        "reasons": []}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        # stuff below is from generics.ListCreateAPIView
-
-        if (hasattr(self, "pre_save")):
-            # rest_framework 2.x
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-        else:
-            # rest_framework 3.x
-            self.perform_create(serializer)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
-
 # Based on core/views/*.py
 
 
-class ServiceAttributeList(PlanetStackListCreateAPIView):
+class ServiceAttributeList(XOSListCreateAPIView):
     queryset = ServiceAttribute.objects.select_related().all()
     serializer_class = ServiceAttributeSerializer
     id_serializer_class = ServiceAttributeIdSerializer
@@ -2671,7 +2572,7 @@ class ServiceAttributeList(PlanetStackListCreateAPIView):
         return ServiceAttribute.select_by_user(self.request.user)
 
 
-class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ServiceAttributeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ServiceAttribute.objects.select_related().all()
     serializer_class = ServiceAttributeSerializer
     id_serializer_class = ServiceAttributeIdSerializer
@@ -2690,13 +2591,13 @@ class ServiceAttributeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceAttribute.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerImagesList(PlanetStackListCreateAPIView):
+class ControllerImagesList(XOSListCreateAPIView):
     queryset = ControllerImages.objects.select_related().all()
     serializer_class = ControllerImagesSerializer
     id_serializer_class = ControllerImagesIdSerializer
@@ -2718,7 +2619,7 @@ class ControllerImagesList(PlanetStackListCreateAPIView):
         return ControllerImages.select_by_user(self.request.user)
 
 
-class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerImagesDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerImages.objects.select_related().all()
     serializer_class = ControllerImagesSerializer
     id_serializer_class = ControllerImagesIdSerializer
@@ -2737,13 +2638,13 @@ class ControllerImagesDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerImages.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerSitePrivilegeList(PlanetStackListCreateAPIView):
+class ControllerSitePrivilegeList(XOSListCreateAPIView):
     queryset = ControllerSitePrivilege.objects.select_related().all()
     serializer_class = ControllerSitePrivilegeSerializer
     id_serializer_class = ControllerSitePrivilegeIdSerializer
@@ -2765,7 +2666,7 @@ class ControllerSitePrivilegeList(PlanetStackListCreateAPIView):
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
 
-class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerSitePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerSitePrivilege.objects.select_related().all()
     serializer_class = ControllerSitePrivilegeSerializer
     id_serializer_class = ControllerSitePrivilegeIdSerializer
@@ -2784,13 +2685,13 @@ class ControllerSitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ImageList(PlanetStackListCreateAPIView):
+class ImageList(XOSListCreateAPIView):
     queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
@@ -2812,7 +2713,7 @@ class ImageList(PlanetStackListCreateAPIView):
         return Image.select_by_user(self.request.user)
 
 
-class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ImageDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Image.objects.select_related().all()
     serializer_class = ImageSerializer
     id_serializer_class = ImageIdSerializer
@@ -2831,13 +2732,13 @@ class ImageDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Image.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkParameterList(PlanetStackListCreateAPIView):
+class NetworkParameterList(XOSListCreateAPIView):
     queryset = NetworkParameter.objects.select_related().all()
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
@@ -2859,7 +2760,7 @@ class NetworkParameterList(PlanetStackListCreateAPIView):
         return NetworkParameter.select_by_user(self.request.user)
 
 
-class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkParameterDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameter.objects.select_related().all()
     serializer_class = NetworkParameterSerializer
     id_serializer_class = NetworkParameterIdSerializer
@@ -2878,13 +2779,13 @@ class NetworkParameterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameter.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SiteList(PlanetStackListCreateAPIView):
+class SiteList(XOSListCreateAPIView):
     queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
@@ -2906,7 +2807,7 @@ class SiteList(PlanetStackListCreateAPIView):
         return Site.select_by_user(self.request.user)
 
 
-class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SiteDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Site.objects.select_related().all()
     serializer_class = SiteSerializer
     id_serializer_class = SiteIdSerializer
@@ -2925,13 +2826,13 @@ class SiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Site.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SliceRoleList(PlanetStackListCreateAPIView):
+class SliceRoleList(XOSListCreateAPIView):
     queryset = SliceRole.objects.select_related().all()
     serializer_class = SliceRoleSerializer
     id_serializer_class = SliceRoleIdSerializer
@@ -2953,7 +2854,7 @@ class SliceRoleList(PlanetStackListCreateAPIView):
         return SliceRole.select_by_user(self.request.user)
 
 
-class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SliceRoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SliceRole.objects.select_related().all()
     serializer_class = SliceRoleSerializer
     id_serializer_class = SliceRoleIdSerializer
@@ -2972,13 +2873,13 @@ class SliceRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceRole.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class TagList(PlanetStackListCreateAPIView):
+class TagList(XOSListCreateAPIView):
     queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
@@ -3000,7 +2901,7 @@ class TagList(PlanetStackListCreateAPIView):
         return Tag.select_by_user(self.request.user)
 
 
-class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class TagDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.select_related().all()
     serializer_class = TagSerializer
     id_serializer_class = TagIdSerializer
@@ -3019,13 +2920,13 @@ class TagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Tag.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class InvoiceList(PlanetStackListCreateAPIView):
+class InvoiceList(XOSListCreateAPIView):
     queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
     id_serializer_class = InvoiceIdSerializer
@@ -3047,7 +2948,7 @@ class InvoiceList(PlanetStackListCreateAPIView):
         return Invoice.select_by_user(self.request.user)
 
 
-class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class InvoiceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.select_related().all()
     serializer_class = InvoiceSerializer
     id_serializer_class = InvoiceIdSerializer
@@ -3066,13 +2967,13 @@ class InvoiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Invoice.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SlicePrivilegeList(PlanetStackListCreateAPIView):
+class SlicePrivilegeList(XOSListCreateAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
     serializer_class = SlicePrivilegeSerializer
     id_serializer_class = SlicePrivilegeIdSerializer
@@ -3094,7 +2995,7 @@ class SlicePrivilegeList(PlanetStackListCreateAPIView):
         return SlicePrivilege.select_by_user(self.request.user)
 
 
-class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SlicePrivilege.objects.select_related().all()
     serializer_class = SlicePrivilegeSerializer
     id_serializer_class = SlicePrivilegeIdSerializer
@@ -3113,13 +3014,13 @@ class SlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SlicePrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class PlanetStackRoleList(PlanetStackListCreateAPIView):
+class PlanetStackRoleList(XOSListCreateAPIView):
     queryset = PlanetStackRole.objects.select_related().all()
     serializer_class = PlanetStackRoleSerializer
     id_serializer_class = PlanetStackRoleIdSerializer
@@ -3141,7 +3042,7 @@ class PlanetStackRoleList(PlanetStackListCreateAPIView):
         return PlanetStackRole.select_by_user(self.request.user)
 
 
-class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class PlanetStackRoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = PlanetStackRole.objects.select_related().all()
     serializer_class = PlanetStackRoleSerializer
     id_serializer_class = PlanetStackRoleIdSerializer
@@ -3160,13 +3061,13 @@ class PlanetStackRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackRole.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkSliverList(PlanetStackListCreateAPIView):
+class NetworkSliverList(XOSListCreateAPIView):
     queryset = NetworkSliver.objects.select_related().all()
     serializer_class = NetworkSliverSerializer
     id_serializer_class = NetworkSliverIdSerializer
@@ -3188,7 +3089,7 @@ class NetworkSliverList(PlanetStackListCreateAPIView):
         return NetworkSliver.select_by_user(self.request.user)
 
 
-class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkSliverDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = NetworkSliver.objects.select_related().all()
     serializer_class = NetworkSliverSerializer
     id_serializer_class = NetworkSliverIdSerializer
@@ -3207,13 +3108,13 @@ class NetworkSliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSliver.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class FlavorList(PlanetStackListCreateAPIView):
+class FlavorList(XOSListCreateAPIView):
     queryset = Flavor.objects.select_related().all()
     serializer_class = FlavorSerializer
     id_serializer_class = FlavorIdSerializer
@@ -3235,7 +3136,7 @@ class FlavorList(PlanetStackListCreateAPIView):
         return Flavor.select_by_user(self.request.user)
 
 
-class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class FlavorDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Flavor.objects.select_related().all()
     serializer_class = FlavorSerializer
     id_serializer_class = FlavorIdSerializer
@@ -3254,13 +3155,13 @@ class FlavorDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Flavor.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerSiteList(PlanetStackListCreateAPIView):
+class ControllerSiteList(XOSListCreateAPIView):
     queryset = ControllerSite.objects.select_related().all()
     serializer_class = ControllerSiteSerializer
     id_serializer_class = ControllerSiteIdSerializer
@@ -3282,7 +3183,7 @@ class ControllerSiteList(PlanetStackListCreateAPIView):
         return ControllerSite.select_by_user(self.request.user)
 
 
-class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerSiteDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerSite.objects.select_related().all()
     serializer_class = ControllerSiteSerializer
     id_serializer_class = ControllerSiteIdSerializer
@@ -3301,13 +3202,13 @@ class ControllerSiteDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSite.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ProjectList(PlanetStackListCreateAPIView):
+class ProjectList(XOSListCreateAPIView):
     queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
     id_serializer_class = ProjectIdSerializer
@@ -3329,7 +3230,7 @@ class ProjectList(PlanetStackListCreateAPIView):
         return Project.select_by_user(self.request.user)
 
 
-class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ProjectDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
     id_serializer_class = ProjectIdSerializer
@@ -3348,13 +3249,13 @@ class ProjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Project.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SliceList(PlanetStackListCreateAPIView):
+class SliceList(XOSListCreateAPIView):
     queryset = Slice.objects.select_related().all()
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
@@ -3376,7 +3277,7 @@ class SliceList(PlanetStackListCreateAPIView):
         return Slice.select_by_user(self.request.user)
 
 
-class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SliceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Slice.objects.select_related().all()
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
@@ -3395,13 +3296,13 @@ class SliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Slice.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkList(PlanetStackListCreateAPIView):
+class NetworkList(XOSListCreateAPIView):
     queryset = Network.objects.select_related().all()
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
@@ -3423,7 +3324,7 @@ class NetworkList(PlanetStackListCreateAPIView):
         return Network.select_by_user(self.request.user)
 
 
-class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Network.objects.select_related().all()
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
@@ -3442,13 +3343,13 @@ class NetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Network.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ServiceList(PlanetStackListCreateAPIView):
+class ServiceList(XOSListCreateAPIView):
     queryset = Service.objects.select_related().all()
     serializer_class = ServiceSerializer
     id_serializer_class = ServiceIdSerializer
@@ -3470,7 +3371,7 @@ class ServiceList(PlanetStackListCreateAPIView):
         return Service.select_by_user(self.request.user)
 
 
-class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ServiceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Service.objects.select_related().all()
     serializer_class = ServiceSerializer
     id_serializer_class = ServiceIdSerializer
@@ -3489,13 +3390,13 @@ class ServiceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Service.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ServiceClassList(PlanetStackListCreateAPIView):
+class ServiceClassList(XOSListCreateAPIView):
     queryset = ServiceClass.objects.select_related().all()
     serializer_class = ServiceClassSerializer
     id_serializer_class = ServiceClassIdSerializer
@@ -3517,7 +3418,7 @@ class ServiceClassList(PlanetStackListCreateAPIView):
         return ServiceClass.select_by_user(self.request.user)
 
 
-class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ServiceClassDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ServiceClass.objects.select_related().all()
     serializer_class = ServiceClassSerializer
     id_serializer_class = ServiceClassIdSerializer
@@ -3536,13 +3437,13 @@ class ServiceClassDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceClass.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class PlanetStackList(PlanetStackListCreateAPIView):
+class PlanetStackList(XOSListCreateAPIView):
     queryset = PlanetStack.objects.select_related().all()
     serializer_class = PlanetStackSerializer
     id_serializer_class = PlanetStackIdSerializer
@@ -3564,7 +3465,7 @@ class PlanetStackList(PlanetStackListCreateAPIView):
         return PlanetStack.select_by_user(self.request.user)
 
 
-class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class PlanetStackDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = PlanetStack.objects.select_related().all()
     serializer_class = PlanetStackSerializer
     id_serializer_class = PlanetStackIdSerializer
@@ -3583,13 +3484,13 @@ class PlanetStackDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStack.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ChargeList(PlanetStackListCreateAPIView):
+class ChargeList(XOSListCreateAPIView):
     queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
     id_serializer_class = ChargeIdSerializer
@@ -3611,7 +3512,7 @@ class ChargeList(PlanetStackListCreateAPIView):
         return Charge.select_by_user(self.request.user)
 
 
-class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ChargeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
     id_serializer_class = ChargeIdSerializer
@@ -3630,13 +3531,13 @@ class ChargeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Charge.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class RoleList(PlanetStackListCreateAPIView):
+class RoleList(XOSListCreateAPIView):
     queryset = Role.objects.select_related().all()
     serializer_class = RoleSerializer
     id_serializer_class = RoleIdSerializer
@@ -3658,7 +3559,7 @@ class RoleList(PlanetStackListCreateAPIView):
         return Role.select_by_user(self.request.user)
 
 
-class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class RoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Role.objects.select_related().all()
     serializer_class = RoleSerializer
     id_serializer_class = RoleIdSerializer
@@ -3677,13 +3578,13 @@ class RoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Role.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class UsableObjectList(PlanetStackListCreateAPIView):
+class UsableObjectList(XOSListCreateAPIView):
     queryset = UsableObject.objects.select_related().all()
     serializer_class = UsableObjectSerializer
     id_serializer_class = UsableObjectIdSerializer
@@ -3705,7 +3606,7 @@ class UsableObjectList(PlanetStackListCreateAPIView):
         return UsableObject.select_by_user(self.request.user)
 
 
-class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class UsableObjectDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = UsableObject.objects.select_related().all()
     serializer_class = UsableObjectSerializer
     id_serializer_class = UsableObjectIdSerializer
@@ -3724,13 +3625,13 @@ class UsableObjectDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UsableObject.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SiteRoleList(PlanetStackListCreateAPIView):
+class SiteRoleList(XOSListCreateAPIView):
     queryset = SiteRole.objects.select_related().all()
     serializer_class = SiteRoleSerializer
     id_serializer_class = SiteRoleIdSerializer
@@ -3752,7 +3653,7 @@ class SiteRoleList(PlanetStackListCreateAPIView):
         return SiteRole.select_by_user(self.request.user)
 
 
-class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SiteRoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SiteRole.objects.select_related().all()
     serializer_class = SiteRoleSerializer
     id_serializer_class = SiteRoleIdSerializer
@@ -3771,13 +3672,13 @@ class SiteRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteRole.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SliceCredentialList(PlanetStackListCreateAPIView):
+class SliceCredentialList(XOSListCreateAPIView):
     queryset = SliceCredential.objects.select_related().all()
     serializer_class = SliceCredentialSerializer
     id_serializer_class = SliceCredentialIdSerializer
@@ -3799,7 +3700,7 @@ class SliceCredentialList(PlanetStackListCreateAPIView):
         return SliceCredential.select_by_user(self.request.user)
 
 
-class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SliceCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SliceCredential.objects.select_related().all()
     serializer_class = SliceCredentialSerializer
     id_serializer_class = SliceCredentialIdSerializer
@@ -3818,13 +3719,13 @@ class SliceCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceCredential.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SliverList(PlanetStackListCreateAPIView):
+class SliverList(XOSListCreateAPIView):
     queryset = Sliver.objects.select_related().all()
     serializer_class = SliverSerializer
     id_serializer_class = SliverIdSerializer
@@ -3846,7 +3747,7 @@ class SliverList(PlanetStackListCreateAPIView):
         return Sliver.select_by_user(self.request.user)
 
 
-class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SliverDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Sliver.objects.select_related().all()
     serializer_class = SliverSerializer
     id_serializer_class = SliverIdSerializer
@@ -3865,13 +3766,13 @@ class SliverDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Sliver.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NodeList(PlanetStackListCreateAPIView):
+class NodeList(XOSListCreateAPIView):
     queryset = Node.objects.select_related().all()
     serializer_class = NodeSerializer
     id_serializer_class = NodeIdSerializer
@@ -3893,7 +3794,7 @@ class NodeList(PlanetStackListCreateAPIView):
         return Node.select_by_user(self.request.user)
 
 
-class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NodeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Node.objects.select_related().all()
     serializer_class = NodeSerializer
     id_serializer_class = NodeIdSerializer
@@ -3912,13 +3813,13 @@ class NodeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Node.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class DashboardViewList(PlanetStackListCreateAPIView):
+class DashboardViewList(XOSListCreateAPIView):
     queryset = DashboardView.objects.select_related().all()
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
@@ -3940,7 +3841,7 @@ class DashboardViewList(PlanetStackListCreateAPIView):
         return DashboardView.select_by_user(self.request.user)
 
 
-class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class DashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = DashboardView.objects.select_related().all()
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
@@ -3959,13 +3860,13 @@ class DashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DashboardView.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerNetworkList(PlanetStackListCreateAPIView):
+class ControllerNetworkList(XOSListCreateAPIView):
     queryset = ControllerNetwork.objects.select_related().all()
     serializer_class = ControllerNetworkSerializer
     id_serializer_class = ControllerNetworkIdSerializer
@@ -3987,7 +3888,7 @@ class ControllerNetworkList(PlanetStackListCreateAPIView):
         return ControllerNetwork.select_by_user(self.request.user)
 
 
-class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerNetworkDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerNetwork.objects.select_related().all()
     serializer_class = ControllerNetworkSerializer
     id_serializer_class = ControllerNetworkIdSerializer
@@ -4006,13 +3907,13 @@ class ControllerNetworkDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerNetwork.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ImageDeploymentsList(PlanetStackListCreateAPIView):
+class ImageDeploymentsList(XOSListCreateAPIView):
     queryset = ImageDeployments.objects.select_related().all()
     serializer_class = ImageDeploymentsSerializer
     id_serializer_class = ImageDeploymentsIdSerializer
@@ -4034,7 +3935,7 @@ class ImageDeploymentsList(PlanetStackListCreateAPIView):
         return ImageDeployments.select_by_user(self.request.user)
 
 
-class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ImageDeploymentsDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ImageDeployments.objects.select_related().all()
     serializer_class = ImageDeploymentsSerializer
     id_serializer_class = ImageDeploymentsIdSerializer
@@ -4053,13 +3954,13 @@ class ImageDeploymentsDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ImageDeployments.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerUserList(PlanetStackListCreateAPIView):
+class ControllerUserList(XOSListCreateAPIView):
     queryset = ControllerUser.objects.select_related().all()
     serializer_class = ControllerUserSerializer
     id_serializer_class = ControllerUserIdSerializer
@@ -4081,7 +3982,7 @@ class ControllerUserList(PlanetStackListCreateAPIView):
         return ControllerUser.select_by_user(self.request.user)
 
 
-class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerUserDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerUser.objects.select_related().all()
     serializer_class = ControllerUserSerializer
     id_serializer_class = ControllerUserIdSerializer
@@ -4100,13 +4001,13 @@ class ControllerUserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerUser.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ReservedResourceList(PlanetStackListCreateAPIView):
+class ReservedResourceList(XOSListCreateAPIView):
     queryset = ReservedResource.objects.select_related().all()
     serializer_class = ReservedResourceSerializer
     id_serializer_class = ReservedResourceIdSerializer
@@ -4128,7 +4029,7 @@ class ReservedResourceList(PlanetStackListCreateAPIView):
         return ReservedResource.select_by_user(self.request.user)
 
 
-class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ReservedResourceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ReservedResource.objects.select_related().all()
     serializer_class = ReservedResourceSerializer
     id_serializer_class = ReservedResourceIdSerializer
@@ -4147,13 +4048,13 @@ class ReservedResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ReservedResource.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class PaymentList(PlanetStackListCreateAPIView):
+class PaymentList(XOSListCreateAPIView):
     queryset = Payment.objects.select_related().all()
     serializer_class = PaymentSerializer
     id_serializer_class = PaymentIdSerializer
@@ -4175,7 +4076,7 @@ class PaymentList(PlanetStackListCreateAPIView):
         return Payment.select_by_user(self.request.user)
 
 
-class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class PaymentDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Payment.objects.select_related().all()
     serializer_class = PaymentSerializer
     id_serializer_class = PaymentIdSerializer
@@ -4194,13 +4095,13 @@ class PaymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Payment.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkSliceList(PlanetStackListCreateAPIView):
+class NetworkSliceList(XOSListCreateAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
     id_serializer_class = NetworkSliceIdSerializer
@@ -4222,7 +4123,7 @@ class NetworkSliceList(PlanetStackListCreateAPIView):
         return NetworkSlice.select_by_user(self.request.user)
 
 
-class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkSliceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
     id_serializer_class = NetworkSliceIdSerializer
@@ -4241,13 +4142,13 @@ class NetworkSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkSlice.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class UserDashboardViewList(PlanetStackListCreateAPIView):
+class UserDashboardViewList(XOSListCreateAPIView):
     queryset = UserDashboardView.objects.select_related().all()
     serializer_class = UserDashboardViewSerializer
     id_serializer_class = UserDashboardViewIdSerializer
@@ -4269,7 +4170,7 @@ class UserDashboardViewList(PlanetStackListCreateAPIView):
         return UserDashboardView.select_by_user(self.request.user)
 
 
-class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class UserDashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = UserDashboardView.objects.select_related().all()
     serializer_class = UserDashboardViewSerializer
     id_serializer_class = UserDashboardViewIdSerializer
@@ -4288,13 +4189,13 @@ class UserDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserDashboardView.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerList(PlanetStackListCreateAPIView):
+class ControllerList(XOSListCreateAPIView):
     queryset = Controller.objects.select_related().all()
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
@@ -4316,7 +4217,7 @@ class ControllerList(PlanetStackListCreateAPIView):
         return Controller.select_by_user(self.request.user)
 
 
-class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Controller.objects.select_related().all()
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
@@ -4335,13 +4236,13 @@ class ControllerDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Controller.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class PlanetStackPrivilegeList(PlanetStackListCreateAPIView):
+class PlanetStackPrivilegeList(XOSListCreateAPIView):
     queryset = PlanetStackPrivilege.objects.select_related().all()
     serializer_class = PlanetStackPrivilegeSerializer
     id_serializer_class = PlanetStackPrivilegeIdSerializer
@@ -4363,7 +4264,7 @@ class PlanetStackPrivilegeList(PlanetStackListCreateAPIView):
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
 
-class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class PlanetStackPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = PlanetStackPrivilege.objects.select_related().all()
     serializer_class = PlanetStackPrivilegeSerializer
     id_serializer_class = PlanetStackPrivilegeIdSerializer
@@ -4382,13 +4283,13 @@ class PlanetStackPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class UserList(PlanetStackListCreateAPIView):
+class UserList(XOSListCreateAPIView):
     queryset = User.objects.select_related().all()
     serializer_class = UserSerializer
     id_serializer_class = UserIdSerializer
@@ -4410,7 +4311,7 @@ class UserList(PlanetStackListCreateAPIView):
         return User.select_by_user(self.request.user)
 
 
-class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class UserDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = User.objects.select_related().all()
     serializer_class = UserSerializer
     id_serializer_class = UserIdSerializer
@@ -4429,13 +4330,13 @@ class UserDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return User.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class DeploymentList(PlanetStackListCreateAPIView):
+class DeploymentList(XOSListCreateAPIView):
     queryset = Deployment.objects.select_related().all()
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
@@ -4457,7 +4358,7 @@ class DeploymentList(PlanetStackListCreateAPIView):
         return Deployment.select_by_user(self.request.user)
 
 
-class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class DeploymentDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Deployment.objects.select_related().all()
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
@@ -4476,13 +4377,13 @@ class DeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Deployment.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ReservationList(PlanetStackListCreateAPIView):
+class ReservationList(XOSListCreateAPIView):
     queryset = Reservation.objects.select_related().all()
     serializer_class = ReservationSerializer
     id_serializer_class = ReservationIdSerializer
@@ -4504,7 +4405,7 @@ class ReservationList(PlanetStackListCreateAPIView):
         return Reservation.select_by_user(self.request.user)
 
 
-class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ReservationDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.select_related().all()
     serializer_class = ReservationSerializer
     id_serializer_class = ReservationIdSerializer
@@ -4523,13 +4424,13 @@ class ReservationDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Reservation.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SitePrivilegeList(PlanetStackListCreateAPIView):
+class SitePrivilegeList(XOSListCreateAPIView):
     queryset = SitePrivilege.objects.select_related().all()
     serializer_class = SitePrivilegeSerializer
     id_serializer_class = SitePrivilegeIdSerializer
@@ -4551,7 +4452,7 @@ class SitePrivilegeList(PlanetStackListCreateAPIView):
         return SitePrivilege.select_by_user(self.request.user)
 
 
-class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SitePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SitePrivilege.objects.select_related().all()
     serializer_class = SitePrivilegeSerializer
     id_serializer_class = SitePrivilegeIdSerializer
@@ -4570,13 +4471,13 @@ class SitePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SitePrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerSliceList(PlanetStackListCreateAPIView):
+class ControllerSliceList(XOSListCreateAPIView):
     queryset = ControllerSlice.objects.select_related().all()
     serializer_class = ControllerSliceSerializer
     id_serializer_class = ControllerSliceIdSerializer
@@ -4598,7 +4499,7 @@ class ControllerSliceList(PlanetStackListCreateAPIView):
         return ControllerSlice.select_by_user(self.request.user)
 
 
-class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerSliceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerSlice.objects.select_related().all()
     serializer_class = ControllerSliceSerializer
     id_serializer_class = ControllerSliceIdSerializer
@@ -4617,13 +4518,13 @@ class ControllerSliceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlice.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerDashboardViewList(PlanetStackListCreateAPIView):
+class ControllerDashboardViewList(XOSListCreateAPIView):
     queryset = ControllerDashboardView.objects.select_related().all()
     serializer_class = ControllerDashboardViewSerializer
     id_serializer_class = ControllerDashboardViewIdSerializer
@@ -4645,7 +4546,7 @@ class ControllerDashboardViewList(PlanetStackListCreateAPIView):
         return ControllerDashboardView.select_by_user(self.request.user)
 
 
-class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerDashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerDashboardView.objects.select_related().all()
     serializer_class = ControllerDashboardViewSerializer
     id_serializer_class = ControllerDashboardViewIdSerializer
@@ -4664,13 +4565,13 @@ class ControllerDashboardViewDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerDashboardView.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class AccountList(PlanetStackListCreateAPIView):
+class AccountList(XOSListCreateAPIView):
     queryset = Account.objects.select_related().all()
     serializer_class = AccountSerializer
     id_serializer_class = AccountIdSerializer
@@ -4692,7 +4593,7 @@ class AccountList(PlanetStackListCreateAPIView):
         return Account.select_by_user(self.request.user)
 
 
-class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class AccountDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Account.objects.select_related().all()
     serializer_class = AccountSerializer
     id_serializer_class = AccountIdSerializer
@@ -4711,13 +4612,13 @@ class AccountDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Account.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerRoleList(PlanetStackListCreateAPIView):
+class ControllerRoleList(XOSListCreateAPIView):
     queryset = ControllerRole.objects.select_related().all()
     serializer_class = ControllerRoleSerializer
     id_serializer_class = ControllerRoleIdSerializer
@@ -4739,7 +4640,7 @@ class ControllerRoleList(PlanetStackListCreateAPIView):
         return ControllerRole.select_by_user(self.request.user)
 
 
-class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerRoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerRole.objects.select_related().all()
     serializer_class = ControllerRoleSerializer
     id_serializer_class = ControllerRoleIdSerializer
@@ -4758,13 +4659,13 @@ class ControllerRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerRole.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkParameterTypeList(PlanetStackListCreateAPIView):
+class NetworkParameterTypeList(XOSListCreateAPIView):
     queryset = NetworkParameterType.objects.select_related().all()
     serializer_class = NetworkParameterTypeSerializer
     id_serializer_class = NetworkParameterTypeIdSerializer
@@ -4786,7 +4687,7 @@ class NetworkParameterTypeList(PlanetStackListCreateAPIView):
         return NetworkParameterType.select_by_user(self.request.user)
 
 
-class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkParameterTypeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = NetworkParameterType.objects.select_related().all()
     serializer_class = NetworkParameterTypeSerializer
     id_serializer_class = NetworkParameterTypeIdSerializer
@@ -4805,13 +4706,13 @@ class NetworkParameterTypeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkParameterType.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SiteCredentialList(PlanetStackListCreateAPIView):
+class SiteCredentialList(XOSListCreateAPIView):
     queryset = SiteCredential.objects.select_related().all()
     serializer_class = SiteCredentialSerializer
     id_serializer_class = SiteCredentialIdSerializer
@@ -4833,7 +4734,7 @@ class SiteCredentialList(PlanetStackListCreateAPIView):
         return SiteCredential.select_by_user(self.request.user)
 
 
-class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SiteCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SiteCredential.objects.select_related().all()
     serializer_class = SiteCredentialSerializer
     id_serializer_class = SiteCredentialIdSerializer
@@ -4852,13 +4753,13 @@ class SiteCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteCredential.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class DeploymentPrivilegeList(PlanetStackListCreateAPIView):
+class DeploymentPrivilegeList(XOSListCreateAPIView):
     queryset = DeploymentPrivilege.objects.select_related().all()
     serializer_class = DeploymentPrivilegeSerializer
     id_serializer_class = DeploymentPrivilegeIdSerializer
@@ -4880,7 +4781,7 @@ class DeploymentPrivilegeList(PlanetStackListCreateAPIView):
         return DeploymentPrivilege.select_by_user(self.request.user)
 
 
-class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class DeploymentPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = DeploymentPrivilege.objects.select_related().all()
     serializer_class = DeploymentPrivilegeSerializer
     id_serializer_class = DeploymentPrivilegeIdSerializer
@@ -4899,13 +4800,13 @@ class DeploymentPrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentPrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ControllerSlicePrivilegeList(PlanetStackListCreateAPIView):
+class ControllerSlicePrivilegeList(XOSListCreateAPIView):
     queryset = ControllerSlicePrivilege.objects.select_related().all()
     serializer_class = ControllerSlicePrivilegeSerializer
     id_serializer_class = ControllerSlicePrivilegeIdSerializer
@@ -4927,7 +4828,7 @@ class ControllerSlicePrivilegeList(PlanetStackListCreateAPIView):
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
 
-class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ControllerSlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ControllerSlicePrivilege.objects.select_related().all()
     serializer_class = ControllerSlicePrivilegeSerializer
     id_serializer_class = ControllerSlicePrivilegeIdSerializer
@@ -4946,13 +4847,13 @@ class ControllerSlicePrivilegeDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SiteDeploymentList(PlanetStackListCreateAPIView):
+class SiteDeploymentList(XOSListCreateAPIView):
     queryset = SiteDeployment.objects.select_related().all()
     serializer_class = SiteDeploymentSerializer
     id_serializer_class = SiteDeploymentIdSerializer
@@ -4974,7 +4875,7 @@ class SiteDeploymentList(PlanetStackListCreateAPIView):
         return SiteDeployment.select_by_user(self.request.user)
 
 
-class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SiteDeploymentDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SiteDeployment.objects.select_related().all()
     serializer_class = SiteDeploymentSerializer
     id_serializer_class = SiteDeploymentIdSerializer
@@ -4993,13 +4894,13 @@ class SiteDeploymentDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SiteDeployment.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class DeploymentRoleList(PlanetStackListCreateAPIView):
+class DeploymentRoleList(XOSListCreateAPIView):
     queryset = DeploymentRole.objects.select_related().all()
     serializer_class = DeploymentRoleSerializer
     id_serializer_class = DeploymentRoleIdSerializer
@@ -5021,7 +4922,7 @@ class DeploymentRoleList(PlanetStackListCreateAPIView):
         return DeploymentRole.select_by_user(self.request.user)
 
 
-class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class DeploymentRoleDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = DeploymentRole.objects.select_related().all()
     serializer_class = DeploymentRoleSerializer
     id_serializer_class = DeploymentRoleIdSerializer
@@ -5040,13 +4941,13 @@ class DeploymentRoleDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return DeploymentRole.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class UserCredentialList(PlanetStackListCreateAPIView):
+class UserCredentialList(XOSListCreateAPIView):
     queryset = UserCredential.objects.select_related().all()
     serializer_class = UserCredentialSerializer
     id_serializer_class = UserCredentialIdSerializer
@@ -5068,7 +4969,7 @@ class UserCredentialList(PlanetStackListCreateAPIView):
         return UserCredential.select_by_user(self.request.user)
 
 
-class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class UserCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = UserCredential.objects.select_related().all()
     serializer_class = UserCredentialSerializer
     id_serializer_class = UserCredentialIdSerializer
@@ -5087,13 +4988,13 @@ class UserCredentialDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return UserCredential.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class SliceTagList(PlanetStackListCreateAPIView):
+class SliceTagList(XOSListCreateAPIView):
     queryset = SliceTag.objects.select_related().all()
     serializer_class = SliceTagSerializer
     id_serializer_class = SliceTagIdSerializer
@@ -5115,7 +5016,7 @@ class SliceTagList(PlanetStackListCreateAPIView):
         return SliceTag.select_by_user(self.request.user)
 
 
-class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class SliceTagDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SliceTag.objects.select_related().all()
     serializer_class = SliceTagSerializer
     id_serializer_class = SliceTagIdSerializer
@@ -5134,13 +5035,13 @@ class SliceTagDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SliceTag.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class NetworkTemplateList(PlanetStackListCreateAPIView):
+class NetworkTemplateList(XOSListCreateAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
@@ -5162,7 +5063,7 @@ class NetworkTemplateList(PlanetStackListCreateAPIView):
         return NetworkTemplate.select_by_user(self.request.user)
 
 
-class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class NetworkTemplateDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = NetworkTemplate.objects.select_related().all()
     serializer_class = NetworkTemplateSerializer
     id_serializer_class = NetworkTemplateIdSerializer
@@ -5181,13 +5082,13 @@ class NetworkTemplateDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return NetworkTemplate.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class RouterList(PlanetStackListCreateAPIView):
+class RouterList(XOSListCreateAPIView):
     queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
     id_serializer_class = RouterIdSerializer
@@ -5209,7 +5110,7 @@ class RouterList(PlanetStackListCreateAPIView):
         return Router.select_by_user(self.request.user)
 
 
-class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class RouterDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = Router.objects.select_related().all()
     serializer_class = RouterSerializer
     id_serializer_class = RouterIdSerializer
@@ -5228,13 +5129,13 @@ class RouterDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return Router.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
-class ServiceResourceList(PlanetStackListCreateAPIView):
+class ServiceResourceList(XOSListCreateAPIView):
     queryset = ServiceResource.objects.select_related().all()
     serializer_class = ServiceResourceSerializer
     id_serializer_class = ServiceResourceIdSerializer
@@ -5256,7 +5157,7 @@ class ServiceResourceList(PlanetStackListCreateAPIView):
         return ServiceResource.select_by_user(self.request.user)
 
 
-class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
+class ServiceResourceDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = ServiceResource.objects.select_related().all()
     serializer_class = ServiceResourceSerializer
     id_serializer_class = ServiceResourceIdSerializer
@@ -5275,9 +5176,9 @@ class ServiceResourceDetail(PlanetStackRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return ServiceResource.select_by_user(self.request.user)
 
-    # update() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
-    # destroy() is handled by PlanetStackRetrieveUpdateDestroyAPIView
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
 
 
 
