@@ -131,6 +131,9 @@ class Sliver(PlCoreBase):
     def all_ips_string(self):
         result = []
         ips = self.all_ips()
+        if len(ips):
+            return "??? = ???"
+
         for key in sorted(ips.keys()):
             #result.append("%s = %s" % (key, ips[key]))
             result.append(ips[key])
