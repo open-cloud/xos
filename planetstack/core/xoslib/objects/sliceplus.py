@@ -135,6 +135,9 @@ class SlicePlus(Slice, PlusObjectMixin):
         return nodeList
 
     def save(self, *args, **kwargs):
+        if (not hasattr(self,"caller")) or self.caller==None:
+            raise APIException("no self.caller in SlicePlus.save")
+
         updated_image = self.has_field_changed("default_image")
         updated_flavor = self.has_field_changed("default_flavor")
 
@@ -210,6 +213,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                             flavor = self.default_flavor,
                             creator = self.creator,
                             deployment = node.site_deployment.deployment)
+                    sliver.caller = self.caller
                     slivers.append(sliver)
                     if (not noAct):
                         print "added sliver", sliver
@@ -222,7 +226,10 @@ class SlicePlus(Slice, PlusObjectMixin):
     def save_users(self, noAct = False):
         new_users = self._update_users
 
-        default_role = SliceRole.objects.get(role="default")
+        try:
+            default_role = SliceRole.objects.get(role="access")
+        except:
+            default_role = SliceRole.objects.get(role="default")
 
         slice_privs = self.sliceprivileges.all()
         slice_user_ids = [priv.user.id for priv in slice_privs]
@@ -230,6 +237,7 @@ class SlicePlus(Slice, PlusObjectMixin):
         for user_id in new_users:
             if (user_id not in slice_user_ids):
                 priv = SlicePrivilege(slice=self, user=User.objects.get(id=user_id), role=default_role)
+                priv.caller = self.caller
                 if (not noAct):
                     priv.save()
 
@@ -256,6 +264,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                 continue
             if network.ports:
                 network.ports = self._network_ports
+                network.caller = self.caller
                 if (not noAct):
                     network.save()
                 return
@@ -268,6 +277,7 @@ class SlicePlus(Slice, PlusObjectMixin):
                 continue
             if network.template.translation=="NAT":
                 network.ports = self._network_ports
+                network.caller = self.caller
                 if (not noAct):
                     network.save()
                 return
