@@ -49,8 +49,14 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
+        obj.caller = request.user
         if obj.can_update(request.user):
-            return super(XOSRetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
+            # this is the guts of DestroyModelMixin, copied here so that we
+            # can use the obj with caller set in it,
+            self.pre_delete(obj)
+            obj.delete()
+            self.post_delete(obj)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
