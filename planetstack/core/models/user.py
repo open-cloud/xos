@@ -319,7 +319,7 @@ class User(AbstractBaseUser, PlModelMixIn):
             # can see all users at any site where this user has pi role
             from core.models.site import SitePrivilege
             site_privs = SitePrivilege.objects.filter(user=user)
-            sites = [sp.site for sp in site_privs if sp.role.role == 'pi']
+            sites = [sp.site for sp in site_privs if sp.role.role in ['Admin', 'admin', 'pi']]
             # get site privs of users at these sites
             site_privs = SitePrivilege.objects.filter(site__in=sites)
             user_ids = [sp.user.id for sp in site_privs] + [user.id]
