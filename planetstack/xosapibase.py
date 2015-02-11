@@ -1,0 +1,110 @@
+from rest_framework.response import Response
+from rest_framework import serializers
+from rest_framework import generics
+from rest_framework import status
+from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
+
+class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+    # To handle fine-grained field permissions, we have to check can_update
+    # the object has been updated but before it has been saved.
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        self.object = self.get_object_or_none()
+
+        if self.object is None:
+            raise Exception("Use the List API for creating objects")
+
+        serializer = self.get_serializer(self.object, data=request.DATA,
+                                         files=request.FILES, partial=partial)
+
+        assert(serializer.object is not None)
+
+        serializer.object.caller = request.user
+
+        if not serializer.is_valid():
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            self.pre_save(serializer.object)
+        except ValidationError as err:
+            # full_clean on model instance may be called in pre_save,
+            # so we have to handle eventual errors.
+            response = {"error": "validation",
+                         "specific_error": "ValidationError in pre_save",
+                         "reasons": err.message_dict}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        if not serializer.object.can_update(request.user):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        self.object = serializer.save(force_update=True)
+        self.post_save(self.object, created=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.can_update(request.user):
+            return super(XOSRetrieveUpdateDestroyAPIView, self).destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(XOSRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
+
+class XOSListCreateAPIView(generics.ListCreateAPIView):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if not (serializer.is_valid()):
+            response = {"error": "validation",
+                        "specific_error": "not serializer.is_valid()",
+                        "reasons": serializer.errors}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # now do XOS can_update permission checking
+
+        obj = serializer.object
+        obj.caller = request.user
+        if not obj.can_update(request.user):
+            response = {"error": "validation",
+                        "specific_error": "failed can_update",
+                        "reasons": []}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # stuff below is from generics.ListCreateAPIView
+
+        if (hasattr(self, "pre_save")):
+            # rest_framework 2.x
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+        else:
+            # rest_framework 3.x
+            self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def handle_exception(self, exc):
+        # REST API drops the string attached to Django's PermissionDenied
+        # exception, and replaces it with a generic "Permission Denied"
+        if isinstance(exc, DjangoPermissionDenied):
+            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
+        else:
+            return super(XOSListCreateAPIView, self).handle_exception(exc)
+
