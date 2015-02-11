@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 import model_policy
 from model_autodeletion import ephemeral_models
+from cgi import escape as html_escape
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
@@ -107,6 +108,16 @@ class PlModelMixIn(object):
                 l.append("url")
             validators[field.name] = l
         return validators
+
+    def get_backend_icon(self):
+        # returns (icon_name, tooltip)
+        if (self.enacted is not None) and self.enacted >= self.updated or self.backend_status.startswith("1 -"):
+            return ("success", "successfully enacted")
+        else:
+            if ((self.backend_status is not None) and self.backend_status.startswith("0 -")) or self.backend_status == "Provisioning in progress" or self.backend_status=="":
+                return ("clock", html_escape(self.backend_status, quote=True))
+            else:
+                return ("error", html_escape(self.backend_status, quote=True))
 
 class PlCoreBase(models.Model, PlModelMixIn):
     objects = PlCoreBaseManager()

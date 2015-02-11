@@ -26,22 +26,24 @@ import threading
 # thread locals necessary to work around a django-suit issue
 _thread_locals = threading.local()
 
-def backend_icon(obj): # backend_status, enacted, updated):
-    #return "%s %s %s" % (str(obj.updated), str(obj.enacted), str(obj.backend_status))
-    if (obj.enacted is not None) and obj.enacted >= obj.updated or obj.backend_status.startswith("1 -"):
-        return '<span style="min-width:16px;"><img src="/static/admin/img/icon_success.gif"></span>'
+ICON_URLS = {"success": "/static/admin/img/icon_success.gif",
+            "clock": "/static/admin/img/icon_clock.gif",
+            "error": "/static/admin/img/icon_error.gif"}
+
+def backend_icon(obj):
+    (icon, tooltip) = obj.get_backend_icon()
+    icon_url = ICON_URLS.get(icon, "unknown")
+
+    if tooltip:
+        return '<span style="min-width:16px;" title="%s"><img src="%s"></span>' % (tooltip, icon_url)
     else:
-        if ((obj.backend_status is not None) and obj.backend_status.startswith("0 -")) or obj.backend_status == "Provisioning in progress" or obj.backend_status=="":
-            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_clock.gif"></span>' % obj.backend_status
-        else:
-            return '<span style="min-width:16px;" title="%s"><img src="/static/admin/img/icon_error.gif"></span>' % html_escape(obj.backend_status, quote=True)
+        return '<span style="min-width:16px;"><img src="%s"></span>' % icon_url
 
 def backend_text(obj):
-    icon = backend_icon(obj)
-    if (obj.enacted is not None) and obj.enacted >= obj.updated:
-        return "%s %s" % (icon, "successfully enacted")
-    else:
-        return "%s %s" % (icon, html_escape(obj.backend_status, quote=True))
+    (icon, tooltip) = obj.get_backend_icon()
+    icon_url = ICON_URLS.get(icon, "unknown")
+
+    return '<img src="%s"> %s' % (icon_url, tooltip)
 
 class UploadTextareaWidget(AdminTextareaWidget):
     def render(self, name, value, attrs=None):
