@@ -57,10 +57,18 @@ RUN easy_install django_evolution
 RUN easy_install python_gflags
 RUN easy_install google_api_python_client
 
-# Set up latest Ansible
-# Need to add our patches too
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ansible
-# RUN git clone --recursive git://github.com/ansible/ansible.git /opt/ansible
+# Install custom Ansible
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-crypto
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-yaml
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-client
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-paramiko
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-jinja2
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-httplib2
+RUN git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible
+RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/lib/ansible/modules/extras
+RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/v2/ansible/modules/extras
+RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/lib/ansible/modules/core
+RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/v2/ansible/modules/core
 ADD ansible-hosts /etc/ansible/hosts
 
 ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
