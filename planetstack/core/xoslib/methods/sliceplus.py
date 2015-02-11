@@ -6,7 +6,8 @@ from rest_framework import generics
 from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
-from plus import PlusSerializerMixin, PlusRetrieveUpdateDestroyAPIView, PlusListCreateAPIView
+from plus import PlusSerializerMixin
+from xosapibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
@@ -70,7 +71,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
                       'default_image', 'default_flavor',
                       'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','site_ready','users',"user_names","current_user_can_see")
 
-class SlicePlusList(PlusListCreateAPIView):
+class SlicePlusList(XOSListCreateAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
 
@@ -98,7 +99,7 @@ class SlicePlusList(PlusListCreateAPIView):
 
         return slices
 
-class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
+class SlicePlusDetail(XOSRetrieveUpdateDestroyAPIView):
     queryset = SlicePlus.objects.select_related().all()
     serializer_class = SlicePlusIdSerializer
 
@@ -110,16 +111,4 @@ class SlicePlusDetail(PlusRetrieveUpdateDestroyAPIView):
             raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
         return SlicePlus.select_by_user(self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SlicePlusDetail, self).update(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.can_update(request.user):
-            return super(SlicePlusDetail, self).destroy(request, *args, **kwargs)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
