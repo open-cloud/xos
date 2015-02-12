@@ -1,15 +1,15 @@
 import os
-#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import string
 import random
 import hashlib
 from datetime import datetime
 
 from netaddr import IPAddress, IPNetwork
-from planetstack import settings
+from xos import settings
 from django.core import management
 from core.models import * 
-from planetstack.config import Config
+from xos.config import Config
 try:
     from openstack.client import OpenStackClient
     from openstack.driver import OpenStackDriver

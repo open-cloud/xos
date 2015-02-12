@@ -1,7 +1,7 @@
 import datetime
 import os
 import sys
-#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import time
 import django.utils
 from core.models.sliver import Sliver

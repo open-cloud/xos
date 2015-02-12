@@ -1,7 +1,7 @@
 import threading
 import requests, json
 
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 
 import uuid
 import os

@@ -9,7 +9,7 @@ try:
 except:
     has_openstack = False
 
-from planetstack.config import Config
+from xos.config import Config
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):

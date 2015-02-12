@@ -39,7 +39,7 @@ class Logger:
         # default is to locate loggername from the logfile if avail.
         if not logfile:
             try:
-                from planetstack.config import Config
+                from xos.config import Config
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/planetstack.log"

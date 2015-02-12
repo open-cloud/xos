@@ -1,5 +1,5 @@
 import os
-#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import sys
 from optparse import OptionParser
 from getpass import getpass

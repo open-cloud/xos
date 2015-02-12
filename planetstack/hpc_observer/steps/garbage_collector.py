@@ -4,7 +4,7 @@ import base64
 import traceback
 from collections import defaultdict
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from util.logger import Logger, logging
 from observer.syncstep import SyncStep
 from hpc.models import ServiceProvider, ContentProvider, CDNPrefix, OriginServer

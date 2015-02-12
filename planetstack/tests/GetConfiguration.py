@@ -6,7 +6,7 @@ import time
 
 sys.path.append("/opt/xos")
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from openstack.manager import OpenStackManager
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
@@ -253,6 +253,6 @@ if __name__ == '__main__':
         for slicename in ["princeton_vcoblitz"]:
             configs[slicename] = GetConfiguration({"name": slicename})
 
-        file("planetstack_config","w").write(json.dumps(configs))
+        file("xos.config","w").write(json.dumps(configs))
         file("planetstack_slices","w").write(json.dumps(slices))
         file("planetstack_nodes","w").write(json.dumps(nodes))

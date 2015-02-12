@@ -1,6 +1,6 @@
 import commands
 import hashlib
-from planetstack.config import Config
+from xos.config import Config
 from core.models import Controller
 
 try:

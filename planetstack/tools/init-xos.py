@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append("/opt/xos")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
 django.setup()

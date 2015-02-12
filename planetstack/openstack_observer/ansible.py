@@ -9,7 +9,7 @@ import random
 import re
 
 # XXX hardcoded path
-#    is there any reason why we aren't importing planetstack.config ?
+#    is there any reason why we aren't importing xos.config ?
 XOS_DIR="/opt/xos"
 
 try:

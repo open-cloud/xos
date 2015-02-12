@@ -3,7 +3,7 @@ import base64
 from collections import defaultdict
 from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Slice, ControllerSlice
 from core.models.controlleruser import ControllerUser

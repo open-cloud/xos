@@ -16,7 +16,7 @@ from django.db.models import F, Q
 from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
 #from timeout import timeout
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 from observer.steps import *
 from syncstep import SyncStep
 from toposort import toposort

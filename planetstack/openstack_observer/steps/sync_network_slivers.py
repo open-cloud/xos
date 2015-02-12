@@ -1,7 +1,7 @@
 import os
 import base64
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import Controller
 from core.models.network import *
