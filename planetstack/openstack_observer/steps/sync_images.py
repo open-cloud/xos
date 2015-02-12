@@ -17,11 +17,14 @@ class SyncImages(OpenStackSyncStep):
             return []
 
         # get list of images on disk
-        images_path = Config().observer_images_directory 
+        images_path = Config().observer_images_directory
+
         available_images = {}
-        for f in os.listdir(images_path):
-            if os.path.isfile(os.path.join(images_path ,f)):
-                available_images[f] = os.path.join(images_path ,f)
+        if os.path.exists(images_path):
+            for f in os.listdir(images_path):
+                filename = os.path.join(images_path, f)
+                if os.path.isfile(filename):
+                    available_images[f] = filename
 
         images = Image.objects.all()
         image_names = [image.name for image in images]
@@ -35,8 +38,7 @@ class SyncImages(OpenStackSyncStep):
                               container_format='bare', 
                               path = available_images[image_name])
                 image.save()
-       
-        
+
         return Image.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, image):
