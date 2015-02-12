@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: xos
-Version: 1.1.0
+Version: 1.2.0
 Release: 1
 License: GPL+
 Group: Development/Tools
