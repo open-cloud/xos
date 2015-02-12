@@ -3,7 +3,7 @@ import sys
 XOS_DIR="/opt/xos"
 os.chdir(XOS_DIR)
 sys.path.append(XOS_DIR)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 import core.models
 from django.db import models

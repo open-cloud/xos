@@ -1,6 +1,6 @@
 import os
 import sys
-#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import time
 from core.models.sliver import Sliver
 from openstack.manager import OpenStackManager

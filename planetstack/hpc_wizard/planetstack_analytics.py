@@ -11,7 +11,7 @@ import urllib2
 # XXX hardcoded path
 sys.path.append("/opt/xos")
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.conf import settings
 from django import db
 from django.db import connection

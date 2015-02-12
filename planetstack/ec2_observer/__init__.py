@@ -1,4 +1,4 @@
-from planetstack.config import Config
+from xos.config import Config
 
 try:
     observer_disabled = Config().observer_disabled

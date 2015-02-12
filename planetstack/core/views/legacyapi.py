@@ -298,6 +298,6 @@ if __name__ == '__main__':
         configs={}
         configs[slicename] = GetConfiguration({"name": "princeton_vcoblitz"})
 
-        file("planetstack_config","w").write(json.dumps(configs))
+        file("xos.config","w").write(json.dumps(configs))
         file("planetstack_slices","w").write(json.dumps(slices))
         file("planetstack_nodes","w").write(json.dumps(nodes))

@@ -6,7 +6,7 @@ from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
 from core.acl import AccessControlList
-from planetstack.config import Config
+from xos.config import Config
 
 config = Config()
 

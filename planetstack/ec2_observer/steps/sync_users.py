@@ -4,7 +4,7 @@ import random
 import time
 from datetime import datetime 
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from ec2_observer.syncstep import SyncStep
 from core.models.user import User
 from core.models.site import *

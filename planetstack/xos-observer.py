@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os
 import argparse
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from observer.backend import Backend
-from planetstack.config import Config, DEFAULT_CONFIG_FN
+from xos.config import Config, DEFAULT_CONFIG_FN
 
 try:
     from django import setup as django_setup # django 1.7

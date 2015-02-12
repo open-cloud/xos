@@ -1,4 +1,4 @@
-from planetstack.config import Config
+from xos.config import Config
 from util.logger import Logger, logging, logger
 
 class ErrorMapper:

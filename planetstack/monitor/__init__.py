@@ -1,4 +1,4 @@
-from planetstack.settings import STATISTICS_DRIVER
+from xos.settings import STATISTICS_DRIVER
 
 if (STATISTICS_DRIVER=="ceilometer"):
     from observer import ceilometer

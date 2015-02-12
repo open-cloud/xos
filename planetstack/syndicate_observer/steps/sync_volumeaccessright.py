@@ -12,10 +12,10 @@ if __name__ == "__main__":
     else:
         print >> sys.stderr, "No OPENCLOUD_PYTHONPATH variable set.  Assuming that OpenCloud is in PYTHONPATH"
  
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
 

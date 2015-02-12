@@ -5,7 +5,7 @@ import sys
 import base64
 import traceback
 from django.db.models import F, Q
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 from observer.syncstep import SyncStep
 from core.models import Service
 from requestrouter.models import ServiceMap

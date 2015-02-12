@@ -2,7 +2,7 @@
 
 import os
 import imp
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 import inspect
 import time
 import traceback
