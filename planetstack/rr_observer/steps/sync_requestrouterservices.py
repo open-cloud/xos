@@ -3,7 +3,7 @@ import sys
 import base64
 import traceback
 from django.db.models import F, Q
-from planetstack.config import Config
+from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
 from requestrouter.models import RequestRouterService

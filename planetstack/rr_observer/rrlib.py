@@ -6,9 +6,9 @@ import socket
 from sets import Set
 if __name__ == '__main__':
     sys.path.append("/opt/xos")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
-from planetstack.config import Config
+from xos.config import Config
 from core.models import Service
 from requestrouter.models import RequestRouterService, ServiceMap
 from util.logger import Logger, logging

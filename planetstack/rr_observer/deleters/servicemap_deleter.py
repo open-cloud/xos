@@ -4,7 +4,7 @@ import traceback
 from requestrouter.models import ServiceMap
 from observer.deleter import Deleter
 from util.logger import Logger, logging
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)

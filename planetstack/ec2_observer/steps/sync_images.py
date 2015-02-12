@@ -1,7 +1,7 @@
 import os
 import base64
 from django.db.models import F, Q
-from planetstack.config import Config, XOS_DIR
+from xos.config import Config, XOS_DIR
 from ec2_observer.syncstep import SyncStep
 from core.models.image import Image
 from ec2_observer.awslib import *

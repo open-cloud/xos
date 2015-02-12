@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from planetstack.config import Config
+from xos.config import Config
 
 def help():
     print "syntax: %s get name [default]" % sys.argv[0]

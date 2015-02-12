@@ -55,7 +55,7 @@ else:
    logger.warning("No OPENCLOUD_PYTHONPATH set.  Assuming Syndicate models are in your PYTHONPATH")
 
 try:
-   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
    # get our models
    import syndicate_storage.models as models
@@ -1333,7 +1333,7 @@ def ft_seal_and_unseal():
 # run functional tests
 if __name__ == "__main__":
     sys.path.append("/opt/xos")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
     if len(sys.argv) < 2:
       print "Usage: %s testname [args]" % sys.argv[0]

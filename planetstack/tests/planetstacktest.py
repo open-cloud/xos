@@ -5,7 +5,7 @@ import time
 
 sys.path.append("/opt/xos")
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from openstack.manager import OpenStackManager
 from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 

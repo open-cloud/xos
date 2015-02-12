@@ -4,9 +4,9 @@ import imp
 import inspect
 import os
 import sys
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 sys.path.append("/opt/xos")
-from planetstack.config import Config, DEFAULT_CONFIG_FN, XOS_DIR
+from xos.config import Config, DEFAULT_CONFIG_FN, XOS_DIR
 from util.logger import Logger, logging
 from observer.syncstep import SyncStep
 

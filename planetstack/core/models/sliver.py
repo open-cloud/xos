@@ -13,7 +13,7 @@ from core.models import User
 from core.models import Tag
 from core.models import Flavor
 from django.contrib.contenttypes import generic
-from planetstack.config import Config
+from xos.config import Config
 from monitor import driver as monitor
 
 config = Config()

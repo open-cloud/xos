@@ -1,6 +1,6 @@
 import os
 import base64
-from planetstack.config import Config
+from xos.config import Config
 
 class Deleter:
 	model=None # Must be overridden
