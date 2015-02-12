@@ -89,7 +89,7 @@ RUN /opt/xos/scripts/opencloud genkeys
 RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with password 'password';"
 
 # Turn DEBUG on so that devel server will serve static files
-RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/planetstack/settings.py
+RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 
 # Cruft to workaround problems with migrations, should go away...
 RUN /opt/xos/scripts/opencloud dropdb
