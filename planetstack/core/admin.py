@@ -1032,7 +1032,7 @@ class SliverAdmin(PlanetStackBaseAdmin):
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
-    list_display_links = ('backend_status_icon', 'all_ips_string',)
+    list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
     suit_form_tabs =(('general', 'Sliver Details'),)
 
