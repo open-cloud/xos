@@ -9,11 +9,18 @@ def Stats(request):
     meter = request.GET['meter']
     controller_name = request.GET['controller_name']
     
-    controller = Controller.objects.filter(name=controller_name)[0]
+    controller = Controller.objects.filter(name=controller_name)
+
+    if len(controller)==0:
+        # controller was not found...
+        # probably should put some kind of error response here
+        return HttpResponse(json.dumps({"stat_list": []}))
+
+    controller=controller[0]
     keystone = {'username':controller.admin_user, 'password':controller.admin_password, 'tenant_name':controller.admin_tenant, 'auth_url':controller.auth_url, 'cacert':'/etc/ssl/certs/ca-certificates.crt'}
 
     for k,v in keystone.items():
         keystone['os_'+k] = v
-    
+
     meters = driver.get_meter(meter, model, pk, keystone)
     return HttpResponse(json.dumps(meters))
