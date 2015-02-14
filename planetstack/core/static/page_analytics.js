@@ -10,7 +10,9 @@ function updateMiniDashStatistic(meter, buttonSelector) {
     type : 'GET',
     success: function(newData) {
         console.log(newData);
-        if (newData.stat_list.length > 0) {
+        if (newData.error) {
+            $(buttonSelector).text(newData.error);
+        } else if (newData.stat_list.length > 0) {
             value = newData.stat_list.slice(-1)[0].value;
             console.log(value);
             $(buttonSelector).text(Math.round(value)).show();
