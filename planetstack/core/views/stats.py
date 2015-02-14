@@ -12,9 +12,7 @@ def Stats(request):
     controller = Controller.objects.filter(name=controller_name)
 
     if len(controller)==0:
-        # controller was not found...
-        # probably should put some kind of error response here
-        return HttpResponse(json.dumps({"stat_list": []}))
+        return HttpResponse(json.dumps({"stat_list": [], "error": "not found"}))
 
     controller=controller[0]
     keystone = {'username':controller.admin_user, 'password':controller.admin_password, 'tenant_name':controller.admin_tenant, 'auth_url':controller.auth_url, 'cacert':'/etc/ssl/certs/ca-certificates.crt'}
