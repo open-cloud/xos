@@ -40,7 +40,6 @@ class Logger:
         if not logfile:
             try:
                 from xos.config import Config
-                # should this be Config.api_logfile ? 
                 logfile = Config().observer_log_file
             except:
                 logfile = "/var/log/xos.log"
