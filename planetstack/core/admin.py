@@ -644,7 +644,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
 class ControllerAdmin(PlanetStackBaseAdmin):
     model = Controller
-    fieldList = ['name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain']
+    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
