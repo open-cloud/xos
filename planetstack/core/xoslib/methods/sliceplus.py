@@ -7,7 +7,7 @@ from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin
-from xosapibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
+from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
