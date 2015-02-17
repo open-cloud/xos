@@ -12,19 +12,23 @@ from django.core.exceptions import PermissionDenied
 # This REST API endpoint contains a bunch of misc information that the
 # tenant view needs to display
 
-BLESSED_DEPLOYMENTS = ["ViCCI"] # ["US-MaxPlanck", "US-GeorgiaTech", "US-Princeton", "US-Washington", "US-Stanford"]
-
 def getTenantViewDict(user):
-    blessed_deployments = []
-    for deployment in Deployment.objects.all():
-        if deployment.name in BLESSED_DEPLOYMENTS:
-            blessed_deployments.append(deployment)
+    # compute blessed_deployments by looking for the tenant view, and seeing what
+    # deployments are attached to it.
+    blessed_deployments=[]
+    for dash in DashboardView.objects.all():
+        if (dash.url=="template:xosTenant"):
+            for deployment in dash.deployments.all():
+                if deployment not in blessed_deployments:
+                    blessed_deployments.append(deployment)
+
+    blessed_deployment_ids = [d.id for d in blessed_deployments]
 
     blessed_sites = []
     for site in Site.objects.all():
         good=False
         for deployment in site.deployments.all():
-            if deployment.name in BLESSED_DEPLOYMENTS:
+            if deployment.id in blessed_deployment_ids:
                 # only bless sites that have at least one node in the deployment
                 sitedeployments = SiteDeployment.objects.filter(site=site, deployment=deployment)
                 for sd in sitedeployments.all():
@@ -37,7 +41,7 @@ def getTenantViewDict(user):
     for image in Image.objects.all():
         good = False
         for deployment in image.deployments.all():
-            if deployment.name in BLESSED_DEPLOYMENTS:
+            if deployment.id in blessed_deployment_ids:
                  good=True
         if good:
             blessed_images.append(image)
@@ -46,7 +50,7 @@ def getTenantViewDict(user):
     for flavor in Flavor.objects.all():
         good = False
         for deployment in flavor.deployments.all():
-            if deployment.name in BLESSED_DEPLOYMENTS:
+            if deployment.id in blessed_deployment_ids:
                  good=True
         if good:
             blessed_flavors.append(flavor)
@@ -74,7 +78,7 @@ def getTenantViewDict(user):
     blessed_service_classes = [ServiceClass.objects.get(name="Best Effort")]
 
     return {"id": 0,
-            "blessed_deployment_names": BLESSED_DEPLOYMENTS,
+            "blessed_deployment_names": [deployment.name for deployment in blessed_deployments],
             "blessed_deployments": [deployment.id for deployment in blessed_deployments],
             "blessed_site_names": [site.name for site in blessed_sites],
             "blessed_sites": [site.id for site in blessed_sites],
