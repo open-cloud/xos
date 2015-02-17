@@ -17,7 +17,7 @@ SITE_ROLES = ["admin", "pi", "tech"]
 SLICE_ROLES = ["admin", "access"]
 DEPLOYMENT_ROLES = ["admin"]
 
-d = Deployment(name="ViCCI")
+d = Deployment(name="MyDeployment")
 d.save()
 
 s = Site(name="MySite", enabled=True, login_base="mysite", is_public=True, abbreviated_name="mysite")
@@ -26,7 +26,7 @@ s.save()
 sd = SiteDeployment(site=s, deployment=d)
 sd.save();
 
-u = User(email = "padmin@vicci.org", password="letmein", is_admin=True, is_active=True, site=s, firstname="XOS",
+u = User(email = ADMIN_USERNAME, password=ADMIN_PASSWORD, is_admin=True, is_active=True, site=s, firstname="XOS",
          lastname="admin")
 u.save()
 
@@ -50,7 +50,10 @@ for deployment_role_name in DEPLOYMENT_ROLES:
 
 DashboardView(name="xsh", url="template:xsh", enabled=True).save()
 DashboardView(name="Customize", url="template:customize", enabled=True).save()
-DashboardView(name="Tenant", url="template:xosTenant", enabled=True).save()
+tv=DashboardView(name="Tenant", url="template:xosTenant", enabled=True)
+tv.save()
+tv.deployments.add(d)
+tv.save()
 DashboardView(name="Developer", url="template:xosDeveloper_datatables", enabled=True).save()
 
 ServiceClass(name="Best Effort", description="Best Effort").save()
