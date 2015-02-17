@@ -415,10 +415,8 @@ XOSTenantApp.sanityCheck = function() {
     }
 
     if (errors.length > 0) {
-         $("#tenantSummary").html("Tenant view sanity check failed: <blockquote>" + errors.join("<br>") + "</blockquote>" +
-                "Usually errors in the Tenant view imply that nodes, sites, or " +
-                "images need to be added to a Deployment. The Deployment(s) that " +
-                "the tenant view is hardcoded to use are " +  xos.tenant().blessed_deployment_names.join(",") + ".");
+         t = templateFromId("#tenant-sanity-check")
+         $("#tenantSummary").html( t({errors: errors, blessed_deployment_names: xos.tenant().blessed_deployment_names}) );
          return false;
     }
 
