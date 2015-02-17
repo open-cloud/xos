@@ -2,8 +2,35 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.exceptions import APIException
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
+
+class XOSProgrammingError(APIException):
+    status_code=400
+    def __init__(self, why="programming error", fields={}):
+        APIException.__init__(self, {"error": "XOSProgrammingError",
+                            "specific_error": why,
+                            "fields": fields})
+
+class XOSPermissionDenied(RestFrameworkPermissionDenied):
+    def __init__(self, why="permission error", fields={}):
+        APIException.__init__(self, {"error": "XOSPermissionDenied",
+                            "specific_error": why,
+                            "fields": fields})
+
+class XOSNotAuthenticated(RestFrameworkPermissionDenied):
+    def __init__(self, why="you must be authenticated to use this api", fields={}):
+        APIException.__init__(self, {"error": "XOSNotAuthenticated",
+                            "specific_error": why,
+                            "fields": fields})
+
+class XOSValidationError(APIException):
+    status_code=403
+    def __init__(self, why="validation error", fields={}):
+        APIException.__init__(self, {"error": "XOSValidationError",
+                            "specific_error": why,
+                            "fields": fields})
 
 class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
@@ -15,7 +42,7 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         self.object = self.get_object_or_none()
 
         if self.object is None:
-            raise Exception("Use the List API for creating objects")
+            raise XOSProgrammingError("Use the List API for creating objects")
 
         serializer = self.get_serializer(self.object, data=request.DATA,
                                          files=request.FILES, partial=partial)
@@ -25,26 +52,20 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         serializer.object.caller = request.user
 
         if not serializer.is_valid():
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            self.pre_save(serializer.object)
-        except ValidationError as err:
-            # full_clean on model instance may be called in pre_save,
-            # so we have to handle eventual errors.
-            response = {"error": "validation",
-                         "specific_error": "ValidationError in pre_save",
-                         "reasons": err.message_dict}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            raise XOSValidationError(fields=serializer._errors)
 
         if not serializer.object.can_update(request.user):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise XOSPermissionDenied()
 
-        self.object = serializer.save(force_update=True)
-        self.post_save(self.object, created=False)
+        if (hasattr(self, "pre_save")):
+            # rest_framework 2.x
+            self.pre_save(serializer.object)
+            self.object = serializer.save(force_update=True)
+            self.post_save(self.object, created=False)
+        else:
+            # rest_framework 3.x
+            self.perform_update(serializer)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
@@ -64,7 +85,7 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         # REST API drops the string attached to Django's PermissionDenied
         # exception, and replaces it with a generic "Permission Denied"
         if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
             response.exception=True
             return response
         else:
@@ -73,21 +94,18 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class XOSListCreateAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
-        if not (serializer.is_valid()):
-            response = {"error": "validation",
-                        "specific_error": "not serializer.is_valid()",
-                        "reasons": serializer.errors}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        # In rest_framework 3.x: we can pass raise_exception=True instead of
+        # raising the exception ourselves
+        if not serializer.is_valid():
+            raise XOSValidationError(fields=serializer._errors)
 
         # now do XOS can_update permission checking
 
         obj = serializer.object
         obj.caller = request.user
         if not obj.can_update(request.user):
-            response = {"error": "validation",
-                        "specific_error": "failed can_update",
-                        "reasons": []}
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            raise XOSPermissionDenied()
 
         # stuff below is from generics.ListCreateAPIView
 
@@ -108,7 +126,7 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         # REST API drops the string attached to Django's PermissionDenied
         # exception, and replaces it with a generic "Permission Denied"
         if isinstance(exc, DjangoPermissionDenied):
-            response=Response({'detail': str(exc)}, status=status.HTTP_403_FORBIDDEN)
+            response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
             response.exception=True
             return response
         else:

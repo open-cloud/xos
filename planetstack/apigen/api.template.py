@@ -11,7 +11,7 @@ from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
-from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
+from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView, XOSNotAuthenticated
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -181,7 +181,7 @@ class {{ object.camel }}List(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return {{ object.camel }}.select_by_user(self.request.user)
 
 
@@ -201,7 +201,7 @@ class {{ object.camel }}Detail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return {{ object.camel }}.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
