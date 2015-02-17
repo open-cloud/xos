@@ -11,7 +11,7 @@ from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
-from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView
+from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView, XOSNotAuthenticated
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -1665,7 +1665,7 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
 
 class ControllerIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1685,7 +1685,7 @@ class ControllerIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
 
 
 
@@ -2568,7 +2568,7 @@ class ServiceAttributeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceAttribute.select_by_user(self.request.user)
 
 
@@ -2588,7 +2588,7 @@ class ServiceAttributeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceAttribute.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2615,7 +2615,7 @@ class ControllerImagesList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerImages.select_by_user(self.request.user)
 
 
@@ -2635,7 +2635,7 @@ class ControllerImagesDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerImages.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2662,7 +2662,7 @@ class ControllerSitePrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
 
@@ -2682,7 +2682,7 @@ class ControllerSitePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2709,7 +2709,7 @@ class ImageList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Image.select_by_user(self.request.user)
 
 
@@ -2729,7 +2729,7 @@ class ImageDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Image.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2756,7 +2756,7 @@ class NetworkParameterList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkParameter.select_by_user(self.request.user)
 
 
@@ -2776,7 +2776,7 @@ class NetworkParameterDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkParameter.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2803,7 +2803,7 @@ class SiteList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Site.select_by_user(self.request.user)
 
 
@@ -2823,7 +2823,7 @@ class SiteDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Site.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2850,7 +2850,7 @@ class SliceRoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceRole.select_by_user(self.request.user)
 
 
@@ -2870,7 +2870,7 @@ class SliceRoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceRole.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2897,7 +2897,7 @@ class TagList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Tag.select_by_user(self.request.user)
 
 
@@ -2917,7 +2917,7 @@ class TagDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Tag.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2944,7 +2944,7 @@ class InvoiceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Invoice.select_by_user(self.request.user)
 
 
@@ -2964,7 +2964,7 @@ class InvoiceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Invoice.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -2991,7 +2991,7 @@ class SlicePrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SlicePrivilege.select_by_user(self.request.user)
 
 
@@ -3011,7 +3011,7 @@ class SlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3038,7 +3038,7 @@ class PlanetStackRoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStackRole.select_by_user(self.request.user)
 
 
@@ -3058,7 +3058,7 @@ class PlanetStackRoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStackRole.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3085,7 +3085,7 @@ class NetworkSliverList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkSliver.select_by_user(self.request.user)
 
 
@@ -3105,7 +3105,7 @@ class NetworkSliverDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkSliver.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3132,7 +3132,7 @@ class FlavorList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Flavor.select_by_user(self.request.user)
 
 
@@ -3152,7 +3152,7 @@ class FlavorDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Flavor.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3179,7 +3179,7 @@ class ControllerSiteList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSite.select_by_user(self.request.user)
 
 
@@ -3199,7 +3199,7 @@ class ControllerSiteDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSite.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3226,7 +3226,7 @@ class ProjectList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Project.select_by_user(self.request.user)
 
 
@@ -3246,7 +3246,7 @@ class ProjectDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Project.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3273,7 +3273,7 @@ class SliceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Slice.select_by_user(self.request.user)
 
 
@@ -3293,7 +3293,7 @@ class SliceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Slice.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3320,7 +3320,7 @@ class NetworkList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Network.select_by_user(self.request.user)
 
 
@@ -3340,7 +3340,7 @@ class NetworkDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Network.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3367,7 +3367,7 @@ class ServiceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Service.select_by_user(self.request.user)
 
 
@@ -3387,7 +3387,7 @@ class ServiceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Service.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3414,7 +3414,7 @@ class ServiceClassList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceClass.select_by_user(self.request.user)
 
 
@@ -3434,7 +3434,7 @@ class ServiceClassDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceClass.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3461,7 +3461,7 @@ class PlanetStackList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStack.select_by_user(self.request.user)
 
 
@@ -3481,7 +3481,7 @@ class PlanetStackDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStack.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3508,7 +3508,7 @@ class ChargeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Charge.select_by_user(self.request.user)
 
 
@@ -3528,7 +3528,7 @@ class ChargeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Charge.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3555,7 +3555,7 @@ class RoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Role.select_by_user(self.request.user)
 
 
@@ -3575,7 +3575,7 @@ class RoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Role.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3602,7 +3602,7 @@ class UsableObjectList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UsableObject.select_by_user(self.request.user)
 
 
@@ -3622,7 +3622,7 @@ class UsableObjectDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UsableObject.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3649,7 +3649,7 @@ class SiteRoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteRole.select_by_user(self.request.user)
 
 
@@ -3669,7 +3669,7 @@ class SiteRoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteRole.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3696,7 +3696,7 @@ class SliceCredentialList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceCredential.select_by_user(self.request.user)
 
 
@@ -3716,7 +3716,7 @@ class SliceCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceCredential.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3743,7 +3743,7 @@ class SliverList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Sliver.select_by_user(self.request.user)
 
 
@@ -3763,7 +3763,7 @@ class SliverDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Sliver.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3790,7 +3790,7 @@ class NodeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Node.select_by_user(self.request.user)
 
 
@@ -3810,7 +3810,7 @@ class NodeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Node.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3837,7 +3837,7 @@ class DashboardViewList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DashboardView.select_by_user(self.request.user)
 
 
@@ -3857,7 +3857,7 @@ class DashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DashboardView.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3884,7 +3884,7 @@ class ControllerNetworkList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerNetwork.select_by_user(self.request.user)
 
 
@@ -3904,7 +3904,7 @@ class ControllerNetworkDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerNetwork.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3931,7 +3931,7 @@ class ImageDeploymentsList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ImageDeployments.select_by_user(self.request.user)
 
 
@@ -3951,7 +3951,7 @@ class ImageDeploymentsDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ImageDeployments.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -3978,7 +3978,7 @@ class ControllerUserList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerUser.select_by_user(self.request.user)
 
 
@@ -3998,7 +3998,7 @@ class ControllerUserDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerUser.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4025,7 +4025,7 @@ class ReservedResourceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ReservedResource.select_by_user(self.request.user)
 
 
@@ -4045,7 +4045,7 @@ class ReservedResourceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ReservedResource.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4072,7 +4072,7 @@ class PaymentList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Payment.select_by_user(self.request.user)
 
 
@@ -4092,7 +4092,7 @@ class PaymentDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Payment.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4119,7 +4119,7 @@ class NetworkSliceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkSlice.select_by_user(self.request.user)
 
 
@@ -4139,7 +4139,7 @@ class NetworkSliceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkSlice.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4166,7 +4166,7 @@ class UserDashboardViewList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UserDashboardView.select_by_user(self.request.user)
 
 
@@ -4186,7 +4186,7 @@ class UserDashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UserDashboardView.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4200,7 +4200,7 @@ class ControllerList(XOSListCreateAPIView):
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','dashboardviews',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4213,7 +4213,7 @@ class ControllerList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Controller.select_by_user(self.request.user)
 
 
@@ -4233,7 +4233,7 @@ class ControllerDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Controller.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4260,7 +4260,7 @@ class PlanetStackPrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
 
@@ -4280,7 +4280,7 @@ class PlanetStackPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return PlanetStackPrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4307,7 +4307,7 @@ class UserList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return User.select_by_user(self.request.user)
 
 
@@ -4327,7 +4327,7 @@ class UserDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return User.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4354,7 +4354,7 @@ class DeploymentList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Deployment.select_by_user(self.request.user)
 
 
@@ -4374,7 +4374,7 @@ class DeploymentDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Deployment.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4401,7 +4401,7 @@ class ReservationList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Reservation.select_by_user(self.request.user)
 
 
@@ -4421,7 +4421,7 @@ class ReservationDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Reservation.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4448,7 +4448,7 @@ class SitePrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SitePrivilege.select_by_user(self.request.user)
 
 
@@ -4468,7 +4468,7 @@ class SitePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SitePrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4495,7 +4495,7 @@ class ControllerSliceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSlice.select_by_user(self.request.user)
 
 
@@ -4515,7 +4515,7 @@ class ControllerSliceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSlice.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4542,7 +4542,7 @@ class ControllerDashboardViewList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerDashboardView.select_by_user(self.request.user)
 
 
@@ -4562,7 +4562,7 @@ class ControllerDashboardViewDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerDashboardView.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4589,7 +4589,7 @@ class AccountList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Account.select_by_user(self.request.user)
 
 
@@ -4609,7 +4609,7 @@ class AccountDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Account.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4636,7 +4636,7 @@ class ControllerRoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerRole.select_by_user(self.request.user)
 
 
@@ -4656,7 +4656,7 @@ class ControllerRoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerRole.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4683,7 +4683,7 @@ class NetworkParameterTypeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkParameterType.select_by_user(self.request.user)
 
 
@@ -4703,7 +4703,7 @@ class NetworkParameterTypeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkParameterType.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4730,7 +4730,7 @@ class SiteCredentialList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteCredential.select_by_user(self.request.user)
 
 
@@ -4750,7 +4750,7 @@ class SiteCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteCredential.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4777,7 +4777,7 @@ class DeploymentPrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DeploymentPrivilege.select_by_user(self.request.user)
 
 
@@ -4797,7 +4797,7 @@ class DeploymentPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DeploymentPrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4824,7 +4824,7 @@ class ControllerSlicePrivilegeList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
 
@@ -4844,7 +4844,7 @@ class ControllerSlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ControllerSlicePrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4871,7 +4871,7 @@ class SiteDeploymentList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteDeployment.select_by_user(self.request.user)
 
 
@@ -4891,7 +4891,7 @@ class SiteDeploymentDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SiteDeployment.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4918,7 +4918,7 @@ class DeploymentRoleList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DeploymentRole.select_by_user(self.request.user)
 
 
@@ -4938,7 +4938,7 @@ class DeploymentRoleDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return DeploymentRole.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -4965,7 +4965,7 @@ class UserCredentialList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UserCredential.select_by_user(self.request.user)
 
 
@@ -4985,7 +4985,7 @@ class UserCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return UserCredential.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -5012,7 +5012,7 @@ class SliceTagList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceTag.select_by_user(self.request.user)
 
 
@@ -5032,7 +5032,7 @@ class SliceTagDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return SliceTag.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -5059,7 +5059,7 @@ class NetworkTemplateList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkTemplate.select_by_user(self.request.user)
 
 
@@ -5079,7 +5079,7 @@ class NetworkTemplateDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return NetworkTemplate.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -5106,7 +5106,7 @@ class RouterList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Router.select_by_user(self.request.user)
 
 
@@ -5126,7 +5126,7 @@ class RouterDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return Router.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
@@ -5153,7 +5153,7 @@ class ServiceResourceList(XOSListCreateAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceResource.select_by_user(self.request.user)
 
 
@@ -5173,7 +5173,7 @@ class ServiceResourceDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSNotAuthenticated()
         return ServiceResource.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
