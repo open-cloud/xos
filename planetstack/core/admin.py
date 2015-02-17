@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
 from django.forms.utils import flatatt, to_current_timezone
@@ -446,7 +446,7 @@ class SiteDeploymentInline(PlStackTabularInline):
             kwargs['queryset'] = Deployment.select_by_user(request.user)
 
         if db_field.name == 'controller':
-            kwargs['queryset'] = Controller.select_by_user(request.user)
+            kwargs['queryset'] = Controller.select_by_user(request.user).filter(deployment__id=int(resolve(request.path).args[0]))
 
         return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
