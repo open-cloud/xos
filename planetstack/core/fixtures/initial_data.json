@@ -1,9 +1,9 @@
 [
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.001Z",
+        "updated": "2015-02-17T22:06:37.837Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.001Z",
+        "created": "2015-02-17T22:06:37.837Z",
         "deleted": false,
         "site_url": null,
         "enabled": true,
@@ -23,9 +23,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.783Z",
+        "updated": "2015-02-17T22:06:38.620Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.783Z",
+        "created": "2015-02-17T22:06:38.620Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "admin",
@@ -37,9 +37,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.833Z",
+        "updated": "2015-02-17T22:06:38.670Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.833Z",
+        "created": "2015-02-17T22:06:38.669Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "pi",
@@ -51,9 +51,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.875Z",
+        "updated": "2015-02-17T22:06:38.731Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.875Z",
+        "created": "2015-02-17T22:06:38.730Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "tech",
@@ -66,11 +66,11 @@
 {
     "fields": {
         "accessControl": "allow all",
-        "updated": "2015-02-12T06:26:56.952Z",
+        "updated": "2015-02-17T22:06:37.789Z",
         "policed": null,
-        "created": "2015-02-12T06:26:56.952Z",
+        "created": "2015-02-17T22:06:37.789Z",
         "deleted": false,
-        "name": "ViCCI",
+        "name": "MyDeployment",
         "backend_register": "{}",
         "backend_status": "0 - Provisioning in progress",
         "enacted": null
@@ -80,9 +80,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.008Z",
+        "updated": "2015-02-17T22:06:38.894Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.008Z",
+        "created": "2015-02-17T22:06:38.894Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "admin",
@@ -94,9 +94,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.057Z",
+        "updated": "2015-02-17T22:06:37.893Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.057Z",
+        "created": "2015-02-17T22:06:37.893Z",
         "deleted": false,
         "availability_zone": null,
         "site": 1,
@@ -111,10 +111,11 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.050Z",
+        "updated": "2015-02-17T22:06:38.953Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.050Z",
+        "created": "2015-02-17T22:06:38.953Z",
         "deleted": false,
+        "deployments": [],
         "enabled": true,
         "name": "xsh",
         "backend_register": "{}",
@@ -127,10 +128,11 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.091Z",
+        "updated": "2015-02-17T22:06:39.011Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.091Z",
+        "created": "2015-02-17T22:06:39.011Z",
         "deleted": false,
+        "deployments": [],
         "enabled": true,
         "name": "Customize",
         "backend_register": "{}",
@@ -143,10 +145,13 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.141Z",
+        "updated": "2015-02-17T22:06:39.244Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.141Z",
+        "created": "2015-02-17T22:06:39.069Z",
         "deleted": false,
+        "deployments": [
+            1
+        ],
         "enabled": true,
         "name": "Tenant",
         "backend_register": "{}",
@@ -159,10 +164,11 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.191Z",
+        "updated": "2015-02-17T22:06:39.302Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.191Z",
+        "created": "2015-02-17T22:06:39.302Z",
         "deleted": false,
+        "deployments": [],
         "enabled": true,
         "name": "Developer",
         "backend_register": "{}",
@@ -181,10 +187,10 @@
         "timezone": "America/New_York",
         "backend_status": "Provisioning in progress",
         "is_registering": false,
-        "last_login": "2015-02-12T06:27:17.558Z",
+        "last_login": "2015-02-17T22:35:17.822Z",
         "email": "padmin@vicci.org",
         "username": "padmin@vicci.org",
-        "updated": "2015-02-12T06:26:57.220Z",
+        "updated": "2015-02-17T22:06:38.059Z",
         "firstname": "XOS",
         "user_url": null,
         "deleted": false,
@@ -192,22 +198,22 @@
         "is_active": true,
         "phone": null,
         "is_admin": true,
-        "password": "pbkdf2_sha256$12000$OkIBLeUvZGUq$Y3O+/M9n6uO+Lpa1J4Twe32Ikj/LfisS/4+SFenVE+Y=",
+        "password": "pbkdf2_sha256$12000$Qufx9iqtaYma$xs0YurPOcj9qYQna/Qrb3K+im9Yr2XEVr0J4Kqek7AE=",
         "enacted": null,
         "public_key": null,
         "is_readonly": false,
-        "created": "2015-02-12T06:26:57.219Z"
+        "created": "2015-02-17T22:06:38.059Z"
     },
     "model": "core.user",
     "pk": 1
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:58.241Z",
+        "updated": "2015-02-17T22:06:39.361Z",
         "membershipFee": 0,
         "policed": null,
         "membershipFeeMonths": 12,
-        "created": "2015-02-12T06:26:58.241Z",
+        "created": "2015-02-17T22:06:39.361Z",
         "deleted": false,
         "description": "Best Effort",
         "upgradeFrom": [],
@@ -223,9 +229,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.416Z",
+        "updated": "2015-02-17T22:06:38.236Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.259Z",
+        "created": "2015-02-17T22:06:38.095Z",
         "deleted": false,
         "deployments": [
             1
@@ -244,9 +250,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.583Z",
+        "updated": "2015-02-17T22:06:38.394Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.467Z",
+        "created": "2015-02-17T22:06:38.287Z",
         "deleted": false,
         "deployments": [
             1
@@ -265,9 +271,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.733Z",
+        "updated": "2015-02-17T22:06:38.561Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.633Z",
+        "created": "2015-02-17T22:06:38.445Z",
         "deleted": false,
         "deployments": [
             1
@@ -286,9 +292,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.917Z",
+        "updated": "2015-02-17T22:06:38.778Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.916Z",
+        "created": "2015-02-17T22:06:38.778Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "admin",
@@ -300,9 +306,9 @@
 },
 {
     "fields": {
-        "updated": "2015-02-12T06:26:57.958Z",
+        "updated": "2015-02-17T22:06:38.836Z",
         "policed": null,
-        "created": "2015-02-12T06:26:57.958Z",
+        "created": "2015-02-17T22:06:38.836Z",
         "deleted": false,
         "backend_register": "{}",
         "role": "access",
@@ -315,9 +321,9 @@
 {
     "fields": {
         "shared_network_id": null,
-        "updated": "2015-02-12T06:26:58.291Z",
+        "updated": "2015-02-17T22:06:39.419Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.291Z",
+        "created": "2015-02-17T22:06:39.419Z",
         "deleted": false,
         "description": "A private virtual network",
         "visibility": "private",
@@ -337,9 +343,9 @@
 {
     "fields": {
         "shared_network_id": null,
-        "updated": "2015-02-12T06:26:58.341Z",
+        "updated": "2015-02-17T22:06:39.477Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.341Z",
+        "created": "2015-02-17T22:06:39.477Z",
         "deleted": false,
         "description": "Connect a sliver to the public network",
         "visibility": "private",
@@ -359,9 +365,9 @@
 {
     "fields": {
         "shared_network_id": null,
-        "updated": "2015-02-12T06:26:58.391Z",
+        "updated": "2015-02-17T22:06:39.536Z",
         "policed": null,
-        "created": "2015-02-12T06:26:58.391Z",
+        "created": "2015-02-17T22:06:39.536Z",
         "deleted": false,
         "description": "Connect a sliver to the public network",
         "visibility": "public",
