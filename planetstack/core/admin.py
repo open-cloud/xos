@@ -1240,7 +1240,7 @@ class ControllerDashboardViewInline(PlStackTabularInline):
 
 class DashboardViewAdmin(PlanetStackBaseAdmin):
     fieldsets = [('Dashboard View Details',
-                   {'fields': ['backend_status_text', 'name', 'url', 'enabled'],
+                   {'fields': ['backend_status_text', 'name', 'url', 'enabled', 'deployments'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     list_display = ["name", "enabled", "url"]
