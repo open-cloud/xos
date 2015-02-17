@@ -13,7 +13,7 @@ blacklist = ['SingletonModel','PlCoreBase']
 # Django set up
 
 sys.path.append('.')
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "planetstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from core.models import *
 
