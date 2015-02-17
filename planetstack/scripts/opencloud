@@ -168,3 +168,6 @@ fi
 if [ "$COMMAND" = "genkeys" ]; then
     genkeys
 fi
+if [ "$COMMAND" = "generateapi" ]; then
+   python apigen/modelgen apigen/api.template.py > genapi.py
+fi
