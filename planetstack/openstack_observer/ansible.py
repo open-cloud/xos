@@ -58,6 +58,8 @@ def run_template(name, opts,path='', expected_num=None):
         objname = opts['ansible_tag']
     except:
         objname= id_generator()
+    # https://github.com/open-cloud/xos/issues/27
+    objname = objname.replace(" ", "_")
 
     os.system('mkdir -p %s'%'/'.join([sys_dir,path]))
     fqp = '/'.join([sys_dir,path,objname])
