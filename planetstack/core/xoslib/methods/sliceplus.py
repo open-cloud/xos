@@ -7,8 +7,7 @@ from core.models import *
 from django.forms import widgets
 from core.xoslib.objects.sliceplus import SlicePlus
 from plus import PlusSerializerMixin
-from xosapibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView
-from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
+from xosapibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -82,7 +81,7 @@ class SlicePlusList(XOSListCreateAPIView):
         current_user_can_see = self.request.QUERY_PARAMS.get('current_user_can_see', False)
 
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSPermissionDenied("You must be authenticated in order to use this API")
 
         slices = SlicePlus.select_by_user(self.request.user)
 
@@ -108,7 +107,7 @@ class SlicePlusDetail(XOSRetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
-            raise RestFrameworkPermissionDenied("You must be authenticated in order to use this API")
+            raise XOSPermissionDenied("You must be authenticated in order to use this API")
         return SlicePlus.select_by_user(self.request.user)
 
 

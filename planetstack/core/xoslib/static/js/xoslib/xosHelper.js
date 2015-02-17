@@ -145,17 +145,20 @@ XOSApplication = Marionette.Application.extend({
             parsed_error=undefined;
             width=640;    // django stacktraces like wide width
         }
+
         console.log(responseText);
         console.log(parsed_error);
 
+        if (parsed_error && ("detail" in parsed_error)) {
+            parsed_error = parsed_error["detail"];
+        }
+
         if (parsed_error && ("error" in parsed_error)) {
+            if ((!parsed_error.reasons) && (parsed_error.fields)) {
+                // deal with me renaming 'reasons' to 'fields'
+                parsed_error.reasons = parsed_error.fields;
+            }
             // this error comes from genapi views
-            $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
-        } else if (parsed_error && ("detail" in parsed_error)) {
-            // this error response comes from rest_framework APIException
-            parsed_error["error"] = "API Error";
-            parsed_error["specific_error"] = parsed_error["detail"];
-            parsed_error["reasons"] = [];
             $("#xos-error-dialog").html(templateFromId("#xos-error-response")(parsed_error));
         } else {
             $("#xos-error-dialog").html(templateFromId("#xos-error-rawresponse")({responseText: strip_scripts(responseText)}))
