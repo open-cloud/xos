@@ -41,6 +41,25 @@
   </tr>
 </script>
 
+<script type="text/template" id="tenant-sanity-check">
+    Tenant view sanity check failed:
+       <ul>
+       <% for (index in errors) { %>
+           <li><%= errors[index] %></li>
+       <% } %>
+       </ul>
+       Steps to correct issues in the tenant view:
+       <ol>
+       <li>Make sure that the tenant view is linked to at least one deployment. You
+           may find the list of dashboard views at <a href="/admin/core/dashboardview/">here</a>.
+           Deployments currently attached to the tenant view are: <%= blessed_deployment_names.join(",") %>
+           </li>
+       <li>Make sure that at least one Image and one Flavor is attached to a tenant view deployment.</li>
+       <li>Make sure at least one Site is attached to a tenant view deployment.</li>
+       <li>Make sure at least one of the Sites has one or more nodes attached to it.</li>
+       </ol>
+</script>
+
 <script type="text/template" id="tenant-edit-users">
     <%= xosPickerTemplate({pickedItems: model.usersBuffer,
                           unpickedItems: array_subtract(xos.tenant().current_user_site_users, model.usersBuffer),
