@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
 # This is the generated API
-from genapi import *
+from xosapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 #from core.views.analytics import AnalyticsAjaxView
