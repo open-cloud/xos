@@ -11,7 +11,7 @@ from rest_framework import filters
 from django.conf.urls import patterns, url
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
-from xosapibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView, XOSNotAuthenticated
+from apibase import XOSRetrieveUpdateDestroyAPIView, XOSListCreateAPIView, XOSNotAuthenticated
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
