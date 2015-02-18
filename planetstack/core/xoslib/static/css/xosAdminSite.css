@@ -98,7 +98,7 @@
     display: none;
 }
 
-/* undo what planetstack.css does to the progressbar */
+/* undo what xos.css does to the progressbar */
 #xos-startup-progress .ui-progressbar-value {
     background-color: rgb(204,204,204) !important;
     background-image: url(http://code.jquery.com/ui/1.11.2/themes/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png) !important;
