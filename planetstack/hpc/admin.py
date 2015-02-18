@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, PlStackTabularInline
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
 
 class HpcServiceAdmin(SingletonAdmin):
     model = HpcService
@@ -29,14 +29,14 @@ class HpcServiceAdmin(SingletonAdmin):
         ('serviceattrs','Additional Attributes'),
     )
 
-class CDNPrefixInline(PlStackTabularInline):
+class CDNPrefixInline(XOSTabularInline):
     model = CDNPrefix
     extra = 0
     suit_classes = 'suit-tab suit-tab-prefixes'
     fields = ('backend_status_icon', 'cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
     readonly_fields = ('backend_status_icon', 'cdn_prefix_id',)
 
-class ContentProviderInline(PlStackTabularInline):
+class ContentProviderInline(XOSTabularInline):
     model = ContentProvider
     extra = 0
     suit_classes = 'suit-tab suit-tab-cps'
