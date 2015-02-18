@@ -660,6 +660,9 @@ class ControllerAdmin(PlanetStackBaseAdmin):
     def delete_model(self, request, obj):
         obj.delete_by_user(request.user)
 
+    def queryset(self, request):
+        return Controller.select_by_user(request.user)    
+
     @property
     def suit_form_tabs(self):
         tabs = [('general', 'Controller Details'),
