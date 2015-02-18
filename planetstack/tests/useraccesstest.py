@@ -13,36 +13,44 @@ import json
 import os
 import requests
 import sys
+import time
+from urllib  import urlencode
 
 from operator import itemgetter, attrgetter
 
-REST_API="http://node43.princeton.vicci.org:8000/xos/"
+if (len(sys.argv)!=6):
+    print "syntax: usertest <hostname> <username> <password> <admin_username> <admin_password>"
+    sys.exit(-1)
+
+hostname = sys.argv[1]
+username = sys.argv[2]
+password = sys.argv[3]
+
+opencloud_auth=(username, password)
+admin_auth=(sys.argv[4], sys.argv[5])
+
+REST_API="http://%s:8000/xos/" % hostname
 USERS_API = REST_API + "users/"
 SLICES_API = REST_API + "slices/"
 SITES_API = REST_API + "sites/"
-SITEPRIV_API = REST_API + "site_privileges/"
-SLICEPRIV_API = REST_API + "slice_memberships/"
+SITEPRIV_API = REST_API + "siteprivileges/"
+SLICEPRIV_API = REST_API + "slice_privileges/"
 SITEROLE_API = REST_API + "site_roles/"
 SLICEROLE_API = REST_API + "slice_roles/"
 
-TEST_USER_EMAIL = "test1234@test.com"
-
-username = sys.argv[1]
-password = sys.argv[2]
-
-opencloud_auth=(username, password)
-admin_auth=("scott@onlab.us", "letmein")   # admin creds, used to get full set of objects
+TEST_USER_EMAIL = "test" + str(time.time()) + "@test.com" # in case observer not running, objects won't be purged, so use unique email
 
 def fail_unless(x, msg):
     if not x:
         (frame, filename, line_number, function_name, lines, index) = inspect.getouterframes(inspect.currentframe())[1]
         print "FAIL (%s:%d)" % (function_name, line_number), msg
 
-
 print "downloading objects using admin"
 r = requests.get(USERS_API + "?no_hyperlinks=1", auth=admin_auth)
+fail_unless(r.status_code==200, "failed to get users")
 allUsers = r.json()
 r = requests.get(SLICES_API + "?no_hyperlinks=1", auth=admin_auth)
+fail_unless(r.status_code==200, "failed to get slices")
 allSlices = r.json()
 r = requests.get(SITES_API + "?no_hyperlinks=1", auth=admin_auth)
 allSites = r.json()
@@ -107,7 +115,7 @@ print "  loaded user:%d slice:%d, site:%d, site_priv:%d slice_priv:%d" % (len(al
 
 # get our own user record
 
-r = requests.get(USERS_API + "?email=%s&no_hyperlinks" % username, auth=opencloud_auth)
+r = requests.get(USERS_API + "?" + urlencode({"email": username, "no_hyperlinks": "1"}), auth=opencloud_auth)
 fail_unless(r.status_code==200, "failed to get user %s" % username)
 myself = r.json()
 fail_unless(len(myself)==1, "wrong number of results when getting user %s" % username)
@@ -158,8 +166,10 @@ for user in allUsers:
 # delete the TEST_USER_EMAIL if it exists
 delete_user_if_exists(TEST_USER_EMAIL)
 
-newUser = {"firstname": "test", "lastname": "1234", "email": TEST_USER_EMAIL, "password": "letmein"}
-r = requests.post(USERS_API, data=newUser, auth=opencloud_auth)
+# XXX - enacted and policed should not be required
+
+newUser = {"firstname": "test", "lastname": "1234", "email": TEST_USER_EMAIL, "password": "letmein", "site": allSites[0]["id"], "enacted": "2015-01-01T00:00", "policed": "2015-01-01T00:00"}
+r = requests.post(USERS_API + "?no_hyperlinks=1", data=newUser, auth=opencloud_auth)
 if myself["is_admin"]:
     fail_unless(r.status_code==200, "failed to create %s" % TEST_USER_EMAIL)
 else:
@@ -167,14 +177,15 @@ else:
 
 delete_user_if_exists(TEST_USER_EMAIL)
 
-sys.exit(-1)
-
-
 # now create it as admin
-r = requests.post(USERS_API, data=newUser, auth=admin_auth)
+r = requests.post(USERS_API + "?no_hyperlinks=1", data=newUser, auth=admin_auth)
+if (r.status_code!=201):
+    print r.text
 fail_unless(r.status_code==201, "failed to create %s as admin" % TEST_USER_EMAIL)
 
-user = requests.get(USERS_API +"?email=%s" % TEST_USER_EMAIL, auth=admin_auth).json()[0]
+r = requests.get(USERS_API +"?" + urlencode({"email": TEST_USER_EMAIL}), auth=admin_auth)
+fail_unless(r.status_code==200, "failed to get user %s" % TEST_USER_EMAIL)
+user=r.json()[0]
 r = requests.delete(USERS_API + str(user["id"]) + "/", auth=opencloud_auth)
 if myself["is_admin"]:
     fail_unless(r.status_code==200, "failed to delete %s" % TEST_USER_EMAIL)

@@ -1,22 +1,35 @@
+"""
+     UserTest - tests whether a user is able to fetch his own user record,
+                and modify fields.
+
+                All users should be able to set their phone number.
+                Only admins should be able to set their is_admin bit
+"""
+
 import json
 import os
 import requests
 import sys
+from urllib import urlencode
 
 from operator import itemgetter, attrgetter
 
-REST_API="http://node43.princeton.vicci.org:8000/xos/"
-USERS_API = REST_API + "users/"
+if (len(sys.argv)!=6):
+    print "syntax: usertest <hostname> <username> <password> <admin_username> <admin_password>"
+    sys.exit(-1)
 
-username = sys.argv[1]
-password = sys.argv[2]
+hostname = sys.argv[1]
+username = sys.argv[2]
+password = sys.argv[3]
 
 opencloud_auth=(username, password)
+admin_auth=(sys.argv[4], sys.argv[5])
 
-admin_auth=("scott@onlab.us", "letmein")
+REST_API="http://%s:8000/xos/" % hostname
+USERS_API = REST_API + "users/"
 
-print "users I can see:"
-r = requests.get(USERS_API + "?email=%s" % username, auth=opencloud_auth)
+print "fetching user record for %s:" % username
+r = requests.get(USERS_API + "?" + urlencode({"email": username}), auth=opencloud_auth)
 for user in r.json():
     print "  ", user["email"]
 
@@ -56,7 +69,7 @@ if len(r.json())>0:
     print "Admin was able to read jhh@cs.arizona.edu"
     jhh = r.json()[0]
 else:
-    print "ADmin was not able to read jhh@cs.arizona.edu"
+    print "Admin was not able to read jhh@cs.arizona.edu"
     jhh = None
 
 if jhh:
@@ -66,7 +79,3 @@ if jhh:
         print "I was able to update user", str(jhh["id"])
     else:
         print "I was not able to update user", str(jhh["id"])
-
-
-
-
