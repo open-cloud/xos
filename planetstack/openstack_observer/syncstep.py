@@ -36,7 +36,7 @@ class SyncStep(object):
         dependencies    list of names of models that must be synchronized first if the current model depends on them
     """ 
     slow=False
-    def get_prop(prop):
+    def get_prop(self, prop):
         try:
             sync_config_dir = Config().sync_config_dir
         except:

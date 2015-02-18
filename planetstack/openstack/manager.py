@@ -8,7 +8,7 @@ from datetime import datetime
 from netaddr import IPAddress, IPNetwork
 from xos import settings
 from django.core import management
-from core.models import * 
+from core.models import *
 from xos.config import Config
 try:
     from openstack.client import OpenStackClient
@@ -331,7 +331,7 @@ class OpenStackManager:
                 if not nic.get("net-id", None):
                     sliver.save()   # in case it hasn't been saved yet
                     return
-            slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
+            slice_memberships = slice.SliceMembership.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
             pubkeys.append(sliver.creator.public_key)
             instance = self.driver.spawn_instance(name=sliver.name,
