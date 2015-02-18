@@ -1677,7 +1677,6 @@ if True:
     admin.site.register(ControllerRole)
     admin.site.register(SiteRole)
     admin.site.register(SliceRole)
-    admin.site.register(PlanetStackRole)
     admin.site.register(Node, NodeAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
