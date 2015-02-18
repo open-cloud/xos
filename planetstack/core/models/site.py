@@ -265,7 +265,7 @@ class Controller(PlCoreBase):
         else:
             deployments = [dp.deployment for dp in DeploymentPrivilege.objects.filter(user=user, role__role__in=['Admin', 'admin'])]
             qs = Controller.objects.filter(deployment__in=deployments)
-    return qs
+        return qs
 
 class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
