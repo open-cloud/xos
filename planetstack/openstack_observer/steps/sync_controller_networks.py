@@ -10,6 +10,7 @@ from core.models.slice import *
 from core.models.sliver import Sliver
 from util.logger import Logger, logging
 from observer.ansible import *
+from openstack.driver import OpenStackDriver
 
 import pdb
 
