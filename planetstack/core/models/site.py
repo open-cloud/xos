@@ -253,9 +253,19 @@ class Controller(PlCoreBase):
     admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
     domain = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the domain this controller belongs to")
     deployment = models.ForeignKey(Deployment,related_name='controllerdeployments')
-    
+   
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
+
+    @staticmethod
+    def select_by_user(user):
+
+        if user.is_admin:
+            qs = Controller.objects.all()
+        else:
+            deployments = [dp.deployment for dp in DeploymentPrivilege.objects.filter(user=user, role__role__in=['Admin', 'admin'])]
+            qs = Controller.objects.filter(deployment__in=deployments)
+    return qs
 
 class SiteDeployment(PlCoreBase):
     objects = ControllerLinkManager()
