@@ -105,7 +105,7 @@ RUN cd /opt/xos; python ./manage.py makemigrations core
 RUN cd /opt/xos; python ./manage.py makemigrations hpc
 RUN cd /opt/xos; python ./manage.py makemigrations requestrouter
 RUN cd /opt/xos; python ./manage.py makemigrations syndicate_storage
-RUN cd /opt/xos; python ./manage.py makemigrations servcomp
+#RUN cd /opt/xos; python ./manage.py makemigrations servcomp
 
 RUN /opt/xos/scripts/opencloud initdb
 
