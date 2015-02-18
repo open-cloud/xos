@@ -68,9 +68,6 @@ def get_REST_patterns():
         url(r'xos/slice_privileges/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
         url(r'xos/slice_privileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SlicePrivilegeDetail.as_view(), name ='sliceprivilege-detail'),
     
-        url(r'xos/planetstackroles/$', PlanetStackRoleList.as_view(), name='planetstackrole-list'),
-        url(r'xos/planetstackroles/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackRoleDetail.as_view(), name ='planetstackrole-detail'),
-    
         url(r'xos/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
         url(r'xos/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
     
@@ -95,8 +92,8 @@ def get_REST_patterns():
         url(r'xos/serviceclasses/$', ServiceClassList.as_view(), name='serviceclass-list'),
         url(r'xos/serviceclasses/(?P<pk>[a-zA-Z0-9\-]+)/$', ServiceClassDetail.as_view(), name ='serviceclass-detail'),
     
-        url(r'xos/planetstacks/$', PlanetStackList.as_view(), name='planetstack-list'),
-        url(r'xos/planetstacks/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackDetail.as_view(), name ='planetstack-detail'),
+        url(r'xos/payments/$', PaymentList.as_view(), name='payment-list'),
+        url(r'xos/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
     
         url(r'xos/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'xos/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
@@ -134,9 +131,6 @@ def get_REST_patterns():
         url(r'xos/reservedresources/$', ReservedResourceList.as_view(), name='reservedresource-list'),
         url(r'xos/reservedresources/(?P<pk>[a-zA-Z0-9\-]+)/$', ReservedResourceDetail.as_view(), name ='reservedresource-detail'),
     
-        url(r'xos/payments/$', PaymentList.as_view(), name='payment-list'),
-        url(r'xos/payments/(?P<pk>[a-zA-Z0-9\-]+)/$', PaymentDetail.as_view(), name ='payment-detail'),
-    
         url(r'xos/networkslices/$', NetworkSliceList.as_view(), name='networkslice-list'),
         url(r'xos/networkslices/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliceDetail.as_view(), name ='networkslice-detail'),
     
@@ -145,9 +139,6 @@ def get_REST_patterns():
     
         url(r'xos/controllers/$', ControllerList.as_view(), name='controller-list'),
         url(r'xos/controllers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerDetail.as_view(), name ='controller-detail'),
-    
-        url(r'xos/planetstackprivileges/$', PlanetStackPrivilegeList.as_view(), name='planetstackprivilege-list'),
-        url(r'xos/planetstackprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', PlanetStackPrivilegeDetail.as_view(), name ='planetstackprivilege-detail'),
     
         url(r'xos/users/$', UserList.as_view(), name='user-list'),
         url(r'xos/users/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDetail.as_view(), name ='user-detail'),
@@ -221,7 +212,6 @@ def api_root(request, format=None):
         'tags': reverse('tag-list', request=request, format=format),
         'invoices': reverse('invoice-list', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
-        'planetstackroles': reverse('planetstackrole-list', request=request, format=format),
         'networkslivers': reverse('networksliver-list', request=request, format=format),
         'flavors': reverse('flavor-list', request=request, format=format),
         'controllersites': reverse('controllersite-list', request=request, format=format),
@@ -230,7 +220,7 @@ def api_root(request, format=None):
         'networks': reverse('network-list', request=request, format=format),
         'services': reverse('service-list', request=request, format=format),
         'serviceclasses': reverse('serviceclass-list', request=request, format=format),
-        'planetstacks': reverse('planetstack-list', request=request, format=format),
+        'payments': reverse('payment-list', request=request, format=format),
         'charges': reverse('charge-list', request=request, format=format),
         'roles': reverse('role-list', request=request, format=format),
         'usableobjects': reverse('usableobject-list', request=request, format=format),
@@ -243,11 +233,9 @@ def api_root(request, format=None):
         'imagedeploymentses': reverse('imagedeployments-list', request=request, format=format),
         'controllerusers': reverse('controlleruser-list', request=request, format=format),
         'reservedresources': reverse('reservedresource-list', request=request, format=format),
-        'payments': reverse('payment-list', request=request, format=format),
         'networkslices': reverse('networkslice-list', request=request, format=format),
         'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
         'controllers': reverse('controller-list', request=request, format=format),
-        'planetstackprivileges': reverse('planetstackprivilege-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
         'deployments': reverse('deployment-list', request=request, format=format),
         'reservations': reverse('reservation-list', request=request, format=format),
@@ -692,41 +680,6 @@ class SlicePrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class PlanetStackRoleSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = PlanetStackRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
-
-class PlanetStackRoleIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = PlanetStackRole
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
-
-
-
-
 class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -1071,7 +1024,7 @@ class ServiceClassIdSerializer(XOSModelSerializer):
 
 
 
-class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
+class PaymentSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1084,10 +1037,10 @@ class PlanetStackSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
+        model = Payment
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
-class PlanetStackIdSerializer(XOSModelSerializer):
+class PaymentIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -1100,8 +1053,8 @@ class PlanetStackIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = PlanetStack
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
+        model = Payment
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
 
 
@@ -1366,6 +1319,10 @@ class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
     controllers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='controller-detail')
     
     
+    
+    deployments = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='deployment-detail')
+    
+    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1377,7 +1334,7 @@ class DashboardViewSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers','deployments',)
 
 class DashboardViewIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1386,6 +1343,10 @@ class DashboardViewIdSerializer(XOSModelSerializer):
     controllers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Controller.objects.all())
     
     
+    
+    deployments = serializers.PrimaryKeyRelatedField(many=True,  queryset = Deployment.objects.all())
+    
+    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1397,7 +1358,7 @@ class DashboardViewIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = DashboardView
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers','deployments',)
 
 
 
@@ -1542,41 +1503,6 @@ class ReservedResourceIdSerializer(XOSModelSerializer):
 
 
 
-class PaymentSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Payment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
-
-class PaymentIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Payment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
-
-
-
-
 class NetworkSliceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -1665,7 +1591,7 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
 
 class ControllerIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1685,42 +1611,7 @@ class ControllerIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
-
-
-
-
-class PlanetStackPrivilegeSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = PlanetStackPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
-
-class PlanetStackPrivilegeIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = PlanetStackPrivilege
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
 
 
 
@@ -1775,6 +1666,10 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
     flavors = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='flavor-detail')
     
     
+    
+    dashboardviews = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='dashboardview-detail')
+    
+    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1786,7 +1681,7 @@ class DeploymentSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors','dashboardviews',)
 
 class DeploymentIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1803,6 +1698,10 @@ class DeploymentIdSerializer(XOSModelSerializer):
     flavors = serializers.PrimaryKeyRelatedField(many=True,  queryset = Flavor.objects.all())
     
     
+    
+    dashboardviews = serializers.PrimaryKeyRelatedField(many=True,  queryset = DashboardView.objects.all())
+    
+    
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
     validators = serializers.SerializerMethodField("getValidators")
     def getHumanReadableName(self, obj):
@@ -1814,7 +1713,7 @@ class DeploymentIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Deployment
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors','dashboardviews',)
 
 
 
@@ -2452,8 +2351,6 @@ serializerLookUp = {
 
                  SlicePrivilege: SlicePrivilegeSerializer,
 
-                 PlanetStackRole: PlanetStackRoleSerializer,
-
                  NetworkSliver: NetworkSliverSerializer,
 
                  Flavor: FlavorSerializer,
@@ -2470,7 +2367,7 @@ serializerLookUp = {
 
                  ServiceClass: ServiceClassSerializer,
 
-                 PlanetStack: PlanetStackSerializer,
+                 Payment: PaymentSerializer,
 
                  Charge: ChargeSerializer,
 
@@ -2496,15 +2393,11 @@ serializerLookUp = {
 
                  ReservedResource: ReservedResourceSerializer,
 
-                 Payment: PaymentSerializer,
-
                  NetworkSlice: NetworkSliceSerializer,
 
                  UserDashboardView: UserDashboardViewSerializer,
 
                  Controller: ControllerSerializer,
-
-                 PlanetStackPrivilege: PlanetStackPrivilegeSerializer,
 
                  User: UserSerializer,
 
@@ -3020,53 +2913,6 @@ class SlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackRoleList(XOSListCreateAPIView):
-    queryset = PlanetStackRole.objects.select_related().all()
-    serializer_class = PlanetStackRoleSerializer
-    id_serializer_class = PlanetStackRoleIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return PlanetStackRole.select_by_user(self.request.user)
-
-
-class PlanetStackRoleDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = PlanetStackRole.objects.select_related().all()
-    serializer_class = PlanetStackRoleSerializer
-    id_serializer_class = PlanetStackRoleIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return PlanetStackRole.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
 class NetworkSliverList(XOSListCreateAPIView):
     queryset = NetworkSliver.objects.select_related().all()
     serializer_class = NetworkSliverSerializer
@@ -3443,12 +3289,12 @@ class ServiceClassDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class PlanetStackList(XOSListCreateAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class PaymentList(XOSListCreateAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','description',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3462,13 +3308,13 @@ class PlanetStackList(XOSListCreateAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return PlanetStack.select_by_user(self.request.user)
+        return Payment.select_by_user(self.request.user)
 
 
-class PlanetStackDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = PlanetStack.objects.select_related().all()
-    serializer_class = PlanetStackSerializer
-    id_serializer_class = PlanetStackIdSerializer
+class PaymentDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = Payment.objects.select_related().all()
+    serializer_class = PaymentSerializer
+    id_serializer_class = PaymentIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3482,7 +3328,7 @@ class PlanetStackDetail(XOSRetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return PlanetStack.select_by_user(self.request.user)
+        return Payment.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -3824,7 +3670,7 @@ class DashboardViewList(XOSListCreateAPIView):
     serializer_class = DashboardViewSerializer
     id_serializer_class = DashboardViewIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','url','enabled','controllers','deployments',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4054,53 +3900,6 @@ class ReservedResourceDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class PaymentList(XOSListCreateAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','account','amount','date',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Payment.select_by_user(self.request.user)
-
-
-class PaymentDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = Payment.objects.select_related().all()
-    serializer_class = PaymentSerializer
-    id_serializer_class = PaymentIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Payment.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
 class NetworkSliceList(XOSListCreateAPIView):
     queryset = NetworkSlice.objects.select_related().all()
     serializer_class = NetworkSliceSerializer
@@ -4200,7 +3999,7 @@ class ControllerList(XOSListCreateAPIView):
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','dashboardviews',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4235,53 +4034,6 @@ class ControllerDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return Controller.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
-class PlanetStackPrivilegeList(XOSListCreateAPIView):
-    queryset = PlanetStackPrivilege.objects.select_related().all()
-    serializer_class = PlanetStackPrivilegeSerializer
-    id_serializer_class = PlanetStackPrivilegeIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','user','planetstack','role',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return PlanetStackPrivilege.select_by_user(self.request.user)
-
-
-class PlanetStackPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = PlanetStackPrivilege.objects.select_related().all()
-    serializer_class = PlanetStackPrivilegeSerializer
-    id_serializer_class = PlanetStackPrivilegeIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return PlanetStackPrivilege.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -4341,7 +4093,7 @@ class DeploymentList(XOSListCreateAPIView):
     serializer_class = DeploymentSerializer
     id_serializer_class = DeploymentIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','name','accessControl','images','sites','flavors','dashboardviews',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
