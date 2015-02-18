@@ -178,7 +178,7 @@ class ReadOnlyAwareAdmin(PermissionCheckingAdminMixin, admin.ModelAdmin):
 
     pass
 
-class PlanetStackBaseAdmin(ReadOnlyAwareAdmin):
+class XOSBaseAdmin(ReadOnlyAwareAdmin):
     save_on_top = False
 
 class SingletonAdmin (ReadOnlyAwareAdmin):
@@ -192,9 +192,9 @@ class SingletonAdmin (ReadOnlyAwareAdmin):
         else:
             return True
 
-class PlStackTabularInline(admin.TabularInline):
+class XOSTabularInline(admin.TabularInline):
     def __init__(self, *args, **kwargs):
-        super(PlStackTabularInline, self).__init__(*args, **kwargs)
+        super(XOSTabularInline, self).__init__(*args, **kwargs)
 
         # InlineModelAdmin as no get_fields() method, so in order to add
         # the selflink field, we override __init__ to modify self.fields and
@@ -290,7 +290,7 @@ class PlStackGenericTabularInline(generic.GenericTabularInline):
         return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
 
-class ReservationInline(PlStackTabularInline):
+class ReservationInline(XOSTabularInline):
     model = Reservation
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservations'
@@ -340,7 +340,7 @@ class NetworkLookerUpper:
             NetworkLookerUpper.byNetworkName[network_name] = NetworkLookerUpper(network_name)
         return NetworkLookerUpper.byNetworkName[network_name]
 
-class SliverInline(PlStackTabularInline):
+class SliverInline(XOSTabularInline):
     model = Sliver
     fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
@@ -361,7 +361,7 @@ class SliverInline(PlStackTabularInline):
 
         return field
 
-class SiteInline(PlStackTabularInline):
+class SiteInline(XOSTabularInline):
     model = Site
     extra = 0
     suit_classes = 'suit-tab suit-tab-sites'
@@ -369,7 +369,7 @@ class SiteInline(PlStackTabularInline):
     def queryset(self, request):
         return Site.select_by_user(request.user)
 
-class UserInline(PlStackTabularInline):
+class UserInline(XOSTabularInline):
     model = User
     fields = ['backend_status_icon', 'email', 'firstname', 'lastname']
     readonly_fields = ('backend_status_icon', )
@@ -379,7 +379,7 @@ class UserInline(PlStackTabularInline):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
-class SliceInline(PlStackTabularInline):
+class SliceInline(XOSTabularInline):
     model = Slice
     fields = ['backend_status_icon', 'name', 'site', 'serviceClass', 'service']
     readonly_fields = ('backend_status_icon', )
@@ -389,14 +389,14 @@ class SliceInline(PlStackTabularInline):
     def queryset(self, request):
         return Slice.select_by_user(request.user)
 
-class NodeInline(PlStackTabularInline):
+class NodeInline(XOSTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
     fields = ['backend_status_icon', 'name', 'site_deployment']
     readonly_fields = ('backend_status_icon', )
 
-class DeploymentPrivilegeInline(PlStackTabularInline):
+class DeploymentPrivilegeInline(XOSTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
@@ -406,14 +406,14 @@ class DeploymentPrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
 
-class ControllerSiteInline(PlStackTabularInline):
+class ControllerSiteInline(XOSTabularInline):
     model = ControllerSite
     extra = 0
     suit_classes = 'suit-tab suit-tab-admin-only'
     fields = ['controller', 'site', 'tenant_id']
 
 
-class SitePrivilegeInline(PlStackTabularInline):
+class SitePrivilegeInline(XOSTabularInline):
     model = SitePrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-siteprivileges'
@@ -431,7 +431,7 @@ class SitePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
-class SiteDeploymentInline(PlStackTabularInline):
+class SiteDeploymentInline(XOSTabularInline):
     model = SiteDeployment
     extra = 0
     suit_classes = 'suit-tab suit-tab-sitedeployments'
@@ -454,7 +454,7 @@ class SiteDeploymentInline(PlStackTabularInline):
         return SiteDeployment.select_by_user(request.user)
 
 
-class SlicePrivilegeInline(PlStackTabularInline):
+class SlicePrivilegeInline(XOSTabularInline):
     model = SlicePrivilege
     suit_classes = 'suit-tab suit-tab-sliceprivileges'
     extra = 0
@@ -472,7 +472,7 @@ class SlicePrivilegeInline(PlStackTabularInline):
     def queryset(self, request):
         return SlicePrivilege.select_by_user(request.user)
 
-class SliceNetworkInline(PlStackTabularInline):
+class SliceNetworkInline(XOSTabularInline):
     model = Network.slices.through
     selflink_fieldname = "network"
     extra = 0
@@ -482,7 +482,7 @@ class SliceNetworkInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network']
     readonly_fields = ('backend_status_icon', )
 
-class ImageDeploymentsInline(PlStackTabularInline):
+class ImageDeploymentsInline(XOSTabularInline):
     model = ImageDeployments
     extra = 0
     verbose_name = "Image Deployments"
@@ -491,7 +491,7 @@ class ImageDeploymentsInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'image', 'deployment']
     readonly_fields = ['backend_status_icon']
 
-class ControllerImagesInline(PlStackTabularInline):
+class ControllerImagesInline(XOSTabularInline):
     model = ControllerImages
     extra = 0
     verbose_name = "Controller Images"
@@ -500,11 +500,11 @@ class ControllerImagesInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'image', 'controller', 'glance_image_id']
     readonly_fields = ['backend_status_icon', 'glance_image_id']
 
-class SliceRoleAdmin(PlanetStackBaseAdmin):
+class SliceRoleAdmin(XOSBaseAdmin):
     model = SliceRole
     pass
 
-class SiteRoleAdmin(PlanetStackBaseAdmin):
+class SiteRoleAdmin(XOSBaseAdmin):
     model = SiteRole
     pass
 
@@ -605,12 +605,12 @@ class DeploymentAdminROForm(DeploymentAdminForm):
     def save(self, commit=True):
         raise PermissionDenied
 
-class SiteAssocInline(PlStackTabularInline):
+class SiteAssocInline(XOSTabularInline):
     model = Site.deployments.through
     extra = 0
     suit_classes = 'suit-tab suit-tab-sites'
 
-class DeploymentAdmin(PlanetStackBaseAdmin):
+class DeploymentAdmin(XOSBaseAdmin):
     model = Deployment
     fieldList = ['backend_status_text', 'name', 'images', 'flavors', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
@@ -642,7 +642,7 @@ class DeploymentAdmin(PlanetStackBaseAdmin):
 
         return AdminFormMetaClass
 
-class ControllerAdmin(PlanetStackBaseAdmin):
+class ControllerAdmin(XOSBaseAdmin):
     model = Controller
     fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
@@ -674,13 +674,13 @@ class ControllerAdmin(PlanetStackBaseAdmin):
 
         return tabs
 
-class ServiceAttrAsTabInline(PlStackTabularInline):
+class ServiceAttrAsTabInline(XOSTabularInline):
     model = ServiceAttribute
     fields = ['name','value']
     extra = 0
     suit_classes = 'suit-tab suit-tab-serviceattrs'
 
-class ServiceAdmin(PlanetStackBaseAdmin):
+class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon","name","description","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
     fieldList = ["backend_status_text","name","description","versionNumber","enabled","published"]
@@ -695,13 +695,13 @@ class ServiceAdmin(PlanetStackBaseAdmin):
         ('serviceattrs','Additional Attributes'),
     )
 
-class SiteNodeInline(PlStackTabularInline):
+class SiteNodeInline(XOSTabularInline):
     model = Node
     fields = ['name', 'site_deployment']
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
 
-class SiteAdmin(PlanetStackBaseAdmin):
+class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']
     fieldsets = [
@@ -767,7 +767,7 @@ class SiteAdmin(PlanetStackBaseAdmin):
         obj.delete_by_user(request.user)
         
 
-class SitePrivilegeAdmin(PlanetStackBaseAdmin):
+class SitePrivilegeAdmin(XOSBaseAdmin):
     fieldList = ['backend_status_text', 'user', 'site', 'role']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['collapse']})
@@ -834,7 +834,7 @@ class SliceForm(forms.ModelForm):
             raise forms.ValidationError('slice name must begin with %s' % site.login_base)
         return cleaned_data
 
-class ControllerSliceInline(PlStackTabularInline):
+class ControllerSliceInline(XOSTabularInline):
     model = ControllerSlice
     extra = 0
     verbose_name = "Controller Slices"
@@ -843,7 +843,7 @@ class ControllerSliceInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'controller', 'tenant_id']
     readonly_fields = ('backend_status_icon', 'controller' )
 
-class SliceAdmin(PlanetStackBaseAdmin):
+class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
     fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
@@ -927,7 +927,7 @@ class SliceAdmin(PlanetStackBaseAdmin):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
-class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
+class SlicePrivilegeAdmin(XOSBaseAdmin):
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'user', 'slice', 'role']})
     ]
@@ -967,7 +967,7 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
         obj.delete()
 
 
-class ImageAdmin(PlanetStackBaseAdmin):
+class ImageAdmin(XOSBaseAdmin):
 
     fieldsets = [('Image Details',
                    {'fields': ['backend_status_text', 'name', 'disk_format', 'container_format'],
@@ -991,7 +991,7 @@ class NodeForm(forms.ModelForm):
             'deployment': LinkedSelect
         }
 
-class NodeAdmin(PlanetStackBaseAdmin):
+class NodeAdmin(XOSBaseAdmin):
     form = NodeForm
     list_display = ('backend_status_icon', 'name', 'site_deployment')
     list_display_links = ('backend_status_icon', 'name', )
@@ -1022,13 +1022,13 @@ class SliverForm(forms.ModelForm):
             'image': LinkedSelect
         }
 
-class TagAdmin(PlanetStackBaseAdmin):
+class TagAdmin(XOSBaseAdmin):
     list_display = ['backend_status_icon', 'service', 'name', 'value', 'content_type', 'content_object',]
     list_display_links = list_display
     user_readonly_fields = ['service', 'name', 'value', 'content_type', 'content_object',]
     user_readonly_inlines = []
 
-class SliverAdmin(PlanetStackBaseAdmin):
+class SliverAdmin(XOSBaseAdmin):
     form = SliverForm
     fieldsets = [
         ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
@@ -1138,13 +1138,13 @@ class UserChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
-class UserDashboardViewInline(PlStackTabularInline):
+class UserDashboardViewInline(XOSTabularInline):
     model = UserDashboardView
     extra = 0
     suit_classes = 'suit-tab suit-tab-dashboards'
     fields = ['user', 'dashboardView', 'order']
 
-class ControllerUserInline(PlStackTabularInline):
+class ControllerUserInline(XOSTabularInline):
     model = ControllerUser
     extra = 0
     suit_classes = 'suit-tab suit-tab-admin-only'
@@ -1235,13 +1235,13 @@ class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
         )
         return super(UserAdmin, self).get_form(request, obj, **kwargs)     
 
-class ControllerDashboardViewInline(PlStackTabularInline):
+class ControllerDashboardViewInline(XOSTabularInline):
     model = ControllerDashboardView
     extra = 0
     fields = ["controller", "url"]
     suit_classes = 'suit-tab suit-tab-controllers'
 
-class DashboardViewAdmin(PlanetStackBaseAdmin):
+class DashboardViewAdmin(XOSBaseAdmin):
     fieldsets = [('Dashboard View Details',
                    {'fields': ['backend_status_text', 'name', 'url', 'enabled', 'deployments'],
                     'classes': ['suit-tab suit-tab-general']})
@@ -1253,11 +1253,11 @@ class DashboardViewAdmin(PlanetStackBaseAdmin):
     suit_form_tabs =(('general','Dashboard View Details'),
                      ('controllers', 'Per-controller Dashboard Details'))
 
-class ServiceResourceInline(PlStackTabularInline):
+class ServiceResourceInline(XOSTabularInline):
     model = ServiceResource
     extra = 0
 
-class ServiceClassAdmin(PlanetStackBaseAdmin):
+class ServiceClassAdmin(XOSBaseAdmin):
     list_display = ('backend_status_icon', 'name', 'commitment', 'membershipFee')
     list_display_links = ('backend_status_icon', 'name', )
     inlines = [ServiceResourceInline]
@@ -1265,7 +1265,7 @@ class ServiceClassAdmin(PlanetStackBaseAdmin):
     user_readonly_fields = ['name', 'commitment', 'membershipFee']
     user_readonly_inlines = []
 
-class ReservedResourceInline(PlStackTabularInline):
+class ReservedResourceInline(XOSTabularInline):
     model = ReservedResource
     extra = 0
     suit_classes = 'suit-tab suit-tab-reservedresources'
@@ -1344,7 +1344,7 @@ class ReservationAddRefreshForm(ReservationAddForm):
     def is_valid(self):
         return False
 
-class ReservationAdmin(PlanetStackBaseAdmin):
+class ReservationAdmin(XOSBaseAdmin):
     fieldList = ['backend_status_text', 'slice', 'startTime', 'duration']
     fieldsets = [('Reservation Details', {'fields': fieldList, 'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
@@ -1405,19 +1405,19 @@ class ReservationAdmin(PlanetStackBaseAdmin):
     def queryset(self, request):
         return Reservation.select_by_user(request.user)
 
-class NetworkParameterTypeAdmin(PlanetStackBaseAdmin):
+class NetworkParameterTypeAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", )
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ['name']
     user_readonly_inlines = []
 
-class RouterAdmin(PlanetStackBaseAdmin):
+class RouterAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", )
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ['name']
     user_readonly_inlines = []
 
-class RouterInline(PlStackTabularInline):
+class RouterInline(XOSTabularInline):
     model = Router.networks.through
     extra = 0
     verbose_name_plural = "Routers"
@@ -1433,7 +1433,7 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     fields = ['backend_status_icon', 'parameter', 'value']
     readonly_fields = ('backend_status_icon', )
 
-class NetworkSliversInline(PlStackTabularInline):
+class NetworkSliversInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network','sliver','ip']
     readonly_fields = ("backend_status_icon", "ip", )
     model = NetworkSliver
@@ -1443,7 +1443,7 @@ class NetworkSliversInline(PlStackTabularInline):
     verbose_name = "Sliver"
     suit_classes = 'suit-tab suit-tab-networkslivers'
 
-class NetworkSlicesInline(PlStackTabularInline):
+class NetworkSlicesInline(XOSTabularInline):
     model = NetworkSlice
     selflink_fieldname = "slice"
     extra = 0
@@ -1453,7 +1453,7 @@ class NetworkSlicesInline(PlStackTabularInline):
     fields = ['backend_status_icon', 'network','slice']
     readonly_fields = ('backend_status_icon', )
 
-class ControllerNetworkInline(PlStackTabularInline):
+class ControllerNetworkInline(XOSTabularInline):
     model = ControllerNetwork
     extra = 0
     verbose_name_plural = "Controller Networks"
@@ -1470,7 +1470,7 @@ class NetworkForm(forms.ModelForm):
             'controllerParameters': UploadTextareaWidget,
         }
 
-class NetworkAdmin(PlanetStackBaseAdmin):
+class NetworkAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
@@ -1507,7 +1507,7 @@ class NetworkAdmin(PlanetStackBaseAdmin):
         return tabs
 
 
-class NetworkTemplateAdmin(PlanetStackBaseAdmin):
+class NetworkTemplateAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "guaranteed_bandwidth", "visibility")
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
@@ -1517,7 +1517,7 @@ class NetworkTemplateAdmin(PlanetStackBaseAdmin):
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), )
 
-class FlavorAdmin(PlanetStackBaseAdmin):
+class FlavorAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "flavor", "order", "default")
     list_display_links = ("backend_status_icon", "name")
     user_readonly_fields = ("name", "flavor")
@@ -1552,7 +1552,7 @@ def right_dollar_field(fieldName, short_description):
     newFunc.allow_tags = True
     return newFunc
 
-class InvoiceChargeInline(PlStackTabularInline):
+class InvoiceChargeInline(XOSTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1575,7 +1575,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     dollar_amount = dollar_field("amount", "Amount")
 
-class InvoiceInline(PlStackTabularInline):
+class InvoiceInline(XOSTabularInline):
     model = Invoice
     extra = 0
     verbose_name_plural = "Invoices"
@@ -1588,7 +1588,7 @@ class InvoiceInline(PlStackTabularInline):
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-class PendingChargeInline(PlStackTabularInline):
+class PendingChargeInline(XOSTabularInline):
     model = Charge
     extra = 0
     verbose_name_plural = "Charges"
@@ -1607,7 +1607,7 @@ class PendingChargeInline(PlStackTabularInline):
 
     dollar_amount = right_dollar_field("amount", "Amount")
 
-class PaymentInline(PlStackTabularInline):
+class PaymentInline(XOSTabularInline):
     model=Payment
     extra = 1
     verbose_name_plural = "Payments"
