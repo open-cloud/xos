@@ -10,9 +10,9 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, PlStackTabularInline
+from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
 
-class ServiceInline(PlStackTabularInline):
+class ServiceInline(XOSTabularInline):
     model = CompositionServiceThrough
     verbose_name = "Service"
     verbose_name_plural = "Services"

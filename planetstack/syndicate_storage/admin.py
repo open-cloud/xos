@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ReadOnlyAwareAdmin,SingletonAdmin,SliceInline,ServiceAttrAsTabInline,PlanetStackBaseAdmin, PlStackTabularInline
+from core.admin import ReadOnlyAwareAdmin,SingletonAdmin,SliceInline,ServiceAttrAsTabInline,XOSBaseAdmin, XOSTabularInline
 from suit.widgets import LinkedSelect
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
@@ -30,7 +30,7 @@ class SyndicateServiceAdmin(SingletonAdmin,ReadOnlyAwareAdmin):
     )
 
 
-class VolumeAccessRightInline(PlStackTabularInline):
+class VolumeAccessRightInline(XOSTabularInline):
     model = VolumeAccessRight
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeAccessRights'
@@ -89,7 +89,7 @@ class VolumeSliceFormSet( forms.models.BaseInlineFormSet ):
             
             
 
-class VolumeSliceInline(PlStackTabularInline):
+class VolumeSliceInline(XOSTabularInline):
     model = VolumeSlice
     extra = 0
     suit_classes = 'suit-tab suit-tab-volumeSlices'
