@@ -1305,7 +1305,7 @@ class ReservationAddForm(forms.ModelForm):
     refresh = forms.CharField(widget=forms.HiddenInput())
 
     class Media:
-       css = {'all': ('planetstack.css',)}   # .field-refresh { display: none; }
+       css = {'all': ('xos.css',)}   # .field-refresh { display: none; }
 
     def clean_slice(self):
         slice = self.cleaned_data.get("slice")
