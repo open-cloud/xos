@@ -22,7 +22,6 @@ from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
 from .node import Node
-from .planetstackspecific import PlanetStack,PlanetStackRole,PlanetStackPrivilege
 from .slicetag import SliceTag
 from .sliver import Sliver
 from .reservation import ReservedResource
