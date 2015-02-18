@@ -146,7 +146,7 @@ INSTALLED_APPS = (
     'hpc',
     'requestrouter',
 #    'urlfilter',
-    'servcomp',
+#    'servcomp',
     'syndicate_storage',
     'geoposition',
     'rest_framework_swagger',
@@ -213,7 +213,7 @@ SUIT_CONFIG = {
         {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
         {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate_storage'},
 #       {'label': 'URL Filter', 'icon': 'icon-cog', 'app': 'urlfilter'},
-       {'label': 'Service Comp', 'icon': 'icon-cog', 'app': 'servcomp'},
+#       {'label': 'Service Comp', 'icon': 'icon-cog', 'app': 'servcomp'},
 
         #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
     #     'sites',
