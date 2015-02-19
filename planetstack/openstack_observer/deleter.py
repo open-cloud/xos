@@ -9,7 +9,7 @@ class Deleter:
                 pass
 
 	def call(self, pk, model_dict):
-		# Fetch object from PlanetStack db and delete it
+		# Fetch object from XOS db and delete it
 		pass
 
 	def __call__(self, *args, **kwargs):

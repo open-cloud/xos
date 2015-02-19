@@ -29,7 +29,7 @@ class FailedDependency(Exception):
     pass
 
 class SyncStep(object):
-    """ A PlanetStack Sync step. 
+    """ An XOS Sync step. 
 
     Attributes:
         psmodel        Model name the step synchronizes 
@@ -40,7 +40,7 @@ class SyncStep(object):
         try:
             sync_config_dir = Config().sync_config_dir
         except:
-            sync_config_dir = '/etc/planetstack/sync'
+            sync_config_dir = '/etc/planetstack/sync'     # XXX TODO: update path
         prop_config_path = '/'.join(sync_config_dir,self.name,prop)
         return open(prop_config_path).read().rstrip()
 
@@ -48,7 +48,7 @@ class SyncStep(object):
         """Initialize a sync step
            Keyword arguments:
                    name -- Name of the step
-                provides -- PlanetStack models sync'd by this step
+                provides -- XOS models sync'd by this step
         """
         dependencies = []
         self.driver = args.get('driver')

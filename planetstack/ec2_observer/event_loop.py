@@ -48,7 +48,7 @@ def invert_graph(g):
 				ig=[k]
 	return ig
 
-class PlanetStackObserver:
+class XOSObserver:
 	#sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivilege,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
 	sync_steps = []
 

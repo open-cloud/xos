@@ -89,7 +89,7 @@ def toposort(g, steps=None):
 	return order + noorder
 
 def main():
-	graph_file=open('planetstack.deps').read()
+	graph_file=open('xos.deps').read()
 	g = json.loads(graph_file)
 	print toposort(g)
 
