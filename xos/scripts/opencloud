@@ -13,29 +13,52 @@ DJANGO_17=`python -c "import django; from distutils.version import StrictVersion
 
 cd $XOS_DIR
 
+function is_ubuntu {
+    if ! which lsb_release &> /dev/null; then
+        # lsb_release is not installed
+        return 1
+    fi
+    if lsb_release -i | grep -i ubuntu &> /dev/null; then
+        return 0
+    fi
+    return 2
+}
+
 function ensure_postgres_running {
     # "sudo -u postgres pg_ctl -D /var/lib/postgres/data status" doesn't work
     # right on Vicci, so let's try to detect it by seeing if the port is
     # being listened on
 
-    netstat -nl | grep -i ":5432 "
+    netstat -nl | grep -i ":5432 " > /dev/null
     if [[ $? == 0 ]]; then
         echo "Postgres is already running"
         return
     fi
 
-    service postgresql initdb
+    # note that initdb isn't needed in Ubuntu distributions, and calling it
+    # will throw spurious error messages
+    if ! is_ubuntu; then
+        service postgresql initdb
+    fi
     service postgresql start
 
-    netstat -nl | grep -i ":5432 "
+    netstat -nl | grep -i ":5432 " > /dev/null
     if [[ $? != 0 ]]; then
-        # it's still not running
+        # it's still not running...
+	# this is intended for Vicci where some D-Bus issue is
+        # preventing systemctl from working properly.
         echo "Trying fallback mechanism to start Postgres"
         sudo -u postgres initdb -D /var/lib/pgsql/data/
         sudo -u postgres pg_ctl -D /var/lib/pgsql/data -l logfile start
     fi
 
 }
+
+function db_exists {
+   sudo -u postgres psql $DBNAME -c '\q' 2>/dev/null    
+   return $?
+} 
+
 function createdb {
     echo "Creating XOS database..."
     sudo -u postgres createdb $DBNAME
@@ -104,7 +127,9 @@ function genkeys {
 }
 
 function remigrate {
-    dropdb
+    if db_exists; then
+        dropdb
+    fi
     rm -rf /opt/xos/*/migrations
     python ./manage.py makemigrations core
     python ./manage.py makemigrations hpc
