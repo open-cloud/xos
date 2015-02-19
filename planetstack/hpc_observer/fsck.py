@@ -17,7 +17,7 @@ except:
 
 logger = Logger(level=logging.INFO)
 
-class PlanetStackConsistencyCheck:
+class XOSConsistencyCheck:
 	def __init__(self):
                 self.sync_steps = []
 		self.load_sync_step_modules()
@@ -71,7 +71,7 @@ def main():
     if django_setup: # 1.7
         django_setup()
 
-    cc = PlanetStackConsistencyCheck()
+    cc = XOSConsistencyCheck()
     cc.run()
 
 if __name__ == '__main__':

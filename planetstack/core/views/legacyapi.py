@@ -12,8 +12,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 def ps_id_to_pl_id(x):
-    # Since we don't want the PlanetStack object IDs to conflict with existing
-    # PlanetLab object IDs in the CMI, just add 100000 to the PlanetStack object
+    # Since we don't want the XOS object IDs to conflict with existing
+    # PlanetLab object IDs in the CMI, just add 100000 to the XOS object
     # IDs.
     return 100000 + x
 
@@ -56,17 +56,17 @@ def GetSlices(filter={}, slice_remap={}):
             node_ids.append(ps_id_to_pl_id(ps_sliver.node.id))
 
         slice = {"instantiation": "plc-instantiated",
-                 "description": "planetstack slice",
+                 "description": "XOS slice",
                  "slice_id": pl_slice_id(ps_slice, slice_remap),
                  "node_ids": node_ids,
-                 "url": "planetstack",
+                 "url": "xos",
                  "max_nodes": 1000,
                  "peer_slice_id": None,
                  "slice_tag_ids": [],
                  "peer_id": None,
                  "site_id": ps_id_to_pl_id(ps_slice.site_id),
                  "name": pl_slicename(ps_slice, slice_remap),
-                 "planetstack_name": ps_slice.name}
+                 "planetstack_name": ps_slice.name}     # keeping planetstack_name for now, to match the modified config.py
 
                  # creator_person_id, person_ids, expires, created
 
@@ -91,7 +91,7 @@ def GetNodes(node_ids=None, fields=None, slice_remap={}):
                 "hostname": ps_node.name.lower(),
                 "conf_file_ids": [],
                 "slice_ids": slice_ids,
-                "model": "planetstack",
+                "model": "xos",
                 "peer_id": None,
                 "node_tag_ids": []}
 
@@ -289,15 +289,8 @@ if __name__ == '__main__':
     slices = GetSlices(slice_remap = DEFAULT_REMAP)
     nodes = GetNodes(slice_remap = DEFAULT_REMAP)
 
-    if ("-d" in sys.argv):
-        config = GetConfiguration({"name": "princeton_vcoblitz"}, slice_remap = DEFAULT_REMAP)
-        print config
-        print slices
-        print nodes
-    else:
-        configs={}
-        configs[slicename] = GetConfiguration({"name": "princeton_vcoblitz"})
+    config = GetConfiguration({"name": "princeton_vcoblitz"}, slice_remap = DEFAULT_REMAP)
+    print config
+    print slices
+    print nodes
 
-        file("xos.config","w").write(json.dumps(configs))
-        file("planetstack_slices","w").write(json.dumps(slices))
-        file("planetstack_nodes","w").write(json.dumps(nodes))
