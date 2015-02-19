@@ -4,7 +4,7 @@ import pdb
 from dependency_walker import *
 import model_policies
 from util.logger import logger
-from datetime import datetime
+from django.utils import timezone
 import time
 from core.models import *
 from django.db.transaction import atomic
@@ -49,7 +49,7 @@ def execute_model_policy(instance, deleted):
 			logger.log_exc("Model Policy Error:") 
 			print "Policy Exceution Error"
 
-	instance.policed=datetime.now()
+	instance.policed=timezone.now()
         instance.save(update_fields=['policed'])
 
 def run_policy():
