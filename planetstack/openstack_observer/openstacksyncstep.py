@@ -3,7 +3,7 @@ import base64
 from syncstep import SyncStep
 
 class OpenStackSyncStep(SyncStep):
-    """ PlanetStack Sync step for copying data to OpenStack 
+    """ XOS Sync step for copying data to OpenStack 
     """ 
     
     def __init__(self, **args):

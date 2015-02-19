@@ -1,6 +1,6 @@
 import threading
 import time
-from ec2_observer.event_loop import PlanetStackObserver
+from ec2_observer.event_loop import XOSObserver
 from ec2_observer.event_manager import EventListener
 from util.logger import Logger, logging
 
@@ -11,7 +11,7 @@ class Backend:
     def run(self):
         try:
             # start the openstack observer
-            observer = PlanetStackObserver()
+            observer = XOSObserver()
             observer_thread = threading.Thread(target=observer.run)
             observer_thread.start()
             
