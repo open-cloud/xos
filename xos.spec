@@ -1,7 +1,7 @@
 Summary: OpenCloud core services
 Name: xos
 Version: 1.2.0
-Release: 1
+Release: 2
 License: GPL+
 Group: Development/Tools
 Source0: %{_tmppath}/%{name}-%{version}.tar.gz
@@ -88,9 +88,7 @@ install -d %{buildroot}/etc/init.d
 
 rm -rf %{buildroot}/opt/xos
 # don't copy symbolic links (they are handled in %post)
-rsync -rptgoD ./planetstack %{buildroot}/opt/.  
-# XXX temporary - rename /opt/planetstack to /opt/xos
-mv %{buildroot}/opt/planetstack %{buildroot}/opt/xos
+rsync -rptgoD ./xos %{buildroot}/opt/.  
 cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
 
 find %{buildroot}/opt/xos -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
