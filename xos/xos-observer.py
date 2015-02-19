@@ -29,6 +29,15 @@ def daemon():
     os.dup2(crashlog, 1)
     os.dup2(crashlog, 2)
 
+    if hasattr(config, "observer_pidfile"):
+        pidfile = config.get("observer_pidfile")
+    else:
+        pidfile = "/var/run/xosobserver.pid"
+    try:
+        file(pidfile,"w").write(str(os.getpid()))
+    except:
+        print "failed to create pidfile %s" % pidfile
+
 def main():
     # Generate command line parser
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
