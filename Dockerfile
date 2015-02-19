@@ -99,15 +99,7 @@ RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with
 RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 
 # Cruft to workaround problems with migrations, should go away...
-RUN /opt/xos/scripts/opencloud dropdb
-RUN rm -rf /opt/xos/*/migrations
-RUN cd /opt/xos; python ./manage.py makemigrations core
-RUN cd /opt/xos; python ./manage.py makemigrations hpc
-RUN cd /opt/xos; python ./manage.py makemigrations requestrouter
-RUN cd /opt/xos; python ./manage.py makemigrations syndicate_storage
-#RUN cd /opt/xos; python ./manage.py makemigrations servcomp
-
-RUN /opt/xos/scripts/opencloud initdb
+RUN /opt/xos/scripts/opencloud remigrate
 
 EXPOSE 8000
 
