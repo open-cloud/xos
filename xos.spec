@@ -89,10 +89,10 @@ install -d %{buildroot}/etc/init.d
 rm -rf %{buildroot}/opt/xos
 # don't copy symbolic links (they are handled in %post)
 rsync -rptgoD ./xos %{buildroot}/opt/.  
-cp observer-initscript %{buildroot}/etc/init.d/plstackobserver
+cp observer-initscript %{buildroot}/etc/init.d/xosobserver
 
 find %{buildroot}/opt/xos -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
-echo /etc/init.d/plstackobserver >> %{_tmppath}/tmp-filelist
+echo /etc/init.d/xosobserver >> %{_tmppath}/tmp-filelist
 
 # remove config files from the file list (see %config below)
 cat > %{_tmppath}/config-files << "EOF"
