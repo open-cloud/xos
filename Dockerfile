@@ -87,7 +87,8 @@ RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 # Get XOS 
 ADD xos /opt/xos
 
-ADD observer-initscript /etc/init.d/xosobserver
+# Initscript is broken in Ubuntu
+#ADD observer-initscript /etc/init.d/xosobserver
 
 RUN chmod +x /opt/xos/scripts/opencloud
 RUN /opt/xos/scripts/opencloud genkeys
