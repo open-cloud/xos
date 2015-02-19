@@ -103,6 +103,16 @@ function genkeys {
     fi
 }
 
+function remigrate {
+    dropdb
+    rm -rf /opt/xos/*/migrations
+    python ./manage.py makemigrations core
+    python ./manage.py makemigrations hpc
+    python ./manage.py makemigrations requestrouter
+    python ./manage.py makemigrations syndicate_storage
+    #python ./manage.py makemigrations servcomp
+}
+
 COMMAND=$1
 
 if [ "$COMMAND" = "initdb" ]; then
@@ -170,4 +180,10 @@ if [ "$COMMAND" = "genkeys" ]; then
 fi
 if [ "$COMMAND" = "generateapi" ]; then
    python apigen/modelgen apigen/api.template.py > xos/xosapi.py
+fi
+if [ "$COMMAND" = "remigrate" ]; then
+   ensure_postgres_running
+   remigrate
+   createdb
+   syncdb
 fi
