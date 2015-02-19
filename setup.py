@@ -17,9 +17,9 @@ def copytree(src, dst, symlinks=False, ignore=None):
 setup(name='planetstack',
       version='0.1',
       description='PlanetStack',
-      scripts=['planetstack/xos-observer.py'],
+      scripts=['xos/xos-observer.py'],
       data_files=[
-        ('/lib/systemd/system/', ['planetstack/redhat/xos-observer.service']),
+        ('/lib/systemd/system/', ['xos/redhat/xos-observer.service']),
         ])
 
-copytree('planetstack/', '/opt/xos')
+copytree('xos/', '/opt/xos')
