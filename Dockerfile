@@ -85,7 +85,7 @@ RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantom
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
 # Get XOS 
-ADD planetstack /opt/xos
+ADD xos /opt/xos
 
 ADD observer-initscript /etc/init.d/plstackobserver
 
