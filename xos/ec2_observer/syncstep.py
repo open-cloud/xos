@@ -1,9 +1,7 @@
 import os
 import base64
-from datetime import datetime
-
+from django.utils import timezone
 from django.db.models import F, Q
-
 from xos.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
@@ -80,7 +78,7 @@ class SyncStep:
                     o.delete(purge=True)
                 else:
                     self.sync_record(o)
-                    o.enacted = datetime.now() # Is this the same timezone? XXX
+                    o.enacted = timezone.now()
                     o.backend_status = "OK"
                     o.save(update_fields=['enacted'])
             except Exception,e:
