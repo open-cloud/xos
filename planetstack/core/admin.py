@@ -1672,7 +1672,6 @@ admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 if True:
     admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
     admin.site.register(ServiceClass, ServiceClassAdmin)
-    #admin.site.register(PlanetStack)
     admin.site.register(Tag, TagAdmin)
     admin.site.register(ControllerRole)
     admin.site.register(SiteRole)
