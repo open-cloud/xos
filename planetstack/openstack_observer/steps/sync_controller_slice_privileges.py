@@ -54,7 +54,7 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
                        'password': controller_slice_privilege.slice_privilege.user.remote_password,
                        'admin_user': controller_slice_privilege.controller.admin_user,
 		       'admin_password': controller_slice_privilege.controller.admin_password,
-	               'ansible_tag':'%s@%s'%(controller_slice_privilege.slice_privilege.user.email.replace('@','-at-'),controller_slice_privilege.controller.name),
+                       'ansible_tag':'%s@%s@%s'%(controller_slice_privilege.slice_privilege.user.email.replace('@','-at-'),controller_slice_privilege.slice_privilege.slice.name,controller_slice_privilege.controller.name),
 		       'admin_tenant': controller_slice_privilege.controller.admin_tenant,
 		       'roles':roles,
 		       'tenant':controller_slice_privilege.slice_privilege.slice.name}    
