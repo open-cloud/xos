@@ -1,7 +1,7 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django import VERSION as DJANGO_VERSION
 
-# Django settings for planetstack project.
+# Django settings for XOS.
 from config import Config
 config = Config()
 
@@ -162,7 +162,7 @@ if DJANGO_VERSION[1]>=7:
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
-    'core.context_processors.planetstack',
+    'core.context_processors.xos',
 )
 
 # Django Suit configuration example
@@ -193,7 +193,6 @@ SUIT_CONFIG = {
          'core.deploymentrole',
          'core.siterole',
          'core.slicerole',
-         'core.planetstackrole',
          'core.networktemplate',
          'core.networkparametertype',
          'core.router',
