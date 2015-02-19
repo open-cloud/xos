@@ -348,7 +348,7 @@ class TenantAddOrRemoveSliverView(View):
     """ Add or remove slivers from a Slice
 
         Arguments:
-            siteName - name of site. If not specified, PlanetStack will pick the
+            siteName - name of site. If not specified, XOS will pick the
                        best site.,
             actionToDo - [add | rem]
             count - number of slivers to add or remove

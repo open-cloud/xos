@@ -1,5 +1,5 @@
 from view_common import *
-from planetstack_analytics import DoPlanetStackAnalytics, PlanetStackAnalytics, RED_LOAD, BLUE_LOAD
+from xos_analytics import XOSAnalytics, RED_LOAD, BLUE_LOAD
 
 def getCDNContentProviderData():
     cps = []
@@ -13,7 +13,7 @@ def getCDNContentProviderData():
 def getCDNOperatorData(randomizeData = False, wait=True):
     HPC_SLICE_NAME = "HyperCache"
 
-    bq = PlanetStackAnalytics()
+    bq = XOSAnalytics()
 
     rows = bq.get_cached_query_results(bq.compose_cached_query(), wait)
 

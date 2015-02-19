@@ -22,7 +22,7 @@ RED_LOAD=15000000
 
 glo_cached_queries = {}
 
-class PlanetStackAnalytics(BigQueryAnalytics):
+class XOSAnalytics(BigQueryAnalytics):
     def __init__(self, tableName=None):
         if not tableName:
             tableName = settings.BIGQUERY_TABLE
@@ -421,14 +421,14 @@ class PlanetStackAnalytics(BigQueryAnalytics):
 
             return self.format_result(format, result, q, dataSourceUrl)
 
-def DoPlanetStackAnalytics(request):
-    bq = PlanetStackAnalytics()
+def DoXOSAnalytics(request):
+    bq = XOSAnalytics()
     result = bq.process_request(request)
 
     return result
 
 def main():
-    bq = PlanetStackAnalytics(tableName="demoevents")
+    bq = XOSAnalytics(tableName="demoevents")
 
     q = bq.compose_cached_query()
     results = bq.run_query(q)
