@@ -54,8 +54,8 @@
         "User", 
         "DashboardView"
     ], 
-    "Tag": [
-        "Service"
+    "Controller": [
+        "Deployment"
     ], 
     "User": [
         "Site"
@@ -75,8 +75,7 @@
         "Slice", 
         "Deployment", 
         "Node", 
-        "Flavor",
-	"Network"	
+        "Flavor"
     ], 
     "Payment": [
         "Account"
@@ -121,10 +120,8 @@
         "Controller", 
         "DashboardView"
     ], 
-    "PlanetStackPrivilege": [
-        "User", 
-        "PlanetStack", 
-        "Role"
+    "Tag": [
+        "Service"
     ], 
     "Invoice": [
         "Account"
