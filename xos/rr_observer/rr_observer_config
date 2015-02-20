@@ -5,7 +5,7 @@ name=plc
 deployment=VINI
 
 [db]
-name=planetstack
+name=xos
 user=plstackuser
 #password=2uMDYtJK
 password=1HL07C0E

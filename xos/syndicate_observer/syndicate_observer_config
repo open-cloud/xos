@@ -4,7 +4,7 @@ name=plc
 deployment=VICCI
 
 [db]
-name=planetstack
+name=xos
 #user=plstackuser
 #password=2uMDYtJK
 user=postgres
