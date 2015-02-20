@@ -7,7 +7,7 @@ fi
 
 XOS_DIR=/opt/xos
 BACKUP_DIR=/opt/xos_backups
-DBNAME=planetstack
+DBNAME=xos
 
 DJANGO_17=`python -c "import django; from distutils.version import StrictVersion; print int(StrictVersion(django.get_version()) >= StrictVersion('1.7'))"`
 

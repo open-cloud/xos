@@ -3,7 +3,7 @@ name=plc
 deployment=plc
 
 [db]
-name=planetstack
+name=xos
 user=postgres
 password=password
 host=localhost
