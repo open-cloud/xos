@@ -40,7 +40,7 @@ class SyncStep(object):
         try:
             sync_config_dir = Config().sync_config_dir
         except:
-            sync_config_dir = '/etc/planetstack/sync'     # XXX TODO: update path
+            sync_config_dir = '/etc/xos/sync'
         prop_config_path = '/'.join(sync_config_dir,self.name,prop)
         return open(prop_config_path).read().rstrip()
 
