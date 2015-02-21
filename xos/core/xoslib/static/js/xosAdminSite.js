@@ -1,5 +1,7 @@
-OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver', 'user', 'sliceRole',  'flavor', 'controller', 'siteDeployment'];
-// 'networkDeployment', 'userDeployment', 'sliceDeployment', 'imageDeployment'
+OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver',
+        'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver',
+        'user', 'sliceRole',  'flavor', 'controller', 'siteDeployment',
+        'controller_image'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];
 
 REWRITES = {"/admin/core/deployment/": "#deployments",
