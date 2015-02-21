@@ -23,6 +23,8 @@ if (! window.XOSLIB_LOADED ) {
     FLAVOR_API = XOS_BASE+"/flavors/";
     CONTROLLER_API = XOS_BASE+"/controllers/";
 
+    CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages";
+
     SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
     USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
 
@@ -556,6 +558,7 @@ if (! window.XOSLIB_LOADED ) {
                              });
 
         define_model(this, {urlRoot: IMAGE_API,
+                            relatedCollections: {"controller_images": "image"},
                             model: this.image,
                             modelName: "image",
                             listFields: ["backend_status", "id", "name", "disk_format", "container_format", "path"],
@@ -599,9 +602,18 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: CONTROLLER_API,
+                            relatedCollections: {"controller_images": "controller"},
                             modelName: "controller",
                             listFields: ["backend_status", "id", "name", "version", "backend_type"],
                             detailFields: ["backend_status", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
+                            });
+
+        define_model(this, {urlRoot: CONTROLLERIMAGE_API,
+                            foreignCollections: ["images", "controllers"],
+                            foreignFields: {"image": "images", "controller": "controllers"},
+                            modelName: "controller_image",
+                            listFields: ["backend_status", "id", "image", "controller", "glance_image_id"],
+                            detailFields: ["backend_status", "image", "controller", "glance_image_id"],
                             });
 
         /* removed
