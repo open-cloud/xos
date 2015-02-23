@@ -32,6 +32,7 @@ default_security_group=default
 ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
 
 [observer]
+backoff_disabled=False
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
