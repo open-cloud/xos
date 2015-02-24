@@ -5,6 +5,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from core.models import User
 from core.models.slice import Slice, ControllerSlice
 from core.models.controlleruser import ControllerUser
 from util.logger import Logger, logging, logger
