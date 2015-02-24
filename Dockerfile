@@ -1,4 +1,4 @@
-FROM       ubuntu:14.04.1
+FROM       ubuntu:14.04.2
 MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 
 # XXX Workaround for docker bug:
@@ -76,6 +76,7 @@ ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-pac
 # For Observer
 RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum
 RUN cd /tmp/fofum; python setup.py install
+RUN rm -rf /tmp/fofum
 
 RUN mkdir -p /usr/local/share /bin
 ADD http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2 /usr/local/share/
