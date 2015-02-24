@@ -352,7 +352,8 @@ class SliverInline(XOSTabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
-           kwargs['queryset'] = Deployment.select_by_acl(request.user)
+             
+           kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
         if db_field.name == 'flavor':
            kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
