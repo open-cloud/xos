@@ -24,6 +24,7 @@ if (! window.XOSLIB_LOADED ) {
     CONTROLLER_API = XOS_BASE+"/controllers/";
 
     CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages";
+    CONTROLLERNETWORK_API = XOS_BASE+"/controllernetworks";
 
     SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
     USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
@@ -572,7 +573,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
-                            relatedCollections: {"networkSlivers": "network"},
+                            relatedCollections: {"networkSlivers": "network", "controller_networks": "network"},
                             foreignCollections: ["slices", "networkTemplates"],
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
@@ -602,7 +603,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: CONTROLLER_API,
-                            relatedCollections: {"controller_images": "controller"},
+                            relatedCollections: {"controller_images": "controller", "controller_networks": "controller"},
                             modelName: "controller",
                             listFields: ["backend_status", "id", "name", "version", "backend_type"],
                             detailFields: ["backend_status", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
@@ -614,6 +615,14 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "controller_image",
                             listFields: ["backend_status", "id", "image", "controller", "glance_image_id"],
                             detailFields: ["backend_status", "image", "controller", "glance_image_id"],
+                            });
+
+        define_model(this, {urlRoot: CONTROLLERNETWORK_API,
+                            foreignCollections: ["networks", "controllers"],
+                            foreignFields: {"network": "networks", "controller": "controllers"},
+                            modelName: "controller_network",
+                            listFields: ["backend_status", "id", "network", "controller", "net_id"],
+                            detailFields: ["backend_status", "network", "controller", "net_id"],
                             });
 
         /* removed
