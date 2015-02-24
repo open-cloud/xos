@@ -182,6 +182,7 @@ if [ "$COMMAND" = "evolvedb" -o "$COMMAND" = "migratedb" ]; then
 fi
 if [ "$COMMAND" = "resetdb" ]; then
     stopserver
+    ensure_postgres_running
     dropdb
     createdb
     syncdb
