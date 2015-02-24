@@ -46,6 +46,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         # Get all ports in all controllers
 
         ports_by_id = {}
+        templates_by_id = {}
         for controller in Controller.objects.all():
             if not controller.admin_tenant:
                 logger.info("controller %s has no admin_tenant" % controller)
@@ -59,6 +60,19 @@ class SyncNetworkSlivers(OpenStackSyncStep):
 
             for port in ports:
                 ports_by_id[port["id"]] = port
+
+            # public-nat and public-dedicated networks don't have a net-id anywhere
+            # in the data model, so build up a list of which ids map to which network
+            # templates.
+            try:
+                neutron_networks = driver.shell.quantum.list_networks()["networks"]
+            except:
+                print "failed to get networks from controller %s" % controller
+                continue
+            for network in neutron_networks:
+                for template in NetworkTemplate.objects.all():
+                    if template.shared_network_name == network["name"]:
+                        templates_by_id[network["id"]] = template
 
         for port in ports_by_id.values():
             #logger.info("port %s" % str(port))
@@ -78,6 +92,15 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 continue
 
             network = networks_by_id.get(port['network_id'], None)
+            if not network:
+                # maybe it's public-nat or public-dedicated. Search the templates for
+                # the id, then see if the sliver's slice has some network that uses
+                # that template
+                template = templates_by_id.get(port['network_id'], None)
+                if template and sliver.slice:
+                    for candidate_network in sliver.slice.networks.all():
+                         if candidate_network.template == template:
+                             network=candidate_network
             if not network:
                 logger.info("no network for port %s network %s" % (port["id"], port["network_id"]))
 
