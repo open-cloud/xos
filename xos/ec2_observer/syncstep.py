@@ -1,6 +1,9 @@
 import os
 import base64
 from datetime import datetime
+
+from django.db.models import F, Q
+
 from xos.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
