@@ -159,11 +159,11 @@ class ControllerNetwork(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = NetworkControllers.objects.all()
+            qs = ControllerNetwork.objects.all()
         else:
             slices = Slice.select_by_user(user)
             networks = Network.objects.filter(owner__in=slices)
-            qs = NetworkControllers.objects.filter(network__in=networks)
+            qs = ControllerNetwork.objects.filter(network__in=networks)
         return qs
 
 class NetworkSlice(PlCoreBase):
