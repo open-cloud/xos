@@ -702,6 +702,13 @@ class SiteNodeInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # only display site deployments associated with this site
+        if db_field.name ==  'site_deployment':
+            kwargs['queryset'] = SiteDeployment.objects.filter(site__id=int(request.path.split('/')[-2]))
+
+        return super(SiteNodeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
     fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']
