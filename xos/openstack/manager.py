@@ -8,7 +8,7 @@ from datetime import datetime
 from netaddr import IPAddress, IPNetwork
 from xos import settings
 from django.core import management
-from core.models import * 
+from core.models import *
 from xos.config import Config
 try:
     from openstack.client import OpenStackClient
