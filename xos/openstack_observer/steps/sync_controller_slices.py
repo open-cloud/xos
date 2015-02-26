@@ -70,10 +70,10 @@ class SyncControllerSlices(OpenStackSyncStep):
 
     def delete_record(self, controller_slice):
         user = User.objects.get(id=controller_slice.slice.creator.id)
-        driver = OpenStackDriver().admin_driver(controller=controller_slice.controller.name)
+        driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
         client_driver = driver.client_driver(caller=user,
                                              tenant=controller_slice.slice.name,
-                                             controller=controller_slice.controller.name)
+                                             controller=controller_slice.controller)
 
         if controller_slice.router_id and controller_slice.subnet_id:
             client_driver.delete_router_interface(controller_slice.router_id, controller_slice.subnet_id)

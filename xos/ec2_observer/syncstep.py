@@ -1,6 +1,9 @@
 import os
 import base64
 from datetime import datetime
+
+from django.db.models import F, Q
+
 from xos.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
@@ -18,7 +21,7 @@ class SyncStep:
         dependencies    list of names of models that must be synchronized first if the current model depends on them
     """ 
     slow=False
-    def get_prop(prop):
+    def get_prop(self, prop):
         try:
             sync_config_dir = Config().sync_config_dir
         except:
@@ -48,7 +51,7 @@ class SyncStep:
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
         main_obj = self.provides[0]
-        if (not deleted):
+        if (not deletion):
             objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
         else:
             objs = main_obj.deleted_objects.all()
