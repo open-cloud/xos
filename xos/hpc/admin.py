@@ -32,6 +32,21 @@ class HpcServiceAdmin(ServiceAppAdmin):
 
     suit_form_includes = (('hpcadmin.html', 'top', 'administration'),)
 
+class HPCAdmin(ReadOnlyAwareAdmin):
+   # Change the application breadcrumb to point to an HPC Service if one is
+   # defined
+
+   change_form_template = "admin/change_form_bc.html"
+   change_list_template = "admin/change_list_bc.html"
+   custom_app_breadcrumb_name = "Hpc"
+   @property
+   def custom_app_breadcrumb_url(self):
+       services = HpcService.objects.all()
+       if len(services)==1:
+           return "/admin/hpc/hpcservice/%s/" % services[0].id
+       else:
+           return "/admin/hpc/hpcservice/"
+
 class CDNPrefixInline(XOSTabularInline):
     model = CDNPrefix
     extra = 0
@@ -46,7 +61,7 @@ class ContentProviderInline(XOSTabularInline):
     fields = ('backend_status_icon', 'content_provider_id', 'name', 'enabled')
     readonly_fields = ('backend_status_icon', 'content_provider_id',)
 
-class OriginServerAdmin(ReadOnlyAwareAdmin):
+class OriginServerAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'url','protocol','redirects','contentProvider','authenticated','enabled' )
     list_display_links = ('backend_status_icon', 'url', )
 
@@ -60,7 +75,7 @@ class ContentProviderForm(forms.ModelForm):
             'serviceProvider' : LinkedSelect
         }
 
-class ContentProviderAdmin(ReadOnlyAwareAdmin):
+class ContentProviderAdmin(HPCAdmin):
     form = ContentProviderForm
     list_display = ('backend_status_icon', 'name','description','enabled' )
     list_display_links = ('backend_status_icon', 'name', )
@@ -73,7 +88,7 @@ class ContentProviderAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'))
 
-class ServiceProviderAdmin(ReadOnlyAwareAdmin):
+class ServiceProviderAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [
@@ -92,7 +107,7 @@ class CDNPrefixForm(forms.ModelForm):
             'contentProvider' : LinkedSelect
         }
 
-class CDNPrefixAdmin(ReadOnlyAwareAdmin):
+class CDNPrefixAdmin(HPCAdmin):
     form = CDNPrefixForm
     list_display = ['backend_status_icon', 'prefix','contentProvider']
     list_display_links = ('backend_status_icon', 'prefix', )
@@ -100,7 +115,7 @@ class CDNPrefixAdmin(ReadOnlyAwareAdmin):
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['prefix','contentProvider', "cdn_prefix_id", "description", "defaultOriginServer", "enabled"]
 
-class SiteMapAdmin(ReadOnlyAwareAdmin):
+class SiteMapAdmin(HPCAdmin):
     model = SiteMap
     verbose_name = "Site Map"
     verbose_name_plural = "Site Map"
@@ -109,7 +124,7 @@ class SiteMapAdmin(ReadOnlyAwareAdmin):
     user_readonly_fields = ('backend_status_text', "name", "contentProvider", "serviceProvider", "description", "map")
     readonly_fields = ('backend_status_text', )
 
-class AccessMapAdmin(ReadOnlyAwareAdmin):
+class AccessMapAdmin(HPCAdmin):
     model = AccessMap
     verbose_name = "Access Map"
     verbose_name_plural = "Access Map"
