@@ -14,6 +14,21 @@ from core.admin import ReadOnlyAwareAdmin,ServiceAppAdmin,SliceInline,ServiceAtt
 from suit.widgets import LinkedSelect
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
+class SyndicateAdmin(ReadOnlyAwareAdmin):
+   # Change the application breadcrumb to point to an RR Service if one is
+   # defined
+
+   change_form_template = "admin/change_form_bc.html"
+   change_list_template = "admin/change_list_bc.html"
+   custom_app_breadcrumb_name = "Syndicate_Storage"
+   @property
+   def custom_app_breadcrumb_url(self):
+       services = SyndicateService.objects.all()
+       if len(services)==1:
+           return "/admin/syndicate_storage/syndicateservice/%s/" % services[0].id
+       else:
+           return "/admin/syncdicate_storage/syndicateservice/"
+
 class SyndicateServiceAdmin(ServiceAppAdmin):
     model = SyndicateService
     verbose_name = "Syndicate Storage"
@@ -103,7 +118,7 @@ class VolumeSliceInline(XOSTabularInline):
     readonly_fields = ['credentials_blob']
  
 
-class VolumeAdmin(ReadOnlyAwareAdmin):
+class VolumeAdmin(SyndicateAdmin):
     model = Volume
    
     def get_readonly_fields(self, request, obj=None ):
