@@ -23,9 +23,12 @@ class RequestRouterServiceAdmin(SingletonAdmin):
     user_readonly_fields = ["name", "enabled", "versionNumber", "description", "behindNat", "defaultTTL", "defaultAction", "lastResortAction", "maxAnswers"]
 
     suit_form_tabs =(('general', 'Request Router Service Details'),
+        ('administration', 'Administration'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
+
+    suit_form_includes = (('rradmin.html', 'top', 'administration'),)
 
 class ServiceMapAdmin(ReadOnlyAwareAdmin):
     model = ServiceMap
