@@ -1,3 +1,13 @@
+<div class = "left-nav">
+<ul>
+{% for admin in registered_admins %}
+    <li><a href="{{ admin.url }}">{{ admin.name }}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+<!--
 <ul>
 <li><a href="/admin/syndicate_storage/volume/">Volumes</a></li>
 </ul>
+-->
