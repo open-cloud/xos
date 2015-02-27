@@ -119,7 +119,28 @@ class PermissionCheckingAdminMixin(object):
 
         return actions
 
+    def add_extra_context(self, extra_context):
+        # allow custom application breadcrumb url and name
+        extra_context["custom_app_breadcrumb_url"] = getattr(self, "custom_app_breadcrumb_url", None)
+        extra_context["custom_app_breadcrumb_name"] = getattr(self, "custom_app_breadcrumb_name", None)
+
+        # for Service admins to render their Administration page
+        if getattr(self, "extracontext_registered_admins", False):
+            admins=[]
+            for model, model_admin in admin.site._registry.items():
+                if model == self.model:
+                    continue
+                if model._meta.app_label == self.model._meta.app_label:
+                    info = {"app": model._meta.app_label,
+                            "model": model._meta.model_name,
+                            "name": capfirst(model._meta.verbose_name_plural),
+                            "url": reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label) }
+                    admins.append(info)
+            extra_context["registered_admins"] = admins
+
     def change_view(self,request,object_id, extra_context=None):
+        extra_context = extra_context or {}
+
         if self.__user_is_readonly(request):
             if not hasattr(self, "readonly_save"):
                 # save the original readonly fields
@@ -136,6 +157,8 @@ class PermissionCheckingAdminMixin(object):
             if hasattr(self, "inlines_save"):
                 self.inlines = self.inlines_save
 
+        self.add_extra_context(extra_context)
+
         try:
             return super(PermissionCheckingAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
@@ -144,6 +167,14 @@ class PermissionCheckingAdminMixin(object):
             raise PermissionDenied
         request.readonly = True
         return super(PermissionCheckingAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
+
+    def changelist_view(self, request, extra_context = None):
+        extra_context = extra_context or {}
+
+        self.add_extra_context(extra_context)
+
+        return super(PermissionCheckingAdminMixin, self).changelist_view(request, extra_context=extra_context)
+
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
@@ -194,28 +225,7 @@ class SingletonAdmin (ReadOnlyAwareAdmin):
             return True
 
 class ServiceAppAdmin (SingletonAdmin):
-    # This is for services to render an 'administration page'. It builds up
-    # a list of all registered admins for the service, and passes them in the
-    # 'registered_admins' member of the template context.
-
-    def change_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context or {}
-
-        admins=[]
-        for model, model_admin in admin.site._registry.items():
-            if model == self.model:
-                continue
-            if model._meta.app_label == self.model._meta.app_label:
-                info = {"app": model._meta.app_label,
-                        "model": model._meta.model_name,
-                        "name": capfirst(model._meta.verbose_name_plural),
-                        "url": reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label) }
-                admins.append(info)
-
-        extra_context["registered_admins"] = admins
-
-        return super(ServiceAppAdmin, self).change_view(request=request, object_id=object_id,
-            extra_context=extra_context)
+    extracontext_registered_admins = True
 
 class XOSTabularInline(admin.TabularInline):
     def __init__(self, *args, **kwargs):
