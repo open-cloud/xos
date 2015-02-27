@@ -65,7 +65,7 @@ class PlainTextWidget(forms.HiddenInput):
             value = ''
         return mark_safe(str(value) + super(PlainTextWidget, self).render(name, value, attrs))
 
-class PermissionCheckingAdminMixin(object):
+class XOSAdminMixin(object):
     # call save_by_user and delete_by_user instead of save and delete
 
     def has_add_permission(self, request, obj=None):
@@ -111,7 +111,7 @@ class PermissionCheckingAdminMixin(object):
         formset.save_m2m()
 
     def get_actions(self,request):
-        actions = super(PermissionCheckingAdminMixin,self).get_actions(request)
+        actions = super(XOSAdminMixin,self).get_actions(request)
 
         if self.__user_is_readonly(request):
             if 'delete_selected' in actions:
@@ -160,21 +160,20 @@ class PermissionCheckingAdminMixin(object):
         self.add_extra_context(extra_context)
 
         try:
-            return super(PermissionCheckingAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
+            return super(XOSAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
             pass
         if request.method == 'POST':
             raise PermissionDenied
         request.readonly = True
-        return super(PermissionCheckingAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
+        return super(XOSAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
 
     def changelist_view(self, request, extra_context = None):
         extra_context = extra_context or {}
 
         self.add_extra_context(extra_context)
 
-        return super(PermissionCheckingAdminMixin, self).changelist_view(request, extra_context=extra_context)
-
+        return super(XOSAdminMixin, self).changelist_view(request, extra_context=extra_context)
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
@@ -192,10 +191,10 @@ class PermissionCheckingAdminMixin(object):
         # determine whether the user is an admin.
         _thread_locals.request = request
         _thread_locals.obj = obj
-        return super(PermissionCheckingAdminMixin, self).get_form(request, obj, **kwargs)
+        return super(XOSAdminMixin, self).get_form(request, obj, **kwargs)
 
     def get_inline_instances(self, request, obj=None):
-        inlines = super(PermissionCheckingAdminMixin, self).get_inline_instances(request, obj)
+        inlines = super(XOSAdminMixin, self).get_inline_instances(request, obj)
 
         # inlines that should only be shown to an admin user
         if request.user.is_admin:
@@ -204,8 +203,8 @@ class PermissionCheckingAdminMixin(object):
 
         return inlines
 
-class ReadOnlyAwareAdmin(PermissionCheckingAdminMixin, admin.ModelAdmin):
-    # Note: Make sure PermissionCheckingAdminMixin is listed before
+class ReadOnlyAwareAdmin(XOSAdminMixin, admin.ModelAdmin):
+    # Note: Make sure XOSAdminMixin is listed before
     # admin.ModelAdmin in the class declaration.
 
     pass
@@ -1195,8 +1194,8 @@ class ControllerUserInline(XOSTabularInline):
     readonly_fields=['controller']
 
 
-class UserAdmin(PermissionCheckingAdminMixin, UserAdmin):
-    # Note: Make sure PermissionCheckingAdminMixin is listed before
+class UserAdmin(XOSAdminMixin, UserAdmin):
+    # Note: Make sure XOSAdminMixin is listed before
     # admin.ModelAdmin in the class declaration.
 
     class Meta:
