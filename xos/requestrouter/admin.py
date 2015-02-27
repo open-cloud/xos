@@ -10,9 +10,9 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin
 
-class RequestRouterServiceAdmin(SingletonAdmin):
+class RequestRouterServiceAdmin(ServiceAppAdmin):
     model = RequestRouterService
     verbose_name = "Request Router Service"
     verbose_name_plural = "Request Router Service"
