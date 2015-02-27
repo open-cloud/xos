@@ -25,9 +25,12 @@ class HpcServiceAdmin(SingletonAdmin):
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
 
     suit_form_tabs =(('general', 'HPC Service Details'),
+        ('administration', 'Administration'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
+
+    suit_form_includes = (('hpcadmin.html', 'top', 'administration'),)
 
 class CDNPrefixInline(XOSTabularInline):
     model = CDNPrefix
