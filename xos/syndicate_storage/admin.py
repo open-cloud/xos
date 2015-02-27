@@ -25,9 +25,12 @@ class SyndicateServiceAdmin(SingletonAdmin,ReadOnlyAwareAdmin):
     user_readonly_fields = ['name','enabled','versionNumber','description']
 
     suit_form_tabs =(('general', 'Syndicate Storage Details'),
+        ('administration', 'Administration'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
+
+    suit_form_includes = (('syndicateadmin.html', 'top', 'administration'),)
 
 
 class VolumeAccessRightInline(XOSTabularInline):
