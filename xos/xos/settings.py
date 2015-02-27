@@ -208,9 +208,10 @@ SUIT_CONFIG = {
         {'label': 'Sites', 'icon':'icon-site', 'url': '/admin/core/site/'},
         {'label': 'Slices', 'icon':'icon-slice', 'url': '/admin/core/slice/'},
         {'label': 'Users', 'icon':'icon-user', 'url': '/admin/core/user/'},
-        {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
-        {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
-        {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate_storage'},
+        {'label': 'Services', 'icon':'icon-cog', 'url': '/serviceGrid/'},
+#        {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
+#        {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
+#        {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate_storage'},
 #       {'label': 'URL Filter', 'icon': 'icon-cog', 'app': 'urlfilter'},
 #       {'label': 'Service Comp', 'icon': 'icon-cog', 'app': 'servcomp'},
 
