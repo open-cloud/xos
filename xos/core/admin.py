@@ -17,6 +17,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, resolve, NoReverseMatch
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
+from django.utils.text import capfirst
 from django.forms.utils import flatatt, to_current_timezone
 from cgi import escape as html_escape
 
@@ -191,6 +192,30 @@ class SingletonAdmin (ReadOnlyAwareAdmin):
             return False
         else:
             return True
+
+class ServiceAppAdmin (SingletonAdmin):
+    # This is for services to render an 'administration page'. It builds up
+    # a list of all registered admins for the service, and passes them in the
+    # 'registered_admins' member of the template context.
+
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context or {}
+
+        admins=[]
+        for model, model_admin in admin.site._registry.items():
+            if model == self.model:
+                continue
+            if model._meta.app_label == self.model._meta.app_label:
+                info = {"app": model._meta.app_label,
+                        "model": model._meta.model_name,
+                        "name": capfirst(model._meta.verbose_name_plural),
+                        "url": reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label) }
+                admins.append(info)
+
+        extra_context["registered_admins"] = admins
+
+        return super(ServiceAppAdmin, self).change_view(request=request, object_id=object_id,
+            extra_context=extra_context)
 
 class XOSTabularInline(admin.TabularInline):
     def __init__(self, *args, **kwargs):

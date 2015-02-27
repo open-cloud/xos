@@ -10,9 +10,9 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import SingletonAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
 
-class HpcServiceAdmin(SingletonAdmin):
+class HpcServiceAdmin(ServiceAppAdmin):
     model = HpcService
     verbose_name = "HPC Service"
     verbose_name_plural = "HPC Service"
