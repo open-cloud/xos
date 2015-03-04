@@ -61,7 +61,7 @@ def invert_graph(g):
 			try:
 				ig[v0].append(k)
 			except:
-				ig=[k]
+				ig[v0]=[k]
 	return ig
 
 class XOSObserver:
@@ -267,10 +267,12 @@ class XOSObserver:
                 logger.info("Starting to work on step %s" % step.__name__)
 		
 		dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
+                step_conditions = self.step_conditions# if not deletion else self.deletion_step_conditions
+                step_status = self.step_status# if not deletion else self.deletion_step_status
 
 		# Wait for step dependencies to be met
 		try:
-			deps = self.dependency_graph[S]
+			deps = dependency_graph[S]
 			has_deps = True
 		except KeyError:
 			has_deps = False
@@ -285,12 +287,12 @@ class XOSObserver:
 				    go = True
                                     continue
 
-				cond = self.step_conditions[d]
+				cond = step_conditions[d]
 				cond.acquire()
-				if (self.step_status[d] is STEP_STATUS_WORKING):
+				if (step_status[d] is STEP_STATUS_WORKING):
                                         logger.info("  step %s wait on dep %s" % (step.__name__, d))
 					cond.wait()
-				elif self.step_status[d] == STEP_STATUS_OK:
+				elif step_status[d] == STEP_STATUS_OK:
 					go = True
 				else:
 					go = False
@@ -368,9 +370,9 @@ class XOSObserver:
 				my_status = STEP_STATUS_OK
 
 		try:
-			my_cond = self.step_conditions[S]
+			my_cond = step_conditions[S]
 			my_cond.acquire()
-			self.step_status[S]=my_status
+			step_status[S]=my_status
 			my_cond.notify_all()
 			my_cond.release()
 		except KeyError,e:
@@ -392,35 +394,37 @@ class XOSObserver:
 				error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
 				self.error_mapper = ErrorMapper(error_map_file)
 
-				# Set of whole steps that failed
-				self.failed_steps = []
-
-				# Set of individual objects within steps that failed
-				self.failed_step_objects = set()
-
-				# Set up conditions and step status
-				# This is needed for steps to run in parallel
-				# while obeying dependencies.
-
-				providers = set()
-				for v in self.dependency_graph.values():
-					if (v):
-						providers.update(v)
-
-				self.step_conditions = {}
-				self.step_status = {}
-				for p in list(providers):
-					self.step_conditions[p] = threading.Condition()
-					self.step_status[p] = STEP_STATUS_WORKING
-
-
 				logger.info('Waiting for event')
 				tBeforeWait = time.time()
-				self.wait_for_event(timeout=30)
+				self.wait_for_event(timeout=5)
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.
-				for deletion in [False,True]:
+				for deletion in [False]:#[False,True]:
+					# Set of individual objects within steps that failed
+					self.failed_step_objects = set()
+
+					# Set up conditions and step status
+					# This is needed for steps to run in parallel
+					# while obeying dependencies.
+
+					providers = set()
+					dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
+
+					for v in dependency_graph.values():
+						if (v):
+							providers.update(v)
+
+					self.step_conditions = {}
+					self.step_status = {}
+
+					for p in list(providers):
+						self.step_conditions[p] = threading.Condition()
+
+						self.step_status[p] = STEP_STATUS_WORKING
+
+					self.failed_steps = []
+
 					threads = []
 					logger.info('Deletion=%r...'%deletion)
 					schedule = self.ordered_steps if not deletion else reversed(self.ordered_steps)
