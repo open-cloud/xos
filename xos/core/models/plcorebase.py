@@ -110,12 +110,15 @@ class PlModelMixIn(object):
         return validators
 
     def get_backend_icon(self):
+        is_good = (self.backend_status is not None) and (self.backend_status.startswith("0 -") or self.backend_status.startswith("1 -"))
+        is_provisioning = self.backend_status is None or self.backend_status == "Provisioning in progress" or self.backend_status==""
+
         # returns (icon_name, tooltip)
-        if (self.enacted is not None) and self.enacted >= self.updated or self.backend_status.startswith("1 -"):
+        if (self.enacted is not None) and self.enacted >= self.updated and is_good:
             return ("success", "successfully enacted")
         else:
-            if ((self.backend_status is not None) and self.backend_status.startswith("0 -")) or self.backend_status == "Provisioning in progress" or self.backend_status=="":
-                return ("clock", html_escape(self.backend_status, quote=True))
+            if is_good or is_provisioning:
+                return ("clock", "Pending sync, last_status = " + html_escape(self.backend_status, quote=True))
             else:
                 return ("error", html_escape(self.backend_status, quote=True))
 
