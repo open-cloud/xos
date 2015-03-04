@@ -71,23 +71,28 @@ class SyncSiteMap(SyncStep, HpcLibrary):
 
         if (map.contentProvider):
             if not map.contentProvider.content_provider_id:
+                print "Map", map_dict, "contentProvider has no id"
                 return
             conent_provider_ids = [map.contentProvider.content_provider_id]
 
         if (map.serviceProvider):
             if not map.serviceProvider.service_provider_id:
+                print "Map", map_dict, "serviceProvider has no id"
                 return
             service_provider_ids = [map.serviceProvider.service_provider_id]
 
         if (map.cdnPrefix):
             if not map.cdnPrefix.cdn_prefix_id:
+                print "Map", map_dict, "cdnPrefix has no id"
                 return
             cdn_prefix_ids = [map.cdnPrefix.cdn_prefix_id]
 
         if not map.map_id:
+            print "Create Map", map_dict
             id = self.client.onev.Create("Map", map_dict)
             map.map_id = id
         else:
+            print "Update Map", map_dict
             # these things we probably cannot update
             del map_dict["map_name"]
             self.client.onev.Update("Map", map.map_id, map_dict)
