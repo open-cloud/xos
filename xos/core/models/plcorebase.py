@@ -23,6 +23,14 @@ except:
     def notify_observer(*args, **kwargs):
         pass
 
+class StrippedCharField(models.CharField):
+    """ CharField that strips trailing and leading spaces."""
+    def clean(self, value, *args, **kwds):
+        if value is not None:
+            value = value.strip()
+        return super(StrippedCharField, self).clean(value, *args, **kwds)
+            
+
 # This manager will be inherited by all subclasses because
 # the core model is abstract.
 class PlCoreBaseDeletionManager(models.Manager):
