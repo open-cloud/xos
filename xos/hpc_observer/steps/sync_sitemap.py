@@ -5,7 +5,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
-from hpc.models import ServiceProvider, ContentProvider, CDNPrefix
+from hpc.models import ServiceProvider, ContentProvider, CDNPrefix, SiteMap
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
@@ -16,8 +16,9 @@ from hpclib import HpcLibrary
 
 logger = Logger(level=logging.INFO)
 
-class SyncCDNPrefix(SyncStep, HpcLibrary):
-    provides=[CDNPrefix]
+class SyncSiteMap(SyncStep, HpcLibrary):
+    provides=[SiteMap]
+    observes=SiteMap
     requested_interval=0
 
     def __init__(self, **args):
@@ -25,8 +26,6 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         HpcLibrary.__init__(self)
 
     def fetch_pending(self, deleted):
-        #self.consistency_check()
-
         return SyncStep.fetch_pending(self, deleted)
 
     def consistency_check(self):
@@ -34,63 +33,69 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         result=False
 
         # sanity check to make sure our PS objects have CMI objects behind them
-        all_p_ids = [x["cdn_prefix_id"] for x in self.client.onev.ListAll("CDNPrefix")]
-
-        all_p_ids = []
-        all_origins = {}
-        for x in self.client.onev.ListAll("CDNPrefix"):
-            id = x["cdn_prefix_id"]
-            all_p_ids.append(id)
-            all_origins[id] = x.get("default_origin_server", None)
-
-        for p in CDNPrefix.objects.all():
-            if (p.cdn_prefix_id is None):
-                continue
-
-            if (p.cdn_prefix_id not in all_p_ids):
-                logger.info("CDN Prefix %s was not found on CMI" % p.cdn_prefix_id)
-                p.cdn_prefix_id=None
-                p.save()
-                result = True
-
-            if (p.defaultOriginServer!=None) and (all_origins.get(p.cdn_prefix_id,None) != p.defaultOriginServer.url):
-                logger.info("CDN Prefix %s does not have default origin server on CMI" % str(p))
-                p.save() # this will set updated>enacted and force observer to re-sync
+        all_map_ids = [x["map_id"] for x in self.client.onev.ListAll("Map")]
+        for map in SiteMap.objects.all():
+            if (map.map_id is not None) and (map.map_id not in all_map_ids):
+                logger.info("Map %s was not found on CMI" % map.map_id)
+                map.map_id=None
+                map.save()
                 result = True
 
         return result
 
-    def sync_record(self, cp):
-        logger.info("sync'ing cdn prefix %s" % str(cp))
+    def update_bind(self, map, map_dict, field_name, to_name, ids):
+        for id in ids:
+            if (not id in map_dict.get(field_name, [])):
+                print "Bind Map", map.map_id, "to", to_name, id
+                self.client.onev.Bind("Map", map.map_id, to_name, id)
 
-        if (not cp.contentProvider) or (not cp.contentProvider.content_provider_id):
+        for id in map_dict.get(field_name, []):
+            if (not id in ids):
+                print "Unbind Map", map.map_id, "from", to_name, id
+                self.client.onev.UnBind("map", map.map_id, to_name, id)
+
+    def sync_record(self, map):
+        logger.info("sync'ing SiteMap %s" % str(map))
+
+        if not map.map:
+            # no contents
             return
 
-        cpid = cp.contentProvider.content_provider_id
+        content = map.map.read()
 
-        cp_dict = {"service": "HyperCache", "enabled": cp.enabled, "content_provider_id": cpid, "cdn_prefix": cp.prefix}
+        map_dict = {"name": map.name, "type": "site", "content": content}
 
-        if cp.defaultOriginServer and cp.defaultOriginServer.url:
-            if (not cp.defaultOriginServer.origin_server_id):
-                # It's probably a bad idea to try to set defaultOriginServer before
-                # we've crated defaultOriginServer.
-                logger.info("   cdn prefix %s is waiting for it's default origin server to get an id" % str(cp))
+        cdn_prefix_ids=[]
+        service_provider_ids=[]
+        content_provider_ids=[]
+
+        if (map.contentProvider):
+            if not map.contentProvider.content_provider_id:
                 return
+            conent_provider_ids = [map.contentProvider.content_provider_id]
 
-            cp_dict["default_origin_server"] = cp.defaultOriginServer.url
+        if (map.serviceProvider):
+            if not map.serviceProvider.service_provider_id:
+                return
+            service_provider_ids = [map.serviceProvider.service_provider_id]
 
-        #print cp_dict
+        if (map.cdnPrefix):
+            if not map.cdnPrefix.cdn_prefix_id:
+                return
+            cdn_prefix_ids = [map.cdnPrefix.cdn_prefix_id]
 
-        if not cp.cdn_prefix_id:
-            id = self.client.onev.Create("CDNPrefix", cp_dict)
-            cp.cdn_prefix_id = id
+        if not map.map_id:
+            id = self.client.onev.Create("Map", map_dict)
+            map.map_id = id
         else:
-            del cp_dict["content_provider_id"]  # this can't be updated
-            del cp_dict["cdn_prefix"] # this can't be updated either
-            self.client.onev.Update("CDNPrefix", cp.cdn_prefix_id, cp_dict)
+            # these things we probably cannot update
+            del map_dict["map_name"]
+            self.client.onev.Update("Map", map.map_id, map_dict)
 
-        cp.save()
+        self.update_bind(map, map_dict, "cdn_prefix_ids", "CDNPrefix", cdn_prefix_ids)
+
+        map.save()
 
     def delete_record(self, m):
-        if m.cdn_prefix_id is not None:
-            self.client.onev.Delete("CDNPrefix", m.cdn_prefix_id)
+        if m.map_id is not None:
+            self.client.onev.Delete("Map", m.map_id)

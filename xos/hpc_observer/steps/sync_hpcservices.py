@@ -19,6 +19,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncHpcService(SyncStep, HpcLibrary):
     provides=[HpcService]
+    observes=HpcService
     requested_interval=0
 
     def __init__(self, **args):

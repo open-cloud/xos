@@ -18,6 +18,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncCDNPrefix(SyncStep, HpcLibrary):
     provides=[CDNPrefix]
+    observes=CDNPrefix
     requested_interval=0
 
     def __init__(self, **args):
