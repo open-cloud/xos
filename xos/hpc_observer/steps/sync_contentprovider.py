@@ -18,6 +18,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncContentProvider(SyncStep, HpcLibrary):
     provides=[ContentProvider]
+    observes=ContentProvider
     requested_interval=0
 
     def __init__(self, **args):
