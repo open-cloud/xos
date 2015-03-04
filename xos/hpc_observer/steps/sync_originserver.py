@@ -19,6 +19,7 @@ logger = Logger(level=logging.INFO)
 
 class SyncOriginServer(SyncStep, HpcLibrary):
     provides=[OriginServer]
+    observes=OriginServer
     requested_interval=0
 
     def __init__(self, **args):
