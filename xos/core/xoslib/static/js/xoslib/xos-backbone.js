@@ -25,6 +25,7 @@ if (! window.XOSLIB_LOADED ) {
 
     CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages";
     CONTROLLERNETWORK_API = XOS_BASE+"/controllernetworks";
+    CONTROLLERSLICE_API = XOS_BASE+"/controllerslices";
 
     SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
     USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
@@ -479,7 +480,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SLICE_API,
-                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner"},
+                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner", "controller_slices": "slice"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
@@ -603,7 +604,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: CONTROLLER_API,
-                            relatedCollections: {"controller_images": "controller", "controller_networks": "controller"},
+                            relatedCollections: {"controller_images": "controller", "controller_networks": "controller", "controller_slices": "controller"},
                             modelName: "controller",
                             listFields: ["backend_status", "id", "name", "version", "backend_type"],
                             detailFields: ["backend_status", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
@@ -623,6 +624,14 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "controller_network",
                             listFields: ["backend_status", "id", "network", "controller", "net_id"],
                             detailFields: ["backend_status", "network", "controller", "net_id"],
+                            });
+
+        define_model(this, {urlRoot: CONTROLLERSLICE_API,
+                            foreignCollections: ["slices", "controllers"],
+                            foreignFields: {"slice": "slices", "controller": "controllers"},
+                            modelName: "controller_slice",
+                            listFields: ["backend_status", "id", "slice", "controller", "tenant_id"],
+                            detailFields: ["backend_status", "slice", "controller", "tenant_id"],
                             });
 
         /* removed
