@@ -23,9 +23,9 @@ if (! window.XOSLIB_LOADED ) {
     FLAVOR_API = XOS_BASE+"/flavors/";
     CONTROLLER_API = XOS_BASE+"/controllers/";
 
-    CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages";
-    CONTROLLERNETWORK_API = XOS_BASE+"/controllernetworks";
-    CONTROLLERSLICE_API = XOS_BASE+"/controllerslices";
+    CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages/";
+    CONTROLLERNETWORK_API = XOS_BASE+"/controllernetworks/";
+    CONTROLLERSLICE_API = XOS_BASE+"/controllerslices/";
 
     SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
     USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
