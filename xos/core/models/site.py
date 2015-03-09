@@ -216,6 +216,7 @@ class DeploymentPrivilege(PlCoreBase):
     user = models.ForeignKey('User', related_name='deploymentprivileges')
     deployment = models.ForeignKey('Deployment', related_name='deploymentprivileges')
     role = models.ForeignKey('DeploymentRole',related_name='deploymentprivileges')
+    composite_primary_key = ('user', 'deployment', 'role')
 
     def __unicode__(self):  return u'%s %s %s' % (self.deployment, self.user, self.role)
 
@@ -277,6 +278,8 @@ class SiteDeployment(PlCoreBase):
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
     availability_zone = StrippedCharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
+    composite_primary_key = ('site', 'deployment', 'controller')
+
     def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
     
 class ControllerSite(PlCoreBase):
@@ -284,3 +287,5 @@ class ControllerSite(PlCoreBase):
     site = models.ForeignKey(Site,related_name='controllersite')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='controllersite')
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
+    
+    composite_primary_key = ('site', 'controller') 
