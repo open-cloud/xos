@@ -2,12 +2,13 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models import ServiceClass
+from core.models.plcorebase import StrippedCharField
 
 # Create your models here.
 
 class ServiceResource(PlCoreBase):
     serviceClass = models.ForeignKey(ServiceClass, related_name = "serviceresources")
-    name = models.CharField(max_length=32)
+    name = StrippedCharField(max_length=32)
     maxUnitsDeployment = models.IntegerField(default=1)
     maxUnitsNode = models.IntegerField(default=1)
     maxDuration = models.IntegerField(default=1)

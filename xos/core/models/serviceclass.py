@@ -1,6 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
+from core.models.plcorebase import StrippedCharField
 
 def get_default_serviceclass():
     try:
@@ -9,8 +10,8 @@ def get_default_serviceclass():
         return None
 
 class ServiceClass(PlCoreBase):
-    name = models.CharField(max_length=32)
-    description = models.CharField(max_length=255)
+    name = StrippedCharField(max_length=32)
+    description = StrippedCharField(max_length=255)
     commitment = models.IntegerField(default=365)
     membershipFee = models.IntegerField(default=0)
     membershipFeeMonths = models.IntegerField(default=12)
