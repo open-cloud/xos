@@ -26,7 +26,7 @@ class Slice(PlCoreBase):
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     max_slivers = models.IntegerField(default=10)
-    service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
+    service = models.ForeignKey(Service, related_name='slices', null=True, blank=True)
     network = StrippedCharField(default="Private Only",null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
