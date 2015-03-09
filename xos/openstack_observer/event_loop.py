@@ -264,8 +264,8 @@ class XOSObserver:
 		step = self.step_lookup[S]
 		start_time=time.time()
 
-                logger.info("Starting to work on step %s" % step.__name__)
-		
+                logger.info("Starting to work on step %s, deletion=%s" % (step.__name__, str(deletion)))
+
 		dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
                 step_conditions = self.step_conditions# if not deletion else self.deletion_step_conditions
                 step_status = self.step_status# if not deletion else self.deletion_step_status
