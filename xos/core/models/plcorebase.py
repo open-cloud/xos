@@ -1,6 +1,7 @@
 import datetime
 import os
 import sys
+from django import db
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
@@ -149,6 +150,10 @@ class PlCoreBase(models.Model, PlModelMixIn):
                                       default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
 
+    # XXX Django has no official support for composite primray keys yet
+    # so we will hack in an inefficient solution here.  
+    composite_primary_key = []
+
     class Meta:
         # Changing abstract to False would require the managers of subclasses of
         # PlCoreBase to be customized individually.
@@ -183,11 +188,30 @@ class PlCoreBase(models.Model, PlModelMixIn):
             self.enacted=None
             self.save(update_fields=['enacted','deleted'], silent=silent)
 
+    def check_composite_primary_key(self):
+        if not self.composite_primary_key:
+            return 
+        # dictionary containing cpk field name and value
+        cpk_fields = dict([(name, getattr(self, name)) for name in self.composite_primary_key])
+        objs = self.__class__.objects.filter(**cpk_fields)
+        # we can only continue if there are no matches or 
+        # if this record is updating itself         
+        if (len(objs) == 0 or
+            (len(objs) == 1 and self.id and objs[0].id == self.id)):
+            return 
+        # if we reach this point then we've matched more than 1 
+        # existing record or we are trying to  
+        msg = "%s violates composite primray key constraint on fields: %s " % (self, self.composite_primary_key)
+        raise db.Error, msg
+                 
+               
     def save(self, *args, **kwargs):
         # let the user specify silence as either a kwarg or an instance varible
         silent = self.silent
         if "silent" in kwargs:
             silent=silent or kwargs.pop("silent")
+
+        self.check_composite_primary_key()    
 
         super(PlCoreBase, self).save(*args, **kwargs)
 

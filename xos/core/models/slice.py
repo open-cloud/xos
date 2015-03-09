@@ -126,6 +126,8 @@ class SlicePrivilege(PlCoreBase):
     slice = models.ForeignKey('Slice', related_name='sliceprivileges')
     role = models.ForeignKey('SliceRole',related_name='sliceprivileges')
 
+    composite_primary_key = ('user', 'slice', 'role')
+
     def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
 
     def can_update(self, user):
@@ -148,6 +150,8 @@ class ControllerSlice(PlCoreBase):
     slice = models.ForeignKey(Slice, related_name='controllerslices')
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
 
+    composite_primary_key = ('controller', 'slice')
+     
     def __unicode__(self):  return u'%s %s'  % (self.slice, self.controller)
 
     @staticmethod
