@@ -19,6 +19,8 @@ class ImageDeployments(PlCoreBase):
     image = models.ForeignKey(Image,related_name='imagedeployments')
     deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
 
+    composite_primary_key = ('image', 'deployment')
+
     def __unicode__(self):  return u'%s %s' % (self.image, self.deployment)
 
     def can_update(self, user):
@@ -30,5 +32,7 @@ class ControllerImages(PlCoreBase):
     image = models.ForeignKey(Image,related_name='controllerimages')
     controller = models.ForeignKey(Controller,related_name='controllerimages')
     glance_image_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Glance image id") 
-
+    
+    composite_primary_key = ('image', 'controller')
+         
     def __unicode__(self):  return u'%s %s' % (self.image, self.controller)
