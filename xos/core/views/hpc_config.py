@@ -9,6 +9,11 @@ import os
 import time
 
 def HpcConfig(request):
+    hpcSlice=None
+    cmiSlice=None
+    redirSlice=None
+    demuxSlice=None
+
     hpc = HpcService.objects.all()
     if (not hpc):
         return HttpResponse("# Error: no HPC service")
