@@ -3,6 +3,7 @@ import os
 import socket
 from django.db import models
 from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
+from core.models.plcorebase import StrippedCharField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models import Sum
@@ -45,7 +46,7 @@ class Invoice(PlCoreBase):
     def __unicode__(self):  return u'%s-%s' % (self.account.site.name, str(self.date))
 
 class UsableObject(PlCoreBase):
-    name = models.CharField(max_length=1024)
+    name = StrippedCharField(max_length=1024)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -62,8 +63,8 @@ class Charge(PlCoreBase):
 
     account = models.ForeignKey(Account, related_name="charges")
     slice = models.ForeignKey(Slice, related_name="charges", null=True, blank=True)
-    kind = models.CharField(max_length=30, choices=KIND_CHOICES, default="besteffort")
-    state = models.CharField(max_length=30, choices=STATE_CHOICES, default="pending")
+    kind = StrippedCharField(max_length=30, choices=KIND_CHOICES, default="besteffort")
+    state = StrippedCharField(max_length=30, choices=STATE_CHOICES, default="pending")
     date = models.DateTimeField()
     object = models.ForeignKey(UsableObject)
     amount = models.FloatField(default=0.0)

@@ -7,14 +7,15 @@ from django.forms.models import model_to_dict
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
-from core.models import PlCoreBase,Site, DashboardView, PlModelMixIn
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.core.mail import EmailMultiAlternatives
+from django.core.exceptions import PermissionDenied
+from core.models import PlCoreBase,Site, DashboardView, PlModelMixIn
+from core.models.plcorebase import StrippedCharField
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
-from django.core.mail import EmailMultiAlternatives
 from core.middleware import get_request
 import model_policy
-from django.core.exceptions import PermissionDenied
 
 # ------ from plcorebase.py ------
 try:
@@ -99,12 +100,12 @@ class User(AbstractBaseUser, PlModelMixIn):
         db_index=True,
     )
 
-    username = models.CharField(max_length=255, default="Something" )
+    username = StrippedCharField(max_length=255, default="Something" )
 
-    firstname = models.CharField(help_text="person's given name", max_length=200)
-    lastname = models.CharField(help_text="person's surname", max_length=200)
+    firstname = StrippedCharField(help_text="person's given name", max_length=200)
+    lastname = StrippedCharField(help_text="person's surname", max_length=200)
 
-    phone = models.CharField(null=True, blank=True, help_text="phone number contact", max_length=100)
+    phone = StrippedCharField(null=True, blank=True, help_text="phone number contact", max_length=100)
     user_url = models.URLField(null=True, blank=True)
     site = models.ForeignKey(Site, related_name='users', help_text="Site this user will be homed too", null=True)
     public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
@@ -119,7 +120,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     updated = models.DateTimeField(auto_now=True)
     enacted = models.DateTimeField(null=True, default=None)
     policed = models.DateTimeField(null=True, default=None)
-    backend_status = models.CharField(max_length=1024,
+    backend_status = StrippedCharField(max_length=1024,
                                       default="Provisioning in progress")
     deleted = models.BooleanField(default=False)
 

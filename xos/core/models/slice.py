@@ -13,12 +13,13 @@ from django.contrib.contenttypes import generic
 from core.models import Service
 from core.models import Controller
 from core.models import Flavor, Image
+from core.models.plcorebase import StrippedCharField
 from django.core.exceptions import PermissionDenied, ValidationError
 
 # Create your models here.
 
 class Slice(PlCoreBase):
-    name = models.CharField(unique=True, help_text="The Name of the Slice", max_length=80)
+    name = StrippedCharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     omf_friendly = models.BooleanField(default=False)
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
@@ -26,7 +27,7 @@ class Slice(PlCoreBase):
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     max_slivers = models.IntegerField(default=10)
     service = models.ForeignKey(Service, related_name='service', null=True, blank=True)
-    network = models.CharField(default="Private Only",null=True, blank=True, max_length=256)
+    network = StrippedCharField(default="Private Only",null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
@@ -34,7 +35,7 @@ class Slice(PlCoreBase):
     # for tenant view
     default_flavor = models.ForeignKey(Flavor, related_name = "slices", null=True, blank=True)
     default_image = models.ForeignKey(Image, related_name = "slices", null=True, blank=True);
-    mount_data_sets = models.CharField(default="GenBank",null=True, blank=True, max_length=256)
+    mount_data_sets = StrippedCharField(default="GenBank",null=True, blank=True, max_length=256)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -116,7 +117,7 @@ class Slice(PlCoreBase):
 class SliceRole(PlCoreBase):
     ROLE_CHOICES = (('admin','Admin'),('default','Default'))
 
-    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
     def __unicode__(self):  return u'%s' % (self.role)
 
@@ -145,7 +146,7 @@ class ControllerSlice(PlCoreBase):
 
     controller = models.ForeignKey(Controller, related_name='controllerslices')
     slice = models.ForeignKey(Slice, related_name='controllerslices')
-    tenant_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
+    tenant_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone tenant id")
 
     def __unicode__(self):  return u'%s %s'  % (self.slice, self.controller)
 

@@ -1,10 +1,11 @@
 import os
 from django.db import models
 from django.db.models import Q
-from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
-from core.models import Tag
 from django.contrib.contenttypes import generic
 from geoposition.fields import GeopositionField
+from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
+from core.models import Tag
+from core.models.plcorebase import StrippedCharField
 from core.acl import AccessControlList
 from xos.config import Config
 
@@ -94,15 +95,15 @@ class Site(PlCoreBase):
     """
         A logical grouping of Nodes that are co-located at the same geographic location, which also typically corresponds to the Nodes' location in the physical network.
     """
-    name = models.CharField(max_length=200, help_text="Name for this Site")
+    name = StrippedCharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
     location = GeopositionField()
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
-    login_base = models.CharField(max_length=50, unique=True, help_text="Prefix for Slices associated with this Site")
+    login_base = StrippedCharField(max_length=50, unique=True, help_text="Prefix for Slices associated with this Site")
     is_public = models.BooleanField(default=True, help_text="Indicates the visibility of this site to other members")
-    abbreviated_name = models.CharField(max_length=80)
+    abbreviated_name = StrippedCharField(max_length=80)
 
     #deployments = models.ManyToManyField('Deployment', blank=True, related_name='sites')
     deployments = models.ManyToManyField('Deployment', through='SiteDeployment', blank=True, help_text="Select which sites are allowed to host nodes in this deployment", related_name='sites')
@@ -116,7 +117,7 @@ class Site(PlCoreBase):
 class SiteRole(PlCoreBase):
 
     ROLE_CHOICES = (('admin','Admin'),('pi','PI'),('tech','Tech'),('billing','Billing'))
-    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
     def __unicode__(self):  return u'%s' % (self.role)
 
@@ -149,13 +150,13 @@ class SitePrivilege(PlCoreBase):
 class Deployment(PlCoreBase):
     #objects = Controllermanager()
     #deleted_objects = DeploymentDeletionManager()
-    name = models.CharField(max_length=200, unique=True, help_text="Name of the Deployment")
-    #admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
-    #admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
-    #admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
-    #auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
-    #backend_type = models.CharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
-    #availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
+    name = StrippedCharField(max_length=200, unique=True, help_text="Name of the Deployment")
+    #admin_user = StrippedCharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this deployment")
+    #admin_password = StrippedCharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this deployment")
+    #admin_tenant = StrippedCharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
+    #auth_url = StrippedCharField(max_length=200, null=True, blank=True, help_text="Auth url for the deployment")
+    #backend_type = StrippedCharField(max_length=200, null=True, blank=True, help_text="Type of deployment, e.g. EC2, OpenStack, or OpenStack version")
+    #availability_zone = StrippedCharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     # smbaker: the default of 'allow all' is intended for evolutions of existing
     #    deployments. When new deployments are created via the GUI, they are
@@ -204,7 +205,7 @@ class DeploymentRole(PlCoreBase):
     #objects = DeploymentLinkManager()
     #deleted_objects = DeploymentLinkDeletionManager()
     ROLE_CHOICES = (('admin','Admin'),)
-    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
     def __unicode__(self):  return u'%s' % (self.role)
 
@@ -235,7 +236,7 @@ class ControllerRole(PlCoreBase):
     #deleted_objects = ControllerLinkDeletionManager()
 
     ROLE_CHOICES = (('admin','Admin'),)
-    role = models.CharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
     def __unicode__(self):  return u'%s' % (self.role)
 
@@ -244,14 +245,14 @@ class Controller(PlCoreBase):
     objects = ControllerManager()
     deleted_objects = ControllerDeletionManager()
 
-    name = models.CharField(max_length=200, unique=True, help_text="Name of the Controller")
-    backend_type = models.CharField(max_length=200, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
-    version = models.CharField(max_length=200, help_text="Controller version")
-    auth_url = models.CharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
-    admin_user = models.CharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
-    admin_password = models.CharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
-    admin_tenant = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
-    domain = models.CharField(max_length=200, null=True, blank=True, help_text="Name of the domain this controller belongs to")
+    name = StrippedCharField(max_length=200, unique=True, help_text="Name of the Controller")
+    backend_type = StrippedCharField(max_length=200, help_text="Type of compute controller, e.g. EC2, OpenStack, or OpenStack version")
+    version = StrippedCharField(max_length=200, help_text="Controller version")
+    auth_url = StrippedCharField(max_length=200, null=True, blank=True, help_text="Auth url for the compute controller")
+    admin_user = StrippedCharField(max_length=200, null=True, blank=True, help_text="Username of an admin user at this controller")
+    admin_password = StrippedCharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
+    admin_tenant = StrippedCharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
+    domain = StrippedCharField(max_length=200, null=True, blank=True, help_text="Name of the domain this controller belongs to")
     deployment = models.ForeignKey(Deployment,related_name='controllerdeployments')
    
 
@@ -274,7 +275,7 @@ class SiteDeployment(PlCoreBase):
     site = models.ForeignKey(Site,related_name='sitedeployments')
     deployment = models.ForeignKey(Deployment,related_name='sitedeployments')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='sitedeployments')
-    availability_zone = models.CharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
+    availability_zone = StrippedCharField(max_length=200, null=True, blank=True, help_text="OpenStack availability zone")
 
     def __unicode__(self):  return u'%s %s' % (self.deployment, self.site)
     
@@ -282,4 +283,4 @@ class ControllerSite(PlCoreBase):
      
     site = models.ForeignKey(Site,related_name='controllersite')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='controllersite')
-    tenant_id = models.CharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
+    tenant_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")

@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.db import models
 from django.db.models import F, Q
 from core.models import PlCoreBase,User,Controller
+from core.models.plcorebase import StrippedCharField
 from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
 class ControllerUser(PlCoreBase):
@@ -12,7 +13,7 @@ class ControllerUser(PlCoreBase):
 
     user = models.ForeignKey(User,related_name='controllerusers')
     controller = models.ForeignKey(Controller,related_name='controllersusers')
-    kuser_id = models.CharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
+    kuser_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.user)
 
@@ -35,7 +36,7 @@ class ControllerSitePrivilege(PlCoreBase):
 
     controller = models.ForeignKey('Controller', related_name='controllersiteprivileges')
     site_privilege = models.ForeignKey('SitePrivilege', related_name='controllersiteprivileges')
-    role_id = models.CharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+    role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.site_privilege)
 
@@ -66,7 +67,7 @@ class ControllerSlicePrivilege(PlCoreBase):
 
     controller = models.ForeignKey('Controller', related_name='controllersliceprivileges')
     slice_privilege = models.ForeignKey('SlicePrivilege', related_name='controllersliceprivileges')
-    role_id = models.CharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+    role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.slice_privilege)
 
