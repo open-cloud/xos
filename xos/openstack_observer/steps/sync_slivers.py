@@ -3,6 +3,7 @@ import base64
 import socket
 from django.db.models import F, Q
 from xos.config import Config
+from xos.settings import RESTAPI_HOSTNAME, RESTAPI_PORT
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
@@ -22,7 +23,7 @@ class SyncSlivers(OpenStackSyncStep):
     observes=Sliver
 
     def get_userdata(self, sliver):
-        userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n' % (sliver.slice.name, sliver.node.name)
+        userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (sliver.slice.name, sliver.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
         return userdata
 
     def sync_record(self, sliver):
@@ -151,6 +152,13 @@ class SyncSlivers(OpenStackSyncStep):
                      'ansible_tag':sliver_name,
                      'delete': True}
 
-        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers')
+        try:
+               res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
+        except Exception,e:
+               print "Could not sync %s"%sliver_name
+               #import traceback
+               #traceback.print_exc()
+               raise e
+
         if (len(res)!=1):
             raise Exception('Could not delete sliver %s'%sliver.slice.name)
