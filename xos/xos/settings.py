@@ -1,5 +1,6 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django import VERSION as DJANGO_VERSION
+import socket
 
 # Django settings for XOS.
 from config import Config
@@ -256,6 +257,9 @@ LOGGING = {
     }
 }
 
+RESTAPI_HOSTNAME = getattr(config, "server_hostname", socket.gethostname())
+RESTAPI_PORT = int(getattr(config, "server_port", "8000"))
+
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
@@ -264,5 +268,6 @@ ENCRYPTED_FIELD_MODE = 'ENCRYPT'
 
 STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
 
-# prevents warnings on django 1.7                                                                                                 
+# prevents warnings on django 1.7
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
