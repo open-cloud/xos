@@ -15,6 +15,8 @@ class ControllerUser(PlCoreBase):
     controller = models.ForeignKey(Controller,related_name='controllersusers')
     kuser_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Keystone user id")
 
+    composite_primary_key = ('user', 'controller', 'kuser_id')
+
     def __unicode__(self):  return u'%s %s' % (self.controller, self.user)
 
     @staticmethod
@@ -37,6 +39,8 @@ class ControllerSitePrivilege(PlCoreBase):
     controller = models.ForeignKey('Controller', related_name='controllersiteprivileges')
     site_privilege = models.ForeignKey('SitePrivilege', related_name='controllersiteprivileges')
     role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+
+    composite_primary_key = ('controller', 'site_privilege', 'role_id')
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.site_privilege)
 
@@ -68,6 +72,8 @@ class ControllerSlicePrivilege(PlCoreBase):
     controller = models.ForeignKey('Controller', related_name='controllersliceprivileges')
     slice_privilege = models.ForeignKey('SlicePrivilege', related_name='controllersliceprivileges')
     role_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone id")
+
+    composite_primary_key = ('controller', 'slice_privilege')
 
     def __unicode__(self):  return u'%s %s' % (self.controller, self.slice_privilege)
 

@@ -155,7 +155,10 @@ class ControllerNetwork(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
-       
+      
+      
+    composite_primary_key = ('network', 'controller')
+        
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -172,6 +175,8 @@ class NetworkSlice(PlCoreBase):
 
     network = models.ForeignKey(Network,related_name='networkslices')
     slice = models.ForeignKey(Slice,related_name='networkslices')
+
+    composite_primary_key = ('network', 'slice')
 
     def save(self, *args, **kwds):
         slice = self.slice
@@ -203,6 +208,8 @@ class NetworkSliver(PlCoreBase):
     sliver = models.ForeignKey(Sliver,related_name='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
+
+    composite_primary_key = ('network', 'sliver')
 
     def save(self, *args, **kwds):
         slice = self.sliver.slice
