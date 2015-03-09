@@ -50,7 +50,7 @@ class SyncContentProvider(SyncStep, HpcLibrary):
         account_name = self.make_account_name(cp.name)
 
         if (not cp.serviceProvider) or (not cp.serviceProvider.service_provider_id):
-            return
+            raise Exception("ContentProvider %s is linked to a serviceProvider with no id" % str(cp))
 
         spid = cp.serviceProvider.service_provider_id
 
