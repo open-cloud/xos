@@ -53,7 +53,7 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         logger.info("sync'ing origin server %s" % str(ors))
 
         if (not ors.contentProvider) or (not ors.contentProvider.content_provider_id):
-            return
+            raise Exception("Origin Server %s is linked to a contentProvider with no id" % str(ors))
 
         cpid = ors.contentProvider.content_provider_id
 

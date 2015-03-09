@@ -65,7 +65,7 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
         logger.info("sync'ing cdn prefix %s" % str(cp))
 
         if (not cp.contentProvider) or (not cp.contentProvider.content_provider_id):
-            return
+            raise Exception("CDN Prefix %s is linked to a contentProvider without an id" % str(cp))
 
         cpid = cp.contentProvider.content_provider_id
 
@@ -75,8 +75,7 @@ class SyncCDNPrefix(SyncStep, HpcLibrary):
             if (not cp.defaultOriginServer.origin_server_id):
                 # It's probably a bad idea to try to set defaultOriginServer before
                 # we've crated defaultOriginServer.
-                logger.info("   cdn prefix %s is waiting for it's default origin server to get an id" % str(cp))
-                return
+                raise Exception("cdn prefix %s is waiting for it's default origin server to get an id" % str(cp))
 
             cp_dict["default_origin_server"] = cp.defaultOriginServer.url
 
