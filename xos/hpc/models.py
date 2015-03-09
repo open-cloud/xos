@@ -100,6 +100,7 @@ class SiteMap(PlCoreBase):
     name = models.CharField(max_length=64, help_text="Name of the Site Map")
     description = models.TextField(null=True, blank=True,max_length=130)
     map = models.FileField(upload_to="maps/", help_text="specifies how to map requests to hpc instances")
+    map_id = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):  return self.name
 

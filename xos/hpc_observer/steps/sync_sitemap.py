@@ -71,20 +71,17 @@ class SyncSiteMap(SyncStep, HpcLibrary):
 
         if (map.contentProvider):
             if not map.contentProvider.content_provider_id:
-                print "Map", map_dict, "contentProvider has no id"
-                return
+                raise Exception("Map %s links to a contentProvider with no id" % map.name)
             conent_provider_ids = [map.contentProvider.content_provider_id]
 
         if (map.serviceProvider):
             if not map.serviceProvider.service_provider_id:
-                print "Map", map_dict, "serviceProvider has no id"
-                return
+                raise Exception("Map %s links to a serviceProvider with no id" % map.name)
             service_provider_ids = [map.serviceProvider.service_provider_id]
 
         if (map.cdnPrefix):
             if not map.cdnPrefix.cdn_prefix_id:
-                print "Map", map_dict, "cdnPrefix has no id"
-                return
+                raise Exception("Map %s links to a cdnPrefix with no id" % map.name)
             cdn_prefix_ids = [map.cdnPrefix.cdn_prefix_id]
 
         if not map.map_id:
