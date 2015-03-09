@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^stats', 'core.views.stats.Stats', name='stats'),
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
+    url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),
 
