@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from monitor import driver
 from core.models import *
 from hpc.models import *
@@ -16,7 +16,7 @@ def HpcConfig(request):
 
     hpc = HpcService.objects.all()
     if (not hpc):
-        return HttpResponse("# Error: no HPC service")
+        return HttpResponseServerError("Error: no HPC service")
 
     hpc = hpc[0]
     try:
@@ -30,18 +30,20 @@ def HpcConfig(request):
         elif ("hpc" in slice.name) or ("vcoblitz" in slice.name):
             hpcSlice = slice
 
+    return HttpResponseServerError("Error: Test")
+
     if not cmiSlice:
-        return HttpResponse("# Error: no CMI slice")
+        return HttpResponseServerError("Error: no CMI slice")
 
     if len(cmiSlice.slivers.all())==0:
-        return HttpResponse("# Error: CMI slice has no slivers")
+        return HttpResponseServerError("Error: CMI slice has no slivers")
 
     if not hpcSlice:
-        return HttpResponse("# Error: not HPC slice")
+        return HttpResponseServerError("Error: not HPC slice")
 
     rr = RequestRouterService.objects.all()
     if not (rr):
-        return HttpResponse("# Error: no RR service")
+        return HttpResponseServerError("Error: no RR service")
 
     rr = rr[0]
     try:
@@ -56,10 +58,10 @@ def HpcConfig(request):
             demuxSlice = slice
 
     if not redirSlice:
-        return HttpResponse("# Error: no dnsredir slice")
+        return HttpResponseServerError("Error: no dnsredir slice")
 
     if not demuxSlice:
-        return HttpResponse("# Error: no dnsdemux slice")
+        return HttpResponseServerError("Error: no dnsdemux slice")
 
     # for now, assuming not using NAT
     cmi_hostname = cmiSlice.slivers.all()[0].node.name
