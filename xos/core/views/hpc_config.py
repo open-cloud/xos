@@ -61,7 +61,7 @@ def HpcConfig(request):
     if not demuxSlice:
         return HttpResponseServerError("Error: no dnsdemux slice")
 
-    # for now, assuming not using NAT
+    # for now, assuming using NAT
     cmi_hostname = cmiSlice.slivers.all()[0].node.name
 
     d = {}
