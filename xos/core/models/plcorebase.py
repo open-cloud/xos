@@ -149,6 +149,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
     backend_status = models.CharField(max_length=1024,
                                       default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
+    write_protect = models.BooleanField(default=False)
 
     # XXX Django has no official support for composite primray keys yet
     # so we will hack in an inefficient solution here.  
@@ -184,9 +185,10 @@ class PlCoreBase(models.Model, PlModelMixIn):
         if (purge):
             super(PlCoreBase, self).delete(*args, **kwds)
         else:
-            self.deleted = True
-            self.enacted=None
-            self.save(update_fields=['enacted','deleted'], silent=silent)
+            if (not self.write_protect):
+                    self.deleted = True
+                    self.enacted=None
+                    self.save(update_fields=['enacted','deleted'], silent=silent)
 
     def check_composite_primary_key(self):
         if not self.composite_primary_key:
