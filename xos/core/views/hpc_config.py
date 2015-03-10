@@ -30,8 +30,6 @@ def HpcConfig(request):
         elif ("hpc" in slice.name) or ("vcoblitz" in slice.name):
             hpcSlice = slice
 
-    return HttpResponseServerError("Error: Test")
-
     if not cmiSlice:
         return HttpResponseServerError("Error: no CMI slice")
 
