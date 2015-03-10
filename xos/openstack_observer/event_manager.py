@@ -8,9 +8,14 @@ import os
 import imp
 import inspect
 import base64
-from fofum import Fofum
 import json
 import traceback
+
+if getattr(Config(),"observer_fofum_disabled", False) != True:
+    from fofum import Fofum
+    fofum_enabled = True
+else:
+    fofum_enabled = False
 
 random_client_id=None
 def get_random_client_id():
@@ -73,12 +78,14 @@ class EventSender:
             clid = get_random_client_id()
             print "EventSender: no feefie_client_id configured. Using random id %s" % clid
 
-        self.fofum = Fofum(user=user)
-        self.fofum.make(clid)
+        if fofum_enabled:
+            self.fofum = Fofum(user=user)
+            self.fofum.make(clid)
 
     def fire(self,**kwargs):
         kwargs["uuid"] = str(uuid.uuid1())
-        self.fofum.fire(json.dumps(kwargs))
+        if fofum_enabled:
+            self.fofum.fire(json.dumps(kwargs))
 
 class EventListener:
     def __init__(self,wake_up=None):
@@ -106,7 +113,8 @@ class EventListener:
             clid = get_random_client_id()
             print "EventListener: no feefie_client_id configured. Using random id %s" % clid
 
-        f = Fofum(user=user)
-        
-        listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
-        listener_thread.start()
+        if fofum_enabled:
+            f = Fofum(user=user)
+
+            listener_thread = threading.Thread(target=f.listen_for_event,args=(clid,self.handle_event))
+            listener_thread.start()
