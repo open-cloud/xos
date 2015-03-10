@@ -123,6 +123,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     backend_status = StrippedCharField(max_length=1024,
                                       default="Provisioning in progress")
     deleted = models.BooleanField(default=False)
+    write_protect = models.BooleanField(default=False)
 
     timezone = TimeZoneField()
 
@@ -165,9 +166,10 @@ class User(AbstractBaseUser, PlModelMixIn):
         if (purge):
             super(User, self).delete(*args, **kwds)
         else:
-            self.deleted = True
-            self.enacted=None
-            self.save(update_fields=['enacted','deleted'])
+            if (not self.write_protect):
+                    self.deleted = True
+                    self.enacted=None
+                    self.save(update_fields=['enacted','deleted'])
 
     @property
     def keyname(self):
