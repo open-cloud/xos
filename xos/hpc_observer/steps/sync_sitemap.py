@@ -91,10 +91,12 @@ class SyncSiteMap(SyncStep, HpcLibrary):
         else:
             print "Update Map", map_dict
             # these things we probably cannot update
-            del map_dict["map_name"]
+            del map_dict["name"]
             self.client.onev.Update("Map", map.map_id, map_dict)
 
-        self.update_bind(map, map_dict, "cdn_prefix_ids", "CDNPrefix", cdn_prefix_ids)
+        cmi_map_dict = self.client.onev.Read("Map", map.map_id)
+
+        self.update_bind(map, cmi_map_dict, "cdn_prefix_ids", "CDNPrefix", cdn_prefix_ids)
 
         map.save()
 
