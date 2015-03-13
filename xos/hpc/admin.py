@@ -121,8 +121,8 @@ class SiteMapAdmin(HPCAdmin):
     verbose_name_plural = "Site Map"
     list_display = ("backend_status_icon", "name", "contentProvider", "serviceProvider")
     list_display_links = ('backend_status_icon', 'name', )
-    fields = ['backend_status_text', 'name', 'hpcService', 'contentProvider', 'serviceProvider', 'map', 'map_id']
-    user_readonly_fields = ('backend_status_text', "name", "contentProvider", "serviceProvider", "description", "map")
+    fields = ['backend_status_text', 'name', 'hpcService', 'cdnPrefix', 'contentProvider', 'serviceProvider', 'map', 'map_id']
+    user_readonly_fields = ('backend_status_text', "name", "hpcService", "cdnPrefix", "contentProvider", "serviceProvider", "description", "map")
     readonly_fields = ('backend_status_text', )
 
 class AccessMapAdmin(HPCAdmin):
