@@ -62,31 +62,31 @@ def run_template(name, opts,path='', expected_num=None):
     os.system('mkdir -p %s'%'/'.join([sys_dir,path]))
     fqp = '/'.join([sys_dir,path,objname])
 
-
     f = open(fqp,'w')
     f.write(buffer)
     f.flush()
 
-    run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
-    #run = os.popen('ansible-playbook -v %s'%shellquote(fqp))
-    msg = run.read()
-    status = run.close()
+    if (not Config().observer_pretend):
+        run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
+        #run = os.popen('ansible-playbook -v %s'%shellquote(fqp))
+        msg = run.read()
+        status = run.close()
 
-    try:
-        ok_results = parse_output(msg)
-	if (len(ok_results) != expected_num):
-		raise ValueError('Unexpected num')
-    except ValueError,e:
-        all_fatal = re.findall(r'^msg: (.*)',msg,re.MULTILINE)
-        all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
-	
-	
-	all_fatal.extend(all_fatal2)
         try:
-            error = ' // '.join(all_fatal)
-        except:
-            pass
-        raise Exception(error)
+            ok_results = parse_output(msg)
+        if (len(ok_results) != expected_num):
+            raise ValueError('Unexpected num')
+        except ValueError,e:
+            all_fatal = re.findall(r'^msg: (.*)',msg,re.MULTILINE)
+            all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
+        
+        
+        all_fatal.extend(all_fatal2)
+            try:
+                error = ' // '.join(all_fatal)
+            except:
+                pass
+            raise Exception(error)
 
     return ok_results
 
