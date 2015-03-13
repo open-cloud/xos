@@ -7,16 +7,19 @@ from django.forms.models import model_to_dict
 
 # Create your models here.
 
-class HpcService(SingletonModel,Service):
+class HpcService(Service):
 
     class Meta:
         app_label = "hpc"
         verbose_name = "HPC Service"
 
+    cmi_url = models.URLField(null=True, blank=True)
+
 class ServiceProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
 
+    hpcService = models.ForeignKey(HpcService, null=True, blank=True)
     service_provider_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=254,help_text="Service Provider Name")
     description = models.TextField(max_length=254,null=True, blank=True, help_text="Description of Service Provider")
@@ -97,6 +100,7 @@ class SiteMap(PlCoreBase):
     contentProvider = models.ForeignKey(ContentProvider, blank=True, null=True)
     serviceProvider = models.ForeignKey(ServiceProvider, blank=True, null=True)
     cdnPrefix = models.ForeignKey(CDNPrefix, blank = True, null=True)
+    hpcService = models.ForeignKey(HpcService, blank = True, null=True)
     name = models.CharField(max_length=64, help_text="Name of the Site Map")
     description = models.TextField(null=True, blank=True,max_length=130)
     map = models.FileField(upload_to="maps/", help_text="specifies how to map requests to hpc instances")
@@ -105,9 +109,11 @@ class SiteMap(PlCoreBase):
     def __unicode__(self):  return self.name
 
     def save(self, *args, **kwds):
-        if (self.contentProvider) and (self.serviceProvider or self.cdnPrefix):
-            raise ValueError("You may only set one of contentProvider, serviceProvider, or cdnPrefix")
-        if (self.serviceProvider) and (self.cdnPrefix):
-            raise ValueError("You may only set one of contentProvider, serviceProvider, or cdnPrefix")
+        if (self.contentProvider) and (self.serviceProvider or self.cdnPrefix or self.hpcService):
+            raise ValueError("You may only set one of contentProvider, serviceProvider, cdnPrefix, or hpcService")
+        if (self.serviceProvider) and (self.cdnPrefix or self.hpcService):
+            raise ValueError("You may only set one of contentProvider, serviceProvider, cdnPrefix, or hpcService")
+        if (self.cdnPrefix) and (self.hpcService):
+            raise ValueError("You may only set one of contentProvider, serviceProvider, cdnPrefix, or hpcService")
 
         super(SiteMap, self).save(*args, **kwds)

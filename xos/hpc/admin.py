@@ -18,7 +18,7 @@ class HpcServiceAdmin(ServiceAppAdmin):
     verbose_name_plural = "HPC Service"
     list_display = ("backend_status_icon", "name","enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description'], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "cmi_url"], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline]
 
@@ -92,7 +92,7 @@ class ServiceProviderAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [
-        (None, {'fields': ['backend_status_text', 'name','description','enabled'], 'classes':['suit-tab suit-tab-general']})]
+        (None, {'fields': ['backend_status_text', 'name','description','enabled', 'hpcService'], 'classes':['suit-tab suit-tab-general']})]
 #, ('Content Providers', {'fields':['contentProviders'],'classes':['suit-tab suit-tab-cps']})]
 
     readonly_fields = ('backend_status_text', )
@@ -121,6 +121,7 @@ class SiteMapAdmin(HPCAdmin):
     verbose_name_plural = "Site Map"
     list_display = ("backend_status_icon", "name", "contentProvider", "serviceProvider")
     list_display_links = ('backend_status_icon', 'name', )
+    fields = ['backend_status_text', 'name', 'hpcService', 'contentProvider', 'serviceProvider', 'map', 'map_id']
     user_readonly_fields = ('backend_status_text', "name", "contentProvider", "serviceProvider", "description", "map")
     readonly_fields = ('backend_status_text', )
 
