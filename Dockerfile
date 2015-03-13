@@ -116,4 +116,5 @@ ENV HOME /root
 WORKDIR /root
 
 # Define default command.
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
+CMD service postgresql start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000
