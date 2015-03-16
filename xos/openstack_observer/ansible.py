@@ -67,21 +67,26 @@ def run_template(name, opts,path='', expected_num=None):
     f.write(buffer)
     f.flush()
 
-    run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
-    #run = os.popen('ansible-playbook -v %s'%shellquote(fqp))
-    msg = run.read()
-    status = run.close()
+    
+    if (Config().observer_steps):
+        run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
+        msg = run.read()
+        status = run.close()
 
+        
+    else:
+        msg = open(fqp+'.out').read()
+        
     try:
         ok_results = parse_output(msg)
-	if (len(ok_results) != expected_num):
-		raise ValueError('Unexpected num')
+        if (len(ok_results) != expected_num):
+            raise ValueError('Unexpected num')
     except ValueError,e:
         all_fatal = re.findall(r'^msg: (.*)',msg,re.MULTILINE)
         all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
-	
-	
-	all_fatal.extend(all_fatal2)
+
+
+        all_fatal.extend(all_fatal2)
         try:
             error = ' // '.join(all_fatal)
         except:

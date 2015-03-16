@@ -94,6 +94,10 @@ ADD xos /opt/xos
 RUN chmod +x /opt/xos/scripts/opencloud
 RUN /opt/xos/scripts/opencloud genkeys
 
+# Workaround for AUFS issue
+# https://github.com/docker/docker/issues/783#issuecomment-56013588
+RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private
+
 # Set postgres password to match default value in settings.py
 RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with password 'password';"
 
@@ -112,4 +116,5 @@ ENV HOME /root
 WORKDIR /root
 
 # Define default command.
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
+CMD service postgresql start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000
