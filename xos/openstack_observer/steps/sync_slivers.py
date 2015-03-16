@@ -73,12 +73,15 @@ class SyncSlivers(OpenStackSyncStep):
                     nics.append(net['id'])
 
         # look up image id
-        controller_driver = self.driver.admin_driver(controller=sliver.node.site_deployment.controller)
-        image_id = None
-        images = controller_driver.shell.glanceclient.images.list()
-        for image in images:
-            if image.name == sliver.image.name or not image_id:
-                image_id = image.id
+        if (not sliver.image.id):
+            controller_driver = self.driver.admin_driver(controller=sliver.node.site_deployment.controller)
+            image_id = None
+            images = controller_driver.shell.glanceclient.images.list()
+            for image in images:
+                if image.name == sliver.image.name or not image_id:
+                    image_id = image.id
+        else:
+            image_id = sliver.image.id
 
         # look up key name at the controller
         # create/fetch keypair
