@@ -126,7 +126,7 @@ class HpcWatcher:
         for sliver in slivers:
             sliver.has_error = False
 
-            ip = sliver.get_public_ip(sliver)
+            ip = sliver.get_public_ip()
             if not ip:
                 self.set_status(sliver, service, "watcher.DNS", "no public IP")
                 continue
