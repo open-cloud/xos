@@ -99,7 +99,7 @@
 
 <script type="text/template" id="xos-backend-status-text-template">
     <%= xosBackendStatusIconTemplate.apply(this,arguments) %>
-    <% if (model.enacted === undefined) { %>
+    <% if (model.attributes.enacted === undefined) { %>
         <!-- enacted is undefined; this must be a new object -->
     <% } else if ((enacted) && (enacted >= updated)) { %>
         Successfully enacted
