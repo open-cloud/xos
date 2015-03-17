@@ -42,10 +42,14 @@ def getHpcDict(user, pk):
     slices = get_service_slices(hpc)
 
     dnsdemux_slice = None
+    hpc_slice = None
     for slice in slices:
         if "dnsdemux" in slice.name:
             dnsdemux_service = hpc
             dnsdemux_slice = slice
+        if "hpc" in slice.name:
+            hpc_service = hpc
+            hpc_slice = slice
 
     if not dnsdemux_slice:
         rr = RequestRouterService.objects.all()
@@ -64,7 +68,17 @@ def getHpcDict(user, pk):
                        "watcher.DNS.time": lookup_time(dnsdemux_service, sliver, "watcher.DNS.time"),
                        "ip": sliver.get_public_ip() })
 
-    return { "dnsdemux": dnsdemux }
+    hpc=[]
+    for sliver in hpc_slice.slivers.all():
+        hpc.append( {"name": sliver.node.name,
+                     "watcher.HPC-hb.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-hb.msg"),
+                     "watcher.HPC-hb.time": lookup_time(hpc_service, sliver, "watcher.HPC-hb.time"),
+
+        })
+
+    return { "id": pk,
+             "dnsdemux": dnsdemux,
+             "hpc": hpc }
 
 
 class HpcList(APIView):
@@ -86,5 +100,5 @@ class HpcDetail(APIView):
     def get(self, request, format=None, pk=0):
         if (not request.user.is_authenticated()):
             raise PermissionDenied("You must be authenticated in order to use this API")
-        return Response( [getHpcViewDict(request.user, pk)] )
+        return Response( [getHpcDict(request.user, pk)] )
 
