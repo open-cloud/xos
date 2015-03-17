@@ -79,7 +79,12 @@ class HpcLibrary:
 
         slicenames = {}
         slicehosts = {}
-        for slice in service.service.all():
+        try:
+            slices = service.slices.all()
+        except:
+            # deal with misnamed attribute in some installations
+            slices = service.service.all()
+        for slice in slices:
             name = slice.name
             if not ("_" in name):
                 continue
