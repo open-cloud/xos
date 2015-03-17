@@ -33,7 +33,8 @@ if (! window.XOSLIB_LOADED ) {
     XOSLIB_BASE = "/xoslib";
 
     SLICEPLUS_API = XOSLIB_BASE + "/slicesplus/";
-    TENANTVIEW_API = XOSLIB_BASE + "/tenantview/"
+    TENANTVIEW_API = XOSLIB_BASE + "/tenantview/";
+    HPCVIEW_API = XOSLIB_BASE + "/hpcview";
 
     XOSModel = Backbone.Model.extend({
         relatedCollections: [],
@@ -713,6 +714,13 @@ if (! window.XOSLIB_LOADED ) {
         define_model(this, {urlRoot: TENANTVIEW_API,
                             modelName: "tenantview",
                             collectionName: "tenantview",
+                            listFields: [],
+                            detailFields: [],
+                            });
+
+        define_model(this, {urlRoot: HPCVIEW_API,
+                            modelName: "hpcview",
+                            collectionName: "hpcview",
                             listFields: [],
                             detailFields: [],
                             });
