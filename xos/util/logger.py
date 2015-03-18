@@ -156,6 +156,7 @@ warn_logger = Logger(loggername='warning', level=logging.WARNING)
 error_logger = Logger(loggername='error', level=logging.ERROR)
 critical_logger = Logger(loggername='critical', level=logging.CRITICAL)
 logger = info_logger
+observer_logger = Logger(logfile='/var/log/observer.log', loggername='observer', level=logging.DEBUG)
 ########################################
 import time
 
