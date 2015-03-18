@@ -1,4 +1,6 @@
 #!/bin/sh
+yum -y install bzip2
+yum -y install epel-release
 yum -y install postgresql postgresql-server
 yum -y install python-psycopg2
 yum -y install graphviz
@@ -9,30 +11,30 @@ yum -y install python-pip
 yum -y install wget
 yum -y install tar
 yum -y install gcc
-yum -y install libxml2-dev
-yum -y install libxslt1-dev
+yum -y install libxml2-devel
+yum -y install libxslt-devel
 yum -y install python-devel
 
 
-pip-python install django==1.5
-pip-python install djangorestframework
-pip-python install markdown  # Markdown support for the browseable API.
-pip-python install pyyaml    # YAML content-type support.
-pip-python install django-filter  # Filtering support
-pip-python install lxml  # XML manipulation library
-pip-python install netaddr # IP Addr library
-pip-python install pytz
-pip-python install django-timezones
-pip-python install requests
-pip-python install django-crispy-forms
-pip-python install django-geoposition
-pip-python install django-extensions
-pip-python install django-suit
-pip-python install django-evolution
-pip-python install docutils
-pip-python install cython
-pip-python install bitfield
-pip-python install pygments
+pip install django==1.5
+pip install djangorestframework
+pip install markdown  # Markdown support for the browseable API.
+pip install pyyaml    # YAML content-type support.
+pip install django-filter  # Filtering support
+pip install lxml  # XML manipulation library
+pip install netaddr # IP Addr library
+pip install pytz
+pip install django-timezones
+pip install requests
+pip install django-crispy-forms
+pip install django-geoposition
+pip install django-extensions
+pip install django-suit
+pip install django-evolution
+pip install docutils
+pip install cython
+pip install bitfield
+pip install pygments
 
 easy_install django_evolution
 
@@ -49,4 +51,3 @@ ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
 ln -s /usr/local/share/phantomjs/bin/phantomjs /usr/local/bin/phantomjs
 
 phantomjs --version
-
