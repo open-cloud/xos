@@ -1,6 +1,6 @@
 import os
 import base64
-from datetime import datetime
+from django.utils import timezone
 from xos.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
@@ -121,7 +121,7 @@ class SyncStep(object):
                         o.delete(purge=True)
                     else:
                         self.sync_record(o)
-                        o.enacted = datetime.now() # Is this the same timezone? XXX
+                        o.enacted = timezone.now()
                         scratchpad = {'next_run':0, 'exponent':0}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
