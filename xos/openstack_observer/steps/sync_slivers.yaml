@@ -2,16 +2,6 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
-  {% if not delete %}
-  - nova_keypair:
-      state: present
-      auth_url: {{ endpoint }}
-      login_username: {{ admin_user }}
-      login_password: {{ admin_password }}
-      login_tenant_name: {{ admin_tenant }}
-      name: {{ key_name }}
-      public_key: "{{ key.public_key}}"
-  {% endif %}
   - nova_compute:
       auth_url: {{ endpoint }}
       login_username: {{ admin_user }}
@@ -24,7 +14,6 @@
       state: present
       availability_zone: {{ availability_zone }}
       image_id: {{ image_id }}
-      key_name: {{ key_name }}
       wait_for: 200
       flavor_id: {{ flavor_id }}
       user_data: "{{ user_data }}"

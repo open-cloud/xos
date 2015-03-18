@@ -22,8 +22,11 @@ class SyncSlivers(OpenStackSyncStep):
     requested_interval=0
     observes=Sliver
 
-    def get_userdata(self, sliver):
+    def get_userdata(self, sliver, pubkeys):
         userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (sliver.slice.name, sliver.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
+        userdata += 'ssh-authorized-keys:\n'
+        for key in pubkeys:
+            userdata += '  - %s\n' % key
         return userdata
 
     def sync_record(self, sliver):
@@ -83,14 +86,6 @@ class SyncSlivers(OpenStackSyncStep):
         else:
             image_id = sliver.image.id
 
-        # look up key name at the controller
-        # create/fetch keypair
-        keyname = None
-        keyname = sliver.creator.email.lower().replace('@', 'AT').replace('.', '') +\
-                  sliver.slice.name
-        key_fields =  {'name': keyname,
-                       'public_key': sliver.creator.public_key}
-
         try:
             legacy = Config().observer_legacy
         except:
@@ -104,7 +99,7 @@ class SyncSlivers(OpenStackSyncStep):
         availability_zone_filter = 'nova:%s'%host_filter
         sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
 
-        userData = self.get_userdata(sliver)
+        userData = self.get_userdata(sliver, pubkeys)
         if sliver.userData:
             userData = sliver.userData
 
@@ -119,11 +114,9 @@ class SyncSlivers(OpenStackSyncStep):
                      'ansible_tag':sliver_name,
                      'availability_zone': availability_zone_filter,
                      'image_id':image_id,
-                     'key_name':keyname,
                      'flavor_id':sliver.flavor.id,
                      'nics':nics,
                      'meta':metadata_update,
-                     'key':key_fields,
                      'user_data':r'%s'%escape(userData)}
 
         res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=2)
