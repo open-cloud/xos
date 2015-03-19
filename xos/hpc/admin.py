@@ -134,6 +134,15 @@ class AccessMapAdmin(HPCAdmin):
     user_readonly_fields = ('backend_status_text', "name", "contentProvider", "description", "map")
     readonly_fields = ('backend_status_text', )
 
+class HpcHealthCheckAdmin(HPCAdmin):
+    model = HpcHealthCheck
+    verbose_name = "Health Check"
+    verbose_name = "Health Checks"
+    list_display = ["backend_status_icon", "resource_name", "kind"]
+    list_display_links = ["backend_status_icon", "resource_name"]
+    fields = ["backend_status_text", "hpcService", "resource_name", "kind", "result_contains", "result_min_size", "result_max_size"]
+    readonly_fields = ["backend_status_text",]
+
 admin.site.register(ServiceProvider, ServiceProviderAdmin)
 admin.site.register(ContentProvider, ContentProviderAdmin)
 admin.site.register(CDNPrefix, CDNPrefixAdmin)
@@ -141,4 +150,5 @@ admin.site.register(OriginServer,OriginServerAdmin)
 admin.site.register(HpcService, HpcServiceAdmin)
 admin.site.register(SiteMap, SiteMapAdmin)
 admin.site.register(AccessMap, AccessMapAdmin)
+admin.site.register(HpcHealthCheck, HpcHealthCheckAdmin)
 
