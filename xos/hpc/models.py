@@ -1,5 +1,6 @@
 from django.db import models
 from core.models import User, Service, SingletonModel, PlCoreBase
+from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
 from django.forms.models import model_to_dict
@@ -117,3 +118,19 @@ class SiteMap(PlCoreBase):
             raise ValueError("You may only set one of contentProvider, serviceProvider, cdnPrefix, or hpcService")
 
         super(SiteMap, self).save(*args, **kwds)
+
+class HpcHealthCheck(PlCoreBase):
+    class Meta:
+        app_label = "hpc"
+
+    KIND_CHOICES = (('dns', 'DNS'), ('http', 'HTTP'))
+
+    hpcService = models.ForeignKey(HpcService, blank = True, null=True)
+    kind = models.CharField(max_length=30, choices=KIND_CHOICES, default="dns")
+    resource_name = StrippedCharField(max_length=1024, blank=False, null=False)
+    result_contains = StrippedCharField(max_length=1024, blank=True, null=True)
+    result_min_size = models.IntegerField(null=True, blank=True)
+    result_max_size = models.IntegerField(null=True, blank=True)
+
+    def __unicode__(self): return self.resource_name
+
