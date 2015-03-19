@@ -18,6 +18,18 @@ from dnslib.digparser import DigParser
 
 from threading import Thread, Condition
 
+"""
+from dnslib import *
+q = DNSRecord(q=DNSQuestion("cdn-stream.htm.fiu.edu"))
+a_pkt = q.send("150.135.65.10", tcp=False, timeout=10)
+a = DNSRecord.parse(a_pkt)
+
+from dnslib import *
+q = DNSRecord(q=DNSQuestion("onlab.vicci.org"))
+a_pkt = q.send("150.135.65.10", tcp=False, timeout=10)
+a = DNSRecord.parse(a_pkt)
+"""
+
 class WorkQueue:
     def __init__(self):
         self.job_cv = Condition()
@@ -73,20 +85,30 @@ class DnsResolver(Thread):
         domain = job["domain"]
         server = job["server"]
         port = job["port"]
+        result_contains = job.get("result_contains", None)
 
         try:
-            q = DNSRecord(q=DNSQuestion(domain, getattr(QTYPE,"A")))
+            q = DNSRecord(q=DNSQuestion(domain)) #, getattr(QTYPE,"A")))
 
             a_pkt = q.send(server, port, tcp=False, timeout=10)
             a = DNSRecord.parse(a_pkt)
 
-            found_a_record = False
-            for record in a.ar:
-                if (record.rtype==QTYPE.A):
-                    found_a_record=True
+            found_record = False
+            for record in a.rr:
+                if (not result_contains):
+                    if ((record.rtype==QTYPE_A) or (record.qtype==QTYPE_CNAME)):
+                        found_record = True
+                else:
+                    tmp = QTYPE.get(record.rtype) + str(record.rdata)
+                    if (result_contains in tmp):
+                        found_record = True
 
-            if not found_a_record:
-                job["status"] =  "%s,No A records" % domain
+            if not found_record:
+                if result_contains:
+                    job["status"] =  "%s,No %s records" % (domain, result_contains)
+                else:
+                    job["status"] =  "%s,No A or CNAME records" % domain
+
                 return
 
         except Exception, e:
@@ -192,8 +214,12 @@ class HpcWatcher:
                 self.set_status(sliver, service, "watcher.DNS", "no public IP")
                 continue
 
-            for domain in ["onlab.vicci.org"]:
-                self.resolver_queue.submit_job({"domain": domain, "server": ip, "port": 53, "sliver": sliver})
+            checks = HpcHealthCheck.objects.filter(kind="dns")
+            if not checks:
+                self.set_status(sliver, service, "watcher.DNS", "no DNS HealthCheck tests configured")
+
+            for check in checks:
+                self.resolver_queue.submit_job({"domain": check.resource_name, "server": ip, "port": 53, "sliver": sliver, "result_contains": check.result_contains})
 
         while self.resolver_queue.outstanding > 0:
             result = self.resolver_queue.get_result()
