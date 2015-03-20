@@ -26,11 +26,13 @@ class HpcServiceAdmin(ServiceAppAdmin):
 
     suit_form_tabs =(('general', 'HPC Service Details'),
         ('administration', 'Administration'),
+        ('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
     )
 
-    suit_form_includes = (('hpcadmin.html', 'top', 'administration'),)
+    suit_form_includes = (('hpcadmin.html', 'top', 'administration'),
+                          ('hpctools.html', 'top', 'tools') )
 
 class HPCAdmin(ReadOnlyAwareAdmin):
    # Change the application breadcrumb to point to an HPC Service if one is
