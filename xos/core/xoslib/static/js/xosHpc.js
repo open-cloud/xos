@@ -1,8 +1,16 @@
-function staleCheck(row, time_key, msg_key) {
-    if (parseInt(row[time_key])>30) {
+SC_RR = 60;
+SC_HPC_PROBE = 600;
+SC_HPC_FETCH = 3600;
+
+function staleCheck(row, time_key, msg_key, seconds) {
+    if (parseInt(row[time_key])>seconds) {
         return "stale";
     } else {
-        return row[msg_key];
+        if (! row[msg_key]) {
+            return "null";
+        } else {
+            return row[msg_key];
+        }
     }
 }
 
@@ -15,7 +23,7 @@ function updateDnsDemuxTable(dnsdemux) {
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
 
-        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg")] );
+        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg", SC_RR)] );
     }
     console.log(actualEntries);
     oTable = $('#dynamic_dnsdemux').dataTable( {
@@ -27,7 +35,7 @@ function updateDnsDemuxTable(dnsdemux) {
         "aoColumns": [
             { "sTitle": "Node" },
             { "sTitle": "IP Address" },
-            { "sTitle": "Status" },
+            { "sTitle": "Record Checker" },
         ]
     } );
 }
@@ -41,7 +49,7 @@ function updateHpcTable(dnsdemux) {
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
 
-        actualEntries.push( [row.name, staleCheck(row, "watcher.HPC-hb.time", "watcher.HPC-hb.msg")] );
+        actualEntries.push( [row.name, staleCheck(row, "watcher.HPC-hb.time", "watcher.HPC-hb.msg", SC_HPC_PROBE), staleCheck(row, "watcher.HPC-fetch.time", "watcher.HPC-fetch.msg", SC_HPC_FETCH) ] );
     }
     console.log(actualEntries);
     oTable = $('#dynamic_hpc').dataTable( {
@@ -52,7 +60,8 @@ function updateHpcTable(dnsdemux) {
         "bPaginate": false,
         "aoColumns": [
             { "sTitle": "Node", },
-            { "sTitle": "Status" },
+            { "sTitle": "Prober" },
+            { "sTitle": "Fetcher" },
         ]
     } );
 }
