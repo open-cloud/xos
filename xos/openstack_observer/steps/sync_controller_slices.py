@@ -8,11 +8,9 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import User
 from core.models.slice import Slice, ControllerSlice
 from core.models.controlleruser import ControllerUser
-from util.logger import Logger, logging, logger
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
-
-logger = Logger(level=logging.INFO)
+from util.logger import observer_logger as logger
 
 class SyncControllerSlices(OpenStackSyncStep):
     provides=[Slice]

@@ -5,9 +5,7 @@ from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import Controller
 from core.models.network import *
-from util.logger import Logger, logging
-
-logger = Logger(level=logging.INFO)
+from util.logger import observer_logger as logger
 
 class SyncNetworkSlivers(OpenStackSyncStep):
     requested_interval = 0 # 3600
