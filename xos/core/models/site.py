@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.db.models import Q
 from django.contrib.contenttypes import generic
+from django.core.exceptions import PermissionDenied
 from geoposition.fields import GeopositionField
 from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models import Tag
@@ -130,6 +131,8 @@ class SitePrivilege(PlCoreBase):
     def __unicode__(self):  return u'%s %s %s' % (self.site, self.user, self.role)
 
     def save(self, *args, **kwds):
+        if not self.user.is_active:
+            raise PermissionDenied, "Cannot modify role(s) of a disabled user"
         super(SitePrivilege, self).save(*args, **kwds)
 
     def delete(self, *args, **kwds):
