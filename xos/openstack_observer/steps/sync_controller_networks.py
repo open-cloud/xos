@@ -8,13 +8,11 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.network import *
 from core.models.slice import *
 from core.models.sliver import Sliver
-from util.logger import Logger, logging
+from util.logger import observer_logger as logger
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
 
 import pdb
-
-logger = Logger(level=logging.INFO)
 
 class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
