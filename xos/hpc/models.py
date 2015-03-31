@@ -14,7 +14,7 @@ class HpcService(Service):
         app_label = "hpc"
         verbose_name = "HPC Service"
 
-    cmi_url = models.URLField(null=True, blank=True)
+    cmi_hostname = StrippedCharField(max_length=254, null=True, blank=True)
 
 class ServiceProvider(PlCoreBase):
     class Meta:
