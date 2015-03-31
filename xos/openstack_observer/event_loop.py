@@ -77,6 +77,7 @@ class XOSObserver:
 		self.event_cond = threading.Condition()
 
 		self.driver_kind = getattr(Config(), "observer_driver", "openstack")
+		self.observer_name = getattr(Config(), "observer_name", "")
 		if self.driver_kind=="openstack":
 			self.driver = OpenStackDriver()
 		else:
@@ -193,6 +194,7 @@ class XOSObserver:
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
 		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncSlivers']
 		#self.ordered_steps = ['SyncControllerSites','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
+		#self.ordered_steps = ['SyncSlivers','SyncNetworkSlivers']
 
 		print "Order of steps=",self.ordered_steps
 
@@ -227,14 +229,14 @@ class XOSObserver:
 	
 	def load_run_times(self):
 		try:
-			jrun_times = open('/tmp/observer_run_times').read()
+			jrun_times = open('/tmp/%sobserver_run_times'%self.observer_name).read()
 			self.last_run_times = json.loads(jrun_times)
 		except:
 			self.last_run_times={}
 			for e in self.ordered_steps:
 				self.last_run_times[e]=0
 		try:
-			jrun_times = open('/tmp/observer_deletion_run_times').read()
+			jrun_times = open('/tmp/%sobserver_deletion_run_times'%self.observer_name).read()
 			self.last_deletion_run_times = json.loads(jrun_times)
 		except:
 			self.last_deletion_run_times={}
@@ -244,10 +246,10 @@ class XOSObserver:
 
 	def save_run_times(self):
 		run_times = json.dumps(self.last_run_times)
-		open('/tmp/observer_run_times','w').write(run_times)
+		open('/tmp/%sobserver_run_times'%self.observer_name,'w').write(run_times)
 
 		deletion_run_times = json.dumps(self.last_deletion_run_times)
-		open('/tmp/observer_deletion_run_times','w').write(deletion_run_times)
+		open('/tmp/%sobserver_deletion_run_times'%self.observer_name,'w').write(deletion_run_times)
 
 	def check_class_dependency(self, step, failed_steps):
 		step.dependenices = []
@@ -265,7 +267,7 @@ class XOSObserver:
 		start_time=time.time()
 
                 logger.info("Starting to work on step %s, deletion=%s" % (step.__name__, str(deletion)))
-
+		
 		dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
                 step_conditions = self.step_conditions# if not deletion else self.deletion_step_conditions
                 step_status = self.step_status# if not deletion else self.deletion_step_status
@@ -400,7 +402,7 @@ class XOSObserver:
 				logger.info('Observer woke up')
 
 				# Two passes. One for sync, the other for deletion.
-				for deletion in [False]:#[False,True]:
+				for deletion in [False,True]:
 					# Set of individual objects within steps that failed
 					self.failed_step_objects = set()
 
