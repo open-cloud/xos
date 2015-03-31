@@ -447,7 +447,7 @@ class XOSObserver:
 
 				self.save_run_times()
 				loop_end = time.time()
-				open('/tmp/observer_last_run','w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
+				open('/tmp/%sobserver_last_run'%self.observer_name,'w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
 			except Exception, e:
 				logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
 				logger.log_exc("Exception in observer run loop")
