@@ -65,12 +65,25 @@ class HpcLibrary:
                 y = y + c
         return y[:20]
 
+    def get_hpc_service(self):
+        hpc_service_name = getattr(Config(), "observer_hpc_service", None)
+        if hpc_service_name:
+            hpc_service = HpcService.objects.filter(name = hpc_service_name)
+        else:
+            hpc_service = HpcService.objects.all()
+
+        if not hpc_service:
+            if hpc_service_name:
+                raise Exception("No HPC Service with name %s" % hpc_service_name)
+            else:
+                raise Exception("No HPC Services")
+        hpc_service = hpc_service[0]
+
+        return hpc_service
+
     def get_cmi_hostname(self, hpc_service=None):
         if (hpc_service is None):
-            hpc_service = HpcService.objects.all()
-            if not hpc_service:
-               raise Exception("No HPC Services")
-            hpc_service = hpc_service[0]
+            hpc_service = self.get_hpc_service()
 
         if hpc_service.cmi_hostname:
             return hpc_service.cmi_hostname
