@@ -22,6 +22,7 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
+name=hpc
 dependency_graph=/opt/xos/hpc_observer/model-deps
 steps_dir=/opt/xos/hpc_observer/steps
 deleters_dir=/opt/xos/hpc_observer/deleters
