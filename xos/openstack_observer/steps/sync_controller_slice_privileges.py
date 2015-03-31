@@ -7,11 +7,8 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.slice import Controller, SlicePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSlicePrivilege
-from util.logger import Logger, logging
-
 from observer.ansible import *
-
-logger = Logger(level=logging.INFO)
+from util.logger import observer_logger as logger
 
 class SyncControllerSlicePrivileges(OpenStackSyncStep):
     provides=[SlicePrivilege]

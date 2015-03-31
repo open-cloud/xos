@@ -6,6 +6,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.role import Role
 from core.models.site import SiteRole, Controller, ControllerRole
 from core.models.slice import SliceRole
+from util.logger import observer_logger as logger
 
 class SyncRoles(OpenStackSyncStep):
     provides=[Role]

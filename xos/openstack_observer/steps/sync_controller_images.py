@@ -6,10 +6,8 @@ from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models import Controller
 from core.models import Image, ControllerImages
-from util.logger import Logger, logging
+from util.logger import observer_logger as logger 
 from observer.ansible import *
-
-logger = Logger(level=logging.INFO)
 
 class SyncControllerImages(OpenStackSyncStep):
     provides=[ControllerImages]

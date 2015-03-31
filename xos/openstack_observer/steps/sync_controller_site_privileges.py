@@ -7,11 +7,8 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import Controller, SitePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSitePrivilege
-from util.logger import Logger, logging
-
+from util.logger import observer_logger as logger
 from observer.ansible import *
-
-logger = Logger(level=logging.INFO)
 
 class SyncControllerSitePrivileges(OpenStackSyncStep):
     provides=[SitePrivilege]
