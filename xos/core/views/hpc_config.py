@@ -8,61 +8,84 @@ import json
 import os
 import time
 
+def get_service_slices(service):
+    try:
+       return service.slices.all()
+    except:
+       # this field used to be improperly named, and makemigrations won't fix it
+       return service.service.all()
+
 def HpcConfig(request):
     hpcSlice=None
     cmiSlice=None
     redirSlice=None
     demuxSlice=None
 
-    hpc = HpcService.objects.all()
+    node_slicename = request.GET.get("slicename", None)
+    if not node_slicename:
+        return HttpResponseServerError("Error: no slicename passed in request")
+
+    # search for an HPC Service that owns the slicename that was passed
+    # to us.
+    hpc=None
+    for candidate in HpcService.objects.all():
+        for slice in get_service_slices(candidate):
+            if slice.name == node_slicename:
+                hpc = candidate
+
     if (not hpc):
         return HttpResponseServerError("Error: no HPC service")
 
-    hpc = hpc[0]
-    try:
-       slices = hpc.slices.all()
-    except:
-       # this field used to be improperly named, and makemigrations won't fix it
-       slices = hpc.service.all()
-    for slice in slices:
+    for slice in get_service_slices(hpc):
         if "cmi" in slice.name:
             cmiSlice = slice
         elif ("hpc" in slice.name) or ("vcoblitz" in slice.name):
             hpcSlice = slice
-
-    if not cmiSlice:
-        return HttpResponseServerError("Error: no CMI slice")
-
-    if len(cmiSlice.slivers.all())==0:
-        return HttpResponseServerError("Error: CMI slice has no slivers")
-
-    if not hpcSlice:
-        return HttpResponseServerError("Error: not HPC slice")
-
-    rr = RequestRouterService.objects.all()
-    if not (rr):
-        return HttpResponseServerError("Error: no RR service")
-
-    rr = rr[0]
-    try:
-       slices = rr.slices.all()
-    except:
-       # this field used to be improperly named, and makemigrations won't fix it
-       slices = rr.service.all()
-    for slice in slices:
-        if "redir" in slice.name:
+        elif "redir" in slice.name:
             redirSlice = slice
         elif "demux" in slice.name:
             demuxSlice = slice
+
+    if (hpc.cmi_hostname):
+        cmi_hostname = hpc.cmi_hostname
+    else:
+        if not cmiSlice:
+            return HttpResponseServerError("Error: no CMI slice")
+
+        if len(cmiSlice.slivers.all())==0:
+            return HttpResponseServerError("Error: CMI slice has no slivers")
+
+        # for now, assuming using NAT
+        cmi_hostname = cmiSlice.slivers.all()[0].node.name
+
+    if not hpcSlice:
+        return HttpResponseServerError("Error: no HPC slice")
+
+    if (redirSlice==None) or (demuxSlice==None):
+        # The HPC Service didn't have a dnsredir or a dnsdemux, so try looking
+        # in the RequestRouterService for one.
+
+        rr = RequestRouterService.objects.all()
+        if not (rr):
+            return HttpResponseServerError("Error: no RR service")
+
+        rr = rr[0]
+        try:
+           slices = rr.slices.all()
+        except:
+           # this field used to be improperly named, and makemigrations won't fix it
+           slices = rr.service.all()
+        for slice in slices:
+            if "redir" in slice.name:
+                redirSlice = slice
+            elif "demux" in slice.name:
+                demuxSlice = slice
 
     if not redirSlice:
         return HttpResponseServerError("Error: no dnsredir slice")
 
     if not demuxSlice:
         return HttpResponseServerError("Error: no dnsdemux slice")
-
-    # for now, assuming using NAT
-    cmi_hostname = cmiSlice.slivers.all()[0].node.name
 
     d = {}
     d["hpc_slicename"] = hpcSlice.name
