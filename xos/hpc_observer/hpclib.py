@@ -65,100 +65,29 @@ class HpcLibrary:
                 y = y + c
         return y[:20]
 
-    def extract_slice_info(self, service):
-        """ Produce a dict that describes the slices for the CMI
-
-            slice_coblitz = <name of coblitz slice>
-            service_coblitz = <name of coblitz service>
-            hostname_coblitz = <name of first coblitz slice>
-            hostnames_coblitz = <name_of_first_cob_slice>,<name_of_second_cob_slice>,...
-
-            slice_cmi = <name of cmi slice>
-            ...
-        """
-
-        slicenames = {}
-        slicehosts = {}
-        try:
-            slices = service.slices.all()
-        except:
-            # deal with misnamed attribute in some installations
-            slices = service.service.all()
-        for slice in slices:
-            name = slice.name
-            if not ("_" in name):
-                continue
-
-            if ("coblitz" in name) or ("hpc" in name):
-                slicenames["coblitz"] = name
-                slicehosts["coblitz"] = [sliver.node.name for sliver in slice.slivers.all()]
-            elif "cmi" in name:
-                slicenames["cmi"] = name
-                slicehosts["cmi"] = [sliver.node.name for sliver in slice.slivers.all()]
-            elif "dnsredir" in name:
-                slicenames["dnsredir"] = name
-                slicehosts["dnsredir"] = [sliver.node.name for sliver in slice.slivers.all()]
-            elif "dnsdemux" in name:
-                slicenames["dnsdemux"] = name
-                slicehosts["dnsdemux"] = [sliver.node.name for sliver in slice.slivers.all()]
-
-        base_hrn = None
-        if "coblitz" in slicenames:
-            base_hrn = slicenames["coblitz"].split("_")[0]
-
-        mapping = {}
-        mapping["base_hrn"] = base_hrn
-        for (k,v) in slicenames.items():
-            mapping["slice_" + k] = v
-            mapping["service_" + k] = v.split("_",1)[1]
-        for (k,v) in slicehosts.items():
-            mapping["hostname_" + k] = v[0]
-            mapping["hostnames_" + k] = ",".join(v)
-
-        return mapping
-
     def get_cmi_hostname(self, hpc_service=None):
         if (hpc_service is None):
-            hpc_service = HpcService.objects.get()
+            hpc_service = HpcService.objects.all()
+            if not hpc_service:
+               raise Exception("No HPC Services")
+            hpc_service = hpc_service[0]
 
-        slice_info = self.extract_slice_info(hpc_service)
-        return slice_info["hostname_cmi"]
+        if hpc_service.cmi_hostname:
+            return hpc_service.cmi_hostname
 
-    def write_slices_file(self, hpc_service=None, rr_service=None):
-        if (hpc_service is None):
-            hpc_service = HpcService.objects.get()
+        try:
+            slices = hpc_service.slices.all()
+        except:
+            # deal with buggy data model
+            slices = hpc_service.service.all()
 
-        if (rr_service is None):
-            rr_service = RequestRouterService.objects.get()
+        for slice in slices:
+            if slice.name.endswith("cmi"):
+                for sliver in slice.slivers.all():
+                    if sliver.node:
+                         return sliver.node.name
 
-        mapping = self.extract_slice_info(hpc_service)
-        rr_mapping = self.extract_slice_info(rr_service)
-
-        mapping.update(rr_mapping)
-
-        fn = "/tmp/slices"
-
-        f = open(fn, "w")
-        f.write("""
-ENABLE_PLC=True
-ENABLE_PS=False
-BASE_HRN="%(base_hrn)s"
-RELEVANT_SERVICE_NAMES=['%(service_coblitz)s', '%(service_dnsredir)s', '%(service_dnsdemux)s']
-COBLITZ_SLICE_NAME="%(slice_coblitz)s"
-COBLITZ_SLICE_ID=1
-COBLITZ_PS_SLICE_NAME="%(slice_coblitz)s"
-DNSREDIR_SLICE_NAME="%(slice_dnsredir)s"
-DNSREDIR_SLICE_ID=2
-DNSREDIR_PS_SLICE_NAME="%(slice_dnsredir)s"
-DNSDEMUX_SLICE_NAME="%(slice_dnsdemux)s"
-DNSDEMUX_SLICE_ID=3
-DNSDEMUX_PS_SLICE_NAME="%(slice_dnsdemux)s"
-CMI_URL="http://%(hostname_cmi)s"
-CMI_HTTP_PORT="8004"
-CMI_HTTPS_PORT="8003"
-PUPPET_MASTER_HOSTNAME="%(hostname_cmi)s"
-PUPPET_MASTER_PORT="8140"
-""" % mapping)
+        raise Exception("Failed to find a CMI sliver")
 
     @property
     def client(self):
@@ -167,11 +96,12 @@ PUPPET_MASTER_PORT="8140"
         return self._client
 
 if __name__ == '__main__':
-    print "testing write_slices_file"
-    lib = HpcLibrary()
-    lib.write_slices_file()
+    import django
+    django.setup()
 
-    print "testing API connection"
+    lib = HpcLibrary()
+
+    print "testing API connection to", lib.get_cmi_hostname()
     lib.client.cob.GetNewObjects()
     lib.client.onev.ListAll("CDN")
 
