@@ -5,6 +5,7 @@ from xos.config import Config
 from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.ansible import *
+from util.logger import observer_logger as logger
 
 class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0

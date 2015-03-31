@@ -8,10 +8,8 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
 from core.models.network import Network, NetworkSlice, ControllerNetwork
-from util.logger import Logger, logging
 from observer.ansible import *
-
-logger = Logger(level=logging.INFO)
+from util.logger import observer_logger as logger
 
 def escape(s):
     s = s.replace('\n',r'\n').replace('"',r'\"')
