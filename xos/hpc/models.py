@@ -20,7 +20,7 @@ class ServiceProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
 
-    hpcService = models.ForeignKey(HpcService, null=True, blank=True)
+    hpcService = models.ForeignKey(HpcService)
     service_provider_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=254,help_text="Service Provider Name")
     description = models.TextField(max_length=254,null=True, blank=True, help_text="Description of Service Provider")
