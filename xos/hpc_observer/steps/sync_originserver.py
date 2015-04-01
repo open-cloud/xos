@@ -26,10 +26,15 @@ class SyncOriginServer(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
+    def filter_hpc_service(self, objs):
+        hpcService = self.get_hpc_service()
+
+        return [x for x in objs if x.contentProvider.serviceProvider.hpcService == hpcService]
+
     def fetch_pending(self, deleted):
         #self.consistency_check()
 
-        return SyncStep.fetch_pending(self, deleted)
+        return self.filter_hpc_service(SyncStep.fetch_pending(self, deleted))
 
     def consistency_check(self):
         # set to true if something changed
