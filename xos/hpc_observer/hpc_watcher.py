@@ -12,6 +12,10 @@
 
          resource_name should be set to the domain name to lookup.
 
+         result_contains is option and can be used to hold "A", "CNAME", or
+            a particular address or hostname that should be contained in the
+            query's answer.
+
        kind="http": checks the hpc nodes to make sure that a URL can be
          retrieved from the node.
 
