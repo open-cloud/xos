@@ -28,7 +28,15 @@ class SyncSiteMap(SyncStep, HpcLibrary):
     def filter_hpc_service(self, objs):
         hpcService = self.get_hpc_service()
 
-        return [x for x in objs if x.hpcService == hpcService]
+        filtered_objs = []
+        for x in objs:
+            if ((x.hpcService == hpcService) or
+               ((x.serviceProvider != None) and (x.serviceProvider.hpcService == hpcService)) or
+               ((x.contentProvider != None) and (x.contentProvider.serviceProvider.hpcService == hpcService)) or
+               ((x.cdnPrefix!= None) and (x.cdnPrefix.contentProvider.serviceProvider.hpcService == hpcService))):
+                filtered_objs.append(x)
+
+        return filtered_objs
 
     def fetch_pending(self, deleted):
         return self.filter_hpc_service(SyncStep.fetch_pending(self, deleted))
