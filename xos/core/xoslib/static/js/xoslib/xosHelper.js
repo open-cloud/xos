@@ -1154,3 +1154,11 @@ choicesToSelect = function(variable, selectedValue, choices) {
              '</select>';
     return result;
 }
+
+escapeForFormField = function(s) {
+    if (s===undefined) {
+        return "";
+    } else {
+        return s.replace(/"/g,'&quot;')
+    }
+}
