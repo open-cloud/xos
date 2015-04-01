@@ -271,7 +271,7 @@ XOSApplication = Marionette.Application.extend({
             if (model == undefined) {
                 app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
             } else {
-                title = title + ": " + model.attributes.humanReadableName;
+                var title = title + ": " + model.attributes.humanReadableName;
 
                 $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
 
