@@ -616,7 +616,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"image": "images", "controller": "controllers"},
                             modelName: "controller_image",
                             listFields: ["backend_status", "id", "image", "controller", "glance_image_id"],
-                            detailFields: ["backend_status", "backend_register", "backend_register", "image", "controller", "glance_image_id"],
+                            detailFields: ["backend_status", "backend_register", "image", "controller", "glance_image_id"],
                             });
 
         define_model(this, {urlRoot: CONTROLLERNETWORK_API,
