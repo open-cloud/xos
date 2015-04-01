@@ -26,14 +26,18 @@ class SyncHpcService(SyncStep, HpcLibrary):
         SyncStep.__init__(self, **args)
         HpcLibrary.__init__(self)
 
+    def filter_hpc_service(self, objs):
+        hpcService = self.get_hpc_service()
+
+        return [x for x in objs if x == hpcService]
+
     def fetch_pending(self, deleted):
         # Looks like deletion is not supported for this object - Sapan
         if (deleted):
             return []
         else:
-            return HpcService.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+            return self.filter_hpc_service(HpcService.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)))
 
     def sync_record(self, hpc_service):
         logger.info("sync'ing hpc_service %s" % str(hpc_service))
-        self.write_slices_file(hpc_service, None)
         hpc_service.save()
