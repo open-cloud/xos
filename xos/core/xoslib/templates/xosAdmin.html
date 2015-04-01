@@ -174,7 +174,7 @@
         <% } else if (fieldName=="backend_status") { %>
             <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
         <% } else { %>
-            <td><input type="text" name="<%= fieldName %>" value="<%= model.attributes[fieldName] %>"<%= readOnly %>></td>
+            <td><input type="text" name="<%= fieldName %>" value="<%= escapeForFormField(model.attributes[fieldName]) %>"<%= readOnly %>></td>
         <% } %>
         <td  class="xos-help-cell"><%= helpText[fieldName] %></td>
      </tr>
