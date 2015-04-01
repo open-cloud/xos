@@ -191,6 +191,7 @@ XOSApplication = Marionette.Application.extend({
             app[regionName].show(listView);
             app.hideLinkedItems();
             $("#contentTitle").html(templateFromId("#xos-title-list")({"title": title}));
+            $(document).attr('title', title);
             $("#detail").show();
             app.hideTabs();
 
@@ -265,13 +266,17 @@ XOSApplication = Marionette.Application.extend({
     createDetailHandler: function(detailName, collection_name, regionName, title) {
         var app=this;
         showModelId = function(model_id) {
-            $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
-
             collection = xos[collection_name];
             model = collection.get(model_id);
             if (model == undefined) {
                 app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
             } else {
+                title = title + ": " + model.attributes.humanReadableName;
+
+                $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
+
+                $(document).attr('title', title);
+
                 detailViewClass = app[detailName];
                 detailView = new detailViewClass({model: model});
                 app[regionName].show(detailView);
