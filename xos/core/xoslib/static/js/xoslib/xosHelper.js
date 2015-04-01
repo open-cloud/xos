@@ -1159,6 +1159,6 @@ escapeForFormField = function(s) {
     if (s===undefined) {
         return "";
     } else {
-        return s.replace(/"/g,'&quot;')
+        return String(s).replace(/"/g,'&quot;')
     }
 }

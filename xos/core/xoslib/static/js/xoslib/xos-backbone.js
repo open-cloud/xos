@@ -476,7 +476,7 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "sliver",
                             listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deployment", "image", "node", "flavor"],
                             addFields: ["slice", "deployment", "flavor", "image", "node"],
-                            detailFields: ["backend_status", "name", "instance_id", "instance_name", "slice", "deployment", "flavor", "image", "node", "creator"],
+                            detailFields: ["backend_status", "backend_register", "name", "instance_id", "instance_name", "slice", "deployment", "flavor", "image", "node", "creator"],
                             preSave: function() { if (!this.attributes.name && this.attributes.slice) { this.attributes.name = xos.idToName(this.attributes.slice, "slices", "name"); } },
                             });
 
@@ -485,7 +485,7 @@ if (! window.XOSLIB_LOADED ) {
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
-                           detailFields: ["backend_status", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slice",
                            xosValidate: function(attrs, options) {
@@ -508,13 +508,13 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "slicePrivilege",
                             foreignFields: {"user": "users", "slice": "slices", "role": "sliceRoles"},
                             listFields: ["backend_status", "id", "user", "slice", "role"],
-                            detailFields: ["backend_status", "user", "slice", "role"],
+                            detailFields: ["backend_status", "backend_register", "user", "slice", "role"],
                             });
 
         define_model(this, {urlRoot: SLICEROLE_API,
                             modelName: "sliceRole",
                             listFields: ["backend_status", "id", "role"],
-                            detailFields: ["backend_status", "role"],
+                            detailFields: ["backend_status", "backend_register", "role"],
                             });
 
         define_model(this, {urlRoot: NODE_API,
@@ -522,14 +522,14 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "node",
                             foreignFields: {"site": "sites", "deployment": "deployments"},
                             listFields: ["backend_status", "id", "name", "site", "deployment"],
-                            detailFields: ["backend_status", "name", "site", "deployment"],
+                            detailFields: ["backend_status", "backend_register", "name", "site", "deployment"],
                             });
 
         define_model(this, {urlRoot: SITE_API,
                             relatedCollections: {"users": "site", "slices": "site", "nodes": "site", "siteDeployments": "site"},
                             modelName: "site",
                             listFields: ["backend_status", "id", "name", "site_url", "enabled", "login_base", "is_public", "abbreviated_name"],
-                            detailFields: ["backend_status", "name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
+                            detailFields: ["backend_status", "backend_register", "name", "abbreviated_name", "url", "enabled", "is_public", "login_base"],
                             inputType: {"enabled": "checkbox", "is_public": "checkbox"},
                             });
 
@@ -538,7 +538,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"site": "sites", "deployment": "deployments", "controller": "controllers"},
                             modelName: "siteDeployment",
                             listFields: ["backend_status", "id", "site", "deployment", "controller", "availability_zone"],
-                            detailFields: ["backend_status", "site", "deployment", "controller", "availability_zone"],
+                            detailFields: ["backend_status", "backend_register", "site", "deployment", "controller", "availability_zone"],
                             inputType: {"enabled": "checkbox", "is_public": "checkbox"},
                             });
 
@@ -548,7 +548,7 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "user",
                             foreignFields: {"site": "sites"},
                             listFields: ["backend_status", "id", "username", "firstname", "lastname", "phone", "user_url", "site"],
-                            detailFields: ["backend_status", "username", "firstname", "lastname", "phone", "user_url", "site"],
+                            detailFields: ["backend_status", "backend_register", "username", "firstname", "lastname", "phone", "user_url", "site"],
                             });
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
@@ -556,7 +556,7 @@ if (! window.XOSLIB_LOADED ) {
                              m2mFields: {"flavors": "flavors", "sites": "sites", "images": "images"},
                              modelName: "deployment",
                              listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
-                             detailFields: ["backend_status", "name", "backend_type", "admin_tenant", "flavors", "sites", "images"],
+                             detailFields: ["backend_status", "backend_register", "name", "backend_type", "admin_tenant", "flavors", "sites", "images"],
                              inputType: {"flavors": "picker", "sites": "picker", "images": "picker"},
                              });
 
@@ -565,13 +565,13 @@ if (! window.XOSLIB_LOADED ) {
                             model: this.image,
                             modelName: "image",
                             listFields: ["backend_status", "id", "name", "disk_format", "container_format", "path"],
-                            detailFields: ["backend_status", "name", "disk_format", "admin_tenant"],
+                            detailFields: ["backend_status", "backend_register", "name", "disk_format", "admin_tenant"],
                             });
 
         define_model(this, {urlRoot: NETWORKTEMPLATE_API,
                             modelName: "networkTemplate",
                             listFields: ["backend_status", "id", "name", "visibility", "translation", "shared_network_name", "shared_network_id"],
-                            detailFields: ["backend_status", "name", "description", "visibility", "translation", "shared_network_name", "shared_network_id"],
+                            detailFields: ["backend_status", "backend_register", "name", "description", "visibility", "translation", "shared_network_name", "shared_network_id"],
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
@@ -580,27 +580,27 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
                             listFields: ["backend_status", "id", "name", "template", "ports", "labels", "owner"],
-                            detailFields: ["backend_status", "name", "template", "ports", "labels", "owner"],
+                            detailFields: ["backend_status", "backend_register", "name", "template", "ports", "labels", "owner"],
                             });
 
         define_model(this, {urlRoot: NETWORKSLIVER_API,
                             modelName: "networkSliver",
                             foreignFields: {"network": "networks", "sliver": "slivers"},
                             listFields: ["backend_status", "id", "network", "sliver", "ip", "port_id"],
-                            detailFields: ["backend_status", "network", "sliver", "ip", "port_id"],
+                            detailFields: ["backend_status", "backend_register", "network", "sliver", "ip", "port_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,
                             modelName: "service",
                             listFields: ["backend_status", "id", "name", "enabled", "versionNumber", "published"],
-                            detailFields: ["backend_status", "name", "description", "versionNumber"],
+                            detailFields: ["backend_status", "backend_register", "name", "description", "versionNumber"],
                             });
 
         define_model(this, {urlRoot: FLAVOR_API,
                             modelName: "flavor",
                             m2mFields: {"deployments": "deployments"},
                             listFields: ["backend_status", "id", "name", "flavor", "order", "default"],
-                            detailFields: ["backend_status", "name", "description", "flavor", "order", "default", "deployments"],
+                            detailFields: ["backend_status", "backend_register", "name", "description", "flavor", "order", "default", "deployments"],
                             inputType: {"default": "checkbox", "deployments": "picker"},
                             });
 
@@ -608,7 +608,7 @@ if (! window.XOSLIB_LOADED ) {
                             relatedCollections: {"controller_images": "controller", "controller_networks": "controller", "controller_slices": "controller"},
                             modelName: "controller",
                             listFields: ["backend_status", "id", "name", "version", "backend_type"],
-                            detailFields: ["backend_status", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
+                            detailFields: ["backend_status", "backend_register", "name", "version", "backend_type", "auth_url", "admin_user", "admin_password", "admin_tenant"],
                             });
 
         define_model(this, {urlRoot: CONTROLLERIMAGE_API,
@@ -616,7 +616,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"image": "images", "controller": "controllers"},
                             modelName: "controller_image",
                             listFields: ["backend_status", "id", "image", "controller", "glance_image_id"],
-                            detailFields: ["backend_status", "image", "controller", "glance_image_id"],
+                            detailFields: ["backend_status", "backend_register", "backend_register", "image", "controller", "glance_image_id"],
                             });
 
         define_model(this, {urlRoot: CONTROLLERNETWORK_API,
@@ -624,7 +624,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"network": "networks", "controller": "controllers"},
                             modelName: "controller_network",
                             listFields: ["backend_status", "id", "network", "controller", "net_id"],
-                            detailFields: ["backend_status", "network", "controller", "net_id"],
+                            detailFields: ["backend_status", "backend_register", "network", "controller", "net_id"],
                             });
 
         define_model(this, {urlRoot: CONTROLLERSLICE_API,
@@ -632,7 +632,7 @@ if (! window.XOSLIB_LOADED ) {
                             foreignFields: {"slice": "slices", "controller": "controllers"},
                             modelName: "controller_slice",
                             listFields: ["backend_status", "id", "slice", "controller", "tenant_id"],
-                            detailFields: ["backend_status", "slice", "controller", "tenant_id"],
+                            detailFields: ["backend_status", "backend_register", "slice", "controller", "tenant_id"],
                             });
 
         /* removed
@@ -690,7 +690,7 @@ if (! window.XOSLIB_LOADED ) {
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
-                           detailFields: ["backend_status", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slicePlus",
                            collectionName: "slicesPlus",
