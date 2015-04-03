@@ -119,7 +119,7 @@ class XOSAdminMixin(object):
 
         return actions
 
-    def add_extra_context(self, extra_context):
+    def add_extra_context(self, request, extra_context):
         # allow custom application breadcrumb url and name
         extra_context["custom_app_breadcrumb_url"] = getattr(self, "custom_app_breadcrumb_url", None)
         extra_context["custom_app_breadcrumb_name"] = getattr(self, "custom_app_breadcrumb_name", None)
@@ -158,7 +158,7 @@ class XOSAdminMixin(object):
             if hasattr(self, "inlines_save"):
                 self.inlines = self.inlines_save
 
-        self.add_extra_context(extra_context)
+        self.add_extra_context(request, extra_context)
 
         try:
             return super(XOSAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
@@ -172,7 +172,7 @@ class XOSAdminMixin(object):
     def changelist_view(self, request, extra_context = None):
         extra_context = extra_context or {}
 
-        self.add_extra_context(extra_context)
+        self.add_extra_context(request, extra_context)
 
         return super(XOSAdminMixin, self).changelist_view(request, extra_context=extra_context)
 
