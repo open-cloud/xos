@@ -123,6 +123,7 @@ class XOSAdminMixin(object):
         # allow custom application breadcrumb url and name
         extra_context["custom_app_breadcrumb_url"] = getattr(self, "custom_app_breadcrumb_url", None)
         extra_context["custom_app_breadcrumb_name"] = getattr(self, "custom_app_breadcrumb_name", None)
+        extra_context["custom_changelist_breadcrumb_url"] = getattr(self, "custom_changelist_breadcrumb_url", None)
 
         # for Service admins to render their Administration page
         if getattr(self, "extracontext_registered_admins", False):
