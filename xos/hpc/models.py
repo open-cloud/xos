@@ -4,6 +4,7 @@ from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 
 # Create your models here.
@@ -28,6 +29,12 @@ class ServiceProvider(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(hpcService=hpcService)
+
 class ContentProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -51,6 +58,13 @@ class ContentProvider(PlCoreBase):
     def account(self):
         return self.CP_TO_ACCOUNT.get(self.name, self.name)
 
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(serviceProvider__hpcService=hpcService)
+
+
 class OriginServer(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -68,6 +82,12 @@ class OriginServer(PlCoreBase):
     
     def __unicode__(self):  return u'%s' % (self.url)
 
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(contentProvider__serviceProvider__hpcService=hpcService)
+
 class CDNPrefix(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -81,6 +101,12 @@ class CDNPrefix(PlCoreBase):
     enabled = models.BooleanField(default=True)
 
     def __unicode__(self):  return u'%s' % (self.prefix)
+
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(contentProvider__serviceProvider__hpcService=hpcService)
 
 class AccessMap(PlCoreBase):
     class Meta:
@@ -119,6 +145,15 @@ class SiteMap(PlCoreBase):
 
         super(SiteMap, self).save(*args, **kwds)
 
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(Q(hpcService=hpcService) |
+                                  Q(serviceProvider__hpcService=hpcService) |
+                                  Q(contentProvider__serviceProvider__hpcService=hpcService) |
+                                  Q(cdnPrefix__contentProvider__serviceProvider__hpcService=hpcService))
+
 class HpcHealthCheck(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -133,4 +168,11 @@ class HpcHealthCheck(PlCoreBase):
     result_max_size = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self): return self.resource_name
+
+    @classmethod
+    def select_by_hpcService(cls, hpcService):
+        # This should be overridden by descendant classes that want to perform
+        # filtering of visible objects by user.
+        return cls.objects.filter(hpcService=hpcService)
+
 
