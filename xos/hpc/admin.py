@@ -52,6 +52,12 @@ class HPCAdmin(ReadOnlyAwareAdmin):
        else:
            return "/admin/hpc/hpcservice/"
 
+   def add_extra_context(self, request, extra_context):
+       super(HPCAdmin, self).add_extra_context(request, extra_context)
+
+       if getattr(request,"hpcService",None) is not None:
+            extra_context["custom_changelist_breadcrumb_url"] = "/admin/hpc/%s/%s/filteredlist/" % (self.model._meta.model_name, str(request.hpcService.id))
+
    """
       One approach to filtering the HPC Admin views by HPCService. Encode
       the HPCService into the URL for the changelist view. Then we could do our
@@ -71,13 +77,18 @@ class HPCAdmin(ReadOnlyAwareAdmin):
        urls = super(HPCAdmin, self).get_urls()
        info = self.model._meta.app_label, self.model._meta.model_name
        my_urls = [
-           url(r'^(.+)/filteredlist/$', wrap(self.filtered_changelist_view), name="%s_%s_filteredchangelist" % info)
+           url(r'^(.+)/filteredlist/$', wrap(self.filtered_changelist_view), name="%s_%s_filteredchangelist" % info),
+           url(r'^(.+)/(.+)/$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
        ]
        return my_urls + urls
 
    def filtered_changelist_view(self, request, hpcServiceId, extra_context=None):
        request.hpcService = HpcService.objects.get(id=hpcServiceId)
        return self.changelist_view(request, extra_context)
+
+   def filtered_change_view(self, request, hpcServiceId, object_id, extra_context=None):
+       request.hpcService = HpcService.objects.get(id=hpcServiceId)
+       return self.change_view(request, object_id, extra_context)
 
    def get_queryset(self, request):
        qs = self.model.objects.all()
