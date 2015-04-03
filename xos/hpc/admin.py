@@ -11,7 +11,79 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
+
 from functools import update_wrapper
+from django.contrib.admin.views.main import ChangeList
+from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote
+
+class FilteredChangeList(ChangeList):
+    def __init__(self, request, *args, **kwargs):
+        self.hpcService = getattr(request, "hpcService", None)
+        super(FilteredChangeList, self).__init__(request, *args, **kwargs)
+
+    def url_for_result(self, result):
+        if (self.hpcService is None):
+             return super(FilteredChangeList, self).url_for_result(result)
+
+        pk = getattr(result, self.pk_attname)
+        return reverse('admin:%s_%s_filteredchange' % (self.opts.app_label,
+                                                       self.opts.model_name),
+                       args=(quote(self.hpcService.id), quote(pk),),
+                       current_app=self.model_admin.admin_site.name)
+
+class FilteredAdmin(ReadOnlyAwareAdmin):
+   """
+      One approach to filtering the HPC Admin views by HPCService. Encode
+      the HPCService into the URL for the changelist view. Then we could do our
+      custom filtering in self.filtered_changelist_view.
+
+      Note: also need to deal with the breadcrumb and the add view.
+   """
+
+   def get_urls(self):
+       from django.conf.urls import patterns, url
+
+       def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+
+       urls = super(FilteredAdmin, self).get_urls()
+       info = self.model._meta.app_label, self.model._meta.model_name
+       my_urls = [
+           url(r'^(.+)/filteredlist/$', wrap(self.filtered_changelist_view), name="%s_%s_filteredchangelist" % info),
+           url(r'^(.+)/(.+)/$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
+       ]
+       return my_urls + urls
+
+   def add_extra_context(self, request, extra_context):
+       super(FilteredAdmin, self).add_extra_context(request, extra_context)
+
+       if getattr(request,"hpcService",None) is not None:
+            extra_context["custom_changelist_breadcrumb_url"] = "/admin/hpc/%s/%s/filteredlist/" % (self.model._meta.model_name, str(request.hpcService.id))
+            #extra_context["custom_add_url"] = "/admin/hpc/%s/%s/add/" % (self.model._meta.model_name, str(request.hpcService.id))
+
+   def filtered_changelist_view(self, request, hpcServiceId, extra_context=None):
+       request.hpcService = HpcService.objects.get(id=hpcServiceId)
+       return self.changelist_view(request, extra_context)
+
+   def filtered_change_view(self, request, hpcServiceId, object_id, extra_context=None):
+       request.hpcService = HpcService.objects.get(id=hpcServiceId)
+       return self.change_view(request, object_id, extra_context)
+
+   def get_queryset(self, request):
+       # request.hpcService will be set in filtered_changelist_view so we can
+       # use it to filter what will be displayed in the list.
+       qs = self.model.objects.all()
+       if (getattr(request,"hpcService",None) is not None) and (hasattr(self.model, "filter_by_hpcService")):
+           qs = self.model.filter_by_hpcService(qs, request.hpcService)
+       return qs
+
+   def get_changelist(self, request, **kwargs):
+       # We implement a custom ChangeList, so the URLs point to the
+       # filtered_change_view rather than the default change_view.
+       return FilteredChangeList
 
 class HpcServiceAdmin(ReadOnlyAwareAdmin):
     model = HpcService
@@ -37,7 +109,7 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('hpcadmin.html', 'top', 'administration'),
                           ('hpctools.html', 'top', 'tools') )
 
-class HPCAdmin(ReadOnlyAwareAdmin):
+class HPCAdmin(FilteredAdmin):
    # Change the application breadcrumb to point to an HPC Service if one is
    # defined
 
@@ -51,50 +123,6 @@ class HPCAdmin(ReadOnlyAwareAdmin):
            return "/admin/hpc/hpcservice/%s/" % services[0].id
        else:
            return "/admin/hpc/hpcservice/"
-
-   def add_extra_context(self, request, extra_context):
-       super(HPCAdmin, self).add_extra_context(request, extra_context)
-
-       if getattr(request,"hpcService",None) is not None:
-            extra_context["custom_changelist_breadcrumb_url"] = "/admin/hpc/%s/%s/filteredlist/" % (self.model._meta.model_name, str(request.hpcService.id))
-
-   """
-      One approach to filtering the HPC Admin views by HPCService. Encode
-      the HPCService into the URL for the changelist view. Then we could do our
-      custom filtering in self.filtered_changelist_view.
-
-      Note: also need to deal with the breadcrumb and the add view.
-   """
-
-   def get_urls(self):
-       from django.conf.urls import patterns, url
-
-       def wrap(view):
-            def wrapper(*args, **kwargs):
-                return self.admin_site.admin_view(view)(*args, **kwargs)
-            return update_wrapper(wrapper, view)
-
-       urls = super(HPCAdmin, self).get_urls()
-       info = self.model._meta.app_label, self.model._meta.model_name
-       my_urls = [
-           url(r'^(.+)/filteredlist/$', wrap(self.filtered_changelist_view), name="%s_%s_filteredchangelist" % info),
-           url(r'^(.+)/(.+)/$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
-       ]
-       return my_urls + urls
-
-   def filtered_changelist_view(self, request, hpcServiceId, extra_context=None):
-       request.hpcService = HpcService.objects.get(id=hpcServiceId)
-       return self.changelist_view(request, extra_context)
-
-   def filtered_change_view(self, request, hpcServiceId, object_id, extra_context=None):
-       request.hpcService = HpcService.objects.get(id=hpcServiceId)
-       return self.change_view(request, object_id, extra_context)
-
-   def get_queryset(self, request):
-       qs = self.model.objects.all()
-       if (getattr(request,"hpcService",None) is not None) and (hasattr(self.model, "filter_by_hpcService")):
-           qs = self.model.filter_by_hpcService(qs, request.hpcService)
-       return qs
 
 class CDNPrefixInline(XOSTabularInline):
     model = CDNPrefix
