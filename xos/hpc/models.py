@@ -30,10 +30,10 @@ class ServiceProvider(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(hpcService=hpcService)
+        return qs.filter(hpcService=hpcService)
 
 class ContentProvider(PlCoreBase):
     class Meta:
@@ -59,10 +59,10 @@ class ContentProvider(PlCoreBase):
         return self.CP_TO_ACCOUNT.get(self.name, self.name)
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(serviceProvider__hpcService=hpcService)
+        return qs.filter(serviceProvider__hpcService=hpcService)
 
 
 class OriginServer(PlCoreBase):
@@ -83,10 +83,10 @@ class OriginServer(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.url)
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(contentProvider__serviceProvider__hpcService=hpcService)
+        return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
 
 class CDNPrefix(PlCoreBase):
     class Meta:
@@ -103,10 +103,10 @@ class CDNPrefix(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.prefix)
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(contentProvider__serviceProvider__hpcService=hpcService)
+        return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
 
 class AccessMap(PlCoreBase):
     class Meta:
@@ -146,10 +146,10 @@ class SiteMap(PlCoreBase):
         super(SiteMap, self).save(*args, **kwds)
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(Q(hpcService=hpcService) |
+        return qs.filter(Q(hpcService=hpcService) |
                                   Q(serviceProvider__hpcService=hpcService) |
                                   Q(contentProvider__serviceProvider__hpcService=hpcService) |
                                   Q(cdnPrefix__contentProvider__serviceProvider__hpcService=hpcService))
@@ -170,9 +170,9 @@ class HpcHealthCheck(PlCoreBase):
     def __unicode__(self): return self.resource_name
 
     @classmethod
-    def select_by_hpcService(cls, hpcService):
+    def filter_by_hpcService(cls, qs, hpcService):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
-        return cls.objects.filter(hpcService=hpcService)
+        return qs.filter(hpcService=hpcService)
 
 
