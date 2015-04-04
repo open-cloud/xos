@@ -4,6 +4,7 @@
 
 {% if not is_popup %}
   {% block breadcrumbs %}
+    <!-- template: modify the breadcrumbs to support custom_app_breadcrumb -->
     <ul class="breadcrumb">
       <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
         <span class="divider">&raquo;</span></li>
@@ -18,3 +19,22 @@
     </ul>
   {% endblock %}
 {% endif %}
+
+
+{% block object-tools %}
+    <!-- template: modify object-tools to support custom_add_url -->
+    {% if has_add_permission %}
+      <div class="object-tools">
+        {% block object-tools-items %}
+        {% if custom_add_url %}
+          <a href="{{ custom_add_url }}{% if is_popup %}?_popup=1{% endif %}" class="btn btn-success">
+        {% else %}
+          <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}" class="btn btn-success">
+        {% endif %}
+            <i class="icon-plus-sign icon-white"></i>&nbsp;
+            {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+          </a>
+        {% endblock %}
+      </div>
+    {% endif %}
+{% endblock %}

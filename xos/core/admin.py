@@ -119,6 +119,10 @@ class XOSAdminMixin(object):
 
         return actions
 
+    def url_for_model_changelist(self, request, model):
+        # used in add_extra_context
+        return reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label)
+
     def add_extra_context(self, request, extra_context):
         # allow custom application breadcrumb url and name
         extra_context["custom_app_breadcrumb_url"] = getattr(self, "custom_app_breadcrumb_url", None)
@@ -135,7 +139,7 @@ class XOSAdminMixin(object):
                     info = {"app": model._meta.app_label,
                             "model": model._meta.model_name,
                             "name": capfirst(model._meta.verbose_name_plural),
-                            "url": reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label) }
+                            "url": self.url_for_model_changelist(request,model) }
                     admins.append(info)
             extra_context["registered_admins"] = admins
 
@@ -175,6 +179,13 @@ class XOSAdminMixin(object):
         self.add_extra_context(request, extra_context)
 
         return super(XOSAdminMixin, self).changelist_view(request, extra_context=extra_context)
+
+    def add_view(self, request, extra_context = None):
+        extra_context = extra_context or {}
+
+        self.add_extra_context(request, extra_context)
+
+        return super(XOSAdminMixin, self).add_view(request, extra_context=extra_context)
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
