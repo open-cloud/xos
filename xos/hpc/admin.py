@@ -18,6 +18,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin.utils import quote
 
 class FilteredChangeList(ChangeList):
+    """ A special ChangeList with a doctored url_for_result function that
+        points to the filteredchange view instead of the default change
+        view.
+    """
+
     def __init__(self, request, *args, **kwargs):
         self.hpcService = getattr(request, "hpcService", None)
         super(FilteredChangeList, self).__init__(request, *args, **kwargs)
@@ -38,7 +43,18 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
       the HPCService into the URL for the changelist view. Then we could do our
       custom filtering in self.filtered_changelist_view.
 
-      Note: also need to deal with the breadcrumb and the add view.
+      To make this work, a few changes needed to be made to the change and
+      change_list templates.
+
+      1) "custom_changelist_breadcrumb_url" is used to replace the breadcrumb
+         in change and add views with one that will point back to the filtered
+         list.
+
+      2) "custom_add_url" is used to replace the Add button's URL with one
+         that points to the filtered add view.
+
+      TODO: Save & Add Another,
+            the add link when the changelist is empty
    """
 
    def get_urls(self):
@@ -53,7 +69,8 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
        info = self.model._meta.app_label, self.model._meta.model_name
        my_urls = [
            url(r'^(.+)/filteredlist/$', wrap(self.filtered_changelist_view), name="%s_%s_filteredchangelist" % info),
-           url(r'^(.+)/(.+)/$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
+           url(r'^(.+)/(.+)/filteredchange$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
+           url(r'^(.+)/filteredadd/$', wrap(self.filtered_add_view), name='%s_%s_filteredadd' % info),
        ]
        return my_urls + urls
 
@@ -62,15 +79,19 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
 
        if getattr(request,"hpcService",None) is not None:
             extra_context["custom_changelist_breadcrumb_url"] = "/admin/hpc/%s/%s/filteredlist/" % (self.model._meta.model_name, str(request.hpcService.id))
-            #extra_context["custom_add_url"] = "/admin/hpc/%s/%s/add/" % (self.model._meta.model_name, str(request.hpcService.id))
+            extra_context["custom_add_url"] = "/admin/hpc/%s/%s/filteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
 
    def filtered_changelist_view(self, request, hpcServiceId, extra_context=None):
        request.hpcService = HpcService.objects.get(id=hpcServiceId)
-       return self.changelist_view(request, extra_context)
+       return self.changelist_view(request, extra_context=extra_context)
 
    def filtered_change_view(self, request, hpcServiceId, object_id, extra_context=None):
        request.hpcService = HpcService.objects.get(id=hpcServiceId)
-       return self.change_view(request, object_id, extra_context)
+       return self.change_view(request, object_id, extra_context=extra_context)
+
+   def filtered_add_view(self, request, hpcServiceId, extra_context=None):
+       request.hpcService = HpcService.objects.get(id=hpcServiceId)
+       return self.add_view(request, extra_context=extra_context)
 
    def get_queryset(self, request):
        # request.hpcService will be set in filtered_changelist_view so we can
@@ -108,6 +129,14 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
 
     suit_form_includes = (('hpcadmin.html', 'top', 'administration'),
                           ('hpctools.html', 'top', 'tools') )
+
+    def url_for_model_changelist(self, request, model):
+       if not request.resolver_match.args:
+           return reverse('admin:%s_%s_changelist' % (model._meta.app_label, model._meta.model_name), current_app=model._meta.app_label)
+       else:
+           obj_id = request.resolver_match.args[0]
+           changelist_url = reverse('admin:%s_%s_filteredchangelist' % (model._meta.app_label, model._meta.model_name), args=(obj_id,), current_app=model._meta.app_label)
+           return changelist_url
 
 class HPCAdmin(FilteredAdmin):
    # Change the application breadcrumb to point to an HPC Service if one is
