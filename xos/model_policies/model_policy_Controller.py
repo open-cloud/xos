@@ -1,6 +1,6 @@
 
 def handle(controller):
-    from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser
+    from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser, ControllerImages, ControllerNetwork
     from collections import defaultdict
 
     # relations for all sites
@@ -36,3 +36,25 @@ def handle(controller):
             controller not in ctrls_by_user[user]:
             controller_user = ControllerUser(controller=controller, user=user)
             controller_user.save()
+    # relations for all networks
+    ctrls_by_network = defaultdict(list)
+    ctrl_networks = ControllerNetwork.objects.all()
+    for ctrl_network in ctrl_networks:
+        ctrls_by_network[ctrl_network.network].append(ctrl_network.controller)
+    networks = Network.objects.all()
+    for network in networks:
+        if network not in ctrls_by_network or \
+            controller not in ctrls_by_network[network]:
+            controller_network = ControllerNetwork(controller=controller, network=network)
+            controller_network.save()
+    # relations for all images
+    ctrls_by_image = defaultdict(list)
+    ctrl_images = ControllerImages.objects.all()
+    for ctrl_image in ctrl_images:
+        ctrls_by_image[ctrl_image.image].append(ctrl_image.controller)
+    images = Image.objects.all()
+    for image in images:
+        if image not in ctrls_by_image or \
+            controller not in ctrls_by_image[image]:
+            controller_image = ControllerImages(controller=controller, image=image)
+            controller_image.save()
