@@ -219,7 +219,18 @@ class PlCoreBase(models.Model, PlModelMixIn):
         if "silent" in kwargs:
             silent=silent or kwargs.pop("silent")
 
-        self.check_composite_primary_key()
+        # SMBAKER: if an object is trying to delete itself, or if the observer
+        # is updating an object's backend_* fields, then let it slip past the
+        # composite key check.
+        ignore_composite_key_check=False
+        if "update_fields" in kwargs:
+            ignore_composite_key_check=True
+            for field in kwargs["update_fields"]:
+                if not (field in ["backend_register", "backend_status", "deleted", "enacted", "updated"]):
+                    ignore_composite_key_check=False
+
+        if not ignore_composite_key_check:
+            self.check_composite_primary_key()
 
         super(PlCoreBase, self).save(*args, **kwargs)
 
