@@ -265,13 +265,14 @@ XOSApplication = Marionette.Application.extend({
 
     createDetailHandler: function(detailName, collection_name, regionName, title) {
         var app=this;
+        var detail_title=title;
         showModelId = function(model_id) {
             collection = xos[collection_name];
             model = collection.get(model_id);
             if (model == undefined) {
                 app[regionName].show(new HTMLView({html: "failed to load object " + model_id + " from collection " + collection_name}));
             } else {
-                var title = title + ": " + model.attributes.humanReadableName;
+                var title = detail_title + ": " + model.attributes.humanReadableName;
 
                 $("#contentTitle").html(templateFromId("#xos-title-detail")({"title": title}));
 
