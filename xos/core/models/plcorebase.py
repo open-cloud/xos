@@ -192,12 +192,12 @@ class PlCoreBase(models.Model, PlModelMixIn):
 
     def check_composite_primary_key(self):
         try:
-            composite_key_exists = self.composite_primary_key
+            composite_key_exists = (self.composite_primary_key!=None) and (self.composite_primary_key!=[])
         except AttributeError:
             composite_key_exists = False
 
-            if (not composite_key_exists):
-                return
+        if (not composite_key_exists):
+            return
 
         # dictionary containing cpk field name and value
         cpk_fields = dict([(name, getattr(self, name)) for name in self.composite_primary_key])
