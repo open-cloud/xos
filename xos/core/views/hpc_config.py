@@ -29,6 +29,12 @@ def HpcConfig(request):
     # to us.
     hpc=None
     for candidate in HpcService.objects.all():
+        if candidate.cmi_hostname == node_slicename:
+            # A hack for standalone CMIs that aren't managed by XOS. Set
+            # /etc/slicename to cmi_hostname that's configured in the
+            # HPCService object.
+            hpc = candidate
+
         for slice in get_service_slices(candidate):
             if slice.name == node_slicename:
                 hpc = candidate
