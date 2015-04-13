@@ -146,7 +146,7 @@ def GetSites(slice_remap={}):
 
     return sites
 
-def GetInterfaces(slicename, node_ids):
+def GetInterfaces(slicename, node_ids, return_nat=False, return_private=False):
     interfaces = []
     ps_slices = Slice.objects.filter(name=slicename)
     for ps_slice in ps_slices:
@@ -164,6 +164,28 @@ def GetInterfaces(slicename, node_ids):
                     template = networkSliver.network.template
                     if (template.visibility=="public") and (template.translation=="none"):
                         ip=networkSliver.ip
+
+                if return_nat:
+                    ip = None
+                    for networkSliver in ps_sliver.networkslivers.all():
+                        if (not networkSliver.ip):
+                            continue
+                        template = networkSliver.network.template
+                        if (template.visibility=="private") and (template.translation=="NAT"):
+                            ip=networkSliver.ip
+                    if not ip:
+                        continue
+
+                if return_private:
+                    ip = None
+                    for networkSliver in ps_sliver.networkslivers.all():
+                        if (not networkSliver.ip):
+                            continue
+                        template = networkSliver.network.template
+                        if (template.visibility=="private") and (template.translation=="none"):
+                            ip=networkSliver.ip
+                    if not ip:
+                        continue
 
                 interface = {"node_id": node_id,
                              "ip": ip,
@@ -197,6 +219,7 @@ def GetConfiguration(name, slice_remap={}):
     perhost = {}
     allinterfaces = {}
     hostipmap = {}
+    hostnatmap = {}
     nodes = []
     if len(slices)==1:
         slice = slices[0]
@@ -216,6 +239,18 @@ def GetConfiguration(name, slice_remap={}):
             if interface['is_primary']:
                 hostipmap[nodemap[interface['node_id']]] = interface['ip']
 
+        hostnatmap = {}
+        interfaces = GetInterfaces(slice["planetstack_name"], node_ids, return_nat=True)
+        for interface in interfaces:
+            interface['interface_tags'] = []
+            hostnatmap[nodemap[interface['node_id']]] = interface['ip']
+
+        hostprivmap = {}
+        interfaces = GetInterfaces(slice["planetstack_name"], node_ids, return_private=True)
+        for interface in interfaces:
+            interface['interface_tags'] = []
+            hostprivmap[nodemap[interface['node_id']]] = interface['ip']
+
         for nid in node_ids:
             sliver_tags = GetTags(slicename,nid)
             perhost[nodemap[nid]] = sliver_tags
@@ -234,6 +269,8 @@ def GetConfiguration(name, slice_remap={}):
             'configuration': node_sliver_tags,
             'allconfigurations':perhost,
             'hostipmap':hostipmap,
+            'hostnatmap':hostnatmap,
+            'hostprivmap':hostprivmap,
             'slivers': slivers,
             'interfaces': allinterfaces,
             'sites': sites,
