@@ -133,7 +133,12 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                                sliver=sliver,
                                ip=ip,
                                port_id=port["id"])
-            ns.save()
+
+            try:
+                ns.save()
+            except:
+                logger.log_exc("failed to save networksliver %s" % str(ns))
+                continue
 
         # Now, handle port forwarding
         # We get the list of NetworkSlivers again, since we might have just
