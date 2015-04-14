@@ -33,6 +33,7 @@
 """
 
 import os
+import socket
 import sys
 sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
@@ -329,8 +330,11 @@ class RRWatcher(BaseWatcher):
 
             ip = sliver.get_public_ip()
             if not ip:
-                self.set_status(sliver, service, "watcher.DNS", "no public IP")
-                continue
+                ip = socket.gethostbyname(sliver.node.name)
+
+            #if not ip:
+            #    self.set_status(sliver, service, "watcher.DNS", "no public IP")
+            #    continue
 
             checks = HpcHealthCheck.objects.filter(kind="dns")
             if not checks:
