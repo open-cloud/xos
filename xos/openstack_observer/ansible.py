@@ -65,7 +65,7 @@ def run_template(name, opts,path='', expected_num=None):
     f.flush()
 
     
-    if (Config().observer_steps):
+    if (not Config().observer_pretend):
         run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
         msg = run.read()
         status = run.close()
