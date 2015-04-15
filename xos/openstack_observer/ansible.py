@@ -7,6 +7,7 @@ import pdb
 import string
 import random
 import re
+from xos.config import Config
 
 # XXX hardcoded path
 #    is there any reason why we aren't importing xos.config ?
