@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import PlCoreBase,SingletonModel
 from core.models.plcorebase import StrippedCharField
+import json
 
 class Service(PlCoreBase):
     description = models.TextField(max_length=254,null=True, blank=True,help_text="Description of Service")
@@ -49,7 +50,7 @@ class Tenant(PlCoreBase):
         return attributes.get(name, default)
 
     def set_attribute(self, name, value):
-        if self.service_specific_attributes:
+        if self.service_specific_attribute:
             attributes = json.loads(self.service_specific_attribute)
         else:
             attributes = {}
