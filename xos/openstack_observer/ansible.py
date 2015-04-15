@@ -7,11 +7,7 @@ import pdb
 import string
 import random
 import re
-from xos.config import Config
-
-# XXX hardcoded path
-#    is there any reason why we aren't importing xos.config ?
-XOS_DIR="/opt/xos"
+from xos.config import Config, XOS_DIR
 
 try:
     step_dir = Config().observer_steps_dir
