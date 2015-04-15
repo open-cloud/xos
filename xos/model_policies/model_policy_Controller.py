@@ -1,6 +1,6 @@
 
 def handle(controller):
-    from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser, ControllerImages, ControllerNetwork
+    from core.models import Controller, Site, ControllerSite, Slice, ControllerSlice, User, ControllerUser, ControllerImages, ControllerNetwork, Image, Network
     from collections import defaultdict
 
     # relations for all sites
