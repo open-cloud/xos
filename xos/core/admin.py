@@ -180,12 +180,12 @@ class XOSAdminMixin(object):
 
         return super(XOSAdminMixin, self).changelist_view(request, extra_context=extra_context)
 
-    def add_view(self, request, extra_context = None):
+    def add_view(self, request, form_url='', extra_context = None):
         extra_context = extra_context or {}
 
         self.add_extra_context(request, extra_context)
 
-        return super(XOSAdminMixin, self).add_view(request, extra_context=extra_context)
+        return super(XOSAdminMixin, self).add_view(request, form_url, extra_context=extra_context)
 
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
