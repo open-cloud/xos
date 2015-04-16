@@ -34,7 +34,9 @@ if (! window.XOSLIB_LOADED ) {
 
     SLICEPLUS_API = XOSLIB_BASE + "/slicesplus/";
     TENANTVIEW_API = XOSLIB_BASE + "/tenantview/";
-    HPCVIEW_API = XOSLIB_BASE + "/hpcview";
+    HPCVIEW_API = XOSLIB_BASE + "/hpcview/";
+
+    CORDSUBSCRIBER_API = XOSLIB_BASE + "/cordsubscriber/";
 
     XOSModel = Backbone.Model.extend({
         relatedCollections: [],
@@ -723,6 +725,13 @@ if (! window.XOSLIB_LOADED ) {
                             collectionName: "hpcview",
                             listFields: [],
                             detailFields: [],
+                            });
+
+        define_model(this, {urlRoot: CORDSUBSCRIBER_API,
+                            modelName: "cordSubscriber",
+                            listFields: ["id"],
+                            detailFields: ["id", "service_specific_id", "vcpe_id", "firewall_enable"],
+                            inputType: {"firewall_enable": "checkbox"},
                             });
 
         /* by default, have slicePlus only fetch the slices the user can see */
