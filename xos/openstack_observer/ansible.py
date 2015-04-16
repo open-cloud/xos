@@ -7,10 +7,7 @@ import pdb
 import string
 import random
 import re
-
-# XXX hardcoded path
-#    is there any reason why we aren't importing xos.config ?
-XOS_DIR="/opt/xos"
+from xos.config import Config, XOS_DIR
 
 try:
     step_dir = Config().observer_steps_dir
@@ -68,7 +65,7 @@ def run_template(name, opts,path='', expected_num=None):
     f.flush()
 
     
-    if (Config().observer_steps):
+    if (not Config().observer_pretend):
         run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp))
         msg = run.read()
         status = run.close()
