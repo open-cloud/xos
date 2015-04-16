@@ -17,11 +17,15 @@ from core.models import *
 from hpc.models import *
 from cord.models import *
 django.setup()
-svc = Service.objects.get(name="VCPE")
+svc = VOLTService.get_service_objects().all()[0]
 
-t = VCPETenant(provider_service=svc)
+t = VOLTTenant(provider_service=svc)
 t.caller = User.objects.all()[0]
 t.save()
+
+for v in VOLTTenant.objects.all():
+    v.caller = User.objects.all()[0]
+    v.delete()
 
 for v in VCPETenant.objects.all():
     v.caller = User.objects.all()[0]
@@ -31,14 +35,96 @@ for v in VCPETenant.objects.all():
 class ConfigurationError(Exception):
     pass
 
-class VCPEService(Service):
+# -------------------------------------------
+# VOLT
+# -------------------------------------------
+
+class VOLTService(Service):
+    KIND = "vOLT"
+
     class Meta:
-        app_label = "vCPE"
+        app_label = "cord"
+        verbose_name = "vOLT Service"
+        proxy = True
+
+class VOLTTenant(Tenant):
+    class Meta:
+        proxy = True
+
+    KIND = "vOLT"
+
+    @property
+    def vcpe(self):
+        vcpe_id=self.get_attribute("vcpe_id")
+        if not vcpe_id:
+            return None
+        vcpes=VCPETenant.objects.filter(id=vcpe_id)
+        if not vcpes:
+            return None
+        return vcpes[0]
+
+    @vcpe.setter
+    def vcpe(self, value):
+        if value:
+            self.set_attribute("vcpe_id", value.id)
+        else:
+            self.set_attribute("vcpe_id", None)
+
+    def manage_vcpe(self):
+        # Each VOLT object owns exactly one VCPE object
+
+        if self.deleted:
+            return
+
+        if self.vcpe is None:
+            vcpeServices = VCPEService.get_service_objects().all()
+            if not vcpeServices:
+                raise ConfigurationError("No VCPE Services available")
+
+            vcpe = VCPETenant(provider_service = vcpeServices[0],
+                              subscriber_tenant = self)
+            vcpe.caller = self.caller
+            vcpe.save()
+
+            try:
+                self.vcpe = vcpe
+                self.save()
+            except:
+                vcpe.delete()
+                raise
+
+    def cleanup_vcpe(self):
+        if self.vcpe:
+            self.vcpe.delete()
+            self.vcpe = None
+
+    def save(self, *args, **kwargs):
+        if not getattr(self, "caller", None):
+            raise TypeError("VOLTTenant's self.caller was not set")
+        super(VOLTTenant, self).save(*args, **kwargs)
+        self.manage_vcpe()
+
+    def delete(self, *args, **kwargs):
+        self.cleanup_vcpe()
+        super(VOLTTenant, self).delete(*args, **kwargs)
+
+# -------------------------------------------
+# VCPE
+# -------------------------------------------
+
+class VCPEService(Service):
+    KIND = "vCPE"
+
+    class Meta:
+        app_label = "cord"
         verbose_name = "vCPE Service"
+        proxy = True
 
 class VCPETenant(Tenant):
     class Meta:
         proxy = True
+
+    KIND = "vCPE"
 
     default_attributes = {"firewall_enable": False,
                           "sliver_id": None}
@@ -82,10 +168,11 @@ class VCPETenant(Tenant):
         return nodes[0]
 
     def manage_sliver(self):
+        # Each VCPE object owns exactly one sliver.
+
         if self.deleted:
             return
 
-        # TODO: This could be a model_policy...
         if (self.sliver is not None) and (self.sliver.image != self.image):
             self.sliver.delete()
             self.sliver = None
@@ -101,7 +188,12 @@ class VCPETenant(Tenant):
                             deployment = node.site_deployment.deployment)
             sliver.save()
 
-            self.sliver = sliver
+            try:
+                self.sliver = sliver
+                self.save()
+            except:
+                sliver.delete()
+                raise
 
     def cleanup_sliver(self):
         if self.sliver:
@@ -111,8 +203,8 @@ class VCPETenant(Tenant):
     def save(self, *args, **kwargs):
         if not getattr(self, "caller", None):
             raise TypeError("VCPETenant's self.caller was not set")
-        self.manage_sliver()
         super(VCPETenant, self).save(*args, **kwargs)
+        self.manage_sliver()
 
     def delete(self, *args, **kwargs):
         self.cleanup_sliver()
