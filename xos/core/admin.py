@@ -728,9 +728,9 @@ class ServiceAttrAsTabInline(XOSTabularInline):
     suit_classes = 'suit-tab suit-tab-serviceattrs'
 
 class ServiceAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon","name","description","versionNumber","enabled","published")
+    list_display = ("backend_status_icon","name","kind","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text","name","description","versionNumber","enabled","published","view_url","icon_url"]
+    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline]
     readonly_fields = ('backend_status_text', )
