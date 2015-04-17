@@ -12,16 +12,23 @@ from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, X
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
-    IdField = serializers.ReadOnlyField
+    ReadOnlyField = serializers.ReadOnlyField
 else:
     # rest_framework 2.x
-    IdField = serializers.Field
+    ReadOnlyField = serializers.Field
 
 class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
-        id = IdField()
-        vcpe_id = IdField()
-        sliver_id = IdField()
+        id = ReadOnlyField()
+        vcpe_id = ReadOnlyField()
+        sliver = ReadOnlyField()
+        image = ReadOnlyField()
         firewall_enable = serializers.BooleanField()
+        firewall_rules = serializers.CharField()
+        url_filter_enable = serializers.BooleanField()
+        url_filter_rules = serializers.CharField()
+        cdn_enable = serializers.BooleanField()
+        sliver_name = ReadOnlyField()
+        image_name = ReadOnlyField()
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
@@ -29,11 +36,11 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
                       'service_specific_id',
-                      'vcpe_id', 'sliver_id', 'firewall_enable')
+                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'cdn_enable')
 
 
         def getHumanReadableName(self, obj):
-            return str(obj)
+            return obj.__unicode__()
 
 class CordSubscriberList(XOSListCreateAPIView):
     queryset = CordSubscriber.get_tenant_objects().select_related().all()
