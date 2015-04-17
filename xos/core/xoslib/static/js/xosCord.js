@@ -58,12 +58,13 @@ CordAdminApp.buildViews = function() {
          add_child_template = '#xosAdmin-' + name + '-add-child-template';
          collection_name = name + "s";
          region_name = name + "List";
+         templates = {cordSubscriber: "#xos-cord-subscriber-template"};
 
          if (window["XOSDetailView_" + name]) {
-             detailClass = window["XOSDetailView_" + name].extend({template: "#xos-detail-template",
+             detailClass = window["XOSDetailView_" + name].extend( {template: templates[name] || "#xos-detail-template",
                                                                     app: CordAdminApp});
          } else {
-             detailClass = genericDetailClass;
+             detailClass = genericDetailClass.extend( {template: templates[name] || "#xos-detail-template", });
          }
          if ($(detail_template).length) {
              detailClass = detailClass.extend({

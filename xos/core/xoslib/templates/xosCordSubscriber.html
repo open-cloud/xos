@@ -1,16 +1,44 @@
 <script type="text/template" id="xos-cord-subscriber-template">
   <h3 class="xos-detail-title">CORD Subscriber</h3>
   <form>
+
+  <div class="box">
+  <h3>vOLT</h3>
   <table class="xos-detail-table">
-  <tr><td class="xos-label-cell">vOLT</td></tr>
-  <tr><td class="xos-label-cell">ID:</td><td><%= vOLT_id %></td></tr>
-  <tr><td class="xos-label-cell">internal ID:</td><td><%= vOLT_service_specific_id %></td></tr>
-  <tr><td class="xos-label-cell">vCPE</td></tr>
-  <tr><td class="xos-label-cell">ID:</td><td><%= vCPE_id %></td></tr>
-  <tr><td class="xos-label-cell">vBNG</td></tr>
-  <tr><td class="xos-label-cell">ID:</td><td></td></tr>
-  <tr><td class="xos-label-cell">Routeable Subnet:</td><td></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.id %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">VLAN Id:</td><td><%= model.attributes.service_specific_id %></td></tr>
+  </table>
+  </div>
+
+  <br>
+
+  <div class="box">
+  <h3>vCPE</h3>
+  <table class="xos-detail-table">
+  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.vcpe_id %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Image:</td><td><%= model.attributes.image_name %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Sliver Id:</td><td><%= model.attributes.sliver %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Firewall:</td><td><input type="checkbox" name="firewall_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable<br>
+                                                                  <textarea name="firewall_rules"><%= model.attributes.firewall_rules %></textarea></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">URL Filter:</td><td><input type="checkbox" name="url_filter_enable" <% if (model.attributes.url_filter_enable) print("checked"); %>>Enable<br>
+                                                                  <textarea name="url_filter_rules"><%= model.attributes.url_filter_rules %></textarea></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">CDN:</td><td><input type="checkbox" name="cdn_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable</td></tr>
+  </table>
+  </div>
+
+  <br>
+
+  <div class="box">
+  <h3>vBNG</h3>
+  <table class="xos-detail-table">
+  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Routeable Subnet:</td><td></td></tr>
+  </table>
+  </div>
+
+  <%= xosInlineDetailButtonsTemplate() %>
   </table>
   </form>
 </script>
+
 
