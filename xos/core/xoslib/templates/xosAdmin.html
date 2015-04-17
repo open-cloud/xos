@@ -217,7 +217,9 @@
   <div class="box save-box">
     <button class="btn btn-high btn-info btn-xos-contentButtonPanel btn-xos-save-leave">Save</button>
     <button class="btn btn-high btn-xos-contentButtonPanel btn-xos-save-continue">Save and continue editing</button>
+    <% if (!disableAdd) { %>
     <button class="btn btn-high btn-xos-contentButtonPanel btn-xos-save-another">Save and add another</button>
+    <% }; %>
     <button class="btn btn-danger btn-xos-contentButtonPanel btn-xos-delete">Delete</button>
   </div>
 </script>
@@ -225,7 +227,9 @@
 <script type="text/template" id="xos-listbuttons-template">
   <div class="box save-box">
     <button class="btn btn-high btn-primary btn-xos-contentButtonPanel btn-xos-refresh">Refresh</button>
+    <% if (!disableAdd) { %>
     <button class="btn btn-high btn-success btn-xos-contentButtonPanel btn-xos-add">Add</button>
+    <% }; %>
   </div>
 </script>
 
