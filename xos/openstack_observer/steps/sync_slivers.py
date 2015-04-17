@@ -21,8 +21,8 @@ class SyncSlivers(OpenStackSyncStep):
     observes=Sliver
 
     def get_userdata(self, sliver, pubkeys):
-        userdata = 'opencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (sliver.slice.name, sliver.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
-        userdata += 'ssh-authorized-keys:\n'
+        userdata = '#cloud-config\n\nopencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (sliver.slice.name, sliver.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
+        userdata += 'ssh_authorized_keys:\n'
         for key in pubkeys:
             userdata += '  - %s\n' % key
         return userdata
