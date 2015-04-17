@@ -117,12 +117,12 @@ class SyncSlivers(OpenStackSyncStep):
                      'meta':metadata_update,
                      'user_data':r'%s'%escape(userData)}
 
-        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=2)
-        sliver_id = res[1]['info']['OS-EXT-SRV-ATTR:instance_name'] # 0 is for the key
-        sliver_uuid = res[1]['id'] # 0 is for the key
+        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
+        sliver_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
+        sliver_uuid = res[0]['id']
 
         try:
-            hostname = res[1]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
+            hostname = res[0]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
             ip = socket.gethostbyname(hostname)
             sliver.ip = ip
         except:
