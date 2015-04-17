@@ -127,6 +127,10 @@ class VCPETenant(Tenant):
     KIND = "vCPE"
 
     default_attributes = {"firewall_enable": False,
+                          "firewall_rules": "accept all anywhere anywhere",
+                          "url_filter_enable": False,
+                          "url_filter_rules": "allow all",
+                          "cdn_enable": False,
                           "sliver_id": None}
 
     @property
@@ -159,6 +163,38 @@ class VCPETenant(Tenant):
     @firewall_enable.setter
     def firewall_enable(self, value):
         self.set_attribute("firewall_enable", value)
+
+    @property
+    def firewall_rules(self):
+        return self.get_attribute("firewall_rules", self.default_attributes["firewall_rules"])
+
+    @firewall_rules.setter
+    def firewall_rules(self, value):
+        self.set_attribute("firewall_rules", value)
+
+    @property
+    def url_filter_enable(self):
+        return self.get_attribute("url_filter_enable", self.default_attributes["url_filter_enable"])
+
+    @url_filter_enable.setter
+    def url_filter_enable(self, value):
+        self.set_attribute("url_filter_enable", value)
+
+    @property
+    def url_filter_rules(self):
+        return self.get_attribute("url_filter_rules", self.default_attributes["url_filter_rules"])
+
+    @url_filter_rules.setter
+    def url_filter_rules(self, value):
+        self.set_attribute("url_filter_rules", value)
+
+    @property
+    def cdn_enable(self):
+        return self.get_attribute("cdn_enable", self.default_attributes["cdn_enable"])
+
+    @cdn_enable.setter
+    def cdn_enable(self, value):
+        self.set_attribute("cdn_enable", value)
 
     def pick_node(self):
         nodes = list(Node.objects.all())
