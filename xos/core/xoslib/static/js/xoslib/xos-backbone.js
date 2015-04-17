@@ -730,8 +730,10 @@ if (! window.XOSLIB_LOADED ) {
         define_model(this, {urlRoot: CORDSUBSCRIBER_API,
                             modelName: "cordSubscriber",
                             listFields: ["id"],
-                            detailFields: ["id", "service_specific_id", "vcpe_id", "firewall_enable"],
-                            inputType: {"firewall_enable": "checkbox"},
+                            detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name", "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable"],
+                            inputType: {"firewall_enable": "checkbox",
+                                        "url_filter_enable": "checkbox",
+                                        "cdn_enable": "checkbox"},
                             });
 
         /* by default, have slicePlus only fetch the slices the user can see */
