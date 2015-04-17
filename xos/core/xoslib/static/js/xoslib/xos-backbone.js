@@ -383,11 +383,11 @@ if (! window.XOSLIB_LOADED ) {
 
         for (key in attrs) {
             value = attrs[key];
-            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "detailLinkFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections", "defaults"])>=0) {
+            if ($.inArray(key, ["urlRoot", "modelName", "collectionName", "listFields", "addFields", "detailFields", "detailLinkFields", "foreignFields", "inputType", "relatedCollections", "foreignCollections", "defaults", "disableAdd"])>=0) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
-            if ($.inArray(key, ["validate", "preSave", "readOnlyFields"])) {
+            if ($.inArray(key, ["validate", "preSave", "readOnlyFields"]) >= 0) {
                 modelAttrs[key] = value;
             }
         }
@@ -395,6 +395,8 @@ if (! window.XOSLIB_LOADED ) {
         if (!modelAttrs.defaults) {
             modelAttrs.defaults = get_defaults(modelName);
         }
+
+        console.log(collectionAttrs);
 
 //        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
 //            modelAttrs["defaults"] = xosdefaults[modelName];
@@ -734,6 +736,7 @@ if (! window.XOSLIB_LOADED ) {
                             inputType: {"firewall_enable": "checkbox",
                                         "url_filter_enable": "checkbox",
                                         "cdn_enable": "checkbox"},
+                            disableAdd: true,
                             });
 
         /* by default, have slicePlus only fetch the slices the user can see */

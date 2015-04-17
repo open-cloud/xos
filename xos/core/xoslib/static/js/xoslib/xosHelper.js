@@ -465,7 +465,10 @@ XOSButtonView = Marionette.ItemView.extend({
             refreshClicked: function(e) {
                      this.options.linkedView.refreshClicked.call(this.options.linkedView, e);
                      },
+
+            templateHelpers: function() { return {disableAdd: this.options.linkedView.disableAdd }; },
             });
+
 
 XOSDetailButtonView = XOSButtonView.extend({ template: "#xos-savebuttons-template" });
 XOSListButtonView = XOSButtonView.extend({ template: "#xos-listbuttons-template" });
@@ -692,6 +695,8 @@ XOSDetailView = Marionette.ItemView.extend({
                                                     choices: this.options.choices || this.choices || this.model.choices || {},
                                                     helpText: this.options.helpText || this.helpText || this.model.helpText || {},
                                          }},
+
+             disableAdd: function() { return this.disableAdd || this.options.disableAdd || this.model.disableAdd; },
 });
 
 XOSDetailView_sliver = XOSDetailView.extend( {
@@ -860,6 +865,8 @@ XOSListView = FilteredCompositeView.extend({
                          listFields: this.collection.listFields,
                          detailLinkFields: this.collection.detailLinkFields, };
              },
+
+             disableAdd: function() { return this.disableAdd || this.options.disableAdd || this.collection.disableAdd; }
 });
 
 XOSDataTableView = Marionette.View.extend( {
@@ -1076,6 +1083,8 @@ XOSDataTableView = Marionette.View.extend( {
             return null;
         }
      },
+
+     disableAdd: function() { return this.disableAdd || this.options.disableAdd || this.collection.disableAdd; },
 
 });
 
