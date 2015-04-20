@@ -57,11 +57,21 @@ class VOLTTenant(Tenant):
 
     KIND = "vOLT"
 
+    default_attributes = {"vlan_id": None, }
+
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
             self._meta.get_field("provider_service").default = volt_services[0].id
         super(VOLTTenant, self).__init__(*args, **kwargs)
+
+    @property
+    def vlan_id(self):
+        return self.get_attribute("vlan_id", self.default_attributes["vlan_id"])
+
+    @vlan_id.setter
+    def vlan_id(self, value):
+        self.set_attribute("vlan_id", value)
 
     @property
     def vcpe(self):
