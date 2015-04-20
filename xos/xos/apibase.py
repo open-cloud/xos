@@ -6,32 +6,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.exceptions import PermissionDenied as RestFrameworkPermissionDenied
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
-
-class XOSProgrammingError(APIException):
-    status_code=400
-    def __init__(self, why="programming error", fields={}):
-        APIException.__init__(self, {"error": "XOSProgrammingError",
-                            "specific_error": why,
-                            "fields": fields})
-
-class XOSPermissionDenied(RestFrameworkPermissionDenied):
-    def __init__(self, why="permission error", fields={}):
-        APIException.__init__(self, {"error": "XOSPermissionDenied",
-                            "specific_error": why,
-                            "fields": fields})
-
-class XOSNotAuthenticated(RestFrameworkPermissionDenied):
-    def __init__(self, why="you must be authenticated to use this api", fields={}):
-        APIException.__init__(self, {"error": "XOSNotAuthenticated",
-                            "specific_error": why,
-                            "fields": fields})
-
-class XOSValidationError(APIException):
-    status_code=403
-    def __init__(self, why="validation error", fields={}):
-        APIException.__init__(self, {"error": "XOSValidationError",
-                            "specific_error": why,
-                            "fields": fields})
+from xos.exceptions import *
 
 class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
@@ -89,10 +64,6 @@ class XOSRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
             response.exception=True
             return response
-        elif isinstance(exc, DjangoValidationError):
-            response=Response({'detail': {"error": "ValidationError", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_400_BAD_REQUEST)
-            response.exception=True
-            return response
         else:
             return super(XOSRetrieveUpdateDestroyAPIView, self).handle_exception(exc)
 
@@ -132,10 +103,6 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
         # exception, and replaces it with a generic "Permission Denied"
         if isinstance(exc, DjangoPermissionDenied):
             response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
-            response.exception=True
-            return response
-        elif isinstance(exc, DjangoValidationError):
-            response=Response({'detail': {"error": "ValidationError", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_400_BAD_REQUEST)
             response.exception=True
             return response
         else:
