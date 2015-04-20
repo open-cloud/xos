@@ -26,7 +26,7 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         service_specific_id = serializers.CharField()
         vlan_id = serializers.CharField()
-        provider_service = serializers.PrimaryKeyRelatedField(queryset=VOLTService.get_service_objects().all(), default=get_default_volt_service())
+        provider_service = serializers.PrimaryKeyRelatedField(queryset=VOLTService.get_service_objects().all(), default=get_default_volt_service)
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
