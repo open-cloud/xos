@@ -62,7 +62,6 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      obj = getattr(obj, part)
                      if not obj:
                          return
-                print "XXX", obj, parts[-1], value
                 setattr(obj, parts[-1], value)
 
         super(CordSubscriber, self).__setattr__(key, value)
