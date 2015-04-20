@@ -38,7 +38,6 @@ RUN pip install django-crispy-forms
 RUN pip install django-geoposition
 RUN pip install django-extensions
 RUN pip install django-suit
-RUN pip install django-evolution
 RUN pip install django-bitfield
 RUN pip install django-ipware
 RUN pip install django-encrypted-fields
