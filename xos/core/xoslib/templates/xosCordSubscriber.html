@@ -6,7 +6,7 @@
   <h3>vOLT</h3>
   <table class="xos-detail-table">
   <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.id %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">VLAN Id:</td><td><%= model.attributes.service_specific_id %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">VLAN Id:</td><td><%= model.attributes.vlan_id %></td></tr>
   </table>
   </div>
 
@@ -31,8 +31,8 @@
   <div class="box">
   <h3>vBNG</h3>
   <table class="xos-detail-table">
-  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Routeable Subnet:</td><td></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.vbng_id %></td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Routeable Subnet:</td><td><%= model.attributes.routeable_subnet %></td></tr>
   </table>
   </div>
 

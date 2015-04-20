@@ -19,9 +19,11 @@ else:
 
 class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
+        vlan_id = ReadOnlyField()
         vcpe_id = ReadOnlyField()
         sliver = ReadOnlyField()
         image = ReadOnlyField()
+        vbng_id = ReadOnlyField()
         firewall_enable = serializers.BooleanField()
         firewall_rules = serializers.CharField()
         url_filter_enable = serializers.BooleanField()
@@ -29,14 +31,15 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         cdn_enable = serializers.BooleanField()
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
+        routeable_subnet = serializers.CharField()
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         class Meta:
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
-                      'service_specific_id',
-                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'cdn_enable')
+                      'vlan_id',
+                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'cdn_enable', 'vbng_id', 'routeable_subnet',)
 
 
         def getHumanReadableName(self, obj):

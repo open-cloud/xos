@@ -25,17 +25,6 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
     def __init__(self, *args, **kwargs):
         super(VOLTTenant, self).__init__(*args, **kwargs)
 
-    @property
-    def vcpe_id(self):
-        if self.vcpe:
-            return self.vcpe.id
-        else:
-            return None
-
-    @vcpe_id.setter
-    def vcpe_id(self, value):
-        pass
-
     passthroughs = ( ("firewall_enable", "vcpe.firewall_enable"),
                      ("firewall_rules", "vcpe.firewall_rules"),
                      ("url_filter_enable", "vcpe.url_filter_enable"),
@@ -44,7 +33,11 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      ("image", "vcpe.image.id"),
                      ("image_name", "vcpe.image.name"),
                      ("sliver", "vcpe.sliver.id"),
-                     ("sliver_name", "vcpe.sliver.name") )
+                     ("sliver_name", "vcpe.sliver.name"),
+                     ("routeable_subnet", "vcpe.vbng.routeable_subnet"),
+                     ("vcpe_id", "vcpe.id"),
+                     ("vbng_id", "vcpe.vbng.id"),
+                     ("vlan_id", "service_specific_id")  )
 
     def __getattr__(self, key):
         for (member_name, passthrough_name) in self.passthroughs:
@@ -69,9 +62,23 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      obj = getattr(obj, part)
                      if not obj:
                          return
+                print "XXX", obj, parts[-1], value
                 setattr(obj, parts[-1], value)
 
         super(CordSubscriber, self).__setattr__(key, value)
+
+    def save(self, *args, **kwargs):
+        super(CordSubscriber, self).save(*args, **kwargs)
+
+        # in case the vcpe or vbng fields were altered
+        #   TODO: dirty detection?
+        if (self.vcpe):
+            print "save vcpe"
+            self.vcpe.save()
+            if (self.vcpe.vbng):
+                print "save vbng", self.vcpe.vbng
+                print "attr", self.vcpe.vbng.service_specific_attribute
+                self.vcpe.vbng.save()
 
 
 
