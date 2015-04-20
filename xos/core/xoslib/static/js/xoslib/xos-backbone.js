@@ -396,8 +396,6 @@ if (! window.XOSLIB_LOADED ) {
             modelAttrs.defaults = get_defaults(modelName);
         }
 
-        console.log(collectionAttrs);
-
 //        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
 //            modelAttrs["defaults"] = xosdefaults[modelName];
 //        }
@@ -731,8 +729,10 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: CORDSUBSCRIBER_API,
                             modelName: "cordSubscriber",
-                            listFields: ["id"],
-                            detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name", "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable"],
+                            listFields: ["id", "vlan_id", "routeable_subnet"],
+                            detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name",
+                                           "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable",
+                                           "vbng_id", "routeable_subnet"],
                             inputType: {"firewall_enable": "checkbox",
                                         "url_filter_enable": "checkbox",
                                         "cdn_enable": "checkbox"},
