@@ -34,6 +34,13 @@ class XOSDuplicateKey(APIException):
                             "specific_error": why,
                             "fields": fields})
 
+class XOSMissingField(APIException):
+    status_code=400
+    def __init__(self, why="missing field", fields={}):
+        APIException.__init__(self, {"error": "XOSMissingField",
+                            "specific_error": why,
+                            "fields": fields})
+
 class XOSConfigurationError(APIException):
     status_code=400
     def __init__(self, why="configuration error", fields={}):
