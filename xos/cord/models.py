@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
 import traceback
+from xos.exceptions import *
 
 """
 import os
@@ -105,7 +106,7 @@ class VOLTTenant(Tenant):
         if self.vcpe is None:
             vcpeServices = VCPEService.get_service_objects().all()
             if not vcpeServices:
-                raise ConfigurationError("No VCPE Services available")
+                raise XOSConfigurationError("No VCPE Services available")
 
             vcpe = VCPETenant(provider_service = vcpeServices[0],
                               subscriber_tenant = self)
@@ -125,8 +126,10 @@ class VOLTTenant(Tenant):
             self.vcpe = None
 
     def save(self, *args, **kwargs):
+        self.validate_unique_service_specific_id()
+
         if not getattr(self, "caller", None):
-            raise TypeError("VOLTTenant's self.caller was not set")
+            raise XOSProgrammingError("VOLTTenant's self.caller was not set")
         super(VOLTTenant, self).save(*args, **kwargs)
         self.manage_vcpe()
 
@@ -274,7 +277,7 @@ class VCPETenant(Tenant):
             self.sliver = None
         if self.sliver is None:
             if not self.provider_service.slices.count():
-                raise ConfigurationError("The VCPE service has no slicers")
+                raise XOSConfigurationError("The VCPE service has no slicers")
 
             node =self.pick_node()
             sliver = Sliver(slice = self.provider_service.slices.all()[0],
@@ -305,7 +308,7 @@ class VCPETenant(Tenant):
         if self.vbng is None:
             vbngServices = VBNGService.get_service_objects().all()
             if not vbngServices:
-                raise ConfigurationError("No VBNG Services available")
+                raise XOSConfigurationError("No VBNG Services available")
 
             vbng = VBNGTenant(provider_service = vbngServices[0],
                               subscriber_tenant = self)
@@ -326,7 +329,7 @@ class VCPETenant(Tenant):
 
     def save(self, *args, **kwargs):
         if not getattr(self, "caller", None):
-            raise TypeError("VCPETenant's self.caller was not set")
+            raise XOSProgrammingError("VCPETenant's self.caller was not set")
         super(VCPETenant, self).save(*args, **kwargs)
         self.manage_sliver()
         self.manage_vbng()
