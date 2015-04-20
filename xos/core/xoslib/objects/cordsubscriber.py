@@ -37,7 +37,7 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      ("routeable_subnet", "vcpe.vbng.routeable_subnet"),
                      ("vcpe_id", "vcpe.id"),
                      ("vbng_id", "vcpe.vbng.id"),
-                     ("vlan_id", "service_specific_id")  )
+                     )
 
     def __getattr__(self, key):
         for (member_name, passthrough_name) in self.passthroughs:
