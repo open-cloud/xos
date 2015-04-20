@@ -18,9 +18,8 @@ from core.models import *
 from hpc.models import *
 from cord.models import *
 django.setup()
-svc = VOLTService.get_service_objects().all()[0]
 
-t = VOLTTenant(provider_service=svc)
+t = VOLTTenant()
 t.caller = User.objects.all()[0]
 t.save()
 
@@ -57,6 +56,12 @@ class VOLTTenant(Tenant):
         proxy = True
 
     KIND = "vOLT"
+
+    def __init__(self, *args, **kwargs):
+        volt_services = VOLTService.get_service_objects().all()
+        if volt_services:
+            self._meta.get_field("provider_service").default = volt_services[0].id
+        super(VOLTTenant, self).__init__(*args, **kwargs)
 
     @property
     def vcpe(self):
