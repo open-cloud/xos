@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import PlCoreBase,SingletonModel,PlCoreBaseManager
 from core.models.plcorebase import StrippedCharField
+from xos.exceptions import *
 import json
 
 class Service(PlCoreBase):
@@ -91,5 +92,15 @@ class Tenant(PlCoreBase):
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
+
+    # helper function to be used in subclasses that want to ensure service_specific_id is unique
+    def validate_unique_service_specific_id(self):
+        if self.pk is None:
+            if self.service_specific_id is None:
+                raise XOSMissingField("subscriber_specific_id is None, and it's a required field", fields={"service_specific_id": "cannot be none"})
+
+            conflicts = self.get_tenant_objects().filter(service_specific_id=self.service_specific_id)
+            if conflicts:
+                raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
 
 
