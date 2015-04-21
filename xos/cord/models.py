@@ -169,9 +169,15 @@ class VCPETenant(Tenant):
 
     @property
     def image(self):
-        # TODO: logic to pick an image based on the feature set
-        #    just use Ubuntu 14.04 for now...
-        return Image.objects.get(name="Ubuntu 14.04 LTS")
+        LOOK_FOR_IMAGES=["Ubuntu 14.04 LTS",    # portal
+                         "Ubuntu-14.04-LTS",    # ONOS demo machine
+                        ]
+        for image_name in LOOK_FOR_IMAGES:
+            images = Image.objects.filter(name = image_name)
+            if images:
+                return images[0]
+
+        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(LOOK_FOR_IMAGES))
 
     @property
     def sliver(self):
