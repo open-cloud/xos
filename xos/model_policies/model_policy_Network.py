@@ -21,5 +21,5 @@ def handle(network):
 	for expected_controller in expected_controllers:
 		if network not in network_deploy_lookup or \
 		  expected_controller not in network_deploy_lookup[network]:
-			nd = ControllerNetwork(network=network, controller=expected_controller)
+			nd = ControllerNetwork(network=network, controller=expected_controller, lazy_blocked=True)
 			nd.save()
