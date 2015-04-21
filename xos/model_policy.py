@@ -53,10 +53,10 @@ def execute_model_policy(instance, deleted):
         instance.save(update_fields=['policed'])
 
 def run_policy():
-        from core.models import Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
+        from core.models import Sliver,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
 	while (True):
 		start = time.time()
-		models = [Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
+		models = [Sliver,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
 		objects = []
 		
 		for m in models:

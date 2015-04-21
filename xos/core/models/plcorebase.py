@@ -150,6 +150,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
                                       default="0 - Provisioning in progress")
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
+    lazy_blocked = models.BooleanField(default=False)
 
     class Meta:
         # Changing abstract to False would require the managers of subclasses of
