@@ -38,17 +38,33 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             return obj.__unicode__()
 
 class VOLTTenantList(XOSListCreateAPIView):
-    queryset = VOLTTenant.get_tenant_objects().select_related().all()
     serializer_class = VOLTTenantIdSerializer
 
     method_kind = "list"
     method_name = "volttenant"
 
+    def get_queryset(self):
+        queryset = VOLTTenant.get_tenant_objects().select_related().all()
+
+        service_specific_id = self.request.QUERY_PARAMS.get('service_specific_id', None)
+        if service_specific_id is not None:
+            queryset = queryset.filter(service_specific_id=service_specific_id)
+
+        vlan_id = self.request.QUERY_PARAMS.get('vlan_id', None)
+        if vlan_id is not None:
+            ids = [x.id for x in queryset if x.get_attribute("vlan_id", None)==vlan_id]
+            queryset = queryset.filter(id__in=ids)
+
+        return queryset
+
 class VOLTTenantDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = VOLTTenant.get_tenant_objects().select_related().all()
     serializer_class = VOLTTenantIdSerializer
+    queryset = VOLTTenant.get_tenant_objects().select_related().all()
 
     method_kind = "detail"
     method_name = "volttenant"
+
+
+
 
 
