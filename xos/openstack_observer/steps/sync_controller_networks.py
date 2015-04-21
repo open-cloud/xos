@@ -31,13 +31,6 @@ class SyncControllerNetworks(OpenStackSyncStep):
         return cidr
 
 
-    def fetch_pending(self, deleted):
-        if (deleted):
-            return ControllerNetwork.deleted_objects.all()
-        else:
-            return ControllerNetwork.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
-
     def save_controller_network(self, controller_network):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
