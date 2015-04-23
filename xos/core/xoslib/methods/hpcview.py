@@ -11,6 +11,7 @@ from django.forms import widgets
 from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
+import socket
 import time
 
 # This REST API endpoint contains a bunch of misc information that the
@@ -61,12 +62,25 @@ def getHpcDict(user, pk):
                     dnsdemux_service = rr
                     dnsdemux_slice = slice
 
+    dnsdemux_has_public_network = False
+    for network in dnsdemux_slice.networks.all():
+        if (network.template) and (network.template.visibility=="public") and (network.template.translation=="none"):
+            dnsdemux_has_public_network = True
+
     dnsdemux=[]
     for sliver in dnsdemux_slice.slivers.all():
+        if dnsdemux_has_public_network:
+            ip = sliver.get_public_ip()
+        else:
+            try:
+                ip = socket.gethostbyname(sliver.node.name)
+            except:
+                ip = "??? " + sliver.node.name
+
         dnsdemux.append( {"name": sliver.node.name,
                        "watcher.DNS.msg": lookup_tag(dnsdemux_service, sliver, "watcher.DNS.msg"),
                        "watcher.DNS.time": lookup_time(dnsdemux_service, sliver, "watcher.DNS.time"),
-                       "ip": sliver.get_public_ip() })
+                       "ip": ip })
 
     hpc=[]
     for sliver in hpc_slice.slivers.all():
