@@ -11,7 +11,15 @@ from django.forms import widgets
 from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
+import socket
 import time
+
+NAMESERVERS = ["cdnrr1.opencloud.us",
+              "cdnrr2.opencloud.us",
+              "cdnrr3.opencloud.us",
+              "cdnrr4.opencloud.us",
+              "cdnrr5.opencloud.us",
+              "cdnrr6.opencloud.us"]
 
 # This REST API endpoint contains a bunch of misc information that the
 # tenant view needs to display
@@ -61,12 +69,39 @@ def getHpcDict(user, pk):
                     dnsdemux_service = rr
                     dnsdemux_slice = slice
 
+    dnsdemux_has_public_network = False
+    for network in dnsdemux_slice.networks.all():
+        if (network.template) and (network.template.visibility=="public") and (network.template.translation=="none"):
+            dnsdemux_has_public_network = True
+
+    nameservers = {}
+    for nameserver in NAMESERVERS:
+        try:
+            nameservers[nameserver] = {"name": nameserver, "ip": socket.gethostbyname(nameserver), "hit": False}
+        except:
+            nameservers[nameserver] = {"name": nameserver, "ip": "exception", "hit": False}
+
     dnsdemux=[]
     for sliver in dnsdemux_slice.slivers.all():
+        if dnsdemux_has_public_network:
+            ip = sliver.get_public_ip()
+        else:
+            try:
+                ip = socket.gethostbyname(sliver.node.name)
+            except:
+                ip = "??? " + sliver.node.name
+
+        sliver_nameservers = []
+        for ns in nameservers.values():
+            if ns["ip"]==ip:
+                sliver_nameservers.append(ns["name"])
+                ns["hit"]=True
+
         dnsdemux.append( {"name": sliver.node.name,
                        "watcher.DNS.msg": lookup_tag(dnsdemux_service, sliver, "watcher.DNS.msg"),
                        "watcher.DNS.time": lookup_time(dnsdemux_service, sliver, "watcher.DNS.time"),
-                       "ip": sliver.get_public_ip() })
+                       "ip": ip,
+                       "nameservers": sliver_nameservers })
 
     hpc=[]
     for sliver in hpc_slice.slivers.all():
@@ -80,7 +115,8 @@ def getHpcDict(user, pk):
 
     return { "id": pk,
              "dnsdemux": dnsdemux,
-             "hpc": hpc }
+             "hpc": hpc,
+             "nameservers": nameservers }
 
 
 class HpcList(APIView):
