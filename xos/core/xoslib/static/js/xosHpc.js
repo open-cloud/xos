@@ -18,12 +18,12 @@ function updateDnsDemuxTable(dnsdemux) {
     $('#xos-hpc-dns').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_dnsdemux"></table>' );
     var actualEntries = [];
 
-    console.log(dnsdemux);
+    //console.log(dnsdemux);
 
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
 
-        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg", SC_RR)] );
+        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg", SC_RR), row.nameservers.join(",")] );
     }
     console.log(actualEntries);
     oTable = $('#dynamic_dnsdemux').dataTable( {
@@ -36,6 +36,7 @@ function updateDnsDemuxTable(dnsdemux) {
             { "sTitle": "Node" },
             { "sTitle": "IP Address" },
             { "sTitle": "Record Checker" },
+            { "sTitle": "Nameservers" },
         ]
     } );
 }
@@ -44,7 +45,7 @@ function updateHpcTable(dnsdemux) {
     $('#xos-hpc-hpc').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_hpc"></table>' );
     var actualEntries = [];
 
-    console.log(dnsdemux);
+    //console.log(dnsdemux);
 
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
@@ -66,10 +67,26 @@ function updateHpcTable(dnsdemux) {
     } );
 }
 
+function updateWarnings(data) {
+    nameservers = data.attributes.nameservers;
+    warnings = [];
+    for (rowKey in nameservers) {
+        nameserver = nameservers[rowKey]
+        if (!nameserver.hit) {
+            warnings.push("<B>WARNING:</B> nameserver " + nameserver.name + " does not map to a request router");
+        }
+    }
+
+    console.log(warnings);
+
+    $("#warnings").html(warnings.join("<BR>"));
+}
+
 function updateHpcView(data) {
     data = data[0];
     updateDnsDemuxTable( data.attributes.dnsdemux );
     updateHpcTable( data.attributes.hpc );
+    updateWarnings( data );
 }
 
 $(document).ready(function(){
