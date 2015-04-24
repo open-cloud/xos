@@ -84,6 +84,10 @@ RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
 RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
+# Supervisor
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
+ADD observer.conf /etc/supervisor/conf.d/
+
 # Get XOS 
 ADD xos /opt/xos
 
@@ -106,6 +110,9 @@ RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 # Cruft to workaround problems with migrations, should go away...
 RUN /opt/xos/scripts/opencloud remigrate
 
+# git clone uses cached copy, doesn't pick up latest
+RUN git -C /opt/ansible pull
+
 EXPOSE 8000
 
 # Set environment variables.
@@ -116,4 +123,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-CMD service postgresql start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000
+CMD service postgresql start; service supervisor start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000
