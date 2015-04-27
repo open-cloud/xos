@@ -721,6 +721,32 @@ class ControllerAdmin(XOSBaseAdmin):
 
         return tabs
 
+class ProviderTenantInline(XOSTabularInline):
+    model = CoarseTenant
+    fields = ['provider_service', 'subscriber_service', 'connect_method']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicetenants'
+    fk_name = 'provider_service'
+    verbose_name = 'provided tenant'
+    verbose_name_plural = 'provided tenants'
+
+    def queryset(self, request):
+        qs = super(ProviderTenantInline, self).queryset(request)
+        return qs.filter(kind="coarse")
+
+class SubscriberTenantInline(XOSTabularInline):
+    model = CoarseTenant
+    fields = ['provider_service', 'subscriber_service', 'connect_method']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicetenants'
+    fk_name = 'subscriber_service'
+    verbose_name = 'subscribed tenant'
+    verbose_name_plural = 'subscribed tenants'
+
+    def queryset(self, request):
+        qs = super(SubscriberTenantInline, self).queryset(request)
+        return qs.filter(kind="coarse")
+
 class ServiceAttrAsTabInline(XOSTabularInline):
     model = ServiceAttribute
     fields = ['name','value']
@@ -732,7 +758,7 @@ class ServiceAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
-    inlines = [ServiceAttrAsTabInline,SliceInline]
+    inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -740,6 +766,7 @@ class ServiceAdmin(XOSBaseAdmin):
     suit_form_tabs =(('general', 'Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('servicetenants','Tenancy'),
     )
 
 class SiteNodeInline(XOSTabularInline):
