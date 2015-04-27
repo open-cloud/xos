@@ -11,6 +11,7 @@ from django.forms import widgets
 from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
+import json
 import socket
 import time
 
@@ -45,16 +46,41 @@ def lookup_time(service, sliver, name):
     else:
         return None
 
+def compute_config_run(d):
+    if not d:
+        return "null"
+
+    d = json.loads(d)
+
+    status = d.get("status", "null")
+    if status!="success":
+        return status
+
+    config_run = d.get("config.run")
+    if not config_run:
+        return "null"
+
+    try:
+        config_run = max(0, int(time.time()) - int(float(config_run)))
+    except:
+        pass
+
+    return config_run
+
 def getHpcDict(user, pk):
     hpc = HpcService.objects.get(pk=pk)
     slices = get_service_slices(hpc)
 
     dnsdemux_slice = None
+    dnsredir_slice = None
     hpc_slice = None
     for slice in slices:
         if "dnsdemux" in slice.name:
             dnsdemux_service = hpc
             dnsdemux_slice = slice
+        if "dnsredir" in slice.name:
+            dnsredir_service = hpc
+            dnsredir_slice = slice
         if "hpc" in slice.name:
             hpc_service = hpc
             hpc_slice = slice
@@ -68,6 +94,17 @@ def getHpcDict(user, pk):
                 if "dnsdemux" in slice.name:
                     dnsdemux_service = rr
                     dnsdemux_slice = slice
+                if "dnsredir" in slice.name:
+                    dnsredir_service = rr
+                    dnsredir_slice = slice
+
+    if not dnsredir_slice:
+        print "no dnsredir slice"
+        return
+
+    if not dnsdemux_slice:
+        print "no dnsdemux slice"
+        return
 
     dnsdemux_has_public_network = False
     for network in dnsdemux_slice.networks.all():
@@ -97,26 +134,34 @@ def getHpcDict(user, pk):
                 sliver_nameservers.append(ns["name"])
                 ns["hit"]=True
 
+        watcherd_dnsdemux = lookup_tag(dnsdemux_service, sliver, "watcher.watcher.msg")
+        watcherd_dnsredir = lookup_tag(dnsredir_service, sliver, "watcher.watcher.msg")
+
         dnsdemux.append( {"name": sliver.node.name,
                        "watcher.DNS.msg": lookup_tag(dnsdemux_service, sliver, "watcher.DNS.msg"),
                        "watcher.DNS.time": lookup_time(dnsdemux_service, sliver, "watcher.DNS.time"),
                        "ip": ip,
-                       "nameservers": sliver_nameservers })
+                       "nameservers": sliver_nameservers,
+                       "dnsdemux_config_age": compute_config_run(watcherd_dnsdemux),
+                       "dnsredir_config_age": compute_config_run(watcherd_dnsredir) })
 
     hpc=[]
     for sliver in hpc_slice.slivers.all():
+        watcherd_hpc = lookup_tag(hpc_service, sliver, "watcher.watcher.msg")
+
         hpc.append( {"name": sliver.node.name,
                      "watcher.HPC-hb.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-hb.msg"),
                      "watcher.HPC-hb.time": lookup_time(hpc_service, sliver, "watcher.HPC-hb.time"),
                      "watcher.HPC-fetch.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-fetch.msg"),
                      "watcher.HPC-fetch.time": lookup_time(hpc_service, sliver, "watcher.HPC-fetch.time"),
+                     "config_age": compute_config_run(watcherd_hpc),
 
         })
 
     return { "id": pk,
              "dnsdemux": dnsdemux,
              "hpc": hpc,
-             "nameservers": nameservers }
+             "nameservers": nameservers,}
 
 
 class HpcList(APIView):
