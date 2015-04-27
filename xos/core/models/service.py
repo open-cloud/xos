@@ -42,16 +42,19 @@ class Tenant(PlCoreBase):
         The provider is always a Service.
     """
 
+    CONNECTIVITY_CHOICES = (('public', 'Public'), ('private', 'Private'), ('na', 'Not Applicable'))
+
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"
 
     kind = StrippedCharField(max_length=30, default=KIND)
     provider_service = models.ForeignKey(Service, related_name='tenants')
-    subscriber_service = models.ForeignKey(Service, related_name='subscriptions', blank=True, null=True)
+    subscriber_service = models.ForeignKey(Service, related_name='subscriptions', blank=True, null=True)      # can we drop this ?
     subscriber_tenant = models.ForeignKey("Tenant", related_name='subscriptions', blank=True, null=True)
     subscriber_user = models.ForeignKey("User", related_name='subscriptions', blank=True, null=True)
     service_specific_id = StrippedCharField(max_length=30)
     service_specific_attribute = models.TextField()
+    connect_method = models.CharField(null=False, blank=False, max_length=30, choices=CONNECTIVITY_CHOICES, default="na")
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
@@ -103,4 +106,16 @@ class Tenant(PlCoreBase):
             if conflicts:
                 raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
 
+class CoarseTenant(Tenant):
+    class Meta:
+        proxy = True
 
+    KIND = "coarse"
+
+    def save(self, *args, **kwargs):
+        if (not self.subscriber_service):
+            raise XOSValidationError("subscriber_service cannot be null")
+        if (self.subscriber_tenant or self.subscriber_user):
+            raise XOSValidationError("subscriber_tenant and subscriber_user must be null")
+
+        super(CoarseTenant,self).save()
