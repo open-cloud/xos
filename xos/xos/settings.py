@@ -257,7 +257,7 @@ LOGGING = {
     }
 }
 
-RESTAPI_HOSTNAME = getattr(config, "server_hostname", socket.gethostname())
+RESTAPI_HOSTNAME = getattr(config, "server_restapihostname", getattr(config, "server_hostname", socket.gethostname()))
 RESTAPI_PORT = int(getattr(config, "server_port", "8000"))
 
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
