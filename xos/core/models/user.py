@@ -314,6 +314,15 @@ class User(AbstractBaseUser, PlModelMixIn):
             return True
         return False
 
+    def can_update_service(self, service, allow=[]):
+        from core.models.service import ServicePrivilege
+        if self.can_update_root():
+            return True
+        if ServicePrivilege.objects.filter(
+            service=service, user=self, role__role__in=['admin', 'Admin']+allow):
+            return True
+        return False           
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
