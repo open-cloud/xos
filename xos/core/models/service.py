@@ -16,6 +16,7 @@ class Service(PlCoreBase):
     published = models.BooleanField(default=True)
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
     icon_url = StrippedCharField(blank=True, null=True, max_length=1024)
+    public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
