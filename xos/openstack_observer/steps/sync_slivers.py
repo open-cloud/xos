@@ -57,8 +57,10 @@ class SyncSlivers(OpenStackSyncStep):
 
         for controller_network in controller_networks:
             if controller_network.network.template.visibility == 'private' and \
-               controller_network.network.template.translation == 'none' and controller_network.net_id:
-                nics.append(controller_network.net_id)
+               controller_network.network.template.translation == 'none':
+                   if not controller_network.net_id:
+                        raise Exception("Private Network %s has no id; Try again later" % controller_network.network.name)
+                   nics.append(controller_network.net_id)
 
         # now include network template
         network_templates = [network.template.shared_network_name for network in networks \
