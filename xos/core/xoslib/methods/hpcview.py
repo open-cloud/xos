@@ -134,8 +134,13 @@ def getHpcDict(user, pk):
                 sliver_nameservers.append(ns["name"])
                 ns["hit"]=True
 
+        # now find the dnsredir sliver that is also on this node
+        watcherd_dnsredir = "no-redir-sliver"
+        for dnsredir_sliver in dnsredir_slice.slivers.all():
+            if dnsredir_sliver.node == sliver.node:
+                watcherd_dnsredir = lookup_tag(dnsredir_service, dnsredir_sliver, "watcher.watcher.msg")
+
         watcherd_dnsdemux = lookup_tag(dnsdemux_service, sliver, "watcher.watcher.msg")
-        watcherd_dnsredir = lookup_tag(dnsredir_service, sliver, "watcher.watcher.msg")
 
         dnsdemux.append( {"name": sliver.node.name,
                        "watcher.DNS.msg": lookup_tag(dnsdemux_service, sliver, "watcher.DNS.msg"),
