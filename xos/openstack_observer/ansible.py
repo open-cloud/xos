@@ -76,7 +76,7 @@ def run_template(name, opts,path='', expected_num=None, ansible_config=None, ans
 
     if (not Config().observer_pretend):
         if not run_ansible_script:
-            run_ansible_script = os.path.join(XOS_DIR, "/observer/run_ansible")
+            run_ansible_script = os.path.join(XOS_DIR, "observer/run_ansible")
 
         #run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp), env=env)
         run = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, env=env).stdout
