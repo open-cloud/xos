@@ -8,6 +8,10 @@
       dnsdemux_ip: {{ dnsdemux_ip }}
       firewall_enable: {{ firewall_enable }}
       url_filter_enable: {{ url_filter_enable }}
+      vlan_ids:
+        {% for vlan_id in vlan_ids %}
+        - {{ vlan_id }}
+        {% endfor %}
   tasks:
     - name: make sure /etc/dnsmasq.d exists
       file: path=/etc/dnsmasq.d state=directory owner=root group=root
