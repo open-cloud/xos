@@ -16,6 +16,7 @@ class Service(PlCoreBase):
     published = models.BooleanField(default=True)
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
     icon_url = StrippedCharField(blank=True, null=True, max_length=1024)
+    public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
 
     def __init__(self, *args, **kwargs):
         # for subclasses, set the default kind appropriately
@@ -138,6 +139,10 @@ class Tenant(PlCoreBase):
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
+
+    @classmethod
+    def get_deleted_tenant_objects(cls):
+        return cls.deleted_objects.filter(kind = cls.KIND)
 
     # helper function to be used in subclasses that want to ensure service_specific_id is unique
     def validate_unique_service_specific_id(self):
