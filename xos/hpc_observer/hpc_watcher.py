@@ -390,11 +390,15 @@ class RRWatcher(BaseWatcher):
 
             ip = sliver.get_public_ip()
             if not ip:
-                ip = socket.gethostbyname(sliver.node.name)
+                try:
+                    ip = socket.gethostbyname(sliver.node.name)
+                except:
+                    self.set_status(sliver, service, "watcher.DNS", "dns resolution failure")
+                    continue
 
-            #if not ip:
-            #    self.set_status(sliver, service, "watcher.DNS", "no public IP")
-            #    continue
+            if not ip:
+                self.set_status(sliver, service, "watcher.DNS", "no IP address")
+                continue
 
             checks = HpcHealthCheck.objects.filter(kind="dns")
             if not checks:
@@ -518,7 +522,15 @@ class WatcherFetcher(BaseWatcher):
         for sliver in slivers:
             ip = sliver.get_public_ip()
             if not ip:
-                ip = socket.gethostbyname(sliver.node.name)
+                try:
+                    ip = socket.gethostbyname(sliver.node.name)
+                except:
+                    self.set_status(sliver, service, "watcher.watcher", "dns resolution failure")
+                    continue
+
+            if not ip:
+                self.set_status(sliver, service, "watcher.watcher", "no IP address")
+                continue
 
             port = 8015
             if ("redir" in sliver.slice.name):
