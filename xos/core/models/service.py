@@ -97,6 +97,10 @@ class Tenant(PlCoreBase):
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
 
+    @classmethod
+    def get_deleted_tenant_objects(cls):
+        return cls.deleted_objects.filter(kind = cls.KIND)
+
     # helper function to be used in subclasses that want to ensure service_specific_id is unique
     def validate_unique_service_specific_id(self):
         if self.pk is None:
