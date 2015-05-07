@@ -57,10 +57,15 @@ class SyncVCPETenant(SyncStep):
                             except:
                                 pass
 
+        cdn_prefixes = []
+        for prefix in CDNPrefix.objects.all():
+            cdn_prefixes.append(prefix.prefix)
+
         volts = [x for x in VOLTTenant.get_tenant_objects() if x.vcpe.id==o.id]
         vlan_ids = [x.vlan_id for x in volts]
         return {"vlan_ids": vlan_ids,
-                "dnsdemux_ip": dnsdemux_ip}
+                "dnsdemux_ip": dnsdemux_ip,
+                "cdn_prefixes": cdn_prefixes}
 
     def get_sliver(self, o):
         # We need to know what slivers is associated with the object.
