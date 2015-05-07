@@ -43,7 +43,7 @@ class SSHKeyDetail(APIView):
             raise XOSNotFound("didn't find sliver for instance %s" % pk)
         return Response( [ {"id": slivers[0].instance_id,
                             "public_keys": slivers[0].get_public_keys(),
-                            "node_name": sliver.node.name } ])
+                            "node_name": slivers[0].node.name } ])
 
     def get_queryset(self):
         queryset = queryset=Sliver.objects.all()
