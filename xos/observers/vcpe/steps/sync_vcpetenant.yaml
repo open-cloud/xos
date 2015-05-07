@@ -16,6 +16,10 @@
         {% for firewall_rule in firewall_rules.split("\n") %}
         - {{ firewall_rule }}
         {% endfor %}
+      cdn_prefixes:
+        {% for prefix in cdn_prefixes %}
+        - {{ prefix }}
+        {% endfor %}
 
   tasks:
     - name: make sure /etc/dnsmasq.d exists
