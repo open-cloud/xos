@@ -50,11 +50,11 @@ class Tenant(PlCoreBase):
 
     kind = StrippedCharField(max_length=30, default=KIND)
     provider_service = models.ForeignKey(Service, related_name='tenants')
-    subscriber_service = models.ForeignKey(Service, related_name='subscriptions', blank=True, null=True)      # can we drop this ?
+    subscriber_service = models.ForeignKey(Service, related_name='subscriptions', blank=True, null=True)
     subscriber_tenant = models.ForeignKey("Tenant", related_name='subscriptions', blank=True, null=True)
     subscriber_user = models.ForeignKey("User", related_name='subscriptions', blank=True, null=True)
-    service_specific_id = StrippedCharField(max_length=30)
-    service_specific_attribute = models.TextField()
+    service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
+    service_specific_attribute = models.TextField(blank=True, null=True)
     connect_method = models.CharField(null=False, blank=False, max_length=30, choices=CONNECTIVITY_CHOICES, default="na")
 
     def __init__(self, *args, **kwargs):
