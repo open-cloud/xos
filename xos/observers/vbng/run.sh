@@ -1,4 +1,4 @@
-if [[ ! -e ./vcpe-observer.py ]]; then
+if [[ ! -e ./vbng-observer.py ]]; then
     ln -s ../../xos-observer.py vbng-observer.py
 fi
 
