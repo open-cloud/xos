@@ -61,7 +61,7 @@ class SyncVCPETenant(SyncStep):
         for prefix in CDNPrefix.objects.all():
             cdn_prefixes.append(prefix.prefix)
 
-        volts = [x for x in VOLTTenant.get_tenant_objects() if x.vcpe.id==o.id]
+        volts = [x for x in VOLTTenant.get_tenant_objects() if (x.vcpe is not None) and (x.vcpe.id==o.id)]
         vlan_ids = [x.vlan_id for x in volts]
         return {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
