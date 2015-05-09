@@ -99,6 +99,7 @@ class Slice(PlCoreBase):
             qs = Slice.objects.filter(id__in=slice_ids)
         return qs
 
+    """
     def delete(self, *args, **kwds):
         # delete networks associated with this slice
         from core.models.network import Network
@@ -112,6 +113,7 @@ class Slice(PlCoreBase):
         slice_privileges.delete() 
         # continue with normal delete
         super(Slice, self).delete(*args, **kwds) 
+    """
          
 
 class SliceRole(PlCoreBase):
