@@ -29,6 +29,10 @@ class SyncSlivers(OpenStackSyncStep):
 
     def sync_record(self, sliver):
         logger.info("sync'ing sliver:%s slice:%s controller:%s " % (sliver, sliver.slice.name, sliver.node.site_deployment.controller))
+        controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
+
+        if (controller_register.get('disabled',False)):
+            raise Exception('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
 
         metadata_update = {}
         if (sliver.numberCores):
@@ -143,6 +147,11 @@ class SyncSlivers(OpenStackSyncStep):
         sliver.save()
 
     def delete_record(self, sliver):
+        controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
+
+        if (controller_register.get('disabled',False)):
+            raise Exception('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+
         sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
         controller = sliver.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,

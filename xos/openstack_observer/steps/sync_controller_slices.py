@@ -5,12 +5,11 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models import User
-from core.models.slice import Slice, ControllerSlice
-from core.models.controlleruser import ControllerUser
+from core.models import *
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
 from util.logger import observer_logger as logger
+import json
 
 class SyncControllerSlices(OpenStackSyncStep):
     provides=[Slice]
@@ -25,6 +24,10 @@ class SyncControllerSlices(OpenStackSyncStep):
 
     def sync_record(self, controller_slice):
         logger.info("sync'ing slice controller %s" % controller_slice)
+
+        controller_register = json.loads(controller_slice.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+            raise Exception('Controller %s is disabled'%controller_slice.controller.name)
 
         if not controller_slice.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice.controller)
