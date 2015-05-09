@@ -75,6 +75,32 @@ class SyncControllerNetworks(OpenStackSyncStep):
 	    logger.info("saved network controller: %s" % (controller_network))
 
     def delete_record(self, controller_network):
+	controller_register = json.loads(controller_network.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_network.controller.name)
+
+	try:
+        	slice = controller_network.network.owner # XXX: FIXME!!
+        except:
+                raise Exception('Could not get slice for Network %s'%controller_network.network.name)
+
+	network_name = controller_network.network.name
+        subnet_name = '%s-%d'%(network_name,controller_network.pk)
+	cidr = controller_network.subnet
+	network_fields = {'endpoint':controller_network.controller.auth_url,
+                    'admin_user':slice.creator.email, # XXX: FIXME
+                    'tenant_name':slice.name, # XXX: FIXME
+                    'admin_password':slice.creator.remote_password,
+                    'name':network_name,
+                    'subnet_name':subnet_name,
+                    'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
+                    'cidr':cidr,
+		    'delete':True	
+                    }
+
+        res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=1)
+
+	"""
         driver = OpenStackDriver().client_driver(caller=controller_network.network.owner.creator,
                                                  tenant=controller_network.network.owner.name,
                                                  controller=controller_network.controller.name)
@@ -86,3 +112,4 @@ class SyncControllerNetworks(OpenStackSyncStep):
             driver.delete_router(controller_network.router_id)
         if controller_network.net_id:
             driver.delete_network(controller_network.net_id)
+	"""
