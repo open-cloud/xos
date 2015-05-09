@@ -9,6 +9,7 @@ from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSitePrivilege
 from util.logger import observer_logger as logger
 from observer.ansible import *
+import json
 
 class SyncControllerSitePrivileges(OpenStackSyncStep):
     provides=[SitePrivilege]
@@ -24,6 +25,11 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
 
     def sync_record(self, controller_site_privilege):
         logger.info("sync'ing controler_site_privilege %s at controller %s" % (controller_site_privilege, controller_site_privilege.controller))
+
+	controller_register = json.loads(controller_site_privilege.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_site_privilege.controller.name)
+
 
         if not controller_site_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_site_privilege.controller)
@@ -68,6 +74,10 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
             controller_site_privilege.save()
 
     def delete_record(self, controller_site_privilege):
+	controller_register = json.loads(controller_site_privilege.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_site_privilege.controller.name)
+
         if controller_site_privilege.role_id:
             driver = self.driver.admin_driver(controller=controller_site_privilege.controller)
             user = ControllerUser.objects.get(

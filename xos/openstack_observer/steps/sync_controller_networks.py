@@ -11,6 +11,7 @@ from core.models.sliver import Sliver
 from util.logger import observer_logger as logger
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
+import json
 
 import pdb
 
@@ -60,6 +61,10 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
     def sync_record(self, controller_network):
         logger.info("sync'ing network controller %s for network %s slice %s controller %s" % (controller_network, controller_network.network, str(controller_network.network.owner), controller_network.controller))
+
+	controller_register = json.loads(controller_network.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_network.controller.name)
 
         if not controller_network.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)

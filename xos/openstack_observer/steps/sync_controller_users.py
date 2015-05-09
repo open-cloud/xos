@@ -9,6 +9,7 @@ from core.models.user import User
 from core.models.controlleruser import ControllerUser
 from observer.ansible import *
 from util.logger import observer_logger as logger
+import json
 
 class SyncControllerUsers(OpenStackSyncStep):
     provides=[User]
@@ -24,6 +25,10 @@ class SyncControllerUsers(OpenStackSyncStep):
 
     def sync_record(self, controller_user):
         logger.info("sync'ing user %s at controller %s" % (controller_user.user, controller_user.controller))
+
+	controller_register = json.loads(controller_user.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_user.controller.name)
 
         if not controller_user.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_user.controller)
@@ -72,6 +77,10 @@ class SyncControllerUsers(OpenStackSyncStep):
             controller_user.save()
 
     def delete_record(self, controller_user):
+	controller_register = json.loads(controller_user.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_user.controller.name)
+
         if controller_user.kuser_id:
             driver = self.driver.admin_driver(controller=controller_user.controller)
             driver.delete_user(controller_user.kuser_id)

@@ -176,5 +176,11 @@ class SyncStep(object):
 
         return failed
 
+    def sync_record(self, o):
+        return
+
+    def delete_record(self, o):
+        return
+
     def __call__(self, **args):
         return self.call(**args)
