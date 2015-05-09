@@ -45,7 +45,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'name':network_name,
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
-                    'cidr':cidr
+                    'cidr':cidr,
+                    'delete':False	
                     }
 
         res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=2)
