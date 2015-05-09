@@ -165,12 +165,12 @@ class SyncSlivers(OpenStackSyncStep):
                      'delete': True}
 
         try:
-               res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
+            res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
         except Exception,e:
-               print "Could not sync %s"%sliver_name
-               #import traceback
-               #traceback.print_exc()
-               raise e
+            print "Could not sync %s"%sliver_name
+            #import traceback
+            #traceback.print_exc()
+            raise e
 
         if (len(res)!=1):
             raise Exception('Could not delete sliver %s'%sliver.slice.name)

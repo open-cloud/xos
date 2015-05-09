@@ -108,7 +108,6 @@ class SyncStep(object):
                     next_run = scratchpad['next_run']
                     if (not backoff_disabled and next_run>time.time()):
                         sync_failed = True
-                        print "BACKING OFF, exponent = %d"%scratchpad['exponent']
             except:
                 pass
 
