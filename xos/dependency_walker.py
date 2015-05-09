@@ -84,11 +84,13 @@ def __walk_deps(fn, object, deps):
 				peer_objects = []
 
 			for o in peer_objects:
-				fn(o, object)
+				#if (isinstance(o,PlCoreBase)):
+				if (hasattr(o,'updated')):
+					fn(o, object)
 				# Uncomment the following line to enable recursion
 				# walk_inv_deps(fn, o)
 
-def p(x):
+def p(x,source):
 	print x,x.__class__.__name__
 	return
 
