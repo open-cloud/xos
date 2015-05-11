@@ -6,6 +6,7 @@ from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.ansible import *
 from util.logger import observer_logger as logger
+import json
 
 class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0
@@ -17,6 +18,10 @@ class SyncControllerSites(OpenStackSyncStep):
         return pending.filter(controller__isnull=False)
 
     def sync_record(self, controller_site):
+	controller_register = json.loads(controller_site.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_site.controller.name)
+
 	template = os_template_env.get_template('sync_controller_sites.yaml')
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
 		         'admin_user': controller_site.controller.admin_user,
@@ -34,6 +39,10 @@ class SyncControllerSites(OpenStackSyncStep):
         controller_site.save()
             
     def delete_record(self, controller_site):
+	controller_register = json.loads(controller_site.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_site.controller.name)
+
 	if controller_site.tenant_id:
             driver = self.driver.admin_driver(controller=controller_site.controller)
             driver.delete_tenant(controller_site.tenant_id)

@@ -11,62 +11,105 @@ from django.db.transaction import atomic
 from django.db.models import F, Q
 
 modelPolicyEnabled = True
+bad_instances=[]
 
 def EnableModelPolicy(x):
     global modelPolicyEnabled
     modelPolicyEnabled = x
 
+def update_wp(d, o):
+    try:
+        save_fields = []
+        if (d.write_protect != o.write_protect):
+            d.write_protect = o.write_protect
+            save_fields.append('write_protect')
+        if (save_fields):
+            d.save(update_fields=save_fields)
+    except AttributeError,e:
+        raise e
+
 def update_dep(d, o):
-	try:
-		if (d.updated < o.updated):
-			d.save(update_fields=['updated'])
-	except AttributeError,e:
-		raise e
-	
+    try:
+        print 'Trying to update %s'%d
+        save_fields = []
+        if (d.updated < o.updated):
+            save_fields = ['updated']
+
+        if (save_fields):
+            d.save(update_fields=save_fields)
+    except AttributeError,e:
+        raise e
+
 def delete_if_inactive(d, o):
-	#print "Deleting %s (%s)"%(d,d.__class__.__name__)
-	# d.delete()	
-	return
+    try:
+        d.delete()
+        print "Deleted %s (%s)"%(d,d.__class__.__name__)
+    except:
+        pass
+    return
+
 
 @atomic
 def execute_model_policy(instance, deleted):
-	# Automatic dirtying
-	walk_inv_deps(update_dep, instance)
+    # Automatic dirtying
+    if (instance in bad_instances):
+        return
 
-	sender_name = instance.__class__.__name__
-	policy_name = 'model_policy_%s'%sender_name
-	noargs = False
+    # These are the models whose children get deleted when they are
+    delete_policy_models = ['Slice','Sliver','Network']
+    sender_name = instance.__class__.__name__
+    policy_name = 'model_policy_%s'%sender_name
+    noargs = False
 
-	if deleted:
-		walk_inv_deps(delete_if_inactive, instance)
-	else:
-		try:
-			policy_handler = getattr(model_policies, policy_name, None)
-			logger.error("POLICY HANDLER: %s %s" % (policy_name, policy_handler))                       
-			if policy_handler is not None:
-				policy_handler.handle(instance)
-		except:
-			logger.log_exc("Model Policy Error:") 
-			print "Policy Exceution Error"
+    if (not deleted):
+        walk_inv_deps(update_dep, instance)
+        walk_deps(update_wp, instance)
+    elif (sender_name in delete_policy_models):
+        walk_inv_deps(delete_if_inactive, instance)
 
-	instance.policed=datetime.now()
+
+
+    try:
+        policy_handler = getattr(model_policies, policy_name, None)
+        logger.error("POLICY HANDLER: %s %s" % (policy_name, policy_handler))
+        if policy_handler is not None:
+            if (deleted):
+                try:
+                    policy_handler.handle_delete(instance)
+                except AttributeError:
+                    pass
+            else:
+                policy_handler.handle(instance)
+    except:
+        logger.log_exc("Model Policy Error:")
+
+    try:
+        instance.policed=datetime.now()
         instance.save(update_fields=['policed'])
+    except:
+        logging.error('Object %r is defective'%instance)
+        bad_instances.append(instance)
 
 def run_policy():
-        from core.models import Sliver,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
-	while (True):
-		start = time.time()
-		models = [Sliver,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
-		objects = []
-		
-		for m in models:
-        		res = m.objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
-			objects.extend(res)	
+    from core.models import Sliver,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
+    while (True):
+        start = time.time()
+        models = [Sliver,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
+        objects = []
+        deleted_objects = []
 
-		for o in objects:
-			print "Working on %r"%o
-			execute_model_policy(o, False)
-		
-		
-		if (time.time()-start<1):
-			time.sleep(1)	
+        for m in models:
+            res = m.objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
+            objects.extend(res)
+            res = m.deleted_objects.filter(Q(policed__lt=F('updated')) | Q(policed=None))
+            deleted_objects.extend(res)
+
+        for o in objects:
+            execute_model_policy(o, o.deleted)
+
+        for o in deleted_objects:
+            execute_model_policy(o, True)
+
+
+        if (time.time()-start<1):
+            time.sleep(1)
