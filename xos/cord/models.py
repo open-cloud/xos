@@ -24,24 +24,24 @@ t = VOLTTenant()
 t.caller = User.objects.all()[0]
 t.save()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VCPETenant.objects.all():
+for v in VCPETenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     if not v.creator:
         v.creator= User.objects.all()[0]
         v.save()
 
-for v in VCPETenant.objects.all():
+for v in VCPETenant.get_tenant_objects().all():
     if not v.creator:
         v.creator= User.objects.all()[0]
         v.save()
