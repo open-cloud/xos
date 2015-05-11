@@ -57,6 +57,31 @@ class UploadTextareaWidget(AdminTextareaWidget):
                            flatatt(final_attrs),
                            force_text(value))
 
+class SliderWidget(forms.HiddenInput):
+    def render(self, name, value,  attrs=None):
+        if value is None:
+            value = '0'
+        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs or attrs[:]
+        attrs["name"] = name
+        attrs["value"] = value
+        html = """<div style="width:640px"><span id="%(id)s_label">%(value)s</span><div id="%(id)s_slider" style="float:right;width:610px;margin-top:5px"></div></div>
+                              <script>
+                                  $(function() {
+                                      $("#%(id)s_slider").slider({
+                                         value: %(value)s,
+                                         slide: function(event, ui) { $("#%(id)s").val( ui.value ); $("#%(id)s_label").html(ui.value); },
+                                         });
+                                  });
+                              </script>
+                              <input type="hidden" id="%(id)s" name="%(name)s" value="%(value)s"></input>
+                           """ % attrs
+        html = html.replace("{","{{").replace("}","}}")
+        return format_html(html,
+                           flatatt(final_attrs),
+                           force_text(value))
+
+
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
 
