@@ -1,16 +1,33 @@
+def handle_delete(slice):
+    from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate, Slice
+    from collections import defaultdict
+
+    public_nets = []
+    private_net = None
+    networks = Network.objects.filter(owner=slice)
+
+    for n in networks:
+        n.delete()	
+    
+    # Note that sliceprivileges and slicecontrollers are autodeleted, through the dependency graph
 
 def handle(slice):
     from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate, Slice
     from collections import defaultdict
+
+    print "MODEL POLICY: slice", slice
 
     # slice = Slice.get(slice_id)
 
     controller_slices = ControllerSlice.objects.filter(slice=slice)
     existing_controllers = [cs.controller for cs in controller_slices] 
         
+    print "MODEL POLICY: slice existing_controllers=", existing_controllers
+
     all_controllers = Controller.objects.all() 
     for controller in all_controllers:
         if controller not in existing_controllers:
+            print "MODEL POLICY: slice adding controller", controller
             sd = ControllerSlice(slice=slice, controller=controller)
             sd.save()
 
