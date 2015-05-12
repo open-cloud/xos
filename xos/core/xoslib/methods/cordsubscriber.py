@@ -32,7 +32,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         cdn_enable = serializers.BooleanField()
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
-        routeable_subnet = serializers.CharField()
+        routeable_subnet = serializers.CharField(required=False)
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 

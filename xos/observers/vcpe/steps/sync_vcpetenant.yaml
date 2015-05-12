@@ -1,0 +1,35 @@
+---
+- hosts: {{ sliver_name }}
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  vars:
+      cdn_enable: {{ cdn_enable }}
+      dnsdemux_ip: {{ dnsdemux_ip }}
+      firewall_enable: {{ firewall_enable }}
+      url_filter_enable: {{ url_filter_enable }}
+      vlan_ids:
+        {% for vlan_id in vlan_ids %}
+        - {{ vlan_id }}
+        {% endfor %}
+      firewall_rules:
+        {% for firewall_rule in firewall_rules.split("\n") %}
+        - {{ firewall_rule }}
+        {% endfor %}
+      cdn_prefixes:
+        {% for prefix in cdn_prefixes %}
+        - {{ prefix }}
+        {% endfor %}
+
+  tasks:
+    - name: make sure /etc/dnsmasq.d exists
+      file: path=/etc/dnsmasq.d state=directory owner=root group=root
+   
+    - name: configure dnsmasq servers
+      template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
+
+    - name: setup networking
+      template: src=/opt/xos/observers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
+
+    - name: setup firewall
+      template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root

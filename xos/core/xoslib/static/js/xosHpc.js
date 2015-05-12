@@ -23,7 +23,8 @@ function updateDnsDemuxTable(dnsdemux) {
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
 
-        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg", SC_RR), row.nameservers.join(",")] );
+        actualEntries.push( [row.name, row.ip, staleCheck(row, "watcher.DNS.time", "watcher.DNS.msg", SC_RR), row.nameservers.join(","),
+                             row.dnsredir_config_age + "," + row.dnsdemux_config_age] );
     }
     console.log(actualEntries);
     oTable = $('#dynamic_dnsdemux').dataTable( {
@@ -37,6 +38,7 @@ function updateDnsDemuxTable(dnsdemux) {
             { "sTitle": "IP Address" },
             { "sTitle": "Record Checker" },
             { "sTitle": "Nameservers" },
+            { "sTitle": "Config Age" },
         ]
     } );
 }
@@ -50,7 +52,9 @@ function updateHpcTable(dnsdemux) {
     for (rowkey in dnsdemux) {
         row = dnsdemux[rowkey];
 
-        actualEntries.push( [row.name, staleCheck(row, "watcher.HPC-hb.time", "watcher.HPC-hb.msg", SC_HPC_PROBE), staleCheck(row, "watcher.HPC-fetch.time", "watcher.HPC-fetch.msg", SC_HPC_FETCH) ] );
+        actualEntries.push( [row.name, staleCheck(row, "watcher.HPC-hb.time", "watcher.HPC-hb.msg", SC_HPC_PROBE),
+                                       staleCheck(row, "watcher.HPC-fetch.time", "watcher.HPC-fetch.msg", SC_HPC_FETCH),
+                                       row.config_age, ] );
     }
     console.log(actualEntries);
     oTable = $('#dynamic_hpc').dataTable( {
@@ -63,6 +67,7 @@ function updateHpcTable(dnsdemux) {
             { "sTitle": "Node", },
             { "sTitle": "Prober" },
             { "sTitle": "Fetcher" },
+            { "sTitle": "Config Age" },
         ]
     } );
 }

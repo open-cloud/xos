@@ -15,6 +15,7 @@
         state=present
         {% endif %}
         shared=true
+  {% if not delete %}
   - quantum_subnet:
         auth_url={{ endpoint }} 
         login_username={{ admin_user }}
@@ -30,3 +31,4 @@
         no_gateway=true 
         cidr={{ cidr }}
         {% endif %}
+  {% endif %}

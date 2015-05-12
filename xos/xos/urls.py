@@ -7,7 +7,7 @@ from django.contrib import admin
 from xosapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
-from core.views.services import ServiceGridView
+from core.views.services import ServiceGridView, ServiceGraphView
 #from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics
@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^stats', 'core.views.stats.Stats', name='stats'),
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
+    url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
     url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
 
     url(r'^docs/', include('rest_framework_swagger.urls')),

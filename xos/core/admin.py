@@ -57,6 +57,31 @@ class UploadTextareaWidget(AdminTextareaWidget):
                            flatatt(final_attrs),
                            force_text(value))
 
+class SliderWidget(forms.HiddenInput):
+    def render(self, name, value,  attrs=None):
+        if value is None:
+            value = '0'
+        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs or attrs[:]
+        attrs["name"] = name
+        attrs["value"] = value
+        html = """<div style="width:640px"><span id="%(id)s_label">%(value)s</span><div id="%(id)s_slider" style="float:right;width:610px;margin-top:5px"></div></div>
+                              <script>
+                                  $(function() {
+                                      $("#%(id)s_slider").slider({
+                                         value: %(value)s,
+                                         slide: function(event, ui) { $("#%(id)s").val( ui.value ); $("#%(id)s_label").html(ui.value); },
+                                         });
+                                  });
+                              </script>
+                              <input type="hidden" id="%(id)s" name="%(name)s" value="%(value)s"></input>
+                           """ % attrs
+        html = html.replace("{","{{").replace("}","}}")
+        return format_html(html,
+                           flatatt(final_attrs),
+                           force_text(value))
+
+
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
 
@@ -721,6 +746,32 @@ class ControllerAdmin(XOSBaseAdmin):
 
         return tabs
 
+class ProviderTenantInline(XOSTabularInline):
+    model = CoarseTenant
+    fields = ['provider_service', 'subscriber_service', 'connect_method']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicetenants'
+    fk_name = 'provider_service'
+    verbose_name = 'provided tenant'
+    verbose_name_plural = 'provided tenants'
+
+    def queryset(self, request):
+        qs = super(ProviderTenantInline, self).queryset(request)
+        return qs.filter(kind="coarse")
+
+class SubscriberTenantInline(XOSTabularInline):
+    model = CoarseTenant
+    fields = ['provider_service', 'subscriber_service', 'connect_method']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-servicetenants'
+    fk_name = 'subscriber_service'
+    verbose_name = 'subscribed tenant'
+    verbose_name_plural = 'subscribed tenants'
+
+    def queryset(self, request):
+        qs = super(SubscriberTenantInline, self).queryset(request)
+        return qs.filter(kind="coarse")
+
 class ServiceAttrAsTabInline(XOSTabularInline):
     model = ServiceAttribute
     fields = ['name','value']
@@ -730,9 +781,9 @@ class ServiceAttrAsTabInline(XOSTabularInline):
 class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon","name","kind","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url"]
+    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
-    inlines = [ServiceAttrAsTabInline,SliceInline]
+    inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -740,6 +791,7 @@ class ServiceAdmin(XOSBaseAdmin):
     suit_form_tabs =(('general', 'Service Details'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('servicetenants','Tenancy'),
     )
 
 class SiteNodeInline(XOSTabularInline):

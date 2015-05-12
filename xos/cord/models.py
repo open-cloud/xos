@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image
+from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
@@ -24,17 +24,27 @@ t = VOLTTenant()
 t.caller = User.objects.all()[0]
 t.save()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VCPETenant.objects.all():
+for v in VCPETenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
+
+for v in VOLTTenant.get_tenant_objects().all():
+    if not v.creator:
+        v.creator= User.objects.all()[0]
+        v.save()
+
+for v in VCPETenant.get_tenant_objects().all():
+    if not v.creator:
+        v.creator= User.objects.all()[0]
+        v.save()
 """
 
 class ConfigurationError(Exception):
@@ -85,7 +95,7 @@ class VOLTTenant(Tenant):
         if not vcpes:
             return None
         vcpe=vcpes[0]
-        vcpe.caller = getattr(self, "caller", None)
+        vcpe.caller = self.creator
         self.cached_vcpe = vcpe
         return vcpe
 
@@ -96,6 +106,28 @@ class VOLTTenant(Tenant):
         if (value != self.get_attribute("vcpe_id", None)):
             self.cached_vcpe=None
         self.set_attribute("vcpe_id", value)
+
+    @property
+    def creator(self):
+        if getattr(self, "cached_creator", None):
+            return self.cached_creator
+        creator_id=self.get_attribute("creator_id")
+        if not creator_id:
+            return None
+        users=User.objects.filter(id=creator_id)
+        if not users:
+            return None
+        user=users[0]
+        self.cached_creator = users[0]
+        return user
+
+    @creator.setter
+    def creator(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("creator_id", None)):
+            self.cached_creator=None
+        self.set_attribute("creator_id", value)
 
     def manage_vcpe(self):
         # Each VOLT object owns exactly one VCPE object
@@ -110,7 +142,7 @@ class VOLTTenant(Tenant):
 
             vcpe = VCPETenant(provider_service = vcpeServices[0],
                               subscriber_tenant = self)
-            vcpe.caller = self.caller
+            vcpe.caller = self.creator
             vcpe.save()
 
             try:
@@ -128,8 +160,14 @@ class VOLTTenant(Tenant):
     def save(self, *args, **kwargs):
         self.validate_unique_service_specific_id()
 
-        if not getattr(self, "caller", None):
-            raise XOSProgrammingError("VOLTTenant's self.caller was not set")
+        if not self.creator:
+            if not getattr(self, "caller", None):
+                # caller must be set when creating a vCPE since it creates a slice
+                raise XOSProgrammingError("VOLTTenant's self.caller was not set")
+            self.creator = self.caller
+            if not self.creator:
+                raise XOSProgrammingError("VOLTTenant's self.creator was not set")
+
         super(VOLTTenant, self).save(*args, **kwargs)
         self.manage_vcpe()
 
@@ -154,6 +192,12 @@ class VCPETenant(Tenant):
         proxy = True
 
     KIND = "vCPE"
+
+    sync_attributes = ("firewall_enable",
+                       "firewall_rules",
+                       "url_filter_enable",
+                       "url_filter_rules",
+                       "cdn_enable")
 
     default_attributes = {"firewall_enable": False,
                           "firewall_rules": "accept all anywhere anywhere",
@@ -190,7 +234,7 @@ class VCPETenant(Tenant):
         if not slivers:
             return None
         sliver=slivers[0]
-        sliver.caller = getattr(self, "caller", None)
+        sliver.caller = self.creator
         self.cached_sliver = sliver
         return sliver
 
@@ -203,6 +247,28 @@ class VCPETenant(Tenant):
         self.set_attribute("sliver_id", value)
 
     @property
+    def creator(self):
+        if getattr(self, "cached_creator", None):
+            return self.cached_creator
+        creator_id=self.get_attribute("creator_id")
+        if not creator_id:
+            return None
+        users=User.objects.filter(id=creator_id)
+        if not users:
+            return None
+        user=users[0]
+        self.cached_creator = users[0]
+        return user
+
+    @creator.setter
+    def creator(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("creator_id", None)):
+            self.cached_creator=None
+        self.set_attribute("creator_id", value)
+
+    @property
     def vbng(self):
         if getattr(self, "cached_vbng", None):
             return self.cached_vbng
@@ -213,7 +279,7 @@ class VCPETenant(Tenant):
         if not vbngs:
             return None
         vbng=vbngs[0]
-        vbng.caller = getattr(self, "caller", None)
+        vbng.caller = self.creator
         self.cached_vbng = vbng
         return vbng
 
@@ -281,15 +347,16 @@ class VCPETenant(Tenant):
         if (self.sliver is not None) and (self.sliver.image != self.image):
             self.sliver.delete()
             self.sliver = None
+
         if self.sliver is None:
             if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The VCPE service has no slicers")
+                raise XOSConfigurationError("The VCPE service has no slices")
 
             node =self.pick_node()
             sliver = Sliver(slice = self.provider_service.slices.all()[0],
                             node = node,
                             image = self.image,
-                            creator = self.caller,
+                            creator = self.creator,
                             deployment = node.site_deployment.deployment)
             sliver.save()
 
@@ -318,7 +385,7 @@ class VCPETenant(Tenant):
 
             vbng = VBNGTenant(provider_service = vbngServices[0],
                               subscriber_tenant = self)
-            vbng.caller = self.caller
+            vbng.caller = self.creator
             vbng.save()
 
             try:
@@ -334,8 +401,14 @@ class VCPETenant(Tenant):
             self.vbng = None
 
     def save(self, *args, **kwargs):
-        if not getattr(self, "caller", None):
-            raise XOSProgrammingError("VCPETenant's self.caller was not set")
+        if not self.creator:
+            if not getattr(self, "caller", None):
+                # caller must be set when creating a vCPE since it creates a slice
+                raise XOSProgrammingError("VCPETenant's self.caller was not set")
+            self.creator = self.caller
+            if not self.creator:
+                raise XOSProgrammingError("VCPETenant's self.creator was not set")
+
         super(VCPETenant, self).save(*args, **kwargs)
         self.manage_sliver()
         self.manage_vbng()
