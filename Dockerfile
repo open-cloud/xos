@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y geoip-database libgeoip1
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-dev
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libyaml-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
@@ -42,6 +43,7 @@ RUN pip install django-bitfield
 RUN pip install django-ipware
 RUN pip install django-encrypted-fields
 RUN pip install python-keyczar
+RUN pip install pygraphviz
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-keystoneclient
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-novaclient

@@ -17,6 +17,26 @@ class HpcService(Service):
 
     cmi_hostname = StrippedCharField(max_length=254, null=True, blank=True)
 
+    @property
+    def scale(self):
+        hpc_slices = [x for x in self.slices.all() if "hpc" in x.name]
+        if not hpc_slices:
+            return 0
+        return hpc_slices[0].slivers.count()
+
+    @scale.setter
+    def scale(self, value):
+        self.set_scale = value
+
+    def save(self, *args, **kwargs):
+        super(HpcService, self).save(*args, **kwargs)
+
+        # scale up/down
+        scale = getattr(self, "set_scale", None)
+        if scale is not None:
+            exclude_slices = [x for x in self.slices.all() if "cmi" in x.name]
+            self.adjust_scale(slice_hint="hpc", scale=scale, exclusive_slices = exclude_slices, max_per_node=1)
+
 class ServiceProvider(PlCoreBase):
     class Meta:
         app_label = "hpc"

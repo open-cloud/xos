@@ -185,7 +185,8 @@ class PlCoreBase(models.Model, PlModelMixIn):
             if (not self.write_protect):
                 self.deleted = True
                 self.enacted=None
-                self.save(update_fields=['enacted','deleted'], silent=silent)
+                self.policed=None
+                self.save(update_fields=['enacted','deleted','policed'], silent=silent)
 
 
     def save(self, *args, **kwargs):

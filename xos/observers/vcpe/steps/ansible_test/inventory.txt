@@ -1,0 +1,7 @@
+[onlab_hpc-355]
+node67.washington.vicci.org instance_id=instance-00000045 sliver_name=onlab_hpc-355
+
+[onlab_test405-372]
+node67.washington.vicci.org instance_id=instance-0000004c sliver_name=onlab_test405-372
+
+

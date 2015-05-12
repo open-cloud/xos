@@ -1,3 +1,5 @@
+import os
+import sys
 import threading
 import time
 from observer.event_loop import XOSObserver
@@ -22,6 +24,7 @@ class Backend:
             model_policy_thread = threading.Thread(target=run_policy)
             model_policy_thread.start()
         else:
+            model_policy_thread = None
             print "Skipping model policies thread for service observer."
 
 
@@ -29,3 +32,15 @@ class Backend:
         #event_manager = EventListener(wake_up=observer.wake_up)
         #event_manager_thread = threading.Thread(target=event_manager.run)
         #event_manager_thread.start()
+
+        while True:
+            try:
+                time.sleep(1000)
+            except KeyboardInterrupt:
+                print "exiting due to keyboard interrupt"
+                # TODO: See about setting the threads as daemons
+                observer_thread._Thread__stop()
+                if model_policy_thread:
+                    model_policy_thread._Thread__stop()
+                sys.exit(1)
+

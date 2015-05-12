@@ -5,7 +5,7 @@ from django.core import exceptions
 from core.models import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager
 from core.models.plcorebase import StrippedCharField
 from core.models import Image
-from core.models import Slice
+from core.models import Slice, SlicePrivilege
 from core.models import Node
 from core.models import Site
 from core.models import Deployment
@@ -170,3 +170,18 @@ class Sliver(PlCoreBase):
             return None
         else:
             return 'ssh -o "ProxyCommand ssh -q %s@%s" ubuntu@%s' % (self.instance_id, self.node.name, self.instance_name)
+
+    def get_public_keys(self):
+        slice_memberships = SlicePrivilege.objects.filter(slice=self.slice)
+        pubkeys = set([sm.user.public_key for sm in slice_memberships if sm.user.public_key])
+
+        if self.creator.public_key:
+            pubkeys.add(self.creator.public_key)
+
+        if self.slice.creator.public_key:
+            pubkeys.add(self.slice.creator.public_key)
+
+        if self.slice.service and self.slice.service.public_key:
+            pubkeys.add(self.slice.service.public_key)
+
+        return pubkeys

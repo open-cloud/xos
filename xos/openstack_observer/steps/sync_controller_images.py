@@ -8,6 +8,7 @@ from core.models import Controller
 from core.models import Image, ControllerImages
 from util.logger import observer_logger as logger 
 from observer.ansible import *
+import json
 
 class SyncControllerImages(OpenStackSyncStep):
     provides=[ControllerImages]
@@ -23,6 +24,11 @@ class SyncControllerImages(OpenStackSyncStep):
 
     def sync_record(self, controller_image):
         logger.info("Working on image %s on controller %s" % (controller_image.image.name, controller_image.controller))
+
+	controller_register = json.loads(controller_image.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_image.controller.name)
+
         image_fields = {'endpoint':controller_image.controller.auth_url,
                         'admin_user':controller_image.controller.admin_user,
                         'admin_password':controller_image.controller.admin_password,
