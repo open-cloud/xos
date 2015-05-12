@@ -35,7 +35,7 @@ class HpcService(Service):
         scale = getattr(self, "set_scale", None)
         if scale is not None:
             exclude_slices = [x for x in self.slices.all() if "cmi" in x.name]
-            self.adjust_scale(slice_hint="hpc", scale=scale, exclusive_slices = exclude_slices)
+            self.adjust_scale(slice_hint="hpc", scale=scale, exclusive_slices = exclude_slices, max_per_node=1)
 
 class ServiceProvider(PlCoreBase):
     class Meta:
