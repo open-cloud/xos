@@ -64,18 +64,23 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 def shellquote(s):
     return "'" + s.replace("'", "'\\''") + "'"
 
-def run_template(name, opts,path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None):
+def get_playbook_fn(opts, path):
+    if not opts.get("ansible_tag", None):
+        # if no ansible_tag is in the options, then generate a unique one
+        objname= id_generator()
+        opts = opts.copy()
+        opts["ansible_tag"] = objname
+
+    objname = opts["ansible_tag"]
+
+    os.system('mkdir -p %s' % os.path.join(sys_dir, path))
+    return (opts, os.path.join(sys_dir,path,objname))
+
+def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None):
     template = os_template_env.get_template(name)
     buffer = template.render(opts)
 
-    try:
-        objname = opts['ansible_tag']
-    except:
-        objname= id_generator()
-
-    os.system('mkdir -p %s'%'/'.join([sys_dir,path]))
-    fqp = '/'.join([sys_dir,path,objname])
-
+    (opts, fqp) = get_playbook_fn(opts, path)
 
     f = open(fqp,'w')
     f.write(buffer)
@@ -93,11 +98,16 @@ def run_template(name, opts,path='', expected_num=None, ansible_config=None, ans
         if not run_ansible_script:
             run_ansible_script = os.path.join(XOS_DIR, "observer/run_ansible")
 
-        #run = os.popen(XOS_DIR + '/observer/run_ansible %s'%shellquote(fqp), env=env)
         run = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, env=env).stdout
         msg = run.read()
         status = run.close()
 
+        if getattr(Config(), "observer_save_ansible_output", False):
+            try:
+                open(fqp+".out","w").write(msg)
+            except:
+                # fail silently
+                pass
         
     else:
         msg = open(fqp+'.out').read()
@@ -129,35 +139,32 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     hostname = opts["hostname"]
     private_key = opts["private_key"]
 
-    (private_key_handle, private_key_pathname) = tempfile.mkstemp()
-    (config_handle, config_pathname) = tempfile.mkstemp()
-    (hosts_handle, hosts_pathname) = tempfile.mkstemp()
+    (opts, fqp) = get_playbook_fn(opts, path)
+    private_key_pathname = fqp + ".key"
+    config_pathname = fqp + ".config"
+    hosts_pathname = fqp + ".hosts"
 
-    try:
-        proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
+    proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
 
-        os.write(private_key_handle, private_key)
-        os.close(private_key_handle)
+    f = open(private_key_pathname, "w")
+    f.write(private_key)
+    f.close()
 
-        os.write(config_handle, "[ssh_connection]\n")
-        os.write(config_handle, 'ssh_args = -o "%s" -o StrictHostKeyChecking=no\n' % proxy_command)
-        os.write(config_handle, 'scp_if_ssh = True\n')
-        os.close(config_handle)
+    f = open(config_pathname, "w")
+    f.write("[ssh_connection]\n")
+    f.write('ssh_args = -o "%s" -o StrictHostKeyChecking=no\n' % proxy_command)
+    f.write('scp_if_ssh = True\n')
+    f.close()
 
-        os.write(hosts_handle, "[%s]\n" % sliver_name)
-        os.write(hosts_handle, "%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
-        os.close(hosts_handle)
+    f = open(hosts_pathname, "w")
+    f.write("[%s]\n" % sliver_name)
+    f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
+    f.close()
 
-        print "ANSIBLE_CONFIG=%s" % config_pathname
-        print "ANSIBLE_HOSTS=%s" % hosts_pathname
+    print "ANSIBLE_CONFIG=%s" % config_pathname
+    print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
-        return run_template(name, opts, path, expected_num, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
-
-    finally:
-        #os.remove(private_key_pathname)
-        #os.remove(config_pathname)
-        #os.remove(hosts_pathname)
-        pass
+    return run_template(name, opts, path, expected_num, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
 
 
 
