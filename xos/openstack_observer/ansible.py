@@ -43,6 +43,21 @@ def parse_output(msg):
 
     return results
 
+def parse_unreachable(msg):
+    total_unreachable=0
+    for l in msg.splitlines():
+        x = re.findall('ok=([0-9]+).*changed=([0-9]+).*unreachable=([0-9]+).*failed=([0-9]+)', l)
+        if x:
+            (ok, changed, unreachable, failed) = x[0]
+            ok=int(ok)
+            changed=int(changed)
+            unreachable=int(unreachable)
+            failed=int(failed)
+
+            total_unreachable += unreachable
+    return total_unreachable
+
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
@@ -91,6 +106,10 @@ def run_template(name, opts,path='', expected_num=None, ansible_config=None, ans
         ok_results = parse_output(msg)
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
+
+        total_unreachable = parse_unreachable(msg)
+        if (total_unreachable > 0):
+            raise ValueError("Unreachable results in ansible recipe")
     except ValueError,e:
         all_fatal = [e.message] + re.findall(r'^msg: (.*)',msg,re.MULTILINE)
         all_fatal2 = re.findall(r'^ERROR: (.*)',msg,re.MULTILINE)
