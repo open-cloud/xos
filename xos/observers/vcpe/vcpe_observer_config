@@ -31,7 +31,8 @@ log_file=console
 #/var/log/hpc.log
 driver=None
 pretend=False
-#backoff_disabled=True
+backoff_disabled=True
+save_ansible_output=True
 
 [feefie]
 client_id='vicci_dev_central'
