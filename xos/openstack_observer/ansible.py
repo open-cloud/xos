@@ -98,13 +98,14 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
         if not run_ansible_script:
             run_ansible_script = os.path.join(XOS_DIR, "observer/run_ansible")
 
-        run = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, env=env).stdout
-        msg = run.read()
-        status = run.close()
+        process = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        msg = process.stdout.read()
+        err_msg = process.stderr.read()
 
         if getattr(Config(), "observer_save_ansible_output", False):
             try:
                 open(fqp+".out","w").write(msg)
+                open(fqp+".err","w").write(err_msg)
             except:
                 # fail silently
                 pass
