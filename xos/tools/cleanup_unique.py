@@ -16,6 +16,10 @@ for obj in ControllerSite.deleted_objects.all():
     print "Purging deleted object", obj
     obj.delete(purge=True)
 
+for obj in ControllerSlice.deleted_objects.all():
+    print "Purging deleted object", obj
+    obj.delete(purge=True)
+
 for obj in NetworkSlice.deleted_objects.all():
     print "Purging deleted object", obj
     obj.delete(purge=True)
@@ -85,3 +89,13 @@ for obj in ControllerSite.objects.all():
          if conflict.id not in seen:
              print "Purging", conflict, conflict.id, "due to duplicate of", obj.id
              conflict.delete(purge=True)
+
+seen=[]
+for obj in ControllerSlice.objects.all():
+     seen.append(obj.id)
+     conflicts = ControllerSlice.objects.filter(slice=obj.slice, controller=obj.controller)
+     for conflict in conflicts:
+         if conflict.id not in seen:
+             print "Purging", conflict, conflict.id, "due to duplicate of", obj.id
+             conflict.delete(purge=True)
+
