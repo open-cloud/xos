@@ -3,4 +3,4 @@
 #fi
 
 export XOS_DIR=/opt/xos
-nohup python hpc-observer.py  -C $XOS_DIR/hpc_observer/hpc_observer_config > /dev/null 2>&1 &
+nohup python hpc-observer.py  -C $XOS_DIR/observers/hpc/hpc_observer_config > /dev/null 2>&1 &
