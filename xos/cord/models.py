@@ -24,24 +24,24 @@ t = VOLTTenant()
 t.caller = User.objects.all()[0]
 t.save()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VCPETenant.objects.all():
+for v in VCPETenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     v.caller = User.objects.all()[0]
     v.delete()
 
-for v in VOLTTenant.objects.all():
+for v in VOLTTenant.get_tenant_objects().all():
     if not v.creator:
         v.creator= User.objects.all()[0]
         v.save()
 
-for v in VCPETenant.objects.all():
+for v in VCPETenant.get_tenant_objects().all():
     if not v.creator:
         v.creator= User.objects.all()[0]
         v.save()
@@ -350,7 +350,7 @@ class VCPETenant(Tenant):
 
         if self.sliver is None:
             if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The VCPE service has no slicers")
+                raise XOSConfigurationError("The VCPE service has no slices")
 
             node =self.pick_node()
             sliver = Sliver(slice = self.provider_service.slices.all()[0],
@@ -404,10 +404,10 @@ class VCPETenant(Tenant):
         if not self.creator:
             if not getattr(self, "caller", None):
                 # caller must be set when creating a vCPE since it creates a slice
-                raise XOSProgrammingError("VBNGTenant's self.caller was not set")
+                raise XOSProgrammingError("VCPETenant's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
-                raise XOSProgrammingError("VCPETenant's self.caller was not set")
+                raise XOSProgrammingError("VCPETenant's self.creator was not set")
 
         super(VCPETenant, self).save(*args, **kwargs)
         self.manage_sliver()

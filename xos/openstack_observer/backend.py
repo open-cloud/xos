@@ -33,7 +33,6 @@ class Backend:
         #event_manager_thread = threading.Thread(target=event_manager.run)
         #event_manager_thread.start()
 
-        print "entering keyboard wait loop"
         while True:
             try:
                 time.sleep(1000)
@@ -42,6 +41,6 @@ class Backend:
                 # TODO: See about setting the threads as daemons
                 observer_thread._Thread__stop()
                 if model_policy_thread:
-                    model_policy_thread._Threat__stop()
+                    model_policy_thread._Thread__stop()
                 sys.exit(1)
 

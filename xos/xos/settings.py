@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'django_evolution',
     'core',
     'hpc',
+    'cord',
     'requestrouter',
 #    'urlfilter',
 #    'servcomp',

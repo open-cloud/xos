@@ -193,7 +193,8 @@ class XOSObserver:
 		pp.pprint(step_graph)
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
 		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncSlivers']
-		#self.ordered_steps = ['SyncControllerSites','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
+		#self.ordered_steps = ['SyncControllerSites','SyncRoles','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
+		#self.ordered_steps = ['SyncControllerNetworks']
 		#self.ordered_steps = ['SyncSlivers','SyncNetworkSlivers']
 
 		print "Order of steps=",self.ordered_steps

@@ -20,6 +20,13 @@ class XOSNotAuthenticated(RestFrameworkPermissionDenied):
                             "specific_error": why,
                             "fields": fields})
 
+class XOSNotFound(RestFrameworkPermissionDenied):
+    status_code=404
+    def __init__(self, why="object not found", fields={}):
+        APIException.__init__(self, {"error": "XOSNotFound",
+                            "specific_error": why,
+                            "fields": fields})
+
 class XOSValidationError(APIException):
     status_code=403
     def __init__(self, why="validation error", fields={}):

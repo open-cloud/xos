@@ -115,13 +115,13 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     (hosts_handle, hosts_pathname) = tempfile.mkstemp()
 
     try:
-        proxy_command = "ProxyCommand ssh -q -i %s %s@%s" % (private_key_pathname, instance_id, hostname)
+        proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
 
         os.write(private_key_handle, private_key)
         os.close(private_key_handle)
 
         os.write(config_handle, "[ssh_connection]\n")
-        os.write(config_handle, 'ssh_args = -o "%s"\n' % proxy_command)
+        os.write(config_handle, 'ssh_args = -o "%s" -o StrictHostKeyChecking=no\n' % proxy_command)
         os.write(config_handle, 'scp_if_ssh = True\n')
         os.close(config_handle)
 

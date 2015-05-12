@@ -3,7 +3,9 @@
 
 {% if cdn_enable %}
 # CDN 
-server=/foo.com/{{ dnsdemux_ip }}
+{% for prefix in cdn_prefixes %}
+server=/{{ prefix }}/{{ dnsdemux_ip }}
+{% endfor %}
 {% endif %}
 
 {% if url_filter_enable %}
