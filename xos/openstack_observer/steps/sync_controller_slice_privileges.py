@@ -9,6 +9,7 @@ from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSlicePrivilege
 from observer.ansible import *
 from util.logger import observer_logger as logger
+import json
 
 class SyncControllerSlicePrivileges(OpenStackSyncStep):
     provides=[SlicePrivilege]
@@ -24,6 +25,10 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
 
     def sync_record(self, controller_slice_privilege):
         logger.info("sync'ing controler_slice_privilege %s at controller %s" % (controller_slice_privilege, controller_slice_privilege.controller))
+
+	controller_register = json.loads(controller_slice_privilege.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_slice_privilege.controller.name)
 
         if not controller_slice_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice_privilege.controller)
@@ -68,6 +73,10 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
             controller_slice_privilege.save()
 
     def delete_record(self, controller_slice_privilege):
+	controller_register = json.loads(controller_slice_privilege.controller.backend_register)
+        if (controller_register.get('disabled',False)):
+                raise Exception('Controller %s is disabled'%controller_slice_privilege.controller.name)
+
         if controller_slice_privilege.role_id:
             driver = self.driver.admin_driver(controller=controller_slice_privilege.controller)
             user = ControllerUser.objects.get(
