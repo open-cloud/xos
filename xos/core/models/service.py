@@ -122,7 +122,7 @@ class ServicePrivilege(PlCoreBase):
     role = models.ForeignKey('ServiceRole',related_name='serviceprivileges')
 
     class Meta:
-        unique_toggether =  ('user', 'service', 'role')
+        unique_together =  ('user', 'service', 'role')
 
     def __unicode__(self):  return u'%s %s %s' % (self.service, self.user, self.role)
 
