@@ -22,7 +22,7 @@ def handle(controller):
     slices = Slice.objects.all()
     for slice in slices:
         if slice not in ctrls_by_slice or \
-            controller not in ctrls_by_slice:
+            controller not in ctrls_by_slice[slice]:
             controller_slice = ControllerSlice(controller=controller, slice=slice)
             controller_slice.save()
     # relations for all users
