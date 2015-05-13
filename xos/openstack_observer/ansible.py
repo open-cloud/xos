@@ -162,6 +162,9 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
     f.close()
 
+    # SSH will complain if private key is world or group readable
+    os.chmod(private_key_pathname, 0600)
+
     print "ANSIBLE_CONFIG=%s" % config_pathname
     print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
