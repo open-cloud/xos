@@ -104,7 +104,6 @@ class Service(PlCoreBase):
                 s.save()
 
                 # print "add sliver", s
->>>>>>> origin/master
 
 class ServiceAttribute(PlCoreBase):
     name = models.SlugField(help_text="Attribute Name", max_length=128)
