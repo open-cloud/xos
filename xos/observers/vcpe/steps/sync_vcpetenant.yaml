@@ -20,16 +20,71 @@
         {% for prefix in cdn_prefixes %}
         - {{ prefix }}
         {% endfor %}
+      lan_iface: eth2
+      wan_iface: eth3
 
   tasks:
-    - name: make sure /etc/dnsmasq.d exists
-      file: path=/etc/dnsmasq.d state=directory owner=root group=root
+  - name: Docker repository
+    copy: src=/opt/xos/observers/vcpe/files/docker.list
+      dest=/etc/apt/sources.list.d/docker.list
+
+  - name: Import the repository key
+    apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+  - name: install Docker
+    apt: name=lxc-docker-1.5.0 state=present update_cache=yes
+
+  - name: install pip
+    easy_install: name=pip
+
+  - name: install docker-py
+    pip: name=docker-py version=0.5.3
+
+  - name: install Pipework
+    get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
+       dest=/usr/local/bin/pipework
+       mode=0755
+
+  - name: bring up LAN and WAN interfaces
+    shell: ifconfig {{ item }} up
+    with_items:
+    - "{{ lan_iface }}"
+    - "{{ wan_iface }}"
+
+  - name: make sure /etc/dnsmasq.d exists
+    file: path=/etc/dnsmasq.d state=directory owner=root group=root
    
-    - name: configure dnsmasq servers
-      template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
+  - name: dnsmasq config
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
 
-    - name: setup networking
-      template: src=/opt/xos/observers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
+  - name: networking info
+    template: src=/opt/xos/observers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
 
-    - name: setup firewall
-      template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
+  - name: firewall info
+    template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
+
+  - name: Make sure iptables modules loaded
+    shell: "{{ item }} -L > /dev/null"
+    with_items:
+    - iptables
+    - ip6tables
+
+  - name: Disable resolvconf updates (to avoid overwriting /etc/resolv.conf on host)
+    shell: service resolvconf disable-updates
+
+  - name: spin up container
+    docker: name=vcpe
+      image=andybavier/docker-vcpe
+      net=none
+      privileged=yes
+
+  # This needs attention once ONOS is integrated
+  - name: Connect container to network
+    shell: "{{ item }}"
+    with_items:
+    - docker exec vcpe ifconfig eth0 >> /dev/null || pipework {{ wan_iface }} -i eth0 vcpe 10.1.2.3/24
+    - docker exec vcpe ifconfig eth1 >> /dev/null || pipework {{ lan_iface }} -i eth1 vcpe 192.168.0.1/24
+
+  - name: Start container services
+    shell: docker exec vcpe service dnsmasq start
+
