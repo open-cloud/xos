@@ -182,7 +182,7 @@ border-bottom-right-radius: 0px !important;
   float: right;
   border: 2px darkGrey;
 }
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+.ui-state-default #hometabs, .ui-widget-content .ui-state-default #hometabs, .ui-widget-header .ui-state-default {
 background: none !important;
 border-top: 0px !important;
 border-left: 0px !important;

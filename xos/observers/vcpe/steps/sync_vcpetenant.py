@@ -97,6 +97,7 @@ class SyncVCPETenant(SyncStep):
                    "hostname": sliver.node.name,
                    "instance_id": sliver.instance_id,
                    "private_key": service_key,
+                   "ansible_tag": "vcpe_tenant_" + str(o.id)
                  }
 
         if hasattr(o, "sync_attributes"):
