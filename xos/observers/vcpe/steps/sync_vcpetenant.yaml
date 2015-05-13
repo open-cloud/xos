@@ -20,8 +20,6 @@
         {% for prefix in cdn_prefixes %}
         - {{ prefix }}
         {% endfor %}
-      lan_iface: eth2
-      wan_iface: eth3
 
   tasks:
   - name: Docker repository
@@ -34,6 +32,9 @@
   - name: install Docker
     apt: name=lxc-docker-1.5.0 state=present update_cache=yes
 
+  - name: install python-setuptools
+    apt: name=python-setuptools state=present
+
   - name: install pip
     easy_install: name=pip
 
@@ -45,11 +46,11 @@
        dest=/usr/local/bin/pipework
        mode=0755
 
-  - name: bring up LAN and WAN interfaces
-    shell: ifconfig {{ item }} up
-    with_items:
-    - "{{ lan_iface }}"
-    - "{{ wan_iface }}"
+  - name: bring up LAN interface
+    shell: ifconfig eth2 up
+
+  - name: bring up WAN interface
+    shell: ifconfig eth3 up
 
   - name: make sure /etc/dnsmasq.d exists
     file: path=/etc/dnsmasq.d state=directory owner=root group=root
@@ -63,11 +64,11 @@
   - name: firewall info
     template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
 
-  - name: Make sure iptables modules loaded
-    shell: "{{ item }} -L > /dev/null"
-    with_items:
-    - iptables
-    - ip6tables
+  - name: Make sure iptables module loaded
+    shell: "iptables -L > /dev/null"
+
+  - name: Make sure ip6tables module loaded
+    shell: "ip6tables -L > /dev/null"
 
   - name: Disable resolvconf updates (to avoid overwriting /etc/resolv.conf on host)
     shell: service resolvconf disable-updates
@@ -79,11 +80,12 @@
       privileged=yes
 
   # This needs attention once ONOS is integrated
-  - name: Connect container to network
-    shell: "{{ item }}"
-    with_items:
-    - docker exec vcpe ifconfig eth0 >> /dev/null || pipework {{ wan_iface }} -i eth0 vcpe 10.1.2.3/24
-    - docker exec vcpe ifconfig eth1 >> /dev/null || pipework {{ lan_iface }} -i eth1 vcpe 192.168.0.1/24
+  - name: Connect container to WAN network
+    shell: docker exec vcpe ifconfig eth0 >> /dev/null || pipework eth3 -i eth0 vcpe 10.1.2.3/24
+
+  # This needs attention once ONOS is integrated
+  - name: Connect container to LAN network
+    shell: docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth2 -i eth1 vcpe 192.168.0.1/24
 
   - name: Start container services
     shell: docker exec vcpe service dnsmasq start
