@@ -25,12 +25,14 @@ nova_enabled=True
 name=vcpe
 dependency_graph=/opt/xos/observers/vcpe/model-deps
 steps_dir=/opt/xos/observers/vcpe/steps
-sys_dir=/opt/xos/observer/vcpe/sys
+sys_dir=/opt/xos/observers/vcpe/sys
 deleters_dir=/opt/xos/observers/vcpe/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
 pretend=False
+backoff_disabled=True
+save_ansible_output=True
 
 [feefie]
 client_id='vicci_dev_central'

@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, SliderWidget
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -106,15 +106,30 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
        # filtered_change_view rather than the default change_view.
        return FilteredChangeList
 
+class HpcServiceForm(forms.ModelForm):
+    scale = forms.IntegerField(widget = SliderWidget, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(HpcServiceForm, self).__init__(*args, **kwargs)
+        self.fields['scale'].initial = kwargs["instance"].scale
+
+    def save(self, *args, **kwargs):
+        if self.cleaned_data['scale']:
+             self.instance.scale = self.cleaned_data['scale']
+
+        return super(HpcServiceForm, self).save(*args, **kwargs)
+
+
 class HpcServiceAdmin(ReadOnlyAwareAdmin):
     model = HpcService
     verbose_name = "HPC Service"
     verbose_name_plural = "HPC Service"
     list_display = ("backend_status_icon", "name","enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "cmi_hostname"], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname"], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline]
+    form = HpcServiceForm
 
     extracontext_registered_admins = True
 
