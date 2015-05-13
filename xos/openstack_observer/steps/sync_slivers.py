@@ -83,20 +83,19 @@ class SyncSlivers(OpenStackSyncStep):
                 if net['name']=='public':
                     nics.append(net['id'])
 
-        image_id = None
+        image_name = None
         controller_images = sliver.image.controllerimages.filter(controller=sliver.node.site_deployment.controller)
         if controller_images:
-            image_id = controller_images[0].glance_image_id
-            logger.info("using image_id from ControllerImage object: " + str(image_id))
+            image_name = controller_images[0].image.name
+            logger.info("using image from ControllerImage object: " + str(image_name))
 
-        if image_id is None:
+        if image_name is None:
             controller_driver = self.driver.admin_driver(controller=sliver.node.site_deployment.controller)
-            image_id = None
             images = controller_driver.shell.glanceclient.images.list()
             for image in images:
-                if image.name == sliver.image.name or not image_id:
-                    image_id = image.id
-                    logger.info("using image_id from glance: " + str(image_id))
+                if image.name == sliver.image.name or not image_name:
+                    image_name = image.name
+                    logger.info("using image from glance: " + str(image_name))
 
         try:
             legacy = Config().observer_legacy
@@ -125,8 +124,8 @@ class SyncSlivers(OpenStackSyncStep):
                      'name':sliver_name,
                      'ansible_tag':sliver_name,
                      'availability_zone': availability_zone_filter,
-                     'image_id':image_id,
-                     'flavor_id':sliver.flavor.id,
+                     'image_name':image_name,
+                     'flavor_name':sliver.flavor.name,
                      'nics':nics,
                      'meta':metadata_update,
                      'user_data':r'%s'%escape(userData)}

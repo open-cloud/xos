@@ -8,14 +8,14 @@
       login_password: {{ admin_password }}
       login_tenant_name: {{ admin_tenant }}
       name: {{ name }}
-      {% if delete %}
+      {% if delete -%}
       state: absent
-      {% else %}
+      {% else -%}
       state: present
       availability_zone: {{ availability_zone }}
-      image_id: {{ image_id }}
+      image_name: {{ image_name }}
       wait_for: 200
-      flavor_id: {{ flavor_id }}
+      flavor_name: {{ flavor_name }}
       user_data: "{{ user_data }}"
       nics:
       {% for net in nics %}
