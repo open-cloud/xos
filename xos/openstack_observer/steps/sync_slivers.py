@@ -9,6 +9,7 @@ from core.models.sliver import Sliver
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
 from core.models.network import Network, NetworkSlice, ControllerNetwork
 from observer.ansible import *
+from observer.syncstep import *
 from util.logger import observer_logger as logger
 
 def escape(s):
@@ -32,7 +33,7 @@ class SyncSlivers(OpenStackSyncStep):
         controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
 
         if (controller_register.get('disabled',False)):
-            raise Exception('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+            raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
 
         metadata_update = {}
         if (sliver.numberCores):
@@ -150,7 +151,7 @@ class SyncSlivers(OpenStackSyncStep):
         controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
 
         if (controller_register.get('disabled',False)):
-            raise Exception('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+            raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
 
         sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
         controller = sliver.node.site_deployment.controller

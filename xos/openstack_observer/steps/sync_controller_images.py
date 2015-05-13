@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models import Controller
 from core.models import Image, ControllerImages
 from util.logger import observer_logger as logger 
@@ -27,7 +28,7 @@ class SyncControllerImages(OpenStackSyncStep):
 
 	controller_register = json.loads(controller_image.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_image.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_image.controller.name)
 
         image_fields = {'endpoint':controller_image.controller.auth_url,
                         'admin_user':controller_image.controller.admin_user,

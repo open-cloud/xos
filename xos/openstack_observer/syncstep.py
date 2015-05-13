@@ -21,20 +21,24 @@ def elim_dups(backend_str):
     strs = backend_str.split(' // ')
     strs2 = f7(strs)
     return ' // '.join(strs2)
-    
+
 def deepgetattr(obj, attr):
     return reduce(getattr, attr.split('.'), obj)
+
+
+class InnocuousException(Exception):
+    pass
 
 class FailedDependency(Exception):
     pass
 
 class SyncStep(object):
-    """ An XOS Sync step. 
+    """ An XOS Sync step.
 
     Attributes:
-        psmodel        Model name the step synchronizes 
+        psmodel        Model name the step synchronizes
         dependencies    list of names of models that must be synchronized first if the current model depends on them
-    """ 
+    """
     slow=False
     def get_prop(self, prop):
         try:
@@ -73,19 +77,25 @@ class SyncStep(object):
 
         return objs
         #return Sliver.objects.filter(ip=None)
-    
+
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
- 
+
             try:
                 peer_object = deepgetattr(obj, peer_name)
-                try: 
-                    peer_objects = peer_object.all() 
+                try:
+                    peer_objects = peer_object.all()
                 except AttributeError:
-                    peer_objects = [peer_object] 
+                    peer_objects = [peer_object]
             except:
                 peer_objects = []
+
+            if (hasattr(obj,'controller')):
+                try:
+                    peer_objects = filter(lambda o:o.controller==obj.controller, peer_objects)
+                except AttributeError:
+                    pass
 
             if (failed in peer_objects):
                 if (obj.backend_status!=failed.backend_status):
@@ -109,6 +119,7 @@ class SyncStep(object):
                     if (not backoff_disabled and next_run>time.time()):
                         sync_failed = True
             except:
+                logger.log_exc("Exception while loading scratchpad")
                 pass
 
             if (not sync_failed):
@@ -125,26 +136,32 @@ class SyncStep(object):
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
                         o.save(update_fields=['enacted','backend_status','backend_register'])
-                except Exception,e:
+                except (InnocuousException,Exception) as e:
                     logger.log_exc("sync step failed!")
                     try:
                         if (o.backend_status.startswith('2 - ')):
                             str_e = '%s // %r'%(o.backend_status[4:],e)
-			    str_e = elim_dups(str_e)
+                            str_e = elim_dups(str_e)
                         else:
                             str_e = '%r'%e
                     except:
                         str_e = '%r'%e
 
                     try:
-                        o.backend_status = '2 - %s'%self.error_map.map(str_e)
+                        error = self.error_map.map(str_e)
                     except:
-                        o.backend_status = '2 - %s'%str_e
+                        error = '2 - %s'%str_e
+
+                    if isinstance(e, InnocuousException) and not force_error:
+                        o.backend_status = '1 - %s'%error
+                    else:
+                        o.backend_status = '3 - %s'%error
 
                     try:
                         scratchpad = json.loads(o.backend_register)
                         scratchpad['exponent']
                     except:
+                        logger.log_exc("Exception while updating scratchpad")
                         scratchpad = {'next_run':0, 'exponent':0}
 
                     # Second failure

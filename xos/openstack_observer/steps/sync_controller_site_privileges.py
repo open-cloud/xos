@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models.site import Controller, SitePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSitePrivilege
@@ -28,7 +29,7 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
 
 	controller_register = json.loads(controller_site_privilege.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_site_privilege.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_site_privilege.controller.name)
 
 
         if not controller_site_privilege.controller.admin_user:
@@ -76,7 +77,7 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
     def delete_record(self, controller_site_privilege):
 	controller_register = json.loads(controller_site_privilege.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_site_privilege.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_site_privilege.controller.name)
 
         if controller_site_privilege.role_id:
             driver = self.driver.admin_driver(controller=controller_site_privilege.controller)
