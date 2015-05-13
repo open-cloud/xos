@@ -155,7 +155,7 @@ class SyncStep(object):
                     if isinstance(e, InnocuousException) and not force_error:
                         o.backend_status = '1 - %s'%error
                     else:
-                        o.backend_status = '3 - %s'%error
+                        o.backend_status = '2 - %s'%error
 
                     try:
                         scratchpad = json.loads(o.backend_register)
@@ -180,7 +180,7 @@ class SyncStep(object):
                     if (o.pk):
                         try:
                             o.backend_status = o.backend_status[:1024]
-                            o.save(update_fields=['backend_status','backend_register'])
+                            o.save(update_fields=['backend_status','backend_register','updated'])
                         except:
                             print "Could not update backend status field!"
                             pass
