@@ -4,6 +4,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
+from observer.syncstep import *
 from observer.ansible import *
 from util.logger import observer_logger as logger
 import json
@@ -20,7 +21,7 @@ class SyncControllerSites(OpenStackSyncStep):
     def sync_record(self, controller_site):
 	controller_register = json.loads(controller_site.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_site.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_site.controller.name)
 
 	template = os_template_env.get_template('sync_controller_sites.yaml')
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
@@ -41,7 +42,7 @@ class SyncControllerSites(OpenStackSyncStep):
     def delete_record(self, controller_site):
 	controller_register = json.loads(controller_site.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_site.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_site.controller.name)
 
 	if controller_site.tenant_id:
             driver = self.driver.admin_driver(controller=controller_site.controller)

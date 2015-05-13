@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models.slice import Controller, SlicePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSlicePrivilege
@@ -28,7 +29,7 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
 
 	controller_register = json.loads(controller_slice_privilege.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_slice_privilege.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_slice_privilege.controller.name)
 
         if not controller_slice_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice_privilege.controller)
@@ -75,7 +76,7 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
     def delete_record(self, controller_slice_privilege):
 	controller_register = json.loads(controller_slice_privilege.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_slice_privilege.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_slice_privilege.controller.name)
 
         if controller_slice_privilege.role_id:
             driver = self.driver.admin_driver(controller=controller_slice_privilege.controller)

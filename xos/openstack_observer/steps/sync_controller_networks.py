@@ -5,6 +5,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models.network import *
 from core.models.slice import *
 from core.models.sliver import Sliver
@@ -65,7 +66,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
 	controller_register = json.loads(controller_network.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_network.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_network.controller.name)
 
         if not controller_network.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)
@@ -78,7 +79,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
     def delete_record(self, controller_network):
 	controller_register = json.loads(controller_network.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_network.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_network.controller.name)
 
 	try:
         	slice = controller_network.network.owner # XXX: FIXME!!

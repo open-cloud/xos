@@ -5,6 +5,7 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models import *
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
@@ -27,7 +28,7 @@ class SyncControllerSlices(OpenStackSyncStep):
 
         controller_register = json.loads(controller_slice.controller.backend_register)
         if (controller_register.get('disabled',False)):
-            raise Exception('Controller %s is disabled'%controller_slice.controller.name)
+            raise InnocuousException('Controller %s is disabled'%controller_slice.controller.name)
 
         if not controller_slice.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice.controller)
@@ -72,7 +73,7 @@ class SyncControllerSlices(OpenStackSyncStep):
     def delete_record(self, controller_slice):
         controller_register = json.loads(controller_slice.controller.backend_register)
         if (controller_register.get('disabled',False)):
-            raise Exception('Controller %s is disabled'%controller_slice.controller.name)
+            raise InnocuousException('Controller %s is disabled'%controller_slice.controller.name)
 
         controller_users = ControllerUser.objects.filter(user=controller_slice.slice.creator,
                                                               controller=controller_slice.controller)

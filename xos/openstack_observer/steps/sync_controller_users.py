@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
+from observer.syncstep import *
 from core.models.site import Controller, SiteDeployment, SiteDeployment
 from core.models.user import User
 from core.models.controlleruser import ControllerUser
@@ -28,7 +29,7 @@ class SyncControllerUsers(OpenStackSyncStep):
 
 	controller_register = json.loads(controller_user.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_user.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_user.controller.name)
 
         if not controller_user.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_user.controller)
@@ -79,7 +80,7 @@ class SyncControllerUsers(OpenStackSyncStep):
     def delete_record(self, controller_user):
 	controller_register = json.loads(controller_user.controller.backend_register)
         if (controller_register.get('disabled',False)):
-                raise Exception('Controller %s is disabled'%controller_user.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller_user.controller.name)
 
         if controller_user.kuser_id:
             driver = self.driver.admin_driver(controller=controller_user.controller)
