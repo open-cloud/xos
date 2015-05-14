@@ -9,8 +9,13 @@ server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endif %}
 
 {% if url_filter_enable %}
-# placeholder; figure out what to really use...
-server=dns.xerocole.com
+# Point to BroadbandShield service, disable cache, and enable eDNS MAC passing
+add-mac
+cache-size=0
+server=198.105.255.10
+server=198.105.255.11
+server=198.105.255.12
+server=198.105.255.13
 {% else %}
 # use google's DNS service
 server=8.8.8.8
