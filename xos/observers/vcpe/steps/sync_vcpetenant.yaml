@@ -83,9 +83,9 @@
   - name: Connect container to WAN network
     shell: docker exec vcpe ifconfig eth0 >> /dev/null || pipework eth3 -i eth0 vcpe 10.1.2.3/24
 
-  # This needs attention once ONOS is integrated
-  - name: Connect container to LAN network
-    shell: docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth2 -i eth1 vcpe 192.168.0.1/24
+  # Only uses the first vlan_id
+  - name: Connect container to LAN network, VLAN {{ vlan_ids[0] }}
+    shell: docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth2 -i eth1 vcpe 192.168.0.1/24 @{{ vlan_ids[0] }}
 
   - name: Start container services
     shell: docker exec vcpe service dnsmasq start
