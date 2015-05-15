@@ -34,7 +34,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         firewall_rules = serializers.CharField()
         url_filter_enable = serializers.BooleanField()
         url_filter_rules = serializers.CharField()
-        url_filter_level = serializers.CharField()
+        url_filter_level = serializers.CharField(required=False)
         cdn_enable = serializers.BooleanField()
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
@@ -66,6 +66,8 @@ class CordSubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
     method_kind = "detail"
     method_name = "cordsubscriber"
 
+# this may be moved into plus.py...
+
 class XOSViewSet(viewsets.ModelViewSet):
     @classmethod
     def detail_url(self, pattern, viewdict, name):
@@ -82,6 +84,8 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         return patterns
 
+# the "new" API with many more REST endpoints.
+
 class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
     method_name = "rs/subscriber"
@@ -96,6 +100,10 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("url_filtering/(?P<level>[a-zA-Z0-9\-]+)/$", {"get": "set_url_filtering"}, "url_filtering") )
         patterns.append( self.detail_url("users/$", {"get": "get_users"}, "users") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/$", {"get": "get_service"}, "get_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/true/$", {"get": "enable_service"}, "enable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/false/$", {"get": "disable_service"}, "disable_service") )
+
         return patterns
 
     def get_url_filtering(self, request, pk=None):
@@ -115,6 +123,25 @@ class CordSubscriberViewSet(XOSViewSet):
     def get_services(self, request, pk=None):
         subscriber = self.get_object()
         return Response(subscriber.services)
+
+    def get_service(self, request, pk=None, service=None):
+        service_attr = service+"_enable"
+        subscriber = self.get_object()
+        return Response(getattr(subscriber, service_attr))
+
+    def enable_service(self, request, pk=None, service=None):
+        service_attr = service+"_enable"
+        subscriber = self.get_object()
+        setattr(subscriber, service_attr, True)
+        subscriber.save()
+        return Response(getattr(subscriber, service_attr))
+
+    def disable_service(self, request, pk=None, service=None):
+        service_attr = service+"_enable"
+        subscriber = self.get_object()
+        setattr(subscriber, service_attr, False)
+        subscriber.save()
+        return Response(getattr(subscriber, service_attr))
 
 
 
