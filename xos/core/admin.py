@@ -514,9 +514,9 @@ class ServicePrivilegeInline(XOSTabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'service':
             kwargs['queryset'] = Service.select_by_user(request.user)
-       if db_field.name == 'user':
-           kwargs['queryset'] = User.select_by_user(request.user)
-       return super(ServicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)         
+        if db_field.name == 'user':
+            kwargs['queryset'] = User.select_by_user(request.user)
+        return super(ServicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)         
 
     def queryset(self, request):
         return ServicePrivilege.select_by_user(request.user)
