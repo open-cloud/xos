@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User
+from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User, Flavor
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
@@ -382,12 +382,17 @@ class VCPETenant(Tenant):
             if not self.provider_service.slices.count():
                 raise XOSConfigurationError("The VCPE service has no slices")
 
+            flavors = Flavor.objects.filter(name="m1.small")
+            if not flavors:
+                raise XOSConfigurationError("No m1.small flavor")
+
             node =self.pick_node()
             sliver = Sliver(slice = self.provider_service.slices.all()[0],
                             node = node,
                             image = self.image,
                             creator = self.creator,
-                            deployment = node.site_deployment.deployment)
+                            deployment = node.site_deployment.deployment,
+                            flavor = flavors[0])
             sliver.save()
 
             try:
