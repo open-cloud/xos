@@ -503,6 +503,24 @@ class SitePrivilegeInline(XOSTabularInline):
     def queryset(self, request):
         return SitePrivilege.select_by_user(request.user)
 
+
+class ServicePrivilegeInline(XOSTabularInline):
+    model = ServicePrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-serviceprivileges'
+    fields = ['backend_status_icon', 'user','service', 'role']
+    readonly_fields = ('backend_status_icon', )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'service':
+            kwargs['queryset'] = Service.select_by_user(request.user)
+        if db_field.name == 'user':
+            kwargs['queryset'] = User.select_by_user(request.user)
+        return super(ServicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)         
+
+    def queryset(self, request):
+        return ServicePrivilege.select_by_user(request.user)
+
 class SiteDeploymentInline(XOSTabularInline):
     model = SiteDeployment
     extra = 0
@@ -783,7 +801,7 @@ class ServiceAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
-    inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline]
+    inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline,ServicePrivilegeInline]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = fieldList
@@ -792,6 +810,7 @@ class ServiceAdmin(XOSBaseAdmin):
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
         ('servicetenants','Tenancy'),
+        ('serviceprivileges','Privileges') 
     )
 
 class SiteNodeInline(XOSTabularInline):
