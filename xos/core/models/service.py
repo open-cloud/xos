@@ -29,6 +29,9 @@ class Service(PlCoreBase):
 
     def __unicode__(self): return u'%s' % (self.name)
 
+    def can_update(self, user):
+        return user.can_update_service(self, allow=['admin'])
+     
     def get_scalable_nodes(self, slice, max_per_node=None, exclusive_slices=[]):
         """
              Get a list of nodes that can be used to scale up a slice.
@@ -106,6 +109,45 @@ class ServiceAttribute(PlCoreBase):
     name = models.SlugField(help_text="Attribute Name", max_length=128)
     value = StrippedCharField(help_text="Attribute Value", max_length=1024)
     service = models.ForeignKey(Service, related_name='serviceattributes', help_text="The Service this attribute is associated with")
+
+class ServiceRole(PlCoreBase):
+    ROLE_CHOICES = (('admin','Admin'),)
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+
+    def __unicode__(self):  return u'%s' % (self.role)
+
+class ServicePrivilege(PlCoreBase):
+    user = models.ForeignKey('User', related_name='serviceprivileges')
+    service = models.ForeignKey('Service', related_name='serviceprivileges')
+    role = models.ForeignKey('ServiceRole',related_name='serviceprivileges')
+
+    class Meta:
+        unique_together =  ('user', 'service', 'role')
+
+    def __unicode__(self):  return u'%s %s %s' % (self.service, self.user, self.role)
+
+    def can_update(self, user):
+        if not self.service.enabled:
+            raise PermissionDenied, "Cannot modify permission(s) of a disabled service"
+        return self.service.can_update(user)
+
+    def save(self, *args, **kwds):
+        if not self.service.enabled:
+            raise PermissionDenied, "Cannot modify permission(s) of a disabled service"
+        super(ServicePrivilege, self).save(*args, **kwds)
+
+    def delete(self, *args, **kwds):
+        if not self.service.enabled:
+            raise PermissionDenied, "Cannot modify permission(s) of a disabled service"
+        super(ServicePrivilege, self).delete(*args, **kwds)                    
+    
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = ServicePrivilege.objects.all()
+        else:
+            qs = SitePrivilege.objects.filter(user=user)
+        return qs        
 
 class Tenant(PlCoreBase):
     """ A tenant is a relationship between two entities, a subscriber and a
