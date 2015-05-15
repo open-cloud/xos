@@ -106,19 +106,26 @@ class CordSubscriberViewSet(XOSViewSet):
 
         return patterns
 
+    def list(self, request):
+        object_list = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(object_list, many=True)
+
+        return Response({"subscribers": serializer.data})
+
     def get_url_filtering(self, request, pk=None):
         subscriber = self.get_object()
-        return Response(subscriber.url_filter_level)
+        return Response({"level": subscriber.url_filter_level})
 
     def set_url_filtering(self, request, pk=None, level=None):
         subscriber = self.get_object()
         subscriber.url_filter_level = level
         subscriber.save()
-        return Response(subscriber.url_filter_level)
+        return Response({"level": subscriber.url_filter_level})
 
     def get_users(self, request, pk=None):
         subscriber = self.get_object()
-        return Response(subscriber.users)
+        return Response({"users": subscriber.users})
 
     def get_services(self, request, pk=None):
         subscriber = self.get_object()
@@ -127,21 +134,21 @@ class CordSubscriberViewSet(XOSViewSet):
     def get_service(self, request, pk=None, service=None):
         service_attr = service+"_enable"
         subscriber = self.get_object()
-        return Response(getattr(subscriber, service_attr))
+        return Response({service: getattr(subscriber, service_attr)})
 
     def enable_service(self, request, pk=None, service=None):
         service_attr = service+"_enable"
         subscriber = self.get_object()
         setattr(subscriber, service_attr, True)
         subscriber.save()
-        return Response(getattr(subscriber, service_attr))
+        return Response({service: getattr(subscriber, service_attr)})
 
     def disable_service(self, request, pk=None, service=None):
         service_attr = service+"_enable"
         subscriber = self.get_object()
         setattr(subscriber, service_attr, False)
         subscriber.save()
-        return Response(getattr(subscriber, service_attr))
+        return Response({service: getattr(subscriber, service_attr)})
 
 
 
