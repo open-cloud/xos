@@ -3,12 +3,17 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.decorators import detail_route, list_route
 from core.models import *
 from django.forms import widgets
+from django.conf.urls import patterns, url
 from cord.models import VOLTTenant
 from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin
+from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
+import json
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -29,6 +34,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         firewall_rules = serializers.CharField()
         url_filter_enable = serializers.BooleanField()
         url_filter_rules = serializers.CharField()
+        url_filter_level = serializers.CharField()
         cdn_enable = serializers.BooleanField()
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
@@ -40,7 +46,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
                       'service_specific_id', 'vlan_id',
-                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'cdn_enable', 'vbng_id', 'routeable_subnet',)
+                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'url_filter_level', 'cdn_enable', 'vbng_id', 'routeable_subnet',)
 
 
         def getHumanReadableName(self, obj):
@@ -59,5 +65,57 @@ class CordSubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
 
     method_kind = "detail"
     method_name = "cordsubscriber"
+
+class XOSViewSet(viewsets.ModelViewSet):
+    @classmethod
+    def detail_url(self, pattern, viewdict, name):
+        return url(r'^' + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+                   self.as_view(viewdict),
+                   name=self.base_name+"_"+name)
+
+    @classmethod
+    def get_urlpatterns(self):
+        patterns = []
+
+        patterns.append(url(r'^' + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
+        patterns.append(url(r'^' + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
+
+        return patterns
+
+class CordSubscriberViewSet(XOSViewSet):
+    base_name = "subscriber"
+    method_name = "rs/subscriber"
+    method_kind = "viewset"
+    queryset = CordSubscriber.get_tenant_objects().select_related().all()
+    serializer_class = CordSubscriberIdSerializer
+
+    @classmethod
+    def get_urlpatterns(self):
+        patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
+        patterns.append( self.detail_url("url_filtering/$", {"get": "get_url_filtering"}, "url_filtering") )
+        patterns.append( self.detail_url("url_filtering/(?P<level>[a-zA-Z0-9\-]+)/$", {"get": "set_url_filtering"}, "url_filtering") )
+        patterns.append( self.detail_url("users/$", {"get": "get_users"}, "users") )
+        patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
+        return patterns
+
+    def get_url_filtering(self, request, pk=None):
+        subscriber = self.get_object()
+        return Response(subscriber.url_filter_level)
+
+    def set_url_filtering(self, request, pk=None, level=None):
+        subscriber = self.get_object()
+        subscriber.url_filter_level = level
+        subscriber.save()
+        return Response(subscriber.url_filter_level)
+
+    def get_users(self, request, pk=None):
+        subscriber = self.get_object()
+        return Response(subscriber.users)
+
+    def get_services(self, request, pk=None):
+        subscriber = self.get_object()
+        return Response(subscriber.services)
+
+
 
 

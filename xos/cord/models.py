@@ -203,6 +203,7 @@ class VCPETenant(Tenant):
                           "firewall_rules": "accept all anywhere anywhere",
                           "url_filter_enable": False,
                           "url_filter_rules": "allow all",
+                          "url_filter_level": "PG",
                           "cdn_enable": False,
                           "sliver_id": None}
 
@@ -316,6 +317,14 @@ class VCPETenant(Tenant):
         self.set_attribute("url_filter_enable", value)
 
     @property
+    def url_filter_level(self):
+        return self.get_attribute("url_filter_level", self.default_attributes["url_filter_level"])
+
+    @url_filter_level.setter
+    def url_filter_level(self, value):
+        self.set_attribute("url_filter_level", value)
+
+    @property
     def url_filter_rules(self):
         return self.get_attribute("url_filter_rules", self.default_attributes["url_filter_rules"])
 
@@ -330,6 +339,27 @@ class VCPETenant(Tenant):
     @cdn_enable.setter
     def cdn_enable(self, value):
         self.set_attribute("cdn_enable", value)
+
+    @property
+    def users(self):
+        return [ {"name": "mom", "id": 1, "role": "admin"},
+                 {"name": "dad", "id": 2, "role": "admin"},
+                 {"name": "kid1", "id": 3, "role": "user"},
+                 {"name": "kid2", "id": 4, "role": "user"} ]
+
+    @users.setter
+    def users(self, value):
+        pass
+
+    @property
+    def services(self):
+        return [ {"cdn": self.cdn_enable,
+                  "url_filter": self.url_filter_enable,
+                  "firewall": self.firewall_enable} ]
+
+    @services.setter
+    def services(self, value):
+        pass
 
     def pick_node(self):
         nodes = list(Node.objects.all())
