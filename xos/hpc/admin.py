@@ -37,7 +37,7 @@ class FilteredChangeList(ChangeList):
              return super(FilteredChangeList, self).url_for_result(result)
 
         pk = getattr(result, self.pk_attname)
-        if embedded:
+        if self.embedded:
             return reverse('admin:%s_%s_embeddedfilteredchange' % (self.opts.app_label,
                                                            self.opts.model_name),
                            args=(quote(self.hpcService.id), quote(pk),),
@@ -93,6 +93,7 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
            url(r'^(.+)/(.+)/filteredchange$', wrap(self.filtered_change_view), name='%s_%s_filteredchange' % info),
            url(r'^(.+)/(.+)/embeddedfilteredchange$', wrap(self.embedded_filtered_change_view), name='%s_%s_embeddedfilteredchange' % info),
            url(r'^(.+)/filteredadd/$', wrap(self.filtered_add_view), name='%s_%s_filteredadd' % info),
+           url(r'^(.+)/embeddedfilteredadd/$', wrap(self.embedded_filtered_add_view), name='%s_%s_embeddedfilteredadd' % info),
        ]
        return my_urls + urls
 
@@ -101,7 +102,10 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
 
        if getattr(request,"hpcService",None) is not None:
             extra_context["custom_changelist_breadcrumb_url"] = "/admin/hpc/%s/%s/filteredlist/" % (self.model._meta.model_name, str(request.hpcService.id))
-            extra_context["custom_add_url"] = "/admin/hpc/%s/%s/filteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
+            if getattr(request,"embedded",False):
+                extra_context["custom_add_url"] = "/admin/hpc/%s/%s/embeddedfilteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
+            else:
+                extra_context["custom_add_url"] = "/admin/hpc/%s/%s/filteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
 
    def changelist_view(self, *args, **kwargs):
        if "template" in kwargs:
@@ -137,9 +141,22 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
        request.embedded = True
        return self.change_view(request, object_id, template="admin/change_form_embedded.html", extra_context=extra_context)
 
+   def add_view(self, *args, **kwargs):
+       if "template" in kwargs:
+           _thread_locals.change_form_template = kwargs["template"]
+           del kwargs["template"]
+       else:
+           _thread_locals.change_form_template = "admin/change_form_bc.html"
+       return super(FilteredAdmin, self).add_view(*args, **kwargs)
+
    def filtered_add_view(self, request, hpcServiceId, extra_context=None):
        request.hpcService = HpcService.objects.get(id=hpcServiceId)
        return self.add_view(request, extra_context=extra_context)
+
+   def embedded_filtered_add_view(self, request, hpcServiceId, extra_context=None):
+       request.hpcService = HpcService.objects.get(id=hpcServiceId)
+       request.embedded = True
+       return self.add_view(request, template="admin/change_form_embedded.html", extra_context=extra_context)
 
    def get_queryset(self, request):
        # request.hpcService will be set in filtered_changelist_view so we can
