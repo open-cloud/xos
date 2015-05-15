@@ -1,5 +1,6 @@
 from django.views.generic import View
 from django.conf.urls import patterns, url
+from rest_framework.routers import DefaultRouter
 import os, sys
 import inspect
 import importlib
@@ -40,6 +41,19 @@ try:
            urlpatterns.append(url(r'^' + view_url[1] + '/$',  view_url[3].as_view(), name=view_url[1]+'list'))
         elif view_url[0] == "detail":
            urlpatterns.append(url(r'^' + view_url[1] + '/(?P<pk>[a-zA-Z0-9\-]+)/$',  view_url[3].as_view(), name=view_url[1]+'detail'))
+        elif view_url[0] == "viewset":
+           viewset = view_url[3]
+
+           urlpatterns.extend(viewset.get_urlpatterns())
+
+           #urlpatterns.append(url(r'^' + view_url[1] + '/$', viewset.as_view({'get': 'list'}), name=view_url[1]+'list'))
+           #urlpatterns.append(url(r'^' + view_url[1] + '/(?P<pk>[a-zA-Z0-9\-]+)/$', viewset.as_view({'get': 'retrieve', 'put': 'update', 'post': 'create', 'delete': 'destroy', 'patch': 'partial_update'}), name=view_url[1]+'detail'))
+           #urlpatterns.extend(
+
+           #router = DefaultRouter()
+           #router.register(r'^' + view_url[1], view_url[3], base_name="foo")
+           #urlpatterns.extend(router.urls)
+           #urlpatterns.append(url(r'^' + view_url[1], view_url[3]))
 
 finally:
     sys.path = sys_path_save
