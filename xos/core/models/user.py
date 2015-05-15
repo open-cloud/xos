@@ -115,6 +115,7 @@ class User(AbstractBaseUser, PlModelMixIn):
     is_staff = models.BooleanField(default=True)
     is_readonly = models.BooleanField(default=False)
     is_registering = models.BooleanField(default=False)
+    is_appuser = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

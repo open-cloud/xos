@@ -1296,18 +1296,18 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline]
     admin_inlines = [ControllerUserInline]
-    fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','public_key']
+    fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','is_appuser', 'public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
-        ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
+        ('Login Details', {'fields': ['backend_status_text', 'email', 'site','password', 'is_active', 'is_readonly', 'is_admin', 'is_appuser', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('site', 'email', 'firstname', 'lastname', 'is_admin', 'is_readonly', 'phone', 'public_key','password1', 'password2')},
+            'fields': ('site', 'email', 'firstname', 'lastname', 'is_admin', 'is_readonly', 'is_appuser', 'phone', 'public_key','password1', 'password2')},
         ),
     )
     readonly_fields = ('backend_status_text', )
