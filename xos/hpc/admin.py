@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, SliderWidget
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, SliderWidget, ServicePrivilegeInline
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -128,7 +128,7 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname"], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
     form = HpcServiceForm
 
     extracontext_registered_admins = True
@@ -140,6 +140,7 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
         ('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+                ('serviceprivileges','Privileges'),
     )
 
     suit_form_includes = (('hpcadmin.html', 'top', 'administration'),

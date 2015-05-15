@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -29,7 +29,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
 
     extracontext_registered_admins = True
 
@@ -40,6 +40,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
         #('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('serviceprivileges','Privileges'),
     )
 
     suit_form_includes = (('voltadmin.html', 'top', 'administration'),
@@ -82,7 +83,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
 
     extracontext_registered_admins = True
 
@@ -93,6 +94,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
         #('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('serviceprivileges','Privileges') ,
     )
 
     suit_form_includes = (('vcpeadmin.html', 'top', 'administration'),
@@ -135,7 +137,7 @@ class VBNGServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
 
     extracontext_registered_admins = True
 
@@ -146,6 +148,7 @@ class VBNGServiceAdmin(ReadOnlyAwareAdmin):
         #('tools', 'Tools'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('serviceprivileges','Privileges'),
     )
 
     suit_form_includes = (('vbngadmin.html', 'top', 'administration'),
