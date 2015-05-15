@@ -353,9 +353,9 @@ class VCPETenant(Tenant):
 
     @property
     def services(self):
-        return [ {"cdn": self.cdn_enable,
-                  "url_filter": self.url_filter_enable,
-                  "firewall": self.firewall_enable} ]
+        return {"cdn": self.cdn_enable,
+                "url_filter": self.url_filter_enable,
+                "firewall": self.firewall_enable}
 
     @services.setter
     def services(self, value):
