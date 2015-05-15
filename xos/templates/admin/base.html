@@ -40,7 +40,9 @@
   {% block container %}
     <div id="container">
 
-             <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
+      {% block logo %}
+      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
+      {% endblock %}
       {% block header %}
         {% if not is_popup %}
           <!-- Header -->
@@ -120,9 +122,11 @@
           <div id="suit-center" class="suit-column">
 
             {% if not is_popup %}
+            {% block minidash %}
             <div id=openCloudTopPage>
             {% include "admin/newminidashboard.html" %}
             </div>
+            {% endblock %} 
 
               {% block breadcrumbs %}
                 <ul class="breadcrumb"> 
