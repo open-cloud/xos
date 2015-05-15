@@ -174,13 +174,15 @@
 
 
         {% block content-left %}
-          {% if not is_popup %}
-            <div id="suit-left" class="suit-column">
-         
+          {% if not user.is_appuser %}
+              {% if not is_popup %}
+                <div id="suit-left" class="suit-column">
 
-              {% include 'suit/menu.html' %}
 
-            </div>
+                  {% include 'suit/menu.html' %}
+
+                </div>
+              {% endif %}
           {% endif %}
         {% endblock %}
 
