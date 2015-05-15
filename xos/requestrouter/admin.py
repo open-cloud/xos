@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, ServicePrivilegeInline
 
 class RequestRouterAdmin(ReadOnlyAwareAdmin):
    # Change the application breadcrumb to point to an RR Service if one is
@@ -33,7 +33,7 @@ class RequestRouterServiceAdmin(ServiceAppAdmin):
     verbose_name_plural = "Request Router Service"
     list_display = ("name","enabled")
     fieldsets = [(None, {'fields': ['name','enabled','versionNumber', 'description','behindNat','defaultTTL','defaultAction','lastResortAction','maxAnswers'], 'classes':['suit-tab suit-tab-general']})]
-    inlines = [SliceInline,ServiceAttrAsTabInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description", "behindNat", "defaultTTL", "defaultAction", "lastResortAction", "maxAnswers"]
 
@@ -41,6 +41,7 @@ class RequestRouterServiceAdmin(ServiceAppAdmin):
         ('administration', 'Administration'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('serviceprivileges','Privileges'),
     )
 
     suit_form_includes = (('rradmin.html', 'top', 'administration'),)
