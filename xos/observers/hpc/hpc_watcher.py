@@ -30,6 +30,10 @@
      variety were successful for a sliver, then "success" will be stored in
      the tag. Otherwise, the first healthcheck to fail will be stored in the
      tag.
+
+     Ubuntu prereqs:
+         apt-get install python-pycurl
+         pip install dnslib
 """
 
 import os
@@ -132,6 +136,8 @@ class DnsResolver(Thread):
             found_record = False
             for record in a.rr:
                 if (not result_contains):
+                    QTYPE_A = getattr(QTYPE,"A")
+                    QTYPE_CNAME = getattr(QTYPE, "CNAME")
                     if ((record.rtype==QTYPE_A) or (record.qtype==QTYPE_CNAME)):
                         found_record = True
                 else:
