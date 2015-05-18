@@ -17,6 +17,11 @@ class HpcService(Service):
 
     cmi_hostname = StrippedCharField(max_length=254, null=True, blank=True)
 
+    hpc_port80 = models.BooleanField(default=True, help_text="Enable port 80 for HPC")
+    watcher_hpc_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact hpc sliver")
+    watcher_dnsdemux_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsdemux sliver")
+    watcher_dnsredir_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsredir sliver")
+
     @property
     def scale(self):
         hpc_slices = [x for x in self.slices.all() if "hpc" in x.name]
