@@ -191,7 +191,7 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "HPC Service"
     list_display = ("backend_status_icon", "name","enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname"], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname", "hpc_port80", "watcher_hpc_network", "watcher_dnsredir_network", "watcher_dnsdemux_network"], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
     form = HpcServiceForm
