@@ -67,6 +67,28 @@ def compute_config_run(d):
 
     return config_run
 
+# from hpc_watcher.py
+def get_public_ip(service, sliver):
+    network_name = None
+    if "hpc" in sliver.slice.name:
+        network_name = getattr(service, "watcher_hpc_network", None)
+    elif "demux" in sliver.slice.name:
+        network_name = getattr(service, "watcher_dnsdemux_network", None)
+    elif "redir" in sliver.slice.name:
+        network_name = getattr(service, "watcher_dnsredir_network", None)
+
+    if network_name and network_name.lower()=="nat":
+        return None
+
+    if (network_name is None) or (network_name=="") or (network_name.lower()=="public"):
+        return sliver.get_public_ip()
+
+    for ns in sliver.networkslivers.all():
+        if (ns.ip) and (ns.network.name==network_name):
+            return ns.ip
+
+    raise ValueError("Couldn't find network %s" % str(network_name))
+
 def getHpcDict(user, pk):
     hpc = HpcService.objects.get(pk=pk)
     slices = get_service_slices(hpc)
@@ -106,10 +128,10 @@ def getHpcDict(user, pk):
         print "no dnsdemux slice"
         return
 
-    dnsdemux_has_public_network = False
-    for network in dnsdemux_slice.networks.all():
-        if (network.template) and (network.template.visibility=="public") and (network.template.translation=="none"):
-            dnsdemux_has_public_network = True
+    #dnsdemux_has_public_network = False
+    #for network in dnsdemux_slice.networks.all():
+    #    if (network.template) and (network.template.visibility=="public") and (network.template.translation=="none"):
+    #        dnsdemux_has_public_network = True
 
     nameservers = {}
     for nameserver in NAMESERVERS:
@@ -120,9 +142,12 @@ def getHpcDict(user, pk):
 
     dnsdemux=[]
     for sliver in dnsdemux_slice.slivers.all():
-        if dnsdemux_has_public_network:
-            ip = sliver.get_public_ip()
-        else:
+        ip=None
+        try:
+            ip = get_public_ip(dnsdemux_service, sliver)
+        except Exception, e:
+            ip = "Exception: " + str(e)
+        if not ip:
             try:
                 ip = socket.gethostbyname(sliver.node.name)
             except:
