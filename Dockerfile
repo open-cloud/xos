@@ -58,6 +58,7 @@ RUN pip install django_rest_swagger
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-setuptools
 RUN easy_install django_evolution
 RUN easy_install python_gflags
+RUN easy_install --upgrade httplib2
 RUN easy_install google_api_python_client
 
 # Install custom Ansible
@@ -116,6 +117,8 @@ RUN /opt/xos/scripts/opencloud remigrate
 
 # git clone uses cached copy, doesn't pick up latest
 RUN git -C /opt/ansible pull
+RUN git -C /opt/ansible/lib/ansible/modules/core pull
+RUN git -C /opt/ansible/v2/ansible/modules/core pull
 
 EXPOSE 8000
 
