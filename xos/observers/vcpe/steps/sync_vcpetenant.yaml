@@ -46,12 +46,6 @@
        dest=/usr/local/bin/pipework
        mode=0755
 
-  - name: bring up LAN interface
-    shell: ifconfig eth2 up
-
-  - name: bring up WAN interface
-    shell: ifconfig eth3 up
-
   - name: make sure /etc/dnsmasq.d exists
     file: path=/etc/dnsmasq.d state=directory owner=root group=root
    
@@ -64,29 +58,14 @@
   - name: firewall info
     template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
 
-  - name: Make sure iptables module loaded
-    shell: "iptables -L > /dev/null"
-
-  - name: Make sure ip6tables module loaded
-    shell: "ip6tables -L > /dev/null"
-
   - name: Disable resolvconf updates (to avoid overwriting /etc/resolv.conf on host)
     shell: service resolvconf disable-updates
 
-  - name: spin up container
-    docker: name=vcpe
-      image=andybavier/docker-vcpe
-      net=none
-      privileged=yes
+  - name: vCPE startup script
+    template: src=/opt/xos/observers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe.sh mode=0755
 
-  # This needs attention once ONOS is integrated
-  - name: Connect container to WAN network
-    shell: docker exec vcpe ifconfig eth0 >> /dev/null || pipework eth3 -i eth0 vcpe 10.1.2.3/24
+  - name: vCPE upstart
+    copy: src=/opt/xos/observers/vcpe/files/vcpe.conf dest=/etc/init/vcpe.conf
 
-  # Only uses the first vlan_id
-  - name: Connect container to LAN network, VLAN {{ vlan_ids[0] }}
-    shell: docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth2 -i eth1 vcpe 192.168.0.1/24 @{{ vlan_ids[0] }}
-
-  - name: Start container services
-    shell: docker exec vcpe service dnsmasq start
-
+  - name: Start vCPE service
+    service: name=vcpe state=started
