@@ -116,6 +116,8 @@ RUN /opt/xos/scripts/opencloud remigrate
 
 # git clone uses cached copy, doesn't pick up latest
 RUN git -C /opt/ansible pull
+RUN git -C /opt/ansible/lib/ansible/modules/core pull
+RUN git -C /opt/ansible/v2/ansible/modules/core pull
 
 EXPOSE 8000
 
