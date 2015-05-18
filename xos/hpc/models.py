@@ -90,7 +90,7 @@ class OriginServer(PlCoreBase):
         app_label = "hpc"
 
     origin_server_id = models.IntegerField(null=True, blank=True)
-    url = models.URLField()
+    url = models.CharField(max_length=1024)
     contentProvider = models.ForeignKey(ContentProvider)
 
     authenticated = models.BooleanField(default=False, help_text="Status for this Site")
