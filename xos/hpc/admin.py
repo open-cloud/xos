@@ -274,10 +274,27 @@ class OriginServerAdmin(HPCAdmin):
     user_readonly_fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description')
 
 class ContentProviderForm(forms.ModelForm):
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        help_text="Select which users can manage this ContentProvider",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Users'), is_stacked=False
+        )
+    )
+
     class Meta:
+        model = ContentProvider
         widgets = {
             'serviceProvider' : LinkedSelect
         }
+
+    def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
+      super(ContentProviderForm, self).__init__(*args, **kwargs)
+
+      if self.instance and self.instance.pk:
+        self.fields['users'].initial = self.instance.users.all()
 
 class ContentProviderAdmin(HPCAdmin):
     form = ContentProviderForm
