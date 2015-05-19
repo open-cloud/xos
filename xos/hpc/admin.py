@@ -251,6 +251,13 @@ class CDNPrefixInline(XOSTabularInline):
     fields = ('backend_status_icon', 'cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
     readonly_fields = ('backend_status_icon', 'cdn_prefix_id',)
 
+class OriginServerInline(XOSTabularInline):
+    model = OriginServer
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-origins'
+    fields = ('backend_status_icon', 'origin_server_id', 'url')
+    readonly_fields = ('backend_status_icon', 'origin_server_id')
+
 class ContentProviderInline(XOSTabularInline):
     model = ContentProvider
     extra = 0
@@ -279,11 +286,11 @@ class ContentProviderAdmin(HPCAdmin):
     fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
 
-    inlines = [CDNPrefixInline]
+    inlines = [CDNPrefixInline, OriginServerInline]
 
     user_readonly_fields = ('name','description','enabled','serviceProvider','users')
 
-    suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'))
+    suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'), ('origins','Origin Servers'))
 
 class ServiceProviderAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
