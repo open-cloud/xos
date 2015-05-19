@@ -198,7 +198,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         dashboards = sorted(list(self.userdashboardviews.all()), key=attrgetter('order'))
         dashboards = [x.dashboardView for x in dashboards]
 
-        if not dashboards:
+        if (not dashboards) and (not self.is_appuser):
             for dashboardName in DEFAULT_DASHBOARDS:
                 dbv = DashboardView.objects.filter(name=dashboardName)
                 if dbv:
@@ -352,6 +352,17 @@ class User(AbstractBaseUser, PlModelMixIn):
         if not self.can_update(user):
             raise PermissionDenied("You do not have permission to delete %s objects" % self.__class__.__name__)
         self.delete(*args, **kwds)
+
+    def apply_profile(self, profile):
+        if profile=="regular":
+            self.is_appuser = False
+            self.is_admin = False
+
+        elif profile=="cp":
+            self.is_appuser = True
+            self.is_admin = False
+            for db in self.userdashboardviews.all():
+                db.delete()
 
 class UserDashboardView(PlCoreBase):
      user = models.ForeignKey(User, related_name='userdashboardviews')

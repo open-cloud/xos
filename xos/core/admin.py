@@ -1253,6 +1253,9 @@ class UserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField(label='Password',
                    help_text= '<a href=\"password/\">Change Password</a>.')
 
+    PROFILE_CHOICES = ((None, '------'), ('regular', 'Regular user'), ('cp', 'Content Provider'))
+    profile = forms.ChoiceField(choices=PROFILE_CHOICES, required=False, label="Quick Profile")
+
     class Meta:
         model = User
         widgets = { 'public_key': UploadTextareaWidget, }
@@ -1262,6 +1265,12 @@ class UserChangeForm(forms.ModelForm):
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
         return self.initial["password"]
+
+    def save(self, *args, **kwargs):
+        if self.cleaned_data['profile']:
+             self.instance.apply_profile(self.cleaned_data['profile'])
+
+        return super(UserChangeForm, self).save(*args, **kwargs)
 
 class UserDashboardViewInline(XOSTabularInline):
     model = UserDashboardView
@@ -1296,7 +1305,7 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline]
     admin_inlines = [ControllerUserInline]
-    fieldListLoginDetails = ['backend_status_text', 'email','site','password','is_active','is_readonly','is_admin','is_appuser', 'public_key']
+    fieldListLoginDetails = ['backend_status_text', 'email', 'site','password','is_active','is_readonly','is_admin','is_appuser', 'public_key', 'profile']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
@@ -1350,9 +1359,13 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
             if 'is_admin' in login_details_fields:
                 login_details_fields.remove('is_admin')
             if 'is_readonly' in login_details_fields:
-                login_details_fields.remove('is_readonly') 
+                login_details_fields.remove('is_readonly')
+            if 'is_appuser' in login_details_fields:
+                login_details_fields.remove('is_admin')
+            if 'profile' in login_details_fields:
+                login_details_fields.remove('profile')
             #if len(request.user.siteprivileges.filter(role__role = 'pi')) > 0:
-                # only admins and pis can change a user's site  
+                # only admins and pis can change a user's site
             #    self.readonly_fields = ('backend_status_text', 'site') 
         self.fieldsets = (
             ('Login Details', {'fields': login_details_fields, 'classes':['suit-tab suit-tab-general']}),
