@@ -72,6 +72,12 @@ class DashboardDynamicView(TemplateView):
                 continue
             body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name)
 
+        # embed content provider dashboards
+        for cp in ContentProvider.objects.all():
+            if request.user in cp.users.all():
+                i = i + 1
+                body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, cp.name)
+
         body = body + "</ul>\n"
 
         for i,view in enumerate(dashboards):
@@ -108,6 +114,14 @@ class DashboardDynamicView(TemplateView):
             else:
                 body = body + self.embedDashboard(url)
             body = body + '</div>\n'
+
+        # embed content provider dashboards
+        for cp in ContentProvider.objects.all():
+            if request.user in cp.users.all():
+                i = i + 1
+                body = body + '<div id="dashtab-%d">\n' % i
+                body = body + self.embedDashboard("http:/admin/hpc/contentprovider/%s/%s/embeddedfilteredchange" % (cp.serviceProvider.hpcService.id, cp.id))
+                body = body + '</div>\n'
 
         body=body+"</div>\n"
 
