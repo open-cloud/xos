@@ -105,9 +105,6 @@ class SyncVCPETenant(SyncStep):
                  fields[attribute_name] = getattr(o, attribute_name)
 
         fields.update(self.get_extra_attributes(o))
-
-        print fields
-
         run_template_ssh(self.template_name, fields)
 
         o.save()
