@@ -347,6 +347,27 @@ class BaseWatcher(Thread):
         Thread.__init__(self)
         self.daemon = True
 
+    def get_public_ip(self, service, sliver):
+        network_name = None
+        if "hpc" in sliver.slice.name:
+            network_name = getattr(service, "watcher_hpc_network", None)
+        elif "demux" in sliver.slice.name:
+            network_name = getattr(service, "watcher_dnsdemux_network", None)
+        elif "redir" in sliver.slice.name:
+            network_name = getattr(service, "watcher_dnsredir_network", None)
+
+        if network_name and network_name.lower()=="nat":
+            return None
+
+        if (network_name is None) or (network_name=="") or (network_name.lower()=="public"):
+            return sliver.get_public_ip()
+
+        for ns in sliver.networkslivers.all():
+            if (ns.ip) and (ns.network.name==network_name):
+                return ns.ip
+
+        raise ValueError("Couldn't find network %s" % str(network_name))
+
     def set_status(self, sliver, service, kind, msg):
         #print sliver.node.name, kind, msg
         sliver.has_error = (msg!="success")
@@ -394,7 +415,11 @@ class RRWatcher(BaseWatcher):
         for sliver in slivers:
             sliver.has_error = False
 
-            ip = sliver.get_public_ip()
+            try:
+                ip = self.get_public_ip(service, sliver)
+            except Exception, e:
+                self.set_status(sliver, service, "watcher.DNS", "exception: %s" % str(e))
+                continue
             if not ip:
                 try:
                     ip = socket.gethostbyname(sliver.node.name)
@@ -526,16 +551,20 @@ class WatcherFetcher(BaseWatcher):
 
     def fetch_watcher(self, service, slivers):
         for sliver in slivers:
-            ip = sliver.get_public_ip()
+            try:
+                ip = self.get_public_ip(service, sliver)
+            except Exception, e:
+                self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "exception: %s" % str(e)}) )
+                continue
             if not ip:
                 try:
                     ip = socket.gethostbyname(sliver.node.name)
                 except:
-                    self.set_status(sliver, service, "watcher.watcher", "dns resolution failure")
+                    self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "dns resolution failure"}) )
                     continue
 
             if not ip:
-                self.set_status(sliver, service, "watcher.watcher", "no IP address")
+                self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "no IP address"}) )
                 continue
 
             port = 8015

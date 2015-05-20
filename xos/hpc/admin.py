@@ -191,7 +191,7 @@ class HpcServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "HPC Service"
     list_display = ("backend_status_icon", "name","enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname"], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','scale','enabled','versionNumber', 'description', "cmi_hostname", "hpc_port80", "watcher_hpc_network", "watcher_dnsredir_network", "watcher_dnsdemux_network"], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
     form = HpcServiceForm
@@ -251,6 +251,13 @@ class CDNPrefixInline(XOSTabularInline):
     fields = ('backend_status_icon', 'cdn_prefix_id', 'prefix', 'defaultOriginServer', 'enabled')
     readonly_fields = ('backend_status_icon', 'cdn_prefix_id',)
 
+class OriginServerInline(XOSTabularInline):
+    model = OriginServer
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-origins'
+    fields = ('backend_status_icon', 'origin_server_id', 'url')
+    readonly_fields = ('backend_status_icon', 'origin_server_id')
+
 class ContentProviderInline(XOSTabularInline):
     model = ContentProvider
     extra = 0
@@ -267,23 +274,50 @@ class OriginServerAdmin(HPCAdmin):
     user_readonly_fields = ('url','protocol','redirects','contentProvider','authenticated','enabled','origin_server_id','description')
 
 class ContentProviderForm(forms.ModelForm):
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        help_text="Select which users can manage this ContentProvider",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Users'), is_stacked=False
+        )
+    )
+
     class Meta:
+        model = ContentProvider
         widgets = {
             'serviceProvider' : LinkedSelect
         }
+
+    def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
+      super(ContentProviderForm, self).__init__(*args, **kwargs)
+
+      if self.instance and self.instance.pk:
+        self.fields['users'].initial = self.instance.users.all()
 
 class ContentProviderAdmin(HPCAdmin):
     form = ContentProviderForm
     list_display = ('backend_status_icon', 'name','description','enabled' )
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
+    admin_readonly_fields = ('backend_status_text', )
+    cp_readonly_fields = ('backend_status_text', 'name', 'enabled', 'serviceProvider', 'users')
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
 
-    inlines = [CDNPrefixInline]
+    inlines = [CDNPrefixInline, OriginServerInline]
 
     user_readonly_fields = ('name','description','enabled','serviceProvider','users')
 
-    suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'))
+    suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'), ('origins','Origin Servers'))
+
+    def change_view(self,request, *args, **kwargs):
+        if request.user.is_admin:
+            self.readonly_fields = self.admin_readonly_fields
+        else:
+            self.readonly_fields = self.cp_readonly_fields
+
+        return super(ContentProviderAdmin, self).change_view(request, *args, **kwargs)
 
 class ServiceProviderAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
