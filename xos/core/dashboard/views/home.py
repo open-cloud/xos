@@ -54,36 +54,26 @@ class DashboardDynamicView(TemplateView):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        body = """
-         <div id="hometabs" >
-         <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
-        """
-
         dashboards = request.user.get_dashboards()
 
-        # customize is a special dashboard they always get
-        customize = DashboardView.objects.filter(name="Customize")
-        if customize:
-            dashboards.append(customize[0])
+        if not request.user.is_appuser:
+            # customize is a special dashboard they always get
+            customize = DashboardView.objects.filter(name="Customize")
+            if customize:
+                dashboards.append(customize[0])
 
-        for i,view in enumerate(dashboards):
+        tabs = []
+        bodies = []
+
+        i = 0
+        for view in dashboards:
             # don't display disabled dashboards
             if (not view.enabled):
                 continue
-            body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name)
 
-        # embed content provider dashboards
-        for cp in ContentProvider.objects.all():
-            if request.user in cp.users.all():
-                i = i + 1
-                body = body + '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, cp.name)
+            tabs.append( '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, view.name) )
 
-        body = body + "</ul>\n"
-
-        for i,view in enumerate(dashboards):
-            # don't display disabled dashboards
-            if (not view.enabled):
-                continue
+            body = ""
 
             url = view.url
             body = body + '<div id="dashtab-%d">\n' % i
@@ -115,17 +105,36 @@ class DashboardDynamicView(TemplateView):
                 body = body + self.embedDashboard(url)
             body = body + '</div>\n'
 
+            bodies.append(body)
+            i = i + 1
+
         # embed content provider dashboards
         for cp in ContentProvider.objects.all():
             if request.user in cp.users.all():
-                i = i + 1
+                tabs.append( '<li><a href="#dashtab-%d">%s</a></li>\n' % (i, cp.name) )
+
+                body = ""
                 body = body + '<div id="dashtab-%d">\n' % i
                 body = body + self.embedDashboard("http:/admin/hpc/contentprovider/%s/%s/embeddedfilteredchange" % (cp.serviceProvider.hpcService.id, cp.id))
                 body = body + '</div>\n'
 
-        body=body+"</div>\n"
+                bodies.append(body)
+                i = i + 1
 
-        t = template.Template(head_template + body + self.tail_template)
+        if (len(tabs)==1) and (len(bodies)==1):
+            # there is only one dashboard, so optimize out the tabbing
+            contents = bodies[0]
+        else:
+            contents = """
+             <div id="hometabs" >
+             <ul id="suit_form_tabs" class="nav nav-tabs nav-tabs-suit" data-tab-prefix="suit-tab">
+             %s
+             </ul>
+             %s
+             </div>
+            """ % ("\n".join(tabs), "\n".join(bodies))
+
+        t = template.Template(head_template + contents + self.tail_template)
 
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
