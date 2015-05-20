@@ -13,6 +13,7 @@ from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
+from xos.exceptions import *
 import json
 
 if hasattr(serializers, "ReadOnlyField"):
@@ -98,16 +99,28 @@ class CordSubscriberViewSet(XOSViewSet):
     queryset = CordSubscriber.get_tenant_objects().select_related().all()
     serializer_class = CordSubscriberIdSerializer
 
+    def get_vcpe(self):
+        subscriber = self.get_object()
+        if not subscriber.vcpe:
+            raise XOSMissingField("vCPE object is not present for subscriber")
+        return subscriber.vcpe
+
     @classmethod
     def get_urlpatterns(self):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
         patterns.append( self.detail_url("url_filtering/$", {"get": "get_url_filtering"}, "url_filtering") )
-        patterns.append( self.detail_url("url_filtering/(?P<level>[a-zA-Z0-9\-]+)/$", {"get": "set_url_filtering"}, "url_filtering") )
-        patterns.append( self.detail_url("users/$", {"get": "get_users"}, "users") )
+        patterns.append( self.detail_url("url_filtering/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_url_filtering"}, "url_filtering") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
         patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/$", {"get": "get_service"}, "get_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/true/$", {"get": "enable_service"}, "enable_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/false/$", {"get": "disable_service"}, "disable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/true/$", {"put": "enable_service"}, "enable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/false/$", {"put": "disable_service"}, "disable_service") )
+
+        patterns.append( self.detail_url("users/$", {"get": "get_users", "post": "create_user"}, "users") )
+        patterns.append( self.detail_url("users/clearusers/$", {"get": "clear_users", "put": "clear_users", "post": "clear_users"}, "clearusers") )
+        patterns.append( self.detail_url("users/newuser/$", {"put": "create_user", "post": "create_user"}, "newuser") )
+        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/$", {"delete": "delete_user"}, "user") )
+        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filtering/$", {"get": "get_user_level"}, "user_level") )
+        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filtering/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_user_level"}, "set_user_level") )
 
         return patterns
 
@@ -131,6 +144,53 @@ class CordSubscriberViewSet(XOSViewSet):
     def get_users(self, request, pk=None):
         subscriber = self.get_object()
         return Response({"users": subscriber.users})
+
+    def get_user_level(self, request, pk=None, uid=None):
+        vcpe = self.get_vcpe()
+        user = vcpe.find_user(uid)
+        if user and user.get("level", None):
+            level = user["level"]
+        else:
+            level = self.get_object().url_filter_level
+
+        return Response( {"id": uid, "level": level} )
+
+    def set_user_level(self, request, pk=None, uid=None, level=None):
+        vcpe = self.get_vcpe()
+        vcpe.update_user(uid, level=level)
+        vcpe.save()
+        return self.get_user_level(request, pk, uid)
+
+    def create_user(self, request, pk=None):
+        vcpe = self.get_vcpe()
+
+        data = request.DATA
+        name = data.get("name",None)
+        mac = data.get("mac",None)
+        if (not name):
+             raise XOSMissingField("name must be specified when creating user")
+        if (not mac):
+             raise XOSMissingField("mac must be specified when creating user")
+
+        newuser = vcpe.create_user(name=name, mac=mac)
+        vcpe.save()
+
+        return Response(newuser)
+
+    def delete_user(self, request, pk=None, uid=None):
+        vcpe = self.get_vcpe()
+
+        vcpe.delete_user(uid)
+        vcpe.save()
+
+        return Response( {"id": uid, "deleted": True} )
+
+    def clear_users(self, request, pk=None):
+        vcpe = self.get_vcpe()
+        vcpe.users = []
+        vcpe.save()
+
+        return Response( "Okay" )
 
     def get_services(self, request, pk=None):
         subscriber = self.get_object()
