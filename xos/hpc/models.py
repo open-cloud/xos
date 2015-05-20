@@ -17,6 +17,11 @@ class HpcService(Service):
 
     cmi_hostname = StrippedCharField(max_length=254, null=True, blank=True)
 
+    hpc_port80 = models.BooleanField(default=True, help_text="Enable port 80 for HPC")
+    watcher_hpc_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact hpc sliver")
+    watcher_dnsdemux_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsdemux sliver")
+    watcher_dnsredir_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsredir sliver")
+
     @property
     def scale(self):
         hpc_slices = [x for x in self.slices.all() if "hpc" in x.name]
@@ -84,6 +89,14 @@ class ContentProvider(PlCoreBase):
         # filtering of visible objects by user.
         return qs.filter(serviceProvider__hpcService=hpcService)
 
+    def can_update(self, user):
+        if super(ContentProvider, self).can_update(user):
+            return True
+
+        if user in self.users.all():
+            return True
+
+        return False
 
 class OriginServer(PlCoreBase):
     class Meta:
@@ -108,6 +121,15 @@ class OriginServer(PlCoreBase):
         # filtering of visible objects by user.
         return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
 
+    def can_update(self, user):
+        if super(OriginServer, self).can_update(user):
+            return True
+
+        if self.contentProvider and self.contentProvider.can_update(user):
+            return True
+
+        return False
+
 class CDNPrefix(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -127,6 +149,15 @@ class CDNPrefix(PlCoreBase):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
         return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
+
+    def can_update(self, user):
+        if super(CDNPrefix, self).can_update(user):
+            return True
+
+        if self.contentProvider and self.contentProvider.can_update(user):
+            return True
+
+        return False
 
 class AccessMap(PlCoreBase):
     class Meta:
