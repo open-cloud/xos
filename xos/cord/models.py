@@ -197,7 +197,11 @@ class VCPETenant(Tenant):
                        "firewall_rules",
                        "url_filter_enable",
                        "url_filter_rules",
-                       "cdn_enable")
+                       "cdn_enable",
+                       "nat_ip",
+                       "lan_ip",
+                       "wan_ip",
+                       "private_ip")
 
     default_attributes = {"firewall_enable": False,
                           "firewall_rules": "accept all anywhere anywhere",
