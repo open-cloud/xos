@@ -89,6 +89,14 @@ class ContentProvider(PlCoreBase):
         # filtering of visible objects by user.
         return qs.filter(serviceProvider__hpcService=hpcService)
 
+    def can_update(self, user):
+        if super(ContentProvider, self).can_update(user):
+            return True
+
+        if user in self.users.all():
+            return True
+
+        return False
 
 class OriginServer(PlCoreBase):
     class Meta:
@@ -113,6 +121,15 @@ class OriginServer(PlCoreBase):
         # filtering of visible objects by user.
         return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
 
+    def can_update(self, user):
+        if super(OriginServer, self).can_update(user):
+            return True
+
+        if self.contentProvider and self.contentProvider.can_update(user):
+            return True
+
+        return False
+
 class CDNPrefix(PlCoreBase):
     class Meta:
         app_label = "hpc"
@@ -132,6 +149,15 @@ class CDNPrefix(PlCoreBase):
         # This should be overridden by descendant classes that want to perform
         # filtering of visible objects by user.
         return qs.filter(contentProvider__serviceProvider__hpcService=hpcService)
+
+    def can_update(self, user):
+        if super(CDNPrefix, self).can_update(user):
+            return True
+
+        if self.contentProvider and self.contentProvider.can_update(user):
+            return True
+
+        return False
 
 class AccessMap(PlCoreBase):
     class Meta:
