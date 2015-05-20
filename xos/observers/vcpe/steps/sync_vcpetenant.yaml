@@ -67,5 +67,8 @@
   - name: vCPE upstart
     copy: src=/opt/xos/observers/vcpe/files/vcpe.conf dest=/etc/init/vcpe.conf
 
+  - name: Make sure vCPE service not running (reload configuration)
+    service: name=vcpe state=stopped
+
   - name: Start vCPE service
     service: name=vcpe state=started
