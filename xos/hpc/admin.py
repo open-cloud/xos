@@ -300,14 +300,24 @@ class ContentProviderAdmin(HPCAdmin):
     form = ContentProviderForm
     list_display = ('backend_status_icon', 'name','description','enabled' )
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
+    admin_readonly_fields = ('backend_status_text', )
+    cp_readonly_fields = ('backend_status_text', 'name', 'enabled', 'serviceProvider', 'users')
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'name','enabled','description','serviceProvider','users'], 'classes':['suit-tab suit-tab-general']})]
 
     inlines = [CDNPrefixInline, OriginServerInline]
 
     user_readonly_fields = ('name','description','enabled','serviceProvider','users')
 
     suit_form_tabs = (('general','Details'),('prefixes','CDN Prefixes'), ('origins','Origin Servers'))
+
+    def change_view(self,request, *args, **kwargs):
+        if request.user.is_admin:
+            self.readonly_fields = self.admin_readonly_fields
+        else:
+            self.readonly_fields = self.cp_readonly_fields
+
+        return super(ContentProviderAdmin, self).change_view(request, *args, **kwargs)
 
 class ServiceProviderAdmin(HPCAdmin):
     list_display = ('backend_status_icon', 'name', 'description', 'enabled')
