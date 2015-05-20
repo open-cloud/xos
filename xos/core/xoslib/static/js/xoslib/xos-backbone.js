@@ -732,6 +732,7 @@ if (! window.XOSLIB_LOADED ) {
                             listFields: ["id", "vlan_id", "routeable_subnet"],
                             detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name",
                                            "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable",
+                                           "nat_ip", "lan_ip", "wan_ip", "private_ip",
                                            "vbng_id", "routeable_subnet"],
                             inputType: {"firewall_enable": "checkbox",
                                         "url_filter_enable": "checkbox",
