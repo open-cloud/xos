@@ -378,6 +378,22 @@ class VCPETenant(Tenant):
                 addresses["nat"] = ns.ip
         return addresses
 
+    @property
+    def nat_ip(self):
+        return self.addresses.get("nat",None)
+
+    @property
+    def lan_ip(self):
+        return self.addresses.get("lan",None)
+
+    @property
+    def wan_ip(self):
+        return self.addresses.get("wan",None)
+
+    @property
+    def private_ip(self):
+        return self.addresses.get("private",None)
+
     def pick_node(self):
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
