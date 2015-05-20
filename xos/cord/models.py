@@ -209,7 +209,8 @@ class VCPETenant(Tenant):
                           "url_filter_rules": "allow all",
                           "url_filter_level": "PG",
                           "cdn_enable": False,
-                          "sliver_id": None}
+                          "sliver_id": None,
+                          "users": []}
 
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
@@ -346,14 +347,57 @@ class VCPETenant(Tenant):
 
     @property
     def users(self):
-        return [ {"name": "mom", "id": 1, "role": "admin"},
-                 {"name": "dad", "id": 2, "role": "admin"},
-                 {"name": "kid1", "id": 3, "role": "user"},
-                 {"name": "kid2", "id": 4, "role": "user"} ]
+        return self.get_attribute("users", self.default_attributes["users"])
 
     @users.setter
     def users(self, value):
-        pass
+        self.set_attribute("users", value)
+
+    def find_user(self, uid):
+        uid = int(uid)
+        for user in self.users:
+            if user["id"] == uid:
+                return user
+        return None
+
+    def update_user(self, uid, **kwargs):
+        # kwargs may be "level" or "mac"
+        #    Setting one of these to None will cause None to be stored in the db
+        uid = int(uid)
+        users = self.users
+        for user in users:
+            if user["id"] == uid:
+                for arg in kwargs.keys():
+                    user[arg] = kwargs[arg]
+                    self.users = users
+                return
+        raise ValueError("User %d not found" % uid)
+
+    def create_user(self, **kwargs):
+        uids = [x["id"] for x in self.users]
+        if uids:
+            uid = max(uids)+1
+        else:
+            uid = 0
+        newuser = kwargs.copy()
+        newuser["id"] = uid
+
+        users = self.users
+        users.append(newuser)
+        self.users = users
+
+        return newuser
+
+    def delete_user(self, uid):
+        uid = int(uid)
+        users = self.users
+        for user in users:
+            if user["id"]==uid:
+                users.remove(user)
+                self.users = users
+                return
+
+        raise ValueError("Users %d not found" % uid)
 
     @property
     def services(self):
