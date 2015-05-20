@@ -68,6 +68,8 @@ class SyncOriginServer(SyncStep, HpcLibrary):
             url = "http://" + url
 
         ors_dict = {"authenticated_content": ors.authenticated, "zone_redirects": ors.redirects, "content_provider_id": cpid, "url": url, "service_type": "HyperCache", "caching_type": "Optimistic", "description": ors.description}
+        if not ors_dict["description"]:
+            ors_dict["description"] = "blank"
 
         #print os_dict
 
