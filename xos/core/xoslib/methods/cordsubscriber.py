@@ -40,13 +40,18 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         image_name = ReadOnlyField()
         routeable_subnet = serializers.CharField(required=False)
 
+        lan_ip = ReadOnlyField()
+        wan_ip = ReadOnlyField()
+        nat_ip = ReadOnlyField()
+        private_ip = ReadOnlyField()
+
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         class Meta:
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
                       'service_specific_id', 'vlan_id',
-                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'url_filter_level', 'cdn_enable', 'vbng_id', 'routeable_subnet',)
+                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'url_filter_level', 'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
 
 
         def getHumanReadableName(self, obj):
