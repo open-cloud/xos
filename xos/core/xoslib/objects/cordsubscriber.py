@@ -40,6 +40,10 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      ("routeable_subnet", "vcpe.vbng.routeable_subnet"),
                      ("vcpe_id", "vcpe.id"),
                      ("vbng_id", "vcpe.vbng.id"),
+                     ("nat_ip", "vcpe.nat_ip"),
+                     ("lan_ip", "vcpe.lan_ip"),
+                     ("private_ip", "vcpe.private_ip"),
+                     ("wan_ip", "vcpe.wan_ip"),
                      )
 
     def __getattr__(self, key):
@@ -55,30 +59,6 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
 
         raise AttributeError("getattr: %r object has no attribute %r" %
                          (self.__class__, key))
-
-    @property
-    def nat_ip(self):
-        if not self.vcpe:
-            return None
-        return self.vcpe.addresses.get("nat",None)
-
-    @property
-    def lan_ip(self):
-        if not self.vcpe:
-            return None
-        return self.vcpe.addresses.get("lan",None)
-
-    @property
-    def wan_ip(self):
-        if not self.vcpe:
-            return None
-        return self.vcpe.addresses.get("wan",None)
-
-    @property
-    def private_ip(self):
-        if not self.vcpe:
-            return None
-        return self.vcpe.addresses.get("private",None)
 
     def __setattr__(self, key, value):
         for (member_name, passthrough_name) in self.passthroughs:
