@@ -24,6 +24,10 @@
   <tr><td class="xos-label-cell xos-cord-label">URL Filter:</td><td><input type="checkbox" name="url_filter_enable" <% if (model.attributes.url_filter_enable) print("checked"); %>>Enable<br>
                                                                   <textarea name="url_filter_rules" style="width:320px; height:80px"><%= model.attributes.url_filter_rules %></textarea></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">CDN:</td><td><input type="checkbox" name="cdn_enable" <% if (model.attributes.cdn_enable) print("checked"); %>>Enable</td></tr>
+  <tr><td class="xos-label-cell xos-cord-label">Addresses:</td><td><%= wan_ip %> (wan)<br>
+                                                                   <%= lan_ip %> (lan)<br>
+                                                                   <%= nat_ip %> (nat)<br>
+                                                                   <%= private_ip %> (private) </td></tr>
   </table>
   </div>
 
