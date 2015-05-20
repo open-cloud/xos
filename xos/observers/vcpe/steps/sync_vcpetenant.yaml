@@ -20,6 +20,10 @@
         {% for prefix in cdn_prefixes %}
         - {{ prefix }}
         {% endfor %}
+      nat_ip: {{ nat_ip }}
+      lan_ip: {{ lan_ip }}
+      wan_ip: {{ wan_ip }}
+      private_ip: {{ private_ip }}
 
   tasks:
   - name: Docker repository
