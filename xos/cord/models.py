@@ -361,6 +361,23 @@ class VCPETenant(Tenant):
     def services(self, value):
         pass
 
+    @property
+    def addresses(self):
+        if not self.sliver:
+            return {}
+
+        addresses = {}
+        for ns in self.sliver.networkslivers.all():
+            if "lan" in ns.network.name.lower():
+                addresses["lan"] = ns.ip
+            elif "wan" in ns.network.name.lower():
+                addresses["wan"] = ns.ip
+            elif "private" in ns.network.name.lower():
+                addresses["private"] = ns.ip
+            elif "nat" in ns.network.name.lower():
+                addresses["nat"] = ns.ip
+        return addresses
+
     def pick_node(self):
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
