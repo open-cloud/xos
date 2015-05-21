@@ -543,9 +543,16 @@ class VCPETenant(Tenant):
         if self.deleted:
             return
 
-        if not self.bbs_account:
-            self.bbs_account = self.provider_service.allocate_bbs_account()
-            super(VCPETenant, self).save()
+        if self.url_filter_enable:
+            if not self.bbs_account:
+                # make sure we use the proxied VCPEService object, not the generic Service object
+                vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
+                self.bbs_account = vcpe_service.allocate_bbs_account()
+                super(VCPETenant, self).save()
+        else:
+            if self.bbs_account:
+                self.bbs_account = None
+                super(VCPETenant, self).save()
 
     def save(self, *args, **kwargs):
         if not self.creator:
