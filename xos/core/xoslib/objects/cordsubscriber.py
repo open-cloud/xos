@@ -25,11 +25,15 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
     def __init__(self, *args, **kwargs):
         super(VOLTTenant, self).__init__(*args, **kwargs)
 
+    def __unicode__(self):
+        return u"cordSubscriber-%s" % str(self.id)
+
     passthroughs = ( ("firewall_enable", "vcpe.firewall_enable"),
                      ("firewall_rules", "vcpe.firewall_rules"),
                      ("url_filter_enable", "vcpe.url_filter_enable"),
                      ("url_filter_rules", "vcpe.url_filter_rules"),
                      ("url_filter_level", "vcpe.url_filter_level"),
+                     ("bbs_account", "vcpe.bbs_account"),
                      ("users", "vcpe.users"),
                      ("services", "vcpe.services"),
                      ("cdn_enable", "vcpe.cdn_enable"),

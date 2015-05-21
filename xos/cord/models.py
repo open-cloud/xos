@@ -187,6 +187,20 @@ class VCPEService(Service):
         verbose_name = "vCPE Service"
         proxy = True
 
+    def allocate_bbs_account(self):
+        vcpes = VCPETenant.get_tenant_objects().all()
+        bbs_accounts = [vcpe.bbs_account for vcpe in vcpes]
+
+        # There's a bit of a race here; some other user could be trying to
+        # allocate a bbs_account at the same time we are.
+
+        for i in range(1,21):
+             account_name = "bbs%02d@onlab.us" % i
+             if (account_name not in bbs_accounts):
+                 return account_name
+
+        raise XOSConfigurationError("We've run out of available broadbandshield accounts. Delete some vcpe and try again.")
+
 class VCPETenant(Tenant):
     class Meta:
         proxy = True
@@ -210,7 +224,8 @@ class VCPETenant(Tenant):
                           "url_filter_level": "PG",
                           "cdn_enable": False,
                           "sliver_id": None,
-                          "users": []}
+                          "users": [],
+                          "bbs_account": None}
 
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
@@ -352,6 +367,14 @@ class VCPETenant(Tenant):
     @users.setter
     def users(self, value):
         self.set_attribute("users", value)
+
+    @property
+    def bbs_account(self):
+        return self.get_attribute("bbs_account", self.default_attributes["bbs_account"])
+
+    @bbs_account.setter
+    def bbs_account(self, value):
+        return self.set_attribute("bbs_account", value)
 
     def find_user(self, uid):
         uid = int(uid)
@@ -516,6 +539,14 @@ class VCPETenant(Tenant):
             self.vbng.delete()
             self.vbng = None
 
+    def manage_bbs_account(self):
+        if self.deleted:
+            return
+
+        if not self.bbs_account:
+            self.bbs_account = self.provider_service.allocate_bbs_account()
+            super(VCPETenant, self).save()
+
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
@@ -528,6 +559,7 @@ class VCPETenant(Tenant):
         super(VCPETenant, self).save(*args, **kwargs)
         self.manage_sliver()
         self.manage_vbng()
+        self.manage_bbs_account()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
