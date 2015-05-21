@@ -98,7 +98,9 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
                 extra_context["custom_add_url"] = "/admin/hpc/%s/%s/embeddedfilteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
             else:
                 extra_context["custom_add_url"] = "/admin/hpc/%s/%s/filteredadd/" % (self.model._meta.model_name, str(request.hpcService.id))
-                extra_context["custom_delete_url"] = "/admin/hpc/%s/%s/delete/" % (self.model._meta.model_name, request.resolver_match.args[1])
+                if len(request.resolver_match.args)>1:
+                    # this is only useful on change views, not changelist views
+                    extra_context["custom_delete_url"] = "/admin/hpc/%s/%s/delete/" % (self.model._meta.model_name, request.resolver_match.args[1])
 
        extra_context["show_save"] = False
        extra_context["show_save_and_add_another"] = False
