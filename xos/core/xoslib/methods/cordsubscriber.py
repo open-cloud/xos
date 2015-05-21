@@ -40,6 +40,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
         routeable_subnet = serializers.CharField(required=False)
+        bbs_account = ReadOnlyField()
 
         lan_ip = ReadOnlyField()
         wan_ip = ReadOnlyField()
