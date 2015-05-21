@@ -53,7 +53,11 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
                       'service_specific_id', 'vlan_id',
-                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name', 'firewall_enable', 'firewall_rules', 'url_filter_enable', 'url_filter_rules', 'url_filter_level', 'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
+                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name',
+                      'firewall_enable', 'firewall_rules',
+                      'url_filter_enable', 'url_filter_rules', 'url_filter_level',
+                      'bbs_account',
+                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
 
 
         def getHumanReadableName(self, obj):
