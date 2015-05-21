@@ -19,11 +19,11 @@
   <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.vcpe_id %></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">Image:</td><td><%= model.attributes.image_name %></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">Sliver Id:</td><td><%= model.attributes.sliver %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">BBS Account:</td><td><%= model.attributes.bbs_account %></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">Firewall:</td><td><input type="checkbox" name="firewall_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable<br>
                                                                   <textarea name="firewall_rules" style="width:320px; height:80px"><%= model.attributes.firewall_rules %></textarea></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">URL Filter:</td><td><input type="checkbox" name="url_filter_enable" <% if (model.attributes.url_filter_enable) print("checked"); %>>Enable<br>
-                                                                  <textarea name="url_filter_rules" style="width:320px; height:80px"><%= model.attributes.url_filter_rules %></textarea></td></tr>
+                                                                  <textarea name="url_filter_rules" style="width:320px; height:80px"><%= model.attributes.url_filter_rules %></textarea><br>
+                                                                  BBS Account: <%= model.attributes.bbs_account %></td></tr>
   <tr><td class="xos-label-cell xos-cord-label">CDN:</td><td><input type="checkbox" name="cdn_enable" <% if (model.attributes.cdn_enable) print("checked"); %>>Enable</td></tr>
   <tr><td class="xos-label-cell xos-cord-label">Addresses:</td><td><%= model.attributes.wan_ip %> (wan)<br>
                                                                    <%= model.attributes.lan_ip %> (lan)<br>
