@@ -185,12 +185,7 @@ class Tenant(PlCoreBase):
            # trying to getattr() on it will fail.
            return "confused-tenant-object"
 
-        if self.subscriber_service:
-            return u'%s service %s on service %s' % (str(self.kind), str(self.subscriber_service.id), str(self.provider_service.id))
-        elif self.subscriber_tenant:
-            return u'%s tenant %s on service %s' % (str(self.kind), str(self.subscriber_tenant.id), str(self.provider_service.id))
-        else:
-            return u'%s on service %s' % (str(self.kind), str(self.provider_service.id))
+        return u"%s-tenant-%s" % (str(self.kind), str(self.id))
 
     # helper for extracting things from a json-encoded service_specific_attribute
     def get_attribute(self, name, default=None):
