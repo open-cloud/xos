@@ -1,0 +1,30 @@
+.cord-subscriber-table-old td {
+    padding-top: 5px;
+}
+
+.cord-subscriber-table-old .xos-label-cell {
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.cord-subscriber-box {
+    margin-right: 20px;
+}
+
+.cord-subscriber-table {
+    width: 100%;
+}
+
+.cord-subscriber-table td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #f6f7f8;
+}
+
+.cord-subscriber-table .xos-label-cell {
+    vertical-align: top;
+    font-weight: bold;
+    border-bottom: 1px solid #ededed;
+    background-color: white;
+    width: 160px;
+}

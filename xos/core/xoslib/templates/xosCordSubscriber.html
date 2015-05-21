@@ -2,30 +2,30 @@
   <h3 class="xos-detail-title">CORD Subscriber</h3>
   <form>
 
-  <div class="box">
+  <div class="cord-subscriber-box">
   <h3>vOLT</h3>
-  <table class="xos-detail-table">
-  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.id %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Service Specific Id:</td><td><%= model.attributes.service_specific_id %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">VLAN Id:</td><td><%= model.attributes.vlan_id %></td></tr>
+  <table class="xos-detail-table cord-subscriber-table">
+  <tr><td class="xos-label-cell">Id:</td><td><%= model.attributes.id %></td></tr>
+  <tr><td class="xos-label-cell">Service Specific Id:</td><td><%= model.attributes.service_specific_id %></td></tr>
+  <tr><td class="xos-label-cell">VLAN Id:</td><td><%= model.attributes.vlan_id %></td></tr>
   </table>
   </div>
 
   <br>
 
-  <div class="box">
+  <div class="cord-subscriber-box">
   <h3>vCPE</h3>
-  <table class="xos-detail-table">
-  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.vcpe_id %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Image:</td><td><%= model.attributes.image_name %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Sliver Id:</td><td><%= model.attributes.sliver %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Firewall:</td><td><input type="checkbox" name="firewall_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable<br>
+  <table class="xos-detail-table cord-subscriber-table">
+  <tr><td class="xos-label-cell">Id:</td><td><%= model.attributes.vcpe_id %></td></tr>
+  <tr><td class="xos-label-cell">Image:</td><td><%= model.attributes.image_name %></td></tr>
+  <tr><td class="xos-label-cell">Sliver Id:</td><td><%= model.attributes.sliver %></td></tr>
+  <tr><td class="xos-label-cell">Firewall:</td><td><input type="checkbox" name="firewall_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable<br>
                                                                   <textarea name="firewall_rules" style="width:320px; height:80px"><%= model.attributes.firewall_rules %></textarea></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">URL Filter:</td><td><input type="checkbox" name="url_filter_enable" <% if (model.attributes.url_filter_enable) print("checked"); %>>Enable<br>
+  <tr><td class="xos-label-cell">URL Filter:</td><td><input type="checkbox" name="url_filter_enable" <% if (model.attributes.url_filter_enable) print("checked"); %>>Enable<br>
                                                                   <textarea name="url_filter_rules" style="width:320px; height:80px"><%= model.attributes.url_filter_rules %></textarea><br>
                                                                   BBS Account: <%= model.attributes.bbs_account %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">CDN:</td><td><input type="checkbox" name="cdn_enable" <% if (model.attributes.cdn_enable) print("checked"); %>>Enable</td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Addresses:</td><td><%= model.attributes.wan_ip %> (wan)<br>
+  <tr><td class="xos-label-cell">CDN:</td><td><input type="checkbox" name="cdn_enable" <% if (model.attributes.cdn_enable) print("checked"); %>>Enable</td></tr>
+  <tr><td class="xos-label-cell">Addresses:</td><td><%= model.attributes.wan_ip %> (wan)<br>
                                                                    <%= model.attributes.lan_ip %> (lan)<br>
                                                                    <%= model.attributes.nat_ip %> (nat)<br>
                                                                    <%= model.attributes.private_ip %> (private) </td></tr>
@@ -34,11 +34,11 @@
 
   <br>
 
-  <div class="box">
+  <div class="cord-subscriber-box">
   <h3>vBNG</h3>
-  <table class="xos-detail-table">
-  <tr><td class="xos-label-cell xos-cord-label">Id:</td><td><%= model.attributes.vbng_id %></td></tr>
-  <tr><td class="xos-label-cell xos-cord-label">Routeable Subnet:</td><td><%= model.attributes.routeable_subnet %></td></tr>
+  <table class="xos-detail-table cord-subscriber-table">
+  <tr><td class="xos-label-cell">Id:</td><td><%= model.attributes.vbng_id %></td></tr>
+  <tr><td class="xos-label-cell">Routeable Subnet:</td><td><%= model.attributes.routeable_subnet %></td></tr>
   </table>
   </div>
 
