@@ -178,13 +178,6 @@ class Tenant(PlCoreBase):
         super(Tenant, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
-        if not hasattr(self, "provider_service"):
-           # When the REST API does a POST on a CordSubscriber object, for
-           # some reason there is no provider_service field. All of the other
-           # fields are there. Provider_service is even in the dir(). However,
-           # trying to getattr() on it will fail.
-           return "confused-tenant-object"
-
         return u"%s-tenant-%s" % (str(self.kind), str(self.id))
 
     # helper for extracting things from a json-encoded service_specific_attribute
