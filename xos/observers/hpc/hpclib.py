@@ -82,6 +82,9 @@ class HpcLibrary:
         return hpc_service
 
     def get_cmi_hostname(self, hpc_service=None):
+        if getattr(Config(),"observer_cmi_hostname",None):
+            return getattr(Config(),"observer_cmi_hostname")
+
         if (hpc_service is None):
             hpc_service = self.get_hpc_service()
 
