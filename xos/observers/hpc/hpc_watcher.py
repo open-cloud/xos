@@ -282,6 +282,7 @@ class HpcFetchUrl(Thread):
                 return
 
         except Exception, e:
+            #traceback.print_exc()
             job["status"] = "Exception: %s" % str(e)
             return
 
@@ -371,9 +372,10 @@ class BaseWatcher(Thread):
 
         raise ValueError("Couldn't find network %s" % str(network_name))
 
-    def set_status(self, sliver, service, kind, msg):
+    def set_status(self, sliver, service, kind, msg, check_error=True):
         #print sliver.node.name, kind, msg
-        sliver.has_error = (msg!="success")
+        if check_error:
+            sliver.has_error = (msg!="success")
 
         sliver_type = ContentType.objects.get_for_model(sliver)
 
@@ -529,19 +531,22 @@ class HpcFetcher(BaseWatcher):
             result = self.fetch_queue.get_result()
             sliver = result["sliver"]
             if (result["status"] == "success"):
-                sliver.url_status.append( (result["url"], "success", result["bytes_downloaded"], result["total_time"]) )
+                sliver.url_status.append( (result["domain"] + result["url"], "success", result["bytes_downloaded"], result["total_time"]) )
             if (result["status"]!="success") and (not sliver.has_error):
                 self.set_status(sliver, service, "watcher.HPC-fetch", result["status"])
 
         for sliver in slivers:
-            self.set_status(sliver, service, "watcher.HPC-fetch-urls", json.dumps(sliver.url_status))
+            self.set_status(sliver, service, "watcher.HPC-fetch-urls", json.dumps(sliver.url_status), check_error=False)
             if not sliver.has_error:
                 self.set_status(sliver, service, "watcher.HPC-fetch", "success")
 
     def run_once(self):
         for hpcService in HpcService.objects.all():
             for slice in self.get_service_slices(hpcService, "hpc"):
-                self.fetch_hpc(hpcService, slice.slivers.all())
+                try:
+                    self.fetch_hpc(hpcService, slice.slivers.all())
+                except:
+                    traceback.print_exc()
 
     def run(self):
         while True:
