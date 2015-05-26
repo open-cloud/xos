@@ -39,6 +39,11 @@ def lookup_time(service, sliver, name):
     else:
         return None
 
+def json_default(d, default):
+    if not d:
+        return default
+    return json.loads(d)
+
 def compute_config_run(d):
     if not d:
         return "null"
@@ -178,6 +183,7 @@ def getHpcDict(user, pk):
                      "watcher.HPC-hb.time": lookup_time(hpc_service, sliver, "watcher.HPC-hb.time"),
                      "watcher.HPC-fetch.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-fetch.msg"),
                      "watcher.HPC-fetch.time": lookup_time(hpc_service, sliver, "watcher.HPC-fetch.time"),
+                     "watcher.HPC-fetch.urls": json_default(lookup_tag(hpc_service, sliver, "watcher.HPC-fetch-urls.msg"), []),
                      "config_age": compute_config_run(watcherd_hpc),
 
         })
