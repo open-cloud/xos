@@ -15,13 +15,6 @@ import json
 import socket
 import time
 
-NAMESERVERS = ["cdnrr1.opencloud.us",
-              "cdnrr2.opencloud.us",
-              "cdnrr3.opencloud.us",
-              "cdnrr4.opencloud.us",
-              "cdnrr5.opencloud.us",
-              "cdnrr6.opencloud.us"]
-
 # This REST API endpoint contains a bunch of misc information that the
 # tenant view needs to display
 
@@ -134,7 +127,8 @@ def getHpcDict(user, pk):
     #        dnsdemux_has_public_network = True
 
     nameservers = {}
-    for nameserver in NAMESERVERS:
+    for nshc in hpc.hpchealthcheck_set.filter(kind="nameserver"):
+        nameserver = nshc.resource_name
         try:
             nameservers[nameserver] = {"name": nameserver, "ip": socket.gethostbyname(nameserver), "hit": False}
         except:

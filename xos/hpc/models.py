@@ -209,7 +209,7 @@ class HpcHealthCheck(PlCoreBase):
     class Meta:
         app_label = "hpc"
 
-    KIND_CHOICES = (('dns', 'DNS'), ('http', 'HTTP'))
+    KIND_CHOICES = (('dns', 'DNS'), ('http', 'HTTP'), ('nameserver', 'Name Server'))
 
     hpcService = models.ForeignKey(HpcService, blank = True, null=True)
     kind = models.CharField(max_length=30, choices=KIND_CHOICES, default="dns")
