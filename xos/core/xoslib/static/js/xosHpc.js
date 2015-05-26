@@ -43,14 +43,14 @@ function updateDnsDemuxTable(dnsdemux) {
     } );
 }
 
-function updateHpcTable(dnsdemux) {
+function updateHpcTable(hpcnodes) {
     $('#xos-hpc-hpc').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic_hpc"></table>' );
     var actualEntries = [];
 
-    //console.log(dnsdemux);
+    //console.log(hpcnodes);
 
-    for (rowkey in dnsdemux) {
-        row = dnsdemux[rowkey];
+    for (rowkey in hpcnodes) {
+        row = hpcnodes[rowkey];
 
         actualEntries.push( [row.name, staleCheck(row, "watcher.HPC-hb.time", "watcher.HPC-hb.msg", SC_HPC_PROBE),
                                        staleCheck(row, "watcher.HPC-fetch.time", "watcher.HPC-fetch.msg", SC_HPC_FETCH),
