@@ -269,6 +269,7 @@ class HpcFetchUrl(Thread):
                         raise
                 response_code = c.getinfo(c.RESPONSE_CODE)
                 bytes_downloaded = int(c.getinfo(c.SIZE_DOWNLOAD))
+                total_time = float(c.getinfo(c.TOTAL_TIME))
             except Exception, e:
                 #traceback.print_exc()
                 job["status"] = self.curl_error_message(e)
@@ -285,6 +286,8 @@ class HpcFetchUrl(Thread):
             return
 
         job["status"] = "success"
+        job["bytes_downloaded"] = bytes_downloaded
+        job["total_time"] = total_time
 
 class WatcherWorker(Thread):
     def __init__(self, queue):
@@ -507,6 +510,7 @@ class HpcFetcher(BaseWatcher):
     def fetch_hpc(self, service, slivers):
         for sliver in slivers:
             sliver.has_error = False
+            sliver.url_status = []
 
             checks = HpcHealthCheck.objects.filter(kind="http")
             if not checks:
@@ -524,10 +528,13 @@ class HpcFetcher(BaseWatcher):
         while self.fetch_queue.outstanding > 0:
             result = self.fetch_queue.get_result()
             sliver = result["sliver"]
+            if (result["status"] == "success"):
+                sliver.url_status.append( (result["url"], "success", result["bytes_downloaded"], result["total_time"]) )
             if (result["status"]!="success") and (not sliver.has_error):
                 self.set_status(sliver, service, "watcher.HPC-fetch", result["status"])
 
         for sliver in slivers:
+            self.set_status(sliver, service, "watcher.HPC-fetch-urls", json.dumps(sliver.url_status))
             if not sliver.has_error:
                 self.set_status(sliver, service, "watcher.HPC-fetch", "success")
 
