@@ -62,6 +62,10 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
 
     def sync_record(self, controller_network):
+        if (controller_network.network.template.name!='Private'):
+            # We only sync private networks
+            return
+        
         logger.info("sync'ing network controller %s for network %s slice %s controller %s" % (controller_network, controller_network.network, str(controller_network.network.owner), controller_network.controller))
 
 	controller_register = json.loads(controller_network.controller.backend_register)
@@ -77,6 +81,9 @@ class SyncControllerNetworks(OpenStackSyncStep):
 	    logger.info("saved network controller: %s" % (controller_network))
 
     def delete_record(self, controller_network):
+	if (controller_network.network.template.name!='Private'):
+            # We only sync private networks
+            return
 	controller_register = json.loads(controller_network.controller.backend_register)
         if (controller_register.get('disabled',False)):
                 raise InnocuousException('Controller %s is disabled'%controller_network.controller.name)
