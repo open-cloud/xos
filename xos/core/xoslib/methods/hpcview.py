@@ -48,7 +48,10 @@ def compute_config_run(d):
     if not d:
         return "null"
 
-    d = json.loads(d)
+    try:
+        d = json.loads(d)
+    except:
+        return "error decoding json '%s'" % str(d)
 
     status = d.get("status", "null")
     if status!="success":
