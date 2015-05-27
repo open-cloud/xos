@@ -46,7 +46,7 @@ def walk_deps(fn, object):
 		deps = dependencies[model]
 	except:
 		deps = []
-	__walk_deps(fn, object, deps)
+	return __walk_deps(fn, object, deps)
 
 def walk_inv_deps(fn, object):
 	model = object.__class__.__name__
@@ -54,10 +54,11 @@ def walk_inv_deps(fn, object):
 		deps = inv_dependencies[model]
 	except:
 		deps = []
-	__walk_deps(fn, object, deps)
+	return __walk_deps(fn, object, deps)
 
 def __walk_deps(fn, object, deps):
 	model = object.__class__.__name__
+	ret = []
 	for dep in deps:
 		#print "Checking dep %s"%dep
 		peer=None
@@ -87,8 +88,10 @@ def __walk_deps(fn, object, deps):
 				#if (isinstance(o,PlCoreBase)):
 				if (hasattr(o,'updated')):
 					fn(o, object)
+					ret.append(o)
 				# Uncomment the following line to enable recursion
 				# walk_inv_deps(fn, o)
+	return ret
 
 def p(x,source):
 	print x,x.__class__.__name__
@@ -96,11 +99,9 @@ def p(x,source):
 
 def main():
 	#pdb.set_trace()
-	import django
-	django.setup()
-	s = Site.objects.filter(login_base='onlab')
+	s = Slice.objects.filter(name='princeton_sapan62')
 	#pdb.set_trace()
-	walk_inv_deps(p,s[0])
+	print walk_inv_deps(p,s[0])
 	
 if __name__=='__main__':
 	main()
