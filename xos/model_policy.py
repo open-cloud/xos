@@ -90,6 +90,9 @@ def execute_model_policy(instance, deleted):
         logging.error('Object %r is defective'%instance)
         bad_instances.append(instance)
 
+def noop(o,p):
+        pass
+
 def run_policy():
     from core.models import Sliver,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
     while (True):
@@ -110,6 +113,16 @@ def run_policy():
         for o in deleted_objects:
             execute_model_policy(o, True)
 
+        # Reap non-sync'd models here
+        reaped = [Slice]
+
+        for m in reaped:
+            dobjs = m.deleted_objects.all()
+            for d in dobjs:
+                deps = walk_inv_deps(noop, d)
+                if (not deps):
+                    print 'Purging object %r'%d
+                    d.delete(purge=True)
 
         if (time.time()-start<1):
             time.sleep(1)
