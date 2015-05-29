@@ -87,6 +87,12 @@ class XOSViewSet(viewsets.ModelViewSet):
                    name=self.base_name+"_"+name)
 
     @classmethod
+    def list_url(self, pattern, viewdict, name):
+        return url(r'^' + self.method_name + r'/' + pattern,
+                   self.as_view(viewdict),
+                   name=self.base_name+"_"+name)
+
+    @classmethod
     def get_urlpatterns(self):
         patterns = []
 
@@ -126,6 +132,8 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/$", {"delete": "delete_user"}, "user") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/$", {"get": "get_user_level"}, "user_level") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_user_level"}, "set_user_level") )
+
+        patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
 
         return patterns
 
@@ -220,6 +228,25 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.save()
         return Response({service: getattr(subscriber, service_attr)})
 
+    def initdemo(self, request):
+        object_list = VOLTTenant.get_tenant_objects().all()
 
+        demo_subscribers = [o for o in object_list if o.is_demo_user]
 
+        if demo_subscribers:
+            return Response({"id": demo_subscribers[0].id})
+
+        voltTenant = VOLTTenant(service_specific_id=1234,
+                                vlan_id=1234,
+                                is_demo_user=True)
+        voltTenant.caller = User.objects.get(email="padmin@vicci.org")
+        voltTenant.save()
+
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="R")
+        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="R")
+        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG")
+        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="G")
+        voltTenant.vcpe.save()
+
+        return Response({"id": voltTenant.id})
 
