@@ -68,7 +68,8 @@ class VOLTTenant(Tenant):
 
     KIND = "vOLT"
 
-    default_attributes = {"vlan_id": None, }
+    default_attributes = {"vlan_id": None,
+                          "is_demo_user": False }
 
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
@@ -128,6 +129,14 @@ class VOLTTenant(Tenant):
         if (value != self.get_attribute("creator_id", None)):
             self.cached_creator=None
         self.set_attribute("creator_id", value)
+
+    @property
+    def is_demo_user(self):
+        return self.get_attribute("is_demo_user", self.default_attributes["is_demo_user"])
+
+    @is_demo_user.setter
+    def is_demo_user(self, value):
+        self.set_attribute("is_demo_user", value)
 
     def manage_vcpe(self):
         # Each VOLT object owns exactly one VCPE object
