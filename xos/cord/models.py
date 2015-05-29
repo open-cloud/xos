@@ -406,6 +406,13 @@ class VCPETenant(Tenant):
         raise ValueError("User %d not found" % uid)
 
     def create_user(self, **kwargs):
+        if "name" not in kwargs:
+            raise XOSMissingField("The name field is required")
+
+        for user in self.users:
+            if kwargs["name"] == user["name"]:
+                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
+
         uids = [x["id"] for x in self.users]
         if uids:
             uid = max(uids)+1
