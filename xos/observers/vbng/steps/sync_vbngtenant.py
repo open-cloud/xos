@@ -12,7 +12,7 @@ from cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
-VBNG_API = "http://10.0.3.136/onos/virtualbng/privateip/"
+VBNG_API = "http://10.0.3.136:8181/onos/virtualbng/privateip/"
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -70,9 +70,11 @@ class SyncVBNGTenant(SyncStep):
         private_ip = external_ns.ip
 
         if not o.routeable_subnet:
-            r = requests.get(VBNG_API + "%s" % private_ip, )
-            public_ip = r.json()
-            o.routeable_subnet = public_ip
+            r = requests.post(VBNG_API + "%s" % private_ip, )
+            if (r.status_code != 200):
+                raise Exception("Received error from bng service (%d)" % r.status_code)
+            logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
+            o.routeable_subnet = r.text
 
         o.save()
 
