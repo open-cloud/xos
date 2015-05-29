@@ -12,7 +12,7 @@ from cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
-VBNG_API = "http://<vnbg-addr>/onos/virtualbng/privateip/"
+VBNG_API = "http://10.0.3.136/onos/virtualbng/privateip/"
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -60,23 +60,19 @@ class SyncVBNGTenant(SyncStep):
 
         external_ns = None
         for ns in sliver.networkslivers.all():
-            if (ns.ip) and (ns.network.template.visibility=="private") and (ns.network.template.translation=="none"):
-                # need some logic here to find the right network
+            if (ns.ip) and ("WAN" in ns.network.template.name):
                 external_ns = ns
 
         if not external_ns:
-            self.defer_sync(o, "private network is not filled in yet")
+            self.defer_sync(o, "WAN network is not filled in yet")
             return
 
         private_ip = external_ns.ip
 
         if not o.routeable_subnet:
-            print "This is where we would call Pingping's API"
-            o.routeable_subnet = "placeholder-from-observer"
-
-            # r = requests.post(VBNG_API + "%s" % private_ip, )
-            # public_ip = r.json()
-            # o.routeable_subnet = public_ip
+            r = requests.get(VBNG_API + "%s" % private_ip, )
+            public_ip = r.json()
+            o.routeable_subnet = public_ip
 
         o.save()
 
