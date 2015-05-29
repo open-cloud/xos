@@ -31,6 +31,7 @@ log_file=console
 #/var/log/hpc.log
 driver=None
 pretend=False
+backoff_disabled=True
 
 [feefie]
 client_id='vicci_dev_central'
