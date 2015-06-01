@@ -122,9 +122,9 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/$", {"get": "get_service"}, "get_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/true/$", {"put": "enable_service"}, "enable_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/false/$", {"put": "disable_service"}, "disable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/$", {"get": "get_service"}, "get_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/true/$", {"put": "enable_service"}, "enable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/false/$", {"put": "disable_service"}, "disable_service") )
 
         patterns.append( self.detail_url("users/$", {"get": "get_users", "post": "create_user"}, "users") )
         patterns.append( self.detail_url("users/clearusers/$", {"get": "clear_users", "put": "clear_users", "post": "clear_users"}, "clearusers") )
