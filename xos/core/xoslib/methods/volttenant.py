@@ -30,12 +30,23 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
+        computeNodeName = serializers.SerializerMethodField("getComputeNodeName")
+
         class Meta:
             model = VOLTTenant
-            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 'vlan_id' )
+            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 'vlan_id', 'computeNodeName' )
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
+
+        def getComputeNodeName(self, obj):
+            vcpe = obj.vcpe
+            if not vcpe:
+                return None
+            sliver = vcpe.sliver
+            if not sliver:
+                return None
+            return sliver.node.name
 
 class VOLTTenantList(XOSListCreateAPIView):
     serializer_class = VOLTTenantIdSerializer
