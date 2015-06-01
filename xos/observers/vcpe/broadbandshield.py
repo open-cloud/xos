@@ -2,6 +2,7 @@ import requests
 import logging
 import json
 import sys
+from rest_framework.exceptions import APIException
 
 """ format of settings
 
@@ -43,6 +44,13 @@ import sys
                  ["blocklist"] - []
                  ["allowlist"] - []
 """
+
+class BBS_Failure(APIException):
+    status_code=400
+    def __init__(self, why="broadbandshield error", fields={}):
+        APIException.__init__(self, {"error": "BBS_Failure",
+                            "specific_error": why,
+                            "fields": fields})
 
 
 class BBS:
@@ -233,8 +241,14 @@ def self_test():
 
     open("bbs.json","w").write(json.dumps(bbs.settings))
 
+    # a new BBS account will throw a 500 error if it has no rating
+    bbs.settings["settings"]["rating"] = "R"
+    #bbs.settings["settings"]["category"] = [u'PORNOGRAPHY', u'ADULT', u'ILLEGAL', u'WEAPONS', u'DRUGS', u'GAMBLING', u'CYBERBULLY', u'ANONYMIZERS', u'SUICIDE', u'MALWARE']
+    #bbs.settings["settings"]["blocklist"] = []
+    #bbs.settings["settings"]["allowlist"] = []
+    #for water in bbs.settings["settings"]["watershed"];
+    #    water["categories"]=[]
     # delete everything
-    bbs.settings["rating"] = "R"
     bbs.post_account()
     bbs.clear_users_and_devices()
 
