@@ -15,6 +15,8 @@ from util.logger import Logger, logging
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)
 
+from broadbandshield import BBS
+
 logger = Logger(level=logging.INFO)
 
 class SyncVCPETenant(SyncStep):
@@ -106,6 +108,10 @@ class SyncVCPETenant(SyncStep):
 
         fields.update(self.get_extra_attributes(o))
         run_template_ssh(self.template_name, fields)
+
+        if o.url_filter_enable:
+            bbs = BBS(o.bbs_account, "123")
+            bbs.sync(o.url_filter_level, o.users)
 
         o.save()
 
