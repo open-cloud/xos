@@ -120,7 +120,7 @@ class CordSubscriberViewSet(XOSViewSet):
     def get_urlpatterns(self):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
-        patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_url_filter"}, "url_filter") )
+        patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
         patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/$", {"get": "get_service"}, "get_service") )
         patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/true/$", {"put": "enable_service"}, "enable_service") )
@@ -131,7 +131,7 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("users/newuser/$", {"put": "create_user", "post": "create_user"}, "newuser") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/$", {"delete": "delete_user"}, "user") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/$", {"get": "get_user_level"}, "user_level") )
-        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_user_level"}, "set_user_level") )
+        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_user_level"}, "set_user_level") )
 
         patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
 
