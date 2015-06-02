@@ -607,7 +607,8 @@ class VBNGTenant(Tenant):
 
     KIND = "vBNG"
 
-    default_attributes = {"routeable_subnet": ""}
+    default_attributes = {"routeable_subnet": "",
+                          "mapped_ip": ""}
 
     @property
     def routeable_subnet(self):
@@ -616,3 +617,11 @@ class VBNGTenant(Tenant):
     @routeable_subnet.setter
     def routeable_subnet(self, value):
         self.set_attribute("routeable_subnet", value)
+
+    @property
+    def mapped_ip(self):
+        return self.get_attribute("mapped_ip", self.default_attributes["mapped_ip"])
+
+    @mapped_ip.setter
+    def mapped_ip(self, value):
+        self.set_attribute("mapped_ip", value)

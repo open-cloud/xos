@@ -30,6 +30,7 @@ class SyncVCPETenant(SyncStep):
         SyncStep.__init__(self, **args)
 
     def defer_sync(self, o, reason):
+        logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def fetch_pending(self, deleted):
