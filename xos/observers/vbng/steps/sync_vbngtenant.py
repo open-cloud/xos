@@ -37,11 +37,10 @@ class SyncVBNGTenant(SyncStep):
         return objs
 
     def defer_sync(self, o, reason):
+        logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
-    def sync_record(self, o):
-        logger.info("sync'ing VBNGTenant %s" % str(o))
-
+    def get_private_ip(self, o):
         vcpes = VCPETenant.get_tenant_objects().all()
         vcpes = [x for x in vcpes if (x.vbng is not None) and (x.vbng.id == o.id)]
         if not vcpes:
@@ -64,17 +63,31 @@ class SyncVBNGTenant(SyncStep):
             self.defer_sync(o, "WAN network is not filled in yet")
             return
 
-        private_ip = external_ns.ip
+        return external_ns.ip
+
+    def sync_record(self, o):
+        logger.info("sync'ing VBNGTenant %s" % str(o))
 
         if not o.routeable_subnet:
+            private_ip = self.get_private_ip(o)
+            logger.info("contacting vBNG service to request mapping for private ip %s" % private_ip)
+
             r = requests.post(VBNG_API + "%s" % private_ip, )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
             o.routeable_subnet = r.text
+            o.mapped_ip = private_ip
 
         o.save()
 
-    def delete_record(self, m):
-        pass
+    def delete_record(self, o):
+        logger.info("deleting VBNGTenant %s" % str(o))
+
+        if o.mapped_ip:
+            private_ip = o.mapped_ip
+            logger.info("contacting vBNG service to delete private ip %s" % private_ip)
+            r = requests.delete(VBNG_API + "%s" % private_ip, )
+            if (r.status_code != 200):
+                raise Exception("Received error from bng service (%d)" % r.status_code)
 
