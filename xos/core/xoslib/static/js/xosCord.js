@@ -1,4 +1,4 @@
-OBJS = ['cordSubscriber', ]
+OBJS = ['cordSubscriber', 'cordUser']
 
 CordAdminApp = new XOSApplication({
     logTableId: "#logTable",
