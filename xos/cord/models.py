@@ -402,7 +402,7 @@ class VCPETenant(Tenant):
                 for arg in kwargs.keys():
                     user[arg] = kwargs[arg]
                     self.users = users
-                return
+                return user
         raise ValueError("User %d not found" % uid)
 
     def create_user(self, **kwargs):
