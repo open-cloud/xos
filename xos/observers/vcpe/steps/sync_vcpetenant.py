@@ -30,10 +30,7 @@ class SyncVCPETenant(SyncStep):
         SyncStep.__init__(self, **args)
 
     def defer_sync(self, o, reason):
-        o.backend_register="{}"
-        o.backend_status = "2 - " + reason
-        o.save(update_fields=['enacted','backend_status','backend_register'])
-        logger.info("defer object %s due to %s" % (str(o), reason))
+        raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def fetch_pending(self, deleted):
         if (not deleted):
