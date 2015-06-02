@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
@@ -63,6 +64,11 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
 
+#------------------------------------------------------------------------------
+# The "old" API
+# This is used by the xoslib-based GUI
+#------------------------------------------------------------------------------
+
 class CordSubscriberList(XOSListCreateAPIView):
     queryset = CordSubscriber.get_tenant_objects().select_related().all()
     serializer_class = CordSubscriberIdSerializer
@@ -76,6 +82,71 @@ class CordSubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
 
     method_kind = "detail"
     method_name = "cordsubscriber"
+
+# We fake a user object by pulling the user data struct out of the
+# subscriber object...
+
+def serialize_user(subscriber, user):
+    return {"id": "%d-%d" % (subscriber.id, user["id"]),
+            "name": user["name"],
+            "level": user.get("level",""),
+            "mac": user.get("mac", ""),
+            "subscriber": subscriber.id }
+
+class CordUserList(APIView):
+    method_kind = "list"
+    method_name = "corduser"
+
+    def get(self, request, format=None):
+        instances=[]
+        for subscriber in CordSubscriber.get_tenant_objects().all():
+            for user in subscriber.users:
+                instances.append( serialize_user(subscriber, user) )
+
+        return Response(instances)
+
+    def post(self, request, format=None):
+        data = request.DATA
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(data["subscriber"]))
+        user = subscriber.vcpe.create_user(name=data["name"],
+                                    level=data["level"],
+                                    mac=data["mac"])
+        subscriber.save()
+
+        return Response(serialize_user(subscriber,user))
+
+class CordUserDetail(APIView):
+    method_kind = "detail"
+    method_name = "corduser"
+
+    def get(self, request, format=None, pk=0):
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().filter(id=parts[0])
+        for user in subscriber.users:
+            return Response( [ serialize_user(subscriber, user) ] )
+        raise XOSNotFound("Failed to find user %s" % pk)
+
+    def delete(self, request, pk):
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
+        subscriber.vcpe.delete_user(parts[1])
+        subscriber.save()
+        return Response("okay")
+
+    def put(self, request, pk):
+        kwargs={}
+        if "name" in request.DATA:
+             kwargs["name"] = request.DATA["name"]
+        if "level" in request.DATA:
+             kwargs["level"] = request.DATA["level"]
+        if "mac" in request.DATA:
+             kwargs["mac"] = request.DATA["mac"]
+
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
+        user = subscriber.vcpe.update_user(parts[1], **kwargs)
+        subscriber.save()
+        return Response(serialize_user(subscriber,user))
 
 # this may be moved into plus.py...
 
@@ -101,7 +172,10 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         return patterns
 
-# the "new" API with many more REST endpoints.
+#------------------------------------------------------------------------------
+# The "new" API with many more REST endpoints.
+# This is for integration with with the subscriber GUI
+#------------------------------------------------------------------------------
 
 class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
