@@ -37,10 +37,7 @@ class SyncVBNGTenant(SyncStep):
         return objs
 
     def defer_sync(self, o, reason):
-        o.backend_register="{}"
-        o.backend_status = "2 - " + reason
-        o.save(update_fields=['enacted','backend_status','backend_register'])
-        logger.info("defer object %s due to %s" % (str(o), reason))
+        raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def sync_record(self, o):
         logger.info("sync'ing VBNGTenant %s" % str(o))
