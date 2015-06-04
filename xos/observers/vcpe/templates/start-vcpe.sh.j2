@@ -14,6 +14,7 @@ fi
 # Set up networking via pipework
 docker exec vcpe ifconfig eth0 >> /dev/null || pipework eth4 -i eth0 vcpe {{ wan_ip }}/17@192.168.128.1
 docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth3 -i eth1 vcpe 192.168.0.1/24 @{{ vlan_ids[0] }}
+docker exec vcpe ifconfig eth2 >> /dev/null || pipework eth1 -i eth2 vcpe {{ hpc_client_ip }}/16
 
 # Now can start up dnsmasq
 docker exec vcpe service dnsmasq start
