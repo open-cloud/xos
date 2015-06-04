@@ -33,6 +33,7 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      ("url_filter_enable", "vcpe.url_filter_enable"),
                      ("url_filter_rules", "vcpe.url_filter_rules"),
                      ("url_filter_level", "vcpe.url_filter_level"),
+                     ("ssh_command", "vcpe.ssh_command"),
                      ("bbs_account", "vcpe.bbs_account"),
                      ("users", "vcpe.users"),
                      ("services", "vcpe.services"),

@@ -41,6 +41,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
         routeable_subnet = serializers.CharField(required=False)
+        ssh_command = ReadOnlyField()
         bbs_account = ReadOnlyField()
 
         lan_ip = ReadOnlyField()
@@ -58,6 +59,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'firewall_enable', 'firewall_rules',
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',
+                      'ssh_command',
                       'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
 
 
