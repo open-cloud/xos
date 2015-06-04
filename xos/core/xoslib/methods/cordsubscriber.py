@@ -209,6 +209,9 @@ class CordSubscriberViewSet(XOSViewSet):
 
         patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
 
+        patterns.append( url("^rs/ssidmap/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url("^rs/ssidmap/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
+
         return patterns
 
     def list(self, request):
@@ -323,4 +326,19 @@ class CordSubscriberViewSet(XOSViewSet):
         voltTenant.vcpe.save()
 
         return Response({"id": voltTenant.id})
+
+    def ssidlist(self, request):
+        object_list = VOLTTenant.get_tenant_objects().all()
+
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "id": x.id} for x in object_list ]
+
+        return Response({"ssidmap": ssidmap})
+
+    def ssiddetail(self, pk=None, ssid=None):
+        object_list = VOLTTenant.get_tenant_objects().all()
+
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
+
+        return Response({"ssidmap": ssidmap})
+
 
