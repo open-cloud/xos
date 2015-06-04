@@ -224,7 +224,8 @@ class VCPETenant(Tenant):
                        "nat_ip",
                        "lan_ip",
                        "wan_ip",
-                       "private_ip")
+                       "private_ip",
+                       "hpc_client_ip")
 
     default_attributes = {"firewall_enable": False,
                           "firewall_rules": "accept all anywhere anywhere",
@@ -464,6 +465,8 @@ class VCPETenant(Tenant):
                 addresses["private"] = ns.ip
             elif "nat" in ns.network.name.lower():
                 addresses["nat"] = ns.ip
+            elif "hpc_client" in ns.network.name.lower():
+                addresses["hpc_client"] = ns.ip
         return addresses
 
     @property
@@ -481,6 +484,10 @@ class VCPETenant(Tenant):
     @property
     def private_ip(self):
         return self.addresses.get("private",None)
+
+    @property
+    def hpc_client_ip(self):
+        return self.addresses.get("hpc_client",None)
 
     def pick_node(self):
         nodes = list(Node.objects.all())
