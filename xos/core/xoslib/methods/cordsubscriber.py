@@ -340,7 +340,7 @@ class CordSubscriberViewSet(XOSViewSet):
         ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
 
         if len(ssidmap)==0:
-            raise Exception("didn't find it")
+            raise XOSNotFound("didn't find ssid %s" % str(ssid))
 
         return Response( ssidmap[0] )
 
