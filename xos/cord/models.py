@@ -387,6 +387,17 @@ class VCPETenant(Tenant):
     def bbs_account(self, value):
         return self.set_attribute("bbs_account", value)
 
+    @property
+    def ssh_command(self):
+        if self.sliver:
+            return self.sliver.get_ssh_command()
+        else:
+            return "no-sliver"
+
+    @ssh_command.setter
+    def ssh_command(self, value):
+        pass
+
     def find_user(self, uid):
         uid = int(uid)
         for user in self.users:
