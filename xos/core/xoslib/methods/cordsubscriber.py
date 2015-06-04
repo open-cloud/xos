@@ -209,8 +209,8 @@ class CordSubscriberViewSet(XOSViewSet):
 
         patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
 
-        patterns.append( url("^rs/ssidmap/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
-        patterns.append( url("^rs/ssidmap/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
+        patterns.append( url("^rs/subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url("^rs/subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
 
         return patterns
 
@@ -330,15 +330,18 @@ class CordSubscriberViewSet(XOSViewSet):
     def ssidlist(self, request):
         object_list = VOLTTenant.get_tenant_objects().all()
 
-        ssidmap = [ {"service_specific_id:": x.service_specific_id, "id": x.id} for x in object_list ]
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
 
         return Response({"ssidmap": ssidmap})
 
     def ssiddetail(self, pk=None, ssid=None):
         object_list = VOLTTenant.get_tenant_objects().all()
 
-        ssidmap = [ {"service_specific_id:": x.service_specific_id, "id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
 
-        return Response({"ssidmap": ssidmap})
+        if len(ssidmap)==0:
+            raise Exception("didn't find it")
+
+        return Response( ssidmap[0] )
 
 
