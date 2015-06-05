@@ -347,7 +347,7 @@ class CordSubscriberViewSet(XOSViewSet):
     def ssidlist(self, request):
         object_list = VOLTTenant.get_tenant_objects().all()
 
-        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
+        ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
 
         return Response({"ssidmap": ssidmap})
 
