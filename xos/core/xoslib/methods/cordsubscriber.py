@@ -325,7 +325,7 @@ class CordSubscriberViewSet(XOSViewSet):
 
         # reset the parental controls in any existing demo vCPEs
         for o in object_list:
-            if str(o.subscriber_specific_id) in ["0", "1"]:
+            if str(o.service_specific_id) in ["0", "1"]:
                 if o.vcpe is not None:
                     self.setup_demo_vcpe(o)
 
