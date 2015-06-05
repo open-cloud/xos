@@ -15,6 +15,8 @@ from util.logger import Logger, logging
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)
 
+from broadbandshield import BBS
+
 logger = Logger(level=logging.INFO)
 
 class SyncVCPETenant(SyncStep):
@@ -28,10 +30,8 @@ class SyncVCPETenant(SyncStep):
         SyncStep.__init__(self, **args)
 
     def defer_sync(self, o, reason):
-        o.backend_register="{}"
-        o.backend_status = "2 - " + reason
-        o.save(update_fields=['enacted','backend_status','backend_register'])
         logger.info("defer object %s due to %s" % (str(o), reason))
+        raise Exception("defer object %s due to %s" % (str(o), reason))
 
     def fetch_pending(self, deleted):
         if (not deleted):
@@ -51,6 +51,11 @@ class SyncVCPETenant(SyncStep):
             for slice in service.slices.all():
                 if "dnsdemux" in slice.name:
                     for sliver in slice.slivers.all():
+                        # Connect to a dnsdemux that's on the hpc_client network
+                        # if one is available.
+                        for ns in sliver.networkslivers.all():
+                            if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
+                                dnsdemux_ip = ns.ip
                         if dnsdemux_ip=="none":
                             try:
                                 dnsdemux_ip = socket.gethostbyname(sliver.node.name)
@@ -106,6 +111,10 @@ class SyncVCPETenant(SyncStep):
 
         fields.update(self.get_extra_attributes(o))
         run_template_ssh(self.template_name, fields)
+
+        if o.url_filter_enable:
+            bbs = BBS(o.bbs_account, "123")
+            bbs.sync(o.url_filter_level, o.users)
 
         o.save()
 

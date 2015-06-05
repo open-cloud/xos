@@ -37,6 +37,7 @@ if (! window.XOSLIB_LOADED ) {
     HPCVIEW_API = XOSLIB_BASE + "/hpcview/";
 
     CORDSUBSCRIBER_API = XOSLIB_BASE + "/cordsubscriber/";
+    CORDUSER_API = XOSLIB_BASE + "/corduser/";
 
     XOSModel = Backbone.Model.extend({
         relatedCollections: [],
@@ -729,7 +730,8 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: CORDSUBSCRIBER_API,
                             modelName: "cordSubscriber",
-                            listFields: ["id", "vlan_id", "routeable_subnet"],
+                            relatedCollections: {"cordUsers": "subscriber"},
+                            listFields: ["id", "service_specific_id", "vlan_id", "routeable_subnet"],
                             detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name",
                                            "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable",
                                            "nat_ip", "lan_ip", "wan_ip", "private_ip",
@@ -737,6 +739,13 @@ if (! window.XOSLIB_LOADED ) {
                             inputType: {"firewall_enable": "checkbox",
                                         "url_filter_enable": "checkbox",
                                         "cdn_enable": "checkbox"},
+                            disableAdd: true,
+                            });
+
+        define_model(this, {urlRoot: CORDUSER_API,
+                            modelName: "cordUser",
+                            listFields: ["id", "subscriber", "name", "level", "mac"],
+                            detailFields: ["subscriber", "name", "level", "mac"],
                             disableAdd: true,
                             });
 
