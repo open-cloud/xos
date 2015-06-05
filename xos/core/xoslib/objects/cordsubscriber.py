@@ -49,6 +49,7 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                      ("lan_ip", "vcpe.lan_ip"),
                      ("private_ip", "vcpe.private_ip"),
                      ("wan_ip", "vcpe.wan_ip"),
+                     ("wan_mac", "vcpe.wan_mac"),
                      )
 
     def __getattr__(self, key):

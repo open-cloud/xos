@@ -49,6 +49,8 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         nat_ip = ReadOnlyField()
         private_ip = ReadOnlyField()
 
+        wan_mac = ReadOnlyField()
+
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         class Meta:
@@ -60,7 +62,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',
                       'ssh_command',
-                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
+                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac')
 
 
         def getHumanReadableName(self, obj):
