@@ -225,7 +225,8 @@ class VCPETenant(Tenant):
                        "lan_ip",
                        "wan_ip",
                        "private_ip",
-                       "hpc_client_ip")
+                       "hpc_client_ip",
+                       "wan_mac")
 
     default_attributes = {"firewall_enable": False,
                           "firewall_rules": "accept all anywhere anywhere",
@@ -491,6 +492,18 @@ class VCPETenant(Tenant):
     @property
     def wan_ip(self):
         return self.addresses.get("wan",None)
+
+    @property
+    def wan_mac(self):
+        ip = self.wan_ip
+        if not ip:
+           return None
+        try:
+           (a,b,c,d) = ip.split('.')
+           wan_mac = "02:42:%2x:%2x:%2x:%2x" % (int(a), int(b), int(c), int(d))
+        except:
+           wan_mac = "Exception"
+        return wan_mac
 
     @property
     def private_ip(self):

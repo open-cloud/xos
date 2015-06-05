@@ -25,6 +25,7 @@
       wan_ip: {{ wan_ip }}
       private_ip: {{ private_ip }}
       hpc_client_ip: {{ hpc_client_ip }}
+      wan_mac: {{ wan_mac }}
 
   tasks:
   - name: Docker repository
