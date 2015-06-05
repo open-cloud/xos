@@ -51,6 +51,11 @@ class SyncVCPETenant(SyncStep):
             for slice in service.slices.all():
                 if "dnsdemux" in slice.name:
                     for sliver in slice.slivers.all():
+                        # Connect to a dnsdemux that's on the hpc_client network
+                        # if one is available.
+                        for ns in sliver.networkslivers.all():
+                            if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
+                                dnsdemux_ip = ns.ip
                         if dnsdemux_ip=="none":
                             try:
                                 dnsdemux_ip = socket.gethostbyname(sliver.node.name)
