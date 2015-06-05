@@ -12,7 +12,7 @@ from cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
-VBNG_API = "http://<vnbg-addr>/onos/virtualbng/privateip/"
+VBNG_API = "http://10.0.3.136:8181/onos/virtualbng/privateip/"
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -37,14 +37,10 @@ class SyncVBNGTenant(SyncStep):
         return objs
 
     def defer_sync(self, o, reason):
-        o.backend_register="{}"
-        o.backend_status = "2 - " + reason
-        o.save(update_fields=['enacted','backend_status','backend_register'])
         logger.info("defer object %s due to %s" % (str(o), reason))
+        raise Exception("defer object %s due to %s" % (str(o), reason))
 
-    def sync_record(self, o):
-        logger.info("sync'ing VBNGTenant %s" % str(o))
-
+    def get_private_ip(self, o):
         vcpes = VCPETenant.get_tenant_objects().all()
         vcpes = [x for x in vcpes if (x.vbng is not None) and (x.vbng.id == o.id)]
         if not vcpes:
@@ -60,26 +56,38 @@ class SyncVBNGTenant(SyncStep):
 
         external_ns = None
         for ns in sliver.networkslivers.all():
-            if (ns.ip) and (ns.network.template.visibility=="private") and (ns.network.template.translation=="none"):
-                # need some logic here to find the right network
+            if (ns.ip) and ("WAN" in ns.network.template.name):
                 external_ns = ns
 
         if not external_ns:
-            self.defer_sync(o, "private network is not filled in yet")
+            self.defer_sync(o, "WAN network is not filled in yet")
             return
 
-        private_ip = external_ns.ip
+        return external_ns.ip
+
+    def sync_record(self, o):
+        logger.info("sync'ing VBNGTenant %s" % str(o))
 
         if not o.routeable_subnet:
-            print "This is where we would call Pingping's API"
-            o.routeable_subnet = "placeholder-from-observer"
+            private_ip = self.get_private_ip(o)
+            logger.info("contacting vBNG service to request mapping for private ip %s" % private_ip)
 
-            # r = requests.post(VBNG_API + "%s" % private_ip, )
-            # public_ip = r.json()
-            # o.routeable_subnet = public_ip
+            r = requests.post(VBNG_API + "%s" % private_ip, )
+            if (r.status_code != 200):
+                raise Exception("Received error from bng service (%d)" % r.status_code)
+            logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
+            o.routeable_subnet = r.text
+            o.mapped_ip = private_ip
 
         o.save()
 
-    def delete_record(self, m):
-        pass
+    def delete_record(self, o):
+        logger.info("deleting VBNGTenant %s" % str(o))
+
+        if o.mapped_ip:
+            private_ip = o.mapped_ip
+            logger.info("contacting vBNG service to delete private ip %s" % private_ip)
+            r = requests.delete(VBNG_API + "%s" % private_ip, )
+            if (r.status_code != 200):
+                raise Exception("Received error from bng service (%d)" % r.status_code)
 

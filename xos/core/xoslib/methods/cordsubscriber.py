@@ -5,10 +5,11 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from cord.models import VOLTTenant
+from cord.models import VOLTTenant, VBNGTenant
 from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin
 from django.shortcuts import get_object_or_404
@@ -40,12 +41,15 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         sliver_name = ReadOnlyField()
         image_name = ReadOnlyField()
         routeable_subnet = serializers.CharField(required=False)
+        ssh_command = ReadOnlyField()
         bbs_account = ReadOnlyField()
 
         lan_ip = ReadOnlyField()
         wan_ip = ReadOnlyField()
         nat_ip = ReadOnlyField()
         private_ip = ReadOnlyField()
+
+        wan_mac = ReadOnlyField()
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
@@ -57,11 +61,17 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'firewall_enable', 'firewall_rules',
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',
-                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip')
+                      'ssh_command',
+                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac')
 
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
+
+#------------------------------------------------------------------------------
+# The "old" API
+# This is used by the xoslib-based GUI
+#------------------------------------------------------------------------------
 
 class CordSubscriberList(XOSListCreateAPIView):
     queryset = CordSubscriber.get_tenant_objects().select_related().all()
@@ -77,12 +87,83 @@ class CordSubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
     method_kind = "detail"
     method_name = "cordsubscriber"
 
+# We fake a user object by pulling the user data struct out of the
+# subscriber object...
+
+def serialize_user(subscriber, user):
+    return {"id": "%d-%d" % (subscriber.id, user["id"]),
+            "name": user["name"],
+            "level": user.get("level",""),
+            "mac": user.get("mac", ""),
+            "subscriber": subscriber.id }
+
+class CordUserList(APIView):
+    method_kind = "list"
+    method_name = "corduser"
+
+    def get(self, request, format=None):
+        instances=[]
+        for subscriber in CordSubscriber.get_tenant_objects().all():
+            for user in subscriber.users:
+                instances.append( serialize_user(subscriber, user) )
+
+        return Response(instances)
+
+    def post(self, request, format=None):
+        data = request.DATA
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(data["subscriber"]))
+        user = subscriber.vcpe.create_user(name=data["name"],
+                                    level=data["level"],
+                                    mac=data["mac"])
+        subscriber.save()
+
+        return Response(serialize_user(subscriber,user))
+
+class CordUserDetail(APIView):
+    method_kind = "detail"
+    method_name = "corduser"
+
+    def get(self, request, format=None, pk=0):
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().filter(id=parts[0])
+        for user in subscriber.users:
+            return Response( [ serialize_user(subscriber, user) ] )
+        raise XOSNotFound("Failed to find user %s" % pk)
+
+    def delete(self, request, pk):
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
+        subscriber.vcpe.delete_user(parts[1])
+        subscriber.save()
+        return Response("okay")
+
+    def put(self, request, pk):
+        kwargs={}
+        if "name" in request.DATA:
+             kwargs["name"] = request.DATA["name"]
+        if "level" in request.DATA:
+             kwargs["level"] = request.DATA["level"]
+        if "mac" in request.DATA:
+             kwargs["mac"] = request.DATA["mac"]
+
+        parts = pk.split("-")
+        subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
+        user = subscriber.vcpe.update_user(parts[1], **kwargs)
+        subscriber.save()
+        return Response(serialize_user(subscriber,user))
+
 # this may be moved into plus.py...
 
 class XOSViewSet(viewsets.ModelViewSet):
     @classmethod
     def detail_url(self, pattern, viewdict, name):
         return url(r'^' + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
+                   self.as_view(viewdict),
+                   name=self.base_name+"_"+name)
+
+    @classmethod
+    def list_url(self, pattern, viewdict, name):
+        return url(r'^' + self.method_name + r'/' + pattern,
                    self.as_view(viewdict),
                    name=self.base_name+"_"+name)
 
@@ -95,7 +176,10 @@ class XOSViewSet(viewsets.ModelViewSet):
 
         return patterns
 
-# the "new" API with many more REST endpoints.
+#------------------------------------------------------------------------------
+# The "new" API with many more REST endpoints.
+# This is for integration with with the subscriber GUI
+#------------------------------------------------------------------------------
 
 class CordSubscriberViewSet(XOSViewSet):
     base_name = "subscriber"
@@ -114,18 +198,25 @@ class CordSubscriberViewSet(XOSViewSet):
     def get_urlpatterns(self):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
-        patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_url_filter"}, "url_filter") )
+        patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/$", {"get": "get_service"}, "get_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/true/$", {"put": "enable_service"}, "enable_service") )
-        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-]+)/false/$", {"put": "disable_service"}, "disable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/$", {"get": "get_service"}, "get_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/true/$", {"put": "enable_service"}, "enable_service") )
+        patterns.append( self.detail_url("services/(?P<service>[a-zA-Z0-9\-_]+)/false/$", {"put": "disable_service"}, "disable_service") )
 
         patterns.append( self.detail_url("users/$", {"get": "get_users", "post": "create_user"}, "users") )
         patterns.append( self.detail_url("users/clearusers/$", {"get": "clear_users", "put": "clear_users", "post": "clear_users"}, "clearusers") )
         patterns.append( self.detail_url("users/newuser/$", {"put": "create_user", "post": "create_user"}, "newuser") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/$", {"delete": "delete_user"}, "user") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/$", {"get": "get_user_level"}, "user_level") )
-        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-]+)/$", {"put": "set_user_level"}, "set_user_level") )
+        patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_user_level"}, "set_user_level") )
+
+        patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
+
+        patterns.append( url("^rs/subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
+        patterns.append( url("^rs/subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
+
+        patterns.append( url("^rs/vbng_mapping/$", self.as_view({"get": "get_vbng_mapping"}), name="vbng_mapping") )
 
         return patterns
 
@@ -220,6 +311,53 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.save()
         return Response({service: getattr(subscriber, service_attr)})
 
+    def initdemo(self, request):
+        object_list = VOLTTenant.get_tenant_objects().all()
 
+        demo_subscribers = [o for o in object_list if o.is_demo_user]
+
+        if demo_subscribers:
+            return Response({"id": demo_subscribers[0].id})
+
+        voltTenant = VOLTTenant(service_specific_id=1234,
+                                vlan_id=1234,
+                                is_demo_user=True)
+        voltTenant.caller = User.objects.get(email="padmin@vicci.org")
+        voltTenant.save()
+
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="R")
+        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="R")
+        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG")
+        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="G")
+        voltTenant.vcpe.save()
+
+        return Response({"id": voltTenant.id})
+
+    def ssidlist(self, request):
+        object_list = VOLTTenant.get_tenant_objects().all()
+
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
+
+        return Response({"ssidmap": ssidmap})
+
+    def ssiddetail(self, pk=None, ssid=None):
+        object_list = VOLTTenant.get_tenant_objects().all()
+
+        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
+
+        if len(ssidmap)==0:
+            raise XOSNotFound("didn't find ssid %s" % str(ssid))
+
+        return Response( ssidmap[0] )
+
+    def get_vbng_mapping(self, request):
+        object_list = VBNGTenant.get_tenant_objects().all()
+
+        mappings = []
+        for vbng in object_list:
+            if vbng.mapped_ip and vbng.routeable_subnet:
+                mappings.append( {"private_ip": vbng.mapped_ip, "routeable_subnet": vbng.routeable_subnet} )
+
+        return Response( {"vbng_mapping": mappings} )
 
 

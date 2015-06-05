@@ -157,13 +157,26 @@ def GetInterfaces(slicename, node_ids, return_nat=False, return_private=False):
 
                 ip = socket.gethostbyname(ps_node.name.strip())
 
-                # search for a dedicated public IP address
+                # If the slice has a network that's labeled for hpc_client, then
+                # return that network.
+                found_labeled_network = False
                 for networkSliver in ps_sliver.networkslivers.all():
                     if (not networkSliver.ip):
                         continue
-                    template = networkSliver.network.template
-                    if (template.visibility=="public") and (template.translation=="none"):
+                    if (networkSliver.network.owner != ps_slice):
+                        continue
+                    if networkSliver.network.labels and ("hpc_client" in networkSliver.network.labels):
                         ip=networkSliver.ip
+                        found_labeled_network = True
+
+                if not found_labeled_network:
+                    # search for a dedicated public IP address
+                    for networkSliver in ps_sliver.networkslivers.all():
+                        if (not networkSliver.ip):
+                            continue
+                        template = networkSliver.network.template
+                        if (template.visibility=="public") and (template.translation=="none"):
+                            ip=networkSliver.ip
 
                 if return_nat:
                     ip = None
@@ -218,6 +231,7 @@ def GetConfiguration(name, slice_remap={}):
     slices = GetSlices({"name": slicename}, slice_remap=slice_remap)
     perhost = {}
     allinterfaces = {}
+    hostprivmap = {}
     hostipmap = {}
     hostnatmap = {}
     nodes = []

@@ -68,7 +68,8 @@ class VOLTTenant(Tenant):
 
     KIND = "vOLT"
 
-    default_attributes = {"vlan_id": None, }
+    default_attributes = {"vlan_id": None,
+                          "is_demo_user": False }
 
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
@@ -128,6 +129,14 @@ class VOLTTenant(Tenant):
         if (value != self.get_attribute("creator_id", None)):
             self.cached_creator=None
         self.set_attribute("creator_id", value)
+
+    @property
+    def is_demo_user(self):
+        return self.get_attribute("is_demo_user", self.default_attributes["is_demo_user"])
+
+    @is_demo_user.setter
+    def is_demo_user(self, value):
+        self.set_attribute("is_demo_user", value)
 
     def manage_vcpe(self):
         # Each VOLT object owns exactly one VCPE object
@@ -215,7 +224,9 @@ class VCPETenant(Tenant):
                        "nat_ip",
                        "lan_ip",
                        "wan_ip",
-                       "private_ip")
+                       "private_ip",
+                       "hpc_client_ip",
+                       "wan_mac")
 
     default_attributes = {"firewall_enable": False,
                           "firewall_rules": "accept all anywhere anywhere",
@@ -234,7 +245,8 @@ class VCPETenant(Tenant):
 
     @property
     def image(self):
-        LOOK_FOR_IMAGES=["Ubuntu 14.04 LTS",    # portal
+        LOOK_FOR_IMAGES=["ubuntu-vcpe2",        # ONOS demo machine -- preferred vcpe image
+                         "Ubuntu 14.04 LTS",    # portal
                          "Ubuntu-14.04-LTS",    # ONOS demo machine
                         ]
         for image_name in LOOK_FOR_IMAGES:
@@ -376,6 +388,17 @@ class VCPETenant(Tenant):
     def bbs_account(self, value):
         return self.set_attribute("bbs_account", value)
 
+    @property
+    def ssh_command(self):
+        if self.sliver:
+            return self.sliver.get_ssh_command()
+        else:
+            return "no-sliver"
+
+    @ssh_command.setter
+    def ssh_command(self, value):
+        pass
+
     def find_user(self, uid):
         uid = int(uid)
         for user in self.users:
@@ -393,10 +416,17 @@ class VCPETenant(Tenant):
                 for arg in kwargs.keys():
                     user[arg] = kwargs[arg]
                     self.users = users
-                return
+                return user
         raise ValueError("User %d not found" % uid)
 
     def create_user(self, **kwargs):
+        if "name" not in kwargs:
+            raise XOSMissingField("The name field is required")
+
+        for user in self.users:
+            if kwargs["name"] == user["name"]:
+                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
+
         uids = [x["id"] for x in self.users]
         if uids:
             uid = max(uids)+1
@@ -447,6 +477,8 @@ class VCPETenant(Tenant):
                 addresses["private"] = ns.ip
             elif "nat" in ns.network.name.lower():
                 addresses["nat"] = ns.ip
+            elif "hpc_client" in ns.network.name.lower():
+                addresses["hpc_client"] = ns.ip
         return addresses
 
     @property
@@ -462,8 +494,24 @@ class VCPETenant(Tenant):
         return self.addresses.get("wan",None)
 
     @property
+    def wan_mac(self):
+        ip = self.wan_ip
+        if not ip:
+           return None
+        try:
+           (a,b,c,d) = ip.split('.')
+           wan_mac = "02:42:%2x:%2x:%2x:%2x" % (int(a), int(b), int(c), int(d))
+        except:
+           wan_mac = "Exception"
+        return wan_mac
+
+    @property
     def private_ip(self):
         return self.addresses.get("private",None)
+
+    @property
+    def hpc_client_ip(self):
+        return self.addresses.get("hpc_client",None)
 
     def pick_node(self):
         nodes = list(Node.objects.all())
@@ -591,7 +639,8 @@ class VBNGTenant(Tenant):
 
     KIND = "vBNG"
 
-    default_attributes = {"routeable_subnet": ""}
+    default_attributes = {"routeable_subnet": "",
+                          "mapped_ip": ""}
 
     @property
     def routeable_subnet(self):
@@ -600,3 +649,11 @@ class VBNGTenant(Tenant):
     @routeable_subnet.setter
     def routeable_subnet(self, value):
         self.set_attribute("routeable_subnet", value)
+
+    @property
+    def mapped_ip(self):
+        return self.get_attribute("mapped_ip", self.default_attributes["mapped_ip"])
+
+    @mapped_ip.setter
+    def mapped_ip(self, value):
+        self.set_attribute("mapped_ip", value)
