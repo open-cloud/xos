@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from cord.models import VOLTTenant
+from cord.models import VOLTTenant, VBNGTenant
 from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin
 from django.shortcuts import get_object_or_404
@@ -214,6 +214,8 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( url("^rs/subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
         patterns.append( url("^rs/subidlookup/$", self.as_view({"get": "ssidlist"}), name="ssidlist") )
 
+        patterns.append( url("^rs/vbng_mapping/$", self.as_view({"get": "get_vbng_mapping"}), name="vbng_mapping") )
+
         return patterns
 
     def list(self, request):
@@ -345,5 +347,15 @@ class CordSubscriberViewSet(XOSViewSet):
             raise XOSNotFound("didn't find ssid %s" % str(ssid))
 
         return Response( ssidmap[0] )
+
+    def get_vbng_mapping(self, request):
+        object_list = VBNGTenant.get_tenant_objects().all()
+
+        mappings = []
+        for vbng in object_list:
+            if vbng.mapped_ip and vbng.routeable_subnet:
+                mappings.append( {"private_ip": vbng.mapped_ip, "routeable_subnet": vbng.routeable_subnet} )
+
+        return Response( {"vbng_mapping": mappings} )
 
 
