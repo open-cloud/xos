@@ -54,7 +54,9 @@ class BBS_Failure(APIException):
 
 
 class BBS:
-    level_map = {"PG_13": "PG-13",
+    level_map = {"PG_13": "PG13",
+                 "NONE": "OFF",
+                 "ALL": "NONE",
                  None: "NONE"}
 
     def __init__(self, username, password):
@@ -229,6 +231,15 @@ class BBS:
         for device in self.settings["devices"]:
             print "  device", device["name"], "user", device["username"], "rating", device["settings"]["rating"], "mac", device["mac_address"]
 
+def dump():
+    if len(sys.argv)!=3:
+        print "syntax: broadbandshield.py <email> <password>"
+        sys.exit(-1)
+
+    bbs = BBS(sys.argv[1], sys.argv[2])
+
+    bbs.dump()
+
 def self_test():
     if len(sys.argv)!=3:
         print "syntax: broadbandshield.py <email> <password>"
@@ -345,7 +356,8 @@ def self_test():
     #bbs.add_device(name="tom's iphone", mac="010203040506", type="tablet", username="tom")
 
 def main():
-    self_test()
+    dump()
+    #self_test()
 
 if __name__ == "__main__":
     main()
