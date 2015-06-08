@@ -311,8 +311,23 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.save()
         return Response({service: getattr(subscriber, service_attr)})
 
+    def setup_demo_vcpe(self, voltTenant):
+        # nuke the users and start over
+        voltTenant.vcpe.users = []
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="PG_13")
+        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="PG_13")
+        voltTenant.vcpe.save()
+
     def initdemo(self, request):
         object_list = VOLTTenant.get_tenant_objects().all()
+
+        # reset the parental controls in any existing demo vCPEs
+        for o in object_list:
+            if str(o.service_specific_id) in ["0", "1"]:
+                if o.vcpe is not None:
+                    self.setup_demo_vcpe(o)
 
         demo_subscribers = [o for o in object_list if o.is_demo_user]
 
@@ -325,25 +340,21 @@ class CordSubscriberViewSet(XOSViewSet):
         voltTenant.caller = User.objects.get(email="padmin@vicci.org")
         voltTenant.save()
 
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="R")
-        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="R")
-        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG")
-        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="G")
-        voltTenant.vcpe.save()
+        self.setup_demo_vcpe(voltTenant)
 
         return Response({"id": voltTenant.id})
 
     def ssidlist(self, request):
         object_list = VOLTTenant.get_tenant_objects().all()
 
-        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
+        ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
 
         return Response({"ssidmap": ssidmap})
 
     def ssiddetail(self, pk=None, ssid=None):
         object_list = VOLTTenant.get_tenant_objects().all()
 
-        ssidmap = [ {"service_specific_id:": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
+        ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
 
         if len(ssidmap)==0:
             raise XOSNotFound("didn't find ssid %s" % str(ssid))
