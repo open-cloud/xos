@@ -6,9 +6,10 @@ ip6tables -L > /dev/null
 docker inspect vcpe > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
-	docker run -d --name=vcpe --privileged=true --net=none -v /etc/dnsmasq.d/servers.conf:/etc/dnsmasq.d/servers.conf andybavier/docker-vcpe
+    docker pull andybavier/docker-vcpe
+    docker run -d --name=vcpe --privileged=true --net=none -v /etc/dnsmasq.d/servers.conf:/etc/dnsmasq.d/servers.conf andybavier/docker-vcpe
 else
-	docker start vcpe
+    docker start vcpe
 fi
 
 # Set up networking via pipework
