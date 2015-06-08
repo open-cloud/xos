@@ -197,6 +197,9 @@ class VCPEService(Service):
         proxy = True
 
     def allocate_bbs_account(self):
+        # XXX fixme XXX
+        return "bbs01@onlab.us"
+
         vcpes = VCPETenant.get_tenant_objects().all()
         bbs_accounts = [vcpe.bbs_account for vcpe in vcpes]
 
