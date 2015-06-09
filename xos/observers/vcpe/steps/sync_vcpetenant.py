@@ -2,6 +2,7 @@ import os
 import socket
 import sys
 import base64
+import time
 from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
@@ -110,7 +111,9 @@ class SyncVCPETenant(SyncStep):
                  fields[attribute_name] = getattr(o, attribute_name)
 
         fields.update(self.get_extra_attributes(o))
+        tStart = time.time()
         run_template_ssh(self.template_name, fields)
+        logger.info("playbook execution time %d" % int(time.time()-tStart))
 
         if o.url_filter_enable:
             if (str(o.service_specific_id) != "SYNCME"):
@@ -118,8 +121,10 @@ class SyncVCPETenant(SyncStep):
                 # Also fix the spot in cord/models.py
                 logger.info("skipping sync of URL filter for SSID %s" % str(o.service_specific_id))
             else:
+                tStart = time.time()
                 bbs = BBS(o.bbs_account, "123")
                 bbs.sync(o.url_filter_level, o.users)
+                logger.info("bbs update tiem %d" % int(time.time()-tStart))
 
         o.save()
 
