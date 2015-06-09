@@ -367,7 +367,7 @@ class CordSubscriberViewSet(XOSViewSet):
         mappings = []
         for vbng in object_list:
             if vbng.mapped_ip and vbng.routeable_subnet:
-                mappings.append( {"private_ip": vbng.mapped_ip, "routeable_subnet": vbng.routeable_subnet} )
+                mappings.append( {"private_ip": vbng.mapped_ip, "routeable_subnet": vbng.routeable_subnet, "mac": vbng.mapped_mac, "hostname": vbng.mapped_hostname} )
 
         return Response( {"vbng_mapping": mappings} )
 
