@@ -200,6 +200,7 @@ class CordSubscriberViewSet(XOSViewSet):
     @classmethod
     def get_urlpatterns(self):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
+        patterns.append( self.detail_url("vcpe_synced/$", {"get": "get_vcpe_synced"}, "vcpe_synced") )
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
@@ -229,6 +230,10 @@ class CordSubscriberViewSet(XOSViewSet):
         serializer = self.get_serializer(object_list, many=True)
 
         return Response({"subscribers": serializer.data})
+
+    def get_vcpe_synced(self, request, pk=None):
+        subscriber = self.get_object()
+        return Response({"vcpe_synced": subscriber.vcpe_synced})
 
     def get_url_filter(self, request, pk=None):
         subscriber = self.get_object()
