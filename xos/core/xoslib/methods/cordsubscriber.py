@@ -51,6 +51,8 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
 
         wan_mac = ReadOnlyField()
 
+        vcpe_synced = serializers.BooleanField()
+
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         class Meta:
@@ -62,6 +64,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',
                       'ssh_command',
+                      'vcpe_synced',
                       'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac')
 
 
@@ -314,7 +317,7 @@ class CordSubscriberViewSet(XOSViewSet):
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
         voltTenant.vcpe.users = []
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203030506", level="PG_13")
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
         voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
         voltTenant.vcpe.create_user(name="Jack's iPhone", mac="A85B780F2651", level="PG_13")
         voltTenant.vcpe.create_user(name="Jill's iPad",   mac="010203040509", level="PG_13")

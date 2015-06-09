@@ -522,6 +522,14 @@ class VCPETenant(Tenant):
     def hpc_client_ip(self):
         return self.addresses.get("hpc_client",None)
 
+    @property
+    def is_synced(self):
+        return (self.enacted is not None) and (self.enacted >= self.updated)
+
+    @is_synced.setter
+    def is_synced(self, value):
+        pass
+
     def pick_node(self):
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
