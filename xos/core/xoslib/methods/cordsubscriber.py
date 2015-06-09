@@ -314,10 +314,10 @@ class CordSubscriberViewSet(XOSViewSet):
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
         voltTenant.vcpe.users = []
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="PG_13")
-        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="PG_13")
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203030506", level="PG_13")
+        voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="A85B780F2651", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="010203040509", level="PG_13")
         voltTenant.vcpe.save()
 
     def initdemo(self, request):
