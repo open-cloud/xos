@@ -40,7 +40,7 @@ class SyncVBNGTenant(SyncStep):
         logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
 
-    def get_private_ip(self, o):
+    def get_private_interface(self, o):
         vcpes = VCPETenant.get_tenant_objects().all()
         vcpes = [x for x in vcpes if (x.vbng is not None) and (x.vbng.id == o.id)]
         if not vcpes:
@@ -54,30 +54,31 @@ class SyncVBNGTenant(SyncStep):
         if not sliver:
             raise Exception("No sliver associated with vBNG %s" % str(o.id))
 
-        external_ns = None
-        for ns in sliver.networkslivers.all():
-            if (ns.ip) and ("WAN" in ns.network.template.name):
-                external_ns = ns
+        if not vcpe.wan_ip:
+            self.defer_sync(o, "does not have a WAN IP yet")
 
-        if not external_ns:
-            self.defer_sync(o, "WAN network is not filled in yet")
-            return
+        if not vcpe.wan_mac:
+            # this should never happen; WAN MAC is computed from WAN IP
+            self.defer_sync(o, "does not have a WAN MAC yet")
 
-        return external_ns.ip
+        return (vcpe.wan_ip, vcpe.wan_mac, vcpe.sliver.node.name)
 
     def sync_record(self, o):
         logger.info("sync'ing VBNGTenant %s" % str(o))
 
         if not o.routeable_subnet:
-            private_ip = self.get_private_ip(o)
-            logger.info("contacting vBNG service to request mapping for private ip %s" % private_ip)
+            (private_ip, private_mac, private_hostname) = self.get_private_interface(o)
+            logger.info("contacting vBNG service to request mapping for private ip %s mac %s host %s" % (private_ip, private_mac, private_hostname) )
 
-            r = requests.post(VBNG_API + "%s" % private_ip, )
+            r = requests.post(VBNG_API + "%s" % (private_ip,) )
+            #r = requests.post(VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
             o.routeable_subnet = r.text
             o.mapped_ip = private_ip
+            c.mapped_mac = private_mac
+            c.mapped_hostname = private_hostname
 
         o.save()
 
