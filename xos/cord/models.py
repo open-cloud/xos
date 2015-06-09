@@ -236,7 +236,8 @@ class VCPETenant(Tenant):
                           "cdn_enable": False,
                           "sliver_id": None,
                           "users": [],
-                          "bbs_account": None}
+                          "bbs_account": None,
+                          "last_ansible_hash": None}
 
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
@@ -387,6 +388,14 @@ class VCPETenant(Tenant):
     @bbs_account.setter
     def bbs_account(self, value):
         return self.set_attribute("bbs_account", value)
+
+    @property
+    def last_ansible_hash(self):
+        return self.get_attribute("last_ansible_hash", self.default_attributes["last_ansible_hash"])
+
+    @last_ansible_hash.setter
+    def last_ansible_hash(self, value):
+        return self.set_attribute("last_ansible_hash", value)
 
     @property
     def ssh_command(self):
