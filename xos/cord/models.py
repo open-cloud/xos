@@ -203,7 +203,7 @@ class VCPEService(Service):
         # There's a bit of a race here; some other user could be trying to
         # allocate a bbs_account at the same time we are.
 
-        for i in range(1,21):
+        for i in range(2,21):
              account_name = "bbs%02d@onlab.us" % i
              if (account_name not in bbs_accounts):
                  return account_name
@@ -595,7 +595,10 @@ class VCPETenant(Tenant):
             if not self.bbs_account:
                 # make sure we use the proxied VCPEService object, not the generic Service object
                 vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
-                self.bbs_account = vcpe_service.allocate_bbs_account()
+                if self.service_specific_id=="SYNCME":
+                    self.bbs_account = "bbs01@onlab.us"
+                else:
+                    self.bbs_account = vcpe_service.allocate_bbs_account()
                 super(VCPETenant, self).save()
         else:
             if self.bbs_account:
