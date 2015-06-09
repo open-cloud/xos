@@ -197,9 +197,6 @@ class VCPEService(Service):
         proxy = True
 
     def allocate_bbs_account(self):
-        # XXX fixme XXX
-        return "bbs01@onlab.us"
-
         vcpes = VCPETenant.get_tenant_objects().all()
         bbs_accounts = [vcpe.bbs_account for vcpe in vcpes]
 
@@ -643,7 +640,9 @@ class VBNGTenant(Tenant):
     KIND = "vBNG"
 
     default_attributes = {"routeable_subnet": "",
-                          "mapped_ip": ""}
+                          "mapped_ip": "",
+                          "mapped_mac": "",
+                          "mapped_hostname": ""}
 
     @property
     def routeable_subnet(self):
@@ -660,3 +659,19 @@ class VBNGTenant(Tenant):
     @mapped_ip.setter
     def mapped_ip(self, value):
         self.set_attribute("mapped_ip", value)
+
+    @property
+    def mapped_mac(self):
+        return self.get_attribute("mapped_mac", self.default_attributes["mapped_mac"])
+
+    @mapped_mac.setter
+    def mapped_mac(self, value):
+        self.set_attribute("mapped_mac", value)
+
+    @property
+    def mapped_hostname(self):
+        return self.get_attribute("mapped_hostname", self.default_attributes["mapped_hostname"])
+
+    @mapped_hostname.setter
+    def mapped_hostname(self, value):
+        self.set_attribute("mapped_hostname", value)
