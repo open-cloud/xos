@@ -113,8 +113,13 @@ class SyncVCPETenant(SyncStep):
         run_template_ssh(self.template_name, fields)
 
         if o.url_filter_enable:
-            bbs = BBS(o.bbs_account, "123")
-            bbs.sync(o.url_filter_level, o.users)
+            if (str(o.service_specific_id) != "SYNCME"):
+                # XXX FIXME
+                # Also fix the spot in cord/models.py
+                logger.info("skipping sync of URL filter for SSID %s" % str(o.service_specific_id))
+            else:
+                bbs = BBS(o.bbs_account, "123")
+                bbs.sync(o.url_filter_level, o.users)
 
         o.save()
 
