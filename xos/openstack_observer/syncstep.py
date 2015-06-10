@@ -150,7 +150,7 @@ class SyncStep(object):
                     try:
                         error = self.error_map.map(str_e)
                     except:
-                        error = '2 - %s'%str_e
+                        error = '%s'%str_e
 
                     if isinstance(e, InnocuousException) and not force_error:
                         o.backend_status = '1 - %s'%error

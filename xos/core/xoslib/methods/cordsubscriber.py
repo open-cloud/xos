@@ -51,6 +51,8 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
 
         wan_mac = ReadOnlyField()
 
+        vcpe_synced = serializers.BooleanField()
+
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
 
         class Meta:
@@ -62,6 +64,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',
                       'ssh_command',
+                      'vcpe_synced',
                       'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac')
 
 
@@ -197,6 +200,7 @@ class CordSubscriberViewSet(XOSViewSet):
     @classmethod
     def get_urlpatterns(self):
         patterns = super(CordSubscriberViewSet, self).get_urlpatterns()
+        patterns.append( self.detail_url("vcpe_synced/$", {"get": "get_vcpe_synced"}, "vcpe_synced") )
         patterns.append( self.detail_url("url_filter/$", {"get": "get_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_url_filter"}, "url_filter") )
         patterns.append( self.detail_url("services/$", {"get": "get_services"}, "services") )
@@ -226,6 +230,10 @@ class CordSubscriberViewSet(XOSViewSet):
         serializer = self.get_serializer(object_list, many=True)
 
         return Response({"subscribers": serializer.data})
+
+    def get_vcpe_synced(self, request, pk=None):
+        subscriber = self.get_object()
+        return Response({"vcpe_synced": subscriber.vcpe_synced})
 
     def get_url_filter(self, request, pk=None):
         subscriber = self.get_object()
@@ -314,10 +322,10 @@ class CordSubscriberViewSet(XOSViewSet):
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
         voltTenant.vcpe.users = []
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="01020303040506", level="PG_13")
-        voltTenant.vcpe.create_user(name="Dad's PC",      mac="01020304040507", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="01020304050508", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="01020304050609", level="PG_13")
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
+        voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="A85B780F2651", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="010203040509", level="PG_13")
         voltTenant.vcpe.save()
 
     def initdemo(self, request):
