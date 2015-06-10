@@ -246,7 +246,7 @@ class VCPETenant(Tenant):
 
     @property
     def image(self):
-        LOOK_FOR_IMAGES=["ubuntu-vcpe2",        # ONOS demo machine -- preferred vcpe image
+        LOOK_FOR_IMAGES=["ubuntu-vcpe3",        # ONOS demo machine -- preferred vcpe image
                          "Ubuntu 14.04 LTS",    # portal
                          "Ubuntu-14.04-LTS",    # ONOS demo machine
                         ]

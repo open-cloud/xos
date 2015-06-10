@@ -155,6 +155,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f.write("[ssh_connection]\n")
     f.write('ssh_args = -o "%s" -o StrictHostKeyChecking=no\n' % proxy_command)
     f.write('scp_if_ssh = True\n')
+    f.write('pipelining = True\n')
     f.close()
 
     f = open(hosts_pathname, "w")
