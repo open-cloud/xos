@@ -70,9 +70,26 @@ class SyncVCPETenant(SyncStep):
 
         volts = [x for x in VOLTTenant.get_tenant_objects() if (x.vcpe is not None) and (x.vcpe.id==o.id)]
         vlan_ids = [x.vlan_id for x in volts]
+
+        bbs_addrs = []
+        bbs_slices = Slice.objects.filter(name="mysite_bbs")
+        if bbs_slices:
+            bbs_slice = bbs_slices[0]
+            for bbs_sliver in bbs_slice.slivers.all():
+                for ns in bbs_sliver.networkslicers.all():
+                    if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
+                        bbs_addrs.append(ns.ip)
+
+        if not bbs_addrs:
+            bbs_addrs = ["198.105.255.10",
+                         "198.105.255.11",
+                         "198.105.255.12",
+                         "198.105.255.13"]
+
         return {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
-                "cdn_prefixes": cdn_prefixes}
+                "cdn_prefixes": cdn_prefixes,
+                "bbs_addrs": bbs_addrs}
 
     def get_sliver(self, o):
         # We need to know what slivers is associated with the object.
