@@ -20,7 +20,7 @@ class ServiceGridView(TemplateView):
         head_template = self.head_template
         tail_template = self.tail_template
 
-        html = '<table><tr>'
+        html = '<table class="service-grid"><tr>'
 
         icons=[]
         for service in Service.objects.all():
@@ -51,8 +51,8 @@ class ServiceGridView(TemplateView):
             if (i%4) == 0:
                 html = html + '</tr><tr>'
 
-            html = html + '<td width=96 height=128 valign=top align=center><a href="%s"><img src="%s" height=64 width=64></img></a>' % (view_url, image_url)
-            html = html + '<p><a href="%s">%s</a></p></td>' % (view_url, service_name)
+            html = html + '<td width=96 height=128 valign=top align=center><a class="service-grid-icon" href="%s"><img src="%s" height=64 width=64></img></a>' % (view_url, image_url)
+            html = html + '<p><a class="service-grid-icon-link" href="%s">%s</a></p></td>' % (view_url, service_name)
             i=i+1
 
         html = html + '</tr></table>'
