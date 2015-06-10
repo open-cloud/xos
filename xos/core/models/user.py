@@ -117,6 +117,8 @@ class User(AbstractBaseUser, PlModelMixIn):
     is_registering = models.BooleanField(default=False)
     is_appuser = models.BooleanField(default=False)
 
+    login_page = StrippedCharField(help_text="send this user to a specific page on login", max_length=200, null=True, blank=True)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     enacted = models.DateTimeField(null=True, default=None)
