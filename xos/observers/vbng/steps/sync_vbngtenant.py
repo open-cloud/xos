@@ -77,8 +77,8 @@ class SyncVBNGTenant(SyncStep):
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
             o.routeable_subnet = r.text
             o.mapped_ip = private_ip
-            c.mapped_mac = private_mac
-            c.mapped_hostname = private_hostname
+            o.mapped_mac = private_mac
+            o.mapped_hostname = private_hostname
 
         o.save()
 

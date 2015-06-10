@@ -1,5 +1,6 @@
 ---
 - hosts: {{ sliver_name }}
+  gather_facts: False
   connection: ssh
   user: ubuntu
   sudo: yes
@@ -28,6 +29,7 @@
       wan_mac: {{ wan_mac }}
 
   tasks:
+{% if full_setup %}
   - name: Docker repository
     copy: src=/opt/xos/observers/vcpe/files/docker.list
       dest=/etc/apt/sources.list.d/docker.list
@@ -54,14 +56,17 @@
 
   - name: make sure /etc/dnsmasq.d exists
     file: path=/etc/dnsmasq.d state=directory owner=root group=root
-   
+{% endif %}
+
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart vcpe
 
-  - name: networking info
-    template: src=/opt/xos/observers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
+# These are samples, not necessary for correct function of demo
+
+#  - name: networking info
+#    template: src=/opt/xos/observers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
 
   - name: firewall info
     template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root

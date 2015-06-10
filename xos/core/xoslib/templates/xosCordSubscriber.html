@@ -17,6 +17,7 @@
   <h3>vCPE</h3>
   <table class="xos-detail-table cord-subscriber-table">
   <tr><td class="xos-label-cell">Id:</td><td><%= model.attributes.vcpe_id %></td></tr>
+  <tr><td class="xos-label-cell">Synced:</td><td><% if (model.attributes.vcpe_synced) { print("Yes"); } else { print("No"); } %></td></tr>
   <tr><td class="xos-label-cell">Image:</td><td><%= model.attributes.image_name %></td></tr>
   <tr><td class="xos-label-cell">Sliver Id:</td><td><%= model.attributes.sliver %></td></tr>
   <tr><td class="xos-label-cell">Firewall:</td><td><input type="checkbox" name="firewall_enable" <% if (model.attributes.firewall_enable) print("checked"); %>>Enable<br>
