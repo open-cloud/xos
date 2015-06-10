@@ -1,13 +1,155 @@
+/* login page background image */
 .login {
     background-image: url('cord_bg.jpg');
     background-size: 100%;
     background-repeat: no-repeat;
 }
 
+/* login page logo */
 .login #content-main h1 {
     background: url("cord_logo1.jpg") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
-    height: 55px;  
-    background-repeat: no-repeat; 
+    height: 55px;
+    background-repeat: no-repeat;
     font-size: 0px;
     padding-top: 70px;
 }
+
+/* content page logo */
+.logo {
+   display: block;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
+   background: url('cord_logo1.jpg') no-repeat;
+   width: 167px;
+   height: 55px;
+   padding-left: 167px;
+}
+
+/* content page header, adjust the margin to match logo */
+.header{
+    margin-top: -90px !important;
+}
+
+/* hide the quick search box */
+.nav-quick-search {
+    display: None;
+}
+
+/* -----------------------------------------
+   Service Grid Page
+   -----------------------------------------
+*/
+
+.service-grid tr td {
+   width: 132px;
+}
+
+.service-grid-icon img {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 10px;
+}
+
+/* Service Icon Screen */
+.service-grid-icon-link {
+    font-size: 125%;
+}
+
+/* -----------------------------------------
+   Font Sizes
+   -----------------------------------------
+*/
+
+/* the welcome line at the top of the screen */
+#user-tools {
+    font-size: 125%;
+}
+
+/* suit navigation tabs */
+.nav-tabs-suit li a {
+    font-size: 125%;
+}
+.nav-tabs-suit li.active a:hover,.nav-tabs-suit li a:hover{
+    font-size: 125%;
+}
+
+/* bread crumb */
+.breadcrumb {
+    font-size: 125%;
+}
+
+/* tablularInline */
+.inline-related {
+    font-size: 125%;
+}
+.inline-related select {
+    font-size: 125%;
+    height: 40px;
+}
+.table .add-row a {
+    font-size: 125%;
+}
+
+/* list view */
+#result_list th, #result_list td {
+    font-size: 125%;
+}
+
+/* application list of admins */
+.applist th, .applist td, .applist caption a {
+    font-size: 125%;
+}
+
+/* ModelAdmin stuff */
+.form-row label, .form-row span, .form-row input, .form-row textarea {
+   font-size: 125%;
+}
+
+.form-row .linked-select {
+   font-size: 125%;
+   height: 40px;
+}
+.form-row .linked-select-link {
+   font-size: 125%;
+}
+
+/* ModelAdmin help text */
+.form-horizontal .control-group .help-inline {
+   font-size: 125%;
+}
+
+/* the save buttons and tools */
+.save-box button, .save-box .btn-info, .save-box .deletelink {
+    font-size: 125%;
+}
+.italic-title {
+    font-size: 125%;
+}
+.menu-box li {
+    font-size: 125%;
+}
+
+/* left nav buttons */
+.left-nav>ul>li>a {
+    font-size: 125%;
+}
+.left-nav>ul>li>a:hover {
+    font-size: 125%;
+}
+
+/* bottom of page tools */
+.tools {
+    font-size: 125%;
+}
+
+/* bottom of page branding */
+.branding {
+    font-size: 125%;
+}
+
+
+
+
+
+
+
