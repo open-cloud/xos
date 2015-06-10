@@ -1,0 +1,13 @@
+.login {
+    background-image: url('cord_bg.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.login #content-main h1 {
+    background: url("cord_logo1.jpg") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
+    height: 55px;  
+    background-repeat: no-repeat; 
+    font-size: 0px;
+    padding-top: 70px;
+}
