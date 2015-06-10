@@ -70,8 +70,9 @@ class SyncVBNGTenant(SyncStep):
             (private_ip, private_mac, private_hostname) = self.get_private_interface(o)
             logger.info("contacting vBNG service to request mapping for private ip %s mac %s host %s" % (private_ip, private_mac, private_hostname) )
 
-            r = requests.post(VBNG_API + "%s" % (private_ip,) )
-            #r = requests.post(VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
+            #r = requests.post(VBNG_API + "%s" % (private_ip,) )
+            logger.info( VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
+            r = requests.post(VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
