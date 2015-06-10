@@ -53,10 +53,10 @@
     get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
        dest=/usr/local/bin/pipework
        mode=0755
+{% endif %}
 
   - name: make sure /etc/dnsmasq.d exists
     file: path=/etc/dnsmasq.d state=directory owner=root group=root
-{% endif %}
 
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
