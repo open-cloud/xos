@@ -60,14 +60,14 @@
   - name: Disable resolvconf updates (to avoid overwriting /etc/resolv.conf on host)
     shell: service resolvconf disable-updates
 
+  - name: vCPE upstart
+    copy: src=/opt/xos/observers/vcpe/files/vcpe.conf dest=/etc/init/vcpe.conf
+{% endif %}
+
   - name: vCPE startup script
     template: src=/opt/xos/observers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe.sh mode=0755
     notify:
     - restart vcpe
-
-  - name: vCPE upstart
-    copy: src=/opt/xos/observers/vcpe/files/vcpe.conf dest=/etc/init/vcpe.conf
-{% endif %}
 
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
