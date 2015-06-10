@@ -1,4 +1,12 @@
 from view_common import *
+from django.http import HttpResponseRedirect
+
+class LoggedInView(TemplateView):
+    def get(self, request, name="root", *args, **kwargs):
+        if request.user.login_page:
+             return HttpResponseRedirect(request.user.login_page)
+        else:
+             return HttpResponseRedirect("/admin/")
 
 class DashboardDynamicView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}

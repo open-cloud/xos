@@ -16,7 +16,8 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-LOGIN_REDIRECT_URL = '/admin/core/user'
+#LOGIN_REDIRECT_URL = '/admin/core/user'
+LOGIN_REDIRECT_URL = '/admin/loggedin/'
 
 MANAGERS = ADMINS
 

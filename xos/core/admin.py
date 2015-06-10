@@ -1305,7 +1305,7 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
     list_filter = ('site',)
     inlines = [SlicePrivilegeInline,SitePrivilegeInline]
     admin_inlines = [ControllerUserInline]
-    fieldListLoginDetails = ['backend_status_text', 'email', 'site','password','is_active','is_readonly','is_admin','is_appuser', 'public_key', 'profile']
+    fieldListLoginDetails = ['backend_status_text', 'email', 'site','password','is_active','is_readonly','is_admin','is_appuser', 'public_key', 'login_page', 'profile']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
 
     fieldsets = (
