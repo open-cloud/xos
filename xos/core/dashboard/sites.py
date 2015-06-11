@@ -28,7 +28,7 @@ class AdminMixin(object):
                url(r'^$', self.admin_view(DashboardDynamicView.as_view()),
                     name="index"),
                url(r'^loggedin/$', self.admin_view(LoggedInView.as_view()),
-                    name="index"),
+                    name="loggedin"),
                url(r'^test/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="test"),
                url(r'^sliceinteractions/(?P<name>\w+)/$', self.admin_view(DashboardSliceInteractions.as_view()),
