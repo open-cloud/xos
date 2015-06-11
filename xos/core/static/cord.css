@@ -147,7 +147,17 @@
     font-size: 125%;
 }
 
-
+/* login screen */
+.login #content-main form input[type=text] {
+    font-size: 125%;
+}
+.login .btn {
+    font-size: 125%;
+}
+.login #requestAccountLink {
+    /* trying to supersize this makes it wrap */
+    font-size: 100%;
+}
 
 
 
