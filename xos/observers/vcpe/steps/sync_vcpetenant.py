@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
-from core.models import Service
+from core.models import Service, Slice
 from cord.models import VCPEService, VCPETenant, VOLTTenant
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
@@ -76,7 +76,7 @@ class SyncVCPETenant(SyncStep):
         if bbs_slices:
             bbs_slice = bbs_slices[0]
             for bbs_sliver in bbs_slice.slivers.all():
-                for ns in bbs_sliver.networkslicers.all():
+                for ns in bbs_sliver.networkslivers.all():
                     if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
                         bbs_addrs.append(ns.ip)
 
@@ -141,7 +141,7 @@ class SyncVCPETenant(SyncStep):
             logger.info("playbook execution time %d" % int(time.time()-tStart))
 
         if o.url_filter_enable:
-            if (str(o.service_specific_id) != "SYNCME"):
+            if False: # (str(o.service_specific_id) != "SYNCME"):
                 # XXX FIXME
                 # Also fix the spot in cord/models.py
                 logger.info("skipping sync of URL filter for SSID %s" % str(o.service_specific_id))
@@ -149,6 +149,13 @@ class SyncVCPETenant(SyncStep):
                 tStart = time.time()
                 bbs = BBS(o.bbs_account, "123")
                 bbs.sync(o.url_filter_level, o.users)
+
+                if o.hpc_client_ip:
+                    logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
+                    bbs.associate(o.hpc_client_ip)
+                else:
+                    logger.info("no hpc_client_ip to associate")
+
                 logger.info("bbs update tiem %d" % int(time.time()-tStart))
 
         o.last_ansible_hash = ansible_hash
