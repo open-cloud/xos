@@ -11,3 +11,4 @@ cd /opt/xerocole/answerx
 /opt/xerocole/answerx/startStop start answerx
 cd /opt/xerocole/namecontrols
 nohup /opt/xerocole/namecontrols/broadbandshield &
+nohup socat TCP-LISTEN:80,bind=0.0.0.0,fork TCP4:127.0.0.1:8018 &  
