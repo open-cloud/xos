@@ -62,7 +62,17 @@ class BBS:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.api = "https://www.broadbandshield.com/api"
+
+        # XXX not tested on port 80
+        #self.bbs_hostname = "www.broadbandshield.com"
+        #self.bbs_port = 80
+
+        self.bbs_hostname = "cordcompute01.onlab.us"
+        self.bbs_port = 8018
+
+        self.api = "http://%s:%d/api" % (self.bbs_hostname, self.bbs_port)
+        self.nic_update = "http://%s:%d/nic/update" % (self.bbs_hostname, self.bbs_port)
+
         self.session = None
         self.settings = None
 
@@ -231,21 +241,26 @@ class BBS:
         for device in self.settings["devices"]:
             print "  device", device["name"], "user", device["username"], "rating", device["settings"]["rating"], "mac", device["mac_address"]
 
+    def associate(self, ip):
+        bbs_hostname = "cordcompute01.onlab.us"
+        r = requests.get(self.nic_update, params={"hostname": "onlab.us"}, headers={"X-Forwarded-For": ip}, auth=requests.auth.HTTPBasicAuth(self.username,self.password))
+        if (r.status_code != 200):
+            raise BBS_Failure("Failed to associate account with ip (%d)" % r.status_code)
+
 def dump():
-    if len(sys.argv)!=3:
-        print "syntax: broadbandshield.py <email> <password>"
-        sys.exit(-1)
-
-    bbs = BBS(sys.argv[1], sys.argv[2])
-
+    bbs = BBS(sys.argv[2], sys.argv[3])
     bbs.dump()
 
-def self_test():
-    if len(sys.argv)!=3:
-        print "syntax: broadbandshield.py <email> <password>"
+def associate():
+    if len(sys.argv)<5:
+        print "you need to specify IP address"
         sys.exit(-1)
 
-    bbs = BBS(sys.argv[1], sys.argv[2])
+    bbs = BBS(sys.argv[2], sys.argv[3])
+    bbs.associate(sys.argv[4])
+
+def self_test():
+    bbs = BBS(sys.argv[2], sys.argv[3])
 
     print "*** initial ***"
     bbs.dump()
@@ -356,8 +371,19 @@ def self_test():
     #bbs.add_device(name="tom's iphone", mac="010203040506", type="tablet", username="tom")
 
 def main():
-    dump()
-    #self_test()
+    if len(sys.argv)<4:
+        print "syntax: broadbandshield.py <operation> <email> <password>"
+        print "        operation = [dump | selftest | assocate"
+        sys.exit(-1)
+
+    operation = sys.argv[1]
+
+    if operation=="dump":
+        dump()
+    elif operation=="selftest":
+        self_test()
+    elif operation=="associate":
+        associate()
 
 if __name__ == "__main__":
     main()
