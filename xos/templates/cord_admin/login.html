@@ -49,7 +49,8 @@
     {% if not form.this_is_the_login_form.errors %}{{ form.password.errors }}{% endif %}
      {{ form.password }}
     <input type="hidden" name="this_is_the_login_form" value="1" />
-    <input type="hidden" name="next" value="{{ next }}" />
+    <input type="hidden" name="old_next" value="{{ next }}" />
+    <input type="hidden" name="next" value="/loggedin/?orig_next={{ next }}" />
   </div>
   <div class="submit-row">
     <input type="submit" class="btn btn-info" value="{% trans 'SIGN IN' %}" />
