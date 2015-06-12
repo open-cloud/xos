@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
 import json
+import subprocess
 
 if hasattr(serializers, "ReadOnlyField"):
     # rest_framework 3.x
@@ -215,6 +216,8 @@ class CordSubscriberViewSet(XOSViewSet):
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/$", {"get": "get_user_level"}, "user_level") )
         patterns.append( self.detail_url("users/(?P<uid>[0-9\-]+)/url_filter/(?P<level>[a-zA-Z0-9\-_]+)/$", {"put": "set_user_level"}, "set_user_level") )
 
+        patterns.append( self.detail_url("bbsdump/$", {"get": "get_bbsdump"}, "bbsdump") )
+
         patterns.append( url("^rs/initdemo/$", self.as_view({"put": "initdemo", "get": "initdemo"}), name="initdemo") )
 
         patterns.append( url("^rs/subidlookup/(?P<ssid>[0-9\-]+)/$", self.as_view({"get": "ssiddetail"}), name="ssiddetail") )
@@ -319,13 +322,22 @@ class CordSubscriberViewSet(XOSViewSet):
         subscriber.save()
         return Response({service: getattr(subscriber, service_attr)})
 
+    def get_bbsdump(self, request, pk=None):
+        subscriber = self.get_object()
+        if not subsciber.vcpe:
+            raise XOSMissingField("subscriber has no vCPE")
+        if not subscriber.vcpe.bbs_account:
+            raise XOSMissingField("subscriber has no bbs_account")
+
+        return Response( {"bbs_dump": subprocess.check_output("python", "/opt/xos/observers/vcpe/broadbandshield.py", subscriber.vcpe.bbs_account, "123") } )
+
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
         voltTenant.vcpe.users = []
         voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
         voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jack's iPhone", mac="A85B780F2651", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jill's iPad",   mac="010203040509", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jack's Laptop", mac="14109FE38EB7", level="PG_13")
+        voltTenant.vcpe.create_user(name="Jill's Laptop", mac="34363BC9B6A6", level="PG_13")
         voltTenant.vcpe.save()
 
     def initdemo(self, request):
