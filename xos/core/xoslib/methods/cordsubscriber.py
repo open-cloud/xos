@@ -329,7 +329,13 @@ class CordSubscriberViewSet(XOSViewSet):
         if not subscriber.vcpe.bbs_account:
             raise XOSMissingField("subscriber has no bbs_account")
 
-        return Response( {"bbs_dump": subprocess.check_output("python", "/opt/xos/observers/vcpe/broadbandshield.py", subscriber.vcpe.bbs_account, "123") } )
+        result=subprocess.check_output(["python", "/opt/xos/observers/vcpe/broadbandshield.py", "dump", subscriber.vcpe.\
+bbs_account, "123"])
+        if request.GET.get("theformat",None)=="text":
+            from django.http import HttpResponse
+            return HttpResponse(result, content_type="text/plain")
+        else:
+            return Response( {"bbs_dump": result } )
 
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
