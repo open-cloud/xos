@@ -73,10 +73,17 @@
     notify:
     - restart vcpe
 
+  - name: vCPE basic dnsmasq config
+    copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/etc/dnsmasq.d/vcpe.conf owner=root group=root
+    notify:
+    - stop dnsmasq
+    - start dnsmasq
+
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
-    - restart vcpe
+    - stop dnsmasq
+    - start dnsmasq
 
 # These are samples, not necessary for correct function of demo
 
@@ -90,8 +97,11 @@
     service: name=vcpe state=started
 
   handlers:
-  - name: reload dnsmasq config
-    shell: docker exec -t -i vcpe killall -HUP /usr/sbin/dnsmasq
+  - name: stop dnsmasq
+    shell: docker exec vcpe /usr/bin/killall dnsmasq
+
+  - name: start dnsmasq
+    shell: docker exec vcpe /usr/sbin/service dnsmasq start
 
   - name: restart vcpe
     shell: service vcpe stop; sleep 1; service vcpe start
