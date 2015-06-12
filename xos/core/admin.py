@@ -433,6 +433,28 @@ class SliverInline(XOSTabularInline):
 
         return field
 
+class CordSliverInline(XOSTabularInline):
+    model = Sliver
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node']
+    extra = 0
+    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
+    suit_classes = 'suit-tab suit-tab-slivers'
+
+    def queryset(self, request):
+        return Sliver.select_by_user(request.user)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'deployment':
+
+           kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
+        if db_field.name == 'flavor':
+           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
+
+        field = super(CordSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return field
+
 class SiteInline(XOSTabularInline):
     model = Site
     extra = 0
@@ -975,7 +997,8 @@ class SliceAdmin(XOSBaseAdmin):
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
     list_display_links = ('backend_status_icon', 'name', )
-    inlines = [SlicePrivilegeInline,SliverInline, TagInline, ReservationInline,SliceNetworkInline]
+    normal_inlines = [SlicePrivilegeInline, SliverInline, TagInline, ReservationInline, SliceNetworkInline]
+    inlines = normal_inlines
     admin_inlines = [ControllerSliceInline]
 
     user_readonly_fields = fieldList
@@ -997,6 +1020,8 @@ class SliceAdmin(XOSBaseAdmin):
         return tabs
     
     def add_view(self, request, form_url='', extra_context=None):
+        # Ugly hack for CORD
+        self.inlines = self.normal_inlines
         # revert to default read-only fields
         self.readonly_fields = ('backend_status_text',)
         return super(SliceAdmin, self).add_view(request, form_url, extra_context=extra_context)
@@ -1005,6 +1030,14 @@ class SliceAdmin(XOSBaseAdmin):
         # cannot change the site of an existing slice so make the site field read only
         if object_id:
             self.readonly_fields = ('backend_status_text','site')
+
+        # Ugly hack for CORD
+        self.inlines = self.normal_inlines
+        if object_id:
+            slice = Slice.objects.get(pk=object_id)
+            if slice.name == "mysite_vcpe":
+                self.inlines = [ SlicePrivilegeInline, CordSliverInline, TagInline, ReservationInline,SliceNetworkInline]
+
         return super(SliceAdmin, self).change_view(request, object_id, form_url)
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
@@ -1052,6 +1085,23 @@ class SliceAdmin(XOSBaseAdmin):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
+    def UNUSED_get_inline_instances(self, request, obj=None):
+        # HACK for CORD to do something special on vcpe slice page
+        #    this was a good idea, but failed miserably, as something still
+        #    expects there to be a deployment field.
+        #    XXX this approach is better than clobbering self.inlines, so
+        #    try to make this work post-demo.
+        if (obj is not None) and (obj.name == "mysite_vcpe"):
+            cord_vcpe_inlines = [ SlicePrivilegeInline, CordSliverInline, TagInline, ReservationInline,SliceNetworkInline]
+
+            inlines=[]
+            for inline_class in cord_vcpe_inlines:
+                inlines.append(inline_class(self.model, self.admin_site))
+        else:
+            inlines = super(SliceAdmin, self).get_inline_instances(request, obj)
+
+        return inlines
+
 class SlicePrivilegeAdmin(XOSBaseAdmin):
     fieldsets = [
         (None, {'fields': ['backend_status_text', 'user', 'slice', 'role']})
@@ -1090,7 +1140,6 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
         auth['tenant'] = obj.slice.slicename
         obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
         obj.delete()
-
 
 class ImageAdmin(XOSBaseAdmin):
 
