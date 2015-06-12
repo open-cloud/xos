@@ -7,7 +7,7 @@ docker inspect vcpe > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull andybavier/docker-vcpe
-    docker run -d --name=vcpe --privileged=true --net=none -v /etc/dnsmasq.d/servers.conf:/etc/dnsmasq.d/servers.conf andybavier/docker-vcpe
+    docker run -d --name=vcpe --privileged=true --net=none -v /etc/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
 else
     docker start vcpe
 fi
