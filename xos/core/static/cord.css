@@ -7,7 +7,7 @@
 
 /* login page logo */
 .login #content-main h1 {
-    background: url("cord_logo2.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
+    background: url("cord_logo3.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
     height: 55px;
     background-repeat: no-repeat;
     font-size: 0px;
@@ -19,7 +19,7 @@
    display: block;
    -moz-box-sizing: border-box;
    box-sizing: border-box;
-   background: url('cord_logo2_cropped_sized_96.png') no-repeat;
+   background: url('cord_logo3_cropped_sized.png') no-repeat;
    width: 250px;
    height: 96px;
    padding-left: 250px;
