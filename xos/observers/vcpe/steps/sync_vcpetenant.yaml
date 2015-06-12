@@ -71,7 +71,10 @@
   - name: vCPE startup script
     template: src=/opt/xos/observers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe.sh mode=0755
     notify:
-    - restart vcpe
+#    - restart vcpe
+     - stop vcpe
+     - remove container
+     - start vcpe
 
   - name: vCPE basic dnsmasq config
     copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/etc/dnsmasq.d/vcpe.conf owner=root group=root
@@ -105,3 +108,12 @@
 
   - name: restart vcpe
     shell: service vcpe stop; sleep 1; service vcpe start
+
+  - name: stop vcpe
+    service: name=vcpe state=stopped
+
+  - name: remove container
+    docker: name=vcpe state=absent image=docker-vcpe
+
+  - name: start vcpe
+    service: name=vcpe state=started
