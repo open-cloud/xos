@@ -340,7 +340,7 @@ bbs_account, "123"])
     def setup_demo_vcpe(self, voltTenant):
         # nuke the users and start over
         voltTenant.vcpe.users = []
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
+        voltTenant.vcpe.create_user(name="Mom's PC",      mac="685B359D91D5", level="PG_13")
         voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
         voltTenant.vcpe.create_user(name="Jack's Laptop", mac="14109FE38EB7", level="PG_13")
         voltTenant.vcpe.create_user(name="Jill's Laptop", mac="34363BC9B6A6", level="PG_13")
