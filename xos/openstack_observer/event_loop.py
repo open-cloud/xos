@@ -16,6 +16,7 @@ from collections import defaultdict
 from core.models import *
 from django.db.models import F, Q
 from django.db import connection
+from django.db import reset_queries
 #from openstack.manager import OpenStackManager
 from openstack.driver import OpenStackDriver
 from util.logger import Logger, logging, logger
@@ -382,6 +383,12 @@ class XOSObserver:
 			logger.info('Step %r is a leaf' % step)
 			pass
             finally:
+                try:
+                    reset_queries()
+                except:
+                    # this shouldn't happen, but in case it does, catch it...
+                    logger.log_exc("exception in reset_queries")
+
                 connection.close()
 
 	def run(self):
@@ -442,11 +449,19 @@ class XOSObserver:
 					for t in threads:
 						t.start()
 
+                                        # another spot to clean up debug state
+                                        try:
+                                            reset_queries()
+                                        except:
+                                            # this shouldn't happen, but in case it does, catch it...
+                                            logger.log_exc("exception in reset_queries")
+
 					# Wait for all threads to finish before continuing with the run loop
 					for t in threads:
 						t.join()
 
 				self.save_run_times()
+
 				loop_end = time.time()
 				open('/tmp/%sobserver_last_run'%self.observer_name,'w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
 			except Exception, e:

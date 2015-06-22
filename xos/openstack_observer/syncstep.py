@@ -5,7 +5,8 @@ from xos.config import Config
 from util.logger import Logger, logging
 from observer.steps import *
 from django.db.models import F, Q
-from core.models import * 
+from core.models import *
+from django.db import reset_queries
 import json
 import time
 import pdb
@@ -106,6 +107,13 @@ class SyncStep(object):
     def call(self, failed=[], deletion=False):
         pending = self.fetch_pending(deletion)
         for o in pending:
+            # another spot to clean up debug state
+            try:
+                reset_queries()
+            except:
+                # this shouldn't happen, but in case it does, catch it...
+                logger.log_exc("exception in reset_queries")
+
             sync_failed = False
             try:
                 backoff_disabled = Config().observer_backoff_disabled

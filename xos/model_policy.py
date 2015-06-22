@@ -7,6 +7,7 @@ from util.logger import logger
 from datetime import datetime
 import time
 from core.models import *
+from django.db import reset_queries
 from django.db.transaction import atomic
 from django.db.models import F, Q
 
@@ -39,6 +40,8 @@ def update_dep(d, o):
             d.save(update_fields=save_fields)
     except AttributeError,e:
         raise e
+    except Exception,e:
+            logger.info('Could not save %r. Exception: %r'%(d,e))
 
 def delete_if_inactive(d, o):
     try:
@@ -123,6 +126,12 @@ def run_policy():
                 if (not deps):
                     print 'Purging object %r'%d
                     d.delete(purge=True)
+
+        try:
+            reset_queries()
+        except:
+            # this shouldn't happen, but in case it does, catch it...
+            logger.log_exc("exception in reset_queries")
 
         if (time.time()-start<1):
             time.sleep(1)
