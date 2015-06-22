@@ -467,6 +467,8 @@ class RRWatcher(BaseWatcher):
             self.run_once()
             time.sleep(10)
 
+            django.db.reset_queries()
+
 class HpcProber(BaseWatcher):
     def __init__(self):
         BaseWatcher.__init__(self)
@@ -500,6 +502,8 @@ class HpcProber(BaseWatcher):
         while True:
             self.run_once()
             time.sleep(10)
+
+            django.db.reset_queries()
 
 class HpcFetcher(BaseWatcher):
     def __init__(self):
@@ -553,6 +557,8 @@ class HpcFetcher(BaseWatcher):
             self.run_once()
             time.sleep(10)
 
+            django.db.reset_queries()
+
 class WatcherFetcher(BaseWatcher):
     def __init__(self):
         BaseWatcher.__init__(self)
@@ -601,6 +607,9 @@ class WatcherFetcher(BaseWatcher):
         while True:
             self.run_once()
             time.sleep(10)
+
+            django.db.reset_queries()
+
 
 if __name__ == "__main__":
     if "--once" in sys.argv:
