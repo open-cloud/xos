@@ -110,7 +110,8 @@ RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; r
 RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with password 'password';"
 
 # Turn DEBUG on so that devel server will serve static files
-RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
+#    (not necessary if --insecure is passed to 'manage.py runserver')
+# RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 
 # Cruft to workaround problems with migrations, should go away...
 RUN /opt/xos/scripts/opencloud remigrate
@@ -130,4 +131,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-CMD service postgresql start; service supervisor start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000
+CMD service postgresql start; service supervisor start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure
