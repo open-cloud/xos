@@ -196,6 +196,34 @@ class Tenant(PlCoreBase):
         attributes[name]=value
         self.service_specific_attribute = json.dumps(attributes)
 
+    def get_initial_attribute(self, name, default=None):
+        if self._initial["service_specific_attribute"]:
+            attributes = json.loads(self._initial["service_specific_attribute"])
+        else:
+            attributes = {}
+        return attributes.get(name, default)
+
+    def update_attribute_from_initial(self):
+        # XXX not sure I want to pursue this approach...
+        try:
+            attributes = json.loads(self._initial["service_specific_attribute"])
+        except:
+            attributes = {}
+
+        if not self.service_specific_attribute:
+            # the easy case -- nothing has changed, so keep the original
+            # attribute
+            self.service_specific_attribute = json.dumps(orig_attributes)
+            return
+
+        try:
+            new_attributes = json.loads(self.service_specific_attribute)
+        except:
+            raise XOSValidationError("Unable to parse service_specific_attribute")
+
+        attributes.update(new_attributes)
+        self.service_specific_attribute = json.dumps(attributes)
+
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
