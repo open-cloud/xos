@@ -77,6 +77,8 @@ class VOLTTenant(Tenant):
             self._meta.get_field("provider_service").default = volt_services[0].id
         super(VOLTTenant, self).__init__(*args, **kwargs)
 
+        self.orig_vcpe_id = self.get_initial_attribute("vcpe_id")
+
     @property
     def vlan_id(self):
         return self.get_attribute("vlan_id", self.default_attributes["vlan_id"])
@@ -166,6 +168,13 @@ class VOLTTenant(Tenant):
             self.vcpe.delete()
             self.vcpe = None
 
+    def cleanup_orphans(self):
+        if self.orig_vcpe_id and (self.orig_vcpe_id != self.get_attribute("vcpe_id")):
+            vcpes=VCPETenant.objects.filter(id=self.orig_vcpe_id)
+            if vcpes:
+                # print "XXX clean up orphaned vcpe", vcpes[0]
+                vcpes[0].delete()
+
     def save(self, *args, **kwargs):
         self.validate_unique_service_specific_id()
 
@@ -179,6 +188,7 @@ class VOLTTenant(Tenant):
 
         super(VOLTTenant, self).save(*args, **kwargs)
         self.manage_vcpe()
+        self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vcpe()
@@ -243,6 +253,8 @@ class VCPETenant(Tenant):
         super(VCPETenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
         self.cached_sliver=None
+        self.orig_vbng_id = self.get_initial_attribute("vbng_id")
+        self.orig_sliver_id = self.get_initial_attribute("sliver_id")
 
     @property
     def image(self):
@@ -604,6 +616,21 @@ class VCPETenant(Tenant):
             self.vbng.delete()
             self.vbng = None
 
+    def cleanup_orphans(self):
+
+        if self.orig_vbng_id and (self.orig_vbng_id != self.get_attribute("vbng_id")):
+            vbngs=VBNGTenant.objects.filter(id=self.orig_vbng_id)
+            if vbngs:
+                # print "XXX clean up orphaned vbng", vbngs[0]
+                vbngs[0].delete()
+
+
+        if self.orig_sliver_id and (self.orig_sliver_id != self.get_attribute("sliver_id")):
+            slivers=Sliver.objects.filter(id=self.orig_sliver_id)
+            if slivers:
+                # print "XXX clean up orphaned sliver", slivers[0]
+                slivers[0].delete()
+
     def manage_bbs_account(self):
         if self.deleted:
             return
@@ -635,6 +662,7 @@ class VCPETenant(Tenant):
         self.manage_sliver()
         self.manage_vbng()
         self.manage_bbs_account()
+        self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
