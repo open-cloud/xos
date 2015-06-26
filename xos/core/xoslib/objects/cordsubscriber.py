@@ -23,7 +23,7 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
         proxy = True
 
     def __init__(self, *args, **kwargs):
-        super(VOLTTenant, self).__init__(*args, **kwargs)
+        super(CordSubscriber, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
         return u"cordSubscriber-%s" % str(self.id)
