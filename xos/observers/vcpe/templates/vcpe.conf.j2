@@ -1,0 +1,10 @@
+# Upstart script for vCPE
+description "vCPE container"
+author "andy@onlab.us"
+start on filesystem and started docker
+stop on runlevel [!2345]
+respawn
+
+script
+  /usr/local/sbin/start-vcpe-{{ vlan_ids[0] }}.sh
+end script
