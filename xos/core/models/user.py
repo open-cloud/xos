@@ -324,7 +324,17 @@ class User(AbstractBaseUser, PlModelMixIn):
         if ServicePrivilege.objects.filter(
             service=service, user=self, role__role__in=['admin', 'Admin']+allow):
             return True
-        return False           
+        return False
+
+    def can_update_tenant_root(self, tenant_root):
+        from core.models.service import TenantRoot
+        from core.models.site import SitePrivilege
+        if self.can_update_root():
+            return True
+        if TenantRootPrivilege.objects.filter(
+            tenant_root=tenant_root, user=self, role__role__in=['admin', 'Admin']+allow):
+            return True
+        return False
 
     @staticmethod
     def select_by_user(user):

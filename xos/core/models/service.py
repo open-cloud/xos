@@ -139,23 +139,51 @@ class ServicePrivilege(PlCoreBase):
     def delete(self, *args, **kwds):
         if not self.service.enabled:
             raise PermissionDenied, "Cannot modify permission(s) of a disabled service"
-        super(ServicePrivilege, self).delete(*args, **kwds)                    
-    
+        super(ServicePrivilege, self).delete(*args, **kwds)
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
             qs = ServicePrivilege.objects.all()
         else:
             qs = SitePrivilege.objects.filter(user=user)
-        return qs        
+        return qs
+
+class TenantRoot(PlCoreBase):
+    """ A tenantRoot is one of the things that can sit at the root of a chain
+        of tenancy. This object represents a node.
+    """
+
+    KIND= "generic"
+    kind = StrippedCharField(max_length=30, default=KIND)
+
+    attribute = models.TextField(blank=True, null=True)
+
+    # helper for extracting things from a json-encoded attribute
+    def get_attribute(self, name, default=None):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.attribute)
+        else:
+            attributes = {}
+        return attributes.get(name, default)
+
+    def set_attribute(self, name, value):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.attribute)
+        else:
+            attributes = {}
+        attributes[name]=value
+        self.attribute = json.dumps(attributes)
 
 class Tenant(PlCoreBase):
     """ A tenant is a relationship between two entities, a subscriber and a
-        provider.
+        provider. This object represents an edge.
 
         The subscriber can be a User, a Service, or a Tenant.
 
         The provider is always a Service.
+
+        TODO: rename "Tenant" to "Tenancy"
     """
 
     CONNECTIVITY_CHOICES = (('public', 'Public'), ('private', 'Private'), ('na', 'Not Applicable'))
@@ -164,12 +192,20 @@ class Tenant(PlCoreBase):
     KIND = "generic"
 
     kind = StrippedCharField(max_length=30, default=KIND)
-    provider_service = models.ForeignKey(Service, related_name='tenants')
-    subscriber_service = models.ForeignKey(Service, related_name='subscriptions', blank=True, null=True)
-    subscriber_tenant = models.ForeignKey("Tenant", related_name='subscriptions', blank=True, null=True)
-    subscriber_user = models.ForeignKey("User", related_name='subscriptions', blank=True, null=True)
+    provider_service = models.ForeignKey(Service, related_name='provided_tenants')
+
+    # The next four things are the various type of objects that can be subscribers of this Tenancy
+    # relationship. One and only one can be used at a time.
+    subscriber_service = models.ForeignKey(Service, related_name='subscribed_tenants', blank=True, null=True)
+    subscriber_tenant = models.ForeignKey("Tenant", related_name='subscribed_tenants', blank=True, null=True)
+    subscriber_user = models.ForeignKey("User", related_name='subscribed_tenants', blank=True, null=True)
+    subscriber_root = models.ForeignKey("TenantRoot", related_name="subscribed_tenants", blank=True, null=True)
+
+    # Service_specific_attribute and service_specific_id are opaque to XOS
     service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
     service_specific_attribute = models.TextField(blank=True, null=True)
+
+    # Connect_method is only used by Coarse tenants
     connect_method = models.CharField(null=False, blank=False, max_length=30, choices=CONNECTIVITY_CHOICES, default="na")
 
     def __init__(self, *args, **kwargs):
@@ -203,27 +239,6 @@ class Tenant(PlCoreBase):
             attributes = {}
         return attributes.get(name, default)
 
-    def update_attribute_from_initial(self):
-        # XXX not sure I want to pursue this approach...
-        try:
-            attributes = json.loads(self._initial["service_specific_attribute"])
-        except:
-            attributes = {}
-
-        if not self.service_specific_attribute:
-            # the easy case -- nothing has changed, so keep the original
-            # attribute
-            self.service_specific_attribute = json.dumps(orig_attributes)
-            return
-
-        try:
-            new_attributes = json.loads(self.service_specific_attribute)
-        except:
-            raise XOSValidationError("Unable to parse service_specific_attribute")
-
-        attributes.update(new_attributes)
-        self.service_specific_attribute = json.dumps(attributes)
-
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
@@ -243,6 +258,7 @@ class Tenant(PlCoreBase):
                 raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
 
 class CoarseTenant(Tenant):
+    """ TODO: rename "CoarseTenant" --> "StaticTenant" """
     class Meta:
         proxy = True
 
@@ -255,3 +271,53 @@ class CoarseTenant(Tenant):
             raise XOSValidationError("subscriber_tenant and subscriber_user must be null")
 
         super(CoarseTenant,self).save()
+
+class Subscriber(TenantRoot):
+    """ Intermediate class for TenantRoots that are to be Subscribers """
+
+    class Meta:
+        proxy = True
+
+    KIND = "Subscriber"
+
+class Provider(TenantRoot):
+    """ Intermediate class for TenantRoots that are to be Providers """
+
+    class Meta:
+        proxy = True
+
+    KIND = "Provider"
+
+class TenantRootRole(PlCoreBase):
+    ROLE_CHOICES = (('admin','Admin'),)
+
+    role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
+
+    def __unicode__(self):  return u'%s' % (self.role)
+
+class TenantRootPrivilege(PlCoreBase):
+    user = models.ForeignKey('User', related_name="tenant_root_privileges")
+    tenant_root = models.ForeignKey('TenantRoot', related_name="tenant_root_privileges")
+    role = models.ForeignKey('TenantRootRole', related_name="tenant_root_privileges")
+
+    class Meta:
+        unique_together = ('user', 'tenant_root', 'role')
+
+    def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
+
+    def save(self, *args, **kwds):
+        if not self.user.is_active:
+            raise PermissionDenied, "Cannot modify role(s) of a disabled user"
+        super(SlicePrivilege, self).save(*args, **kwds)
+
+    def can_update(self, user):
+        return user.can_update_tenant_root(self.tenant_root)
+
+    @staticmethod
+    def select_by_user(user):
+        if user.is_admin:
+            qs = TenantRoot.objects.all()
+        else:
+            sp_ids = [sp.id for sp in TenantRoot.objects.filter(user=user)]
+            qs = TenantRoot.objects.filter(id__in=sp_ids)
+        return qs
