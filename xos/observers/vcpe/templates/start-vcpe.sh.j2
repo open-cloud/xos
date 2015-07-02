@@ -3,25 +3,27 @@
 iptables -L > /dev/null
 ip6tables -L > /dev/null
 
-docker inspect vcpe > /dev/null 2>&1
+VCPE=vcpe-{{ vlan_ids[0] }}
+
+docker inspect $VCPE > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull andybavier/docker-vcpe
-    docker run -d --name=vcpe --privileged=true --net=none -v /etc/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
+    docker run -d --name=$VCPE --privileged=true --net=none -v /etc/$VCPE/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
 else
-    docker start vcpe
+    docker start $VCPE
 fi
 
 # Set up networking via pipework
-docker exec vcpe ifconfig eth0 >> /dev/null || pipework eth4 -i eth0 vcpe {{ wan_ip }}/17@192.168.128.1 {{ wan_mac }}
-docker exec vcpe ifconfig eth1 >> /dev/null || pipework eth3 -i eth1 vcpe 192.168.0.1/24 @{{ vlan_ids[0] }}
-docker exec vcpe ifconfig eth2 >> /dev/null || pipework eth0 -i eth2 vcpe {{ hpc_client_ip }}/24
+docker exec $VCPE ifconfig eth0 >> /dev/null || pipework eth4 -i eth0 $VCPE {{ wan_ip }}/17@192.168.128.1 {{ wan_mac }}
+docker exec $VCPE ifconfig eth1 >> /dev/null || pipework eth3 -i eth1 $VCPE 192.168.0.1/24 @{{ vlan_ids[0] }}
+docker exec $VCPE ifconfig eth2 >> /dev/null || pipework eth0 -i eth2 $VCPE {{ hpc_client_ip }}/24
 
 # Make sure VM's eth0 (hpc_client) has no IP address
 ifconfig eth0 0.0.0.0
 
 # Now can start up dnsmasq
-docker exec vcpe service dnsmasq start
+docker exec $VCPE service dnsmasq start
 
 # Attach to container
-docker start -a vcpe
+docker start -a $VCPE
