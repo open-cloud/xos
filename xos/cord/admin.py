@@ -114,9 +114,9 @@ class VCPETenantForm(forms.ModelForm):
         model = VCPETenant
 
 class VCPETenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id' )
+    list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     form = VCPETenantForm
 
@@ -168,9 +168,9 @@ class VBNGTenantForm(forms.ModelForm):
         model = VBNGTenant
 
 class VBNGTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id' )
+    list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     form = VBNGTenantForm
 

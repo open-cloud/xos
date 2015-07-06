@@ -786,6 +786,47 @@ class ControllerAdmin(XOSBaseAdmin):
 
         return tabs
 
+class TenantRootRoleAdmin(XOSBaseAdmin):
+    model = TenantRootRole
+    fields = ('role',)
+
+class TenantRootTenantInline(XOSTabularInline):
+    model = Tenant
+    fields = ['provider_service', 'subscriber_root']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantroots'
+    fk_name = 'subscriber_root'
+    verbose_name = 'subscribed tenant'
+    verbose_name_plural = 'subscribed tenants'
+
+    #def queryset(self, request):
+    #    qs = super(TenantRootTenantInline, self).queryset(request)
+    #    return qs.filter(kind="coarse")
+
+class TenantRootPrivilegeInline(XOSTabularInline):
+    model = TenantRootPrivilege
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantrootprivileges'
+    fields = ['backend_status_icon', 'user', 'role', 'tenant_root']
+    readonly_fields = ('backend_status_icon', )
+
+    def queryset(self, request):
+        return TenantRootPrivilege.select_by_user(request.user)
+
+class TenantRootAdmin(XOSBaseAdmin):
+    model = TenantRoot
+    list_display = ('backend_status_icon', 'name', 'kind')
+    list_display_links = ('backend_status_icon', 'name')
+    fieldList = ('backend_status_text', 'name', 'kind', )
+    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
+    inlines = (TenantRootTenantInline, TenantRootPrivilegeInline)
+    readonly_fields = ('backend_status_text', )
+
+    suit_form_tabs =(('general', 'Tenant Root Details'),
+        ('tenantroots','Tenancy'),
+        ('tenantrootprivileges','Privileges')
+    )
+
 class ProviderTenantInline(XOSTabularInline):
     model = CoarseTenant
     fields = ['provider_service', 'subscriber_service', 'connect_method']
@@ -832,7 +873,7 @@ class ServiceAdmin(XOSBaseAdmin):
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
         ('servicetenants','Tenancy'),
-        ('serviceprivileges','Privileges') 
+        ('serviceprivileges','Privileges')
     )
 
 class SiteNodeInline(XOSTabularInline):
@@ -1870,4 +1911,6 @@ if True:
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)
     admin.site.register(Flavor, FlavorAdmin)
+    admin.site.register(TenantRoot, TenantRootAdmin)
+    admin.site.register(TenantRootRole, TenantRootRoleAdmin)
 
