@@ -1,7 +1,7 @@
 from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,PlModelMixIn
 from .project import Project
 from .singletonmodel import SingletonModel
-from .service import Service, Tenant, CoarseTenant, ServicePrivilege, TenantRoot, TenantRootPrivilege, TenantRootRole
+from .service import Service, Tenant, CoarseTenant, ServicePrivilege, TenantRoot, TenantRootPrivilege, TenantRootRole, Subscriber, Provider
 from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
