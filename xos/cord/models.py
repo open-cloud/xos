@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User, Flavor
+from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User, Flavor, Subscriber
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
@@ -53,6 +53,159 @@ class ConfigurationError(Exception):
 VOLT_KIND = "vOLT"
 VCPE_KIND = "vCPE"
 VBNG_KIND = "vBNG"
+CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
+
+# -------------------------------------------
+# CordSubscriberRoot
+# -------------------------------------------
+
+class CordSubscriberRoot(Subscriber):
+    KIND = CORD_SUBSCRIBER_KIND
+
+    default_attributes = {"firewall_enable": False,
+                          "firewall_rules": "accept all anywhere anywhere",
+                          "url_filter_enable": False,
+                          "url_filter_rules": "allow all",
+                          "url_filter_level": "PG",
+                          "cdn_enable": False,
+                          "users": [] }
+
+    def __init__(self, *args, **kwargs):
+        super(CordSubscriberRoot, self).__init__(*args, **kwargs)
+        self.cached_volt = None
+
+    @property
+    def volt(self):
+        volt = self.get_newest_subscribed_tenant(VOLTTenant)
+        if not volt:
+            return None
+
+        # always return the same object when possible
+        if (self.cached_volt) and (self.cached_volt.id == volt.id):
+            return self.cached_vcpe
+
+        vcpe.caller = self.creator
+        self.cached_volt = volt
+        return volt
+
+    @property
+    def firewall_enable(self):
+        return self.get_attribute("firewall_enable", self.default_attributes["firewall_enable"])
+
+    @firewall_enable.setter
+    def firewall_enable(self, value):
+        self.set_attribute("firewall_enable", value)
+
+    @property
+    def firewall_rules(self):
+        return self.get_attribute("firewall_rules", self.default_attributes["firewall_rules"])
+
+    @firewall_rules.setter
+    def firewall_rules(self, value):
+        self.set_attribute("firewall_rules", value)
+
+    @property
+    def url_filter_enable(self):
+        return self.get_attribute("url_filter_enable", self.default_attributes["url_filter_enable"])
+
+    @url_filter_enable.setter
+    def url_filter_enable(self, value):
+        self.set_attribute("url_filter_enable", value)
+
+    @property
+    def url_filter_level(self):
+        return self.get_attribute("url_filter_level", self.default_attributes["url_filter_level"])
+
+    @url_filter_level.setter
+    def url_filter_level(self, value):
+        self.set_attribute("url_filter_level", value)
+
+    @property
+    def url_filter_rules(self):
+        return self.get_attribute("url_filter_rules", self.default_attributes["url_filter_rules"])
+
+    @url_filter_rules.setter
+    def url_filter_rules(self, value):
+        self.set_attribute("url_filter_rules", value)
+
+    @property
+    def cdn_enable(self):
+        return self.get_attribute("cdn_enable", self.default_attributes["cdn_enable"])
+
+    @cdn_enable.setter
+    def cdn_enable(self, value):
+        self.set_attribute("cdn_enable", value)
+
+    @property
+    def users(self):
+        return self.get_attribute("users", self.default_attributes["users"])
+
+    @users.setter
+    def users(self, value):
+        self.set_attribute("users", value)
+
+    def find_user(self, uid):
+        uid = int(uid)
+        for user in self.users:
+            if user["id"] == uid:
+                return user
+        return None
+
+    def update_user(self, uid, **kwargs):
+        # kwargs may be "level" or "mac"
+        #    Setting one of these to None will cause None to be stored in the db
+        uid = int(uid)
+        users = self.users
+        for user in users:
+            if user["id"] == uid:
+                for arg in kwargs.keys():
+                    user[arg] = kwargs[arg]
+                    self.users = users
+                return user
+        raise ValueError("User %d not found" % uid)
+
+    def create_user(self, **kwargs):
+        if "name" not in kwargs:
+            raise XOSMissingField("The name field is required")
+
+        for user in self.users:
+            if kwargs["name"] == user["name"]:
+                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
+
+        uids = [x["id"] for x in self.users]
+        if uids:
+            uid = max(uids)+1
+        else:
+            uid = 0
+        newuser = kwargs.copy()
+        newuser["id"] = uid
+
+        users = self.users
+        users.append(newuser)
+        self.users = users
+
+        return newuser
+
+    def delete_user(self, uid):
+        uid = int(uid)
+        users = self.users
+        for user in users:
+            if user["id"]==uid:
+                users.remove(user)
+                self.users = users
+                return
+
+        raise ValueError("Users %d not found" % uid)
+
+    @property
+    def services(self):
+        return {"cdn": self.cdn_enable,
+                "url_filter": self.url_filter_enable,
+                "firewall": self.firewall_enable}
+
+    @services.setter
+    def services(self, value):
+        pass
 
 # -------------------------------------------
 # VOLT
@@ -323,6 +476,8 @@ class VCPETenant(Tenant):
     def vbng(self, value):
         raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
 
+    # *** to be moved to CordSubscriberRoot
+
     @property
     def firewall_enable(self):
         return self.get_attribute("firewall_enable", self.default_attributes["firewall_enable"])
@@ -378,33 +533,6 @@ class VCPETenant(Tenant):
     @users.setter
     def users(self, value):
         self.set_attribute("users", value)
-
-    @property
-    def bbs_account(self):
-        return self.get_attribute("bbs_account", self.default_attributes["bbs_account"])
-
-    @bbs_account.setter
-    def bbs_account(self, value):
-        return self.set_attribute("bbs_account", value)
-
-    @property
-    def last_ansible_hash(self):
-        return self.get_attribute("last_ansible_hash", self.default_attributes["last_ansible_hash"])
-
-    @last_ansible_hash.setter
-    def last_ansible_hash(self, value):
-        return self.set_attribute("last_ansible_hash", value)
-
-    @property
-    def ssh_command(self):
-        if self.sliver:
-            return self.sliver.get_ssh_command()
-        else:
-            return "no-sliver"
-
-    @ssh_command.setter
-    def ssh_command(self, value):
-        pass
 
     def find_user(self, uid):
         uid = int(uid)
@@ -467,6 +595,35 @@ class VCPETenant(Tenant):
 
     @services.setter
     def services(self, value):
+        pass
+
+    # *** end of stuff to be moved to CordSubscriberRoot
+
+    @property
+    def bbs_account(self):
+        return self.get_attribute("bbs_account", self.default_attributes["bbs_account"])
+
+    @bbs_account.setter
+    def bbs_account(self, value):
+        return self.set_attribute("bbs_account", value)
+
+    @property
+    def last_ansible_hash(self):
+        return self.get_attribute("last_ansible_hash", self.default_attributes["last_ansible_hash"])
+
+    @last_ansible_hash.setter
+    def last_ansible_hash(self, value):
+        return self.set_attribute("last_ansible_hash", value)
+
+    @property
+    def ssh_command(self):
+        if self.sliver:
+            return self.sliver.get_ssh_command()
+        else:
+            return "no-sliver"
+
+    @ssh_command.setter
+    def ssh_command(self, value):
         pass
 
     @property
