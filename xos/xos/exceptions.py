@@ -54,3 +54,10 @@ class XOSConfigurationError(APIException):
         APIException.__init__(self, {"error": "XOSConfigurationError",
                             "specific_error": why,
                             "fields": fields})
+
+class XOSConflictingField(APIException):
+    status_code=400
+    def __init__(self, why="conflicting field", fields={}):
+        APIException.__init__(self, {"error": "XOSMissingField",
+                            "specific_error": why,
+                            "fields": fields})
