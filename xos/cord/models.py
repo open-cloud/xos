@@ -50,12 +50,16 @@ for v in VCPETenant.get_tenant_objects().all():
 class ConfigurationError(Exception):
     pass
 
+VOLT_KIND = "vOLT"
+VCPE_KIND = "vCPE"
+VBNG_KIND = "vBNG"
+
 # -------------------------------------------
 # VOLT
 # -------------------------------------------
 
 class VOLTService(Service):
-    KIND = "vOLT"
+    KIND = VOLT_KIND
 
     class Meta:
         app_label = "cord"
@@ -66,7 +70,7 @@ class VOLTTenant(Tenant):
     class Meta:
         proxy = True
 
-    KIND = "vOLT"
+    KIND = VOLT_KIND
 
     default_attributes = {"vlan_id": None,
                           "is_demo_user": False }
@@ -76,8 +80,7 @@ class VOLTTenant(Tenant):
         if volt_services:
             self._meta.get_field("provider_service").default = volt_services[0].id
         super(VOLTTenant, self).__init__(*args, **kwargs)
-
-        self.orig_vcpe_id = self.get_initial_attribute("vcpe_id")
+        self.cached_vcpe = None
 
     @property
     def vlan_id(self):
@@ -89,26 +92,21 @@ class VOLTTenant(Tenant):
 
     @property
     def vcpe(self):
-        if getattr(self, "cached_vcpe", None):
+        vcpe = self.get_newest_subscribed_tenant(VCPETenant)
+        if not vcpe:
+            return None
+
+        # always return the same object when possible
+        if (self.cached_vcpe) and (self.cached_vcpe.id == vcpe.id):
             return self.cached_vcpe
-        vcpe_id=self.get_attribute("vcpe_id")
-        if not vcpe_id:
-            return None
-        vcpes=VCPETenant.objects.filter(id=vcpe_id)
-        if not vcpes:
-            return None
-        vcpe=vcpes[0]
+
         vcpe.caller = self.creator
         self.cached_vcpe = vcpe
         return vcpe
 
     @vcpe.setter
     def vcpe(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("vcpe_id", None)):
-            self.cached_vcpe=None
-        self.set_attribute("vcpe_id", value)
+        raise XOSConfigurationError("vOLT.vCPE cannot be set this way -- create a new vCPE object and set it's subscriber_tenant instead")
 
     @property
     def creator(self):
@@ -156,24 +154,18 @@ class VOLTTenant(Tenant):
             vcpe.caller = self.creator
             vcpe.save()
 
-            try:
-                self.vcpe = vcpe
-                super(VOLTTenant, self).save()
-            except:
-                vcpe.delete()
-                raise
-
     def cleanup_vcpe(self):
         if self.vcpe:
+            # print "XXX cleanup vcpe", self.vcpe
             self.vcpe.delete()
-            self.vcpe = None
 
     def cleanup_orphans(self):
-        if self.orig_vcpe_id and (self.orig_vcpe_id != self.get_attribute("vcpe_id")):
-            vcpes=VCPETenant.objects.filter(id=self.orig_vcpe_id)
-            if vcpes:
-                # print "XXX clean up orphaned vcpe", vcpes[0]
-                vcpes[0].delete()
+        # ensure vOLT only has one vCPE
+        cur_vcpe = self.vcpe
+        for vcpe in list(self.get_subscribed_tenants(VCPETenant)):
+            if (not cur_vcpe) or (vcpe.id != cur_vcpe.id):
+                # print "XXX clean up orphaned vcpe", vcpe
+                vcpe.delete()
 
     def save(self, *args, **kwargs):
         self.validate_unique_service_specific_id()
@@ -199,7 +191,7 @@ class VOLTTenant(Tenant):
 # -------------------------------------------
 
 class VCPEService(Service):
-    KIND = "vCPE"
+    KIND = VCPE_KIND
 
     class Meta:
         app_label = "cord"
@@ -224,7 +216,7 @@ class VCPETenant(Tenant):
     class Meta:
         proxy = True
 
-    KIND = "vCPE"
+    KIND = VCPE_KIND
 
     sync_attributes = ("firewall_enable",
                        "firewall_rules",
@@ -253,7 +245,6 @@ class VCPETenant(Tenant):
         super(VCPETenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
         self.cached_sliver=None
-        self.orig_vbng_id = self.get_initial_attribute("vbng_id")
         self.orig_sliver_id = self.get_initial_attribute("sliver_id")
 
     @property
@@ -316,26 +307,21 @@ class VCPETenant(Tenant):
 
     @property
     def vbng(self):
-        if getattr(self, "cached_vbng", None):
+        vbng = self.get_newest_subscribed_tenant(VBNGTenant)
+        if not vbng:
+            return None
+
+        # always return the same object when possible
+        if (self.cached_vbng) and (self.cached_vbng.id == vbng.id):
             return self.cached_vbng
-        vbng_id=self.get_attribute("vbng_id")
-        if not vbng_id:
-            return None
-        vbngs=VBNGTenant.objects.filter(id=vbng_id)
-        if not vbngs:
-            return None
-        vbng=vbngs[0]
+
         vbng.caller = self.creator
         self.cached_vbng = vbng
         return vbng
 
     @vbng.setter
     def vbng(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("vbng_id", None)):
-            self.cached_vbng=None
-        self.set_attribute("vbng_id", value)
+        raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
 
     @property
     def firewall_enable(self):
@@ -585,6 +571,7 @@ class VCPETenant(Tenant):
 
     def cleanup_sliver(self):
         if self.sliver:
+            # print "XXX cleanup sliver", self.sliver
             self.sliver.delete()
             self.sliver = None
 
@@ -604,26 +591,18 @@ class VCPETenant(Tenant):
             vbng.caller = self.creator
             vbng.save()
 
-            try:
-                self.vbng = vbng
-                super(VCPETenant, self).save()
-            except:
-                vbng.delete()
-                raise
-
     def cleanup_vbng(self):
         if self.vbng:
+            # print "XXX cleanup vnbg", self.vbng
             self.vbng.delete()
-            self.vbng = None
 
     def cleanup_orphans(self):
-
-        if self.orig_vbng_id and (self.orig_vbng_id != self.get_attribute("vbng_id")):
-            vbngs=VBNGTenant.objects.filter(id=self.orig_vbng_id)
-            if vbngs:
-                # print "XXX clean up orphaned vbng", vbngs[0]
-                vbngs[0].delete()
-
+        # ensure vCPE only has one vBNG
+        cur_vbng = self.vbng
+        for vbng in list(self.get_subscribed_tenants(VBNGTenant)):
+            if (not cur_vbng) or (vbng.id != cur_vbng.id):
+                # print "XXX clean up orphaned vbng", vbng
+                vbng.delete()
 
         if self.orig_sliver_id and (self.orig_sliver_id != self.get_attribute("sliver_id")):
             slivers=Sliver.objects.filter(id=self.orig_sliver_id)
@@ -674,7 +653,7 @@ class VCPETenant(Tenant):
 #----------------------------------------------------------------------------
 
 class VBNGService(Service):
-    KIND = "vBNG"
+    KIND = VBNG_KIND
 
     class Meta:
         app_label = "cord"
@@ -685,7 +664,7 @@ class VBNGTenant(Tenant):
     class Meta:
         proxy = True
 
-    KIND = "vBNG"
+    KIND = VBNG_KIND
 
     default_attributes = {"routeable_subnet": "",
                           "mapped_ip": "",
