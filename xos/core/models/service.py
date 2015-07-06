@@ -2,6 +2,7 @@ from django.db import models
 from core.models import PlCoreBase,SingletonModel,PlCoreBaseManager
 from core.models.plcorebase import StrippedCharField
 from xos.exceptions import *
+from operator import attrgetter
 import json
 
 class Service(PlCoreBase):
@@ -31,7 +32,7 @@ class Service(PlCoreBase):
 
     def can_update(self, user):
         return user.can_update_service(self, allow=['admin'])
-     
+
     def get_scalable_nodes(self, slice, max_per_node=None, exclusive_slices=[]):
         """
              Get a list of nodes that can be used to scale up a slice.
@@ -156,6 +157,7 @@ class TenantRoot(PlCoreBase):
 
     KIND= "generic"
     kind = StrippedCharField(max_length=30, default=KIND)
+    name = StrippedCharField(max_length=255, help_text="name", blank=True, null=True)
 
     attribute = models.TextField(blank=True, null=True)
 
@@ -174,6 +176,15 @@ class TenantRoot(PlCoreBase):
             attributes = {}
         attributes[name]=value
         self.attribute = json.dumps(attributes)
+
+    def __unicode__(self):
+        if not self.name:
+            return u"%s-tenant_root-#%s" % (str(self.kind), str(self.id))
+        else:
+            return self.name
+
+    def can_update(self, user):
+        return user.can_update_tenant_root(self, allow=['admin'])
 
 class Tenant(PlCoreBase):
     """ A tenant is a relationship between two entities, a subscriber and a
@@ -257,6 +268,24 @@ class Tenant(PlCoreBase):
             if conflicts:
                 raise XOSDuplicateKey("service_specific_id %s already exists" % self.service_specific_id, fields={"service_specific_id": "duplicate key"})
 
+    def save(self, *args, **kwargs):
+        subCount = sum( [1 for e in [self.subscriber_service, self.subscriber_tenant, self.subscriber_user, self.subscriber_root] if e is not None])
+        if (subCount > 1):
+            raise XOSConflictingField("Only one of subscriber_service, subscriber_tenant, subscriber_user, subscriber_root should be set")
+
+        super(Tenant, self).save(*args, **kwargs)
+
+    def get_subscribed_tenants(self, tenant_class):
+        ids = self.subscribed_tenants.filter(kind=tenant_class.KIND)
+        return tenant_class.objects.filter(id__in = ids)
+
+    def get_newest_subscribed_tenant(self, kind):
+        st = list(self.get_subscribed_tenants(kind))
+        if not st:
+            return None
+        return sorted(st, key=attrgetter('id'))[0]
+
+
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """
     class Meta:
@@ -303,7 +332,7 @@ class TenantRootPrivilege(PlCoreBase):
     class Meta:
         unique_together = ('user', 'tenant_root', 'role')
 
-    def __unicode__(self):  return u'%s %s %s' % (self.slice, self.user, self.role)
+    def __unicode__(self):  return u'%s %s %s' % (self.tenant_root, self.user, self.role)
 
     def save(self, *args, **kwds):
         if not self.user.is_active:
@@ -311,13 +340,13 @@ class TenantRootPrivilege(PlCoreBase):
         super(SlicePrivilege, self).save(*args, **kwds)
 
     def can_update(self, user):
-        return user.can_update_tenant_root(self.tenant_root)
+        return user.tenant_root.can_update(user)
 
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = TenantRoot.objects.all()
+            qs = TenantRootPrivilege.objects.all()
         else:
-            sp_ids = [sp.id for sp in TenantRoot.objects.filter(user=user)]
-            qs = TenantRoot.objects.filter(id__in=sp_ids)
+            qs = TenantRootPrivilege.objects.filter(user=user)
         return qs
+
