@@ -142,22 +142,17 @@ class SyncVCPETenant(SyncStep):
             logger.info("playbook execution time %d" % int(time.time()-tStart))
 
         if o.url_filter_enable:
-            if False: # (str(o.service_specific_id) != "SYNCME"):
-                # XXX FIXME
-                # Also fix the spot in cord/models.py
-                logger.info("skipping sync of URL filter for SSID %s" % str(o.service_specific_id))
+            tStart = time.time()
+            bbs = BBS(o.bbs_account, "123")
+            bbs.sync(o.url_filter_level, o.users)
+
+            if o.hpc_client_ip:
+                logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
+                bbs.associate(o.hpc_client_ip)
             else:
-                tStart = time.time()
-                bbs = BBS(o.bbs_account, "123")
-                bbs.sync(o.url_filter_level, o.users)
+                logger.info("no hpc_client_ip to associate")
 
-                if o.hpc_client_ip:
-                    logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
-                    bbs.associate(o.hpc_client_ip)
-                else:
-                    logger.info("no hpc_client_ip to associate")
-
-                logger.info("bbs update tiem %d" % int(time.time()-tStart))
+            logger.info("bbs update tiem %d" % int(time.time()-tStart))
 
         o.last_ansible_hash = ansible_hash
         o.save()
