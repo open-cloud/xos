@@ -60,6 +60,9 @@ CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
 # -------------------------------------------
 
 class CordSubscriberRoot(Subscriber):
+    class Meta:
+        proxy = True
+
     KIND = CORD_SUBSCRIBER_KIND
 
     default_attributes = {"firewall_enable": False,
@@ -84,7 +87,7 @@ class CordSubscriberRoot(Subscriber):
         if (self.cached_volt) and (self.cached_volt.id == volt.id):
             return self.cached_vcpe
 
-        vcpe.caller = self.creator
+        #volt.caller = self.creator
         self.cached_volt = volt
         return volt
 
@@ -259,7 +262,16 @@ class VOLTTenant(Tenant):
 
     @vcpe.setter
     def vcpe(self, value):
-        raise XOSConfigurationError("vOLT.vCPE cannot be set this way -- create a new vCPE object and set it's subscriber_tenant instead")
+        raise XOSConfigurationError("vOLT.vCPE cannot be set this way -- create a new vCPE object and set its subscriber_tenant instead")
+
+    @property
+    def subscriber(self):
+        if not self.subscriber_root:
+            return None
+        subs = CordSubscriberRoot.objects.filter(id=self.subscriber_root.id)
+        if not subs:
+            return None
+        return subs[0]
 
     @property
     def creator(self):
@@ -475,6 +487,15 @@ class VCPETenant(Tenant):
     @vbng.setter
     def vbng(self, value):
         raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
+
+    @property
+    def volt(self):
+        if not self.subscriber_tenant:
+            return None
+        volts = VOLTTenant.objects.filter(id=self.subscriber_tenant.id)
+        if not volts:
+            return None
+        return volts[0]
 
     # *** to be moved to CordSubscriberRoot
 
