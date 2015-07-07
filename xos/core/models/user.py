@@ -326,7 +326,7 @@ class User(AbstractBaseUser, PlModelMixIn):
             return True
         return False
 
-    def can_update_tenant_root(self, tenant_root):
+    def can_update_tenant_root(self, tenant_root, allow=[]):
         from core.models.service import TenantRoot
         from core.models.site import SitePrivilege
         if self.can_update_root():
