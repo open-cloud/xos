@@ -125,9 +125,23 @@ class SyncVCPETenant(SyncStep):
                    "ansible_tag": "vcpe_tenant_" + str(o.id)
                  }
 
+        # for attributes that come from VCPETenant
         if hasattr(o, "sync_attributes"):
             for attribute_name in o.sync_attributes:
-                 fields[attribute_name] = getattr(o, attribute_name)
+                fields[attribute_name] = getattr(o, attribute_name)
+
+        # legacy code, to be deleted
+        url_filter_enable = o.url_filter_enable
+        url_filter_level = o.url_filter_level
+        url_filter_users = o.users
+
+        # for attributes that come from CordSubscriberRoot
+        if o.volt and o.volt.subscriber and hasattr(o.volt.subscriber, "sync_attributes"):
+            for attribute_name in o.volt.subscriber.sync_attributes:
+                fields[attribute_name] = getattr(o.volt.subscriber, attribute_name)
+            url_filter_enable = o.volt.subscriber.url_filter_enable
+            url_filter_level = o.volt.subscriber.url_filter_level
+            url_filter_users = o.volt.subscriber.users
 
         fields.update(self.get_extra_attributes(o))
 
@@ -141,10 +155,10 @@ class SyncVCPETenant(SyncStep):
             run_template_ssh(self.template_name, fields)
             logger.info("playbook execution time %d" % int(time.time()-tStart))
 
-        if o.url_filter_enable:
+        if url_filter_enable:
             tStart = time.time()
             bbs = BBS(o.bbs_account, "123")
-            bbs.sync(o.url_filter_level, o.users)
+            bbs.sync(url_filter_level, url_filter_users)
 
             if o.hpc_client_ip:
                 logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
