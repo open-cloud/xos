@@ -68,8 +68,9 @@ class SyncVCPETenant(SyncStep):
         for prefix in CDNPrefix.objects.all():
             cdn_prefixes.append(prefix.prefix)
 
-        volts = [x for x in VOLTTenant.get_tenant_objects() if (x.vcpe is not None) and (x.vcpe.id==o.id)]
-        vlan_ids = [x.vlan_id for x in volts]
+        vlan_ids = []
+        if o.volt:
+            vlan_ids.append(o.volt.vlan_id)
 
         bbs_addrs = []
         bbs_slices = Slice.objects.filter(name="mysite_bbs")
