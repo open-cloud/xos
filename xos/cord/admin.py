@@ -60,9 +60,9 @@ class VOLTTenantForm(forms.ModelForm):
         model = VOLTTenant
 
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'service_specific_id', 'vlan_id' )
+    list_display = ('backend_status_icon', 'id', 'service_specific_id', 'vlan_id', 'subscriber_root' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     form = VOLTTenantForm
 
