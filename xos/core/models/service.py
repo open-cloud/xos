@@ -159,23 +159,24 @@ class TenantRoot(PlCoreBase):
     kind = StrippedCharField(max_length=30, default=KIND)
     name = StrippedCharField(max_length=255, help_text="name", blank=True, null=True)
 
-    attribute = models.TextField(blank=True, null=True)
+    service_specific_attribute = models.TextField(blank=True, null=True)
+    service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
 
     # helper for extracting things from a json-encoded attribute
     def get_attribute(self, name, default=None):
         if self.service_specific_attribute:
-            attributes = json.loads(self.attribute)
+            attributes = json.loads(self.service_specific_attribute)
         else:
             attributes = {}
         return attributes.get(name, default)
 
     def set_attribute(self, name, value):
         if self.service_specific_attribute:
-            attributes = json.loads(self.attribute)
+            attributes = json.loads(self.service_specific_attribute)
         else:
             attributes = {}
         attributes[name]=value
-        self.attribute = json.dumps(attributes)
+        self.service_specific_attribute = json.dumps(attributes)
 
     def __unicode__(self):
         if not self.name:
@@ -185,6 +186,20 @@ class TenantRoot(PlCoreBase):
 
     def can_update(self, user):
         return user.can_update_tenant_root(self, allow=['admin'])
+
+    def get_subscribed_tenants(self, tenant_class):
+        ids = self.subscribed_tenants.filter(kind=tenant_class.KIND)
+        return tenant_class.objects.filter(id__in = ids)
+
+    def get_newest_subscribed_tenant(self, kind):
+        st = list(self.get_subscribed_tenants(kind))
+        if not st:
+            return None
+        return sorted(st, key=attrgetter('id'))[0]
+
+    @classmethod
+    def get_tenant_objects(cls):
+        return cls.objects.filter(kind = cls.KIND)
 
 class Tenant(PlCoreBase):
     """ A tenant is a relationship between two entities, a subscriber and a
