@@ -162,6 +162,12 @@ class TenantRoot(PlCoreBase):
     service_specific_attribute = models.TextField(blank=True, null=True)
     service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
 
+    def __init__(self, *args, **kwargs):
+        # for subclasses, set the default kind appropriately
+        self._meta.get_field("kind").default = self.KIND
+        super(TenantRoot, self).__init__(*args, **kwargs)
+
+
     # helper for extracting things from a json-encoded attribute
     def get_attribute(self, name, default=None):
         if self.service_specific_attribute:

@@ -130,10 +130,8 @@ class SyncVCPETenant(SyncStep):
             for attribute_name in o.sync_attributes:
                 fields[attribute_name] = getattr(o, attribute_name)
 
-        # legacy code, to be deleted
-        url_filter_enable = o.url_filter_enable
-        url_filter_level = o.url_filter_level
-        url_filter_users = o.users
+        # only enable filtering if we have a subscriber object (see below)
+        url_filter_enable = False
 
         # for attributes that come from CordSubscriberRoot
         if o.volt and o.volt.subscriber and hasattr(o.volt.subscriber, "sync_attributes"):
