@@ -18,7 +18,7 @@ from core.xoslib.objects.cordsubscriber import CordSubscriber
 c=CordSubscriber.get_tenant_objects().select_related().all()[0]
 """
 
-class CordSubscriber(VOLTTenant, PlusObjectMixin):
+class CordSubscriberOld(VOLTTenant, PlusObjectMixin):
     class Meta:
         proxy = True
 
@@ -93,7 +93,7 @@ class CordSubscriber(VOLTTenant, PlusObjectMixin):
                 print "attr", self.vcpe.vbng.service_specific_attribute
                 self.vcpe.vbng.save()
 
-class CordSubscriberNew(CordSubscriberRoot):
+class CordSubscriber(CordSubscriberRoot):
     class Meta:
         proxy = True
 
@@ -109,11 +109,13 @@ class CordSubscriberNew(CordSubscriberRoot):
                      # ("url_filter_enable", "vcpe.url_filter_enable"),
                      # ("url_filter_rules", "vcpe.url_filter_rules"),
                      # ("url_filter_level", "vcpe.url_filter_level"),
-                     # ("bbs_account", "vcpe.bbs_account"),
                      # ("users", "vcpe.users"),
                      # ("services", "vcpe.services"),
                      # ("cdn_enable", "vcpe.cdn_enable"),
 
+                     ("vlan_id", "volt.vlan_id"),
+
+                     ("bbs_account", "volt.vcpe.bbs_account"),
                      ("ssh_command", "volt.vcpe.ssh_command"),
                      ("image", "volt.vcpe.image.id"),
                      ("image_name", "volt.vcpe.image.name"),
@@ -131,6 +133,7 @@ class CordSubscriberNew(CordSubscriberRoot):
                      )
 
     def __getattr__(self, key):
+        #print "XXX getattr", self, key
         for (member_name, passthrough_name) in self.passthroughs:
             if key==member_name:
                 parts = passthrough_name.split(".")
@@ -165,13 +168,13 @@ class CordSubscriberNew(CordSubscriberRoot):
         if (self.volt):
             print "save volt"
             self.volt.save()
-            if (self.vcpe):
+            if (self.volt.vcpe):
                 print "save vcpe"
-                self.vcpe.save()
-                if (self.vcpe.vbng):
-                    print "save vbng", self.vcpe.vbng
-                    print "attr", self.vcpe.vbng.service_specific_attribute
-                    self.vcpe.vbng.save()
+                self.volt.vcpe.save()
+                if (self.volt.vcpe.vbng):
+                    print "save vbng", self.volt.vcpe.vbng
+                    print "attr", self.volt.vcpe.vbng.service_specific_attribute
+                    self.volt.vcpe.vbng.save()
 
 
 

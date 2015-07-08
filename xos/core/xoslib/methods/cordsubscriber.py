@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from cord.models import VOLTTenant, VBNGTenant
+from cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
 from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin
 from django.shortcuts import get_object_or_404
@@ -116,7 +116,7 @@ class CordUserList(APIView):
     def post(self, request, format=None):
         data = request.DATA
         subscriber = CordSubscriber.get_tenant_objects().get(id=int(data["subscriber"]))
-        user = subscriber.vcpe.create_user(name=data["name"],
+        user = subscriber.create_user(name=data["name"],
                                     level=data["level"],
                                     mac=data["mac"])
         subscriber.save()
@@ -137,7 +137,7 @@ class CordUserDetail(APIView):
     def delete(self, request, pk):
         parts = pk.split("-")
         subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
-        subscriber.vcpe.delete_user(parts[1])
+        subscriber.delete_user(parts[1])
         subscriber.save()
         return Response("okay")
 
@@ -152,7 +152,7 @@ class CordUserDetail(APIView):
 
         parts = pk.split("-")
         subscriber = CordSubscriber.get_tenant_objects().get(id=int(parts[0]))
-        user = subscriber.vcpe.update_user(parts[1], **kwargs)
+        user = subscriber.update_user(parts[1], **kwargs)
         subscriber.save()
         return Response(serialize_user(subscriber,user))
 
@@ -253,8 +253,8 @@ class CordSubscriberViewSet(XOSViewSet):
         return Response({"users": subscriber.users})
 
     def get_user_level(self, request, pk=None, uid=None):
-        vcpe = self.get_vcpe()
-        user = vcpe.find_user(uid)
+        subscriber = self.get_object()
+        user = subscriber.find_user(uid)
         if user and user.get("level", None):
             level = user["level"]
         else:
@@ -263,14 +263,12 @@ class CordSubscriberViewSet(XOSViewSet):
         return Response( {"id": uid, "level": level} )
 
     def set_user_level(self, request, pk=None, uid=None, level=None):
-        vcpe = self.get_vcpe()
-        vcpe.update_user(uid, level=level)
-        vcpe.save()
+        subscriber = self.get_object()
+        subscriber.update_user(uid, level=level)
+        subscriber.save()
         return self.get_user_level(request, pk, uid)
 
     def create_user(self, request, pk=None):
-        vcpe = self.get_vcpe()
-
         data = request.DATA
         name = data.get("name",None)
         mac = data.get("mac",None)
@@ -279,23 +277,23 @@ class CordSubscriberViewSet(XOSViewSet):
         if (not mac):
              raise XOSMissingField("mac must be specified when creating user")
 
-        newuser = vcpe.create_user(name=name, mac=mac)
-        vcpe.save()
+        subscriber = self.get_object()
+        newuser = subscriber.create_user(name=name, mac=mac)
+        subscriber.save()
 
         return Response(newuser)
 
     def delete_user(self, request, pk=None, uid=None):
-        vcpe = self.get_vcpe()
-
-        vcpe.delete_user(uid)
-        vcpe.save()
+        subscriber = self.get_object()
+        subscriber.delete_user(uid)
+        subscriber.save()
 
         return Response( {"id": uid, "deleted": True} )
 
     def clear_users(self, request, pk=None):
-        vcpe = self.get_vcpe()
-        vcpe.users = []
-        vcpe.save()
+        subscriber = self.get_object()
+        subscriber.users = []
+        subscriber.save()
 
         return Response( "Okay" )
 
@@ -324,61 +322,58 @@ class CordSubscriberViewSet(XOSViewSet):
 
     def get_bbsdump(self, request, pk=None):
         subscriber = self.get_object()
-        if not subsciber.vcpe:
+        if not subsciber.volt or not subscriber.volt.vcpe:
             raise XOSMissingField("subscriber has no vCPE")
-        if not subscriber.vcpe.bbs_account:
+        if not subscriber.volt.vcpe.bbs_account:
             raise XOSMissingField("subscriber has no bbs_account")
 
-        result=subprocess.check_output(["python", "/opt/xos/observers/vcpe/broadbandshield.py", "dump", subscriber.vcpe.\
-bbs_account, "123"])
+        result=subprocess.check_output(["python", "/opt/xos/observers/vcpe/broadbandshield.py", "dump", subscriber.volt.vcpe.bbs_account, "123"])
         if request.GET.get("theformat",None)=="text":
             from django.http import HttpResponse
             return HttpResponse(result, content_type="text/plain")
         else:
             return Response( {"bbs_dump": result } )
 
-    def setup_demo_vcpe(self, voltTenant):
+    def setup_demo_subscriber(self, subscriber):
         # nuke the users and start over
-        voltTenant.vcpe.users = []
-        voltTenant.vcpe.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
-        voltTenant.vcpe.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jack's Laptop", mac="685B359D91D5", level="PG_13")
-        voltTenant.vcpe.create_user(name="Jill's Laptop", mac="34363BC9B6A6", level="PG_13")
-        voltTenant.vcpe.save()
+        subscriber.users = []
+        subscriber.create_user(name="Mom's PC",      mac="010203040506", level="PG_13")
+        subscriber.create_user(name="Dad's PC",      mac="90E2Ba82F975", level="PG_13")
+        subscriber.create_user(name="Jack's Laptop", mac="685B359D91D5", level="PG_13")
+        subscriber.create_user(name="Jill's Laptop", mac="34363BC9B6A6", level="PG_13")
+        subscriber.save()
 
     def initdemo(self, request):
-        object_list = VOLTTenant.get_tenant_objects().all()
+        object_list = CordSubscriber.get_tenant_objects().all()
 
         # reset the parental controls in any existing demo vCPEs
         for o in object_list:
             if str(o.service_specific_id) in ["0", "1"]:
-                if o.vcpe is not None:
-                    self.setup_demo_vcpe(o)
+                self.setup_demo_subscriber(o)
 
         demo_subscribers = [o for o in object_list if o.is_demo_user]
 
         if demo_subscribers:
             return Response({"id": demo_subscribers[0].id})
 
-        voltTenant = VOLTTenant(service_specific_id=1234,
-                                vlan_id=1234,
-                                is_demo_user=True)
-        voltTenant.caller = User.objects.get(email="padmin@vicci.org")
-        voltTenant.save()
+        subscriber = CordSubscriberRoot(service_specific_id=1234,
+                                        name="demo-subscriber",)
+        subscriber.is_demo_user = True
+        subscriber.save()
 
-        self.setup_demo_vcpe(voltTenant)
+        self.setup_demo_subscriber(subscriber)
 
-        return Response({"id": voltTenant.id})
+        return Response({"id": subscriber.id})
 
     def ssidlist(self, request):
-        object_list = VOLTTenant.get_tenant_objects().all()
+        object_list = CordSubscriber.get_tenant_objects().all()
 
         ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list ]
 
         return Response({"ssidmap": ssidmap})
 
     def ssiddetail(self, pk=None, ssid=None):
-        object_list = VOLTTenant.get_tenant_objects().all()
+        object_list = CordSubscriber.get_tenant_objects().all()
 
         ssidmap = [ {"service_specific_id": x.service_specific_id, "subscriber_id": x.id} for x in object_list if str(x.service_specific_id)==str(ssid) ]
 

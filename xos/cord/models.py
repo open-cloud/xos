@@ -71,7 +71,8 @@ class CordSubscriberRoot(Subscriber):
                           "url_filter_rules": "allow all",
                           "url_filter_level": "PG",
                           "cdn_enable": False,
-                          "users": [] }
+                          "users": [],
+                          "is_demo_user": False }
 
     sync_attributes = ("firewall_enable",
                        "firewall_rules",
@@ -92,7 +93,7 @@ class CordSubscriberRoot(Subscriber):
 
         # always return the same object when possible
         if (self.cached_volt) and (self.cached_volt.id == volt.id):
-            return self.cached_vcpe
+            return self.cached_volt
 
         #volt.caller = self.creator
         self.cached_volt = volt
@@ -224,6 +225,14 @@ class CordSubscriberRoot(Subscriber):
             # 2) trigger vcpe observer to wake up
             self.volt.vcpe.save()
 
+    @property
+    def is_demo_user(self):
+        return self.get_attribute("is_demo_user", self.default_attributes["is_demo_user"])
+
+    @is_demo_user.setter
+    def is_demo_user(self, value):
+        self.set_attribute("is_demo_user", value)
+
 # -------------------------------------------
 # VOLT
 # -------------------------------------------
@@ -242,9 +251,7 @@ class VOLTTenant(Tenant):
 
     KIND = VOLT_KIND
 
-    default_attributes = {"vlan_id": None,
-                          "is_demo_user": False }
-
+    default_attributes = {"vlan_id": None, }
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
@@ -308,14 +315,6 @@ class VOLTTenant(Tenant):
         if (value != self.get_attribute("creator_id", None)):
             self.cached_creator=None
         self.set_attribute("creator_id", value)
-
-    @property
-    def is_demo_user(self):
-        return self.get_attribute("is_demo_user", self.default_attributes["is_demo_user"])
-
-    @is_demo_user.setter
-    def is_demo_user(self, value):
-        self.set_attribute("is_demo_user", value)
 
     def manage_vcpe(self):
         # Each VOLT object owns exactly one VCPE object
@@ -422,25 +421,14 @@ class VCPETenant(Tenant):
 
     KIND = VCPE_KIND
 
-    sync_attributes = ("firewall_enable",
-                       "firewall_rules",
-                       "url_filter_enable",
-                       "url_filter_rules",
-                       "cdn_enable",
-                       "nat_ip",
+    sync_attributes = ("nat_ip",
                        "lan_ip",
                        "wan_ip",
                        "private_ip",
                        "hpc_client_ip",
                        "wan_mac")
 
-    default_attributes = {"firewall_enable": False,
-                          "firewall_rules": "accept all anywhere anywhere",
-                          "url_filter_enable": False,
-                          "url_filter_rules": "allow all",
-                          "url_filter_level": "PG",
-                          "cdn_enable": False,
-                          "sliver_id": None,
+    default_attributes = {"sliver_id": None,
                           "users": [],
                           "bbs_account": None,
                           "last_ansible_hash": None}
@@ -535,137 +523,6 @@ class VCPETenant(Tenant):
         if not volts:
             return None
         return volts[0]
-
-    # *** to be moved to CordSubscriberRoot
-
-    # TODO:
-    #    1) delete the stuff in this section
-    #    2) remove the associated fields from sync_attributes and default_attributes
-    #    3) in core/xoslib/methods/cordsubscriber.py, rename CordSubscriberNew to CordSubscriber
-    #    4) in observers/vcpe/steps/sync_vcpetenant, remove the stuff marked 'legacy'
-    #    5) update manage_bbs_account
-    #    6) come up with a way to auto-create Subscriber from vOLT, for backward compatibility
-
-    @property
-    def firewall_enable(self):
-        return self.get_attribute("firewall_enable", self.default_attributes["firewall_enable"])
-
-    @firewall_enable.setter
-    def firewall_enable(self, value):
-        self.set_attribute("firewall_enable", value)
-
-    @property
-    def firewall_rules(self):
-        return self.get_attribute("firewall_rules", self.default_attributes["firewall_rules"])
-
-    @firewall_rules.setter
-    def firewall_rules(self, value):
-        self.set_attribute("firewall_rules", value)
-
-    @property
-    def url_filter_enable(self):
-        return self.get_attribute("url_filter_enable", self.default_attributes["url_filter_enable"])
-
-    @url_filter_enable.setter
-    def url_filter_enable(self, value):
-        self.set_attribute("url_filter_enable", value)
-
-    @property
-    def url_filter_level(self):
-        return self.get_attribute("url_filter_level", self.default_attributes["url_filter_level"])
-
-    @url_filter_level.setter
-    def url_filter_level(self, value):
-        self.set_attribute("url_filter_level", value)
-
-    @property
-    def url_filter_rules(self):
-        return self.get_attribute("url_filter_rules", self.default_attributes["url_filter_rules"])
-
-    @url_filter_rules.setter
-    def url_filter_rules(self, value):
-        self.set_attribute("url_filter_rules", value)
-
-    @property
-    def cdn_enable(self):
-        return self.get_attribute("cdn_enable", self.default_attributes["cdn_enable"])
-
-    @cdn_enable.setter
-    def cdn_enable(self, value):
-        self.set_attribute("cdn_enable", value)
-
-    @property
-    def users(self):
-        return self.get_attribute("users", self.default_attributes["users"])
-
-    @users.setter
-    def users(self, value):
-        self.set_attribute("users", value)
-
-    def find_user(self, uid):
-        uid = int(uid)
-        for user in self.users:
-            if user["id"] == uid:
-                return user
-        return None
-
-    def update_user(self, uid, **kwargs):
-        # kwargs may be "level" or "mac"
-        #    Setting one of these to None will cause None to be stored in the db
-        uid = int(uid)
-        users = self.users
-        for user in users:
-            if user["id"] == uid:
-                for arg in kwargs.keys():
-                    user[arg] = kwargs[arg]
-                    self.users = users
-                return user
-        raise ValueError("User %d not found" % uid)
-
-    def create_user(self, **kwargs):
-        if "name" not in kwargs:
-            raise XOSMissingField("The name field is required")
-
-        for user in self.users:
-            if kwargs["name"] == user["name"]:
-                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
-
-        uids = [x["id"] for x in self.users]
-        if uids:
-            uid = max(uids)+1
-        else:
-            uid = 0
-        newuser = kwargs.copy()
-        newuser["id"] = uid
-
-        users = self.users
-        users.append(newuser)
-        self.users = users
-
-        return newuser
-
-    def delete_user(self, uid):
-        uid = int(uid)
-        users = self.users
-        for user in users:
-            if user["id"]==uid:
-                users.remove(user)
-                self.users = users
-                return
-
-        raise ValueError("Users %d not found" % uid)
-
-    @property
-    def services(self):
-        return {"cdn": self.cdn_enable,
-                "url_filter": self.url_filter_enable,
-                "firewall": self.firewall_enable}
-
-    @services.setter
-    def services(self, value):
-        pass
-
-    # *** end of stuff to be moved to CordSubscriberRoot
 
     @property
     def bbs_account(self):
@@ -839,7 +696,7 @@ class VCPETenant(Tenant):
         if self.deleted:
             return
 
-        if self.url_filter_enable:
+        if self.volt and self.volt.subscriber and self.volt.subscriber.url_filter_enable:
             if not self.bbs_account:
                 # make sure we use the proxied VCPEService object, not the generic Service object
                 vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
