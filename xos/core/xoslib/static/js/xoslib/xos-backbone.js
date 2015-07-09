@@ -26,6 +26,7 @@ if (! window.XOSLIB_LOADED ) {
     CONTROLLERIMAGE_API = XOS_BASE+"/controllerimages/";
     CONTROLLERNETWORK_API = XOS_BASE+"/controllernetworks/";
     CONTROLLERSLICE_API = XOS_BASE+"/controllerslices/";
+    CONTROLLERUSER_API = XOS_BASE+"/controllerusers/";
 
     SLICEDEPLOYMENT_API = XOS_BASE+"/slicedeployments/";
     USERDEPLOYMENT_API = XOS_BASE+"/userdeployments/";
@@ -546,7 +547,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: USER_API,
-                            relatedCollections: {"slicePrivileges": "user", "slices": "owner"},
+                            relatedCollections: {"slicePrivileges": "user", "slices": "owner", "controller_users": "user"},
                             foreignCollections: ["sites"],
                             modelName: "user",
                             foreignFields: {"site": "sites"},
@@ -636,6 +637,14 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "controller_slice",
                             listFields: ["backend_status", "id", "slice", "controller", "tenant_id"],
                             detailFields: ["backend_status", "backend_register", "slice", "controller", "tenant_id"],
+                            });
+
+        define_model(this, {urlRoot: CONTROLLERUSER_API,
+                            foreignCollections: ["users", "controllers"],
+                            foreignFields: {"user": "users", "controller": "controllers"},
+                            modelName: "controller_user",
+                            listFields: ["backend_status", "id", "user", "controller", "kuser_id"],
+                            detailFields: ["backend_status", "backend_register", "user", "controller", "kuser_id"],
                             });
 
         /* removed
