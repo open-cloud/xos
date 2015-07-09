@@ -114,6 +114,7 @@ class XOSAdminMixin(object):
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         for instance in instances:
+            instance.caller = request.user
             instance.save_by_user(request.user)
 
         # BUG in django 1.7? Objects are not deleted by formset.save if
@@ -1071,13 +1072,6 @@ class SliceAdmin(XOSBaseAdmin):
         # cannot change the site of an existing slice so make the site field read only
         if object_id:
             self.readonly_fields = ('backend_status_text','site')
-
-        # Ugly hack for CORD
-        self.inlines = self.normal_inlines
-        if object_id:
-            slice = Slice.objects.get(pk=object_id)
-            if slice.name == "mysite_vcpe":
-                self.inlines = [ SlicePrivilegeInline, CordSliverInline, TagInline, ReservationInline,SliceNetworkInline]
 
         return super(SliceAdmin, self).change_view(request, object_id, form_url)
 
