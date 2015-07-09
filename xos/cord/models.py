@@ -2,7 +2,7 @@ from django.db import models
 from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User, Flavor, Subscriber
 from core.models.plcorebase import StrippedCharField
 import os
-from django.db import models
+from django.db import models, transaction
 from django.forms.models import model_to_dict
 from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
@@ -381,13 +381,25 @@ class VOLTTenant(Tenant):
                 raise XOSProgrammingError("VOLTTenant's self.creator was not set")
 
         super(VOLTTenant, self).save(*args, **kwargs)
-        self.manage_vcpe()
-        self.manage_subscriber()
-        self.cleanup_orphans()
+        model_policy_volt(self.pk)
+        #self.manage_vcpe()
+        #self.manage_subscriber()
+        #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vcpe()
         super(VOLTTenant, self).delete(*args, **kwargs)
+
+def model_policy_volt(pk):
+    # TODO: this should be made in to a real model_policy
+    with transaction.atomic():
+        volt = VOLTTenant.objects.select_for_update().filter(pk=pk)
+        if not volt:
+            return
+        volt = volt[0]
+        volt.manage_vcpe()
+        volt.manage_subscriber()
+        volt.cleanup_orphans()
 
 # -------------------------------------------
 # VCPE
@@ -441,7 +453,7 @@ class VCPETenant(Tenant):
 
     @property
     def image(self):
-        LOOK_FOR_IMAGES=["ubuntu-vcpe3",        # ONOS demo machine -- preferred vcpe image
+        LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
                          "Ubuntu 14.04 LTS",    # portal
                          "Ubuntu-14.04-LTS",    # ONOS demo machine
                         ]
@@ -717,15 +729,28 @@ class VCPETenant(Tenant):
                 raise XOSProgrammingError("VCPETenant's self.creator was not set")
 
         super(VCPETenant, self).save(*args, **kwargs)
-        self.manage_sliver()
-        self.manage_vbng()
-        self.manage_bbs_account()
-        self.cleanup_orphans()
+        model_policy_vcpe(self.pk)
+        #self.manage_sliver()
+        #self.manage_vbng()
+        #self.manage_bbs_account()
+        #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
         self.cleanup_sliver()
         super(VCPETenant, self).delete(*args, **kwargs)
+
+def model_policy_vcpe(pk):
+    # TODO: this should be made in to a real model_policy
+    with transaction.atomic():
+        vcpe = VCPETenant.objects.select_for_update().filter(pk=pk)
+        if not vcpe:
+            return
+        vcpe = vcpe[0]
+        vcpe.manage_sliver()
+        vcpe.manage_vbng()
+        vcpe.manage_bbs_account()
+        vcpe.cleanup_orphans()
 
 #----------------------------------------------------------------------------
 # vBNG
