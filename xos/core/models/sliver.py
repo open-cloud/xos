@@ -16,6 +16,7 @@ from core.models import Flavor
 from django.contrib.contenttypes import generic
 from xos.config import Config
 from monitor import driver as monitor
+from django.core.exceptions import PermissionDenied, ValidationError
 
 config = Config()
 
@@ -113,6 +114,13 @@ class Sliver(PlCoreBase):
             self.creator = self.caller
         if not self.creator:
             raise ValidationError('sliver has no creator')
+
+        if (self.slice.creator != self.creator):
+            # Check to make sure there's a slice_privilege for the user. If there
+            # isn't, then keystone will throw an exception inside the observer.
+            slice_privs = SlicePrivilege.objects.filter(slice=self.slice, user=self.creator)
+            if not slice_privs:
+                raise ValidationError('sliver creator has no privileges on slice')
 
 # XXX smbaker - disabled for now, was causing fault in tenant view create slice
 #        if not self.controllerNetwork.test_acl(slice=self.slice):

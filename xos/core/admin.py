@@ -19,7 +19,9 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
 from django.utils.text import capfirst
 from django.forms.utils import flatatt, to_current_timezone
+from django.core.exceptions import PermissionDenied, ValidationError
 from cgi import escape as html_escape
+from django.contrib import messages
 
 import django_evolution
 import threading
@@ -194,6 +196,21 @@ class XOSAdminMixin(object):
             return super(XOSAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
             pass
+        except ValidationError as e:
+            if (e.params is None):
+                # Validation errors that don't reference a specific field will
+                # often throw a non-descriptive 500 page to the user. The code
+                # below will cause an error message to be printed and the
+                # page refreshed instead.
+                # As a side-effect it turns the request back into a 'GET' which
+                # may wipe anything the user had changed on the page. But, at
+                # least the user gets a real error message.
+                # TODO: revisit this and display some kind of error view
+                request.method = 'GET'
+                messages.error(request, e.message)
+                return super(XOSAdminMixin, self).change_view(request, object_id, extra_context=extra_context)
+            else:
+                raise
         if request.method == 'POST':
             raise PermissionDenied
         request.readonly = True
