@@ -87,15 +87,35 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
 # vCPE
 #-----------------------------------------------------------------------------
 
+class VCPEServiceForm(forms.ModelForm):
+    bbs_url = forms.CharField()
+    client_network_label = forms.CharField()
+
+    def __init__(self,*args,**kwargs):
+        super (VCPEServiceForm,self ).__init__(*args,**kwargs)
+        if self.instance:
+            self.fields['bbs_url'].initial = self.instance.bbs_url
+            self.fields['client_network_label'].initial = self.instance.client_network_label
+
+    def save(self, commit=True):
+        self.instance.bbs_url = self.cleaned_data.get("bbs_url")
+        self.instance.client_network_label = self.cleaned_data.get("client_network_label")
+        return super(VCPEServiceForm, self).save(commit=commit)
+
+    class Meta:
+        model = VCPEService
+
 class VCPEServiceAdmin(ReadOnlyAwareAdmin):
     model = VCPEService
     verbose_name = "vCPE Service"
     verbose_name_plural = "vCPE Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",
+                                    "bbs_url", "client_network_label" ], 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    form = VCPEServiceForm
 
     extracontext_registered_admins = True
 

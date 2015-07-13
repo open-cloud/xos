@@ -408,6 +408,12 @@ def model_policy_volt(pk):
 class VCPEService(Service):
     KIND = VCPE_KIND
 
+    simple_attributes = ( ("bbs_url", None),
+                          ("client_network_label", "hpc_client") )
+
+    def __init__(self, *args, **kwargs):
+        super(VCPEService, self).__init__(*args, **kwargs)
+
     class Meta:
         app_label = "cord"
         verbose_name = "vCPE Service"
@@ -426,6 +432,9 @@ class VCPEService(Service):
                  return account_name
 
         raise XOSConfigurationError("We've run out of available broadbandshield accounts. Delete some vcpe and try again.")
+
+VCPEService.setup_simple_attributes()
+
 
 class VCPETenant(Tenant):
     class Meta:
