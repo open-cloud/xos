@@ -50,11 +50,23 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
         return VOLTService.get_service_objects()
 
 class VOLTTenantForm(forms.ModelForm):
+    vlan_id = forms.CharField()
+    creator = forms.ModelChoiceField(queryset=User.objects.all())
+
     def __init__(self,*args,**kwargs):
         super (VOLTTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].default = "vOLT"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VOLTService.get_service_objects().all()
+        if self.instance:
+            # fields for the attributes
+            self.fields['vlan_id'].initial = self.instance.vlan_id
+            self.fields['creator'].initial = self.instance.creator
+
+    def save(self, commit=True):
+        self.instance.vlan_id = self.cleaned_data.get("vlan_id")
+        self.instance.creator = self.cleaned_data.get("creator")
+        return super(VOLTTenantForm, self).save(commit=commit)
 
     class Meta:
         model = VOLTTenant
@@ -62,8 +74,8 @@ class VOLTTenantForm(forms.ModelForm):
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'service_specific_id', 'vlan_id', 'subscriber_root' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', 'service_specific_attribute', 'vlan_id', 'creator'], 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', 'service_specific_attribute')
     form = VOLTTenantForm
 
     suit_form_tabs = (('general','Details'),)
