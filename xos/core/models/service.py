@@ -5,7 +5,31 @@ from xos.exceptions import *
 from operator import attrgetter
 import json
 
-class Service(PlCoreBase):
+class AttributeMixin(object):
+    # helper for extracting things from a json-encoded service_specific_attribute
+    def get_attribute(self, name, default=None):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.service_specific_attribute)
+        else:
+            attributes = {}
+        return attributes.get(name, default)
+
+    def set_attribute(self, name, value):
+        if self.service_specific_attribute:
+            attributes = json.loads(self.service_specific_attribute)
+        else:
+            attributes = {}
+        attributes[name]=value
+        self.service_specific_attribute = json.dumps(attributes)
+
+    def get_initial_attribute(self, name, default=None):
+        if self._initial["service_specific_attribute"]:
+            attributes = json.loads(self._initial["service_specific_attribute"])
+        else:
+            attributes = {}
+        return attributes.get(name, default)
+
+class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
     KIND = "generic"
 
@@ -154,7 +178,7 @@ class ServicePrivilege(PlCoreBase):
             qs = SitePrivilege.objects.filter(user=user)
         return qs
 
-class TenantRoot(PlCoreBase):
+class TenantRoot(PlCoreBase, AttributeMixin):
     """ A tenantRoot is one of the things that can sit at the root of a chain
         of tenancy. This object represents a node.
     """
@@ -170,23 +194,6 @@ class TenantRoot(PlCoreBase):
         # for subclasses, set the default kind appropriately
         self._meta.get_field("kind").default = self.KIND
         super(TenantRoot, self).__init__(*args, **kwargs)
-
-
-    # helper for extracting things from a json-encoded attribute
-    def get_attribute(self, name, default=None):
-        if self.service_specific_attribute:
-            attributes = json.loads(self.service_specific_attribute)
-        else:
-            attributes = {}
-        return attributes.get(name, default)
-
-    def set_attribute(self, name, value):
-        if self.service_specific_attribute:
-            attributes = json.loads(self.service_specific_attribute)
-        else:
-            attributes = {}
-        attributes[name]=value
-        self.service_specific_attribute = json.dumps(attributes)
 
     def __unicode__(self):
         if not self.name:
@@ -211,7 +218,7 @@ class TenantRoot(PlCoreBase):
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
 
-class Tenant(PlCoreBase):
+class Tenant(PlCoreBase, AttributeMixin):
     """ A tenant is a relationship between two entities, a subscriber and a
         provider. This object represents an edge.
 
@@ -251,29 +258,6 @@ class Tenant(PlCoreBase):
 
     def __unicode__(self):
         return u"%s-tenant-%s" % (str(self.kind), str(self.id))
-
-    # helper for extracting things from a json-encoded service_specific_attribute
-    def get_attribute(self, name, default=None):
-        if self.service_specific_attribute:
-            attributes = json.loads(self.service_specific_attribute)
-        else:
-            attributes = {}
-        return attributes.get(name, default)
-
-    def set_attribute(self, name, value):
-        if self.service_specific_attribute:
-            attributes = json.loads(self.service_specific_attribute)
-        else:
-            attributes = {}
-        attributes[name]=value
-        self.service_specific_attribute = json.dumps(attributes)
-
-    def get_initial_attribute(self, name, default=None):
-        if self._initial["service_specific_attribute"]:
-            attributes = json.loads(self._initial["service_specific_attribute"])
-        else:
-            attributes = {}
-        return attributes.get(name, default)
 
     @classmethod
     def get_tenant_objects(cls):
