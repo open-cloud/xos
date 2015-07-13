@@ -32,10 +32,10 @@ class AttributeMixin(object):
     @classmethod
     def setup_simple_attributes(cls):
         for (attrname, default) in cls.simple_attributes:
-            setattr(cls, attrname, property(lambda self: self.get_attribute(attrname, default),
-                                   lambda self, value: self.set_attribute(attrname, value),
-                                   None,
-                                   attrname))
+            setattr(cls, attrname, property(lambda self, attrname=attrname, default=default: self.get_attribute(attrname, default),
+                                            lambda self, value, attrname=attrname: self.set_attribute(attrname, value),
+                                            None,
+                                            attrname))
 
 class Service(PlCoreBase, AttributeMixin):
     # when subclassing a service, redefine KIND to describe the new service
