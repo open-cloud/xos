@@ -92,10 +92,10 @@ class Slice(PlCoreBase):
         else:
             # users can see slices they belong to 
             slice_ids = [sp.slice.id for sp in SlicePrivilege.objects.filter(user=user)]
-            # pis can see slices at their sites
+            # pis and admins can see slices at their sites
             sites = [sp.site for sp in SitePrivilege.objects.filter(user=user)\
                         if (sp.role.role == 'pi') or (sp.role.role == 'admin')]
-            slice_ids.extend([s.id for s in Slice.objects.filter(site__in=sites)]) 
+            slice_ids.extend([s.id for s in Slice.objects.filter(site__in=sites)])
             qs = Slice.objects.filter(id__in=slice_ids)
         return qs
 
