@@ -61,3 +61,4 @@ class XOSConflictingField(APIException):
         APIException.__init__(self, {"error": "XOSMissingField",
                             "specific_error": why,
                             "fields": fields})
+
