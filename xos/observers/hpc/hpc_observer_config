@@ -29,6 +29,7 @@ deleters_dir=/opt/xos/observers/hpc/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
+#cmi_hostname=openclouddev0.internet2.edu
 
 [feefie]
 client_id='vicci_dev_central'
