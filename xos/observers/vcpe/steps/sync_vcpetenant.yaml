@@ -61,8 +61,14 @@
   - name: make sure /etc/dnsmasq.d exists
     file: path=/etc/dnsmasq.d state=directory owner=root group=root
 
-  - name: Disable resolvconf updates (to avoid overwriting /etc/resolv.conf on host)
-    shell: service resolvconf disable-updates
+  - name: Disable resolvconf service
+    shell: service resolvconf stop
+    shell: echo manual > /etc/init/resolvconf.override
+    shell: rm -f /etc/resolv.conf
+
+  - name: Install resolv.conf
+    copy src=/opt/xos/observers/vcpe/files/vm-resolv.conf
+      dest=/etc/resolv.conf
 {% endif %}
 
   - name: vCPE upstart
