@@ -410,7 +410,7 @@ class VCPEService(Service):
 
     simple_attributes = ( ("bbs_url", None),
                           ("bbs_server", None),
-                          ("client_network_label", "hpc_client"), )
+                          ("backend_network_label", "hpc_client"), )
 
     def __init__(self, *args, **kwargs):
         super(VCPEService, self).__init__(*args, **kwargs)

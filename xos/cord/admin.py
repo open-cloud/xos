@@ -98,13 +98,13 @@ class VCPEServiceForm(forms.ModelForm):
         if self.instance:
             self.fields['bbs_url'].initial = self.instance.bbs_url
             self.fields['bbs_server'].initial = self.instance.bbs_server
-            self.fields['backend_network_label'].initial = self.instance.client_network_label
+            self.fields['backend_network_label'].initial = self.instance.backend_network_label
             self.fields['bbs_slice'].initial = self.instance.bbs_slice
 
     def save(self, commit=True):
         self.instance.bbs_url = self.cleaned_data.get("bbs_url")
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
-        self.instance.client_network_label = self.cleaned_data.get("backend_network_label")
+        self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
         return super(VCPEServiceForm, self).save(commit=commit)
 
