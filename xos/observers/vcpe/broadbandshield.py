@@ -59,7 +59,7 @@ class BBS:
                  "ALL": "NONE",
                  None: "NONE"}
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, bbs_hostname=None, bbs_port=None):
         self.username = username
         self.password = password
 
@@ -67,8 +67,13 @@ class BBS:
         #self.bbs_hostname = "www.broadbandshield.com"
         #self.bbs_port = 80
 
-        self.bbs_hostname = "cordcompute01.onlab.us"
-        self.bbs_port = 8018
+        if not bbs_hostname:
+            bbs_hostname = "cordcompute01.onlab.us"
+        if not bbs_port:
+            bbs_port = 8018
+
+        self.bbs_hostname = bbs_hostname
+        self.bbs_port = int(bbs_port)
 
         self.api = "http://%s:%d/api" % (self.bbs_hostname, self.bbs_port)
         self.nic_update = "http://%s:%d/nic/update" % (self.bbs_hostname, self.bbs_port)
