@@ -98,11 +98,15 @@ class SyncVCPETenant(SyncStep):
 
         bbs_addrs = []
         if vcpe_service.bbs_slice:
-            bbs_slice = vcpe_service.bbs_slice
-            for bbs_sliver in bbs_slice.slivers.all():
-                for ns in bbs_sliver.networkslivers.all():
-                    if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
-                        bbs_addrs.append(ns.ip)
+            if vcpe_service.backend_network_label:
+                for bbs_sliver in vcpe_service.bbs_slice.slivers.all():
+                    for ns in bbs_sliver.networkslivers.all():
+                        if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
+                            bbs_addrs.append(ns.ip)
+            else:
+                logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not")
+            if not bbs_addrs:
+                logger.info("failed to find any usable addresses on bbs_slice")
         elif vcpe.bbs_server:
             bbs_addrs.append(vcpe.bbs_server)
         else:
