@@ -72,9 +72,7 @@ class SyncVCPETenant(SyncStep):
                     if "dnsdemux" in slice.name:
                         for sliver in slice.slivers.all():
                             for ns in sliver.networkslivers.all():
-                                if ns.ip and
-                                   ns.network.labels and
-                                   (vcpe_service.backend_network_label in ns.network.labels):
+                                if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                                     dnsdemux_ip = ns.ip
             if not dnsdemux_ip:
                 logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
@@ -99,8 +97,8 @@ class SyncVCPETenant(SyncStep):
             cdn_prefixes.append(prefix.prefix)
 
         bbs_addrs = []
-        if vcpe.bbs_slice:
-            bbs_slice = bbs_slices[0]
+        if vcpe_service.bbs_slice:
+            bbs_slice = vcpe_service.bbs_slice
             for bbs_sliver in bbs_slice.slivers.all():
                 for ns in bbs_sliver.networkslivers.all():
                     if ns.ip and ns.network.labels and ("hpc_client" in ns.network.labels):
@@ -142,7 +140,7 @@ class SyncVCPETenant(SyncStep):
 
         # Make sure the slice is configured properly
         if (service != o.sliver.slice.service):
-            raise Exception("Slice %s is associated with some service that is not %s % (str(sliver.slice), str(service)))
+            raise Exception("Slice %s is associated with some service that is not %s" % (str(sliver.slice), str(service)))
 
         if not os.path.exists(self.service_key_name):
             raise Exception("Service key %s does not exist" % self.service_key_name)
