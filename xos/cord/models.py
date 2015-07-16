@@ -409,7 +409,8 @@ class VCPEService(Service):
     KIND = VCPE_KIND
 
     simple_attributes = ( ("bbs_url", None),
-                          ("client_network_label", "hpc_client") )
+                          ("bbs_server", None),
+                          ("client_network_label", "hpc_client"), )
 
     def __init__(self, *args, **kwargs):
         super(VCPEService, self).__init__(*args, **kwargs)
@@ -432,6 +433,22 @@ class VCPEService(Service):
                  return account_name
 
         raise XOSConfigurationError("We've run out of available broadbandshield accounts. Delete some vcpe and try again.")
+
+    @property
+    def bbs_slice(self):
+        bbs_slice_id=self.get_attribute("bbs_slice_id")
+        if not bbs_slice_id:
+            return None
+        bbs_slices=Slice.objects.filter(id=bbs_slice_id)
+        if not bbs_slices:
+            return None
+        return bbs_slices[0]
+
+    @bbs_slice.setter
+    def bbs_slice(self, value):
+        if value:
+            value = value.id
+        self.set_attribute("bbs_slice_id", value)
 
 VCPEService.setup_simple_attributes()
 
