@@ -408,7 +408,8 @@ def model_policy_volt(pk):
 class VCPEService(Service):
     KIND = VCPE_KIND
 
-    simple_attributes = ( ("bbs_url", None),
+    simple_attributes = ( ("bbs_api_hostname", None),
+                          ("bbs_api_port", None),
                           ("bbs_server", None),
                           ("backend_network_label", "hpc_client"), )
 

@@ -88,7 +88,8 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
 #-----------------------------------------------------------------------------
 
 class VCPEServiceForm(forms.ModelForm):
-    bbs_url = forms.CharField(required=False)
+    bbs_api_hostname = forms.CharField(required=False)
+    bbs_api_port = forms.IntegerField(required=False)
     bbs_server = forms.CharField(required=False)
     backend_network_label = forms.CharField(required=False)
     bbs_slice = forms.ModelChoiceField(queryset=Slice.objects.all(), required=False)
@@ -96,13 +97,15 @@ class VCPEServiceForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (VCPEServiceForm,self ).__init__(*args,**kwargs)
         if self.instance:
-            self.fields['bbs_url'].initial = self.instance.bbs_url
+            self.fields['bbs_api_hostname'].initial = self.instance.bbs_api_hostname
+            self.fields['bbs_api_port'].initial = self.instance.bbs_api_port
             self.fields['bbs_server'].initial = self.instance.bbs_server
             self.fields['backend_network_label'].initial = self.instance.backend_network_label
             self.fields['bbs_slice'].initial = self.instance.bbs_slice
 
     def save(self, commit=True):
-        self.instance.bbs_url = self.cleaned_data.get("bbs_url")
+        self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
+        self.instance.bbs_api_port = self.cleaned_data.get("bbs_api_port")
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
         self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
@@ -119,7 +122,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
                                      'classes':['suit-tab suit-tab-general']}),
-                 ("backend config", {'fields': [ "backend_network_label", "bbs_url", "bbs_server", "bbs_slice"],
+                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
                                      'classes':['suit-tab suit-tab-backend']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
