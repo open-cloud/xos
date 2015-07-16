@@ -595,7 +595,8 @@ class SlicePrivilegeInline(XOSTabularInline):
         if db_field.name == 'slice':
            kwargs['queryset'] = Slice.select_by_user(request.user)
         if db_field.name == 'user':
-           kwargs['queryset'] = User.select_by_user(request.user)
+           # all users are available to be granted SlicePrivilege
+           kwargs['queryset'] = User.objects.all()
 
         return super(SlicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
