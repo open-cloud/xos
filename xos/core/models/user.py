@@ -224,7 +224,6 @@ class User(AbstractBaseUser, PlModelMixIn):
     def save(self, *args, **kwds):
         if not self.id:
             self.set_password(self.password)
-        print "XXX", self, self.is_active, self.is_registering
         if self.is_active and self.is_registering:
             self.send_temporary_password()
             self.is_registering=False
