@@ -6,6 +6,9 @@
 <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
 <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css">
 <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
+{% if XOS_BRANDING_CSS %}
+    <link rel="stylesheet" type="text/css" href="{{ XOS_BRANDING_CSS }}">
+{% endif %}
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
