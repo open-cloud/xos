@@ -96,6 +96,9 @@ class SyncVCPETenant(SyncStep):
         for prefix in CDNPrefix.objects.all():
             cdn_prefixes.append(prefix.prefix)
 
+        # Broadbandshield can either be set up internally, using vcpe_service.bbs_slice,
+        # or it can be setup externally using vcpe_service.bbs_server.
+
         bbs_addrs = []
         if vcpe_service.bbs_slice:
             if vcpe_service.backend_network_label:
