@@ -54,12 +54,22 @@ function ensure_postgres_running {
 
 }
 
+function wait_postgres {
+    sudo -u postgres psql -c '\q'
+    while [[ "$?" != "0" ]]; do
+        echo Waiting for postgres to start
+        sleep 1
+        sudo -u postgres psql -c '\q'
+    done 
+}
+
 function db_exists {
    sudo -u postgres psql $DBNAME -c '\q' 2>/dev/null    
    return $?
 } 
 
 function createdb {
+    wait_postgres
     echo "Creating XOS database..."
     sudo -u postgres createdb $DBNAME
 }
