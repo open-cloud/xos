@@ -4,6 +4,9 @@
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/static/suit/bootstrap/css/bootstrap.min.css" media="all"/>
 <link rel="stylesheet" type="text/css" href="{% static "xos.css" %}" />
+{% if XOS_BRANDING_CSS %}
+    <link rel="stylesheet" type="text/css" href="{{ XOS_BRANDING_CSS }}">
+{% endif %}
 <script src="{% static 'suit/js/jquery-1.9.1.min.js' %}"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 {% endblock %}

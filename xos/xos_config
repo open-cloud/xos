@@ -37,3 +37,8 @@ backoff_disabled=False
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
+
+[gui]
+disable_minidashboard=True
+#branding_name=CORD
+#branding_css=/static/cord.css

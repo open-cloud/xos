@@ -172,7 +172,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
-    'ADMIN_NAME': 'OpenCloud',
+    'ADMIN_NAME': getattr(config, "gui_branding_name", "OpenCloud"),
     # 'HEADER_DATE_FORMAT': 'l, j. F Y',
     # 'HEADER_TIME_FORMAT': 'H:i',
 
@@ -264,6 +264,9 @@ RESTAPI_HOSTNAME = getattr(config, "server_restapihostname", getattr(config, "se
 RESTAPI_PORT = int(getattr(config, "server_port", "8000"))
 
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
+
+XOS_BRANDING_NAME = getattr(config, "gui_branding_name", "OpenCloud")
+XOS_BRANDING_CSS = getattr(config, "gui_branding_css", None)
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'
