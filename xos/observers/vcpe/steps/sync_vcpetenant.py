@@ -8,6 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
+from observers.base.SyncSliverUsingAnsible import SyncSliverUsingAnsible
 from core.models import Service, Slice
 from cord.models import VCPEService, VCPETenant, VOLTTenant
 from hpc.models import HpcService, CDNPrefix
@@ -21,19 +22,15 @@ from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
 
-class SyncVCPETenant(SyncStep):
+class SyncVCPETenant(SyncSliverUsingAnsible):
     provides=[VCPETenant]
     observes=VCPETenant
     requested_interval=0
     template_name = "sync_vcpetenant.yaml"
     service_key_name = "/opt/xos/observers/vcpe/vcpe_private_key"
 
-    def __init__(self, **args):
-        SyncStep.__init__(self, **args)
-
-    def defer_sync(self, o, reason):
-        logger.info("defer object %s due to %s" % (str(o), reason))
-        raise Exception("defer object %s due to %s" % (str(o), reason))
+    def __init__(self, *args, **kwargs):
+        super(SyncVCPETenant, self).__init__(*args, **kwargs)
 
     def fetch_pending(self, deleted):
         if (not deleted):
@@ -119,24 +116,25 @@ class SyncVCPETenant(SyncStep):
         if o.volt:
             vlan_ids.append(o.volt.vlan_id)
 
-        return {"vlan_ids": vlan_ids,
+        fields = {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
                 "bbs_addrs": bbs_addrs}
 
-    def get_sliver(self, o):
-        # We need to know what slivers is associated with the object.
-        # For vCPE this is easy, as VCPETenant has a sliver field.
+        # add in the sync_attributes that come from the SubscriberRoot object
 
-        return o.sliver
+        if o.volt and o.volt.subscriber and hasattr(o.volt.subscriber, "sync_attributes"):
+            for attribute_name in o.volt.subscriber.sync_attributes:
+                fields[attribute_name] = getattr(o.volt.subscriber, attribute_name)
 
-    def sync_record(self, o):
-        logger.info("sync'ing VCPETenant %s" % str(o))
+        return fields
 
-        sliver = self.get_sliver(o)
-        if not sliver:
-            self.defer_sync(o, "waiting on sliver")
-            return
+    def sync_fields(self, o, fields):
+        # the super causes the playbook to be run
+
+        super(SyncVCPETenant, self).sync_fields(o, fields)
+
+        # now do all of our broadbandshield stuff...
 
         service = self.get_vcpe_service(o)
         if not service:
@@ -149,50 +147,19 @@ class SyncVCPETenant(SyncStep):
         if (service != o.sliver.slice.service):
             raise Exception("Slice %s is associated with some service that is not %s" % (str(sliver.slice), str(service)))
 
-        if not os.path.exists(self.service_key_name):
-            raise Exception("Service key %s does not exist" % self.service_key_name)
-
-        service_key = file(self.service_key_name).read()
-
-        fields = { "sliver_name": sliver.name,
-                   "hostname": sliver.node.name,
-                   "instance_id": sliver.instance_id,
-                   "private_key": service_key,
-                   "ansible_tag": "vcpe_tenant_" + str(o.id)
-                 }
-
-        # for attributes that come from VCPETenant
-        if hasattr(o, "sync_attributes"):
-            for attribute_name in o.sync_attributes:
-                fields[attribute_name] = getattr(o, attribute_name)
-
         # only enable filtering if we have a subscriber object (see below)
         url_filter_enable = False
 
         # for attributes that come from CordSubscriberRoot
-        if o.volt and o.volt.subscriber and hasattr(o.volt.subscriber, "sync_attributes"):
-            for attribute_name in o.volt.subscriber.sync_attributes:
-                fields[attribute_name] = getattr(o.volt.subscriber, attribute_name)
+        if o.volt and o.volt.subscriber:
             url_filter_enable = o.volt.subscriber.url_filter_enable
             url_filter_level = o.volt.subscriber.url_filter_level
             url_filter_users = o.volt.subscriber.users
-
-        fields.update(self.get_extra_attributes(o))
 
         # disable url_filter if there are no bbs_addrs
         if url_filter_enable and (not fields.get("bbs_addrs",[])):
             logger.info("disabling url_filter because there are no bbs_addrs")
             url_filter_enable = False
-
-        ansible_hash = hashlib.md5(repr(sorted(fields.items()))).hexdigest()
-        quick_update = (o.last_ansible_hash == ansible_hash)
-
-        if quick_update:
-            logger.info("quick_update triggered; skipping ansible recipe")
-        else:
-            tStart = time.time()
-            run_template_ssh(self.template_name, fields)
-            logger.info("playbook execution time %d" % int(time.time()-tStart))
 
         if url_filter_enable:
             bbs_hostname = None
@@ -222,8 +189,17 @@ class SyncVCPETenant(SyncStep):
 
                 logger.info("bbs update time %d" % int(time.time()-tStart))
 
+
+    def run_playbook(self, o, fields):
+        ansible_hash = hashlib.md5(repr(sorted(fields.items()))).hexdigest()
+        quick_update = (o.last_ansible_hash == ansible_hash)
+
+        if quick_update:
+            logger.info("quick_update triggered; skipping ansible recipe")
+        else:
+            super(SyncVCPETenant, self).run_playbook(o, fields)
+
         o.last_ansible_hash = ansible_hash
-        o.save()
 
     def delete_record(self, m):
         pass
