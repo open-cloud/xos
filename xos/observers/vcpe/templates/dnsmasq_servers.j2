@@ -13,10 +13,6 @@ server=/{{ prefix }}/{{ dnsdemux_ip }}
 # Point to BroadbandShield service, disable cache, and enable eDNS MAC passing
 add-mac
 cache-size=0
-#server=198.105.255.10
-#server=198.105.255.11
-#server=198.105.255.12
-#server=198.105.255.13
 {% for addr in bbs_addrs %}
 server={{ addr }}
 {% endfor %}
