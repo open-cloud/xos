@@ -29,6 +29,7 @@
         {% else %}
         state=present 
         no_gateway=true 
+        dns_nameservers=8.8.8.8
         cidr={{ cidr }}
         {% endif %}
   {% endif %}
