@@ -179,6 +179,11 @@ class SyncVCPETenant(SyncStep):
 
         fields.update(self.get_extra_attributes(o))
 
+        # disable url_filter if there are no bbs_addrs
+        if url_filter_enable and (not fields.get("bbs_addrs",[])):
+            logger.info("disabling url_filter because there are no bbs_addrs")
+            url_filter_enable = False
+
         ansible_hash = hashlib.md5(repr(sorted(fields.items()))).hexdigest()
         quick_update = (o.last_ansible_hash == ansible_hash)
 
