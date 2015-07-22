@@ -49,7 +49,7 @@ class SyncVBNGTenant(SyncStep):
         return services[0]
 
     def get_vbng_url(self, o):
-        service = o.get_vbng_service()
+        service = self.get_vbng_service(o)
         if not service.vbng_url:
             raise Exception("vBNG service does not have vbng_url set")
         return service.vbng_url
@@ -90,6 +90,10 @@ class SyncVBNGTenant(SyncStep):
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
+
+            if r.text == "0":
+                raise Exception("VBNG service failed to return a routeable_subnet (probably ran out)")
+
             o.routeable_subnet = r.text
             o.mapped_ip = private_ip
             o.mapped_mac = private_mac
