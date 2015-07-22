@@ -194,15 +194,33 @@ class VCPETenantAdmin(ReadOnlyAwareAdmin):
 # vBNG
 #-----------------------------------------------------------------------------
 
+class VBNGServiceForm(forms.ModelForm):
+    vbng_url = forms.CharField(required=False)
+
+    def __init__(self,*args,**kwargs):
+        super (VBNGServiceForm,self ).__init__(*args,**kwargs)
+        if self.instance:
+            self.fields['vbng_url'].initial = self.instance.vbng_url
+
+    def save(self, commit=True):
+        self.instance.vbng_url = self.cleaned_data.get("vbng_url")
+        return super(VBNGServiceForm, self).save(commit=commit)
+
+    class Meta:
+        model = VBNGService
+
 class VBNGServiceAdmin(ReadOnlyAwareAdmin):
     model = VBNGService
     verbose_name = "vBNG Service"
     verbose_name_plural = "vBNG Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url",
+                                    'vbng_url' ],
+                         'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    form = VBNGServiceForm
 
     extracontext_registered_admins = True
 
