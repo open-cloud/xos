@@ -13,4 +13,5 @@ def xos(request):
     return {"DISABLE_MINIDASHBOARD": settings.DISABLE_MINIDASHBOARD,
             "XOS_BRANDING_NAME": settings.XOS_BRANDING_NAME,
             "XOS_BRANDING_CSS": settings.XOS_BRANDING_CSS,
+            "XOS_BRANDING_ICON": settings.XOS_BRANDING_ICON,
             "sites": allSites}
