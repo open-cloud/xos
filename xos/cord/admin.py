@@ -74,7 +74,9 @@ class VOLTTenantForm(forms.ModelForm):
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'service_specific_id', 'vlan_id', 'subscriber_root' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', 'service_specific_attribute', 'vlan_id', 'creator'], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', # 'service_specific_attribute',
+                                     'vlan_id', 'creator'],
+                          'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute')
     form = VOLTTenantForm
 
@@ -148,11 +150,28 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
         return VCPEService.get_service_objects()
 
 class VCPETenantForm(forms.ModelForm):
+    bbs_account = forms.CharField(required=False)
+    creator = forms.ModelChoiceField(queryset=User.objects.all())
+    sliver = forms.ModelChoiceField(queryset=Sliver.objects.all(),required=False)
+    last_ansible_hash = forms.CharField(required=False)
+
     def __init__(self,*args,**kwargs):
         super (VCPETenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].default = "vCPE"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VCPEService.get_service_objects().all()
+        if self.instance:
+            # fields for the attributes
+            self.fields['bbs_account'].initial = self.instance.bbs_account
+            self.fields['creator'].initial = self.instance.creator
+            self.fields['sliver'].initial = self.instance.sliver
+            self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
+
+    def save(self, commit=True):
+        self.instance.creator = self.cleaned_data.get("creator")
+        self.instance.sliver = self.cleaned_data.get("sliver")
+        self.instance.last_ansible_hash = self.cleaned_data.get("last_ansible_hash")
+        return super(VCPETenantForm, self).save(commit=commit)
 
     class Meta:
         model = VCPETenant
@@ -160,8 +179,10 @@ class VCPETenantForm(forms.ModelForm):
 class VCPETenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
+                                     'bbs_account', 'creator', 'sliver', 'last_ansible_hash'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
     form = VCPETenantForm
 
     suit_form_tabs = (('general','Details'),)
@@ -202,11 +223,29 @@ class VBNGServiceAdmin(ReadOnlyAwareAdmin):
         return VBNGService.get_service_objects()
 
 class VBNGTenantForm(forms.ModelForm):
+    routeable_subnet = forms.CharField(required=False)
+    mapped_hostname = forms.CharField(required=False)
+    mapped_ip = forms.CharField(required=False)
+    mapped_mac =  forms.CharField(required=False)
+
     def __init__(self,*args,**kwargs):
         super (VBNGTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].default = "vBNG"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VBNGService.get_service_objects().all()
+        if self.instance:
+            # fields for the attributes
+            self.fields['routeable_subnet'].initial = self.instance.routeable_subnet
+            self.fields['mapped_hostname'].initial = self.instance.mapped_hostname
+            self.fields['mapped_ip'].initial = self.instance.mapped_ip
+            self.fields['mapped_mac'].initial = self.instance.mapped_mac
+
+    def save(self, commit=True):
+        self.instance.routeable_subnet = self.cleaned_data.get("routeable_subnet")
+        self.instance.mapped_hostname = self.cleaned_data.get("mapped_hostname")
+        self.instance.mapped_ip = self.cleaned_data.get("mapped_ip")
+        self.instance.mapped_mac = self.cleaned_data.get("mapped_mac")
+        return super(VBNGTenantForm, self).save(commit=commit)
 
     class Meta:
         model = VBNGTenant
@@ -214,8 +253,10 @@ class VBNGTenantForm(forms.ModelForm):
 class VBNGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', 'service_specific_attribute',], 'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
+                                     'routeable_subnet', 'mapped_hostname', 'mapped_ip', 'mapped_mac'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', 'service_specific_attribute')
     form = VBNGTenantForm
 
     suit_form_tabs = (('general','Details'),)
