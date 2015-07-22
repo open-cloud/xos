@@ -9,6 +9,7 @@ function wait_postgres {
     done
 }
 
+cd /tmp
 service postgresql start
 wait_postgres
 service supervisor start
