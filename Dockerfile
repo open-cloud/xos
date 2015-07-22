@@ -131,4 +131,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-CMD service postgresql start; service supervisor start; cd /opt/xos; PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`; python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure
+CMD /opt/xos/scripts/docker_start_xos
