@@ -12,7 +12,7 @@ from cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
-VBNG_API = "http://10.0.3.136:8181/onos/virtualbng/privateip/"
+# VBNG_API = "http://10.0.3.136:8181/onos/virtualbng/privateip/"
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -39,6 +39,20 @@ class SyncVBNGTenant(SyncStep):
     def defer_sync(self, o, reason):
         logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
+
+    def get_vbng_service(self, o):
+        if not o.provider_service:
+             raise Exception("vBNG tenant %s has no provider_service" % str(o.id))
+        services = VBNGService.get_service_objects().filter(id = o.provider_service.id)
+        if not services:
+             raise Exception("vBNG tenant %s is associated with the wrong kind of provider_service" % str(o.id))
+        return services[0]
+
+    def get_vbng_url(self, o):
+        service = o.get_vbng_service()
+        if not service.vbng_url:
+            raise Exception("vBNG service does not have vbng_url set")
+        return service.vbng_url
 
     def get_private_interface(self, o):
         vcpes = VCPETenant.get_tenant_objects().all()
@@ -70,9 +84,9 @@ class SyncVBNGTenant(SyncStep):
             (private_ip, private_mac, private_hostname) = self.get_private_interface(o)
             logger.info("contacting vBNG service to request mapping for private ip %s mac %s host %s" % (private_ip, private_mac, private_hostname) )
 
-            #r = requests.post(VBNG_API + "%s" % (private_ip,) )
-            logger.info( VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
-            r = requests.post(VBNG_API + "%s/%s/%s" % (private_ip, private_mac, private_hostname) )
+            url = self.get_vbng_url(o) + "privateip/%s/%s/%s" % (private_ip, private_mac, private_hostname)
+            logger.info( "vbng url: %s" % url )
+            r = requests.post(url )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
             logger.info("received public IP %s from private IP %s" % (r.text, private_ip))
@@ -89,7 +103,7 @@ class SyncVBNGTenant(SyncStep):
         if o.mapped_ip:
             private_ip = o.mapped_ip
             logger.info("contacting vBNG service to delete private ip %s" % private_ip)
-            r = requests.delete(VBNG_API + "%s" % private_ip, )
+            r = requests.delete(self.get_vbng_url(o) + "privateip/%s" % private_ip, )
             if (r.status_code != 200):
                 raise Exception("Received error from bng service (%d)" % r.status_code)
 
