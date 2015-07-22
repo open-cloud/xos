@@ -392,4 +392,28 @@ class CordSubscriberViewSet(XOSViewSet):
 
         return Response( {"vbng_mapping": mappings} )
 
+class CordDebugViewSet(XOSViewSet):
+    base_name = "cord_debug"
+    method_name = "rs/cord_debug"
+    method_kind = "viewset"
 
+    @classmethod
+    def get_urlpatterns(self):
+        patterns = []
+        patterns.append( url("^rs/cord_debug/vbng_dump/$", self.as_view({"get": "get_vbng_dump"}), name="vbng_dump"))
+        return patterns
+
+    def get_vbng_dump(self, request, pk=None):
+        result=subprocess.check_output(["curl", "http://10.0.3.136:8181/onos/virtualbng/privateip/map"])
+        if request.GET.get("theformat",None)=="text":
+            from django.http import HttpResponse
+            result = json.loads(result)["map"]
+
+            lines = []
+            for row in result:
+                for k in row.keys():
+                     lines.append( "%s %s" % (k, row[k]) )
+
+            return HttpResponse("\n".join(lines), content_type="text/plain")
+        else:
+            return Response( {"vbng_dump": json.loads(result)["map"] } )
