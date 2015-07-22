@@ -786,10 +786,14 @@ def model_policy_vcpe(pk):
 class VBNGService(Service):
     KIND = VBNG_KIND
 
+    simple_attributes = ( ("vbng_url", "http://10.0.3.136:8181/onos/virtualbng/"), )
+
     class Meta:
         app_label = "cord"
         verbose_name = "vBNG Service"
         proxy = True
+
+VBNGService.setup_simple_attributes()
 
 class VBNGTenant(Tenant):
     class Meta:
