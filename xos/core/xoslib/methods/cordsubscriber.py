@@ -403,6 +403,7 @@ class CordDebugViewSet(XOSViewSet):
         patterns.append( url("^rs/cord_debug/vbng_dump/$", self.as_view({"get": "get_vbng_dump"}), name="vbng_dump"))
         return patterns
 
+    # contact vBNG service and dump current list of mappings
     def get_vbng_dump(self, request, pk=None):
         result=subprocess.check_output(["curl", "http://10.0.3.136:8181/onos/virtualbng/privateip/map"])
         if request.GET.get("theformat",None)=="text":
