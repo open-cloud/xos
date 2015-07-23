@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -282,10 +282,50 @@ class VBNGTenantAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return VBNGTenant.get_tenant_objects()
 
+#-----------------------------------------------------------------------------
+# CordSubscriberRoot
+#-----------------------------------------------------------------------------
+
+class CordSubscriberRootForm(forms.ModelForm):
+    url_filter_level = forms.CharField(required = False)
+
+    def __init__(self,*args,**kwargs):
+        super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
+        self.fields['kind'].default = CORD_SUBSCRIBER_KIND
+        self.fields['kind'].widget.attrs['readonly'] = True
+        if self.instance:
+            self.fields['url_filter_level'].initial = self.instance.url_filter_level
+
+    def save(self, commit=True):
+        self.instance.url_filter_level = self.cleaned_data.get("url_filter_level")
+        return super(CordSubscriberRootForm, self).save(commit=commit)
+
+    class Meta:
+        model = CordSubscriberRoot
+
+class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
+    list_display = ('backend_status_icon', 'id',  'name', )
+    list_display_links = ('backend_status_icon', 'id', 'name', )
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'service_specific_id', # 'service_specific_attribute',
+                                     'url_filter_level'],
+                          'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
+    form = CordSubscriberRootForm
+    inlines = (TenantRootTenantInline, TenantRootPrivilegeInline)
+
+    suit_form_tabs =(('general', 'Cord Subscriber Root Details'),
+        ('tenantroots','Tenancy'),
+        ('tenantrootprivileges','Privileges')
+    )
+
+    def queryset(self, request):
+        return CordSubscriberRoot.get_tenant_objects()
+
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
 admin.site.register(VCPEService, VCPEServiceAdmin)
 admin.site.register(VCPETenant, VCPETenantAdmin)
 admin.site.register(VBNGService, VBNGServiceAdmin)
 admin.site.register(VBNGTenant, VBNGTenantAdmin)
+admin.site.register(CordSubscriberRoot, CordSubscriberRootAdmin)
 
