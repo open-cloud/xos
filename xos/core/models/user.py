@@ -326,8 +326,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_tenant_root(self, tenant_root, allow=[]):
-        from core.models.service import TenantRoot
-        from core.models.site import SitePrivilege
+        from core.models.service import TenantRoot, TenantRootPrivilege
         if self.can_update_root():
             return True
         if TenantRootPrivilege.objects.filter(
@@ -336,6 +335,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
+        # problem: I can add things that I can't see...
         return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
 
     @staticmethod
