@@ -291,9 +291,26 @@ class XOSTabularInline(admin.TabularInline):
 
         self.setup_selflink()
 
-    def get_change_url(self, model, id):
+    @property
+    def selflink_model(self):
+        if hasattr(self, "selflink_fieldname"):
+            """ self.selflink_model can be defined to punch through a relation
+                to its target object. For example, in SliceNetworkInline, set
+                selflink_model = "network", and the URL will lead to the Network
+                object instead of trying to bring up a change view of the
+                SliceNetwork object.
+            """
+            return getattr(self.model,self.selflink_fieldname).field.rel.to
+        else:
+            return self.model
+
+    @property
+    def selflink_reverse_path(self):
+        return "admin:%s_change" % (self.selflink_model._meta.db_table)
+
+    def get_change_url(self, id):
         """ Get the URL to a change form in the admin for this model """
-        reverse_path = "admin:%s_change" % (model._meta.db_table)
+        reverse_path = self.selflink_reverse_path # "admin:%s_change" % (model._meta.db_table)
         try:
             url = reverse(reverse_path, args=(id,))
         except NoReverseMatch:
@@ -302,18 +319,7 @@ class XOSTabularInline(admin.TabularInline):
         return url
 
     def setup_selflink(self):
-        if hasattr(self, "selflink_fieldname"):
-            """ self.selflink_model can be defined to punch through a relation
-                to its target object. For example, in SliceNetworkInline, set
-                selflink_model = "network", and the URL will lead to the Network
-                object instead of trying to bring up a change view of the
-                SliceNetwork object.
-            """
-            self.selflink_model = getattr(self.model,self.selflink_fieldname).field.rel.to
-        else:
-            self.selflink_model = self.model
-
-        url = self.get_change_url(self.selflink_model, 0)
+        url = self.get_change_url(0)
 
         # We don't have an admin for this object, so don't create the
         # selflink.
@@ -340,7 +346,7 @@ class XOSTabularInline(admin.TabularInline):
             obj = getattr(obj, self.selflink_fieldname)
 
         if obj.id:
-            url = self.get_change_url(self.selflink_model, obj.id)
+            url = self.get_change_url(obj.id)
             return "<a href='%s'>Details</a>" % str(url)
         else:
             return "Not present"
