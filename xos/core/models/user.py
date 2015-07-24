@@ -335,6 +335,9 @@ class User(AbstractBaseUser, PlModelMixIn):
             return True
         return False
 
+    def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
+        return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
