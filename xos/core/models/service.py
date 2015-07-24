@@ -354,10 +354,10 @@ class TenantRootPrivilege(PlCoreBase):
     def save(self, *args, **kwds):
         if not self.user.is_active:
             raise PermissionDenied, "Cannot modify role(s) of a disabled user"
-        super(SlicePrivilege, self).save(*args, **kwds)
+        super(TenantRootPrivilege, self).save(*args, **kwds)
 
     def can_update(self, user):
-        return user.tenant_root.can_update(user)
+        return user.can_update_tenant_root_privilege(self)
 
     @staticmethod
     def select_by_user(user):
