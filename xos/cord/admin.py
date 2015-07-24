@@ -286,6 +286,25 @@ class VBNGTenantAdmin(ReadOnlyAwareAdmin):
 # CordSubscriberRoot
 #-----------------------------------------------------------------------------
 
+class VOLTTenantInline(XOSTabularInline):
+    model = VOLTTenant
+    fields = ['provider_service', 'subscriber_root', 'service_specific_id']
+    readonly_fields = ['provider_service', 'subscriber_root', 'service_specific_id']
+    extra = 0
+    max_num = 0
+    suit_classes = 'suit-tab suit-tab-volttenants'
+    fk_name = 'subscriber_root'
+    verbose_name = 'subscribed tenant'
+    verbose_name_plural = 'subscribed tenants'
+
+    @property
+    def selflink_reverse_path(self):
+        return "admin:cord_volttenant_change"
+
+    def queryset(self, request):
+        qs = super(VOLTTenantInline, self).queryset(request)
+        return qs.filter(kind=VOLT_KIND)
+
 class CordSubscriberRootForm(forms.ModelForm):
     url_filter_level = forms.CharField(required = False)
 
@@ -311,10 +330,10 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
     form = CordSubscriberRootForm
-    inlines = (TenantRootTenantInline, TenantRootPrivilegeInline)
+    inlines = (VOLTTenantInline, TenantRootPrivilegeInline)
 
     suit_form_tabs =(('general', 'Cord Subscriber Root Details'),
-        ('tenantroots','Tenancy'),
+        ('volttenants','VOLT Tenancy'),
         ('tenantrootprivileges','Privileges')
     )
 
