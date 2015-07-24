@@ -47,7 +47,7 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
                            ) #('hpctools.html', 'top', 'tools') )
 
     def queryset(self, request):
-        return VOLTService.get_service_objects()
+        return VOLTService.get_service_objects_by_user(request.user)
 
 class VOLTTenantForm(forms.ModelForm):
     vlan_id = forms.CharField()
@@ -83,7 +83,7 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'),)
 
     def queryset(self, request):
-        return VOLTTenant.get_tenant_objects()
+        return VOLTTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
 # vCPE
@@ -147,7 +147,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
                            ) #('hpctools.html', 'top', 'tools') )
 
     def queryset(self, request):
-        return VCPEService.get_service_objects()
+        return VCPEService.get_service_objects_by_user(request.user)
 
 class VCPETenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
@@ -188,7 +188,7 @@ class VCPETenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'),)
 
     def queryset(self, request):
-        return VCPETenant.get_tenant_objects()
+        return VCPETenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
 # vBNG
@@ -238,7 +238,7 @@ class VBNGServiceAdmin(ReadOnlyAwareAdmin):
                            ) #('hpctools.html', 'top', 'tools') )
 
     def queryset(self, request):
-        return VBNGService.get_service_objects()
+        return VBNGService.get_service_objects_by_user(request.user)
 
 class VBNGTenantForm(forms.ModelForm):
     routeable_subnet = forms.CharField(required=False)
@@ -280,7 +280,7 @@ class VBNGTenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'),)
 
     def queryset(self, request):
-        return VBNGTenant.get_tenant_objects()
+        return VBNGTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
 # CordSubscriberRoot
@@ -338,7 +338,7 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     )
 
     def queryset(self, request):
-        return CordSubscriberRoot.get_tenant_objects()
+        return CordSubscriberRoot.get_tenant_objects_by_user(request.user)
 
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)

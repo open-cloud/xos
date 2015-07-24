@@ -64,6 +64,18 @@ class Service(PlCoreBase, AttributeMixin):
     def get_service_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
 
+    @classmethod
+    def get_service_objects_by_user(cls, user):
+        return cls.select_by_user(user).filter(kind = cls.KIND)
+
+    @classmethod
+    def select_by_user(cls, user):
+        if user.is_admin:
+            return cls.objects.all()
+        else:
+            service_ids = [sp.slice.id for sp in ServicePrivilege.objects.filter(user=user)]
+            return cls.objects.filter(id__in=service_ids)
+
     def __unicode__(self): return u'%s' % (self.name)
 
     def can_update(self, user):
@@ -178,12 +190,12 @@ class ServicePrivilege(PlCoreBase):
             raise PermissionDenied, "Cannot modify permission(s) of a disabled service"
         super(ServicePrivilege, self).delete(*args, **kwds)
 
-    @staticmethod
-    def select_by_user(user):
+    @classmethod
+    def select_by_user(cls, user):
         if user.is_admin:
-            qs = ServicePrivilege.objects.all()
+            qs = cls.objects.all()
         else:
-            qs = SitePrivilege.objects.filter(user=user)
+            qs = cls.objects.filter(user=user)
         return qs
 
 class TenantRoot(PlCoreBase, AttributeMixin):
@@ -225,6 +237,18 @@ class TenantRoot(PlCoreBase, AttributeMixin):
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
+
+    @classmethod
+    def get_tenant_objects_by_user(cls, user):
+        return cls.select_by_user(user).filter(kind = cls.KIND)
+
+    @classmethod
+    def select_by_user(cls, user):
+        if user.is_admin:
+            return cls.objects.all()
+        else:
+            tr_ids = [trp.tenant_root.id for trp in TenantRootPrivilege.objects.filter(user=user)]
+            return cls.objects.filter(id__in=tr_ids)
 
 class Tenant(PlCoreBase, AttributeMixin):
     """ A tenant is a relationship between two entities, a subscriber and a
@@ -270,6 +294,10 @@ class Tenant(PlCoreBase, AttributeMixin):
     @classmethod
     def get_tenant_objects(cls):
         return cls.objects.filter(kind = cls.KIND)
+
+    @classmethod
+    def get_tenant_objects_by_user(cls, user):
+        return cls.select_by_user(user).filter(kind = cls.KIND)
 
     @classmethod
     def get_deleted_tenant_objects(cls):
@@ -359,11 +387,11 @@ class TenantRootPrivilege(PlCoreBase):
     def can_update(self, user):
         return user.can_update_tenant_root_privilege(self)
 
-    @staticmethod
-    def select_by_user(user):
+    @classmethod
+    def select_by_user(cls, user):
         if user.is_admin:
-            qs = TenantRootPrivilege.objects.all()
+            qs = cls.objects.all()
         else:
-            qs = TenantRootPrivilege.objects.filter(user=user)
+            qs = cls.objects.filter(user=user)
         return qs
 
