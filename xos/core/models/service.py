@@ -363,7 +363,7 @@ class Provider(TenantRoot):
     KIND = "Provider"
 
 class TenantRootRole(PlCoreBase):
-    ROLE_CHOICES = (('admin','Admin'),)
+    ROLE_CHOICES = (('admin','Admin'), ('access','Access'))
 
     role = StrippedCharField(choices=ROLE_CHOICES, unique=True, max_length=30)
 
@@ -390,8 +390,15 @@ class TenantRootPrivilege(PlCoreBase):
     @classmethod
     def select_by_user(cls, user):
         if user.is_admin:
-            qs = cls.objects.all()
+            return cls.objects.all()
         else:
-            qs = cls.objects.filter(user=user)
-        return qs
+            # User can see his own privilege
+            trp_ids = [trp.id for trp in cls.objects.filter(user=user)]
+
+            # A slice admin can see the SlicePrivileges for his Slice
+            for priv in cls.objects.filter(user=user, role__role="admin"):
+                trp_ids.extend( [trp.id for trp in cls.objects.filter(tenant_root=priv.tenant_root)] )
+
+            return cls.objects.filter(id__in=trp_ids)
+
 
