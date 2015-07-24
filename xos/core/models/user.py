@@ -335,7 +335,6 @@ class User(AbstractBaseUser, PlModelMixIn):
         return False
 
     def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
-        # problem: I can add things that I can't see...
         return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
 
     @staticmethod
