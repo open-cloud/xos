@@ -219,6 +219,9 @@ class CordSubscriberRoot(Subscriber):
         pass
 
     def save(self, *args, **kwargs):
+        if (not hasattr(self, 'caller') or not self.caller.is_admin):
+            if (self.has_field_changed("service_specific_id")):
+                raise XOSPermissionDenied("You do not have permission to change service_specific_id")
         super(CordSubscriberRoot, self).save(*args, **kwargs)
         if (self.volt) and (self.volt.vcpe): # and (self._initial_url_filter_enabled != self.url_filter_enable):
             # 1) trigger manage_bbs_account to run
