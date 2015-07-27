@@ -170,20 +170,20 @@ class FilteredAdmin(ReadOnlyAwareAdmin):
        return FilteredChangeList
 
 class FilteredInline(XOSTabularInline):
-   def get_change_url(self, model, id):
+   def get_change_url(self, id):
        request = get_request()
        embedded = getattr(request, "embedded", False)
        service_id = request.resolver_match.args[0]
 
        if embedded:
-           reverse_path = "admin:%s_embeddedfilteredchange" % (model._meta.db_table)
+           reverse_path = "admin:%s_embeddedfilteredchange" % (self.selflink_model._meta.db_table)
            args = (service_id, id)
        else:
-           reverse_path = "admin:%s_filteredchange" % (model._meta.db_table)
+           reverse_path = "admin:%s_filteredchange" % (self.selflink_model._meta.db_table)
            args = (service_id, id)
 
        try:
-           url = reverse(reverse_path, args=args, current_app=model._meta.app_label)
+           url = reverse(reverse_path, args=args, current_app=self.selflink_model._meta.app_label)
        except NoReverseMatch:
            return None
 

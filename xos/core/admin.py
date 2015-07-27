@@ -310,7 +310,7 @@ class XOSTabularInline(admin.TabularInline):
 
     def get_change_url(self, id):
         """ Get the URL to a change form in the admin for this model """
-        reverse_path = self.selflink_reverse_path # "admin:%s_change" % (model._meta.db_table)
+        reverse_path = self.selflink_reverse_path # "admin:%s_change" % (self.selflink_model._meta.db_table)
         try:
             url = reverse(reverse_path, args=(id,))
         except NoReverseMatch:
