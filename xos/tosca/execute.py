@@ -5,25 +5,8 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-sys.path.append("/opt/xos")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-django.setup()
 from core.models import Slice,Sliver,User,Flavor,Node,Image
-
-class XOSNodeSelector(object):
-    def __init__(self, user):
-        self.user = user
-
-    def get_allowed_nodes(self):
-        # TODO: logic to get nodes that the user can use
-        nodes = Node.objects.all()
-        return nodes
-
-    def get_nodes(self, quantity):
-        nodes = self.get_allowed_nodes()
-        # TODO: sort the nodes by some useful metric to pick the best one
-        return nodes[:quantity]
+from nodeselect import XOSNodeSelector
 
 class XOSTosca(object):
     def __init__(self, tosca_yaml):
@@ -109,44 +92,8 @@ class XOSTosca(object):
                         slice = slice,
                         image = image)
         sliver.caller = user
-        sliver.save()
+        print "XXX save sliver" #sliver.save()
 
 
-def main():
-    sample = """tosca_definitions_version: tosca_simple_yaml_1_0
-
-description: Template for deploying a single server with predefined properties.
-
-topology_template:
-  node_templates:
-    my_server:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: rhel
-            version: 6.5
-      artifacts:
-          - xos_slice: mysite_tosca
-            type: tosca.artifacts.Deployment
-
-"""
-    u = User.objects.get(email="scott@onlab.us")
-
-    xt = XOSTosca(sample)
-    xt.execute(u)
-
-if __name__=="__main__":
-    main()
 
 
