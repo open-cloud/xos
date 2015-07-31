@@ -60,6 +60,9 @@ class XOSTosca(object):
         if (nodetemplate.type == "tosca.nodes.Slice"):
             return
 
+        if (nodetemplate.type == "tosca.nodes.Service"):
+            return
+
         if (nodetemplate.type != "tosca.nodes.Compute"):
             raise Exception("I Don't know how to deal with %s" % nodetemplate.type)
 
