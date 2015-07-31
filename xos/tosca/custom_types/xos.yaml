@@ -1,6 +1,9 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 node_types:
+    tosca.nodes.Service:
+        derived_from: tosca.nodes.Root
+   
     tosca.nodes.Slice:
         derived_from: tosca.nodes.Root
         properties:
@@ -11,4 +14,8 @@ node_types:
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
 
-    
+    tosca.relationships.MemberOfService:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.TenantOfService:
+        derived_from: tosca.relationships.Root
