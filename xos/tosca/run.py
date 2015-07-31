@@ -15,39 +15,16 @@ from core.models import User
 from tosca.execute import XOSTosca
 
 def main():
-    django.setup()
+    if len(sys.argv)<3:
+        print "Syntax: run.py <username> <yaml-template-name>"
+        sys.exit(-1)
 
-    sample = """tosca_definitions_version: tosca_simple_yaml_1_0
+    username = sys.argv[1]
+    template_name = sys.argv[2]
 
-description: Template for deploying a single server with predefined properties.
+    u = User.objects.get(email=username)
 
-topology_template:
-  node_templates:
-    my_server:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: rhel
-            version: 6.5
-      artifacts:
-          - xos_slice: mysite_tosca
-            type: tosca.artifacts.Deployment
-
-"""
-    u = User.objects.get(email="scott@onlab.us")
-
-    xt = XOSTosca(sample)
+    xt = XOSTosca(file(template_name).read(), parent_dir=currentdir)
     xt.execute(u)
 
 if __name__=="__main__":
