@@ -337,6 +337,15 @@ class User(AbstractBaseUser, PlModelMixIn):
     def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
         return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
 
+    def get_readable_objects(self, filter=None):
+       """ Returns a list of objects that the user is allowed to read. """
+       from core.models import Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User
+       models = [Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User]
+       readable_objects = []
+       for model in models:
+           readable_objects.extend(model.select_by_user(self))
+       return readable_objects      
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
