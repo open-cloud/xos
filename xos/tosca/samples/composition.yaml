@@ -25,14 +25,15 @@ topology_template:
     service_vbng:
       type: tosca.nodes.Service
 
-    mysite_tosca:
+    mysite_volt:
+      description: vOLT Controller Slice
       type: tosca.nodes.Slice
       requirements:
           - volt_service:
               node: service_volt
               relationship: tosca.relationships.MemberOfService
 
-    my_server:
+    volt_controller:
       type: tosca.nodes.Compute
       capabilities:
         # Host container properties
@@ -51,5 +52,5 @@ topology_template:
             version: 6.5
       requirements:
           - slice:
-                node: mysite_tosca
+                node: mysite_volt
                 relationship: tosca.relationships.MemberOfSlice
