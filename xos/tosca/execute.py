@@ -9,9 +9,15 @@ from core.models import Slice,Sliver,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
 
 class XOSTosca(object):
-    def __init__(self, tosca_yaml):
+    def __init__(self, tosca_yaml, parent_dir=None):
+        # TOSCA will look for imports using a relative path from where the
+        # template file is located, so we have to put the template file
+        # in a specific place.
+        if not parent_dir:
+            parent_dir = os.getcwd()
+
         try:
-            (tmp_handle, tmp_pathname) = tempfile.mkstemp()
+            (tmp_handle, tmp_pathname) = tempfile.mkstemp(dir=parent_dir)
             os.write(tmp_handle, tosca_yaml)
             os.close(tmp_handle)
 
@@ -51,21 +57,32 @@ class XOSTosca(object):
         return Image.objects.get(name="Ubuntu-14.04-LTS")    # demo
 
     def execute_nodetemplate(self, user, nodetemplate):
+        if (nodetemplate.type == "tosca.nodes.Slice"):
+            return
+
         if (nodetemplate.type != "tosca.nodes.Compute"):
-             raise Exception("I Don't know how to deal with %s" % type)
+            raise Exception("I Don't know how to deal with %s" % nodetemplate.type)
 
         host=None
         flavor=None
         image=None
 
-        sliceName = None
-        artifacts = nodetemplate.entity_tpl.get("artifacts",[])
-        for artifact in artifacts:
-            if artifact.get("xos_slice", None):
-                 sliceName = artifact["xos_slice"]
-
+        sliceName  = None
+        for reqs in nodetemplate.requirements:
+            for (k,v) in reqs.items():
+                print v
+                if (v["relationship"] == "tosca.relationships.MemberOfSlice"):
+                    sliceName = v["node"]
         if not sliceName:
-             raise Exception("No xos_slice artifact for node %s" % nodetemplate.name)
+             raise Exception("No slice requirement for node %s" % nodetemplate.name)
+
+        #sliceName = None
+        #artifacts = nodetemplate.entity_tpl.get("artifacts",[])
+        #for artifact in artifacts:
+        #    if artifact.get("xos_slice", None):
+        #         sliceName = artifact["xos_slice"]
+        #if not sliceName:
+        #     raise Exception("No xos_slice artifact for node %s" % nodetemplate.name)
 
         slice = Slice.objects.filter(name=sliceName)
         if not slice:
