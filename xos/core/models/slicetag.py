@@ -19,6 +19,6 @@ class SliceTag(PlCoreBase):
         if user.is_admin:
             qs = SliceTag.objects.all()
         else:
-            st_ids = [st.id for st in SliceTag.objects.filter(user=user)]
-            qs = SliceTag.objects.filter(id__in=st_ids)
+            slices = Slice.select_by_user(user)
+            qs = SliceTag.objects.filter(slice__in=slices)
         return qs
