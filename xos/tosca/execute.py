@@ -7,6 +7,7 @@ from translator.toscalib.tosca_template import ToscaTemplate
 
 from core.models import Slice,Sliver,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
+from imageselect import XOSImageSelector
 
 class XOSTosca(object):
     def __init__(self, tosca_yaml, parent_dir=None):
@@ -39,7 +40,7 @@ class XOSTosca(object):
         # TODO: pick flavor based on parameters
         flavor = Flavor.objects.get(name="m1.small")
 
-        compute_node = XOSNodeSelector(user).get_nodes(1)[0]
+        compute_node = XOSNodeSelector(user, mem_size=mem_size, num_cpus=num_cpus, disk_size=disk_size).get_nodes(1)[0]
 
         return (compute_node, flavor)
 
@@ -49,12 +50,7 @@ class XOSTosca(object):
         type = v.get_property_value("type")
         architecture = v.get_property_value("architecture")
 
-        # TODO: pick image based on parameters
-
-        imgs=Image.objects.filter(name="Ubuntu 14.04 LTS")   # portal
-        if imgs:
-            return imgs[0]
-        return Image.objects.get(name="Ubuntu-14.04-LTS")    # demo
+        return XOSImageSelector(user, distribution=distribution, version=version, type=type, architecture=architecture).get_image()
 
     def execute_nodetemplate(self, user, nodetemplate):
         if (nodetemplate.type == "tosca.nodes.Slice"):
@@ -78,14 +74,6 @@ class XOSTosca(object):
                     sliceName = v["node"]
         if not sliceName:
              raise Exception("No slice requirement for node %s" % nodetemplate.name)
-
-        #sliceName = None
-        #artifacts = nodetemplate.entity_tpl.get("artifacts",[])
-        #for artifact in artifacts:
-        #    if artifact.get("xos_slice", None):
-        #         sliceName = artifact["xos_slice"]
-        #if not sliceName:
-        #     raise Exception("No xos_slice artifact for node %s" % nodetemplate.name)
 
         slice = Slice.objects.filter(name=sliceName)
         if not slice:
