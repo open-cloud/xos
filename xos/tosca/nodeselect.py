@@ -1,14 +1,10 @@
 import os
 import sys
 
-sys.path.append("/opt/xos")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-django.setup()
 from core.models import Slice,Sliver,User,Flavor,Node,Image
 
 class XOSNodeSelector(object):
-    def __init__(self, user):
+    def __init__(self, user, mem_size=None, num_cpus=None, disk_size=None):
         self.user = user
 
     def get_allowed_nodes(self):
