@@ -40,7 +40,7 @@ class SyncControllerSlices(OpenStackSyncStep):
             raise Exception("slice createor %s has not accout at controller %s" % (controller_slice.slice.creator, controller_slice.controller.name))
         else:
             controller_user = controller_users[0]
-            roles = ['Admin']
+            roles = ['admin']
 
         max_instances=int(controller_slice.slice.max_slivers)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,
