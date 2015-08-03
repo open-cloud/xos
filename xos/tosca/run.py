@@ -12,7 +12,7 @@ import django
 django.setup()
 
 from core.models import User
-from tosca.execute import XOSTosca
+from tosca.engine import XOSTosca
 
 def main():
     if len(sys.argv)<3:
