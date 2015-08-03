@@ -41,19 +41,8 @@ class XOSCompute(XOSResource):
         flavor=None
         image=None
 
-        sliceName  = None
-        for reqs in nodetemplate.requirements:
-            for (k,v) in reqs.items():
-                print v
-                if (v["relationship"] == "tosca.relationships.MemberOfSlice"):
-                    sliceName = v["node"]
-        if not sliceName:
-             raise Exception("No slice requirement for node %s" % nodetemplate.name)
-
-        slice = Slice.objects.filter(name=sliceName)
-        if not slice:
-             raise Exception("Could not find slice %s" % sliceName)
-        slice = slice[0]
+        sliceName = self.get_requirement("tosca.relationships.MemberOfSlice", throw_exception=True)
+        slice = self.get_xos_object(Slice, name=sliceName)
 
         capabilities = nodetemplate.get_capabilities()
         for (k,v) in capabilities.items():
@@ -77,6 +66,10 @@ class XOSCompute(XOSResource):
         sliver.caller = self.user
 
         self.resource = sliver
+        self.dirty = True
+
+        self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
+                  (str(sliver), str(compute_node), str(flavor), str(image)))
 
     def save(self):
         self.resource.save()
