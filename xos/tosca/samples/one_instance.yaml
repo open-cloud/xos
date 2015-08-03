@@ -7,8 +7,15 @@ imports:
 
 topology_template:
   node_templates:
+    mysite:
+      type: tosca.nodes.Site
+
     mysite_tosca:
       type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: mysite
+                relationship: tosca.relationships.MemberOfSite
 
     my_server:
       type: tosca.nodes.Compute
