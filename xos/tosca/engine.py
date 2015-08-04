@@ -37,7 +37,9 @@ class XOSTosca(object):
     def execute_nodetemplate(self, user, nodetemplate):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
+            #print "work on", cls.__name__, nodetemplate.name
             obj = cls(user, nodetemplate)
+            obj.create_or_update()
 
 
 
