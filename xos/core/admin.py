@@ -1239,6 +1239,9 @@ class NodeAdmin(XOSBaseAdmin):
 
     suit_form_tabs =(('details','Node Details'),('slivers','Slivers'))
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'site':
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_nodes=True)
 
 class SliverForm(forms.ModelForm):
     class Meta:
@@ -1452,7 +1455,7 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_users=True)
 
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
