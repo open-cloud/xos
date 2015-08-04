@@ -99,7 +99,9 @@ class Sliver(PlCoreBase):
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
     def __unicode__(self):
-        if self.instance_name:
+        if self.name and self.slice and (self.name != self.slice.name):
+            return u'%s' % self.name
+        elif self.instance_name:
             return u'%s' % (self.instance_name)
         elif self.id:
             return u'uninstantiated-%s' % str(self.id)
@@ -109,7 +111,8 @@ class Sliver(PlCoreBase):
             return u'unsaved-sliver'
 
     def save(self, *args, **kwds):
-        self.name = self.slice.name
+        if not self.name:
+            self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
         if not self.creator:
