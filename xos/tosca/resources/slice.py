@@ -19,18 +19,20 @@ class XOSSlice(XOSResource):
         existing_slices = Slice.objects.filter(name=sliceName)
         if existing_slices:
             self.info("Slice %s already exists" % sliceName)
+            slice = existing_slices[0]
+        else:
+            site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
+            site = self.get_xos_object(Site, login_base=site_name)
 
-        site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
-        site = self.get_xos_object(Site, login_base=site_name)
+            slice = Slice(name = sliceName,
+                          site = site)
+            slice.caller = self.user
+            slice.save()
 
-        slice = Slice(name = sliceName,
-                      site = site)
-        slice.caller = self.user
+            self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(site)))
 
         self.resource = slice
-        self.dirty = True
 
-        self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(site)))
 
     def save(self):
         self.resource.save()
