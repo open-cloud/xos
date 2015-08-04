@@ -916,7 +916,7 @@ class SiteNodeInline(XOSTabularInline):
 
 class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
-    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']
+    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'login_base', 'location', 'is_public', 'hosts_nodes', 'hosts_users']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
@@ -925,7 +925,7 @@ class SiteAdmin(XOSBaseAdmin):
     readonly_fields = ['backend_status_text']
 
     #user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
-    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base']
+    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'hosts_nodes', 'hosts_users']
 
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
