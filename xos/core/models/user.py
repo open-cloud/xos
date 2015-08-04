@@ -344,8 +344,94 @@ class User(AbstractBaseUser, PlModelMixIn):
        readable_objects = []
        for model in models:
            readable_objects.extend(model.select_by_user(self))
-       return readable_objects      
+       return readable_objects
 
+    def get_permissions(self, filter=None):
+        """ Return a list of objects for which the user has read or read/write 
+        access. The object will be an instance of a django model object. 
+        Permissions will be either 'r' or 'rw'.
+         
+        e.g.
+        [{'object': django_object_instance, 'permissions': 'rw'}, ...]
+
+        Returns:
+          list of dicts  
+       
+        """
+        from core.models import *
+        READ = 'r'
+        READWRITE = 'rw'
+
+        deployment_priv_objs = [Image, NetworkTemplate, Flavor]
+        site_priv_objs = [Node, Slice, User]
+        slice_priv_objs = [Sliver, Network] 
+        
+        # maps the set of objects a paticular role has write access
+        write_map = {
+            DeploymentPrivilege : {
+                'admin': deployment_priv_objects,
+            },
+            SitePrivilege : {
+                'admin' : site_priv_objs,
+                'pi' : [Slice, User],
+                'tech': [Node],
+            },     
+            SlicePrivilege : {
+                'admin': slice_priv_objs, 
+            }, 
+        }
+            
+        privilege_map = {
+            DeploymentPrivilege : (Deployment, deployment_priv_objs),
+            SitePrivilege : (Site, site_priv_objs),
+            SlicePrivilege : (Slice, slice_priv_objs)
+        }
+        permissions = []
+        permission_dict = lambda x,y: {'object': x, 'permission': y}
+        for privilege_model, (model, affected_models) in privileg_map.items():
+            # get the objects affected by this privilege model   
+            affected_objects = []
+            for affected_model in affected_models:
+                affected_objects.extend(affected_model.select_by_user(self))
+
+            if self.is_admin:
+                # assume admin users have read/write access to all objects
+                for affected_object in affected_objects:
+                    permissions.append(permission_dict(affected_object, READWRITE))
+            else:
+                # create a dict of the user's per object privileges
+                # ex:  {princeton_tmack : ['admin']  
+                privileges = privilege_model.objects.filter(user=self)
+                for privilege in privileges:
+                    object_roles = defaultdict(list)
+                    obj = None
+                    roles = []
+                    for field in dir(privilege):
+                        if field == model.__name__.lower():
+                            obj = getattr(privilege, field)
+                    if obj:
+                        object_roles[obj].append(privilege.role.role)
+                        
+                # loop through all objects the user has access to and determine
+                # if they also have write access
+                for affected_object in affected_objects:
+                    if affected_object not in objects_roles:
+                        permissions.append(permission_dict(affected_object, READ))
+                    else:
+                        has_write_permission = False
+                        for write_role, models in write_dict.items():
+                            if affected_object._meta.model in models and \
+                                write_role in object_roles[affected_object]:
+                                    has_write_permission = True
+                                    break
+                        if has_write_permission:
+                            permissions.append(permission_dict(affected_object, WRITE))
+                        else:
+                            permissions.append(permission_dict(affected_object, READ))
+                                
+        return permissions                          
+                     
+    
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
