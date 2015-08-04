@@ -487,6 +487,14 @@ class SiteInline(XOSTabularInline):
     def queryset(self, request):
         return Site.select_by_user(request.user)
 
+class SiteHostsNodesInline(SiteInline):
+    def queryset(self, request):
+        return Site.select_by_user(request.user).filter(hosts_nodes=True)
+
+class SiteHostsUsersInline(SiteInline):
+    def queryset(self, request):
+        return Site.select_by_user(request.user).filter(hosts_users=True)        
+
 class UserInline(XOSTabularInline):
     model = User
     fields = ['backend_status_icon', 'email', 'firstname', 'lastname']
@@ -1126,7 +1134,7 @@ class SliceAdmin(XOSBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_users=True)
             kwargs['widget'] = forms.Select(attrs={'onChange': "update_slice_prefix(this, $($(this).closest('fieldset')[0]).find('.field-name input')[0].id)"})
 
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
