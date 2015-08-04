@@ -11,37 +11,34 @@ from xosresource import XOSResource
 
 class XOSService(XOSResource):
     provides = "tosca.nodes.Service"
+    xos_model = Service
 
-    def process_nodetemplate(self):
-        nodetemplate = self.nodetemplate
-        serviceName = nodetemplate.name
+    def get_xos_args(self):
+        return {"name": self.nodetemplate.name}
 
-        existing_services = Service.objects.filter(name=serviceName)
-        if existing_services:
-            self.info("Service %s already exists" % serviceName)
-            service = existing_services[0]
-        else:
-            service = Service(name = serviceName)
-            service.caller = self.user
-            service.save()
-
-            self.info("Created Service '%s'" % (str(service), ))
-
+    def postprocess(self, obj):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
             provider_service = self.get_xos_object(Service, name=provider_service_name)
 
-            existing_tenancy = CoarseTenant.get_tenant_objects().filter(provider_service = provider_service, subscriber_service = service)
+            existing_tenancy = CoarseTenant.get_tenant_objects().filter(provider_service = provider_service, subscriber_service = obj)
             if existing_tenancy:
                 self.info("Tenancy relationship from %s to %s already exists" % (str(service), str(provider_service)))
             else:
                 tenancy = CoarseTenant(provider_service = provider_service,
-                                       subscriber_service = service)
+                                       subscriber_service = obj)
                 tenancy.save()
 
-                self.info("Created Tenancy relationship  from %s to %s" % (str(service), str(provider_service)))
+                self.info("Created Tenancy relationship  from %s to %s" % (str(obj), str(provider_service)))
 
-        self.resource = service
+    def create(self):
+        nodetemplate = self.nodetemplate
 
-    def save(self):
-        self.resource.save()
+        xos_args = self.get_xos_args()
+        service = Service(**xos_args)
+        service.caller = self.user
+        service.save()
+
+        self.postprocess(service)
+
+        self.info("Created Service '%s'" % (str(service), ))
 

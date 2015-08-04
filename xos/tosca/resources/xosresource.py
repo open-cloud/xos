@@ -1,12 +1,12 @@
 class XOSResource(object):
     xos_base_class = "XOSResource"
+    xos_model = None
     provides = None
 
     def __init__(self, user, nodetemplate):
         self.dirty = False
         self.user = user
         self.nodetemplate = nodetemplate
-        self.process_nodetemplate()
 
     def get_requirements(self, relationship_name, throw_exception=False):
         """ helper to search the list of requirements for a particular relationship
@@ -36,7 +36,24 @@ class XOSResource(object):
             raise Exception("Failed to find %s filtered by %s" % (cls.__name__, str(kwargs)))
         return objs[0]
 
-    def process_nodetemplate(self):
+    def get_existing_objs(self):
+        return self.xos_model.objects.filter(name = self.nodetemplate.name)
+
+    def get_xos_args(self):
+        return {}
+
+    def create_or_update(self):
+        existing_objs = self.get_existing_objs()
+        if existing_objs:
+            self.info("%s %s already exists" % (self.xos_model.__name__, self.nodetemplate.name))
+            self.update(existing_objs[0])
+        else:
+            self.create()
+
+    def create(self):
+        raise Exception("abstract method -- must override")
+
+    def update(self, obj):
         pass
 
     def info(self, s):

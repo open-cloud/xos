@@ -13,6 +13,7 @@ from xosresource import XOSResource
 
 class XOSCompute(XOSResource):
     provides = "tosca.nodes.Compute"
+    xos_model = Sliver
 
     def select_compute_node(self, user, v):
         mem_size = v.get_property_value("mem_size")
@@ -34,7 +35,7 @@ class XOSCompute(XOSResource):
 
         return XOSImageSelector(user, distribution=distribution, version=version, type=type, architecture=architecture).get_image()
 
-    def process_nodetemplate(self):
+    def get_xos_args(self):
         nodetemplate = self.nodetemplate
 
         host=None
@@ -58,19 +59,19 @@ class XOSCompute(XOSResource):
         if not flavor:
             raise Exception("Failed to pick a flavor")
 
-        sliver = Sliver(deployment = compute_node.site_deployment.deployment,
-                        node = compute_node,
-                        flavor = flavor,
-                        slice = slice,
-                        image = image)
+        return {"name": nodetemplate.name,
+                "image": image,
+                "slice": slice,
+                "flavor": flavor,
+                "node": compute_node,
+                "deployment": compute_node.site_deployment.deployment}
+
+    def create(self):
+        xos_args = self.get_xos_args()
+        sliver = Sliver(**xos_args)
         sliver.caller = self.user
         sliver.save()
 
-        self.resource = sliver
-
         self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
-                  (str(sliver), str(compute_node), str(flavor), str(image)))
-
-    def save(self):
-        self.resource.save()
+                  (str(sliver), str(sliver.node), str(sliver.flavor), str(sliver.image)))
 

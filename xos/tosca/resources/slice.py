@@ -11,29 +11,26 @@ from xosresource import XOSResource
 
 class XOSSlice(XOSResource):
     provides = "tosca.nodes.Slice"
+    xos_model = Slice
 
-    def process_nodetemplate(self):
+    def get_existing_objs(self):
+        return Slice.objects.filter(name=self.nodetemplate.name)
+
+    def get_xos_args(self):
+        site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
+        site = self.get_xos_object(Site, login_base=site_name)
+        return {"name": self.nodetemplate.name,
+                "site": site}
+
+    def create(self):
         nodetemplate = self.nodetemplate
         sliceName = nodetemplate.name
 
-        existing_slices = Slice.objects.filter(name=sliceName)
-        if existing_slices:
-            self.info("Slice %s already exists" % sliceName)
-            slice = existing_slices[0]
-        else:
-            site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
-            site = self.get_xos_object(Site, login_base=site_name)
+        xos_args = self.get_xos_args()
+        slice = Slice(**xos_args)
+        slice.caller = self.user
+        slice.save()
 
-            slice = Slice(name = sliceName,
-                          site = site)
-            slice.caller = self.user
-            slice.save()
+        self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(slice.site)))
 
-            self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(site)))
-
-        self.resource = slice
-
-
-    def save(self):
-        self.resource.save()
 
