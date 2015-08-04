@@ -99,6 +99,8 @@ class Site(PlCoreBase):
     name = StrippedCharField(max_length=200, help_text="Name for this Site")
     site_url = models.URLField(null=True, blank=True, max_length=512, help_text="Site's Home URL Page")
     enabled = models.BooleanField(default=True, help_text="Status for this Site")
+    hosts_nodes = models.BooleanField(default=True, help_text="Indicates whether or not the site host nodes")
+    hosts_users = models.BooleanField(default=True, help_text="Indicates whether or not the site manages user accounts")
     location = GeopositionField()
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)

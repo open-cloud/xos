@@ -487,6 +487,14 @@ class SiteInline(XOSTabularInline):
     def queryset(self, request):
         return Site.select_by_user(request.user)
 
+class SiteHostsNodesInline(SiteInline):
+    def queryset(self, request):
+        return Site.select_by_user(request.user).filter(hosts_nodes=True)
+
+class SiteHostsUsersInline(SiteInline):
+    def queryset(self, request):
+        return Site.select_by_user(request.user).filter(hosts_users=True)        
+
 class UserInline(XOSTabularInline):
     model = User
     fields = ['backend_status_icon', 'email', 'firstname', 'lastname']
@@ -916,7 +924,7 @@ class SiteNodeInline(XOSTabularInline):
 
 class SiteAdmin(XOSBaseAdmin):
     #fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'accountLink','location']
-    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'is_public', 'login_base', 'location']
+    fieldList = ['backend_status_text', 'name', 'site_url', 'enabled', 'login_base', 'location', 'is_public', 'hosts_nodes', 'hosts_users']
     fieldsets = [
         (None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),
         #('Deployment Networks', {'fields': ['deployments'], 'classes':['suit-tab suit-tab-deployments']}),
@@ -925,7 +933,7 @@ class SiteAdmin(XOSBaseAdmin):
     readonly_fields = ['backend_status_text']
 
     #user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'accountLink']
-    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base']
+    user_readonly_fields = ['name', 'deployments','site_url', 'enabled', 'is_public', 'login_base', 'hosts_nodes', 'hosts_users']
 
     list_display = ('backend_status_icon', 'name', 'login_base','site_url', 'enabled')
     list_display_links = ('backend_status_icon', 'name', )
@@ -1126,7 +1134,7 @@ class SliceAdmin(XOSBaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_users=True)
             kwargs['widget'] = forms.Select(attrs={'onChange': "update_slice_prefix(this, $($(this).closest('fieldset')[0]).find('.field-name input')[0].id)"})
 
         return super(SliceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -1239,6 +1247,9 @@ class NodeAdmin(XOSBaseAdmin):
 
     suit_form_tabs =(('details','Node Details'),('slivers','Slivers'))
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'site':
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_nodes=True)
 
 class SliverForm(forms.ModelForm):
     class Meta:
@@ -1452,7 +1463,7 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
-            kwargs['queryset'] = Site.select_by_user(request.user)
+            kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_users=True)
 
         return super(UserAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
