@@ -64,9 +64,9 @@ class XOSCompute(XOSResource):
                         slice = slice,
                         image = image)
         sliver.caller = self.user
+        sliver.save()
 
         self.resource = sliver
-        self.dirty = True
 
         self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
                   (str(sliver), str(compute_node), str(flavor), str(image)))

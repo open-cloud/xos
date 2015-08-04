@@ -38,7 +38,6 @@ class XOSTosca(object):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
             obj = cls(user, nodetemplate)
-            obj.save_if_dirty()
 
 
 
