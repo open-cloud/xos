@@ -1,4 +1,5 @@
-*orig
-*pyc
+*.orig
+*.pyc
+*.swp
 profile
 *.moved-aside
