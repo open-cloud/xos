@@ -13,9 +13,6 @@ class XOSSlice(XOSResource):
     provides = "tosca.nodes.Slice"
     xos_model = Slice
 
-    def get_existing_objs(self):
-        return Slice.objects.filter(name=self.nodetemplate.name)
-
     def get_xos_args(self):
         site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
         site = self.get_xos_object(Site, login_base=site_name)
