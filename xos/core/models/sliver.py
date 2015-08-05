@@ -99,7 +99,9 @@ class Sliver(PlCoreBase):
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
     def __unicode__(self):
-        if self.name and self.slice and (self.name != self.slice.name):
+        if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
+            # NOTE: The weird check on self.slice_id was due to a problem when
+            #   deleting the slice before the sliver.
             return u'%s' % self.name
         elif self.instance_name:
             return u'%s' % (self.instance_name)
