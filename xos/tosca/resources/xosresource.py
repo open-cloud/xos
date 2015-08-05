@@ -40,10 +40,11 @@ class XOSResource(object):
         return reqs[0]
 
     def get_scalable(self):
-        if ("capabilities" in self.nodetemplate.entity_tpl) and \
-           ("host" in self.nodetemplate.entity_tpl["capabilities"]) and \
-           ("scalable" in self.nodetemplate.entity_tpl["capabilities"]["host"]):
-               return self.nodetemplate.entity_tpl["capabilities"]["host"]["scalable"]
+        scalable = self.nodetemplate.get_capabilities().get("scalable", None)
+        if scalable:
+            return {"min_instances": scalable.get_property_value("min_instances"),
+                    "max_instances": scalable.get_property_value("max_instances"),
+                    "default_instances": scalable.get_property_value("default_instances")}
         else:
             return {}
 
