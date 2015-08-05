@@ -35,8 +35,11 @@ class XOSCompute(XOSResource):
 
         return XOSImageSelector(user, distribution=distribution, version=version, type=type, architecture=architecture).get_image()
 
-    def get_xos_args(self):
+    def get_xos_args(self, name=None):
         nodetemplate = self.nodetemplate
+
+        if not name:
+            name = nodetemplate.name
 
         host=None
         flavor=None
@@ -59,19 +62,46 @@ class XOSCompute(XOSResource):
         if not flavor:
             raise Exception("Failed to pick a flavor")
 
-        return {"name": nodetemplate.name,
+        return {"name": name,
                 "image": image,
                 "slice": slice,
                 "flavor": flavor,
                 "node": compute_node,
                 "deployment": compute_node.site_deployment.deployment}
 
-    def create(self):
-        xos_args = self.get_xos_args()
+    def create(self, name = None):
+        xos_args = self.get_xos_args(name=name)
         sliver = Sliver(**xos_args)
         sliver.caller = self.user
         sliver.save()
 
         self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
                   (str(sliver), str(sliver.node), str(sliver.flavor), str(sliver.image)))
+
+    def create_or_update(self):
+        scalable = self.get_scalable()
+        if scalable:
+            default_instances = scalable.get("default_instances",1)
+            for i in range(0, default_instances):
+                name = "%s-%d" % (self.nodetemplate.name, i)
+                existing_slivers = Sliver.objects.filter(name=name)
+                if existing_slivers:
+                    self.info("%s %s already exists" % (self.xos_model.__name__, name))
+                    self.update(existing_slivers[0])
+                else:
+                    self.create(name)
+        else:
+            super(XOSCompute,self).create_or_update()
+
+    def get_existing_objs(self):
+        scalable = self.get_scalable()
+        if scalable:
+            existing_slivers = []
+            max_instances = scalable.get("max_instances",1)
+            for i in range(0, max_instances):
+                name = "%s-%d" % (self.nodetemplate.name, i)
+                existing_slivers = existing_slivers + list(Sliver.objects.filter(name=name))
+            return existing_slivers
+        else:
+            return super(XOSCompute,self).get_existing_objs()
 
