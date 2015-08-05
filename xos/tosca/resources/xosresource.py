@@ -8,6 +8,13 @@ class XOSResource(object):
         self.user = user
         self.nodetemplate = nodetemplate
 
+    def get_all_required_node_names(self):
+        results = []
+        for reqs in self.nodetemplate.requirements:
+            for (k,v) in reqs.items():
+                results.append(v["node"])
+        return results
+
     def get_requirements(self, relationship_name, throw_exception=False):
         """ helper to search the list of requirements for a particular relationship
             type.
