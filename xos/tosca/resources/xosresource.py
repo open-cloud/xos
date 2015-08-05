@@ -74,6 +74,9 @@ class XOSResource(object):
     def update(self, obj):
         pass
 
+    def delete(self, obj):
+        obj.delete(purge=True)   # XXX TODO: turn off purge before production
+
     def info(self, s):
         print s
 
