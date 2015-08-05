@@ -51,4 +51,4 @@ http --auth $AUTH POST $XOS/xos/nodes/ name=$NODE site_deployment=$XOS/xos/sited
 
 # Modify networktemplate/2
 # BUG: Shouldn't have to set the controller_kind field, it's invalid in the initial fixture
-http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=tun-data-net controller_kind=""
+http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=flat-data-net controller_kind=""
