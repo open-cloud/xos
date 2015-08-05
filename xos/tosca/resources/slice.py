@@ -30,4 +30,11 @@ class XOSSlice(XOSResource):
 
         self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(slice.site)))
 
+    def delete(self, obj):
+        if obj.slivers.exists():
+            self.info("Slice %s has active slivers; skipping delete" % obj.name)
+            return
+        super(XOSSlice, self).delete(obj)
+
+
 

@@ -42,3 +42,9 @@ class XOSService(XOSResource):
 
         self.info("Created Service '%s'" % (str(service), ))
 
+    def delete(self, obj):
+        if obj.slices.exists():
+            self.info("Service %s has active slices; skipping delete" % obj.name)
+            return
+        obj.delete()
+

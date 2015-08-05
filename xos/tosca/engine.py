@@ -105,20 +105,13 @@ class XOSTosca(object):
 	return order + noorder
 
     def execute(self, user):
-        for nodetemplate in self.ordered_nodetemplates: # self.template.nodetemplates:
+        for nodetemplate in self.ordered_nodetemplates:
             self.execute_nodetemplate(user, nodetemplate)
 
     def execute_nodetemplate(self, user, nodetemplate):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
             #print "work on", cls.__name__, nodetemplate.name
-            obj = cls(user, nodetemplate)
-            obj.create_or_update()
-
-    def execute_nodetemplate(self, user, nodetemplate):
-        if nodetemplate.type in resources.resources:
-            cls = resources.resources[nodetemplate.type]
-            print "work on", cls.__name__, nodetemplate.name
             obj = cls(user, nodetemplate)
             obj.create_or_update()
 
@@ -129,9 +122,10 @@ class XOSTosca(object):
             if nodetemplate.type in resources.resources:
                 cls = resources.resources[nodetemplate.type]
                 obj = cls(user, nodetemplate)
-                models = models + list(obj.get_existing_objs())
+                for model in obj.get_existing_objs():
+                    models.append( (obj, model) )
         models.reverse()
-        for model in models:
+        for (resource,model) in models:
             print "destroying", model
-            model.delete(purge=True) # XXX change before deploying
+            resource.delete(model)
 
