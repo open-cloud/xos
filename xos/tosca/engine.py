@@ -41,8 +41,22 @@ class XOSTosca(object):
             obj = cls(user, nodetemplate)
             obj.create_or_update()
 
+    def execute_nodetemplate(self, user, nodetemplate):
+        if nodetemplate.type in resources.resources:
+            cls = resources.resources[nodetemplate.type]
+            #print "work on", cls.__name__, nodetemplate.name
+            obj = cls(user, nodetemplate)
+            obj.create_or_update()
 
-
-
-
+    def destroy(self, user):
+        models = []
+        for nodetemplate in self.template.nodetemplates:
+            if nodetemplate.type in resources.resources:
+                cls = resources.resources[nodetemplate.type]
+                obj = cls(user, nodetemplate)
+                models = models + list(obj.get_existing_objs())
+        models.reverse()
+        for model in models:
+            print "destroying", model
+            model.delete(purge=True) # XXX change before deploying
 
