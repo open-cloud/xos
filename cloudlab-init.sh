@@ -1,28 +1,37 @@
-#!/bin/sh
+#!/bin/bash
+set -x
 
-# This script assumes that XOS is running in a Docker container on the local machine,
-# using an image called 'xos'.
+# This script assumes that it is being run on the ctl node of the Tutorial-OpenStack
+# profile on CloudLab.
 
-# CHANGE THE FOLLOWING FOR YOUR CLOUDLAB INSTALLATION
-# URL for your XOS installation
-XOS="http://192.168.59.103:8000/"
-# The IP address of the OpenStack head node on CloudLab
-CTL_IP="128.104.222.18"
-# The DNS name of the OpenStack compute node, as shown by 'nova hypervisor-list'
-NODE="cp1.acb-qv7993.planetcloud-pg0.wisc.cloudlab.us"
-# The public key that you want to use to login to instances
-PUBKEY="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArlgZWcRP75W2/e5bKG1FEeec1OJQuw9dGVyo3TdUgVu4F0/JgBsgR2BrTuQ+mzm+N47ZkSrYwLdAJGuvL7ECxc6aouQ6AtQ/biU1gsrfuPnnUBjfAGqlP/L77lYxpLAPglx/HCCBu53gLKVt8lRDyyGZaWnB7fGlnwrn5AMjcfXsz5Ia8W6oBmxy2fxDSR9SpTs5yAzfcj37mCBtOZBwdjb54B36WpFq9BwFrEXxbvxH4aU0WSneJagicZuCUXnTg2YSURBD0jBmTrYOVRfTZzNPyagOvuIhnnakOSGkGa8s4SrC5zymZsVPdQbp6icRsu6OjKZ83Y0oiTQ4rTaeUw== acb@cadenza.cs.princeton.edu"
-# END CHANGES
-
+XOS="http://ctl:9999/"
 AUTH="padmin@vicci.org:letmein"
-CONTAINER=$( docker ps|grep xos|awk '{print $(NF)}' )
+
+# Install Docker
+wget -qO- https://get.docker.com/ | sh
+sudo usermod -aG docker $(whoami)
+
+sudo apt-get install httpie
+
+docker build -t xos .
+
+# OpenStack is using port 8000...
+MYIP=$( hostname -i )
+docker run -d --add-host="ctl:$MYIP" -p 9999:8000 xos
+
+echo "Waiting for XOS to come up"
+until http $XOS &> /dev/null
+do
+    sleep 1
+done
+
+# Create public key if none present
+cat /dev/zero | ssh-keygen -q -N ""
+PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 
 # Copy public key
 # BUG: Shouldn't have to set the 'enacted' field...
 http --auth $AUTH PATCH $XOS/xos/users/1/ public_key="$PUBKEY" enacted=$( date "+%Y-%m-%dT%T")
-
-# Fix /etc/hosts, necessary for OpenStack endpoints
-docker exec $CONTAINER bash -c "echo $CTL_IP ctl >> /etc/hosts"
 
 # Set up controller
 http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Juno auth_url="http://ctl:5000/v2.0" admin_user=admin admin_tenant=admin admin_password="N!ceD3m0"
@@ -37,6 +46,7 @@ http --auth $AUTH POST $XOS/xos/images/ name=trusty-server-multi-nic disk_format
 http --auth $AUTH POST $XOS/xos/imagedeploymentses/ deployment=$XOS/xos/deployments/1/ image=$XOS/xos/images/1/
 
 # Add node
+NODE=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}' )
 http --auth $AUTH POST $XOS/xos/nodes/ name=$NODE site_deployment=$XOS/xos/sitedeployments/1/
 
 # Modify networktemplate/2
