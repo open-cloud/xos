@@ -16,6 +16,14 @@ topology_template:
           - deployment:
               node: newdeployment
               relationship: tosca.relationships.ControllerDeployment
+      properties:
+           backend_type: openstack
+           version: v1.23.4
+           auth_url: http://foo/
+           admin_user: johndoe
+           admin_password: letmeout
+           admin_tenant: 12345678
+           domain: mydomain
 
     newsite:
       type: tosca.nodes.Site

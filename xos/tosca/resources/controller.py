@@ -19,6 +19,12 @@ class XOSController(XOSResource):
     def get_xos_args(self):
         args = {"name": self.nodetemplate.name}
 
+        # copy simple string properties from the template into the arguments
+        for prop in ["backend_type", "version", "auth_url", "admin_user", "admin_password", "admin_tenant", "domain"]:
+            v = self.get_property(prop)
+            if v:
+                args[prop] = v
+
         deployment_name = self.get_requirement("tosca.relationships.ControllerDeployment")
         if deployment_name:
             args["deployment"] = self.get_xos_object(Deployment, name=deployment_name)
