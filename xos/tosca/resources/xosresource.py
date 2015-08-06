@@ -48,6 +48,9 @@ class XOSResource(object):
         else:
             return {}
 
+    def get_property(self, name):
+        return self.nodetemplate.get_property_value(name)
+
     def get_xos_object(self, cls, **kwargs):
         objs = cls.objects.filter(**kwargs)
         if not objs:

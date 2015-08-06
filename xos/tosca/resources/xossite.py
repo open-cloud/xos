@@ -17,14 +17,16 @@ class XOSSite(XOSResource):
     xos_model = Site
 
     def get_xos_args(self):
+        display_name = self.get_property("display_name")
+        if not display_name:
+            display_name = nodetemplate.name
+
         args = {"login_base": self.nodetemplate.name,
-                "name": self.nodetemplate.name}
-
-        #deployment_name = self.get_requirement("tosca.relationships.SiteDeployment")
-        #if deployment_name:
-        #    args["deployment"] = self.get_xos_object(Deployment, name=deployment_name)
-
+                "name": display_name}
         return args
+
+    def get_existing_objs(self):
+        return self.xos_model.objects.filter(login_base = self.nodetemplate.name)
 
     def postprocess(self, obj):
         results = []
