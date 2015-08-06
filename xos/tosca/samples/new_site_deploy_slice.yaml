@@ -1,6 +1,9 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
-description: Template for deploying a single server with predefined properties.
+description: >
+    * Create a new deployment, controller, and site.
+    * Add a SiteDeployment from the site to the deployment using the controller.
+    * Create a Slice in the Site, with one Sliver
 
 imports:
    - custom_types/xos.yaml
