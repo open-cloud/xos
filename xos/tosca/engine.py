@@ -32,6 +32,7 @@ class XOSTosca(object):
 
         self.ordered_nodetemplates = []
         self.ordered_names = self.topsort_dependencies()
+        print "ordered_names", self.ordered_names
         for name in self.ordered_names:
             if name in self.nodetemplates_by_name:
                 self.ordered_nodetemplates.append(self.nodetemplates_by_name[name])
@@ -54,6 +55,15 @@ class XOSTosca(object):
                     if (name in nodetemplates_by_name):
                         nodetemplate.dependencies.append(nodetemplates_by_name[name])
                         nodetemplate.dependencies_names.append(name)
+
+                    # go another level deep, as our requirements can have requirements...
+                    for sd_req in v.get("requirements",[]):
+                        for (sd_req_k, sd_req_v) in sd_req.items():
+                            name = sd_req_v["node"]
+                            if (name in nodetemplates_by_name):
+                                nodetemplate.dependencies.append(nodetemplates_by_name[name])
+                                nodetemplate.dependencies_names.append(name)
+
 
     def topsort_dependencies(self):
         # stolen from observer
@@ -111,7 +121,7 @@ class XOSTosca(object):
     def execute_nodetemplate(self, user, nodetemplate):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
-            #print "work on", cls.__name__, nodetemplate.name
+            print "work on", cls.__name__, nodetemplate.name
             obj = cls(user, nodetemplate)
             obj.create_or_update()
 
