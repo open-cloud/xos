@@ -1,0 +1,95 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Two services "service_one" and "service_two" with a tenancy relationship.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    # setup the services
+
+    service_one:
+      type: tosca.nodes.Service
+      requirements:
+          - two_tenant:
+              node: service_two
+              relationship: tosca.relationships.TenantOfService
+
+    service_two:
+      type: tosca.nodes.Service
+
+    # the slices will need a site
+
+    mysite:
+      type: tosca.nodes.Site
+
+    # setup the slices
+
+    mysite_one:
+      description: Service One controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - service:
+              node: service_one
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_two:
+      description: Service Two controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - service:
+              node: service_two
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    # setup an instance in each slice
+
+    one_controller:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: rhel
+            version: 6.5
+      requirements:
+          - slice:
+                node: mysite_one
+                relationship: tosca.relationships.MemberOfSlice
+
+    two_controller:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: rhel
+            version: 6.5
+      requirements:
+          - slice:
+                node: mysite_two
+                relationship: tosca.relationships.MemberOfSlice
