@@ -23,6 +23,13 @@ class XOSSite(XOSResource):
 
         args = {"login_base": self.nodetemplate.name,
                 "name": display_name}
+
+        # copy simple string properties from the template into the arguments
+        for prop in ["site_url", ]:
+            v = self.get_property(prop)
+            if v:
+                args[prop] = v
+
         return args
 
     def get_existing_objs(self):

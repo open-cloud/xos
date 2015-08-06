@@ -32,6 +32,7 @@ topology_template:
       type: tosca.nodes.Site
       properties:
           display_name: some new site
+          site_url: http://newsite.org/
       requirements:
           - deployment:
                node: newdeployment
