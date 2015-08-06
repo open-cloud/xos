@@ -5,7 +5,9 @@ node_types:
         derived_from: tosca.nodes.Root
         capabilities:
             scalable:
-                type tosca.capabilities.Scalable
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
 #        properties:
 #            persistent:
 #                type: boolean
@@ -13,20 +15,74 @@ node_types:
 #                default: false
 #                description: prevent this resource from being deleted
 
+    tosca.nodes.Deployment:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            deployment:
+                type: tosca.capabilities.xos.Deployment
+
+    tosca.nodes.Controller:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            controller:
+                type: tosca.capabilities.xos.Controller
+
     tosca.nodes.Site:
         derived_from: tosca.nodes.Root
+        capabilities:
+            site:
+                type: tosca.capabilities.xos.Site
 
     tosca.nodes.Slice:
         derived_from: tosca.nodes.Root
+        capability:
+            slice:
+                type: tosca.capabilities.xos.Slice
 
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Slice ]
 
     tosca.relationships.MemberOfService:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Service ]
 
     tosca.relationships.MemberOfSite:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Site ]
 
     tosca.relationships.TenantOfService:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Service ]
+
+    tosca.relationships.ControllerDeployment:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Deployment ]
+
+    tosca.relationships SiteDeployment:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Deployment ]
+
+    tosca.relationships.UsesController:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Controller ]
+
+    tosca.capabilities.xos.Service:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Service
+
+    tosca.capabilities.xos.Deployment:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Deployment
+
+    tosca.capabilities.xos.Controller:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Controller
+
+    tosca.capabilities.xos.Site:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Site
+
+    tosca.capabilities.xos.Slice:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Slice
