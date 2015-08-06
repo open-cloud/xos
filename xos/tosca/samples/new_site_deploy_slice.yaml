@@ -19,6 +19,8 @@ topology_template:
 
     newsite:
       type: tosca.nodes.Site
+      properties:
+          display_name: some new site
       requirements:
           - deployment:
                node: newdeployment
