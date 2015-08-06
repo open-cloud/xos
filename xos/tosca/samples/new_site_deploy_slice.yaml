@@ -1,0 +1,58 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    newdeployment:
+      type: tosca.nodes.Deployment
+
+    newcontroller:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: newdeployment
+              relationship: tosca.relationships.ControllerDeployment
+
+    newsite:
+      type: tosca.nodes.Site
+      requirements:
+          - deployment:
+               node: newdeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: newcontroller
+                       relationship: tosca.relationship.UsesController
+
+    newsite_tosca:
+      type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: newsite
+                relationship: tosca.relationships.MemberOfSite
+
+    my_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: rhel
+            version: 6.5
+      requirements:
+          - slice:
+                node: newsite_tosca
+                relationship: tosca.relationships.MemberOfSlice
