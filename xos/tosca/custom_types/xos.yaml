@@ -26,6 +26,28 @@ node_types:
         capabilities:
             controller:
                 type: tosca.capabilities.xos.Controller
+        properties:
+            backend_type:
+                type: string
+                required: false
+            version:
+                type: string
+                required: false
+            auth_url:
+                type: string
+                required: false
+            admin_user:
+                type: string
+                required: false
+            admin_password:
+                type: string
+                required: false
+            admin_tenant:
+                type: string
+                required: false
+            domain:
+                type: string
+                required: false
 
     tosca.nodes.Site:
         derived_from: tosca.nodes.Root
