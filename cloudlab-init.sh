@@ -13,11 +13,11 @@ sudo usermod -aG docker $(whoami)
 
 sudo apt-get install httpie
 
-docker build -t xos .
+sudo docker build -t xos .
 
 # OpenStack is using port 8000...
 MYIP=$( hostname -i )
-docker run -d --add-host="ctl:$MYIP" -p 9999:8000 xos
+sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 xos
 
 echo "Waiting for XOS to come up"
 until http $XOS &> /dev/null
@@ -51,4 +51,5 @@ http --auth $AUTH POST $XOS/xos/nodes/ name=$NODE site_deployment=$XOS/xos/sited
 
 # Modify networktemplate/2
 # BUG: Shouldn't have to set the controller_kind field, it's invalid in the initial fixture
-http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=flat-data-net controller_kind=""
+FLATNET=$( sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{print $4}' )
+http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=$FLATNET controller_kind=""
