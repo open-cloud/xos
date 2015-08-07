@@ -19,7 +19,7 @@ class XOSSite(XOSResource):
     def get_xos_args(self):
         display_name = self.get_property("display_name")
         if not display_name:
-            display_name = nodetemplate.name
+            display_name = self.nodetemplate.name
 
         args = {"login_base": self.nodetemplate.name,
                 "name": display_name}
