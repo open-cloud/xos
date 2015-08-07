@@ -1,0 +1,39 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Make some network templates
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    mysite:
+      type: tosca.nodes.Site
+
+    johndoe@foo.bar:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    janedoe@foo.bar:
+      type: tosca.nodes.User
+      properties:
+          password: letmeintoo
+          firstname: jane
+          lastname: doe
+          phone: 111-222-3333
+          user_url: http://janedoe/
+          public_key: asdlfkjasldkfjasldkjfhaslkdjfhglaskdjfhlaksjdhfkasdfasdf
+          is_active: true
+          is_admin: true
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
