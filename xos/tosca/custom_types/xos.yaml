@@ -15,6 +15,54 @@ node_types:
 #                default: false
 #                description: prevent this resource from being deleted
 
+    tosca.nodes.NetworkTemplate:
+        derived_from: tosca.nodes.Root
+
+        capabilities:
+            network_template:
+                type: tosca.capabilities.xos.NetworkTemplate
+
+        properties:
+            visibility:
+                type: string
+                default: private
+            translation:
+                type: string
+                default: none
+            shared_network_name:
+                type: string
+                required: false
+            shared_network_id:
+                type: string
+                required: false
+            topology_kind:
+                type: string
+                default: BigSwitch
+            controller_kind:
+                type: string
+                required: false
+
+    tosca.nodes.XOSNetwork:
+        derived_from: tosca.nodes.Root
+
+        capabilities:
+            network:
+                type: tosca.capabilities.xos.Network
+
+        properties:
+            ports:
+                type: string
+                required: false
+            labels:
+                type: string
+                required: false
+            permit_all_slices:
+                type: boolean
+                default: false
+            permitted_slices:
+                type: string
+                required: false
+
     tosca.nodes.Deployment:
         derived_from: tosca.nodes.Root
         capabilities:
@@ -110,6 +158,18 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Controller ]
 
+    tosca.relationships.ConnectsToNetwork:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilitys.xos.Network ]
+
+#    tosca.relationships.OwnsNetwork:
+#        derived_from: tosca.relationships.Root
+#        valid_target_types: [ tosca.capabilitys.xos.Network ]
+
+    tosca.relationships.UsesNetworkTemplate:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilitys.xos.NetworkTemplate ]
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -129,3 +189,11 @@ node_types:
     tosca.capabilities.xos.Slice:
         derived_from: tosca.capabilities.Root
         description: An XOS Slice
+
+    tosca.capabilities.xos.NetworkTemplate:
+        derived_from: tosca.capabilities.Root
+        description: An XOS network template
+
+    tosca.capabilities.xos.Network:
+        derived_from: tosca.capabilities.Root
+        description: An XOS network
