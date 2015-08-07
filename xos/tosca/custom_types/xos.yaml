@@ -1,6 +1,20 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 node_types:
+    # I wanted to make this the base of all XOS node types, but doing so throws
+    # InvalidTypeError: Type "tosca.nodes.XOS" is not a valid type
+    tosca.nodes.XOS:
+        derived_from: tosca.nodes.Root
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: do not allow Tosca to create this object
+
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         capabilities:
@@ -14,6 +28,42 @@ node_types:
 #                required: false
 #                default: false
 #                description: prevent this resource from being deleted
+
+    tosca.nodes.User:
+        derived_from: tosca.nodes.Root
+
+        capabilities:
+            user:
+                type: tosca.capabilities.xos.User
+
+        properties:
+            password:
+                type: string
+                required: true
+            firstname:
+                type: string
+                required: true
+            lastname:
+                type: string
+                required: true
+            phone:
+                type: string
+                required: false
+            user_url:
+                type: string
+                required: false
+            public_key:
+                type: string
+                required: false
+            is_active:
+                type: boolean
+                default: true
+            is_admin:
+                type: boolean
+                default: false
+            login_page:
+                type: string
+                required: false
 
     tosca.nodes.NetworkTemplate:
         derived_from: tosca.nodes.Root
@@ -160,15 +210,27 @@ node_types:
 
     tosca.relationships.ConnectsToNetwork:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilitys.xos.Network ]
+        valid_target_types: [ tosca.capabilities.xos.Network ]
 
 #    tosca.relationships.OwnsNetwork:
 #        derived_from: tosca.relationships.Root
-#        valid_target_types: [ tosca.capabilitys.xos.Network ]
+#        valid_target_types: [ tosca.capabilities.xos.Network ]
 
     tosca.relationships.UsesNetworkTemplate:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilitys.xos.NetworkTemplate ]
+        valid_target_types: [ tosca.capabilities.xos.NetworkTemplate ]
+
+    tosca.relationships.AdminPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
+
+    tosca.relationships.AccessPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
+
+    tosca.relationships.PIPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
 
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
@@ -197,3 +259,7 @@ node_types:
     tosca.capabilities.xos.Network:
         derived_from: tosca.capabilities.Root
         description: An XOS network
+
+    tosca.capabilities.xos.User:
+        derived_from: tosca.capabilities.Root
+        description: An XOS user
