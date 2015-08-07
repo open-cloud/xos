@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,User,Site
+from core.models import Slice,User,Site,Network,NetworkSlice
 
 from xosresource import XOSResource
 
@@ -19,6 +19,14 @@ class XOSSlice(XOSResource):
         return {"name": self.nodetemplate.name,
                 "site": site}
 
+    def postprocess(self, obj):
+        for net_name in self.get_requirements("tosca.relationships.ConnectsToNetwork"):
+            net = self.get_xos_object(Network, name=net_name)
+            if not NetworkSlice.objects.filter(network=net, slice=obj):
+                ns = NetworkSlice(network=net, slice=obj)
+                ns.save()
+                self.info("Added network connection from '%s' to '%s'" % (str(obj), str(net)))
+
     def create(self):
         nodetemplate = self.nodetemplate
         sliceName = nodetemplate.name
@@ -27,6 +35,8 @@ class XOSSlice(XOSResource):
         slice = Slice(**xos_args)
         slice.caller = self.user
         slice.save()
+
+        self.postprocess(slice)
 
         self.info("Created Slice '%s' on Site '%s'" % (str(slice), str(slice.site)))
 
