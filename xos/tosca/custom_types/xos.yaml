@@ -230,7 +230,11 @@ node_types:
 
     tosca.relationships.PIPrivilege:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
+        valid_target_types: [ tosca.capabiltys.xos.Site ]
+
+    tosca.relationships.TechPrivilege:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabiltys.xos.Site ]
 
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root

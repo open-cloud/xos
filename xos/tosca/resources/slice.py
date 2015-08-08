@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,User,Site,Network,NetworkSlice
+from core.models import Slice,User,Site,Network,NetworkSlice,SliceRole,SlicePrivilege
 
 from xosresource import XOSResource
 
@@ -26,6 +26,17 @@ class XOSSlice(XOSResource):
                 ns = NetworkSlice(network=net, slice=obj)
                 ns.save()
                 self.info("Added network connection from '%s' to '%s'" % (str(obj), str(net)))
+
+        rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
+                    ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
+        for (rel, role) in rolemap:
+            for email in self.get_requirements(rel):
+                role = self.get_xos_object(SliceRole, role=role)
+                user = self.get_xos_object(User, email=email)
+                if not SlicePrivilege.objects.filter(user=user, role=role, slice=obj):
+                    sp = SlicePrivilege(user=user, role=role, slice=obj)
+                    sp.save()
+                    self.info("Added slice privilege on %s role %s for %s" % (str(obj), str(role), str(user)))
 
     def create(self):
         nodetemplate = self.nodetemplate

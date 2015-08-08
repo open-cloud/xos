@@ -122,7 +122,7 @@ class XOSTosca(object):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
             #print "work on", cls.__name__, nodetemplate.name
-            obj = cls(user, nodetemplate)
+            obj = cls(user, nodetemplate, self)
             obj.create_or_update()
 
     def destroy(self, user):
@@ -131,11 +131,30 @@ class XOSTosca(object):
         for nodetemplate in nodetemplates:
             if nodetemplate.type in resources.resources:
                 cls = resources.resources[nodetemplate.type]
-                obj = cls(user, nodetemplate)
+                obj = cls(user, nodetemplate, self)
                 for model in obj.get_existing_objs():
                     models.append( (obj, model) )
         models.reverse()
         for (resource,model) in models:
             print "destroying", model
             resource.delete(model)
+
+    def name_to_xos_class(self, user, name):
+        nt = self.nodetemplates_by_name.get(name)
+        if not nt:
+            raise Exception("failed to find nodetemplate %s" % name)
+
+        cls = resources.resources.get(nt.type)
+        if not cls:
+            raise Exception("nodetemplate %s's type does not resolve to a known resource type" % name)
+
+        return (nt, cls, cls.xos_model)
+
+    def name_to_xos_model(self, user, name):
+        (nt, cls, model_class) = self.name_to_xos_class(user, name)
+        obj = cls(user, nt, self)
+        existing_objs = obj.get_existing_objs()
+        if not existing_objs:
+            raise Exception("failed to find xos %s %s" % (cls.__name__, name))
+        return existing_objs[0]
 

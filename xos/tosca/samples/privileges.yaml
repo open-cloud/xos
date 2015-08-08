@@ -1,0 +1,60 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Make some network templates
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    mysite:
+      type: tosca.nodes.Site
+
+    johndoe@foo.bar:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          # Site privilege must always be specified in user objects, since
+          # user depends on site.
+          - privilege:
+              node: mysite
+              relationship: tosca.relationships.PIPrivilege
+
+    janedoe@foo.bar:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - privilege:
+              node: mysite
+              relationship: tosca.relationships.TechPrivilege
+
+    privsite:
+      type: tosca.nodes.Site
+
+    privsite_slice1:
+      type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: privsite
+                relationship: tosca.relationships.MemberOfSite
+          # Slice privileges must always be specified in slice objects, since
+          # slice depends on user.
+          - privilege:
+                node: johndoe@foo.bar
+                relationship: tosca.relationships.AdminPrivilege
+          - privilege:
+                node: janedoe@foo.bar
+                relationship: tosca.relationships.AccessPrivilege
+
