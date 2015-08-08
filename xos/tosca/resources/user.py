@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import User, Site
+from core.models import User, Site, SiteRole, SliceRole, SlicePrivilege, SitePrivilege
 
 from xosresource import XOSResource
 
@@ -32,7 +32,23 @@ class XOSUser(XOSResource):
         return self.xos_model.objects.filter(email = self.nodetemplate.name)
 
     def postprocess(self, obj):
-        pass
+        rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
+                    ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
+        for (rel, role) in rolemap:
+            for obj_name in self.get_requirements(rel):
+                dest = self.engine.name_to_xos_model(self.user, obj_name)
+                if dest.__class__.__name__ == "Slice":
+                    role_obj = self.get_xos_object(SliceRole, role=role)
+                    if not SlicePrivilege.objects.filter(user=user, role=role_obj, slice=dest):
+                        sp = SlicePrivilege(user=obj, role=role_obj, slice=dest)
+                        sp.save()
+                        self.info("Added slice privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
+                elif dest.__class__.__name__ == "Site":
+                    role_obj = self.get_xos_object(SiteRole, role=role)
+                    if not SitePrivilege.objects.filter(user=obj, role=role_obj, site=dest):
+                        sp = SitePrivilege(user=obj, role=role_obj, site=dest)
+                        sp.save()
+                        self.info("Added site privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
 
     def create(self):
         nodetemplate = self.nodetemplate

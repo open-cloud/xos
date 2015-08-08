@@ -5,10 +5,11 @@ class XOSResource(object):
     xos_model = None
     provides = None
 
-    def __init__(self, user, nodetemplate):
+    def __init__(self, user, nodetemplate, engine):
         self.dirty = False
         self.user = user
         self.nodetemplate = nodetemplate
+        self.engine = engine
 
     def get_all_required_node_names(self):
         results = []
