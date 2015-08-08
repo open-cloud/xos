@@ -46,8 +46,11 @@ http --auth $AUTH POST $XOS/xos/images/ name=trusty-server-multi-nic disk_format
 http --auth $AUTH POST $XOS/xos/imagedeploymentses/ deployment=$XOS/xos/deployments/1/ image=$XOS/xos/images/1/
 
 # Add node
-NODE=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}' )
-http --auth $AUTH POST $XOS/xos/nodes/ name=$NODE site_deployment=$XOS/xos/sitedeployments/1/
+NODES=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}' )
+for NODE in $NODES
+do
+    http --auth $AUTH POST $XOS/xos/nodes/ name=$NODE site_deployment=$XOS/xos/sitedeployments/1/
+done
 
 # Modify networktemplate/2
 # BUG: Shouldn't have to set the controller_kind field, it's invalid in the initial fixture
