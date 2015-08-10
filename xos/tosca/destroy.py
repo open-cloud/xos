@@ -1,6 +1,9 @@
 import os
 import sys
 
+# XXX - deal with what I think is a bug in OpenStack's tosca engine
+os.system("cat definitions/TOSCA_definition_1_0.yaml definitions/xos.yaml >  /opt/tosca/translator/toscalib/elements/TOSCA_definition_1_0.yaml")
+
 # add the parent directory to sys.path
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
