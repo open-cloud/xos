@@ -79,8 +79,8 @@ class XOSCompute(XOSResource):
                 "node": compute_node,
                 "deployment": compute_node.site_deployment.deployment}
 
-    def create(self, name = None):
-        xos_args = self.get_xos_args(name=name)
+    def create(self, name = None, index = None):
+        xos_args = self.get_xos_args(name=name, index=index)
         sliver = Sliver(**xos_args)
         sliver.caller = self.user
         sliver.save()
@@ -94,12 +94,12 @@ class XOSCompute(XOSResource):
             default_instances = scalable.get("default_instances",1)
             for i in range(0, default_instances):
                 name = "%s-%d" % (self.nodetemplate.name, i)
-                existing_slivers = Sliver.objects.filter(name=name, index=i)
+                existing_slivers = Sliver.objects.filter(name=name)
                 if existing_slivers:
                     self.info("%s %s already exists" % (self.xos_model.__name__, name))
                     self.update(existing_slivers[0])
                 else:
-                    self.create(name)
+                    self.create(name, index=i)
         else:
             super(XOSCompute,self).create_or_update()
 
