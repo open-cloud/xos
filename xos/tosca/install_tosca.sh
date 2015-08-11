@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 
 rm -rf /tmp/tosca_install
 mkdir /tmp/tosca_install
