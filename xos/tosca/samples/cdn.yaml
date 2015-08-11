@@ -32,6 +32,17 @@ topology_template:
     mysite:
       type: tosca.nodes.Site
 
+    mysite_cmi:
+      description: CMI Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
     mysite_hpc:
       description: HyperCache Slice
       type: tosca.nodes.Slice
@@ -64,6 +75,18 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+
+    cmi_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties: *large_compute_node
+        os:
+          properties: *hpc_os
+      requirements:
+          - slice:
+                node: mysite_cmi
+                relationship: tosca.relationships.MemberOfSlice
 
     hpc_server:
       type: tosca.nodes.Compute
