@@ -4,9 +4,24 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 #    inheriting from the parent template. Until we get that figured out, use
 #    m4 macros do our inheritance
 
-
-
-
+define(xos_base_props,
+            no-delete:
+                type: boolean
+                default: false
+                description: do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: do not allow Tosca to create this object)
+define(xos_base_service_caps,
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service)
+define(xos_base_service_props,
+            view_url:
+                type: string
+                required: false)
 
 # end m4 macros
 #
@@ -16,26 +31,16 @@ node_types:
     tosca.nodes.Service:
         derived_from: tosca.nodes.Root
         capabilities:
-            scalable:
-                type: tosca.capabilities.Scalable
-            service:
-                type: tosca.capabilities.xos.Service
+            xos_base_service_caps
         properties:
-            view_url:
-                type: string
-                required: false
+            xos_base_service_props
 
     tosca.nodes.VcpeService:
         derived_from: tosca.nodes.Root
         capabilities:
-            scalable:
-                type: tosca.capabilities.Scalable
-            service:
-                type: tosca.capabilities.xos.Service
+            xos_base_service_caps
         properties:
-            view_url:
-                type: string
-                required: false
+            xos_base_service_props
             backend_network_label:
                 type: string
                 required: false
