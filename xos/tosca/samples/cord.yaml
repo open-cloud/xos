@@ -14,43 +14,31 @@ topology_template:
           - vcpe_tenant:
               node: service_vcpe
               relationship: tosca.relationships.IsTenantOf
+      properties:
+          view_url: /admin/cord/voltservice/$id$/
 
     service_vcpe:
-      type: tosca.nodes.Service
+      type: tosca.nodes.VcpeService
       requirements:
           - vbng_tenant:
               node: service_vbng
               relationship: tosca.relationships.IsTenantOf
+      properties:
+          view_url: /admin/cord/vcpeservice/$id$/
+          backend_network_label: hpc_client
 
     service_vbng:
       type: tosca.nodes.Service
+      properties:
+          view_url: /admin/cord/vbngservice/$id$/
+#          vbng_url: http://10.0.3.136:8181/onos/virtualbng/
 
-    mysite_volt:
-      description: vOLT Controller Slice
+    mysite_vcpe:
+      description: vCPE Controller Slice
       type: tosca.nodes.Slice
       requirements:
-          - volt_service:
+          - vcpe_service:
               node: service_volt
               relationship: tosca.relationships.MemberOfService
 
-    volt_controller:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: rhel
-            version: 6.5
-      requirements:
-          - slice:
-                node: mysite_volt
-                relationship: tosca.relationships.MemberOfSlice
+
