@@ -3,6 +3,8 @@ import pdb
 class XOSResource(object):
     xos_base_class = "XOSResource"
     xos_model = None
+    name_field = "name"
+    copyin_props = []
     provides = None
 
     def __init__(self, user, nodetemplate, engine):
@@ -72,13 +74,41 @@ class XOSResource(object):
         else:
             self.create()
 
+    def pre_delete(self, obj):
+        pass
+
+    def postprocess(self, obj):
+        pass
+
+    def get_xos_args(self):
+        args = {}
+
+        if self.name_field:
+            args[self.name_field] = self.nodetemplate.name
+
+        # copy simple string properties from the template into the arguments
+        for prop in self.copyin_props:
+            v = self.get_property(prop)
+            if v:
+                args[prop] = v
+
+        return args
+
     def create(self):
-        raise Exception("abstract method -- must override")
+        xos_args = self.get_xos_args()
+        xos_obj = self.xos_model(**xos_args)
+        xos_obj.caller = self.user
+        xos_obj.save()
+
+        self.postprocess(xos_obj)
+
+        self.info("Created %s '%s'" % (self.xos_model.__name__,str(xos_obj)))
 
     def update(self, obj):
         pass
 
     def delete(self, obj):
+        self.pre_delete(obj)
         obj.delete(purge=True)   # XXX TODO: turn off purge before production
 
     def info(self, s):
