@@ -24,8 +24,11 @@ node_types:
             view_url:
                 type: string
                 required: false
+            icon_url:
+                type: string
+                required: false
 
-    tosca.nodes.VcpeService:
+    tosca.nodes.VCPEService:
         derived_from: tosca.nodes.Root
         capabilities:
             scalable:
@@ -36,7 +39,43 @@ node_types:
             view_url:
                 type: string
                 required: false
+            icon_url:
+                type: string
+                required: false
             backend_network_label:
+                type: string
+                required: false
+
+    tosca.nodes.VBNGService:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            view_url:
+                type: string
+                required: false
+            icon_url:
+                type: string
+                required: false
+            vbng_url:
+                type: string
+                required: false
+
+    tosca.nodes.CDNService:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            scalable:
+                type: tosca.capabilities.Scalable
+            service:
+                type: tosca.capabilities.xos.Service
+        properties:
+            view_url:
+                type: string
+                required: false
+            icon_url:
                 type: string
                 required: false
 
