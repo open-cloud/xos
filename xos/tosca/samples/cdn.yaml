@@ -1,0 +1,106 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+
+dsl_definitions:
+       large_compute_node: &large_compute_node
+           disk_size: 80 GB
+           mem_size: 8 GB
+           num_cpus: 4
+       small_compute_node: &small_compute_node
+           disk_size: 20 GB
+           mem_size: 2 GB
+           num_cpus: 1
+       hpc_os: &hpc_os
+           architecture: x86_64
+           type: linux
+           distribution: centos
+           version: 5.5
+
+topology_template:
+  node_templates:
+    HyperCache:
+      type: tosca.nodes.CDNService
+      description: Content Delivery Network
+      properties:
+          view_url: /admin/hpc/hpcservice/$id$/
+          icon_url: /static/primarycons_blue/network.png
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_hpc:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_dnsredir:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_dnsdemux:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    hpc_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties: *large_compute_node
+        os:
+          properties: *hpc_os
+      requirements:
+          - slice:
+                node: mysite_hpc
+                relationship: tosca.relationships.MemberOfSlice
+
+    dnsredir_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties: *small_compute_node
+        os:
+          properties: *hpc_os
+      requirements:
+          - slice:
+                node: mysite_dnsredir
+                relationship: tosca.relationships.MemberOfSlice
+
+    dnsdemux_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties: *small_compute_node
+        os:
+          properties: *hpc_os
+      requirements:
+          - slice:
+                node: mysite_dnsdemux
+                relationship: tosca.relationships.MemberOfSlice
+          - colocate:
+                node: dnsredir_server
+                relationship: tosca.relationships.SameHost
+
