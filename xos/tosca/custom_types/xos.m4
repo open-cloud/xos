@@ -21,6 +21,9 @@ define(xos_base_service_caps,
 define(xos_base_service_props,
             view_url:
                 type: string
+                required: false
+            icon_url:
+                type: string
                 required: false)
 
 # end m4 macros
@@ -35,7 +38,7 @@ node_types:
         properties:
             xos_base_service_props
 
-    tosca.nodes.VcpeService:
+    tosca.nodes.VCPEService:
         derived_from: tosca.nodes.Root
         capabilities:
             xos_base_service_caps
@@ -44,6 +47,23 @@ node_types:
             backend_network_label:
                 type: string
                 required: false
+
+    tosca.nodes.VBNGService:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_service_props
+            vbng_url:
+                type: string
+                required: false
+
+    tosca.nodes.CDNService:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_service_props
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
