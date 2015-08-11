@@ -121,6 +121,11 @@ RUN git -C /opt/ansible pull
 RUN git -C /opt/ansible/lib/ansible/modules/core pull
 RUN git -C /opt/ansible/v2/ansible/modules/core pull
 
+# install Tosca engine
+RUN apt-get install -y m4
+RUN pip install python-dateutil
+RUN bash /opt/xos/tosca/install_tosca.sh
+
 EXPOSE 8000
 
 # Set environment variables.
