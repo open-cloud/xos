@@ -108,9 +108,10 @@ class XOSResource(object):
         pass
 
     def delete(self, obj):
+        self.info("destroying object %s" % str(obj))
         self.pre_delete(obj)
         obj.delete(purge=True)   # XXX TODO: turn off purge before production
 
     def info(self, s):
-        print s
+        self.engine.log(s)
 

@@ -2,6 +2,8 @@ import os
 import pdb
 import sys
 import tempfile
+import traceback
+
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
@@ -12,21 +14,29 @@ from imageselect import XOSImageSelector
 import resources
 
 class XOSTosca(object):
-    def __init__(self, tosca_yaml, parent_dir=None):
+    def __init__(self, tosca_yaml, parent_dir=None, log_to_console = False):
         # TOSCA will look for imports using a relative path from where the
         # template file is located, so we have to put the template file
         # in a specific place.
         if not parent_dir:
             parent_dir = os.getcwd()
 
+        tmp_pathname = None
         try:
             (tmp_handle, tmp_pathname) = tempfile.mkstemp(dir=parent_dir)
             os.write(tmp_handle, tosca_yaml)
             os.close(tmp_handle)
 
             self.template = ToscaTemplate(tmp_pathname)
+        except:
+            traceback.print_exc()
+            raise
         finally:
-            os.remove(tmp_pathname)
+            if tmp_pathname:
+                os.remove(tmp_pathname)
+
+        self.log_to_console = log_to_console
+        self.log_msgs = []
 
         self.compute_dependencies()
 
@@ -38,6 +48,11 @@ class XOSTosca(object):
                 self.ordered_nodetemplates.append(self.nodetemplates_by_name[name])
 
         #pdb.set_trace()
+
+    def log(self, msg):
+        if self.log_to_console:
+            print msg
+        self.log_msgs.append(msg)
 
     def compute_dependencies(self):
         nodetemplates_by_name = {}
@@ -136,7 +151,6 @@ class XOSTosca(object):
                     models.append( (obj, model) )
         models.reverse()
         for (resource,model) in models:
-            print "destroying", model
             resource.delete(model)
 
     def name_to_xos_class(self, user, name):
