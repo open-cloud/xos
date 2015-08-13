@@ -35,14 +35,14 @@ class ToscaDaemon(Thread):
         try:
             print "*** Run Program %s ***" % model.name
             model.status = "executing"
-            model.output = ""
+            model.messages = ""
             model.save()
             xt = XOSTosca(model.contents, parent_dir=currentdir, log_to_console=True)
             xt.execute(model.owner)
-            model.output = "\n".join(xt.log_msgs)
+            model.messages = "\n".join(xt.log_msgs)
             model.status = "complete"
         except:
-            model.output = traceback.format_exc()
+            model.messages = traceback.format_exc()
             model.status = "exception"
             traceback.print_exc()
         model.command = None
@@ -52,14 +52,14 @@ class ToscaDaemon(Thread):
         try:
             print "*** Destroy Program %s ***" % model.name
             model.status = "executing"
-            model.output = ""
+            model.messages = ""
             model.save()
             xt = XOSTosca(model.contents, parent_dir=currentdir)
             xt.destroy(model.owner)
-            model.output = "\n".join(xt.log_msgs)
+            model.messages = "\n".join(xt.log_msgs)
             model.status = "complete"
         except:
-            model.output = traceback.format_exc()
+            model.messages = traceback.format_exc()
             model.status = "exception"
             traceback.print_exc()
         model.command = None
