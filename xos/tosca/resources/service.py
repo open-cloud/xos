@@ -28,8 +28,9 @@ class XOSService(XOSResource):
 
                 self.info("Created Tenancy relationship  from %s to %s" % (str(obj), str(provider_service)))
 
-    def pre_delete(self, obj):
+    def can_delete(self, obj):
         if obj.slices.exists():
             self.info("Service %s has active slices; skipping delete" % obj.name)
-            return
+            return False
+        return super(XOSService, self).can_delete(obj)
 
