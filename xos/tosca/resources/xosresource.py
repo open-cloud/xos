@@ -61,7 +61,7 @@ class XOSResource(object):
         return objs[0]
 
     def get_existing_objs(self):
-        return self.xos_model.objects.filter(name = self.nodetemplate.name)
+        return self.xos_model.objects.filter(**{self.name_field: self.nodetemplate.name})
 
     def get_xos_args(self):
         return {}
@@ -74,8 +74,8 @@ class XOSResource(object):
         else:
             self.create()
 
-    def pre_delete(self, obj):
-        pass
+    def can_delete(self, obj):
+        return True
 
     def postprocess(self, obj):
         pass
@@ -108,9 +108,9 @@ class XOSResource(object):
         pass
 
     def delete(self, obj):
-        self.info("destroying object %s" % str(obj))
-        self.pre_delete(obj)
-        obj.delete(purge=True)   # XXX TODO: turn off purge before production
+        if (self.can_delete(obj)):
+            self.info("destroying object %s" % str(obj))
+            obj.delete(purge=True)   # XXX TODO: turn off purge before production
 
     def info(self, s):
         self.engine.log(s)
