@@ -4,6 +4,7 @@ description: Template for deploying a single server with predefined properties.
 
 imports:
    - custom_types/xos.yaml
+   - custom_types/cdn.yaml
 
 dsl_definitions:
        large_compute_node: &large_compute_node
@@ -126,4 +127,65 @@ topology_template:
           - colocate:
                 node: dnsredir_server
                 relationship: tosca.relationships.SameHost
+
+  # now for some content
+
+    main_service_provider:
+        type: tosca.nodes.ServiceProvider
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+
+    wsj_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    www.wsj.com:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_www.wsj.com
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    si.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    s.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    ore.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_www.wsj.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    on_lab_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
 
