@@ -32,6 +32,11 @@ try:
                     provides = getattr(c, "provides", None)
                     if provides:
                         globals()[classname] = c
-                        resources[provides] = c
+                        if isinstance(provides, basestring):
+                            resources[provides] = c
+                        else:
+                            # allow provides= to be a list
+                            for p in provides:
+                                resources[p] = c
 finally:
     sys.path = sys_path_save
