@@ -1,6 +1,6 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
-description: Template for deploying a single server with predefined properties.
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
 
 imports:
    - custom_types/xos.yaml

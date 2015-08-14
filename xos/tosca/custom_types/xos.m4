@@ -128,14 +128,77 @@ node_types:
                 type: string
                 required: false
 
-    tosca.nodes.XOSNetwork:
-        derived_from: tosca.nodes.Root
-
-        capabilities:
-            network:
-                type: tosca.capabilities.xos.Network
-
-        properties:
+    tosca.nodes.network.Network.XOS:
+          # Due to bug? in implementation, we have to copy everything from
+          # tosca definitions tosca.nodes.network.Network here rather than
+          # using derived_from.
+          derived_from: tosca.nodes.Root
+          description: >
+            The TOSCA Network node represents a simple, logical network service.
+          properties:
+            ip_version:
+              type: integer
+              required: no
+              default: 4
+              constraints:
+                - valid_values: [ 4, 6 ]
+              description: >
+                The IP version of the requested network. Valid values are 4 for ipv4
+                or 6 for ipv6.
+            cidr:
+              type: string
+              required: no
+              description: >
+                The cidr block of the requested network.
+            start_ip:
+              type: string
+              required: no
+              description: >
+                 The IP address to be used as the start of a pool of addresses within
+                 the full IP range derived from the cidr block.
+            end_ip:
+              type: string
+              required: no
+              description: >
+                  The IP address to be used as the end of a pool of addresses within
+                  the full IP range derived from the cidr block.
+            gateway_ip:
+              type: string
+              required: no
+              description: >
+                 The gateway IP address.
+            network_name:
+              type: string
+              required: no
+              description: >
+                 An identifier that represents an existing Network instance in the
+                 underlying cloud infrastructure or can be used as the name of the
+                 newly created network. If network_name is provided and no other
+                 properties are provided (with exception of network_id), then an
+                 existing network instance will be used. If network_name is provided
+                 alongside with more properties then a new network with this name will
+                 be created.
+            network_id:
+              type: string
+              required: no
+              description: >
+                 An identifier that represents an existing Network instance in the
+                 underlying cloud infrastructure. This property is mutually exclusive
+                 with all other properties except network_name. This can be used alone
+                 or together with network_name to identify an existing network.
+            segmentation_id:
+              type: string
+              required: no
+              description: >
+                 A segmentation identifier in the underlying cloud infrastructure.
+                 E.g. VLAN ID, GRE tunnel ID, etc..
+            dhcp_enabled:
+              type: boolean
+              required: no
+              default: true
+              description: >
+                Indicates should DHCP service be enabled on the network or not.
+        # XOS-specific
             ports:
                 type: string
                 required: false
@@ -144,10 +207,33 @@ node_types:
                 required: false
             permit_all_slices:
                 type: boolean
-                default: false
-            permitted_slices:
-                type: string
-                required: false
+                # In the data model, this is defaulted to false. However, to
+                # preserve Tosca semantics, we default it to true instead.
+                default: true
+          capabilities:
+            link:
+              type: tosca.capabilities.network.Linkable
+
+#    tosca.nodes.XOSNetwork:
+#        derived_from: tosca.nodes.Root
+#
+#        capabilities:
+#            network:
+#                type: tosca.capabilities.xos.Network
+#
+#        properties:
+#            ports:
+#                type: string
+#                required: false
+#            labels:
+#                type: string
+#                required: false
+#            permit_all_slices:
+#                type: boolean
+#                default: false
+#            permitted_slices:
+#                type: string
+#                required: false
 
     tosca.nodes.Deployment:
         derived_from: tosca.nodes.Root
@@ -296,9 +382,9 @@ node_types:
         derived_from: tosca.capabilities.Root
         description: An XOS network template
 
-    tosca.capabilities.xos.Network:
-        derived_from: tosca.capabilities.Root
-        description: An XOS network
+#    tosca.capabilities.xos.Network:
+#        derived_from: tosca.capabilities.Root
+#        description: An XOS network
 
     tosca.capabilities.xos.User:
         derived_from: tosca.capabilities.Root

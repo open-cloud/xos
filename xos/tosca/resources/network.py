@@ -10,7 +10,7 @@ from core.models import Slice,User,Network,NetworkTemplate
 from xosresource import XOSResource
 
 class XOSNetwork(XOSResource):
-    provides = "tosca.nodes.XOSNetwork"
+    provides = ["tosca.nodes.network.Network", "tosca.nodes.network.Network.XOS"]
     xos_model = Network
 
     def get_xos_args(self):
@@ -33,13 +33,15 @@ class XOSNetwork(XOSResource):
         return args
 
     def postprocess(self, obj):
-        v = self.get_property("permitted_slices")
-        if v:
-            for slicename in v.split(","):
-                slice = self.get_xos_object(Slice, name = slicename.strip())
+        pass
 
-                if not obj.permitted_slices.filter(id = slice.id).exists():
-                    obj.permitted_slices.add(slice)
+#        v = self.get_property("permitted_slices")
+#        if v:
+#            for slicename in v.split(","):
+#                slice = self.get_xos_object(Slice, name = slicename.strip())
+#
+#                if not obj.permitted_slices.filter(id = slice.id).exists():
+#                    obj.permitted_slices.add(slice)
 
     def create(self):
         nodetemplate = self.nodetemplate

@@ -100,9 +100,9 @@ class XOSResource(object):
         xos_obj.caller = self.user
         xos_obj.save()
 
-        self.postprocess(xos_obj)
-
         self.info("Created %s '%s'" % (self.xos_model.__name__,str(xos_obj)))
+
+        self.postprocess(xos_obj)
 
     def update(self, obj):
         pass
