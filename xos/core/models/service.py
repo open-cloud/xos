@@ -5,6 +5,8 @@ from xos.exceptions import *
 from operator import attrgetter
 import json
 
+COARSE_KIND="coarse"
+
 class AttributeMixin(object):
     # helper for extracting things from a json-encoded service_specific_attribute
     def get_attribute(self, name, default=None):
@@ -336,7 +338,7 @@ class CoarseTenant(Tenant):
     class Meta:
         proxy = True
 
-    KIND = "coarse"
+    KIND = COARSE_KIND
 
     def save(self, *args, **kwargs):
         if (not self.subscriber_service):
