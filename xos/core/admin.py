@@ -1898,6 +1898,46 @@ class AccountAdmin(admin.ModelAdmin):
     dollar_total_invoices = dollar_field("total_invoices", "Total Invoices")
     dollar_total_payments = dollar_field("total_payments", "Total Payments")
 
+class ProgramForm(forms.ModelForm):
+    class Meta:
+        model = Program
+        widgets = {
+            'contents': UploadTextareaWidget(attrs={'rows': 20, 'cols': 80, 'class': "input-xxlarge"}),
+            'description': forms.Textarea(attrs={'rows': 3, 'cols': 80, 'class': 'input-xxlarge'}),
+            'messages': forms.Textarea(attrs={'rows': 20, 'cols': 80, 'class': 'input-xxlarge'}),
+            'output': forms.Textarea(attrs={'rows': 3, 'cols': 80, 'class': 'input-xxlarge'})
+        }
+
+class ProgramAdmin(XOSBaseAdmin):
+    list_display = ("name", "status")
+    list_display_links = ('name', "status")
+
+    form=ProgramForm
+
+    fieldsets = [
+        (None, {'fields': ['name', 'command', 'kind', 'description', 'output', 'status'],
+                'classes':['suit-tab suit-tab-general']}),
+        (None, {'fields': ['contents'],
+                'classes':['suit-tab suit-tab-contents']}),
+        (None, {'fields': ['messages'],
+                'classes':['suit-tab suit-tab-messages']}),
+                ]
+
+    readonly_fields = ("status",)
+
+    @property
+    def suit_form_tabs(self):
+        tabs=[('general','Program Details'),
+              ('contents','Program Source'),
+              ('messages','Messages'),
+        ]
+
+        request=getattr(_thread_locals, "request", None)
+        if request and request.user.is_admin:
+            tabs.append( ('admin-only', 'Admin-Only') )
+
+        return tabs
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
@@ -1923,6 +1963,7 @@ admin.site.register(Service, ServiceAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
+admin.site.register(Program, ProgramAdmin)
 #admin.site.register(Account, AccountAdmin)
 #admin.site.register(Invoice, InvoiceAdmin)
 
