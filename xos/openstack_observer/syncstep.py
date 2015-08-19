@@ -73,11 +73,18 @@ class SyncStep(object):
         # This is the most common implementation of fetch_pending
         # Steps should override it if they have their own logic
         # for figuring out what objects are outstanding.
-        main_obj = self.observes
-        if (not deletion):
-            objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False), Q(no_sync=False))
-        else:
-            objs = main_obj.deleted_objects.all()
+
+        main_objs = self.observes
+	if (type(main_objs) is not list):
+		main_objs=[main_obj]
+	
+	objs = []
+	for main_obj in main_objs:
+		if (not deletion):
+		    lobjs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False,Q(no_sync=False)))
+		else:
+		    lobjs = main_obj.deleted_objects.all()
+	        objs.extend(lobjs)
 
         return objs
         #return Instance.objects.filter(ip=None)
