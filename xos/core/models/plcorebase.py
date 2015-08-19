@@ -152,6 +152,7 @@ class PlCoreBase(models.Model, PlModelMixIn):
     deleted = models.BooleanField(default=False)
     write_protect = models.BooleanField(default=False)
     lazy_blocked = models.BooleanField(default=False)
+    no_sync = models.BooleanField(default=False)
 
     class Meta:
         # Changing abstract to False would require the managers of subclasses of
