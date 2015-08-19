@@ -21,6 +21,9 @@
       {% for net in nics %}
           - net-id: {{ net }}
       {% endfor %}
+      {% for port in ports %}
+          - port-id: {{ port }}
+      {% endfor %}
 
       {% if meta %}
       meta:
