@@ -139,7 +139,8 @@ class Sliver(PlCoreBase):
     def all_ips(self):
         ips={}
         for ns in self.networkslivers.all():
-           ips[ns.network.name] = ns.ip
+           if ns.ip:
+               ips[ns.network.name] = ns.ip
         return ips
 
     def all_ips_string(self):
