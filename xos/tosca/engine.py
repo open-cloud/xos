@@ -7,7 +7,7 @@ import traceback
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,Sliver,User,Flavor,Node,Image
+from core.models import Slice,Instance,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
 from imageselect import XOSImageSelector
 

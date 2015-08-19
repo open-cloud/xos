@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,Sliver,User,Flavor,Node,Image
+from core.models import Slice,Instance,User,Flavor,Node,Image
 from nodeselect import XOSNodeSelector
 from imageselect import XOSImageSelector
 from flavorselect import XOSFlavorSelector
@@ -14,7 +14,7 @@ from xosresource import XOSResource
 
 class XOSCompute(XOSResource):
     provides = "tosca.nodes.Compute"
-    xos_model = Sliver
+    xos_model = Instance
 
     def select_compute_node(self, user, v, hostname=None):
         mem_size = v.get_property_value("mem_size")
@@ -48,14 +48,14 @@ class XOSCompute(XOSResource):
         sliceName = self.get_requirement("tosca.relationships.MemberOfSlice", throw_exception=True)
         slice = self.get_xos_object(Slice, name=sliceName)
 
-        # locate it one the same host as some other sliver
+        # locate it one the same host as some other instance
         colocate_host = None
-        colocate_sliver_name = self.get_requirement("tosca.relationships.SameHost")
+        colocate_instance_name = self.get_requirement("tosca.relationships.SameHost")
         if index is not None:
-            colocate_sliver_name = "%s-%d" % (colocate_sliver_name, index)
-        colocate_slivers = Sliver.objects.filter(name=colocate_sliver_name)
-        if colocate_slivers:
-            colocate_host = colocate_slivers[0].node.name
+            colocate_instance_name = "%s-%d" % (colocate_instance_name, index)
+        colocate_instances = Instance.objects.filter(name=colocate_instance_name)
+        if colocate_instances:
+            colocate_host = colocate_instances[0].node.name
             self.info("colocating on %s" % colocate_host)
 
         capabilities = nodetemplate.get_capabilities()
@@ -81,12 +81,12 @@ class XOSCompute(XOSResource):
 
     def create(self, name = None, index = None):
         xos_args = self.get_xos_args(name=name, index=index)
-        sliver = Sliver(**xos_args)
-        sliver.caller = self.user
-        sliver.save()
+        instance = Instance(**xos_args)
+        instance.caller = self.user
+        instance.save()
 
-        self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
-                  (str(sliver), str(sliver.node), str(sliver.flavor), str(sliver.image)))
+        self.info("Created Instance '%s' on node '%s' using flavor '%s' and image '%s'" %
+                  (str(instance), str(instance.node), str(instance.flavor), str(instance.image)))
 
     def create_or_update(self):
         scalable = self.get_scalable()
@@ -94,10 +94,10 @@ class XOSCompute(XOSResource):
             default_instances = scalable.get("default_instances",1)
             for i in range(0, default_instances):
                 name = "%s-%d" % (self.nodetemplate.name, i)
-                existing_slivers = Sliver.objects.filter(name=name)
-                if existing_slivers:
+                existing_instances = Instance.objects.filter(name=name)
+                if existing_instances:
                     self.info("%s %s already exists" % (self.xos_model.__name__, name))
-                    self.update(existing_slivers[0])
+                    self.update(existing_instances[0])
                 else:
                     self.create(name, index=i)
         else:
@@ -106,12 +106,12 @@ class XOSCompute(XOSResource):
     def get_existing_objs(self):
         scalable = self.get_scalable()
         if scalable:
-            existing_slivers = []
+            existing_instances = []
             max_instances = scalable.get("max_instances",1)
             for i in range(0, max_instances):
                 name = "%s-%d" % (self.nodetemplate.name, i)
-                existing_slivers = existing_slivers + list(Sliver.objects.filter(name=name))
-            return existing_slivers
+                existing_instances = existing_instances + list(Instance.objects.filter(name=name))
+            return existing_instances
         else:
             return super(XOSCompute,self).get_existing_objs()
 

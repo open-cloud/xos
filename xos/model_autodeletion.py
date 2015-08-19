@@ -1,1 +1,1 @@
-ephemeral_models = ['ReservedResource','Sliver','Image','Network','NetworkSliver','Tag','SitePrivilege','SliceMembership','SliceTag','Reservation','Slice']
+ephemeral_models = ['ReservedResource','Instance','Image','Network','NetworkInstance','Tag','SitePrivilege','SliceMembership','SliceTag','Reservation','Slice']

@@ -1,7 +1,7 @@
 """
     hpc_watcher.py
 
-    Daemon to watch the health of HPC and RR slivers.
+    Daemon to watch the health of HPC and RR instances.
 
     This deamon uses HpcHealthCheck objects in the Data Model to conduct
     periodic tests of HPC and RR nodes. Two types of Health Checks are
@@ -25,9 +25,9 @@
      In addition to the above, HPC heartbeat probes are conducted, similar to
      the ones that dnsredir conducts.
 
-     The results of health checks are stored in a tag attached to the Sliver
+     The results of health checks are stored in a tag attached to the Instance
      the healthcheck was conducted against. If all healthchecks of a particular
-     variety were successful for a sliver, then "success" will be stored in
+     variety were successful for a instance, then "success" will be stored in
      the tag. Otherwise, the first healthcheck to fail will be stored in the
      tag.
 
@@ -351,50 +351,50 @@ class BaseWatcher(Thread):
         Thread.__init__(self)
         self.daemon = True
 
-    def get_public_ip(self, service, sliver):
+    def get_public_ip(self, service, instance):
         network_name = None
-        if "hpc" in sliver.slice.name:
+        if "hpc" in instance.slice.name:
             network_name = getattr(service, "watcher_hpc_network", None)
-        elif "demux" in sliver.slice.name:
+        elif "demux" in instance.slice.name:
             network_name = getattr(service, "watcher_dnsdemux_network", None)
-        elif "redir" in sliver.slice.name:
+        elif "redir" in instance.slice.name:
             network_name = getattr(service, "watcher_dnsredir_network", None)
 
         if network_name and network_name.lower()=="nat":
             return None
 
         if (network_name is None) or (network_name=="") or (network_name.lower()=="public"):
-            return sliver.get_public_ip()
+            return instance.get_public_ip()
 
-        for ns in sliver.networkslivers.all():
+        for ns in instance.networkinstances.all():
             if (ns.ip) and (ns.network.name==network_name):
                 return ns.ip
 
         raise ValueError("Couldn't find network %s" % str(network_name))
 
-    def set_status(self, sliver, service, kind, msg, check_error=True):
-        #print sliver.node.name, kind, msg
+    def set_status(self, instance, service, kind, msg, check_error=True):
+        #print instance.node.name, kind, msg
         if check_error:
-            sliver.has_error = (msg!="success")
+            instance.has_error = (msg!="success")
 
-        sliver_type = ContentType.objects.get_for_model(sliver)
+        instance_type = ContentType.objects.get_for_model(instance)
 
-        t = Tag.objects.filter(service=service, name=kind+".msg", content_type__pk=sliver_type.id, object_id=sliver.id)
+        t = Tag.objects.filter(service=service, name=kind+".msg", content_type__pk=instance_type.id, object_id=instance.id)
         if t:
             t=t[0]
             if (t.value != msg):
                 t.value = msg
                 t.save()
         else:
-            Tag(service=service, name=kind+".msg", content_object = sliver, value=msg).save()
+            Tag(service=service, name=kind+".msg", content_object = instance, value=msg).save()
 
-        t = Tag.objects.filter(service=service, name=kind+".time", content_type__pk=sliver_type.id, object_id=sliver.id)
+        t = Tag.objects.filter(service=service, name=kind+".time", content_type__pk=instance_type.id, object_id=instance.id)
         if t:
             t=t[0]
             t.value = str(time.time())
             t.save()
         else:
-            Tag(service=service, name=kind+".time", content_object = sliver, value=str(time.time())).save()
+            Tag(service=service, name=kind+".time", content_object = instance, value=str(time.time())).save()
 
     def get_service_slices(self, service, kind=None):
         try:
@@ -416,51 +416,51 @@ class RRWatcher(BaseWatcher):
         for i in range(0,10):
             DnsResolver(queue = self.resolver_queue)
 
-    def check_request_routers(self, service, slivers):
-        for sliver in slivers:
-            sliver.has_error = False
+    def check_request_routers(self, service, instances):
+        for instance in instances:
+            instance.has_error = False
 
             try:
-                ip = self.get_public_ip(service, sliver)
+                ip = self.get_public_ip(service, instance)
             except Exception, e:
-                self.set_status(sliver, service, "watcher.DNS", "exception: %s" % str(e))
+                self.set_status(instance, service, "watcher.DNS", "exception: %s" % str(e))
                 continue
             if not ip:
                 try:
-                    ip = socket.gethostbyname(sliver.node.name)
+                    ip = socket.gethostbyname(instance.node.name)
                 except:
-                    self.set_status(sliver, service, "watcher.DNS", "dns resolution failure")
+                    self.set_status(instance, service, "watcher.DNS", "dns resolution failure")
                     continue
 
             if not ip:
-                self.set_status(sliver, service, "watcher.DNS", "no IP address")
+                self.set_status(instance, service, "watcher.DNS", "no IP address")
                 continue
 
             checks = HpcHealthCheck.objects.filter(kind="dns")
             if not checks:
-                self.set_status(sliver, service, "watcher.DNS", "no DNS HealthCheck tests configured")
+                self.set_status(instance, service, "watcher.DNS", "no DNS HealthCheck tests configured")
 
             for check in checks:
-                self.resolver_queue.submit_job({"domain": check.resource_name, "server": ip, "port": 53, "sliver": sliver, "result_contains": check.result_contains})
+                self.resolver_queue.submit_job({"domain": check.resource_name, "server": ip, "port": 53, "instance": instance, "result_contains": check.result_contains})
 
         while self.resolver_queue.outstanding > 0:
             result = self.resolver_queue.get_result()
-            sliver = result["sliver"]
-            if (result["status"]!="success") and (not sliver.has_error):
-                self.set_status(sliver, service, "watcher.DNS", result["status"])
+            instance = result["instance"]
+            if (result["status"]!="success") and (not instance.has_error):
+                self.set_status(instance, service, "watcher.DNS", result["status"])
 
-        for sliver in slivers:
-            if not sliver.has_error:
-                self.set_status(sliver, service, "watcher.DNS", "success")
+        for instance in instances:
+            if not instance.has_error:
+                self.set_status(instance, service, "watcher.DNS", "success")
 
     def run_once(self):
         for hpcService in HpcService.objects.all():
             for slice in self.get_service_slices(hpcService, "dnsdemux"):
-                self.check_request_routers(hpcService, slice.slivers.all())
+                self.check_request_routers(hpcService, slice.instances.all())
 
         for rrService in RequestRouterService.objects.all():
             for slice in self.get_service_slices(rrService, "dnsdemux"):
-                self.check_request_routers(rrService, slice.slivers.all())
+                self.check_request_routers(rrService, slice.instances.all())
 
     def run(self):
         while True:
@@ -477,26 +477,26 @@ class HpcProber(BaseWatcher):
         for i in range(0, 10):
             HpcHeartbeat(queue = self.heartbeat_queue)
 
-    def probe_hpc(self, service, slivers):
-        for sliver in slivers:
-            sliver.has_error = False
+    def probe_hpc(self, service, instances):
+        for instance in instances:
+            instance.has_error = False
 
-            self.heartbeat_queue.submit_job({"server": sliver.node.name, "port": 8009, "sliver": sliver})
+            self.heartbeat_queue.submit_job({"server": instance.node.name, "port": 8009, "instance": instance})
 
         while self.heartbeat_queue.outstanding > 0:
             result = self.heartbeat_queue.get_result()
-            sliver = result["sliver"]
-            if (result["status"]!="success") and (not sliver.has_error):
-                self.set_status(sliver, service, "watcher.HPC-hb", result["status"])
+            instance = result["instance"]
+            if (result["status"]!="success") and (not instance.has_error):
+                self.set_status(instance, service, "watcher.HPC-hb", result["status"])
 
-        for sliver in slivers:
-            if not sliver.has_error:
-                self.set_status(sliver, service, "watcher.HPC-hb", "success")
+        for instance in instances:
+            if not instance.has_error:
+                self.set_status(instance, service, "watcher.HPC-hb", "success")
 
     def run_once(self):
         for hpcService in HpcService.objects.all():
             for slice in self.get_service_slices(hpcService, "hpc"):
-                self.probe_hpc(hpcService, slice.slivers.all())
+                self.probe_hpc(hpcService, slice.instances.all())
 
     def run(self):
         while True:
@@ -513,42 +513,42 @@ class HpcFetcher(BaseWatcher):
         for i in range(0, 10):
             HpcFetchUrl(queue = self.fetch_queue)
 
-    def fetch_hpc(self, service, slivers):
-        for sliver in slivers:
-            sliver.has_error = False
-            sliver.url_status = []
+    def fetch_hpc(self, service, instances):
+        for instance in instances:
+            instance.has_error = False
+            instance.url_status = []
 
             checks = HpcHealthCheck.objects.filter(kind="http")
             if not checks:
-                self.set_status(sliver, service, "watcher.HPC-fetch", "no HTTP HealthCheck tests configured")
+                self.set_status(instance, service, "watcher.HPC-fetch", "no HTTP HealthCheck tests configured")
 
             for check in checks:
                 if (not check.resource_name) or (":" not in check.resource_name):
-                    self.set_status(sliver, service, "watcher.HPC-fetch", "malformed resource_name: " + str(check.resource_name))
+                    self.set_status(instance, service, "watcher.HPC-fetch", "malformed resource_name: " + str(check.resource_name))
                     break
 
                 (domain, url) = check.resource_name.split(":",1)
 
-                self.fetch_queue.submit_job({"server": sliver.node.name, "port": 80, "sliver": sliver, "domain": domain, "url": url})
+                self.fetch_queue.submit_job({"server": instance.node.name, "port": 80, "instance": instance, "domain": domain, "url": url})
 
         while self.fetch_queue.outstanding > 0:
             result = self.fetch_queue.get_result()
-            sliver = result["sliver"]
+            instance = result["instance"]
             if (result["status"] == "success"):
-                sliver.url_status.append( (result["domain"] + result["url"], "success", result["bytes_downloaded"], result["total_time"]) )
-            if (result["status"]!="success") and (not sliver.has_error):
-                self.set_status(sliver, service, "watcher.HPC-fetch", result["status"])
+                instance.url_status.append( (result["domain"] + result["url"], "success", result["bytes_downloaded"], result["total_time"]) )
+            if (result["status"]!="success") and (not instance.has_error):
+                self.set_status(instance, service, "watcher.HPC-fetch", result["status"])
 
-        for sliver in slivers:
-            self.set_status(sliver, service, "watcher.HPC-fetch-urls", json.dumps(sliver.url_status), check_error=False)
-            if not sliver.has_error:
-                self.set_status(sliver, service, "watcher.HPC-fetch", "success")
+        for instance in instances:
+            self.set_status(instance, service, "watcher.HPC-fetch-urls", json.dumps(instance.url_status), check_error=False)
+            if not instance.has_error:
+                self.set_status(instance, service, "watcher.HPC-fetch", "success")
 
     def run_once(self):
         for hpcService in HpcService.objects.all():
             for slice in self.get_service_slices(hpcService, "hpc"):
                 try:
-                    self.fetch_hpc(hpcService, slice.slivers.all())
+                    self.fetch_hpc(hpcService, slice.instances.all())
                 except:
                     traceback.print_exc()
 
@@ -567,41 +567,41 @@ class WatcherFetcher(BaseWatcher):
         for i in range(0, 10):
              WatcherWorker(queue = self.fetch_queue)
 
-    def fetch_watcher(self, service, slivers):
-        for sliver in slivers:
+    def fetch_watcher(self, service, instances):
+        for instance in instances:
             try:
-                ip = self.get_public_ip(service, sliver)
+                ip = self.get_public_ip(service, instance)
             except Exception, e:
-                self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "exception: %s" % str(e)}) )
+                self.set_status(instance, service, "watcher.watcher", json.dumps({"status": "exception: %s" % str(e)}) )
                 continue
             if not ip:
                 try:
-                    ip = socket.gethostbyname(sliver.node.name)
+                    ip = socket.gethostbyname(instance.node.name)
                 except:
-                    self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "dns resolution failure"}) )
+                    self.set_status(instance, service, "watcher.watcher", json.dumps({"status": "dns resolution failure"}) )
                     continue
 
             if not ip:
-                self.set_status(sliver, service, "watcher.watcher", json.dumps({"status": "no IP address"}) )
+                self.set_status(instance, service, "watcher.watcher", json.dumps({"status": "no IP address"}) )
                 continue
 
             port = 8015
-            if ("redir" in sliver.slice.name):
+            if ("redir" in instance.slice.name):
                 port = 8016
-            elif ("demux" in sliver.slice.name):
+            elif ("demux" in instance.slice.name):
                 port = 8017
 
-            self.fetch_queue.submit_job({"server": ip, "port": port, "sliver": sliver})
+            self.fetch_queue.submit_job({"server": ip, "port": port, "instance": instance})
 
         while self.fetch_queue.outstanding > 0:
             result = self.fetch_queue.get_result()
-            sliver = result["sliver"]
-            self.set_status(sliver, service, "watcher.watcher", result["status"])
+            instance = result["instance"]
+            self.set_status(instance, service, "watcher.watcher", result["status"])
 
     def run_once(self):
         for hpcService in HpcService.objects.all():
             for slice in self.get_service_slices(hpcService):
-                self.fetch_watcher(hpcService, slice.slivers.all())
+                self.fetch_watcher(hpcService, slice.instances.all())
 
     def run(self):
         while True:

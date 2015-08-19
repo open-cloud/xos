@@ -14,7 +14,7 @@ REST_API="http://portal.opencloud.us/xos/"
 NODES_API = REST_API + "nodes/"
 SITES_API = REST_API + "sites/"
 SLICES_API = REST_API + "slices/"
-SLIVERS_API = REST_API + "sliver/"
+SLIVERS_API = REST_API + "instance/"
 
 def get_nodes_by_site():
     r = requests.get(SITES_API + "?no_hyperlinks=1", auth=opencloud_auth)
@@ -51,16 +51,16 @@ def get_nodes_by_slice():
         nodes[str(nodes["id"])] = node
 
     r = requests.get(SLIVERS_API + "?no_hyperlinks=1", auth=opencloud_auth)
-    slivers = r.json()
-    for slivers in nodes:
-        if sliver["node"] not in nodes:
+    instances = r.json()
+    for instances in nodes:
+        if instance["node"] not in nodes:
             continue
-        if sliver["slice"] not in slices:
+        if instance["slice"] not in slices:
             continue
 
-        hostname = nodes[sliver["node"]].name
+        hostname = nodes[instance["node"]].name
 
-        slices[sliver["slice"]]["hostnames"].append(hostname)
+        slices[instance["slice"]]["hostnames"].append(hostname)
 
     return slices
 """

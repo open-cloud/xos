@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import timezones.fields
-import core.models.sliver
+import core.models.instance
 import core.models.network
 import geoposition.fields
 import encrypted_fields.fields
@@ -528,7 +528,7 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='NetworkSliver',
+            name='NetworkInstance',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
@@ -537,9 +537,9 @@ class Migration(migrations.Migration):
                 ('policed', models.DateTimeField(default=None, null=True, blank=True)),
                 ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
                 ('deleted', models.BooleanField(default=False)),
-                ('ip', models.GenericIPAddressField(help_text=b'Sliver ip address', null=True, blank=True)),
+                ('ip', models.GenericIPAddressField(help_text=b'Instance ip address', null=True, blank=True)),
                 ('port_id', models.CharField(help_text=b'Quantum port id', max_length=256, null=True, blank=True)),
-                ('network', models.ForeignKey(related_name=b'networkslivers', to='core.Network')),
+                ('network', models.ForeignKey(related_name=b'networkinstances', to='core.Network')),
             ],
             options={
                 'abstract': False,
@@ -952,7 +952,7 @@ class Migration(migrations.Migration):
                 ('omf_friendly', models.BooleanField(default=False)),
                 ('description', models.TextField(help_text=b'High level description of the slice and expected activities', max_length=1024, blank=True)),
                 ('slice_url', models.URLField(max_length=512, blank=True)),
-                ('max_slivers', models.IntegerField(default=10)),
+                ('max_instances', models.IntegerField(default=10)),
                 ('network', models.CharField(default=b'Private Only', max_length=256, null=True, blank=True)),
                 ('mount_data_sets', models.CharField(default=b'GenBank', max_length=256, null=True, blank=True)),
                 ('creator', models.ForeignKey(related_name=b'slices', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
@@ -1040,7 +1040,7 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Sliver',
+            name='Instance',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
@@ -1051,17 +1051,17 @@ class Migration(migrations.Migration):
                 ('deleted', models.BooleanField(default=False)),
                 ('instance_id', models.CharField(help_text=b'Nova instance id', max_length=200, null=True, blank=True)),
                 ('instance_uuid', models.CharField(help_text=b'Nova instance uuid', max_length=200, null=True, blank=True)),
-                ('name', models.CharField(help_text=b'Sliver name', max_length=200)),
+                ('name', models.CharField(help_text=b'Instance name', max_length=200)),
                 ('instance_name', models.CharField(help_text=b'OpenStack generated name', max_length=200, null=True, blank=True)),
-                ('ip', models.GenericIPAddressField(help_text=b'Sliver ip address', null=True, blank=True)),
-                ('numberCores', models.IntegerField(default=0, help_text=b'Number of cores for sliver', verbose_name=b'Number of Cores')),
+                ('ip', models.GenericIPAddressField(help_text=b'Instance ip address', null=True, blank=True)),
+                ('numberCores', models.IntegerField(default=0, help_text=b'Number of cores for instance', verbose_name=b'Number of Cores')),
                 ('userData', models.TextField(help_text=b'user_data passed to instance during creation', null=True, blank=True)),
-                ('creator', models.ForeignKey(related_name=b'slivers', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
-                ('deployment', models.ForeignKey(related_name=b'sliver_deployment', verbose_name=b'deployment', to='core.Deployment')),
-                ('flavor', models.ForeignKey(default=core.models.sliver.get_default_flavor, to='core.Flavor', help_text=b'Flavor of this instance')),
-                ('image', models.ForeignKey(related_name=b'slivers', to='core.Image')),
-                ('node', models.ForeignKey(related_name=b'slivers', to='core.Node')),
-                ('slice', models.ForeignKey(related_name=b'slivers', to='core.Slice')),
+                ('creator', models.ForeignKey(related_name=b'instances', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('deployment', models.ForeignKey(related_name=b'instance_deployment', verbose_name=b'deployment', to='core.Deployment')),
+                ('flavor', models.ForeignKey(default=core.models.instance.get_default_flavor, to='core.Flavor', help_text=b'Flavor of this instance')),
+                ('image', models.ForeignKey(related_name=b'instances', to='core.Image')),
+                ('node', models.ForeignKey(related_name=b'instances', to='core.Node')),
+                ('slice', models.ForeignKey(related_name=b'instances', to='core.Slice')),
             ],
             options={
                 'abstract': False,
@@ -1207,8 +1207,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='reservedresource',
-            name='sliver',
-            field=models.ForeignKey(related_name=b'reservedresources', to='core.Sliver'),
+            name='instance',
+            field=models.ForeignKey(related_name=b'reservedresources', to='core.Instance'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -1242,9 +1242,9 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='networksliver',
-            name='sliver',
-            field=models.ForeignKey(related_name=b'networkslivers', to='core.Sliver'),
+            model_name='networkinstance',
+            name='instance',
+            field=models.ForeignKey(related_name=b'networkinstances', to='core.Instance'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -1279,8 +1279,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='network',
-            name='slivers',
-            field=models.ManyToManyField(related_name=b'networks', through='core.NetworkSliver', to='core.Sliver', blank=True),
+            name='instances',
+            field=models.ManyToManyField(related_name=b'networks', through='core.NetworkInstance', to='core.Instance', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(

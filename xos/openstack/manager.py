@@ -314,47 +314,47 @@ class OpenStackManager:
         return networks
 
     @require_enabled
-    def save_sliver(self, sliver):
+    def save_instance(self, instance):
         metadata_update = {}
-        if ("numberCores" in sliver.changed_fields):
-            metadata_update["cpu_cores"] = str(sliver.numberCores)
+        if ("numberCores" in instance.changed_fields):
+            metadata_update["cpu_cores"] = str(instance.numberCores)
 
-        for tag in sliver.slice.tags.all():
+        for tag in instance.slice.tags.all():
             if tag.name.startswith("sysctl-"):
                 metadata_update[tag.name] = tag.value
 
-        if not sliver.instance_id:
-            nics = self.get_requested_networks(sliver.slice)
+        if not instance.instance_id:
+            nics = self.get_requested_networks(instance.slice)
             for nic in nics:
                 # If a network hasn't been instantiated yet, then we'll fail
-                # during slice creation. Defer saving the sliver for now.
+                # during slice creation. Defer saving the instance for now.
                 if not nic.get("net-id", None):
-                    sliver.save()   # in case it hasn't been saved yet
+                    instance.save()   # in case it hasn't been saved yet
                     return
-            slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
+            slice_memberships = SliceMembership.objects.filter(slice=instance.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
-            pubkeys.append(sliver.creator.public_key)
-            instance = self.driver.spawn_instance(name=sliver.name,
-                                   key_name = sliver.creator.keyname,
-                                   image_id = sliver.image.image_id,
-                                   hostname = sliver.node.name,
+            pubkeys.append(instance.creator.public_key)
+            instance = self.driver.spawn_instance(name=instance.name,
+                                   key_name = instance.creator.keyname,
+                                   image_id = instance.image.image_id,
+                                   hostname = instance.node.name,
                                    pubkeys = pubkeys,
                                    nics = nics,
                                    metadata = metadata_update )
-            sliver.instance_id = instance.id
-            sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
+            instance.instance_id = instance.id
+            instance.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
         else:
             if metadata_update:
-                self.driver.update_instance_metadata(sliver.instance_id, metadata_update)
+                self.driver.update_instance_metadata(instance.instance_id, metadata_update)
 
-        sliver.save()
-        sliver.enacted = datetime.now()
-        sliver.save(update_fields=['enacted'])
+        instance.save()
+        instance.enacted = datetime.now()
+        instance.save(update_fields=['enacted'])
 
     @require_enabled
-    def delete_sliver(self, sliver):
-        if sliver.instance_id:
-            self.driver.destroy_instance(sliver.instance_id) 
+    def delete_instance(self, instance):
+        if instance.instance_id:
+            self.driver.destroy_instance(instance.instance_id) 
     
 
     def refresh_nodes(self):

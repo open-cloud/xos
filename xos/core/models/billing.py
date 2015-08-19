@@ -2,7 +2,7 @@ import datetime
 import os
 import socket
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver, Deployment
+from core.models import PlCoreBase, Site, Slice, Instance, Deployment
 from core.models.plcorebase import StrippedCharField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic

@@ -403,7 +403,7 @@ class TagInline(PlStackGenericTabularInline):
         return Tag.select_by_user(request.user)
 
 class NetworkLookerUpper:
-    """ This is a callable that looks up a network name in a sliver and returns
+    """ This is a callable that looks up a network name in a instance and returns
         the ip address for that network.
     """
 
@@ -416,7 +416,7 @@ class NetworkLookerUpper:
 
     def __call__(self, obj):
         if obj is not None:
-            for nbs in obj.networksliver_set.all():
+            for nbs in obj.networkinstance_set.all():
                 if (nbs.network.name == self.network_name):
                     return nbs.ip
         return ""
@@ -429,53 +429,53 @@ class NetworkLookerUpper:
         """ We want to make sure we alwars return the same NetworkLookerUpper
             because sometimes django will cause them to be instantiated multiple
             times (and we don't want different ones in form.fields vs
-            SliverInline.readonly_fields).
+            InstanceInline.readonly_fields).
         """
         if network_name not in NetworkLookerUpper.byNetworkName:
             NetworkLookerUpper.byNetworkName[network_name] = NetworkLookerUpper(network_name)
         return NetworkLookerUpper.byNetworkName[network_name]
 
-class SliverInline(XOSTabularInline):
-    model = Sliver
+class InstanceInline(XOSTabularInline):
+    model = Instance
     fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
-    suit_classes = 'suit-tab suit-tab-slivers'
+    suit_classes = 'suit-tab suit-tab-instances'
 
     def queryset(self, request):
-        return Sliver.select_by_user(request.user)
+        return Instance.select_by_user(request.user)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
              
            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
-           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':
-           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_flavor_changed(this);"})
 
-        field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(InstanceInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
         return field
 
-class CordSliverInline(XOSTabularInline):
-    model = Sliver
+class CordInstanceInline(XOSTabularInline):
+    model = Instance
     fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
-    suit_classes = 'suit-tab suit-tab-slivers'
+    suit_classes = 'suit-tab suit-tab-instances'
 
     def queryset(self, request):
-        return Sliver.select_by_user(request.user)
+        return Instance.select_by_user(request.user)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
 
            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
-           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_deployment_changed(this);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':
-           kwargs['widget'] = forms.Select(attrs={'onChange': "sliver_flavor_changed(this);"})
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_flavor_changed(this);"})
 
-        field = super(CordSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(CordInstanceInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
         return field
 
@@ -965,7 +965,7 @@ class SiteAdmin(XOSBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            if isinstance(inline, SliverInline):
+            if isinstance(inline, InstanceInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
@@ -1066,12 +1066,12 @@ class ControllerSliceInline(XOSTabularInline):
 
 class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_slivers']
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances']
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
-    list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_slivers')
+    list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_instances')
     list_display_links = ('backend_status_icon', 'name', )
-    normal_inlines = [SlicePrivilegeInline, SliverInline, TagInline, ReservationInline, SliceNetworkInline]
+    normal_inlines = [SlicePrivilegeInline, InstanceInline, TagInline, ReservationInline, SliceNetworkInline]
     inlines = normal_inlines
     admin_inlines = [ControllerSliceInline]
 
@@ -1082,7 +1082,7 @@ class SliceAdmin(XOSBaseAdmin):
         tabs =[('general', 'Slice Details'),
           ('slicenetworks','Networks'),
           ('sliceprivileges','Privileges'),
-          ('slivers','Slivers'),
+          ('instances','Instances'),
           #('reservations','Reservations'), 
           ('tags','Tags'),
           ]
@@ -1148,7 +1148,7 @@ class SliceAdmin(XOSBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            if isinstance(inline, SliverInline):
+            if isinstance(inline, InstanceInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
@@ -1159,7 +1159,7 @@ class SliceAdmin(XOSBaseAdmin):
         #    XXX this approach is better than clobbering self.inlines, so
         #    try to make this work post-demo.
         if (obj is not None) and (obj.name == "mysite_vcpe"):
-            cord_vcpe_inlines = [ SlicePrivilegeInline, CordSliverInline, TagInline, ReservationInline,SliceNetworkInline]
+            cord_vcpe_inlines = [ SlicePrivilegeInline, CordInstanceInline, TagInline, ReservationInline,SliceNetworkInline]
 
             inlines=[]
             for inline_class in cord_vcpe_inlines:
@@ -1216,9 +1216,9 @@ class ImageAdmin(XOSBaseAdmin):
                ]
     readonly_fields = ('backend_status_text', )
 
-    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
+    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
 
-    inlines = [SliverInline, ControllerImagesInline]
+    inlines = [InstanceInline, ControllerImagesInline]
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
@@ -1238,22 +1238,22 @@ class NodeAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     list_filter = ('site_deployment',)
 
-    inlines = [TagInline,SliverInline]
+    inlines = [TagInline,InstanceInline]
     fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name','site_deployment'], 'classes':['suit-tab suit-tab-details']})]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name','site_deployment']
-    user_readonly_inlines = [TagInline,SliverInline]
+    user_readonly_inlines = [TagInline,InstanceInline]
 
-    suit_form_tabs =(('details','Node Details'),('slivers','Slivers'))
+    suit_form_tabs =(('details','Node Details'),('instances','Instances'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_nodes=True)
 
-class SliverForm(forms.ModelForm):
+class InstanceForm(forms.ModelForm):
     class Meta:
-        model = Sliver
+        model = Instance
         ip = forms.CharField(widget=PlainTextWidget)
         instance_name = forms.CharField(widget=PlainTextWidget)
         widgets = {
@@ -1272,16 +1272,16 @@ class TagAdmin(XOSBaseAdmin):
     user_readonly_fields = ['service', 'name', 'value', 'content_type', 'content_object',]
     user_readonly_inlines = []
 
-class SliverAdmin(XOSBaseAdmin):
-    form = SliverForm
+class InstanceAdmin(XOSBaseAdmin):
+    form = InstanceForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Sliver Details'),)
+    suit_form_tabs =(('general', 'Instance Details'),)
 
     inlines = [TagInline]
 
@@ -1298,12 +1298,12 @@ class SliverAdmin(XOSBaseAdmin):
         if db_field.name == 'slice':
             kwargs['queryset'] = Slice.select_by_user(request.user)
 
-        return super(SliverAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(InstanceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
-        # admins can see all slivers. Users can only see slivers of
+        # admins can see all instances. Users can only see instances of
         # the slices they belong to.
-        return Sliver.select_by_user(request.user)
+        return Instance.select_by_user(request.user)
 
 
     def get_formsets(self, request, obj=None):
@@ -1317,7 +1317,7 @@ class SliverAdmin(XOSBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
-            if isinstance(inline, SliverInline):
+            if isinstance(inline, InstanceInline):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
@@ -1538,8 +1538,8 @@ class ReservedResourceInline(XOSTabularInline):
                     field.initial = field.queryset.all()[0]
             else:
                 field.queryset = field.queryset.none()
-        elif db_field.name == 'sliver':
-            # restrict slivers to those that belong to the slice
+        elif db_field.name == 'instance':
+            # restrict instances to those that belong to the slice
             if request._slice is not None:
                 field.queryset = field.queryset.filter(slice = request._slice)
             else:
@@ -1690,15 +1690,15 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     fields = ['backend_status_icon', 'parameter', 'value']
     readonly_fields = ('backend_status_icon', )
 
-class NetworkSliversInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'reserve']
+class NetworkInstancesInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'instance', 'ip', 'reserve']
     readonly_fields = ("backend_status_icon", "ip", )
-    model = NetworkSliver
-    selflink_fieldname = "sliver"
+    model = NetworkInstance
+    selflink_fieldname = "instance"
     extra = 0
-    verbose_name_plural = "Slivers"
-    verbose_name = "Sliver"
-    suit_classes = 'suit-tab suit-tab-networkslivers'
+    verbose_name_plural = "Instances"
+    verbose_name = "Instance"
+    suit_classes = 'suit-tab suit-tab-networkinstances'
 
 class NetworkSlicesInline(XOSTabularInline):
     model = NetworkSlice
@@ -1732,7 +1732,7 @@ class NetworkAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
 
-    inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
+    inlines = [NetworkParameterInline, NetworkInstancesInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [ControllerNetworkInline]
 
     form=NetworkForm
@@ -1752,7 +1752,7 @@ class NetworkAdmin(XOSBaseAdmin):
         tabs=[('general','Network Details'),
             ('sdn', 'SDN Configuration'),
             ('netparams', 'Parameters'),
-            ('networkslivers','Slivers'),
+            ('networkinstances','Instances'),
             ('networkslices','Slices'),
             ('routers','Routers'),
         ]
@@ -1977,7 +1977,7 @@ if True:
     admin.site.register(Node, NodeAdmin)
     #admin.site.register(SlicePrivilege, SlicePrivilegeAdmin)
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
-    admin.site.register(Sliver, SliverAdmin)
+    admin.site.register(Instance, InstanceAdmin)
     admin.site.register(Image, ImageAdmin)
     admin.site.register(DashboardView, DashboardViewAdmin)
     admin.site.register(Flavor, FlavorAdmin)

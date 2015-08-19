@@ -18,16 +18,16 @@ class HpcService(Service):
     cmi_hostname = StrippedCharField(max_length=254, null=True, blank=True)
 
     hpc_port80 = models.BooleanField(default=True, help_text="Enable port 80 for HPC")
-    watcher_hpc_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact hpc sliver")
-    watcher_dnsdemux_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsdemux sliver")
-    watcher_dnsredir_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsredir sliver")
+    watcher_hpc_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact hpc instance")
+    watcher_dnsdemux_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsdemux instance")
+    watcher_dnsredir_network = StrippedCharField(max_length=254, null=True, blank=True, help_text="Network for hpc_watcher to contact dnsredir instance")
 
     @property
     def scale(self):
         hpc_slices = [x for x in self.slices.all() if "hpc" in x.name]
         if not hpc_slices:
             return 0
-        return hpc_slices[0].slivers.count()
+        return hpc_slices[0].instances.count()
 
     @scale.setter
     def scale(self, value):

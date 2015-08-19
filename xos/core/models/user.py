@@ -339,8 +339,8 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def get_readable_objects(self, filter=None):
        """ Returns a list of objects that the user is allowed to read. """
-       from core.models import Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User
-       models = [Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User]
+       from core.models import Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User
+       models = [Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User]
        readable_objects = []
        for model in models:
            readable_objects.extend(model.select_by_user(self))
@@ -364,7 +364,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         deployment_priv_objs = [Image, NetworkTemplate, Flavor]
         site_priv_objs = [Node, Slice, User]
-        slice_priv_objs = [Sliver, Network] 
+        slice_priv_objs = [Instance, Network] 
         
         # maps the set of objects a paticular role has write access
         write_map = {

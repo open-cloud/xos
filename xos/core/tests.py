@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 
 FIXTURES_FILE = 'core/fixtures/initial_data.json'
-MODELS = ['Deployment','Image','Node','Reservation','Slice','Sliver','User']
+MODELS = ['Deployment','Image','Node','Reservation','Slice','Instance','User']
 
 def is_dynamic_type(x):
 	t = type(x)

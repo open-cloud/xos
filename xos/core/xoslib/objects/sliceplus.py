@@ -1,4 +1,4 @@
-from core.models import Slice, SlicePrivilege, SliceRole, Sliver, Site, Node, User
+from core.models import Slice, SlicePrivilege, SliceRole, Instance, Site, Node, User
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
 from rest_framework.exceptions import APIException
@@ -22,16 +22,16 @@ class SlicePlus(Slice, PlusObjectMixin):
             used_sites = {}
             ready_sites = {}
             used_deployments = {}
-            sliverCount = 0
+            instanceCount = 0
             sshCommands = []
-            for sliver in self.slivers.all():
-                site = sliver.node.site_deployment.site
-                deployment = sliver.node.site_deployment.deployment
+            for instance in self.instances.all():
+                site = instance.node.site_deployment.site
+                deployment = instance.node.site_deployment.deployment
                 used_sites[site.name] = used_sites.get(site.name, 0) + 1
                 used_deployments[deployment.name] = used_deployments.get(deployment.name, 0) + 1
-                sliverCount = sliverCount + 1
+                instanceCount = instanceCount + 1
 
-                sshCommand = sliver.get_ssh_command()
+                sshCommand = instance.get_ssh_command()
                 if sshCommand:
                     sshCommands.append(sshCommand)
 
@@ -57,7 +57,7 @@ class SlicePlus(Slice, PlusObjectMixin):
             self._sliceInfo= {"sitesUsed": used_sites,
                     "sitesReady": ready_sites,
                     "deploymentsUsed": used_deployments,
-                    "sliverCount": sliverCount,
+                    "instanceCount": instanceCount,
                     "siteCount": len(used_sites.keys()),
                     "users": users,
                     "roles": [],
@@ -127,10 +127,10 @@ class SlicePlus(Slice, PlusObjectMixin):
         nodeList = []
         for node in Node.objects.all():
             if (node.site_deployment.site.id in siteIDList):
-                node.sliverCount = 0
-                for sliver in node.slivers.all():
-                     if sliver.slice.id == self.id:
-                         node.sliverCount = node.sliverCount + 1
+                node.instanceCount = 0
+                for instance in node.instances.all():
+                     if instance.slice.id == self.id:
+                         node.instanceCount = node.instanceCount + 1
                 nodeList.append(node)
         return nodeList
 
@@ -170,58 +170,58 @@ class SlicePlus(Slice, PlusObjectMixin):
         print "save_site_allocation, reset=",reset
 
         if (not self._site_allocation):
-            # Must be a sliver that was just created, and has not site_allocation
+            # Must be a instance that was just created, and has not site_allocation
             # field.
             return
 
-        all_slice_slivers = self.slivers.all()
+        all_slice_instances = self.instances.all()
         for site_name in self._site_allocation.keys():
             desired_allocation = self._site_allocation[site_name]
 
-            # make a list of the slivers for this site
-            slivers = []
-            for sliver in all_slice_slivers:
-                if sliver.node.site_deployment.site.name == site_name:
-                    slivers.append(sliver)
+            # make a list of the instances for this site
+            instances = []
+            for instance in all_slice_instances:
+                if instance.node.site_deployment.site.name == site_name:
+                    instances.append(instance)
 
-            # delete extra slivers
-            while (reset and len(slivers)>0) or (len(slivers) > desired_allocation):
-                sliver = slivers.pop()
+            # delete extra instances
+            while (reset and len(instances)>0) or (len(instances) > desired_allocation):
+                instance = instances.pop()
                 if (not noAct):
-                    print "deleting sliver", sliver
-                    sliver.delete()
+                    print "deleting instance", instance
+                    instance.delete()
                 else:
-                    print "would delete sliver", sliver
+                    print "would delete instance", instance
 
-            # add more slivers
-            if (len(slivers) < desired_allocation):
+            # add more instances
+            if (len(instances) < desired_allocation):
                 site = Site.objects.get(name = site_name)
                 nodes = self.get_node_allocation([site])
 
                 if (not nodes):
                     raise APIException(detail="no nodes in site %s" % site_name)
 
-                while (len(slivers) < desired_allocation):
+                while (len(instances) < desired_allocation):
                     # pick the least allocated node
-                    nodes = sorted(nodes, key=attrgetter("sliverCount"))
+                    nodes = sorted(nodes, key=attrgetter("instanceCount"))
                     node = nodes[0]
 
-                    sliver = Sliver(name=node.name,
+                    instance = Instance(name=node.name,
                             slice=self,
                             node=node,
                             image = self.default_image,
                             flavor = self.default_flavor,
                             creator = self.creator,
                             deployment = node.site_deployment.deployment)
-                    sliver.caller = self.caller
-                    slivers.append(sliver)
+                    instance.caller = self.caller
+                    instances.append(instance)
                     if (not noAct):
-                        print "added sliver", sliver
-                        sliver.save()
+                        print "added instance", instance
+                        instance.save()
                     else:
-                        print "would add sliver", sliver
+                        print "would add instance", instance
 
-                    node.sliverCount = node.sliverCount + 1
+                    node.instanceCount = node.instanceCount + 1
 
     def save_users(self, noAct = False):
         new_users = self._update_users

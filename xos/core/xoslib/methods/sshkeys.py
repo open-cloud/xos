@@ -16,16 +16,16 @@ class SSHKeyList(APIView):
 
     def get(self, request, format=None):
         instances=[]
-        for sliver in self.get_queryset().all():
-            if sliver.instance_id:
-                instances.append( {"id": sliver.instance_id,
-                                   "public_keys": sliver.get_public_keys(),
-                                   "node_name": sliver.node.name } )
+        for instance in self.get_queryset().all():
+            if instance.instance_id:
+                instances.append( {"id": instance.instance_id,
+                                   "public_keys": instance.get_public_keys(),
+                                   "node_name": instance.node.name } )
 
         return Response(instances)
 
     def get_queryset(self):
-        queryset = queryset=Sliver.objects.all()
+        queryset = queryset=Instance.objects.all()
 
         node_name = self.request.QUERY_PARAMS.get('node_name', None)
         if node_name is not None:
@@ -38,15 +38,15 @@ class SSHKeyDetail(APIView):
     method_name = "sshkeys"
 
     def get(self, request, format=None, pk=0):
-        slivers = self.get_queryset().filter(instance_id=pk)
-        if not slivers:
-            raise XOSNotFound("didn't find sliver for instance %s" % pk)
-        return Response( [ {"id": slivers[0].instance_id,
-                            "public_keys": slivers[0].get_public_keys(),
-                            "node_name": slivers[0].node.name } ])
+        instances = self.get_queryset().filter(instance_id=pk)
+        if not instances:
+            raise XOSNotFound("didn't find instance for instance %s" % pk)
+        return Response( [ {"id": instances[0].instance_id,
+                            "public_keys": instances[0].get_public_keys(),
+                            "node_name": instances[0].node.name } ])
 
     def get_queryset(self):
-        queryset = queryset=Sliver.objects.all()
+        queryset = queryset=Instance.objects.all()
 
         node_name = self.request.QUERY_PARAMS.get('node_name', None)
         if node_name is not None:

@@ -1,13 +1,13 @@
-from core.serializers import SliverSerializer
+from core.serializers import InstanceSerializer
 from rest_framework import generics
-from core.models import Sliver
+from core.models import Instance
 
-class SliverList(generics.ListCreateAPIView):
-    queryset = Sliver.objects.all()
-    serializer_class = SliverSerializer
+class InstanceList(generics.ListCreateAPIView):
+    queryset = Instance.objects.all()
+    serializer_class = InstanceSerializer
 
-class SliverDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Sliver.objects.all()
-    serializer_class = SliverSerializer
+class InstanceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Instance.objects.all()
+    serializer_class = InstanceSerializer
 
 

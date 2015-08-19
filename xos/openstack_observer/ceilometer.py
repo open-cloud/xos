@@ -14,7 +14,7 @@ def object_to_filter(model_name, pk):
     from core.models import *
     filter_dict = {
             'ControllerSlice':[ControllerSlice, 'tenant_id', 'project_id'],
-            'Sliver':[Sliver, 'instance_id', 'resource_id'],
+            'Instance':[Instance, 'instance_id', 'resource_id'],
             'ControllerSite':[ControllerSite, 'tenant_id', 'project_id']
     }
 

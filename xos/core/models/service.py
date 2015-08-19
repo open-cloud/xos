@@ -88,25 +88,25 @@ class Service(PlCoreBase, AttributeMixin):
              Get a list of nodes that can be used to scale up a slice.
 
                 slice - slice to scale up
-                max_per_node - maximum numbers of slivers that 'slice' can have on a single node
+                max_per_node - maximum numbers of instances that 'slice' can have on a single node
                 exclusive_slices - list of slices that must have no nodes in common with 'slice'.
         """
 
-        from core.models import Node, Sliver # late import to get around order-of-imports constraint in __init__.py
+        from core.models import Node, Instance # late import to get around order-of-imports constraint in __init__.py
 
         nodes = list(Node.objects.all())
 
-        conflicting_slivers = Sliver.objects.filter(slice__in = exclusive_slices)
-        conflicting_nodes = Node.objects.filter(slivers__in = conflicting_slivers)
+        conflicting_instances = Instance.objects.filter(slice__in = exclusive_slices)
+        conflicting_nodes = Node.objects.filter(instances__in = conflicting_instances)
 
         nodes = [x for x in nodes if x not in conflicting_nodes]
 
-        # If max_per_node is set, then limit the number of slivers this slice
+        # If max_per_node is set, then limit the number of instances this slice
         # can have on a single node.
         if max_per_node:
             acceptable_nodes = []
             for node in nodes:
-                existing_count = node.slivers.filter(slice=slice).count()
+                existing_count = node.instances.filter(slice=slice).count()
                 if existing_count < max_per_node:
                     acceptable_nodes.append(node)
             nodes = acceptable_nodes
@@ -117,22 +117,22 @@ class Service(PlCoreBase, AttributeMixin):
         # Pick the best node to scale up a slice.
 
         nodes = self.get_scalable_nodes(slice, max_per_node, exclusive_slices)
-        nodes = sorted(nodes, key=lambda node: node.slivers.all().count())
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         if not nodes:
             return None
         return nodes[0]
 
     def adjust_scale(self, slice_hint, scale, max_per_node=None, exclusive_slices=[]):
-        from core.models import Sliver # late import to get around order-of-imports constraint in __init__.py
+        from core.models import Instance # late import to get around order-of-imports constraint in __init__.py
 
         slices = [x for x in self.slices.all() if slice_hint in x.name]
         for slice in slices:
-            while slice.slivers.all().count() > scale:
-                s = slice.slivers.all()[0]
-                # print "drop sliver", s
+            while slice.instances.all().count() > scale:
+                s = slice.instances.all()[0]
+                # print "drop instance", s
                 s.delete()
 
-            while slice.slivers.all().count() < scale:
+            while slice.instances.all().count() < scale:
                 node = self.pick_node(slice, max_per_node, exclusive_slices)
                 if not node:
                     # no more available nodes
@@ -146,7 +146,7 @@ class Service(PlCoreBase, AttributeMixin):
                 if not flavor:
                     raise XOSConfigurationError("No default_flavor for slice %s" % slice.name)
 
-                s = Sliver(slice=slice,
+                s = Instance(slice=slice,
                            node=node,
                            creator=slice.creator,
                            image=image,
@@ -154,7 +154,7 @@ class Service(PlCoreBase, AttributeMixin):
                            deployment=node.site_deployment.deployment)
                 s.save()
 
-                # print "add sliver", s
+                # print "add instance", s
 
 class ServiceAttribute(PlCoreBase):
     name = models.SlugField(help_text="Attribute Name", max_length=128)

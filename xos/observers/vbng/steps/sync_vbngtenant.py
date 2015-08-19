@@ -63,10 +63,10 @@ class SyncVBNGTenant(SyncStep):
             raise Exception("More than one vCPE tenant is associated with vBNG %s" % str(o.id))
 
         vcpe = vcpes[0]
-        sliver = vcpe.sliver
+        instance = vcpe.instance
 
-        if not sliver:
-            raise Exception("No sliver associated with vBNG %s" % str(o.id))
+        if not instance:
+            raise Exception("No instance associated with vBNG %s" % str(o.id))
 
         if not vcpe.wan_ip:
             self.defer_sync(o, "does not have a WAN IP yet")
@@ -75,7 +75,7 @@ class SyncVBNGTenant(SyncStep):
             # this should never happen; WAN MAC is computed from WAN IP
             self.defer_sync(o, "does not have a WAN MAC yet")
 
-        return (vcpe.wan_ip, vcpe.wan_mac, vcpe.sliver.node.name)
+        return (vcpe.wan_ip, vcpe.wan_mac, vcpe.instance.node.name)
 
     def sync_record(self, o):
         logger.info("sync'ing VBNGTenant %s" % str(o))

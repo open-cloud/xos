@@ -44,10 +44,10 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
             vcpe = obj.vcpe
             if not vcpe:
                 return None
-            sliver = vcpe.sliver
-            if not sliver:
+            instance = vcpe.instance
+            if not instance:
                 return None
-            return sliver.node.name
+            return instance.node.name
 
 class VOLTTenantList(XOSListCreateAPIView):
     serializer_class = VOLTTenantIdSerializer

@@ -15,7 +15,7 @@ def api_root(request, format=None):
         'serviceresources': reverse('serviceresource-list', request=request, format=format),
         'sites': reverse('site-list', request=request, format=format),
         'slices': reverse('slice-list', request=request, format=format),
-        'slivers': reverse('sliver-list', request=request, format=format),
+        'instances': reverse('instance-list', request=request, format=format),
         'tags': reverse('tag-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
     })
