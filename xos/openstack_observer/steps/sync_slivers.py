@@ -55,8 +55,23 @@ class SyncSlivers(OpenStackSyncStep):
         if sliver.slice.service and sliver.slice.service.public_key:
             pubkeys.add(sliver.slice.service.public_key)
 
+        # Handle any ports that are already created and attached to the sliver.
+        # If we do have a port for a network, then add that network to an
+        # exclude list so we won't try to auto-create ports on that network
+        # when instantiating.
+        ports = []
+        exclude_networks = set()
+        exclude_templates = set()
+        for ns in sliver.networkslivers.all():
+            if not ns.port_id:
+                raise Exception("Port %s on sliver %s has no id; Try again later" % (str(ns), str(sliver)) )
+            ports.append(ns.port_id)
+            exclude_networks.add(ns.network)
+            exclude_templates.add(ns.network.template)
+
         nics = []
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]
+        networks = [n for n in networks if (n not in exclude_networks)]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=sliver.node.site_deployment.controller)
 
@@ -67,9 +82,11 @@ class SyncSlivers(OpenStackSyncStep):
                         raise Exception("Private Network %s has no id; Try again later" % controller_network.network.name)
                    nics.append(controller_network.net_id)
 
-        # now include network template
+        # Now include network templates, for those networks that use a
+        # shared_network_name.
         network_templates = [network.template.shared_network_name for network in networks \
                              if network.template.shared_network_name]
+        network_templates = [nt for nt in network_templates if (nt not in exclude_templates)]
 
         #driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, controller=sliver.controllerNetwork)
         driver = self.driver.admin_driver(tenant='admin', controller=sliver.node.site_deployment.controller)
@@ -78,7 +95,9 @@ class SyncSlivers(OpenStackSyncStep):
             if net['name'] in network_templates:
                 nics.append(net['id'])
 
-        if (not nics):
+        # If the slice isn't connected to anything, then at least put it on
+        # the public network.
+        if (not nics) and (not ports):
             for net in nets:
                 if net['name']=='public':
                     nics.append(net['id'])
@@ -127,6 +146,7 @@ class SyncSlivers(OpenStackSyncStep):
                      'image_name':image_name,
                      'flavor_name':sliver.flavor.name,
                      'nics':nics,
+                     'ports':ports,
                      'meta':metadata_update,
                      'user_data':r'%s'%escape(userData)}
 
