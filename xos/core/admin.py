@@ -1691,7 +1691,7 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     readonly_fields = ('backend_status_icon', )
 
 class NetworkSliversInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network','sliver','ip']
+    fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'reserve']
     readonly_fields = ("backend_status_icon", "ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
