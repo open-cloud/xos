@@ -143,7 +143,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         # For networkSlivers that were created by the user, find that ones
         # that don't have neutron ports, and create them.
         for networkSliver in NetworkSliver.objects.filter(port_id__isnull=True, sliver__isnull=False):
-            #logger.info("working on networksliver %s" % networkSliver)
+            #logger.info("XXX working on networksliver %s" % networkSliver)
             controller = sliver.node.site_deployment.controller
             if controller:
                 cn=networkSliver.network.controllernetworks.filter(controller=controller)
@@ -152,7 +152,22 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                     continue
                 cn=cn[0]
                 try:
-                    driver = self.driver.admin_driver(controller = controller,tenant='admin')
+                    # We need to use a client driver that specifies the tenant
+                    # of the destination sliver. Nova-compute will not connect
+                    # ports to slivers if the port's tenant does not match
+                    # the sliver's tenant.
+
+                    # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+                    # not being in working condition.
+                    from openstack.client import OpenStackClient
+                    from openstack.driver import OpenStackDriver
+                    caller = networkSliver.network.owner.creator
+                    auth = {'username': caller.email,
+                            'password': caller.remote_password,
+                            'tenant': networkSliver.sliver.slice.name} # networkSliver.network.owner.name}
+                    client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
+                    driver = OpenStackDriver(client=client)
+
                     port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
                     networkSliver.port_id = port["id"]
                     if port["fixed_ips"]:
