@@ -153,7 +153,6 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 cn=cn[0]
                 try:
                     driver = self.driver.admin_driver(controller = controller,tenant='admin')
-                    #networkSliver.port = driver.shell.quantum.create_port(network_id = cn.net_id)
                     port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
                     networkSliver.port_id = port["id"]
                     if port["fixed_ips"]:
