@@ -154,7 +154,10 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 try:
                     driver = self.driver.admin_driver(controller = controller,tenant='admin')
                     #networkSliver.port = driver.shell.quantum.create_port(network_id = cn.net_id)
-                    networkSliver.port_id = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]["id"]
+                    port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
+                    networkSliver.port_id = port["id"]
+                    if port["fixed_ips"]:
+                        networkSliver.ip = port["fixed_ips"][0]["ip_address"]
                 except:
                     logger.log_exc("failed to create neutron port for %s" % networkSliver)
                     continue
