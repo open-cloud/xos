@@ -17,18 +17,8 @@ class SyncControllerSlices(OpenStackSyncStep):
     requested_interval=0
     observes=ControllerSlice
 
-    def fetch_pending(self, deleted):
-        if (deleted):
-            return ControllerSlice.deleted_objects.all()
-        else:
-            return ControllerSlice.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
-    def sync_record(self, controller_slice):
+    def map_sync_inputs(self, controller_slice):
         logger.info("sync'ing slice controller %s" % controller_slice)
-
-        controller_register = json.loads(controller_slice.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%controller_slice.controller.name)
 
         if not controller_slice.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice.controller)
@@ -54,8 +44,9 @@ class SyncControllerSlices(OpenStackSyncStep):
                          'ansible_tag':'%s@%s'%(controller_slice.slice.name,controller_slice.controller.name),
                          'max_instances':max_instances}
 
-        expected_num = len(roles)+1
-        res = run_template('sync_controller_slices.yaml', tenant_fields, path='controller_slices', expected_num=expected_num)
+        return tenant_fields
+
+    def map_sync_outputs(self, controller_slice, res):
         tenant_id = res[0]['id']
         if (not controller_slice.tenant_id):
             try:
@@ -70,11 +61,7 @@ class SyncControllerSlices(OpenStackSyncStep):
             controller_slice.save()
 
 
-    def delete_record(self, controller_slice):
-        controller_register = json.loads(controller_slice.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%controller_slice.controller.name)
-
+    def map_delete_inputs(self, controller_slice):
         controller_users = ControllerUser.objects.filter(user=controller_slice.slice.creator,
                                                               controller=controller_slice.controller)
         if not controller_users:
@@ -91,6 +78,4 @@ class SyncControllerSlices(OpenStackSyncStep):
                           'name':controller_user.user.email,
                           'ansible_tag':'%s@%s'%(controller_slice.slice.name,controller_slice.controller.name),
                           'delete': True}
-
-        expected_num = 1
-        run_template('sync_controller_slices.yaml', tenant_fields, path='controller_slices', expected_num=expected_num)
+	return tenant_fields

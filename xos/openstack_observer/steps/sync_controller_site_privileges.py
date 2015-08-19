@@ -16,27 +16,14 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
     provides=[SitePrivilege]
     requested_interval=0
     observes=ControllerSitePrivilege
+    playbook='sync_controller_users.yaml'
 
-    def fetch_pending(self, deleted):
-
-        if (deleted):
-            return ControllerSitePrivilege.deleted_objects.all()
-        else:
-            return ControllerSitePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
-
-    def sync_record(self, controller_site_privilege):
-        logger.info("sync'ing controler_site_privilege %s at controller %s" % (controller_site_privilege, controller_site_privilege.controller))
-
+    def map_sync_inputs(self, controller_site_privilege):
 	controller_register = json.loads(controller_site_privilege.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%controller_site_privilege.controller.name)
-
-
         if not controller_site_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_site_privilege.controller)
             return
 
-	template = os_template_env.get_template('sync_controller_users.yaml')
         roles = [controller_site_privilege.site_privilege.role.role]
 	# setup user home site roles at controller 
         if not controller_site_privilege.site_privilege.user.site:
@@ -63,10 +50,9 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
 		       'roles':roles,
 		       'tenant':controller_site_privilege.site_privilege.site.login_base}    
 	
-	    rendered = template.render(user_fields)
-	    expected_length = len(roles) + 1
-	    res = run_template('sync_controller_users.yaml', user_fields,path='controller_site_privileges', expected_num=expected_length)
+	    return user_fields
 
+    def map_sync_outputs(self, controller_site_privilege, res):
 	    # results is an array in which each element corresponds to an 
 	    # "ok" string received per operation. If we get as many oks as
 	    # the number of operations we issued, that means a grand success.

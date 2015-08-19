@@ -16,26 +16,12 @@ class SyncControllerUsers(OpenStackSyncStep):
     provides=[User]
     requested_interval=0
     observes=ControllerUser
+    playbook='sync_controller_users.yaml'
 
-    def fetch_pending(self, deleted):
-
-        if (deleted):
-            return ControllerUser.deleted_objects.all()
-        else:
-            return ControllerUser.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
-    def sync_record(self, controller_user):
-        logger.info("sync'ing user %s at controller %s" % (controller_user.user, controller_user.controller))
-
-        controller_register = json.loads(controller_user.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%controller_user.controller.name)
-
+    def map_sync_inputs(self, controller_user):
         if not controller_user.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_user.controller)
             return
-
-        template = os_template_env.get_template('sync_controller_users.yaml')
 
         # All users will have at least the 'user' role at their home site/tenant.
         # We must also check if the user should have the admin role
@@ -68,21 +54,14 @@ class SyncControllerUsers(OpenStackSyncStep):
                 'roles':roles,
                 'tenant':controller_user.user.site.login_base
                 }
+	    return user_fields
 
-            rendered = template.render(user_fields)
-            expected_length = len(roles) + 1
-
-            res = run_template('sync_controller_users.yaml', user_fields,path='controller_users', expected_num=expected_length)
-
-            controller_user.kuser_id = res[0]['id']
-            controller_user.backend_status = '1 - OK'
-            controller_user.save()
+    def map_sync_outputs(self, controller_user, res):
+        controller_user.kuser_id = res[0]['id']
+        controller_user.backend_status = '1 - OK'
+        controller_user.save()
 
     def delete_record(self, controller_user):
-        controller_register = json.loads(controller_user.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%controller_user.controller.name)
-
         if controller_user.kuser_id:
             driver = self.driver.admin_driver(controller=controller_user.controller)
             driver.delete_user(controller_user.kuser_id)
