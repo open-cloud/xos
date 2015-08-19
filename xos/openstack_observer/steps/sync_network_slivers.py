@@ -140,6 +140,26 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 logger.log_exc("failed to save networksliver %s" % str(ns))
                 continue
 
+        # For networkSlivers that were created by the user, find that ones
+        # that don't have neutron ports, and create them.
+        for networkSliver in NetworkSliver.objects.filter(port_id__isnull=True, sliver__isnull=False):
+            #logger.info("working on networksliver %s" % networkSliver)
+            controller = sliver.node.site_deployment.controller
+            if controller:
+                cn=networkSliver.network.controllernetworks.filter(controller=controller)
+                if not cn:
+                    logger.log_exc("no controllernetwork for %s" % networkSliver)
+                    continue
+                cn=cn[0]
+                try:
+                    driver = self.driver.admin_driver(controller = controller,tenant='admin')
+                    #networkSliver.port = driver.shell.quantum.create_port(network_id = cn.net_id)
+                    networkSliver.port_id = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]["id"]
+                except:
+                    logger.log_exc("failed to create neutron port for %s" % networkSliver)
+                    continue
+                networkSliver.save()
+
         # Now, handle port forwarding
         # We get the list of NetworkSlivers again, since we might have just
         # added a few. Then, for each one of them we find it's quantum port and
