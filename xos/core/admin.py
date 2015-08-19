@@ -437,7 +437,7 @@ class NetworkLookerUpper:
 
 class SliverInline(XOSTabularInline):
     model = Sliver
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node', 'no_sync']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
@@ -1275,7 +1275,7 @@ class TagAdmin(XOSBaseAdmin):
 class SliverAdmin(XOSBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Sliver Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
