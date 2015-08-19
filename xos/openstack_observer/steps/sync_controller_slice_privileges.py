@@ -16,21 +16,9 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
     provides=[SlicePrivilege]
     requested_interval=0
     observes=ControllerSlicePrivilege
+    playbook = 'sync_controller_users.yaml'
 
-    def fetch_pending(self, deleted):
-
-        if (deleted):
-            return ControllerSlicePrivilege.deleted_objects.all()
-        else:
-            return ControllerSlicePrivilege.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
-
-    def sync_record(self, controller_slice_privilege):
-        logger.info("sync'ing controler_slice_privilege %s at controller %s" % (controller_slice_privilege, controller_slice_privilege.controller))
-
-	controller_register = json.loads(controller_slice_privilege.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%controller_slice_privilege.controller.name)
-
+    def map_inputs(self, controller_slice_privilege):
         if not controller_slice_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice_privilege.controller)
             return
@@ -61,17 +49,11 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
 		       'admin_tenant': controller_slice_privilege.controller.admin_tenant,
 		       'roles':roles,
 		       'tenant':controller_slice_privilege.slice_privilege.slice.name}    
+            return user_fields
 	
-	    rendered = template.render(user_fields)
-	    expected_length = len(roles) + 1
-	    res = run_template('sync_controller_users.yaml', user_fields, path='controller_slice_privileges', expected_num=expected_length)
-
-	    # results is an array in which each element corresponds to an 
-	    # "ok" string received per operation. If we get as many oks as
-	    # the number of operations we issued, that means a grand success.
-	    # Otherwise, the number of oks tell us which operation failed.
-            controller_slice_privilege.role_id = res[0]['id']
-            controller_slice_privilege.save()
+    def map_sync_outputs(self, controller_slice_privilege, res):
+        controller_slice_privilege.role_id = res[0]['id']
+        controller_slice_privilege.save()
 
     def delete_record(self, controller_slice_privilege):
 	controller_register = json.loads(controller_slice_privilege.controller.backend_register)

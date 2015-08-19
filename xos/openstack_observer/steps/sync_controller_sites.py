@@ -13,17 +13,13 @@ class SyncControllerSites(OpenStackSyncStep):
     requested_interval=0
     provides=[Site]
     observes=ControllerSite
+    playbook = 'sync_controller_sites.yaml'
 
     def fetch_pending(self, deleted=False):
         pending = super(OpenStackSyncStep, self).fetch_pending(deleted)
         return pending.filter(controller__isnull=False)
 
-    def sync_record(self, controller_site):
-	controller_register = json.loads(controller_site.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%controller_site.controller.name)
-
-	template = os_template_env.get_template('sync_controller_sites.yaml')
+    def map_sync_inputs(self, controller_site):
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
 		         'admin_user': controller_site.controller.admin_user,
 		         'admin_password': controller_site.controller.admin_password,
@@ -31,7 +27,9 @@ class SyncControllerSites(OpenStackSyncStep):
 	                 'ansible_tag': '%s@%s'%(controller_site.site.login_base,controller_site.controller.name), # name of ansible playbook
 		         'tenant': controller_site.site.login_base,
 		         'tenant_description': controller_site.site.name}
+        return tenant_fields
 
+    def map_sync_outputs(self, controller_site, res):
 	rendered = template.render(tenant_fields)
 	res = run_template('sync_controller_sites.yaml', tenant_fields, path='controller_sites', expected_num=1)
 

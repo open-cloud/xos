@@ -20,6 +20,7 @@ class SyncInstances(OpenStackSyncStep):
     provides=[Instance]
     requested_interval=0
     observes=Instance
+    playbook='sync_instances.yaml'
 
     def get_userdata(self, instance, pubkeys):
         userdata = '#cloud-config\n\nopencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (instance.slice.name, instance.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
@@ -28,14 +29,9 @@ class SyncInstances(OpenStackSyncStep):
             userdata += '  - %s\n' % key
         return userdata
 
-    def sync_record(self, instance):
-        logger.info("sync'ing instance:%s slice:%s controller:%s " % (instance, instance.slice.name, instance.node.site_deployment.controller))
-        controller_register = json.loads(instance.node.site_deployment.controller.backend_register)
-
-        if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%instance.node.site_deployment.controller.name)
-
-        metadata_update = {}
+    def map_sync_inputs(self, instance):
+        inputs = {}
+	metadata_update = {}
         if (instance.numberCores):
             metadata_update["cpu_cores"] = str(instance.numberCores)
 
@@ -43,8 +39,7 @@ class SyncInstances(OpenStackSyncStep):
             if tag.name.startswith("sysctl-"):
                 metadata_update[tag.name] = tag.value
 
-        # public keys
-        slice_memberships = SlicePrivilege.objects.filter(slice=instance.slice)
+	slice_memberships = SlicePrivilege.objects.filter(slice=instance.slice)
         pubkeys = set([sm.user.public_key for sm in slice_memberships if sm.user.public_key])
         if instance.creator.public_key:
             pubkeys.add(instance.creator.public_key)
@@ -55,23 +50,8 @@ class SyncInstances(OpenStackSyncStep):
         if instance.slice.service and instance.slice.service.public_key:
             pubkeys.add(instance.slice.service.public_key)
 
-        # Handle any ports that are already created and attached to the instance.
-        # If we do have a port for a network, then add that network to an
-        # exclude list so we won't try to auto-create ports on that network
-        # when instantiating.
-        ports = []
-        exclude_networks = set()
-        exclude_templates = set()
-        for ns in instance.ports.all():
-            if not ns.port_id:
-                raise DeferredException("Port %s on instance %s has no id; Try again later" % (str(ns), str(instance)) )
-            ports.append(ns.port_id)
-            exclude_networks.add(ns.network)
-            exclude_templates.add(ns.network.template)
-
         nics = []
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice)]
-        networks = [n for n in networks if (n not in exclude_networks)]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=instance.node.site_deployment.controller)
 
@@ -79,14 +59,12 @@ class SyncInstances(OpenStackSyncStep):
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
-                        raise DeferredException("Private Network %s has no id; Try again later" % controller_network.network.name)
+                        raise Exception("Private Network %s has no id; Try again later" % controller_network.network.name)
                    nics.append(controller_network.net_id)
 
-        # Now include network templates, for those networks that use a
-        # shared_network_name.
+        # now include network template
         network_templates = [network.template.shared_network_name for network in networks \
                              if network.template.shared_network_name]
-        network_templates = [nt for nt in network_templates if (nt not in exclude_templates)]
 
         #driver = self.driver.client_driver(caller=instance.creator, tenant=instance.slice.name, controller=instance.controllerNetwork)
         driver = self.driver.admin_driver(tenant='admin', controller=instance.node.site_deployment.controller)
@@ -95,9 +73,7 @@ class SyncInstances(OpenStackSyncStep):
             if net['name'] in network_templates:
                 nics.append(net['id'])
 
-        # If the slice isn't connected to anything, then at least put it on
-        # the public network.
-        if (not nics) and (not ports):
+        if (not nics):
             for net in nets:
                 if net['name']=='public':
                     nics.append(net['id'])
@@ -116,7 +92,7 @@ class SyncInstances(OpenStackSyncStep):
                     image_name = image.name
                     logger.info("using image from glance: " + str(image_name))
 
-        try:
+	try:
             legacy = Config().observer_legacy
         except:
             legacy = False
@@ -134,7 +110,7 @@ class SyncInstances(OpenStackSyncStep):
             userData = instance.userData
 
         controller = instance.node.site_deployment.controller
-        tenant_fields = {'endpoint':controller.auth_url,
+        fields = {'endpoint':controller.auth_url,
                      'admin_user': instance.creator.email,
                      'admin_password': instance.creator.remote_password,
                      'admin_tenant': instance.slice.name,
@@ -146,15 +122,16 @@ class SyncInstances(OpenStackSyncStep):
                      'image_name':image_name,
                      'flavor_name':instance.flavor.name,
                      'nics':nics,
-                     'ports':ports,
                      'meta':metadata_update,
                      'user_data':r'%s'%escape(userData)}
+        return fields
 
-        res = run_template('sync_instances.yaml', tenant_fields,path='instances', expected_num=1)
-        instance_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
+
+    def map_sync_outputs(self, instance, res):
+	instance_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
         instance_uuid = res[0]['id']
 
-        try:
+	try:
             hostname = res[0]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
             ip = socket.gethostbyname(hostname)
             instance.ip = ip
@@ -165,8 +142,9 @@ class SyncInstances(OpenStackSyncStep):
         instance.instance_uuid = instance_uuid
         instance.instance_name = instance_name
         instance.save()
-
-    def delete_record(self, instance):
+	
+	
+    def map_delete_inputs(self, instance):
         controller_register = json.loads(instance.node.site_deployment.controller.backend_register)
 
         if (controller_register.get('disabled',False)):
@@ -174,7 +152,7 @@ class SyncInstances(OpenStackSyncStep):
 
         instance_name = '%s-%d'%(instance.slice.name,instance.id)
         controller = instance.node.site_deployment.controller
-        tenant_fields = {'endpoint':controller.auth_url,
+        input = {'endpoint':controller.auth_url,
                      'admin_user': instance.creator.email,
                      'admin_password': instance.creator.remote_password,
                      'admin_tenant': instance.slice.name,
@@ -183,14 +161,4 @@ class SyncInstances(OpenStackSyncStep):
                      'name':instance_name,
                      'ansible_tag':instance_name,
                      'delete': True}
-
-        try:
-            res = run_template('sync_instances.yaml', tenant_fields,path='instances', expected_num=1)
-        except Exception,e:
-            print "Could not sync %s"%instance_name
-            #import traceback
-            #traceback.print_exc()
-            raise e
-
-        if (len(res)!=1):
-            raise Exception('Could not delete instance %s'%instance.slice.name)
+        return input
