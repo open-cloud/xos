@@ -7,24 +7,24 @@ from core.models import Controller
 from core.models.network import *
 from util.logger import observer_logger as logger
 
-class SyncNetworkSlivers(OpenStackSyncStep):
+class SyncNetworkInstances(OpenStackSyncStep):
     requested_interval = 0 # 3600
-    provides=[NetworkSliver]
-    observes=NetworkSliver
+    provides=[NetworkInstance]
+    observes=NetworkInstance
 
     #     The way it works is to enumerate the all of the ports that quantum
     #     has, and then work backward from each port's network-id to determine
     #     which Network is associated from the port.
 
     def call(self, **args):
-        logger.info("sync'ing network slivers")
+        logger.info("sync'ing network instances")
 
-        networkSlivers = NetworkSliver.objects.all()
-        networkSlivers_by_id = {}
-        networkSlivers_by_port = {}
-        for networkSliver in networkSlivers:
-            networkSlivers_by_id[networkSliver.id] = networkSliver
-            networkSlivers_by_port[networkSliver.port_id] = networkSliver
+        networkInstances = NetworkInstance.objects.all()
+        networkInstances_by_id = {}
+        networkInstances_by_port = {}
+        for networkInstance in networkInstances:
+            networkInstances_by_id[networkInstance.id] = networkInstance
+            networkInstances_by_port[networkInstance.port_id] = networkInstance
 
         networks = Network.objects.all()
         networks_by_id = {}
@@ -36,10 +36,10 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         #for (network_id, network) in networks_by_id.items():
         #    logger.info("   %s: %s" % (network_id, network.name))
 
-        slivers = Sliver.objects.all()
-        slivers_by_instance_uuid = {}
-        for sliver in slivers:
-            slivers_by_instance_uuid[sliver.instance_uuid] = sliver
+        instances = Instance.objects.all()
+        instances_by_instance_uuid = {}
+        for instance in instances:
+            instances_by_instance_uuid[instance.instance_uuid] = instance
 
         # Get all ports in all controllers
 
@@ -74,7 +74,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
 
         for port in ports_by_id.values():
             #logger.info("port %s" % str(port))
-            if port["id"] in networkSlivers_by_port:
+            if port["id"] in networkInstances_by_port:
                 # we already have it
                 #logger.info("already accounted for port %s" % port["id"])
                 continue
@@ -84,25 +84,25 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 #logger.info("port %s is not a compute port, it is a %s" % (port["id"], port["device_owner"]))
                 continue
 
-            sliver = slivers_by_instance_uuid.get(port['device_id'], None)
-            if not sliver:
-                logger.info("no sliver for port %s device_id %s" % (port["id"], port['device_id']))
+            instance = instances_by_instance_uuid.get(port['device_id'], None)
+            if not instance:
+                logger.info("no instance for port %s device_id %s" % (port["id"], port['device_id']))
                 continue
 
             network = networks_by_id.get(port['network_id'], None)
             if not network:
                 # maybe it's public-nat or public-dedicated. Search the templates for
-                # the id, then see if the sliver's slice has some network that uses
+                # the id, then see if the instance's slice has some network that uses
                 # that template
                 template = templates_by_id.get(port['network_id'], None)
-                if template and sliver.slice:
-                    for candidate_network in sliver.slice.networks.all():
+                if template and instance.slice:
+                    for candidate_network in instance.slice.networks.all():
                          if candidate_network.template == template:
                              network=candidate_network
             if not network:
                 logger.info("no network for port %s network %s" % (port["id"], port["network_id"]))
 
-                # we know it's associated with a sliver, but we don't know
+                # we know it's associated with a instance, but we don't know
                 # which network it is part of.
 
                 continue
@@ -114,7 +114,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 networks = network.template.network_set.all()
                 network = None
                 for candidate_network in networks:
-                    if (candidate_network.owner == sliver.slice):
+                    if (candidate_network.owner == instance.slice):
                         print "found network", candidate_network
                         network = candidate_network
 
@@ -127,57 +127,57 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 continue
 
             ip=port["fixed_ips"][0]["ip_address"]
-            logger.info("creating NetworkSliver (%s, %s, %s, %s)" % (str(network), str(sliver), ip, str(port["id"])))
+            logger.info("creating NetworkInstance (%s, %s, %s, %s)" % (str(network), str(instance), ip, str(port["id"])))
 
-            ns = NetworkSliver(network=network,
-                               sliver=sliver,
+            ns = NetworkInstance(network=network,
+                               instance=instance,
                                ip=ip,
                                port_id=port["id"])
 
             try:
                 ns.save()
             except:
-                logger.log_exc("failed to save networksliver %s" % str(ns))
+                logger.log_exc("failed to save networkinstance %s" % str(ns))
                 continue
 
-        # For networkSlivers that were created by the user, find that ones
+        # For networkInstances that were created by the user, find that ones
         # that don't have neutron ports, and create them.
-        for networkSliver in NetworkSliver.objects.filter(port_id__isnull=True, sliver__isnull=False):
-            #logger.info("working on networksliver %s" % networkSliver)
-            controller = sliver.node.site_deployment.controller
+        for networkInstance in NetworkInstance.objects.filter(port_id__isnull=True, instance__isnull=False):
+            #logger.info("working on networkinstance %s" % networkInstance)
+            controller = instance.node.site_deployment.controller
             if controller:
-                cn=networkSliver.network.controllernetworks.filter(controller=controller)
+                cn=networkInstance.network.controllernetworks.filter(controller=controller)
                 if not cn:
-                    logger.log_exc("no controllernetwork for %s" % networkSliver)
+                    logger.log_exc("no controllernetwork for %s" % networkInstance)
                     continue
                 cn=cn[0]
                 try:
                     driver = self.driver.admin_driver(controller = controller,tenant='admin')
                     port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
-                    networkSliver.port_id = port["id"]
+                    networkInstance.port_id = port["id"]
                     if port["fixed_ips"]:
-                        networkSliver.ip = port["fixed_ips"][0]["ip_address"]
+                        networkInstance.ip = port["fixed_ips"][0]["ip_address"]
                 except:
-                    logger.log_exc("failed to create neutron port for %s" % networkSliver)
+                    logger.log_exc("failed to create neutron port for %s" % networkInstance)
                     continue
-                networkSliver.save()
+                networkInstance.save()
 
         # Now, handle port forwarding
-        # We get the list of NetworkSlivers again, since we might have just
+        # We get the list of NetworkInstances again, since we might have just
         # added a few. Then, for each one of them we find it's quantum port and
         # make sure quantum's nat:forward_ports argument is the same.
 
-        for networkSliver in NetworkSliver.objects.all():
+        for networkInstance in NetworkInstance.objects.all():
             try:
-                nat_list = networkSliver.network.nat_list
+                nat_list = networkInstance.network.nat_list
             except (TypeError, ValueError), e:
                 logger.info("Failed to decode nat_list: %s" % str(e))
                 continue
 
-            if not networkSliver.port_id:
+            if not networkInstance.port_id:
                 continue
 
-            neutron_port = ports_by_id.get(networkSliver.port_id, None)
+            neutron_port = ports_by_id.get(networkInstance.port_id, None)
             if not neutron_port:
                 continue
 
@@ -187,18 +187,18 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 neutron_nat_list = []
 
             if (neutron_nat_list != nat_list):
-                logger.info("Setting nat:forward_ports for port %s network %s sliver %s to %s" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
+                logger.info("Setting nat:forward_ports for port %s network %s instance %s to %s" % (str(networkInstance.port_id), str(networkInstance.network.id), str(networkInstance.instance), str(nat_list)))
                 try:
-                    driver = self.driver.admin_driver(controller=networkSliver.sliver.node.site_deployment.controller,tenant='admin')
-                    driver.shell.quantum.update_port(networkSliver.port_id, {"port": {"nat:forward_ports": nat_list}})
+                    driver = self.driver.admin_driver(controller=networkInstance.instance.node.site_deployment.controller,tenant='admin')
+                    driver.shell.quantum.update_port(networkInstance.port_id, {"port": {"nat:forward_ports": nat_list}})
                 except:
                     logger.log_exc("failed to update port with nat_list %s" % str(nat_list))
                     continue
             else:
-                #logger.info("port %s network %s sliver %s nat %s is already set" % (str(networkSliver.port_id), str(networkSliver.network.id), str(networkSliver.sliver), str(nat_list)))
+                #logger.info("port %s network %s instance %s nat %s is already set" % (str(networkInstance.port_id), str(networkInstance.network.id), str(networkInstance.instance), str(nat_list)))
                 pass
 
-    def delete_record(self, network_sliver):
+    def delete_record(self, network_instance):
         # Nothing to do, this is an OpenCloud object
         pass
 

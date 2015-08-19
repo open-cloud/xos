@@ -1,7 +1,7 @@
 import os
 import sys
 
-from core.models import Slice,Sliver,User,Flavor,Node,Image
+from core.models import Slice,Instance,User,Flavor,Node,Image
 
 class XOSNodeSelector(object):
     def __init__(self, user, mem_size=None, num_cpus=None, disk_size=None, hostname = None):

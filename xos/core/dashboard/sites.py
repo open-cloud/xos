@@ -14,7 +14,7 @@ class AdminMixin(object):
         from django.conf.urls import patterns, url
         from views import DashboardCustomize, DashboardDynamicView, SimulatorView, LoggedInView, \
                           DashboardUserSiteView,  \
-                          TenantViewData, TenantCreateSlice, TenantAddUser,TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
+                          TenantViewData, TenantCreateSlice, TenantAddUser,TenantAddOrRemoveInstanceView, TenantPickSitesView, TenantDeleteSliceView, \
                           TenantUpdateSlice, DashboardSliceInteractions, RequestAccessView
 
         from views import view_urls
@@ -46,8 +46,8 @@ class AdminMixin(object):
                     name="welcome"),
                url(r'^simulator/', self.admin_view(SimulatorView.as_view()),
                     name="simulator"),
-               url(r'^tenantaddorremsliver/$', self.admin_view(TenantAddOrRemoveSliverView.as_view()),
-                    name="tenantaddorremsliver"),
+               url(r'^tenantaddorreminstance/$', self.admin_view(TenantAddOrRemoveInstanceView.as_view()),
+                    name="tenantaddorreminstance"),
                url(r'^tenantview/$', self.admin_view(TenantViewData.as_view()),
                     name="tenantview"),
                url(r'^createnewslice/$', self.admin_view(TenantCreateSlice.as_view()),

@@ -7,7 +7,7 @@ import xmlrpclib
 from plclassic.site_importer import SiteImporter
 from plclassic.user_importer import UserImporter
 from plclassic.slice_importer import SliceImporter
-from plclassic.sliver_importer import SliverImporter
+from plclassic.instance_importer import InstanceImporter
 
 
 class Call:
@@ -36,14 +36,14 @@ class Importer:
         self.sites = SiteImporter(api)
         self.slices = SliceImporter(api)
         self.users = UserImporter(api)
-        self.slivers = SliverImporter(api)
+        self.instances = InstanceImporter(api)
 
     def run(self):
         self.sites.run()
         self.users.run()
         self.slices.run(remote_sites=self.sites.remote_sites, 
                         local_sites=self.sites.local_sites)
-        self.slivers.run()           
+        self.instances.run()           
 
 
 

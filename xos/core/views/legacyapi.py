@@ -6,7 +6,7 @@ import time
 import traceback
 import xmlrpclib
 
-from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
+from core.models import Slice, Instance, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -52,8 +52,8 @@ def GetSlices(filter={}, slice_remap={}):
                 continue
 
         node_ids=[]
-        for ps_sliver in ps_slice.slivers.all():
-            node_ids.append(ps_id_to_pl_id(ps_sliver.node.id))
+        for ps_instance in ps_slice.instances.all():
+            node_ids.append(ps_id_to_pl_id(ps_instance.node.id))
 
         slice = {"instantiation": "plc-instantiated",
                  "description": "XOS slice",
@@ -81,8 +81,8 @@ def GetNodes(node_ids=None, fields=None, slice_remap={}):
     nodes = []
     for ps_node in ps_nodes:
         slice_ids=[]
-        for ps_sliver in ps_node.slivers.all():
-            slice_ids.append(pl_slice_id(ps_sliver.slice, slice_remap))
+        for ps_instance in ps_node.instances.all():
+            slice_ids.append(pl_slice_id(ps_instance.slice, slice_remap))
 
         node = {"node_id": ps_id_to_pl_id(ps_node.id),
                 "site_id": ps_id_to_pl_id(ps_node.site_id),
@@ -125,7 +125,7 @@ def GetSites(slice_remap={}):
                 "node_ids": node_ids,
                 "pcu_ids": [],
                 "max_slices": 100,
-                "max_slivers": 1000,
+                "max_instances": 1000,
                 "is_public": False,
                 "peer_site_id": None,
                 "abbrebiated_name": ps_site.abbreviated_name,
@@ -150,53 +150,53 @@ def GetInterfaces(slicename, node_ids, return_nat=False, return_private=False):
     interfaces = []
     ps_slices = Slice.objects.filter(name=slicename)
     for ps_slice in ps_slices:
-        for ps_sliver in ps_slice.slivers.all():
-            node_id = ps_id_to_pl_id(ps_sliver.node_id)
+        for ps_instance in ps_slice.instances.all():
+            node_id = ps_id_to_pl_id(ps_instance.node_id)
             if node_id in node_ids:
-                ps_node = ps_sliver.node
+                ps_node = ps_instance.node
 
                 ip = socket.gethostbyname(ps_node.name.strip())
 
                 # If the slice has a network that's labeled for hpc_client, then
                 # return that network.
                 found_labeled_network = False
-                for networkSliver in ps_sliver.networkslivers.all():
-                    if (not networkSliver.ip):
+                for networkInstance in ps_instance.networkinstances.all():
+                    if (not networkInstance.ip):
                         continue
-                    if (networkSliver.network.owner != ps_slice):
+                    if (networkInstance.network.owner != ps_slice):
                         continue
-                    if networkSliver.network.labels and ("hpc_client" in networkSliver.network.labels):
-                        ip=networkSliver.ip
+                    if networkInstance.network.labels and ("hpc_client" in networkInstance.network.labels):
+                        ip=networkInstance.ip
                         found_labeled_network = True
 
                 if not found_labeled_network:
                     # search for a dedicated public IP address
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for networkInstance in ps_instance.networkinstances.all():
+                        if (not networkInstance.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = networkInstance.network.template
                         if (template.visibility=="public") and (template.translation=="none"):
-                            ip=networkSliver.ip
+                            ip=networkInstance.ip
 
                 if return_nat:
                     ip = None
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for networkInstance in ps_instance.networkinstances.all():
+                        if (not networkInstance.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = networkInstance.network.template
                         if (template.visibility=="private") and (template.translation=="NAT"):
-                            ip=networkSliver.ip
+                            ip=networkInstance.ip
                     if not ip:
                         continue
 
                 if return_private:
                     ip = None
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for networkInstance in ps_instance.networkinstances.all():
+                        if (not networkInstance.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = networkInstance.network.template
                         if (template.visibility=="private") and (template.translation=="none"):
-                            ip=networkSliver.ip
+                            ip=networkInstance.ip
                     if not ip:
                         continue
 
@@ -226,7 +226,7 @@ def GetConfiguration(name, slice_remap={}):
     else:
         node_id = 0
 
-    node_sliver_tags = GetTags(slicename, node_id)
+    node_instance_tags = GetTags(slicename, node_id)
 
     slices = GetSlices({"name": slicename}, slice_remap=slice_remap)
     perhost = {}
@@ -266,12 +266,12 @@ def GetConfiguration(name, slice_remap={}):
             hostprivmap[nodemap[interface['node_id']]] = interface['ip']
 
         for nid in node_ids:
-            sliver_tags = GetTags(slicename,nid)
-            perhost[nodemap[nid]] = sliver_tags
+            instance_tags = GetTags(slicename,nid)
+            perhost[nodemap[nid]] = instance_tags
 
-    slivers = GetSlices(slice_remap=slice_remap)
+    instances = GetSlices(slice_remap=slice_remap)
     if node_id != 0:
-        slivers = [slice for slice in slivers if (node_id in slice.node_ids)]
+        instances = [slice for slice in instances if (node_id in slice.node_ids)]
 
     sites = GetSites(slice_remap=slice_remap)
     for site in sites:
@@ -280,12 +280,12 @@ def GetConfiguration(name, slice_remap={}):
     timestamp = int(time.time())
     return {'version': 3,
             'timestamp': timestamp,
-            'configuration': node_sliver_tags,
+            'configuration': node_instance_tags,
             'allconfigurations':perhost,
             'hostipmap':hostipmap,
             'hostnatmap':hostnatmap,
             'hostprivmap':hostprivmap,
-            'slivers': slivers,
+            'instances': instances,
             'interfaces': allinterfaces,
             'sites': sites,
             'nodes': nodes}

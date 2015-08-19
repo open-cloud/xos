@@ -13,7 +13,7 @@ from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
-class SyncSliverUsingAnsible(SyncStep):
+class SyncInstanceUsingAnsible(SyncStep):
     # All of the following should be defined for classes derived from this
     # base class. Examples below use VCPETenant.
 
@@ -36,13 +36,13 @@ class SyncSliverUsingAnsible(SyncStep):
 
         return {}
 
-    def get_sliver(self, o):
-        # We need to know what sliver is associated with the object. Let's
-        # assume 'o' has a field called 'sliver'. If the field is called
+    def get_instance(self, o):
+        # We need to know what instance is associated with the object. Let's
+        # assume 'o' has a field called 'instance'. If the field is called
         # something else, or if custom logic is needed, then override this
         # method.
 
-        return o.sliver
+        return o.instance
 
     def run_playbook(self, o, fields):
         tStart = time.time()
@@ -61,9 +61,9 @@ class SyncSliverUsingAnsible(SyncStep):
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
 
-        sliver = self.get_sliver(o)
-        if not sliver:
-            self.defer_sync(o, "waiting on sliver")
+        instance = self.get_instance(o)
+        if not instance:
+            self.defer_sync(o, "waiting on instance")
             return
 
         if not os.path.exists(self.service_key_name):
@@ -71,9 +71,9 @@ class SyncSliverUsingAnsible(SyncStep):
 
         service_key = file(self.service_key_name).read()
 
-        fields = { "sliver_name": sliver.name,
-                   "hostname": sliver.node.name,
-                   "instance_id": sliver.instance_id,
+        fields = { "instance_name": instance.name,
+                   "hostname": instance.node.name,
+                   "instance_id": instance.instance_id,
                    "private_key": service_key,
                    "ansible_tag": "vcpe_tenant_" + str(o.id)
                  }

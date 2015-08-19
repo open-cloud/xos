@@ -1,13 +1,13 @@
-from core.models import NetworkSliver
+from core.models import NetworkInstance
 from observer.deleter import Deleter
 
-class NetworkSliverDeleter(Deleter):
-    model='NetworkSliver'
+class NetworkInstanceDeleter(Deleter):
+    model='NetworkInstance'
 
     def call(self, pk):
-        network_sliver = NetworkSlivers.objects.get(pk=pk)
+        network_instance = NetworkInstances.objects.get(pk=pk)
         # handle openstack delete
 
-        network_sliver.delete() 
+        network_instance.delete() 
 
     

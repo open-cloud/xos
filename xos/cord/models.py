@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, Node, Image, User, Flavor, Subscriber
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, Node, Image, User, Flavor, Subscriber
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -470,7 +470,7 @@ class VCPETenant(Tenant):
                        "hpc_client_ip",
                        "wan_mac")
 
-    default_attributes = {"sliver_id": None,
+    default_attributes = {"instance_id": None,
                           "users": [],
                           "bbs_account": None,
                           "last_ansible_hash": None}
@@ -478,8 +478,8 @@ class VCPETenant(Tenant):
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
-        self.cached_sliver=None
-        self.orig_sliver_id = self.get_initial_attribute("sliver_id")
+        self.cached_instance=None
+        self.orig_instance_id = self.get_initial_attribute("instance_id")
 
     @property
     def image(self):
@@ -495,27 +495,27 @@ class VCPETenant(Tenant):
         raise XOSProgrammingError("No VPCE image (looked for %s)" % str(LOOK_FOR_IMAGES))
 
     @property
-    def sliver(self):
-        if getattr(self, "cached_sliver", None):
-            return self.cached_sliver
-        sliver_id=self.get_attribute("sliver_id")
-        if not sliver_id:
+    def instance(self):
+        if getattr(self, "cached_instance", None):
+            return self.cached_instance
+        instance_id=self.get_attribute("instance_id")
+        if not instance_id:
             return None
-        slivers=Sliver.objects.filter(id=sliver_id)
-        if not slivers:
+        instances=Instance.objects.filter(id=instance_id)
+        if not instances:
             return None
-        sliver=slivers[0]
-        sliver.caller = self.creator
-        self.cached_sliver = sliver
-        return sliver
+        instance=instances[0]
+        instance.caller = self.creator
+        self.cached_instance = instance
+        return instance
 
-    @sliver.setter
-    def sliver(self, value):
+    @instance.setter
+    def instance(self, value):
         if value:
             value = value.id
-        if (value != self.get_attribute("sliver_id", None)):
-            self.cached_sliver=None
-        self.set_attribute("sliver_id", value)
+        if (value != self.get_attribute("instance_id", None)):
+            self.cached_instance=None
+        self.set_attribute("instance_id", value)
 
     @property
     def creator(self):
@@ -584,10 +584,10 @@ class VCPETenant(Tenant):
 
     @property
     def ssh_command(self):
-        if self.sliver:
-            return self.sliver.get_ssh_command()
+        if self.instance:
+            return self.instance.get_ssh_command()
         else:
-            return "no-sliver"
+            return "no-instance"
 
     @ssh_command.setter
     def ssh_command(self, value):
@@ -595,11 +595,11 @@ class VCPETenant(Tenant):
 
     @property
     def addresses(self):
-        if not self.sliver:
+        if not self.instance:
             return {}
 
         addresses = {}
-        for ns in self.sliver.networkslivers.all():
+        for ns in self.instance.networkinstances.all():
             if "lan" in ns.network.name.lower():
                 addresses["lan"] = ns.ip
             elif "wan" in ns.network.name.lower():
@@ -656,20 +656,20 @@ class VCPETenant(Tenant):
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.slivers.all().count())
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return nodes[0]
 
-    def manage_sliver(self):
-        # Each VCPE object owns exactly one sliver.
+    def manage_instance(self):
+        # Each VCPE object owns exactly one instance.
 
         if self.deleted:
             return
 
-        if (self.sliver is not None) and (self.sliver.image != self.image):
-            self.sliver.delete()
-            self.sliver = None
+        if (self.instance is not None) and (self.instance.image != self.image):
+            self.instance.delete()
+            self.instance = None
 
-        if self.sliver is None:
+        if self.instance is None:
             if not self.provider_service.slices.count():
                 raise XOSConfigurationError("The VCPE service has no slices")
 
@@ -678,26 +678,26 @@ class VCPETenant(Tenant):
                 raise XOSConfigurationError("No m1.small flavor")
 
             node =self.pick_node()
-            sliver = Sliver(slice = self.provider_service.slices.all()[0],
+            instance = Instance(slice = self.provider_service.slices.all()[0],
                             node = node,
                             image = self.image,
                             creator = self.creator,
                             deployment = node.site_deployment.deployment,
                             flavor = flavors[0])
-            sliver.save()
+            instance.save()
 
             try:
-                self.sliver = sliver
+                self.instance = instance
                 super(VCPETenant, self).save()
             except:
-                sliver.delete()
+                instance.delete()
                 raise
 
-    def cleanup_sliver(self):
-        if self.sliver:
-            # print "XXX cleanup sliver", self.sliver
-            self.sliver.delete()
-            self.sliver = None
+    def cleanup_instance(self):
+        if self.instance:
+            # print "XXX cleanup instance", self.instance
+            self.instance.delete()
+            self.instance = None
 
     def manage_vbng(self):
         # Each vCPE object owns exactly one vBNG object
@@ -728,11 +728,11 @@ class VCPETenant(Tenant):
                 # print "XXX clean up orphaned vbng", vbng
                 vbng.delete()
 
-        if self.orig_sliver_id and (self.orig_sliver_id != self.get_attribute("sliver_id")):
-            slivers=Sliver.objects.filter(id=self.orig_sliver_id)
-            if slivers:
-                # print "XXX clean up orphaned sliver", slivers[0]
-                slivers[0].delete()
+        if self.orig_instance_id and (self.orig_instance_id != self.get_attribute("instance_id")):
+            instances=Instance.objects.filter(id=self.orig_instance_id)
+            if instances:
+                # print "XXX clean up orphaned instance", instances[0]
+                instances[0].delete()
 
     def manage_bbs_account(self):
         if self.deleted:
@@ -760,14 +760,14 @@ class VCPETenant(Tenant):
 
         super(VCPETenant, self).save(*args, **kwargs)
         model_policy_vcpe(self.pk)
-        #self.manage_sliver()
+        #self.manage_instance()
         #self.manage_vbng()
         #self.manage_bbs_account()
         #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
-        self.cleanup_sliver()
+        self.cleanup_instance()
         super(VCPETenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):
@@ -777,7 +777,7 @@ def model_policy_vcpe(pk):
         if not vcpe:
             return
         vcpe = vcpe[0]
-        vcpe.manage_sliver()
+        vcpe.manage_instance()
         vcpe.manage_vbng()
         vcpe.manage_bbs_account()
         vcpe.cleanup_orphans()

@@ -66,67 +66,67 @@ def getSliceInfo(user):
             continue
         slice = slice[0]
         slicename = slice.name
-        sliverList=Sliver.objects.all()
+        instanceList=Instance.objects.all()
         sites_used = {}
-        for sliver in slice.slivers.all():
-             #sites_used['deploymentSites'] = sliver.node.deployment.name
-             # sites_used[sliver.image.name] = sliver.image.name
-             sites_used[sliver.node.site_deployment.site] = 1 #sliver.numberCores
+        for instance in slice.instances.all():
+             #sites_used['deploymentSites'] = instance.node.deployment.name
+             # sites_used[instance.image.name] = instance.image.name
+             sites_used[instance.node.site_deployment.site] = 1 #instance.numberCores
         sliceid = Slice.objects.get(id=entry.slice.id).id
         try:
-            sliverList = Sliver.objects.filter(slice=entry.slice.id)
+            instanceList = Instance.objects.filter(slice=entry.slice.id)
             siteList = {}
-            for x in sliverList:
+            for x in instanceList:
                if x.node.site_deployment.site not in siteList:
                   siteList[x.node.site_deployment.site] = 1
-            slivercount = len(sliverList)
+            instancecount = len(instanceList)
             sitecount = len(siteList)
         except:
             traceback.print_exc()
-            slivercount = 0
+            instancecount = 0
             sitecount = 0
 
         userSliceInfo.append({'slicename': slicename, 'sliceid':sliceid,
                               'sitesUsed':sites_used,
                               'role': SliceRole.objects.get(id=entry.role.id).role,
-                              'slivercount': slivercount,
+                              'instancecount': instancecount,
                               'sitecount':sitecount})
 
     return userSliceInfo
 
-def slice_increase_slivers(user, user_ip, siteList, slice, image, count, noAct=False):
+def slice_increase_instances(user, user_ip, siteList, slice, image, count, noAct=False):
     sitesChanged = {}
 
-    # let's compute how many slivers are in use in each node of each site
+    # let's compute how many instances are in use in each node of each site
     for site in siteList:
         site.nodeList = list(site.nodes.all())
         for node in site.nodeList:
-            node.sliverCount = 0
-            for sliver in node.slivers.all():
-                 if sliver.slice.id == slice.id:
-                     node.sliverCount = node.sliverCount + 1
+            node.instanceCount = 0
+            for instance in node.instances.all():
+                 if instance.slice.id == slice.id:
+                     node.instanceCount = node.instanceCount + 1
 
-    # Allocate slivers to nodes
-    # for now, assume we want to allocate all slivers from the same site
+    # Allocate instances to nodes
+    # for now, assume we want to allocate all instances from the same site
     nodes = siteList[0].nodeList
     while (count>0):
-        # Sort the node list by number of slivers per node, then pick the
-        # node with the least number of slivers.
-        nodes = sorted(nodes, key=attrgetter("sliverCount"))
+        # Sort the node list by number of instances per node, then pick the
+        # node with the least number of instances.
+        nodes = sorted(nodes, key=attrgetter("instanceCount"))
         node = nodes[0]
 
-        print "adding sliver at node", node.name, "of site", node.site.name
+        print "adding instance at node", node.name, "of site", node.site.name
 
         if not noAct:
-            sliver = Sliver(name=node.name,
+            instance = Instance(name=node.name,
                         slice=slice,
                         node=node,
                         image = image,
                         creator = User.objects.get(email=user),
                         deploymentNetwork=node.deployment)
-            sliver.save()
+            instance.save()
 
-        node.sliverCount = node.sliverCount + 1
+        node.instanceCount = node.instanceCount + 1
 
         count = count - 1
 
@@ -134,20 +134,20 @@ def slice_increase_slivers(user, user_ip, siteList, slice, image, count, noAct=F
 
     return sitesChanged
 
-def slice_decrease_slivers(user, siteList, slice, count, noAct=False):
+def slice_decrease_instances(user, siteList, slice, count, noAct=False):
     sitesChanged = {}
     if siteList:
         siteNames = [site.name for site in siteList]
     else:
         siteNames = None
 
-    for sliver in list(slice.slivers.all()):
+    for instance in list(slice.instances.all()):
         if count>0:
-            if(not siteNames) or (sliver.node.site.name in siteNames):
-                sliver.delete()
-                print "deleting sliver",sliver.name,"at node",sliver.node.name
+            if(not siteNames) or (instance.node.site.name in siteNames):
+                instance.delete()
+                print "deleting instance",instance.name,"at node",instance.node.name
                 count=count-1
-                sitesChanged[sliver.node.site.name] = sitesChanged.get(sliver.node.site.name,0) - 1
+                sitesChanged[instance.node.site.name] = sitesChanged.get(instance.node.site.name,0) - 1
 
     return sitesChanged
 

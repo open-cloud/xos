@@ -2,7 +2,7 @@ import os
 import datetime
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Sliver
+from core.models import Instance
 from core.models import Slice
 from core.models import ServiceResource
 
@@ -32,7 +32,7 @@ class Reservation(PlCoreBase):
         return qs
 
 class ReservedResource(PlCoreBase):
-    sliver = models.ForeignKey(Sliver, related_name="reservedresources")
+    instance = models.ForeignKey(Instance, related_name="reservedresources")
     resource = models.ForeignKey(ServiceResource, related_name="reservedresources")
     quantity = models.IntegerField(default=1)
     reservationSet = models.ForeignKey(Reservation, related_name="reservedresources")
@@ -40,18 +40,18 @@ class ReservedResource(PlCoreBase):
     class Meta(PlCoreBase.Meta):
        verbose_name_plural = "Reserved Resources"
 
-    def __unicode__(self):  return u'%d %s on %s' % (self.quantity, self.resource, self.sliver)
+    def __unicode__(self):  return u'%d %s on %s' % (self.quantity, self.resource, self.instance)
 
     def can_update(self, user):
-        return user.can_update(self.sliver.slice)
+        return user.can_update(self.instance.slice)
 
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
             qs = ReservedResource.objects.all()
         else:
-            sliver_ids = [s.id for s in Sliver.select_by_user(user)]
-            qs = ReservedResource.objects.filter(id__in=sliver_ids)
+            instance_ids = [s.id for s in Instance.select_by_user(user)]
+            qs = ReservedResource.objects.filter(id__in=instance_ids)
         return qs
 
 

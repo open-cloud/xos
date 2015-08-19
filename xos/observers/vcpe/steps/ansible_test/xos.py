@@ -48,13 +48,13 @@ class Connection(object):
         self.HASHED_KEY_MAGIC = "|1|"
         self.has_pipelining = True
         #self.instance_id = "instance-00000045" # C.get_config(C.p, "xos", "instance_id", "INSTANCE_ID", None)
-        #self.sliver_name = "onlab_hpc-355" # C.get_config(C.p, "xos", "sliver_name", "SLIVER_NAME", None)
+        #self.instance_name = "onlab_hpc-355" # C.get_config(C.p, "xos", "instance_name", "SLIVER_NAME", None)
 
         inject={}
         inject= utils.combine_vars(inject, self.runner.inventory.get_variables(self.host))
 
         self.instance_id = inject["instance_id"]
-        self.sliver_name = inject["sliver_name"]
+        self.instance_name = inject["instance_name"]
 
         fcntl.lockf(self.runner.process_lockfile, fcntl.LOCK_EX)
         self.cp_dir = utils.prepare_writeable_dir('$HOME/.ansible/cp',mode=0700)
@@ -282,7 +282,7 @@ class Connection(object):
         if self.ipv6:
             ssh_cmd += ['-6']
         #ssh_cmd += [self.host]
-        ssh_cmd += [self.sliver_name]
+        ssh_cmd += [self.instance_name]
 
         if su and su_user:
             sudocmd, prompt, success_key = utils.make_su_cmd(su_user, executable, cmd)

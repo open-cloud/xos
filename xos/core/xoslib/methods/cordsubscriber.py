@@ -30,7 +30,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         service_specific_id = ReadOnlyField()
         vlan_id = ReadOnlyField()
         vcpe_id = ReadOnlyField()
-        sliver = ReadOnlyField()
+        instance = ReadOnlyField()
         image = ReadOnlyField()
         vbng_id = ReadOnlyField()
         firewall_enable = serializers.BooleanField()
@@ -39,7 +39,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         url_filter_rules = serializers.CharField()
         url_filter_level = serializers.CharField(required=False)
         cdn_enable = serializers.BooleanField()
-        sliver_name = ReadOnlyField()
+        instance_name = ReadOnlyField()
         image_name = ReadOnlyField()
         routeable_subnet = serializers.CharField(required=False)
         ssh_command = ReadOnlyField()
@@ -60,7 +60,7 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
             model = CordSubscriber
             fields = ('humanReadableName', 'id',
                       'service_specific_id', 'vlan_id',
-                      'vcpe_id', 'sliver', 'sliver_name', 'image', 'image_name',
+                      'vcpe_id', 'instance', 'instance_name', 'image', 'image_name',
                       'firewall_enable', 'firewall_rules',
                       'url_filter_enable', 'url_filter_rules', 'url_filter_level',
                       'bbs_account',

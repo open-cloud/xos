@@ -2,7 +2,7 @@ import os
 import socket
 import sys
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Sliver, Controller
+from core.models import PlCoreBase, Site, Slice, Instance, Controller
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -108,7 +108,7 @@ class Network(PlCoreBase):
     permit_all_slices = models.BooleanField(default=False)
     permitted_slices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
     slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
-    slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
+    instances = models.ManyToManyField(Instance, blank=True, related_name="networks", through="NetworkInstance")
 
     topology_parameters = models.TextField(null=True, blank=True)
     controller_url = models.CharField(null=True, blank=True, max_length=1024)
@@ -182,9 +182,9 @@ class NetworkSlice(PlCoreBase):
     def save(self, *args, **kwds):
         slice = self.slice
         if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):
-            # to add a sliver to the network, then one of the following must be true:
-            #   1) sliver's slice is in network's permittedSlices list,
-            #   2) sliver's slice is network's owner, or
+            # to add a instance to the network, then one of the following must be true:
+            #   1) instance's slice is in network's permittedSlices list,
+            #   2) instance's slice is network's owner, or
             #   3) network's permitAllSlices is true
             raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
 
@@ -204,44 +204,44 @@ class NetworkSlice(PlCoreBase):
             qs = NetworkSlice.objects.filter(id__in=slice_ids)
         return qs
 
-class NetworkSliver(PlCoreBase):
-    network = models.ForeignKey(Network,related_name='networkslivers')
-    sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')
-    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
+class NetworkInstance(PlCoreBase):
+    network = models.ForeignKey(Network,related_name='networkinstances')
+    instance = models.ForeignKey(Instance, null=True, blank=True, related_name='networkinstances')
+    ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
     reserve = models.BooleanField(default=False, help_text="Reserve this port for future use")
 
     class Meta:
-        unique_together = ('network', 'sliver')
+        unique_together = ('network', 'instance')
 
     def save(self, *args, **kwds):
-        if self.sliver:
-            slice = self.sliver.slice
+        if self.instance:
+            slice = self.instance.slice
             if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):
-                # to add a sliver to the network, then one of the following must be true:
-                #   1) sliver's slice is in network's permittedSlices list,
-                #   2) sliver's slice is network's owner, or
+                # to add a instance to the network, then one of the following must be true:
+                #   1) instance's slice is in network's permittedSlices list,
+                #   2) instance's slice is network's owner, or
                 #   3) network's permitAllSlices is true
                 raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
 
-        if (not self.sliver) and (not self.reserve):
-            raise ValueError("If NetworkSliver.sliver is false, then NetworkSliver.reserved must be set to True")
+        if (not self.instance) and (not self.reserve):
+            raise ValueError("If NetworkInstance.instance is false, then NetworkInstance.reserved must be set to True")
 
         if (not self.ip) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_address
             self.ip = find_unused_address(self.network.subnet,
-                                          [x.ip for x in self.network.networksliver_set.all()])
-        super(NetworkSliver, self).save(*args, **kwds)
+                                          [x.ip for x in self.network.networkinstance_set.all()])
+        super(NetworkInstance, self).save(*args, **kwds)
 
     def __unicode__(self):
-        if self.sliver:
-            return u'%s-%s' % (self.network.name, self.sliver.instance_name)
+        if self.instance:
+            return u'%s-%s' % (self.network.name, self.instance.instance_name)
         else:
             return u'%s-reserved-%s' % (self.network.name, self.id)
 
     def can_update(self, user):
-        if self.sliver:
-            return user.can_update_slice(self.sliver.slice)
+        if self.instance:
+            return user.can_update_slice(self.instance.slice)
         if self.network:
             return user.can_update_slice(self.network.owner)
         return False
@@ -249,10 +249,10 @@ class NetworkSliver(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = NetworkSliver.objects.all()
+            qs = NetworkInstance.objects.all()
         else:
-            sliver_ids = [s.id for s in NetworkSliver.select_by_user(user)]
-            qs = NetworkSliver.objects.filter(id__in=sliver_ids)
+            instance_ids = [s.id for s in NetworkInstance.select_by_user(user)]
+            qs = NetworkInstance.objects.filter(id__in=instance_ids)
         return qs
 
 class Router(PlCoreBase):

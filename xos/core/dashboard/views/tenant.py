@@ -201,21 +201,21 @@ def getTenantInfo(user):
            preferredImage =  entry.image_preference
            #sliceDataSet = entry.mount_data_sets
            sliceNetwork = {}
-           numSliver = 0
+           numInstance = 0
            sliceImage=""
            sliceSite = {}
            sliceNode = {}
            sliceInstance= {}
            #createPrivateVolume(user,sliceName)
            available_sites = getAvailableSites()
-           for sliver in slice.slivers.all():
-                if sliver.node.site.name in available_sites:
-                    sliceSite[sliver.node.site.name] = sliceSite.get(sliver.node.site.name,0) + 1
-                    sliceImage = sliver.image.name
-                    sliceNode[str(sliver)] = sliver.node.name
-           numSliver = sum(sliceSite.values())
+           for instance in slice.instances.all():
+                if instance.node.site.name in available_sites:
+                    sliceSite[instance.node.site.name] = sliceSite.get(instance.node.site.name,0) + 1
+                    sliceImage = instance.image.name
+                    sliceNode[str(instance)] = instance.node.name
+           numInstance = sum(sliceSite.values())
            numSites = len(sliceSite)
-           userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfSlivers':numSliver,'instanceNodePair':sliceNode})
+           userSliceInfo.append({'sliceName': sliceName,'sliceServiceClass': sliceServiceClass,'preferredImage':preferredImage,'numOfSites':numSites, 'sliceSite':sliceSite,'sliceImage':sliceImage,'numOfInstances':numInstance,'instanceNodePair':sliceNode})
     return userSliceInfo
 
 def getTenantSitesInfo():
@@ -344,14 +344,14 @@ class TenantDeleteSliceView(View):
                 sliceToDel.delete()
                 return HttpResponse(json.dumps("Slice deleted"), content_type='application/javascript')
 
-class TenantAddOrRemoveSliverView(View):
-    """ Add or remove slivers from a Slice
+class TenantAddOrRemoveInstanceView(View):
+    """ Add or remove instances from a Slice
 
         Arguments:
             siteName - name of site. If not specified, XOS will pick the
                        best site.,
             actionToDo - [add | rem]
-            count - number of slivers to add or remove
+            count - number of instances to add or remove
             sliceName - name of slice
             noAct - if set, no changes will be made to db, but result will still
                     show which sites would have been modified.
@@ -384,9 +384,9 @@ class TenantAddOrRemoveSliverView(View):
             if (siteList is None):
                 siteList = tenant_pick_sites(user, user_ip, slice, count)
 
-            sitesChanged = slice_increase_slivers(request.user, user_ip, siteList, slice, image, count, noAct)
+            sitesChanged = slice_increase_instances(request.user, user_ip, siteList, slice, image, count, noAct)
         elif (actionToDo == "rem"):
-            sitesChanged = slice_decrease_slivers(request.user, siteList, slice, count, noAct)
+            sitesChanged = slice_decrease_instances(request.user, siteList, slice, count, noAct)
         else:
             return HttpResponseServerError("Unknown actionToDo %s" % actionToDo)
 
@@ -411,16 +411,16 @@ class TenantPickSitesView(View):
 
 def siteSortKey(site, slice=None, count=None, lat=None, lon=None):
     # try to pick a site we're already using
-    has_slivers_here=False
+    has_instances_here=False
     if slice:
-        for sliver in slice.slivers.all():
-            if sliver.node.site.name == site.name:
-                has_slivers_here=True
+        for instance in slice.instances.all():
+            if instance.node.site.name == site.name:
+                has_instances_here=True
 
     # Haversine method
     d = haversine(site.location.latitude, site.location.longitude, lat, lon)
 
-    return (-has_slivers_here, d)
+    return (-has_instances_here, d)
 
 def tenant_pick_sites(user, user_ip=None, slice=None, count=None):
     """ Returns list of sites, sorted from most favorable to least favorable """

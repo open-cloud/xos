@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
-from observers.base.SyncSliverUsingAnsible import SyncSliverUsingAnsible
+from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
 from cord.models import VCPEService, VCPETenant, VOLTTenant
 from hpc.models import HpcService, CDNPrefix
@@ -22,7 +22,7 @@ from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
 
-class SyncVCPETenant(SyncSliverUsingAnsible):
+class SyncVCPETenant(SyncInstanceUsingAnsible):
     provides=[VCPETenant]
     observes=VCPETenant
     requested_interval=0
@@ -67,21 +67,21 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
             for service in HpcService.objects.all():
                 for slice in service.slices.all():
                     if "dnsdemux" in slice.name:
-                        for sliver in slice.slivers.all():
-                            for ns in sliver.networkslivers.all():
+                        for instance in slice.instances.all():
+                            for ns in instance.networkinstances.all():
                                 if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                                     dnsdemux_ip = ns.ip
             if not dnsdemux_ip:
                 logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
         else:
-            # Connect to dnsdemux using the sliver's public address
+            # Connect to dnsdemux using the instance's public address
             for service in HpcService.objects.all():
                 for slice in service.slices.all():
                     if "dnsdemux" in slice.name:
-                        for sliver in slice.slivers.all():
+                        for instance in slice.instances.all():
                             if dnsdemux_ip=="none":
                                 try:
-                                    dnsdemux_ip = socket.gethostbyname(sliver.node.name)
+                                    dnsdemux_ip = socket.gethostbyname(instance.node.name)
                                 except:
                                     pass
             if not dnsdemux_ip:
@@ -99,8 +99,8 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
         bbs_addrs = []
         if vcpe_service.bbs_slice:
             if vcpe_service.backend_network_label:
-                for bbs_sliver in vcpe_service.bbs_slice.slivers.all():
-                    for ns in bbs_sliver.networkslivers.all():
+                for bbs_instance in vcpe_service.bbs_slice.instances.all():
+                    for ns in bbs_instance.networkinstances.all():
                         if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                             bbs_addrs.append(ns.ip)
             else:
@@ -141,11 +141,11 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
             # Ansible uses the service's keypair in order to SSH into the
             # instance. It would be bad if the slice had no service.
 
-            raise Exception("Slice %s is not associated with a service" % sliver.slice.name)
+            raise Exception("Slice %s is not associated with a service" % instance.slice.name)
 
         # Make sure the slice is configured properly
-        if (service != o.sliver.slice.service):
-            raise Exception("Slice %s is associated with some service that is not %s" % (str(sliver.slice), str(service)))
+        if (service != o.instance.slice.service):
+            raise Exception("Slice %s is associated with some service that is not %s" % (str(instance.slice), str(service)))
 
         # only enable filtering if we have a subscriber object (see below)
         url_filter_enable = False

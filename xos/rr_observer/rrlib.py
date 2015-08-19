@@ -27,7 +27,7 @@ class RequestRouterLibrary:
         pass
     
     def gen_slice_info(self, service=None):   
-        """generates sliver information from slice of request router
+        """generates instance information from slice of request router
         """
 
         if (service is None ):
@@ -40,13 +40,13 @@ class RequestRouterLibrary:
     
         '''for slice in service.service.all():
             name = slice.name
-            for sliver in slice.slivers.all():
-                mapping[sliver.name] = str(sliver.ip)
+            for instance in slice.instances.all():
+                mapping[instance.name] = str(instance.ip)
         '''
         return mapping
 
     def gen_servicemap_slice_info(self, servicemap):
-        """generates sliver information from slice of servicemap
+        """generates instance information from slice of servicemap
         """
 
         wzone = Set(['arizona', 'stanford', 'on.lab', 'housten']) # zone=1 in cooden.conf
@@ -56,14 +56,14 @@ class RequestRouterLibrary:
         mapping_ip = {}
         slice = servicemap.slice
         name = slice.name
-        for sliver in slice.slivers.all():
-            mapping_ip[sliver.node.name] = socket.gethostbyname(sliver.node.name)
-            #print "sliver name "+sliver.name+str(sliver.ip)+"\n"
-            site = sliver.node.site.name
+        for instance in slice.instances.all():
+            mapping_ip[instance.node.name] = socket.gethostbyname(instance.node.name)
+            #print "instance name "+instance.name+str(instance.ip)+"\n"
+            site = instance.node.site.name
             if(site.lower() in wzone):
-                mapping_zone[sliver.node.name] = str(1)
+                mapping_zone[instance.node.name] = str(1)
             else:
-                mapping_zone[sliver.node.name] = str(2)
+                mapping_zone[instance.node.name] = str(2)
 
         return mapping_ip, mapping_zone
 

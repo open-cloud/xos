@@ -59,7 +59,7 @@ def execute_model_policy(instance, deleted):
         return
 
     # These are the models whose children get deleted when they are
-    delete_policy_models = ['Slice','Sliver','Network']
+    delete_policy_models = ['Slice','Instance','Network']
     sender_name = instance.__class__.__name__
     policy_name = 'model_policy_%s'%sender_name
     noargs = False
@@ -97,10 +97,10 @@ def noop(o,p):
         pass
 
 def run_policy():
-    from core.models import Sliver,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
+    from core.models import Instance,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
     while (True):
         start = time.time()
-        models = [Sliver,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
+        models = [Instance,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
         objects = []
         deleted_objects = []
 

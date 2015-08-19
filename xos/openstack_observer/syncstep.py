@@ -77,7 +77,7 @@ class SyncStep(object):
             objs = main_obj.deleted_objects.all()
 
         return objs
-        #return Sliver.objects.filter(ip=None)
+        #return Instance.objects.filter(ip=None)
 
     def check_dependencies(self, obj, failed):
         for dep in self.dependencies:
