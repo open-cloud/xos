@@ -206,21 +206,26 @@ class NetworkSlice(PlCoreBase):
 
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network,related_name='networkslivers')
-    sliver = models.ForeignKey(Sliver,related_name='networkslivers')
+    sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
+    reserve = models.BooleanField(default=False, help_text="Reserve this port for future use")
 
     class Meta:
         unique_together = ('network', 'sliver')
 
     def save(self, *args, **kwds):
-        slice = self.sliver.slice
-        if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):
-            # to add a sliver to the network, then one of the following must be true:
-            #   1) sliver's slice is in network's permittedSlices list,
-            #   2) sliver's slice is network's owner, or
-            #   3) network's permitAllSlices is true
-            raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
+        if self.sliver:
+            slice = self.sliver.slice
+            if (slice not in self.network.permitted_slices.all()) and (slice != self.network.owner) and (not self.network.permit_all_slices):
+                # to add a sliver to the network, then one of the following must be true:
+                #   1) sliver's slice is in network's permittedSlices list,
+                #   2) sliver's slice is network's owner, or
+                #   3) network's permitAllSlices is true
+                raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
+
+        if (not self.sliver) and (not self.reserve):
+            raise ValueError("If NetworkSliver.sliver is false, then NetworkSliver.reserved must be set to True")
 
         if (not self.ip) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_address
@@ -228,10 +233,18 @@ class NetworkSliver(PlCoreBase):
                                           [x.ip for x in self.network.networksliver_set.all()])
         super(NetworkSliver, self).save(*args, **kwds)
 
-    def __unicode__(self):  return u'%s-%s' % (self.network.name, self.sliver.instance_name)
+    def __unicode__(self):
+        if self.sliver:
+            return u'%s-%s' % (self.network.name, self.sliver.instance_name)
+        else:
+            return u'%s-reserved-%s' % (self.network.name, self.id)
 
     def can_update(self, user):
-        return user.can_update_slice(self.sliver.slice)
+        if self.sliver:
+            return user.can_update_slice(self.sliver.slice)
+        if self.network:
+            return user.can_update_slice(self.network.owner)
+        return False
 
     @staticmethod
     def select_by_user(user):
