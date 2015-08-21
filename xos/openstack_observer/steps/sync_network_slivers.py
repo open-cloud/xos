@@ -144,7 +144,7 @@ class SyncNetworkSlivers(OpenStackSyncStep):
         # that don't have neutron ports, and create them.
         for networkSliver in NetworkSliver.objects.filter(port_id__isnull=True, sliver__isnull=False):
             #logger.info("XXX working on networksliver %s" % networkSliver)
-            controller = sliver.node.site_deployment.controller
+            controller = networkSliver.sliver.node.site_deployment.controller
             if controller:
                 cn=networkSliver.network.controllernetworks.filter(controller=controller)
                 if not cn:
