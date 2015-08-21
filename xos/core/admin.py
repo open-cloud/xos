@@ -1738,14 +1738,19 @@ class NetworkAdmin(XOSBaseAdmin):
     form=NetworkForm
 
     fieldsets = [
-        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteed_bandwidth', 'permit_all_slices','permitted_slices','network_id','router_id','subnet_id','subnet'],
+        (None, {'fields': ['backend_status_text', 'name','template','ports','labels',
+                           'owner','guaranteed_bandwidth', 'permit_all_slices',
+                           'permitted_slices','network_id','router_id','subnet_id',
+                           'subnet', 'autoconnect'],
                 'classes':['suit-tab suit-tab-general']}),
         (None, {'fields': ['topology_parameters', 'controller_url', 'controller_parameters'],
                 'classes':['suit-tab suit-tab-sdn']}),
                 ]
 
     readonly_fields = ('backend_status_text', )
-    user_readonly_fields = ['name','template','ports','labels','owner','guaranteed_bandwidth', 'permit_all_slices','permitted_slices','network_id','router_id','subnet_id','subnet']
+    user_readonly_fields = ['name','template','ports','labels','owner','guaranteed_bandwidth',
+                            'permit_all_slices','permitted_slices','network_id','router_id',
+                            'subnet_id','subnet','autoconnect']
 
     @property
     def suit_form_tabs(self):
