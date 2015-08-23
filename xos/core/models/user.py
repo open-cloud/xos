@@ -339,7 +339,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def get_readable_objects(self, filter_by=None):
        """ Returns a list of objects that the user is allowed to read. """
-       from core.models import *
+       from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Sliver, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
        models = []
        if filter_by and isinstance(filter_by, list):
            models = [m for m in filter_by if issubclass(m, PlModelMixIn)
@@ -362,7 +362,7 @@ class User(AbstractBaseUser, PlModelMixIn):
           list of dicts  
        
         """
-        from core.models import *
+        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Sliver, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege   
         READ = 'r'
         READWRITE = 'rw'
         models = []
