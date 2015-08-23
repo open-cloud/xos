@@ -342,7 +342,7 @@ class User(AbstractBaseUser, PlModelMixIn):
        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Sliver, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
        models = []
        if filter_by and isinstance(filter_by, list):
-           models = [m for m in filter_by if issubclass(m, PlModelMixIn)
+           models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
        if not models:
            models = [Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User]
        readable_objects = []
@@ -367,7 +367,7 @@ class User(AbstractBaseUser, PlModelMixIn):
         READWRITE = 'rw'
         models = []
         if filter_by and isinstance(filter_by, list):
-            models = [m for m in filter_by if issubclass(m, PlModelMixIn)
+            models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
 
         deployment_priv_objs = [Image, NetworkTemplate, Flavor]
         site_priv_objs = [Node, Slice, User]
