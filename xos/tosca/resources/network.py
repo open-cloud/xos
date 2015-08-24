@@ -12,9 +12,11 @@ from xosresource import XOSResource
 class XOSNetwork(XOSResource):
     provides = ["tosca.nodes.network.Network", "tosca.nodes.network.Network.XOS"]
     xos_model = Network
+    defaults = {"permit_all_slices": True}
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name}
+        args = {"name": self.nodetemplate.name,
+                "autoconnect": False,}
 
         slice_name = self.get_requirement("tosca.relationships.MemberOfSlice")
         if slice_name:
@@ -26,7 +28,7 @@ class XOSNetwork(XOSResource):
 
         # copy simple string properties from the template into the arguments
         for prop in ["ports", "labels", "permit_all_slices"]:
-            v = self.get_property(prop)
+            v = self.get_property(prop, self.defaults.get(prop,None))
             if v:
                 args[prop] = v
 
