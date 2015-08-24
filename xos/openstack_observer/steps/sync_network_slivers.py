@@ -151,6 +151,11 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                     logger.log_exc("no controllernetwork for %s" % networkSliver)
                     continue
                 cn=cn[0]
+                if cn.lazy_blocked:
+                    cn.lazy_blocked=False
+                    cn.save()
+                    logger.info("deferring networkSliver %s because controller was lazy-blocked" % networkSliver)
+                    continue
                 try:
                     # We need to use a client driver that specifies the tenant
                     # of the destination sliver. Nova-compute will not connect
