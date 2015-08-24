@@ -52,13 +52,18 @@ class XOSResource(object):
         else:
             return {}
 
-    def get_property(self, name):
-        return self.nodetemplate.get_property_value(name)
+    def get_property(self, name, default=None):
+        v = self.nodetemplate.get_property_value(name)
+        if (v==None):
+            return default
+        return v
 
-    def get_xos_object(self, cls, **kwargs):
+    def get_xos_object(self, cls, throw_exception=True, **kwargs):
         objs = cls.objects.filter(**kwargs)
         if not objs:
-            raise Exception("Failed to find %s filtered by %s" % (cls.__name__, str(kwargs)))
+            if throw_exception:
+                raise Exception("Failed to find %s filtered by %s" % (cls.__name__, str(kwargs)))
+            return None
         return objs[0]
 
     def get_existing_objs(self):
