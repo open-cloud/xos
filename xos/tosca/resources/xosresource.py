@@ -9,6 +9,7 @@ class XOSResource(object):
 
     def __init__(self, user, nodetemplate, engine):
         self.dirty = False
+        self.deferred_sync = []
         self.user = user
         self.nodetemplate = nodetemplate
         self.engine = engine
