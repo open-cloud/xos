@@ -83,7 +83,10 @@ class XOSCompute(XOSResource):
         xos_args = self.get_xos_args(name=name, index=index)
         sliver = Sliver(**xos_args)
         sliver.caller = self.user
+        sliver.no_sync = True
         sliver.save()
+
+        self.deferred_sync.append(sliver)
 
         self.info("Created Sliver '%s' on node '%s' using flavor '%s' and image '%s'" %
                   (str(sliver), str(sliver.node), str(sliver.flavor), str(sliver.image)))
