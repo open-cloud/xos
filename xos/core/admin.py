@@ -402,39 +402,6 @@ class TagInline(PlStackGenericTabularInline):
     def queryset(self, request):
         return Tag.select_by_user(request.user)
 
-class NetworkLookerUpper:
-    """ This is a callable that looks up a network name in a sliver and returns
-        the ip address for that network.
-    """
-
-    byNetworkName = {}    # class variable
-
-    def __init__(self, name):
-        self.short_description = name
-        self.__name__ = name
-        self.network_name = name
-
-    def __call__(self, obj):
-        if obj is not None:
-            for nbs in obj.networksliver_set.all():
-                if (nbs.network.name == self.network_name):
-                    return nbs.ip
-        return ""
-
-    def __str__(self):
-        return self.network_name
-
-    @staticmethod
-    def get(network_name):
-        """ We want to make sure we alwars return the same NetworkLookerUpper
-            because sometimes django will cause them to be instantiated multiple
-            times (and we don't want different ones in form.fields vs
-            SliverInline.readonly_fields).
-        """
-        if network_name not in NetworkLookerUpper.byNetworkName:
-            NetworkLookerUpper.byNetworkName[network_name] = NetworkLookerUpper(network_name)
-        return NetworkLookerUpper.byNetworkName[network_name]
-
 class SliverInline(XOSTabularInline):
     model = Sliver
     fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node', 'no_sync']
