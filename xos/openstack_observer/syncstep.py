@@ -30,6 +30,9 @@ def deepgetattr(obj, attr):
 class InnocuousException(Exception):
     pass
 
+class DeferredException(Exception):
+    pass
+
 class FailedDependency(Exception):
     pass
 
@@ -144,7 +147,7 @@ class SyncStep(object):
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
                         o.save(update_fields=['enacted','backend_status','backend_register'])
-                except (InnocuousException,Exception) as e:
+                except (InnocuousException,Exception,DeferredException) as e:
                     logger.log_exc("sync step failed!")
                     try:
                         if (o.backend_status.startswith('2 - ')):
@@ -174,9 +177,13 @@ class SyncStep(object):
 
                     # Second failure
                     if (scratchpad['exponent']):
-                        delay = scratchpad['exponent'] * 600 # 10 minutes
-                        if (delay<1440):
-                            delay = 1440
+                        if isinstance(e,DeferredException):
+                            delay = scratchpad['exponent'] * 60 # 1 minute
+                        else:
+                            delay = scratchpad['exponent'] * 600 # 10 minutes
+                        # cap delays at 8 hours
+                        if (delay>8*60*60):
+                            delay=8*60*60
                         scratchpad['next_run'] = time.time() + delay
 
                     scratchpad['exponent']+=1
