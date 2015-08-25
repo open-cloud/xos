@@ -154,7 +154,10 @@ class SyncNetworkSlivers(OpenStackSyncStep):
                 if cn.lazy_blocked:
                     cn.lazy_blocked=False
                     cn.save()
-                    logger.info("deferring networkSliver %s because controller was lazy-blocked" % networkSliver)
+                    logger.info("deferring networkSliver %s because controllerNetwork was lazy-blocked" % networkSliver)
+                    continue
+                if not cn.net_id:
+                    logger.info("deferring networkSliver %s because controllerNetwork does not have a port-id yet" % networkSliver)
                     continue
                 try:
                     # We need to use a client driver that specifies the tenant
