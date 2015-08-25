@@ -337,16 +337,20 @@ class User(AbstractBaseUser, PlModelMixIn):
     def can_update_tenant_root_privilege(self, tenant_root_privilege, allow=[]):
         return self.can_update_tenant_root(tenant_root_privilege.tenant_root, allow)
 
-    def get_readable_objects(self, filter=None):
+    def get_readable_objects(self, filter_by=None):
        """ Returns a list of objects that the user is allowed to read. """
-       from core.models import Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User
-       models = [Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User]
+       from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
+       models = []
+       if filter_by and isinstance(filter_by, list):
+           models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
+       if not models:
+           models = [Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User]
        readable_objects = []
        for model in models:
            readable_objects.extend(model.select_by_user(self))
        return readable_objects
 
-    def get_permissions(self, filter=None):
+    def get_permissions(self, filter_by=None):
         """ Return a list of objects for which the user has read or read/write 
         access. The object will be an instance of a django model object. 
         Permissions will be either 'r' or 'rw'.
@@ -358,9 +362,12 @@ class User(AbstractBaseUser, PlModelMixIn):
           list of dicts  
        
         """
-        from core.models import *
+        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege   
         READ = 'r'
         READWRITE = 'rw'
+        models = []
+        if filter_by and isinstance(filter_by, list):
+            models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
 
         deployment_priv_objs = [Image, NetworkTemplate, Flavor]
         site_priv_objs = [Node, Slice, User]
@@ -389,6 +396,9 @@ class User(AbstractBaseUser, PlModelMixIn):
         permissions = []
         permission_dict = lambda x,y: {'object': x, 'permission': y}
         for privilege_model, (model, affected_models) in privileg_map.items():
+            if models and model not in models:
+                continue
+
             # get the objects affected by this privilege model   
             affected_objects = []
             for affected_model in affected_models:
@@ -431,6 +441,11 @@ class User(AbstractBaseUser, PlModelMixIn):
                                 
         return permissions                          
                      
+
+    def get_tenant_permissions(self):
+        from core.models import Site, Slice
+        return self.get_object_permissions(filter_by=[Site,Slice])
+
     
     @staticmethod
     def select_by_user(user):

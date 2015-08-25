@@ -14,7 +14,7 @@ topology_template:
       type: tosca.nodes.NetworkTemplate
 
     producer_private_network:
-      type: tosca.nodes.network.Network.XOS
+      type: tosca.nodes.network.Network
       properties:
           ip_version: 4
       requirements:
@@ -96,11 +96,15 @@ topology_template:
                   node: producer_server
                   relationship: tosca.relationships.network.BindsTo
 
-#    consumer_pvt_net_port:
-#        type: tosca.nodes.network.Port
-#        requirements:
-#            - link: producer_private_network
-#            - binding: consumer_server
+    consumer_pvt_net_port:
+        type: tosca.nodes.network.Port
+        requirements:
+            - link:
+                  node: producer_private_network
+                  relationship: tosca.relationships.network.LinksTo
+            - binding:
+                  node: consumer_server
+                  relationship: tosca.relationships.network.BindsTo
 
 
 

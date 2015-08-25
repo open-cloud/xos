@@ -40,6 +40,8 @@ class XOSTosca(object):
 
         self.compute_dependencies()
 
+        self.deferred_sync = []
+
         self.ordered_nodetemplates = []
         self.ordered_names = self.topsort_dependencies()
         print "ordered_names", self.ordered_names
@@ -133,12 +135,18 @@ class XOSTosca(object):
         for nodetemplate in self.ordered_nodetemplates:
             self.execute_nodetemplate(user, nodetemplate)
 
+        for obj in self.deferred_sync:
+            self.log("Saving deferred sync obj %s" % obj)
+            obj.no_sync = False
+            obj.save()
+
     def execute_nodetemplate(self, user, nodetemplate):
         if nodetemplate.type in resources.resources:
             cls = resources.resources[nodetemplate.type]
             #print "work on", cls.__name__, nodetemplate.name
             obj = cls(user, nodetemplate, self)
             obj.create_or_update()
+            self.deferred_sync = self.deferred_sync + obj.deferred_sync
 
     def destroy(self, user):
         nodetemplates = self.ordered_nodetemplates

@@ -119,6 +119,8 @@ class Network(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
 
+    autoconnect = models.BooleanField(default=True, help_text="This network can be autoconnected to the slice that owns it")
+
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
