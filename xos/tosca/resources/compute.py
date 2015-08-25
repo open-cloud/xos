@@ -83,7 +83,9 @@ class XOSCompute(XOSResource):
         xos_args = self.get_xos_args(name=name, index=index)
         instance = Instance(**xos_args)
         instance.caller = self.user
+        instance.no_sync = True
         instance.save()
+        self.deferred_sync.append(instance)
 
         self.info("Created Instance '%s' on node '%s' using flavor '%s' and image '%s'" %
                   (str(instance), str(instance.node), str(instance.flavor), str(instance.image)))

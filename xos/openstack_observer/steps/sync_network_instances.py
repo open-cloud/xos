@@ -144,15 +144,38 @@ class SyncNetworkInstances(OpenStackSyncStep):
         # that don't have neutron ports, and create them.
         for networkInstance in NetworkInstance.objects.filter(port_id__isnull=True, instance__isnull=False):
             #logger.info("working on networkinstance %s" % networkInstance)
-            controller = instance.node.site_deployment.controller
+            controller = networkInstance.instance.node.site_deployment.controller
             if controller:
                 cn=networkInstance.network.controllernetworks.filter(controller=controller)
                 if not cn:
                     logger.log_exc("no controllernetwork for %s" % networkInstance)
                     continue
                 cn=cn[0]
+                if cn.lazy_blocked:
+                    cn.lazy_blocked=False
+                    cn.save()
+                    logger.info("deferring networkSliver %s because controllerNetwork was lazy-blocked" % networkSliver)
+                    continue
+                if not cn.net_id:
+                    logger.info("deferring networkSliver %s because controllerNetwork does not have a port-id yet" % networkSliver)
+                    continue
                 try:
-                    driver = self.driver.admin_driver(controller = controller,tenant='admin')
+                    # We need to use a client driver that specifies the tenant
+                    # of the destination sliver. Nova-compute will not connect
+                    # ports to slivers if the port's tenant does not match
+                    # the sliver's tenant.
+
+                    # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+                    # not being in working condition.
+                    from openstack.client import OpenStackClient
+                    from openstack.driver import OpenStackDriver
+                    caller = networkSliver.network.owner.creator
+                    auth = {'username': caller.email,
+                            'password': caller.remote_password,
+                            'tenant': networkSliver.sliver.slice.name} # networkSliver.network.owner.name}
+                    client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
+                    driver = OpenStackDriver(client=client)
+
                     port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
                     networkInstance.port_id = port["id"]
                     if port["fixed_ips"]:

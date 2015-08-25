@@ -349,7 +349,7 @@ class XOSObserver:
 				try:
 					duration=time.time() - start_time
 
-					logger.info('Executing step %s' % sync_step.__name__)
+					logger.info('Executing step %s, deletion=%s' % (sync_step.__name__, deletion))
 
 					print bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC
 					failed_objects = sync_step(failed=list(self.failed_step_objects), deletion=deletion)
@@ -359,13 +359,13 @@ class XOSObserver:
 					if failed_objects:
 						self.failed_step_objects.update(failed_objects)
 
-                                        logger.info("Step %r succeeded" % step)
-                                        print bcolors.OKGREEN + "Step %r succeeded" % step + bcolors.ENDC
+                                        logger.info("Step %r succeeded" % sync_step.__name__)
+                                        print bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
 				except Exception,e:
-                        		print bcolors.FAIL + "Model step %r failed" % (step) + bcolors.ENDC
-					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (step, e))
+                        		print bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC
+					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (sync_step.__name__, e))
 					logger.log_exc(e)
 					self.failed_steps.append(S)
 					my_status = STEP_STATUS_KO

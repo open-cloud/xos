@@ -72,7 +72,7 @@ class SyncStep(object):
         # for figuring out what objects are outstanding.
         main_obj = self.observes
         if (not deletion):
-            objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
+            objs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False), Q(no_sync=False))
         else:
             objs = main_obj.deleted_objects.all()
 

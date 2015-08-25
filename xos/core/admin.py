@@ -402,6 +402,7 @@ class TagInline(PlStackGenericTabularInline):
     def queryset(self, request):
         return Tag.select_by_user(request.user)
 
+<<<<<<< HEAD
 class NetworkLookerUpper:
     """ This is a callable that looks up a network name in a instance and returns
         the ip address for that network.
@@ -437,7 +438,7 @@ class NetworkLookerUpper:
 
 class InstanceInline(XOSTabularInline):
     model = Instance
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node', 'no_sync']
     extra = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
     suit_classes = 'suit-tab suit-tab-instances'
@@ -1275,7 +1276,7 @@ class TagAdmin(XOSBaseAdmin):
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
@@ -1738,14 +1739,19 @@ class NetworkAdmin(XOSBaseAdmin):
     form=NetworkForm
 
     fieldsets = [
-        (None, {'fields': ['backend_status_text', 'name','template','ports','labels','owner','guaranteed_bandwidth', 'permit_all_slices','permitted_slices','network_id','router_id','subnet_id','subnet'],
+        (None, {'fields': ['backend_status_text', 'name','template','ports','labels',
+                           'owner','guaranteed_bandwidth', 'permit_all_slices',
+                           'permitted_slices','network_id','router_id','subnet_id',
+                           'subnet', 'autoconnect'],
                 'classes':['suit-tab suit-tab-general']}),
         (None, {'fields': ['topology_parameters', 'controller_url', 'controller_parameters'],
                 'classes':['suit-tab suit-tab-sdn']}),
                 ]
 
     readonly_fields = ('backend_status_text', )
-    user_readonly_fields = ['name','template','ports','labels','owner','guaranteed_bandwidth', 'permit_all_slices','permitted_slices','network_id','router_id','subnet_id','subnet']
+    user_readonly_fields = ['name','template','ports','labels','owner','guaranteed_bandwidth',
+                            'permit_all_slices','permitted_slices','network_id','router_id',
+                            'subnet_id','subnet','autoconnect']
 
     @property
     def suit_form_tabs(self):

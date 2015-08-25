@@ -33,15 +33,17 @@ def handle(slice):
 
     # make sure slice has at least 1 public and 1 private networkd
     public_nets = []
-    private_net = None
+    private_nets = []
     networks = Network.objects.filter(owner=slice)
     for network in networks:
+        if not network.autoconnect:
+            continue
         if network.template.name == 'Public dedicated IPv4':
             public_nets.append(network)
         elif network.template.name == 'Public shared IPv4':
             public_nets.append(network)
         elif network.template.name == 'Private':
-            private_net = network
+            private_nets.append(network)
     if not public_nets:
                 # ensure there is at least one public network, and default it to dedicated
         nat_net = Network(
@@ -52,27 +54,28 @@ def handle(slice):
         nat_net.save()
         public_nets.append(nat_net)
 
-    if not private_net:
+    if not private_nets:
         private_net = Network(
-        name = slice.name+'-private',
-        template = NetworkTemplate.objects.get(name='Private'),
-        owner = slice
+            name = slice.name+'-private',
+            template = NetworkTemplate.objects.get(name='Private'),
+            owner = slice
         )
         private_net.save()
+        private_nets = [private_net]
     # create slice networks
     public_net_slice = None
     private_net_slice = None
-    net_slices = NetworkSlice.objects.filter(slice=slice, network__in=[private_net]+public_nets)
+    net_slices = NetworkSlice.objects.filter(slice=slice, network__in=private_nets+public_nets)
     for net_slice in net_slices:
         if net_slice.network in public_nets:
             public_net_slice = net_slice
-        elif net_slice.network == private_net:
+        elif net_slice.network in private_nets:
             private_net_slice = net_slice
     if not public_net_slice:
         public_net_slice = NetworkSlice(slice=slice, network=public_nets[0])
         public_net_slice.save()
     if not private_net_slice:
-        private_net_slice = NetworkSlice(slice=slice, network=private_net)
+        private_net_slice = NetworkSlice(slice=slice, network=private_nets[0])
         private_net_slice.save()
 
 

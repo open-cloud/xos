@@ -37,11 +37,11 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
         cidr = self.alloc_subnet(controller_network.pk)
-        slice = controller_network.network.slices.all()[0] # XXX: FIXME!!
+        slice = controller_network.network.owner
 
         network_fields = {'endpoint':controller_network.controller.auth_url,
-                    'admin_user':slice.creator.email, # XXX: FIXME
-                    'tenant_name':slice.name, # XXX: FIXME
+                    'admin_user':slice.creator.email,
+                    'tenant_name':slice.name,
                     'admin_password':slice.creator.remote_password,
                     'name':network_name,
                     'subnet_name':subnet_name,
@@ -63,6 +63,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
     def sync_record(self, controller_network):
         if (controller_network.network.template.name!='Private'):
+            logger.info("skipping network controller %s because it is not private" % controller_network)
             # We only sync private networks
             return
         

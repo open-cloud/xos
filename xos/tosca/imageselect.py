@@ -25,5 +25,9 @@ class XOSImageSelector(object):
         if found_imgs:
             return found_imgs[0]
 
+        found_imgs=images.filter(name="trusty-server-multi-nic")    # demo
+        if found_imgs:
+            return found_imgs[0]
+
         raise Exception("Failed to find an acceptable image")
 
