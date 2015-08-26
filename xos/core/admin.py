@@ -1239,6 +1239,16 @@ class TagAdmin(XOSBaseAdmin):
     user_readonly_fields = ['service', 'name', 'value', 'content_type', 'content_object',]
     user_readonly_inlines = []
 
+class SliverPortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'sliver', 'ip']
+    readonly_fields = ("backend_status_icon", "ip", )
+    model = NetworkSliver
+    selflink_fieldname = "network"
+    extra = 0
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
+
 class SliverAdmin(XOSBaseAdmin):
     form = SliverForm
     fieldsets = [
@@ -1248,9 +1258,9 @@ class SliverAdmin(XOSBaseAdmin):
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Sliver Details'),)
+    suit_form_tabs =(('general', 'Sliver Details'), ('ports', 'Ports'))
 
-    inlines = [TagInline]
+    inlines = [TagInline, SliverPortInline]
 
     user_readonly_fields = ['slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
@@ -1657,8 +1667,8 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     fields = ['backend_status_icon', 'parameter', 'value']
     readonly_fields = ('backend_status_icon', )
 
-class PortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'reserve']
+class NetworkPortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'sliver', 'ip']
     readonly_fields = ("backend_status_icon", "ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
@@ -1699,7 +1709,7 @@ class NetworkAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
 
-    inlines = [NetworkParameterInline, PortInline, NetworkSlicesInline, RouterInline]
+    inlines = [NetworkParameterInline, NetworkPortInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [ControllerNetworkInline]
 
     form=NetworkForm
