@@ -402,7 +402,6 @@ class TagInline(PlStackGenericTabularInline):
     def queryset(self, request):
         return Tag.select_by_user(request.user)
 
-<<<<<<< HEAD
 class NetworkLookerUpper:
     """ This is a callable that looks up a network name in a instance and returns
         the ip address for that network.
