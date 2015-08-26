@@ -211,7 +211,6 @@ class NetworkSliver(PlCoreBase):
     sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
-    reserve = models.BooleanField(default=False, help_text="Reserve this port for future use")
 
     class Meta:
         unique_together = ('network', 'sliver')
@@ -226,9 +225,6 @@ class NetworkSliver(PlCoreBase):
                 #   3) network's permitAllSlices is true
                 raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
 
-        if (not self.sliver) and (not self.reserve):
-            raise ValueError("If NetworkSliver.sliver is false, then NetworkSliver.reserved must be set to True")
-
         if (not self.ip) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_address
             self.ip = find_unused_address(self.network.subnet,
@@ -239,7 +235,7 @@ class NetworkSliver(PlCoreBase):
         if self.sliver:
             return u'%s-%s' % (self.network.name, self.sliver.instance_name)
         else:
-            return u'%s-reserved-%s' % (self.network.name, self.id)
+            return u'%s-unboundport-%s' % (self.network.name, self.id)
 
     def can_update(self, user):
         if self.sliver:
