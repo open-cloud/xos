@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey
 
 # defaults
-app = "core"
+apps = ["core", "hpc", "cord", "requestrouter"]
 output = "-json"
 
 # syntax: dmdot [-json | -dot] [app_name]
@@ -24,35 +24,38 @@ for arg in sys.argv[1:]:
     else:
         app = arg
 
-app = app + ".models"
-#models_module = imp.load_source(app, ".")
-models_module = __import__(app)
-for part in app.split(".")[1:]:
-    if hasattr(models_module, "PlCoreBase"):
-        break
-    models_module = getattr(models_module,part)
-
-PlCoreBase = getattr(models_module,"PlCoreBase")
-
-synonyms = {
-        'user':'creator'
-}
-
 model_classes = []
 class_names = []
 lower_class_names = {}
-for classname in dir(models_module):
-        c = getattr(models_module, classname, None)
-        if type(c)==type(PlCoreBase):
-                model_classes.append(c)
-                class_names.append(c.__name__)
-                lower_class_names[c.__name__.lower()] = c
-                try:
-                        synonym = synonyms[c.__name__.lower()]
-                        lower_class_names[synonym] = c
-                except: 
-                        pass    
-                        
+synonyms = {
+	'user':'creator'
+}
+
+for app in apps:
+	app = app + ".models"
+	#models_module = imp.load_source(app, ".")
+	models_module = __import__(app)
+	for part in app.split(".")[1:]:
+	    if hasattr(models_module, "PlCoreBase"):
+		break
+	    models_module = getattr(models_module,part)
+
+	PlCoreBase = getattr(models_module,"PlCoreBase")
+
+	
+
+	for classname in dir(models_module):
+		c = getattr(models_module, classname, None)
+		if type(c)==type(PlCoreBase):
+			model_classes.append(c)
+			class_names.append(c.__name__)
+			lower_class_names[c.__name__.lower()] = c
+			try:
+				synonym = synonyms[c.__name__.lower()]
+				lower_class_names[synonym] = c
+			except: 
+				pass    
+				
 
 # django doesn't use the correct case in field.name.title() for objects that
 # have CamelCased class names. So, compare everything in lower case.
