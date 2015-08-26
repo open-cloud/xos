@@ -1657,15 +1657,15 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     fields = ['backend_status_icon', 'parameter', 'value']
     readonly_fields = ('backend_status_icon', )
 
-class NetworkSliversInline(XOSTabularInline):
+class PortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'reserve']
     readonly_fields = ("backend_status_icon", "ip", )
     model = NetworkSliver
     selflink_fieldname = "sliver"
     extra = 0
-    verbose_name_plural = "Slivers"
-    verbose_name = "Sliver"
-    suit_classes = 'suit-tab suit-tab-networkslivers'
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
 
 class NetworkSlicesInline(XOSTabularInline):
     model = NetworkSlice
@@ -1699,7 +1699,7 @@ class NetworkAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
 
-    inlines = [NetworkParameterInline, NetworkSliversInline, NetworkSlicesInline, RouterInline]
+    inlines = [NetworkParameterInline, PortInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [ControllerNetworkInline]
 
     form=NetworkForm
@@ -1724,7 +1724,7 @@ class NetworkAdmin(XOSBaseAdmin):
         tabs=[('general','Network Details'),
             ('sdn', 'SDN Configuration'),
             ('netparams', 'Parameters'),
-            ('networkslivers','Slivers'),
+            ('ports','Ports'),
             ('networkslices','Slices'),
             ('routers','Routers'),
         ]
