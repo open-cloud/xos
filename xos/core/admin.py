@@ -1242,7 +1242,7 @@ class TagAdmin(XOSBaseAdmin):
 class SliverPortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'sliver', 'ip']
     readonly_fields = ("backend_status_icon", "ip", )
-    model = NetworkSliver
+    model = Port
     selflink_fieldname = "network"
     extra = 0
     verbose_name_plural = "Ports"
@@ -1670,7 +1670,7 @@ class NetworkParameterInline(PlStackGenericTabularInline):
 class NetworkPortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'sliver', 'ip']
     readonly_fields = ("backend_status_icon", "ip", )
-    model = NetworkSliver
+    model = Port
     selflink_fieldname = "sliver"
     extra = 0
     verbose_name_plural = "Ports"
