@@ -207,6 +207,9 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class NetworkSliver(PlCoreBase):
+    # Please use "Port" instead of "NetworkSliver". NetworkSliver will soon be
+    # removed.
+
     network = models.ForeignKey(Network,related_name='networkslivers')
     sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
@@ -252,6 +255,11 @@ class NetworkSliver(PlCoreBase):
             sliver_ids = [s.id for s in NetworkSliver.select_by_user(user)]
             qs = NetworkSliver.objects.filter(id__in=sliver_ids)
         return qs
+
+class Port(NetworkSliver):
+    # Rename in progress: NetworkSliver->Port
+    class Meta:
+        proxy = True
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
