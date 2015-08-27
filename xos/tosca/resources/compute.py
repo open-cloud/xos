@@ -41,6 +41,8 @@ class XOSCompute(XOSResource):
         if not name:
             name = nodetemplate.name
 
+        args = {"name": name}
+
         host=None
         flavor=None
         image=None
@@ -72,12 +74,13 @@ class XOSCompute(XOSResource):
         if not flavor:
             raise Exception("Failed to pick a flavor")
 
-        return {"name": name,
-                "image": image,
-                "slice": slice,
-                "flavor": flavor,
-                "node": compute_node,
-                "deployment": compute_node.site_deployment.deployment}
+        args["image"] = image
+        args["slice"] = slice
+        args["flavor"] = flavor
+        args["node"] = compute_node
+        args["deployment"] = compute_node.site_deployment.d
+
+        return args
 
     def create(self, name = None, index = None):
         xos_args = self.get_xos_args(name=name, index=index)
