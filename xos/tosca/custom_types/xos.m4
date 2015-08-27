@@ -19,6 +19,9 @@ define(xos_base_service_caps,
             service:
                 type: tosca.capabilities.xos.Service)
 define(xos_base_service_props,
+            kind:
+                type: string
+                default: generic
             view_url:
                 type: string
                 required: false
