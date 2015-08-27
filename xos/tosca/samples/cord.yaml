@@ -42,7 +42,7 @@ topology_template:
       type: tosca.nodes.Slice
       requirements:
           - vcpe_service:
-              node: service_volt
+              node: service_vcpe
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite

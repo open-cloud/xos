@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,User,Site,Network,NetworkSlice,SliceRole,SlicePrivilege
+from core.models import Slice,User,Site,Network,NetworkSlice,SliceRole,SlicePrivilege,Service
 
 from xosresource import XOSResource
 
@@ -14,10 +14,18 @@ class XOSSlice(XOSResource):
     xos_model = Slice
 
     def get_xos_args(self):
+        args = {"name": self.nodetemplate.name}
+
         site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
         site = self.get_xos_object(Site, login_base=site_name)
-        return {"name": self.nodetemplate.name,
-                "site": site}
+        args["site"] = site
+
+        serviceName = self.get_requirement("tosca.relationships.MemberOfService", throw_exception=False)
+        if serviceName:
+            service = self.get_xos_object(Service, name=serviceName)
+            args["service"] = service
+
+        return args
 
     def postprocess(self, obj):
         for net_name in self.get_requirements("tosca.relationships.ConnectsToNetwork"):
