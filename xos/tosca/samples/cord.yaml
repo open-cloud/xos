@@ -16,6 +16,7 @@ topology_template:
               relationship: tosca.relationships.TenantOfService
       properties:
           view_url: /admin/cord/voltservice/$id$/
+          kind: vOLT
 
     service_vcpe:
       type: tosca.nodes.VCPEService
