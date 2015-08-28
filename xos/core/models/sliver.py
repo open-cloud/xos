@@ -98,6 +98,11 @@ class Sliver(PlCoreBase):
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
+    # TODO: Remove when NetworkSliver->Port rename is complete
+    @property
+    def ports(self):
+        return self.networkslivers
+
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
             # NOTE: The weird check on self.slice_id was due to a problem when
