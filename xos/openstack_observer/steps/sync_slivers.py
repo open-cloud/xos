@@ -62,7 +62,7 @@ class SyncSlivers(OpenStackSyncStep):
         ports = []
         exclude_networks = set()
         exclude_templates = set()
-        for ns in sliver.networkslivers.all():
+        for ns in sliver.ports.all():
             if not ns.port_id:
                 raise DeferredException("Port %s on sliver %s has no id; Try again later" % (str(ns), str(sliver)) )
             ports.append(ns.port_id)

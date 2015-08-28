@@ -99,7 +99,7 @@
         "Slice", 
         "Role"
     ], 
-    "NetworkSliver": [
+    "Port": [
         "Network", 
         "Sliver"
     ], 
