@@ -143,7 +143,7 @@ class Sliver(PlCoreBase):
 
     def all_ips(self):
         ips={}
-        for ns in self.networkslivers.all():
+        for ns in self.ports.all():
            if ns.ip:
                ips[ns.network.name] = ns.ip
         return ips
@@ -158,7 +158,7 @@ class Sliver(PlCoreBase):
     all_ips_string.short_description = "addresses"
 
     def get_public_ip(self):
-        for ns in self.networkslivers.all():
+        for ns in self.ports.all():
             if (ns.ip) and (ns.network.template.visibility=="public") and (ns.network.template.translation=="none"):
                 return ns.ip
         return None
