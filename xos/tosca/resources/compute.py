@@ -78,7 +78,7 @@ class XOSCompute(XOSResource):
         args["slice"] = slice
         args["flavor"] = flavor
         args["node"] = compute_node
-        args["deployment"] = compute_node.site_deployment.d
+        args["deployment"] = compute_node.site_deployment.deployment
 
         return args
 
