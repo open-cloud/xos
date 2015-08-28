@@ -123,6 +123,11 @@ class Network(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    # TODO: Remove when NetworkSliver->Port rename is complete
+    @property
+    def links(self):
+        return self.networkslivers
+
     def save(self, *args, **kwds):
         if (not self.subnet) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_subnet
@@ -210,8 +215,8 @@ class NetworkSliver(PlCoreBase):
     # Please use "Port" instead of "NetworkSliver". NetworkSliver will soon be
     # removed.
 
-    network = models.ForeignKey(Network,related_name='networkslivers')
-    sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')
+    network = models.ForeignKey(Network,related_name='networkslivers')     # related_name='links'
+    sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')      # related_name='ports'
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
 
