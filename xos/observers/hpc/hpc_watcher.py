@@ -366,7 +366,7 @@ class BaseWatcher(Thread):
         if (network_name is None) or (network_name=="") or (network_name.lower()=="public"):
             return sliver.get_public_ip()
 
-        for ns in sliver.networkslivers.all():
+        for ns in sliver.ports.all():
             if (ns.ip) and (ns.network.name==network_name):
                 return ns.ip
 

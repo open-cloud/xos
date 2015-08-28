@@ -68,7 +68,7 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
                 for slice in service.slices.all():
                     if "dnsdemux" in slice.name:
                         for sliver in slice.slivers.all():
-                            for ns in sliver.networkslivers.all():
+                            for ns in sliver.ports.all():
                                 if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                                     dnsdemux_ip = ns.ip
             if not dnsdemux_ip:
@@ -100,7 +100,7 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
         if vcpe_service.bbs_slice:
             if vcpe_service.backend_network_label:
                 for bbs_sliver in vcpe_service.bbs_slice.slivers.all():
-                    for ns in bbs_sliver.networkslivers.all():
+                    for ns in bbs_sliver.ports.all():
                         if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                             bbs_addrs.append(ns.ip)
             else:

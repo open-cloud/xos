@@ -66,7 +66,6 @@ def invert_graph(g):
 	return ig
 
 class XOSObserver:
-	#sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivilege,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
 	sync_steps = []
 
 	
@@ -196,7 +195,6 @@ class XOSObserver:
 		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncSlivers']
 		#self.ordered_steps = ['SyncControllerSites','SyncRoles','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
 		#self.ordered_steps = ['SyncControllerNetworks']
-		#self.ordered_steps = ['SyncSlivers','SyncNetworkSlivers']
 
 		print "Order of steps=",self.ordered_steps
 
