@@ -160,43 +160,43 @@ def GetInterfaces(slicename, node_ids, return_nat=False, return_private=False):
                 # If the slice has a network that's labeled for hpc_client, then
                 # return that network.
                 found_labeled_network = False
-                for networkSliver in ps_sliver.networkslivers.all():
-                    if (not networkSliver.ip):
+                for port in ps_sliver.ports.all():
+                    if (not port.ip):
                         continue
-                    if (networkSliver.network.owner != ps_slice):
+                    if (port.network.owner != ps_slice):
                         continue
-                    if networkSliver.network.labels and ("hpc_client" in networkSliver.network.labels):
-                        ip=networkSliver.ip
+                    if port.network.labels and ("hpc_client" in port.network.labels):
+                        ip=port.ip
                         found_labeled_network = True
 
                 if not found_labeled_network:
                     # search for a dedicated public IP address
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for port in ps_sliver.ports.all():
+                        if (not port.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = port.network.template
                         if (template.visibility=="public") and (template.translation=="none"):
-                            ip=networkSliver.ip
+                            ip=port.ip
 
                 if return_nat:
                     ip = None
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for port in ps_sliver.ports.all():
+                        if (not port.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = port.network.template
                         if (template.visibility=="private") and (template.translation=="NAT"):
-                            ip=networkSliver.ip
+                            ip=port.ip
                     if not ip:
                         continue
 
                 if return_private:
                     ip = None
-                    for networkSliver in ps_sliver.networkslivers.all():
-                        if (not networkSliver.ip):
+                    for port in ps_sliver.ports.all():
+                        if (not port.ip):
                             continue
-                        template = networkSliver.network.template
+                        template = port.network.template
                         if (template.visibility=="private") and (template.translation=="none"):
-                            ip=networkSliver.ip
+                            ip=port.ip
                     if not ip:
                         continue
 
