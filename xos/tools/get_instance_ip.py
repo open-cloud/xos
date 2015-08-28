@@ -12,7 +12,7 @@ REST_API="http://alpha.opencloud.us:8000/xos/"
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
 SLIVERS_API = REST_API + "slivers/"
-NETWORKSLIVERS_API = REST_API + "networkslivers/"
+PORTS_API = REST_API + "ports/"
 
 opencloud_auth=("demo@onlab.us", "demo")
 
@@ -71,10 +71,10 @@ def main():
 
     sliver_id = slivers[-1]["id"]
 
-    r = requests.get(NETWORKSLIVERS_API + "?sliver=%s" % sliver_id, auth=opencloud_auth)
+    r = requests.get(PORTS_API + "?sliver=%s" % sliver_id, auth=opencloud_auth)
 
-    networkSlivers = r.json()
-    ips = [x["ip"] for x in networkSlivers]
+    ports = r.json()
+    ips = [x["ip"] for x in ports]
 
     # XXX kinda hackish -- assumes private ips start with "10." and nat start with "172."
 
