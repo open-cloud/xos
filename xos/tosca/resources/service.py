@@ -4,6 +4,7 @@ import sys
 import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
+import pdb
 
 from core.models import Service,User,CoarseTenant
 
@@ -12,7 +13,7 @@ from xosresource import XOSResource
 class XOSService(XOSResource):
     provides = "tosca.nodes.Service"
     xos_model = Service
-    copyin_props = ["view_url", "kind"]
+    copyin_props = ["view_url", "kind", "enabled", "published", "public_key"]
 
     def postprocess(self, obj):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
