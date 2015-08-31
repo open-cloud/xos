@@ -108,7 +108,7 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
             if not bbs_addrs:
                 logger.info("failed to find any usable addresses on bbs_slice")
         elif vcpe_service.bbs_server:
-            bbs_addrs.append(vcpe.bbs_server)
+            bbs_addrs.append(vcpe_service.bbs_server)
         else:
             logger.info("neither bbs_slice nor bbs_server is configured in the vCPE")
 
