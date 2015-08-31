@@ -27,6 +27,9 @@ topology_template:
       properties:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
 
     service_vbng:
       type: tosca.nodes.VBNGService
