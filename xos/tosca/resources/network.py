@@ -4,6 +4,7 @@ import sys
 import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
+import pdb
 
 from core.models import Slice,User,Network,NetworkTemplate
 
@@ -12,7 +13,6 @@ from xosresource import XOSResource
 class XOSNetwork(XOSResource):
     provides = ["tosca.nodes.network.Network", "tosca.nodes.network.Network.XOS"]
     xos_model = Network
-    defaults = {"permit_all_slices": True}
 
     def get_xos_args(self):
         args = {"name": self.nodetemplate.name,
@@ -26,11 +26,16 @@ class XOSNetwork(XOSResource):
         if net_template_name:
             args["template"] = self.get_xos_object(NetworkTemplate, name=net_template_name)
 
-        # copy simple string properties from the template into the arguments
-        for prop in ["ports", "labels", "permit_all_slices"]:
-            v = self.get_property(prop, self.defaults.get(prop,None))
-            if v:
-                args[prop] = v
+        if self.nodetemplate.type == "tosca.nodes.network.Network.XOS":
+            # copy simple string properties from the template into the arguments
+            for prop in ["ports", "labels", "permit_all_slices"]:
+                v = self.get_property(prop)
+                if v:
+                    args[prop] = v
+        else:
+            # tosca.nodes.network.Netwrok is not as rich as an XOS network. So
+            # we have to manually fill in some defaults.
+            args["permit_all_slices"] = True
 
         return args
 
