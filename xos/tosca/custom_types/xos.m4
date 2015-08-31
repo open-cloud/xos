@@ -27,6 +27,15 @@ define(xos_base_service_props,
                 required: false
             icon_url:
                 type: string
+                required: false
+            enabled:
+                type: boolean
+                default: true
+            published:
+                type: boolean
+                default: true
+            public_key:
+                type: string
                 required: false)
 
 # end m4 macros
