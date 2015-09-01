@@ -12,5 +12,5 @@ from service import XOSService
 class XOSVcpeService(XOSService):
     provides = "tosca.nodes.VCPEService"
     xos_model = VCPEService
-    copyin_props = ["view_url", "icon_url", "backend_network_label", "enabled", "published", "public_key"]
+    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "versionNumber", "backend_network_label"]
 

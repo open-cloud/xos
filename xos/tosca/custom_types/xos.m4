@@ -36,6 +36,9 @@ define(xos_base_service_props,
                 default: true
             public_key:
                 type: string
+                required: false
+            versionNumber:
+                type: string
                 required: false)
 
 # end m4 macros
