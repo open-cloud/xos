@@ -349,6 +349,9 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Network ]
 
+    tosca.relationships.ConnectsToSlice:
+        derived_from: tosca.relationships.Root
+
     #    tosca.relationships.OwnsNetwork:
     #        derived_from: tosca.relationships.Root
     #        valid_target_types: [ tosca.capabilities.xos.Network ]
