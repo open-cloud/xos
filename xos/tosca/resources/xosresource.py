@@ -1,4 +1,6 @@
+import os
 import pdb
+import json
 
 class XOSResource(object):
     xos_base_class = "XOSResource"
@@ -52,11 +54,8 @@ class XOSResource(object):
         else:
             return {}
 
-    def get_property(self, name, default=None):
-        v = self.nodetemplate.get_property_value(name)
-        if (v==None):
-            return default
-        return v
+    def get_property(self, name):
+        return self.nodetemplate.get_property_value(name)
 
     def get_xos_object(self, cls, throw_exception=True, **kwargs):
         objs = cls.objects.filter(**kwargs)
@@ -86,6 +85,37 @@ class XOSResource(object):
     def postprocess(self, obj):
         pass
 
+    def intrinsic_get_artifact(self, obj=None, name=None, method=None):
+        if obj!="SELF":
+            raise Exception("only SELF is supported for get_artifact first arg")
+        if method!="LOCAL_FILE":
+            raise Exception("only LOCAL_FILE is supported for get_artifact third arg")
+
+        for (k,v) in self.nodetemplate.entity_tpl.get("artifacts", {}).items():
+            if k == name:
+                if not os.path.exists(v):
+                    raise Exception("Artifact local file %s for artifact %s does not exist" % (v, k))
+                return open(v).read()
+
+        raise Exception("artifact %s not found" % name)
+
+    def try_intrinsic_function(self, v):
+        try:
+            jsv = v.replace("'", '"')
+            jsv = json.loads(jsv)
+        except:
+            #import traceback
+            #traceback.print_exc()
+            return v
+
+        if type(jsv)!=dict:
+            return v
+
+        if "get_artifact" in jsv:
+            return self.intrinsic_get_artifact(*jsv["get_artifact"])
+
+        return v
+
     def get_xos_args(self):
         args = {}
 
@@ -95,6 +125,9 @@ class XOSResource(object):
         # copy simple string properties from the template into the arguments
         for prop in self.copyin_props:
             v = self.get_property(prop)
+
+            v = self.try_intrinsic_function(v)
+
             if v:
                 args[prop] = v
 

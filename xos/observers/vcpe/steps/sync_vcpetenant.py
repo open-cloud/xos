@@ -107,8 +107,8 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                 logger.info("unsupported configuration -- bbs_slice is set, but backend_network_label is not")
             if not bbs_addrs:
                 logger.info("failed to find any usable addresses on bbs_slice")
-        elif vcpe.bbs_server:
-            bbs_addrs.append(vcpe.bbs_server)
+        elif vcpe_service.bbs_server:
+            bbs_addrs.append(vcpe_service.bbs_server)
         else:
             logger.info("neither bbs_slice nor bbs_server is configured in the vCPE")
 
