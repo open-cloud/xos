@@ -7,10 +7,10 @@ from core.models import Controller
 from core.models.network import *
 from util.logger import observer_logger as logger
 
-class SyncNetworkInstances(OpenStackSyncStep):
+class SyncPorts(OpenStackSyncStep):
     requested_interval = 0 # 3600
-    provides=[NetworkInstance]
-    observes=NetworkInstance
+    provides=[Port]
+    observes=Port
 
     #     The way it works is to enumerate the all of the ports that quantum
     #     has, and then work backward from each port's network-id to determine
@@ -19,12 +19,12 @@ class SyncNetworkInstances(OpenStackSyncStep):
     def call(self, **args):
         logger.info("sync'ing network instances")
 
-        networkInstances = NetworkInstance.objects.all()
-        networkInstances_by_id = {}
-        networkInstances_by_port = {}
-        for networkInstance in networkInstances:
-            networkInstances_by_id[networkInstance.id] = networkInstance
-            networkInstances_by_port[networkInstance.port_id] = networkInstance
+        ports = Port.objects.all()
+        ports_by_id = {}
+        ports_by_neutron_port = {}
+        for port in ports:
+            ports_by_id[port.id] = port
+            ports_by_neutron_port[port.port_id] = port
 
         networks = Network.objects.all()
         networks_by_id = {}
@@ -74,7 +74,7 @@ class SyncNetworkInstances(OpenStackSyncStep):
 
         for port in ports_by_id.values():
             #logger.info("port %s" % str(port))
-            if port["id"] in networkInstances_by_port:
+            if port["id"] in ports_by_neutron_port:
                 # we already have it
                 #logger.info("already accounted for port %s" % port["id"])
                 continue
@@ -127,9 +127,9 @@ class SyncNetworkInstances(OpenStackSyncStep):
                 continue
 
             ip=port["fixed_ips"][0]["ip_address"]
-            logger.info("creating NetworkInstance (%s, %s, %s, %s)" % (str(network), str(instance), ip, str(port["id"])))
+            logger.info("creating Port (%s, %s, %s, %s)" % (str(network), str(instance), ip, str(port["id"])))
 
-            ns = NetworkInstance(network=network,
+            ns = Port(network=network,
                                instance=instance,
                                ip=ip,
                                port_id=port["id"])
@@ -137,70 +137,70 @@ class SyncNetworkInstances(OpenStackSyncStep):
             try:
                 ns.save()
             except:
-                logger.log_exc("failed to save networkinstance %s" % str(ns))
+                logger.log_exc("failed to save port %s" % str(ns))
                 continue
 
-        # For networkInstances that were created by the user, find that ones
+        # For ports that were created by the user, find that ones
         # that don't have neutron ports, and create them.
-        for networkInstance in NetworkInstance.objects.filter(port_id__isnull=True, instance__isnull=False):
-            #logger.info("working on networkinstance %s" % networkInstance)
-            controller = networkInstance.instance.node.site_deployment.controller
+        for port in Port.objects.filter(port_id__isnull=True, instance__isnull=False):
+            #logger.info("XXX working on port %s" % port)
+            controller = port.instance.node.site_deployment.controller
             if controller:
-                cn=networkInstance.network.controllernetworks.filter(controller=controller)
+                cn=port.network.controllernetworks.filter(controller=controller)
                 if not cn:
-                    logger.log_exc("no controllernetwork for %s" % networkInstance)
+                    logger.log_exc("no controllernetwork for %s" % port)
                     continue
                 cn=cn[0]
                 if cn.lazy_blocked:
                     cn.lazy_blocked=False
                     cn.save()
-                    logger.info("deferring networkSliver %s because controllerNetwork was lazy-blocked" % networkSliver)
+                    logger.info("deferring port %s because controllerNetwork was lazy-blocked" % port)
                     continue
                 if not cn.net_id:
-                    logger.info("deferring networkSliver %s because controllerNetwork does not have a port-id yet" % networkSliver)
+                    logger.info("deferring port %s because controllerNetwork does not have a port-id yet" % port)
                     continue
                 try:
                     # We need to use a client driver that specifies the tenant
-                    # of the destination sliver. Nova-compute will not connect
-                    # ports to slivers if the port's tenant does not match
-                    # the sliver's tenant.
+                    # of the destination instance. Nova-compute will not connect
+                    # ports to instances if the port's tenant does not match
+                    # the instance's tenant.
 
                     # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
                     # not being in working condition.
                     from openstack.client import OpenStackClient
                     from openstack.driver import OpenStackDriver
-                    caller = networkSliver.network.owner.creator
+                    caller = port.network.owner.creator
                     auth = {'username': caller.email,
                             'password': caller.remote_password,
-                            'tenant': networkSliver.sliver.slice.name} # networkSliver.network.owner.name}
+                            'tenant': port.instance.slice.name} # port.network.owner.name}
                     client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
                     driver = OpenStackDriver(client=client)
 
                     port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
-                    networkInstance.port_id = port["id"]
+                    port.port_id = port["id"]
                     if port["fixed_ips"]:
-                        networkInstance.ip = port["fixed_ips"][0]["ip_address"]
+                        port.ip = port["fixed_ips"][0]["ip_address"]
                 except:
-                    logger.log_exc("failed to create neutron port for %s" % networkInstance)
+                    logger.log_exc("failed to create neutron port for %s" % port)
                     continue
-                networkInstance.save()
+                port.save()
 
         # Now, handle port forwarding
-        # We get the list of NetworkInstances again, since we might have just
+        # We get the list of Ports again, since we might have just
         # added a few. Then, for each one of them we find it's quantum port and
         # make sure quantum's nat:forward_ports argument is the same.
 
-        for networkInstance in NetworkInstance.objects.all():
+        for port in Port.objects.all():
             try:
-                nat_list = networkInstance.network.nat_list
+                nat_list = port.network.nat_list
             except (TypeError, ValueError), e:
                 logger.info("Failed to decode nat_list: %s" % str(e))
                 continue
 
-            if not networkInstance.port_id:
+            if not port.port_id:
                 continue
 
-            neutron_port = ports_by_id.get(networkInstance.port_id, None)
+            neutron_port = ports_by_id.get(port.port_id, None)
             if not neutron_port:
                 continue
 
@@ -210,15 +210,15 @@ class SyncNetworkInstances(OpenStackSyncStep):
                 neutron_nat_list = []
 
             if (neutron_nat_list != nat_list):
-                logger.info("Setting nat:forward_ports for port %s network %s instance %s to %s" % (str(networkInstance.port_id), str(networkInstance.network.id), str(networkInstance.instance), str(nat_list)))
+                logger.info("Setting nat:forward_ports for port %s network %s instance %s to %s" % (str(port.port_id), str(port.network.id), str(port.instance), str(nat_list)))
                 try:
-                    driver = self.driver.admin_driver(controller=networkInstance.instance.node.site_deployment.controller,tenant='admin')
-                    driver.shell.quantum.update_port(networkInstance.port_id, {"port": {"nat:forward_ports": nat_list}})
+                    driver = self.driver.admin_driver(controller=port.instance.node.site_deployment.controller,tenant='admin')
+                    driver.shell.quantum.update_port(port.port_id, {"port": {"nat:forward_ports": nat_list}})
                 except:
                     logger.log_exc("failed to update port with nat_list %s" % str(nat_list))
                     continue
             else:
-                #logger.info("port %s network %s instance %s nat %s is already set" % (str(networkInstance.port_id), str(networkInstance.network.id), str(networkInstance.instance), str(nat_list)))
+                #logger.info("port %s network %s instance %s nat %s is already set" % (str(port.port_id), str(port.network.id), str(port.instance), str(nat_list)))
                 pass
 
     def delete_record(self, network_instance):

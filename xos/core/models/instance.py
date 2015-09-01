@@ -98,6 +98,11 @@ class Instance(PlCoreBase):
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
+    # TODO: Remove when NetworkSliver->Port rename is complete
+    @property
+    def ports(self):
+        return self.networkslivers
+
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
             # NOTE: The weird check on self.slice_id was due to a problem when
@@ -138,7 +143,7 @@ class Instance(PlCoreBase):
 
     def all_ips(self):
         ips={}
-        for ns in self.networkinstances.all():
+        for ns in self.ports.all():
            if ns.ip:
                ips[ns.network.name] = ns.ip
         return ips
@@ -153,7 +158,7 @@ class Instance(PlCoreBase):
     all_ips_string.short_description = "addresses"
 
     def get_public_ip(self):
-        for ns in self.networkinstances.all():
+        for ns in self.ports.all():
             if (ns.ip) and (ns.network.template.visibility=="public") and (ns.network.template.translation=="none"):
                 return ns.ip
         return None

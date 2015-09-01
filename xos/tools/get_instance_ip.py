@@ -11,8 +11,8 @@ REST_API="http://alpha.opencloud.us:8000/xos/"
 
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
-SLIVERS_API = REST_API + "instances/"
-NETWORKSLIVERS_API = REST_API + "networkinstances/"
+INSTANCES_API = REST_API + "instances/"
+PORTS_API = REST_API + "ports/"
 
 opencloud_auth=("demo@onlab.us", "demo")
 
@@ -41,7 +41,7 @@ def get_instances(slice_id=None, node_id=None):
     else:
         query_string = ""
 
-    r = requests.get(SLIVERS_API + query_string, auth=opencloud_auth)
+    r = requests.get(INSTANCES_API + query_string, auth=opencloud_auth)
     return r.json()
 
 def main():
@@ -71,10 +71,9 @@ def main():
 
     instance_id = instances[-1]["id"]
 
-    r = requests.get(NETWORKSLIVERS_API + "?instance=%s" % instance_id, auth=opencloud_auth)
-
-    networkInstances = r.json()
-    ips = [x["ip"] for x in networkInstances]
+    r = requests.get(NETWORKINSTANCES_API + "?instance=%s" % instance_id, auth=opencloud_auth)
+    ports = r.json()
+    ips = [x["ip"] for x in ports]
 
     # XXX kinda hackish -- assumes private ips start with "10." and nat start with "172."
 

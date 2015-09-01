@@ -599,7 +599,7 @@ class VCPETenant(Tenant):
             return {}
 
         addresses = {}
-        for ns in self.instance.networkinstances.all():
+        for ns in self.sliver.ports.all():
             if "lan" in ns.network.name.lower():
                 addresses["lan"] = ns.ip
             elif "wan" in ns.network.name.lower():

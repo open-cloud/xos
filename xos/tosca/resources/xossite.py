@@ -79,6 +79,12 @@ class XOSSite(XOSResource):
         if obj.slices.exists():
             self.info("Site %s has active slices; skipping delete" % obj.name)
             return
+        if obj.users.exists():
+            self.info("Site %s has active users; skipping delete" % obj.name)
+            return
+        if obj.nodes.exists():
+            self.info("Site %s has active nodes; skipping delete" % obj.name)
+            return
         super(XOSSite, self).delete(obj)
 
 

@@ -12,7 +12,7 @@ from xosresource import XOSResource
 class XOSService(XOSResource):
     provides = "tosca.nodes.Service"
     xos_model = Service
-    copyin_props = ["view_url"]
+    copyin_props = ["view_url", "kind"]
 
     def postprocess(self, obj):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
