@@ -1,0 +1,5 @@
+FROM       xos:latest
+MAINTAINER Andy Bavier <acb@cs.princeton.edu>
+
+ADD xos/observers/vcpe/supervisor/vcpe-observer.conf /etc/supervisor/conf.d/
+RUN sed -i 's/ubuntu-vcpe4/trusty-server-multi-nic/' /opt/xos/cord/models.py
