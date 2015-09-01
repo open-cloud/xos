@@ -7,6 +7,13 @@ set -x
 XOS="http://ctl:9999/"
 AUTH="padmin@vicci.org:letmein"
 
+# Create public key if none present
+cat /dev/zero | ssh-keygen -q -N ""
+PUBKEY=$( cat ~/.ssh/id_rsa.pub )
+
+# Make sure the public key is available inside the container
+cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
+
 # Install Docker
 wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker $(whoami)
@@ -24,10 +31,6 @@ until http $XOS &> /dev/null
 do
     sleep 1
 done
-
-# Create public key if none present
-cat /dev/zero | ssh-keygen -q -N ""
-PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 
 # Copy public key
 # BUG: Shouldn't have to set the 'enacted' field...
