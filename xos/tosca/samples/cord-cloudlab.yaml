@@ -1,0 +1,101 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    # CORD Services
+    service_volt:
+      type: tosca.nodes.Service
+      requirements:
+          - vcpe_tenant:
+              node: service_vcpe
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          view_url: /admin/cord/voltservice/$id$/
+          kind: vOLT
+
+    service_vcpe:
+      type: tosca.nodes.VCPEService
+      requirements:
+          - vbng_tenant:
+              node: service_vbng
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          view_url: /admin/cord/vcpeservice/$id$/
+          backend_network_label: hpc_client
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
+
+    service_vbng:
+      type: tosca.nodes.VBNGService
+      properties:
+          view_url: /admin/cord/vbngservice/$id$/
+          vbng_url: http://10.0.3.136:8181/onos/virtualbng/
+
+    mysite:
+      type: tosca.nodes.Site
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    # networks required by vCPE
+    lan_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vcpe
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vcpe
+              relationship: tosca.relationships.ConnectsToSlice
+
+    wan_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vcpe
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vcpe
+              relationship: tosca.relationships.ConnectsToSlice
+
+    hpc_client_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vcpe
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vcpe
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite_vcpe:
+      description: vCPE Controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - vcpe_service:
+              node: service_vcpe
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
