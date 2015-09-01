@@ -16,7 +16,7 @@ if (! window.XOSLIB_LOADED ) {
     IMAGEDEPLOYMENTS_API = XOS_BASE+"/imagedeployments/";
     NETWORKTEMPLATE_API = XOS_BASE+"/networktemplates/";
     NETWORK_API = XOS_BASE+"/networks/";
-    NETWORKSLIVER_API = XOS_BASE+"/networkslivers/";
+    PORT_API = XOS_BASE+"/ports/";
     SERVICE_API = XOS_BASE+"/services/";
     SLICEPRIVILEGE_API = XOS_BASE+"/slice_privileges/";
     NETWORKDEPLOYMENT_API = XOS_BASE+"/networkdeployments/";
@@ -474,7 +474,7 @@ if (! window.XOSLIB_LOADED ) {
         */
 
         define_model(this, {urlRoot: SLIVER_API,
-                            relatedCollections: {"networkSlivers": "sliver"},
+                            relatedCollections: {"ports": "sliver"},
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users", "flavors"],
                             foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deployment": "deployments", "slice": "slices", "flavor": "flavors"},
                             modelName: "sliver",
@@ -579,7 +579,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: NETWORK_API,
-                            relatedCollections: {"networkSlivers": "network", "controller_networks": "network"},
+                            relatedCollections: {"ports": "network", "controller_networks": "network"},
                             foreignCollections: ["slices", "networkTemplates"],
                             modelName: "network",
                             foreignFields: {"template": "networkTemplates", "owner": "slices"},
@@ -587,8 +587,8 @@ if (! window.XOSLIB_LOADED ) {
                             detailFields: ["backend_status", "backend_register", "name", "template", "ports", "labels", "owner"],
                             });
 
-        define_model(this, {urlRoot: NETWORKSLIVER_API,
-                            modelName: "networkSliver",
+        define_model(this, {urlRoot: PORT_API,
+                            modelName: "port",
                             foreignFields: {"network": "networks", "sliver": "slivers"},
                             listFields: ["backend_status", "id", "network", "sliver", "ip", "port_id"],
                             detailFields: ["backend_status", "backend_register", "network", "sliver", "ip", "port_id"],

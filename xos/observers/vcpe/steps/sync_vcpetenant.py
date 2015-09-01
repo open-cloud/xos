@@ -68,7 +68,7 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                 for slice in service.slices.all():
                     if "dnsdemux" in slice.name:
                         for instance in slice.instances.all():
-                            for ns in instance.networkinstances.all():
+                            for ns in instance.ports.all():
                                 if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                                     dnsdemux_ip = ns.ip
             if not dnsdemux_ip:
@@ -100,7 +100,7 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
         if vcpe_service.bbs_slice:
             if vcpe_service.backend_network_label:
                 for bbs_instance in vcpe_service.bbs_slice.instances.all():
-                    for ns in bbs_instance.networkinstances.all():
+                    for ns in bbs_instance.ports.all():
                         if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
                             bbs_addrs.append(ns.ip)
             else:

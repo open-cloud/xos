@@ -24,7 +24,7 @@ for obj in NetworkSlice.deleted_objects.all():
     print "Purging deleted object", obj
     obj.delete(purge=True)
 
-for obj in NetworkInstance.deleted_objects.all():
+for obj in Port.deleted_objects.all():
     print "Purging deleted object", obj
     obj.delete(purge=True)
 
@@ -55,9 +55,9 @@ for obj in NetworkSlice.objects.all():
              conflict.delete(purge=True)
 
 seen=[]
-for obj in NetworkInstance.objects.all():
+for obj in Port.objects.all():
      seen.append(obj.id)
-     conflicts = NetworkInstance.objects.filter(network=obj.network, instance=obj.instance)
+     conflicts = Port.objects.filter(network=obj.network, instance=obj.instanc)
      for conflict in conflicts:
          if conflict.id not in seen:
              print "Purging", conflict, conflict.id, "due to duplicate of", obj.id

@@ -123,6 +123,11 @@ class Network(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+    # TODO: Remove when NetworkSliver->Port rename is complete
+    @property
+    def links(self):
+        return self.networkslivers
+
     def save(self, *args, **kwds):
         if (not self.subnet) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_subnet
@@ -207,11 +212,13 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class NetworkInstance(PlCoreBase):
+    # Please use "Port" instead of "NetworkSliver". NetworkSliver will soon be
+    # removed.
+
     network = models.ForeignKey(Network,related_name='networkinstances')
     instance = models.ForeignKey(Instance, null=True, blank=True, related_name='networkinstances')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
-    reserve = models.BooleanField(default=False, help_text="Reserve this port for future use")
 
     class Meta:
         unique_together = ('network', 'instance')
@@ -226,9 +233,6 @@ class NetworkInstance(PlCoreBase):
                 #   3) network's permitAllSlices is true
                 raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
 
-        if (not self.instance) and (not self.reserve):
-            raise ValueError("If NetworkInstance.instance is false, then NetworkInstance.reserved must be set to True")
-
         if (not self.ip) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_address
             self.ip = find_unused_address(self.network.subnet,
@@ -239,7 +243,7 @@ class NetworkInstance(PlCoreBase):
         if self.instance:
             return u'%s-%s' % (self.network.name, self.instance.instance_name)
         else:
-            return u'%s-reserved-%s' % (self.network.name, self.id)
+            return u'%s-unboundport-%s' % (self.network.name, self.id)
 
     def can_update(self, user):
         if self.instance:
@@ -256,6 +260,11 @@ class NetworkInstance(PlCoreBase):
             instance_ids = [s.id for s in NetworkInstance.select_by_user(user)]
             qs = NetworkInstance.objects.filter(id__in=instance_ids)
         return qs
+
+class Port(NetworkInstance):
+    # Rename in progress: NetworkSliver->Port
+    class Meta:
+        proxy = True
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)

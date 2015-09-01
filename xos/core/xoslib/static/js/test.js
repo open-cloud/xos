@@ -35,7 +35,7 @@ TestApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
 };
 
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'port', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
 
      for (var index in objs) {
          name = objs[index];

@@ -62,9 +62,9 @@ class SyncInstances(OpenStackSyncStep):
         ports = []
         exclude_networks = set()
         exclude_templates = set()
-        for ns in sliver.networkslivers.all():
+        for ns in sliver.ports.all():
             if not ns.port_id:
-                raise Exception("Port %s on sliver %s has no id; Try again later" % (str(ns), str(sliver)) )
+                raise DeferredException("Port %s on sliver %s has no id; Try again later" % (str(ns), str(sliver)) )
             ports.append(ns.port_id)
             exclude_networks.add(ns.network)
             exclude_templates.add(ns.network.template)
@@ -79,7 +79,7 @@ class SyncInstances(OpenStackSyncStep):
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
-                        raise Exception("Private Network %s has no id; Try again later" % controller_network.network.name)
+                        raise DeferredException("Private Network %s has no id; Try again later" % controller_network.network.name)
                    nics.append(controller_network.net_id)
 
         # Now include network templates, for those networks that use a

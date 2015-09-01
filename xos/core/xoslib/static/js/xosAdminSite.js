@@ -1,4 +1,4 @@
-OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'networkSliver',
+OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'port',
         'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver',
         'user', 'sliceRole',  'flavor', 'controller', 'siteDeployment',
         'controller_image', 'controller_network', 'controller_slice', 'controller_user'];

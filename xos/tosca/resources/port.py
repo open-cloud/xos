@@ -5,13 +5,13 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Sliver,User,Network,NetworkTemplate,NetworkSliver
+from core.models import Sliver,User,Network,NetworkTemplate,Port
 
 from xosresource import XOSResource
 
 class XOSPort(XOSResource):
     provides = ["tosca.nodes.network.Port"]
-    xos_model = NetworkSliver
+    xos_model = Port
 
     def get_existing_objs(self):
         # Port objects have no name, their unique key is (sliver, network)
@@ -46,13 +46,13 @@ class XOSPort(XOSResource):
         if not xos_args.get("network", None):
             raise Exception("Must specify network when creating port")
 
-        port = NetworkSliver(**xos_args)
+        port = Port(**xos_args)
         port.caller = self.user
         port.save()
 
         self.postprocess(port)
 
-        self.info("Created NetworkSliver '%s' connect sliver '%s' to network %s" % (str(port), str(port.sliver), str(port.network)))
+        self.info("Created Port '%s' connect sliver '%s' to network %s" % (str(port), str(port.sliver), str(port.network)))
 
     def delete(self, obj):
         super(XOSPort, self).delete(obj)

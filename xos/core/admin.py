@@ -1272,6 +1272,16 @@ class TagAdmin(XOSBaseAdmin):
     user_readonly_fields = ['service', 'name', 'value', 'content_type', 'content_object',]
     user_readonly_inlines = []
 
+class InstancePortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'instance', 'ip']
+    readonly_fields = ("backend_status_icon", "ip", )
+    model = Port
+    selflink_fieldname = "network"
+    extra = 0
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
+
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
@@ -1281,9 +1291,9 @@ class InstanceAdmin(XOSBaseAdmin):
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Instance Details'),)
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
 
-    inlines = [TagInline]
+    inlines = [TagInline, SliverPortInline]
 
     user_readonly_fields = ['slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image']
 
@@ -1690,15 +1700,15 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     fields = ['backend_status_icon', 'parameter', 'value']
     readonly_fields = ('backend_status_icon', )
 
-class NetworkInstancesInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'instance', 'ip', 'reserve']
+class NetworkPortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'instance', 'ip']
     readonly_fields = ("backend_status_icon", "ip", )
-    model = NetworkInstance
+    model = Port
     selflink_fieldname = "instance"
     extra = 0
-    verbose_name_plural = "Instances"
-    verbose_name = "Instance"
-    suit_classes = 'suit-tab suit-tab-networkinstances'
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
 
 class NetworkSlicesInline(XOSTabularInline):
     model = NetworkSlice
@@ -1731,8 +1741,7 @@ class NetworkAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "subnet", "ports", "labels")
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ("subnet", )
-
-    inlines = [NetworkParameterInline, NetworkInstancesInline, NetworkSlicesInline, RouterInline]
+    inlines = [NetworkParameterInline, NetworkPortInline, NetworkSlicesInline, RouterInline]
     admin_inlines = [ControllerNetworkInline]
 
     form=NetworkForm
@@ -1757,7 +1766,7 @@ class NetworkAdmin(XOSBaseAdmin):
         tabs=[('general','Network Details'),
             ('sdn', 'SDN Configuration'),
             ('netparams', 'Parameters'),
-            ('networkinstances','Instances'),
+            ('ports','Ports'),
             ('networkslices','Slices'),
             ('routers','Routers'),
         ]
