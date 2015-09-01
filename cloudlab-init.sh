@@ -10,7 +10,7 @@ CORD=0
 IMAGE="xos"
 
 # Create public key if none present
-#cat /dev/zero | ssh-keygen -q -N ""
+cat /dev/zero | ssh-keygen -q -N ""
 PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 
 # Install Docker
