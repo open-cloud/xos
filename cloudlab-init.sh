@@ -8,10 +8,9 @@ XOS="http://ctl:9999/"
 AUTH="padmin@vicci.org:letmein"
 CORD=0
 IMAGE="xos"
-KEYFILE="~/.ssh/id_rsa"
 
 # Create public key if none present
-[ -e $KEYFILE ] || cat /dev/zero | ssh-keygen -q -N ""
+[ -e ~/.ssh/id_rsa ] || cat /dev/zero | ssh-keygen -q -N ""
 
 # Install Docker
 which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
@@ -21,8 +20,8 @@ sudo apt-get install httpie
 
 if [ "$CORD" -ne 0 ]
 then
-    cp $KEYFILE.pub xos/observers/vcpe/vcpe_public_key
-    cp $KEYFILE     xos/observers/vcpe/vcpe_private_key
+    cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
+    cp ~/.ssh/id_rsa     xos/observers/vcpe/vcpe_private_key
 fi
 
 sudo docker build -t xos .
@@ -45,7 +44,7 @@ done
 
 # Copy public key
 # BUG: Shouldn't have to set the 'enacted' field...
-PUBKEY=$( cat $KEYFILE.pub )
+PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 http --auth $AUTH PATCH $XOS/xos/users/1/ public_key="$PUBKEY" enacted=$( date "+%Y-%m-%dT%T")
 
 # Set up controller
