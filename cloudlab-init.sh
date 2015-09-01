@@ -1,18 +1,17 @@
 #!/bin/bash
 set -x
 
-# This script assumes that it is being run on the ctl node of the Tutorial-OpenStack
+# This script assumes that it is being run on the ctl node of the OpenStack
 # profile on CloudLab.
 
 XOS="http://ctl:9999/"
 AUTH="padmin@vicci.org:letmein"
+CORD=0
+IMAGE="xos"
 
 # Create public key if none present
-cat /dev/zero | ssh-keygen -q -N ""
+#cat /dev/zero | ssh-keygen -q -N ""
 PUBKEY=$( cat ~/.ssh/id_rsa.pub )
-
-# Make sure the public key is available inside the container
-cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
 
 # Install Docker
 wget -qO- https://get.docker.com/ | sh
@@ -20,11 +19,23 @@ sudo usermod -aG docker $(whoami)
 
 sudo apt-get install httpie
 
+if [ "$CORD" -ne 0 ]
+then
+    cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
+    cp ~/.ssh/id_rsa     xos/observers/vcpe/vcpe_private_key
+fi
+
 sudo docker build -t xos .
+
+if [ "$CORD" -ne 0 ]
+then
+    sudo docker build -t cord -f Dockerfile.cord .
+    IMAGE="cord"
+fi
 
 # OpenStack is using port 8000...
 MYIP=$( hostname -i )
-sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 xos
+sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 $IMAGE
 
 echo "Waiting for XOS to come up"
 until http $XOS &> /dev/null
