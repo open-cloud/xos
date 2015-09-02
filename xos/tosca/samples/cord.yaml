@@ -72,11 +72,51 @@ topology_template:
 
     # Now let's add a subscriber
 
-    The Baker Household:
+    My House:
        type: tosca.nodes.CORDSubscriber
        properties:
            firewall_enable: true
            cdn_enable: true
            url_filter_enable: true
            url_filter_level: R
+
+    Mom's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 010203040506
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Dad's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 90E2Ba82F975
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jack's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 685B359D91D5
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jill's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 34363BC9B6A6
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
 
