@@ -75,6 +75,7 @@ topology_template:
     My House:
        type: tosca.nodes.CORDSubscriber
        properties:
+           service_specific_id: 1234
            firewall_enable: true
            cdn_enable: true
            url_filter_enable: true
@@ -119,4 +120,18 @@ topology_template:
            - household:
                node: My House
                relationship: tosca.relationships.SubscriberDevice
+
+    My Volt:
+        type: tosca.nodes.VOLTTenant
+        properties:
+            service_specific_id: 1234
+        requirements:
+            - provider_service:
+                node: service_volt
+                relationship: tosca.relationships.MemberOfService
+            - subscriber:
+                node: My House
+                relationship: tosca.relationships.BelongsToSubscriber
+
+
 
