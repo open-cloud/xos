@@ -20,5 +20,5 @@ class XOSCORDSubscriber(XOSResource):
         pass
 
     def can_delete(self, obj):
-        return super(XOSService, self).can_delete(obj)
+        return super(XOSCORDSubscriber, self).can_delete(obj)
 

@@ -118,6 +118,16 @@ node_types:
                 type: boolean
                 default: true
 
+    tosca.nodes.CORDUser:
+        derived_from: tosca.nodes.Root
+        properties:
+            level:
+                type: string
+                default: PG_13
+            mac:
+                type: string
+                required: true
+
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
 
@@ -414,6 +424,9 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabiltys.xos.Site ]
 
+    tosca.relationships.SubscriberDevice:
+        derived_from: tosca.relationships.Root
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -449,3 +462,4 @@ node_types:
     tosca.capabilities.xos.Subscriber:
         derived_from: tosca.capabilities.Root
         description: An XOS Subscriber
+
