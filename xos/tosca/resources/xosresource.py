@@ -131,7 +131,7 @@ class XOSResource(object):
 
             v = self.try_intrinsic_function(v)
 
-            if v:
+            if v is not None:
                 args[prop] = v
 
         return args
@@ -147,7 +147,12 @@ class XOSResource(object):
         self.postprocess(xos_obj)
 
     def update(self, obj):
-        pass
+        return # XXX this doesn't work yet
+
+        xos_args = self.get_xos_args()
+        for (k,v) in xos_args:
+            setattr(obj, k)
+        obj.save()
 
     def delete(self, obj):
         if (self.can_delete(obj)):
