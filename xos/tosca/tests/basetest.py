@@ -60,7 +60,7 @@ topology_template:
     def execute(self, yml):
         u = User.objects.get(email=self.username)
 
-        print self.base_yaml+yml
+        #print self.base_yaml+yml
 
         xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=True)
         xt.execute(u)
