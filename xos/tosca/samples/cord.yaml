@@ -18,6 +18,25 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    # networks required by vCPE
+    lan_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vcpe
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vcpe
+              relationship: tosca.relationships.ConnectsToSlice
+
     service_vcpe:
       type: tosca.nodes.VCPEService
       requirements:
@@ -51,4 +70,13 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
+    # Now let's add a subscriber
+
+    The Baker Household:
+       type: tosca.nodes.CORDSubscriber
+       properties:
+           firewall_enable: true
+           cdn_enable: true
+           url_filter_enable: true
+           url_filter_level: R
 
