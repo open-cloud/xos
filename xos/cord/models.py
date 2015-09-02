@@ -631,7 +631,7 @@ class VCPETenant(Tenant):
            return None
         try:
            (a,b,c,d) = ip.split('.')
-           wan_mac = "02:42:%2x:%2x:%2x:%2x" % (int(a), int(b), int(c), int(d))
+           wan_mac = "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
         except:
            wan_mac = "Exception"
         return wan_mac
