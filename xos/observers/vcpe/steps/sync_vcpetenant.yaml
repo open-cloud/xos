@@ -67,7 +67,7 @@
     shell: rm -f /etc/resolv.conf
 
   - name: Install resolv.conf
-    copy src=/opt/xos/observers/vcpe/files/vm-resolv.conf
+    copy: src=/opt/xos/observers/vcpe/files/vm-resolv.conf
       dest=/etc/resolv.conf
 {% endif %}
 
