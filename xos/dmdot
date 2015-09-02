@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey
 
 # defaults
-apps = ["core", "hpc", "cord", "requestrouter"]
+apps = ["core", "hpc", "cord", "requestrouter", "helloworld"]
 output = "-json"
 
 # syntax: dmdot [-json | -dot] [app_name]
@@ -42,8 +42,6 @@ for app in apps:
 
 	PlCoreBase = getattr(models_module,"PlCoreBase")
 
-	
-
 	for classname in dir(models_module):
 		c = getattr(models_module, classname, None)
 		if type(c)==type(PlCoreBase):
@@ -66,20 +64,32 @@ if (output=='-dot'):
                 fields = c._meta.fields
 
                 for f in fields:
-                        if type(f)==ForeignKey and f.name.lower() in lower_class_names:
+                        if type(f)==ForeignKey and f.name.lower().split('_') in lower_class_names:
                                 linked_class = lower_class_names[f.name.lower()]
-                                print '\t"%s"->"%s";'%(c.__name__,linked_class.__name__)
+				if ('backref' in f.name):
+                                	print '\t"%s"->"%s";'%(linked_class.__name__,c.__name__)
+				else:
+                                	print '\t"%s"->"%s";'%(c.__name__,linked_class.__name__)
         print "}\n";
 elif (output=='-json'):
         d = {}
         for c in model_classes:
                 fields = c._meta.fields
-
+		
                 for f in fields:
-                        if type(f)==ForeignKey and f.name.lower() in lower_class_names:
-                                linked_class = lower_class_names[f.name.lower()]
+			field_type = f.name.lower().split('_')[0]
+                        if type(f)==ForeignKey and field_type in lower_class_names:
+                                linked_class = lower_class_names[field_type]
+				if ('backref' in f.name.lower()):
+					a = linked_class.__name__
+					b = c.__name__
+				else:
+					b = linked_class.__name__
+					a = c.__name__
+
                                 try:
-                                        d[c.__name__].append(linked_class.__name__)
+					if (b not in d[a]):
+                                        	d[a].append(b)
                                 except KeyError:
                                         d[c.__name__]=[linked_class.__name__]
         #d['ControllerNetwork'].append('SliceDeployments')
