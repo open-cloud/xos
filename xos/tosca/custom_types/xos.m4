@@ -49,7 +49,14 @@ define(xos_base_subscriber_props,
             kind:
                 type: string
                 default: generic
-            subscriber_specific_id:
+            service_specific_id:
+                type: string
+                required: false)
+define(xos_base_tenant_props,
+            kind:
+                type: string
+                default: generic
+            service_specific_id:
                 type: string
                 required: false)
 
@@ -127,6 +134,11 @@ node_types:
             mac:
                 type: string
                 required: true
+
+    tosca.nodes.VOLTTenant:
+        derived_from: tosca.nodes.Root
+        properties:
+            xos_base_tenant_props
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
@@ -425,6 +437,9 @@ node_types:
         valid_target_types: [ tosca.capabiltys.xos.Site ]
 
     tosca.relationships.SubscriberDevice:
+        derived_from: tosca.relationships.Root
+
+    tosca.relationships.BelongsToSubscriber:
         derived_from: tosca.relationships.Root
 
     tosca.capabilities.xos.Service:

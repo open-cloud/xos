@@ -13,7 +13,7 @@ from xosresource import XOSResource
 class XOSSubscriber(XOSResource):
     provides = "tosca.nodes.Subscriber"
     xos_model = Subscriber
-    copyin_props = ["subscriber_specific_id"]
+    copyin_props = ["service_specific_id"]
 
     def postprocess(self, obj):
         pass
