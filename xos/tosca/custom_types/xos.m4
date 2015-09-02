@@ -13,6 +13,7 @@ define(xos_base_props,
                 type: boolean
                 default: false
                 description: do not allow Tosca to create this object)
+# Service
 define(xos_base_service_caps,
             scalable:
                 type: tosca.capabilities.Scalable
@@ -38,6 +39,17 @@ define(xos_base_service_props,
                 type: string
                 required: false
             versionNumber:
+                type: string
+                required: false)
+# Subscriber
+define(xos_base_subscriber_caps,
+            subscriber:
+                type: tosca.capabilities.xos.Subscriber)
+define(xos_base_subscriber_props,
+            kind:
+                type: string
+                default: generic
+            subscriber_specific_id:
                 type: string
                 required: false)
 
@@ -79,6 +91,32 @@ node_types:
             xos_base_service_caps
         properties:
             xos_base_service_props
+
+    tosca.nodes.Subscriber:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            xos_base_subscriber_caps
+        properties:
+            xos_base_subscriber_props
+
+    tosca.nodes.CORDSubscriber:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            xos_base_subscriber_caps
+        properties:
+            xos_base_subscriber_props
+            firewall_enable:
+                type: boolean
+                default: false
+            url_filter_enable:
+                type: boolean
+                default: false
+            url_filter_level:
+                type: string
+                default: PG
+            cdn_enable:
+                type: boolean
+                default: true
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
@@ -407,3 +445,7 @@ node_types:
     tosca.capabilities.xos.User:
         derived_from: tosca.capabilities.Root
         description: An XOS user
+
+    tosca.capabilities.xos.Subscriber:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Subscriber
