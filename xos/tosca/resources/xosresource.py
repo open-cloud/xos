@@ -150,6 +150,7 @@ class XOSResource(object):
         xos_args = self.get_xos_args()
         for (k,v) in xos_args.items():
             setattr(obj, k, v)
+        self.postprocess(obj)
         obj.save()
 
     def delete(self, obj):
