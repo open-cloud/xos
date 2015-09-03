@@ -7,7 +7,8 @@ class ServiceTest(BaseToscaTest):
              "create_service_notpublished",
              "create_service_notenabled",
              "create_service_public_key",
-             "update_service_notpublished"]
+             "update_service_notpublished",
+             "create_service_maximal"]
 
     def cleanup(self):
         self.try_to_delete(Service, name="test_svc")
