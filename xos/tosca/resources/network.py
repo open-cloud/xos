@@ -41,7 +41,7 @@ class XOSNetwork(XOSResource):
 
     def postprocess(self, obj):
         for sliceName in self.get_requirements("tosca.relationships.ConnectsToSlice"):
-            slice = self.get_xos_object(Slice, sliceName)
+            slice = self.get_xos_object(Slice, name=sliceName)
             netSlices = NetworkSlice.objects.filter(network=obj, slice = slice)
             if not netSlices:
                 self.info("Attached Network %s to Slice %s" % (obj, slice))
