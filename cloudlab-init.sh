@@ -70,3 +70,9 @@ done
 # BUG: Shouldn't have to set the controller_kind field, it's invalid in the initial fixture
 FLATNET=$( sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{print $4}' )
 http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=$FLATNET controller_kind=""
+
+if [ "$CORD" -ne 0 ]
+then
+    DOCKER=$( docker ps|grep $IMAGE|awk '{print $NF}' )
+    docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml"
+fi
