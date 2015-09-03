@@ -50,7 +50,9 @@ topology_template:
         obj = cls.objects.get(name=name)
         assert(obj)
         for (k,v) in kwargs.items():
-            assert(getattr(obj,k) == v)
+            if (getattr(obj,k,None) != v):
+                print "Object %s property '%s' is '%s' and should be '%s'" % (obj, k, getattr(obj,k,None), v)
+                assert(False)
 
     def try_to_delete(self, cls, **kwargs):
         objs = cls.objects.filter(**kwargs)
