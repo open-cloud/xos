@@ -147,11 +147,9 @@ class XOSResource(object):
         self.postprocess(xos_obj)
 
     def update(self, obj):
-        return # XXX this doesn't work yet
-
         xos_args = self.get_xos_args()
-        for (k,v) in xos_args:
-            setattr(obj, k)
+        for (k,v) in xos_args.items():
+            setattr(obj, k, v)
         obj.save()
 
     def delete(self, obj):
