@@ -35,11 +35,29 @@ class ServiceTest(BaseToscaTest):
     def update_service_notpublished(self):
         self.assert_noobj(Service, "test_svc")
         self.execute(self.make_nodetemplate("test_svc", "tosca.nodes.Service"))
-        self.assert_obj(Service, "test_svc", kind="generic", published=True, enabled=True)
-        original_id = Service.objects.get(name="test_svc").id
+        original_obj = self.assert_obj(Service, "test_svc", kind="generic", published=True, enabled=True)
         self.execute(self.make_nodetemplate("test_svc", "tosca.nodes.Service", {"published": False}))
-        self.assert_obj(Service, "test_svc", kind="generic", published=False, enabled=True)
-        assert(Service.objects.get(name="test_svc").id == original_id)
+        updated_obj = self.assert_obj(Service, "test_svc", kind="generic", published=False, enabled=True)
+        assert(original_obj.id == updated_obj.id)
+
+    def create_service_maximal(self):
+        self.assert_noobj(Service, "test_svc")
+        self.execute(self.make_nodetemplate("test_svc", "tosca.nodes.Service",
+                        {"kind": "testkind",
+                         "published": False,
+                         "enabled": False,
+                         "view_url": "http://foo/",
+                         "icon_url": "http://bar/",
+                         "public_key": "foobar",
+                         "versionNumber": "1.2"} ))
+        self.assert_obj(Service, "test_svc",
+                         kind="testkind",
+                         published=False,
+                         enabled=False,
+                         view_url="http://foo/",
+                         icon_url="http://bar/",
+                         public_key="foobar",
+                         versionNumber="1.2")
 
 if __name__ == "__main__":
     ServiceTest()
