@@ -40,6 +40,16 @@ topology_template:
             yml = yml + "      properties:\n"
             for (k,v) in props.items():
                 yml = yml + "          %s: %s\n" % (k, v)
+
+        if reqs:
+            yml = yml + "      requirements:\n"
+            i=0
+            for (name,relat) in reqs:
+                yml = yml + "        - req%d:\n" % i
+                yml = yml + "              node: %s\n" % name
+                yml = yml + "              relationship: %s\n" % relat
+                i = i + 1
+
         return yml
 
     def assert_noobj(self, cls, name):
@@ -53,6 +63,7 @@ topology_template:
             if (getattr(obj,k,None) != v):
                 print "Object %s property '%s' is '%s' and should be '%s'" % (obj, k, getattr(obj,k,None), v)
                 assert(False)
+        return obj
 
     def try_to_delete(self, cls, **kwargs):
         objs = cls.objects.filter(**kwargs)
@@ -64,7 +75,7 @@ topology_template:
 
         #print self.base_yaml+yml
 
-        xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=True)
+        xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=False)
         xt.execute(u)
 
     def runtest(self):
