@@ -8,7 +8,8 @@ class ServiceTest(BaseToscaTest):
              "create_service_notenabled",
              "create_service_public_key",
              "update_service_notpublished",
-             "create_service_maximal"]
+             "create_service_maximal",
+             "destroy_service"]
 
     def cleanup(self):
         self.try_to_delete(Service, name="test_svc")
@@ -59,6 +60,13 @@ class ServiceTest(BaseToscaTest):
                          icon_url="http://bar/",
                          public_key="foobar",
                          versionNumber="1.2")
+
+    def destroy_service(self):
+        self.assert_noobj(Service, "test_svc")
+        self.execute(self.make_nodetemplate("test_svc", "tosca.nodes.Service"))
+        self.assert_obj(Service, "test_svc", kind="generic", published=True, enabled=True)
+        self.destroy(self.make_nodetemplate("test_svc", "tosca.nodes.Service"))
+        self.assert_noobj(Service, "test_svc")
 
 if __name__ == "__main__":
     ServiceTest()
