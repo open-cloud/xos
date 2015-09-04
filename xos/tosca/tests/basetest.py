@@ -34,7 +34,7 @@ topology_template:
     def __init__(self):
         self.runtest()
 
-    def make_nodetemplate(self, name, type, props={}, reqs=[]):
+    def make_nodetemplate(self, name, type, props={}, reqs=[], caps={}):
         yml = "    %s:\n      type: %s\n"  % (name, type)
         if props:
             yml = yml + "      properties:\n"
@@ -49,6 +49,14 @@ topology_template:
                 yml = yml + "              node: %s\n" % name
                 yml = yml + "              relationship: %s\n" % relat
                 i = i + 1
+
+        if caps:
+            yml = yml + "      capabilities:\n"
+            for (cap,capdict) in caps.items():
+               yml = yml + "        %s:\n" % cap
+               yml = yml + "          properties:\n"
+               for (k,v) in capdict.items():
+                   yml = yml + "            %s: %s\n" % (k,v)
 
         return yml
 
@@ -77,6 +85,14 @@ topology_template:
 
         xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=False)
         xt.execute(u)
+
+    def destroy(self, yml):
+        u = User.objects.get(email=self.username)
+
+        #print self.base_yaml+yml
+
+        xt = XOSTosca(self.base_yaml+yml, parent_dir=parentdir, log_to_console=False)
+        xt.destroy(u)
 
     def runtest(self):
         for test in self.tests:
