@@ -7,7 +7,8 @@ class NetworkTest(BaseToscaTest):
              "create_network_maximal",
              "create_network_connected",
              "create_network_connected_two_slices",
-             "update_network_labels"]
+             "update_network_labels",
+             "destroy_network"]
 
     def cleanup(self):
         self.try_to_delete(Network, name="test_net")
@@ -111,24 +112,38 @@ class NetworkTest(BaseToscaTest):
 
         assert(net.id == updated_net.id)
 
-"""
-    name = models.CharField(max_length=32)
-    template = models.ForeignKey(NetworkTemplate)
-    subnet = models.CharField(max_length=32, blank=True)
-    ports = models.CharField(max_length=1024, blank=True, null=True, validators=[ValidateNatList])
-    labels = models.CharField(max_length=1024, blank=True, null=True)
-    owner = models.ForeignKey(Slice, related_name="ownedNetworks", help_text="Slice that owns control of this Network")
+    def update_network_ports(self):
+        self.assert_noobj(Network, "test_net")
+        self.execute(self.get_base_templates() +
+                     self.make_nodetemplate("test_net", "tosca.nodes.network.Network.XOS",
+                                            reqs=[("testsite_slice1", "tosca.relationships.MemberOfSlice"),
+                                                  ("Private", "tosca.relationships.UsesNetworkTemplate")]))
+        net=self.assert_obj(Network, "test_net", owner=self.slice1, template=self.private, labels=None, ports=None)
 
-    guaranteed_bandwidth = models.IntegerField(default=0)
-    permit_all_slices = models.BooleanField(default=False)
-    permitted_slices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
-    slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
-    slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
+        self.execute(self.get_base_templates() +
+                     self.make_nodetemplate("test_net", "tosca.nodes.network.Network.XOS",
+                                            props={"port": "tcp/2222, udp/3333"},
+                                            reqs=[("testsite_slice1", "tosca.relationships.MemberOfSlice"),
+                                                  ("Private", "tosca.relationships.UsesNetworkTemplate")]))
 
-    topology_parameters = models.TextField(null=True, blank=True)
-    controller_url = models.CharField(null=True, blank=True, max_length=1024)
-    controller_parameters = models.TextField(null=True, blank=True)
-"""
+        updated_net = self.assert_obj(Network, "test_net", owner=self.slice1, template=self.private, labels=None, ports="tcp/2222, udp/3333")
+
+        assert(net.id == updated_net.id)
+
+    def destroy_network(self):
+        self.assert_noobj(Network, "test_net")
+        self.execute(self.get_base_templates() +
+                     self.make_nodetemplate("test_net", "tosca.nodes.network.Network",
+                                            reqs=[("testsite_slice1", "tosca.relationships.MemberOfSlice"),
+                                                  ("Private", "tosca.relationships.UsesNetworkTemplate")]))
+        net=self.assert_obj(Network, "test_net", owner=self.slice1, template=self.private)
+
+        self.destroy(self.get_base_templates() +
+                     self.make_nodetemplate("test_net", "tosca.nodes.network.Network",
+                                            reqs=[("testsite_slice1", "tosca.relationships.MemberOfSlice"),
+                                                  ("Private", "tosca.relationships.UsesNetworkTemplate")]))
+
+        self.assert_noobj(Network, "test_net")
 
 if __name__ == "__main__":
     NetworkTest()
