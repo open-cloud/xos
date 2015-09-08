@@ -60,7 +60,7 @@ class SyncControllerSlices(OpenStackSyncStep):
         if (not controller_slice.tenant_id):
             try:
                 driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
-                driver.shell.nova.quotas.update(tenant_id=controller_slice.tenant_id, instances=int(controller_slice.slice.max_slivers))
+                driver.shell.nova.quotas.update(tenant_id=tenant_id, instances=int(controller_slice.slice.max_slivers))
             except:
                 logger.log_exc('Could not update quota for %s'%controller_slice.slice.name)
                 raise Exception('Could not update quota for %s'%controller_slice.slice.name)
