@@ -21,7 +21,7 @@ class XOSService(XOSResource):
 
             existing_tenancy = CoarseTenant.get_tenant_objects().filter(provider_service = provider_service, subscriber_service = obj)
             if existing_tenancy:
-                self.info("Tenancy relationship from %s to %s already exists" % (str(service), str(provider_service)))
+                self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
                 tenancy = CoarseTenant(provider_service = provider_service,
                                        subscriber_service = obj)
