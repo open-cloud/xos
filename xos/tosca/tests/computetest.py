@@ -3,7 +3,7 @@ from basetest import BaseToscaTest
 from core.models import Sliver, Slice
 
 class ComputeTest(BaseToscaTest):
-    tests = ["create_compute_m1_tiny",
+    tests = [ # "create_compute_m1_tiny", XXX m1.tiny does not exist on cloudlab
              "create_compute_m1_small",
              "create_compute_m1_large_8192MB",
              "create_compute_m1_large_8GB",
