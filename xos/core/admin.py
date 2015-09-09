@@ -1240,8 +1240,8 @@ class TagAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
 
 class SliverPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'sliver', 'ip']
-    readonly_fields = ("backend_status_icon", "ip", )
+    fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'mac']
+    readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
     selflink_fieldname = "network"
     extra = 0
@@ -1668,8 +1668,8 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     readonly_fields = ('backend_status_icon', )
 
 class NetworkPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'sliver', 'ip']
-    readonly_fields = ("backend_status_icon", "ip", )
+    fields = ['backend_status_icon', 'network', 'sliver', 'ip', 'mac']
+    readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
     selflink_fieldname = "sliver"
     extra = 0

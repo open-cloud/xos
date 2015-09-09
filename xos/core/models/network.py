@@ -219,6 +219,7 @@ class NetworkSliver(PlCoreBase):
     sliver = models.ForeignKey(Sliver, null=True, blank=True, related_name='networkslivers')      # related_name='ports'
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
+    mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
 
     class Meta:
         unique_together = ('network', 'sliver')
