@@ -633,15 +633,7 @@ class VCPETenant(Tenant):
 
     @property
     def wan_mac(self):
-        ip = self.wan_ip
-        if not ip:
-           return None
-        try:
-           (a,b,c,d) = ip.split('.')
-           wan_mac = "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
-        except:
-           wan_mac = "Exception"
-        return wan_mac
+        return self.addresses.get("wan", (None, None) )[1]
 
     @property
     def private_ip(self):

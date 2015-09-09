@@ -109,7 +109,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
             except:
                 # fail silently
                 pass
-        
+
     else:
         msg = open(fqp+'.out').read()
 
@@ -139,13 +139,17 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     sliver_name = opts["sliver_name"]
     hostname = opts["hostname"]
     private_key = opts["private_key"]
+    nat_ip = opts["nat_ip"]
+
+    try:
+        proxy_ssh = Config().observer_proxy_ssh
+    except:
+        proxy_ssh = True
 
     (opts, fqp) = get_playbook_fn(opts, path)
     private_key_pathname = fqp + ".key"
     config_pathname = fqp + ".config"
     hosts_pathname = fqp + ".hosts"
-
-    proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
 
     f = open(private_key_pathname, "w")
     f.write(private_key)
@@ -153,14 +157,22 @@ def run_template_ssh(name, opts, path='', expected_num=None):
 
     f = open(config_pathname, "w")
     f.write("[ssh_connection]\n")
-    f.write('ssh_args = -o "%s" -o StrictHostKeyChecking=no\n' % proxy_command)
+    if proxy_ssh:
+        proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
+        f.write('ssh_args = -o "%s"\n' % proxy_command)
     f.write('scp_if_ssh = True\n')
     f.write('pipelining = True\n')
+    f.write('\n[defaults]\n')
+    f.write('host_key_checking = False\n')
     f.close()
 
     f = open(hosts_pathname, "w")
     f.write("[%s]\n" % sliver_name)
-    f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
+    if proxy_ssh:
+        f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
+    else:
+        # acb: Login user is hardcoded, this is not great
+        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (nat_ip, private_key_pathname))
     f.close()
 
     # SSH will complain if private key is world or group readable
