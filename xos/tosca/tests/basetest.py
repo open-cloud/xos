@@ -1,4 +1,6 @@
 import os
+import random
+import string
 import sys
 
 # add the parent parent directory to sys.path
@@ -34,7 +36,7 @@ topology_template:
     def __init__(self):
         self.runtest()
 
-    def make_nodetemplate(self, name, type, props={}, reqs=[], caps={}):
+    def make_nodetemplate(self, name, type, props={}, reqs=[], caps={}, artifacts={}):
         yml = "    %s:\n      type: %s\n"  % (name, type)
         if props:
             yml = yml + "      properties:\n"
@@ -58,7 +60,25 @@ topology_template:
                for (k,v) in capdict.items():
                    yml = yml + "            %s: %s\n" % (k,v)
 
+        if artifacts:
+            yml = yml + "      artifacts:\n"
+            for (k,v) in artifacts.items():
+                yml = yml + "        %s: %s\n" % (k,v)
+
         return yml
+
+    def make_compute(self, slice, name, caps={}, props={}, reqs=[], num_cpus="1", disk_size="10 GB", mem_size="4 MB"):
+        caps.update( {"host": {"num_cpus": num_cpus, "disk_size": disk_size, "mem_size": mem_size},
+                      "os": {"architecture": "x86_64", "type": "linux", "distribution": "rhel", "version": "6.5"}} )
+        reqs.append( (slice, "tosca.relationships.MemberOfSlice") )
+
+        return self.make_nodetemplate(name, "tosca.nodes.Compute",
+                                      caps= caps,
+                                      props = props,
+                                      reqs= reqs)
+
+    def make_random_string(self,desired_len):
+        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(desired_len))
 
     def assert_noobj(self, cls, name):
         objs = cls.objects.filter(name=name)
