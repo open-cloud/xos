@@ -336,10 +336,10 @@ class TenantWithContainer(Tenant):
     """ A tenant that manages a container """
 
     # this is a hack and should be replaced by something smarter...
-    LOOK_FOR_IMAGES=["trusty-server-multi-nic",
-                     "ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
+    LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
                      "Ubuntu 14.04 LTS",    # portal
                      "Ubuntu-14.04-LTS",    # ONOS demo machine
+                     "trusty-server-multi-nic", # CloudLab
                     ]
 
     class Meta:
