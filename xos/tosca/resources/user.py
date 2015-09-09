@@ -12,15 +12,11 @@ from xosresource import XOSResource
 class XOSUser(XOSResource):
     provides = "tosca.nodes.User"
     xos_model = User
+    name_field = "email"
+    copyin_props = ["password", "firstname", "lastname", "phone", "user_url", "public_key", "is_active", "is_admin", "login_page"]
 
     def get_xos_args(self):
-        args = {"email": self.nodetemplate.name}
-
-        # copy simple string properties from the template into the arguments
-        for prop in ["password", "firstname", "lastname", "phone", "user_url", "public_key", "is_active", "is_admin", "login_page"]:
-            v = self.get_property(prop)
-            if v:
-                args[prop] = v
+        args = super(XOSUser, self).get_xos_args()
 
         site_name = self.get_requirement("tosca.relationships.MemberOfSite")
         if site_name:
