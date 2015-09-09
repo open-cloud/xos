@@ -116,10 +116,14 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
         if o.volt:
             vlan_ids.append(o.volt.vlan_id)
 
+        # Probably should expose this in a config file
+        full_setup = True
+
         fields = {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
-                "bbs_addrs": bbs_addrs}
+                "bbs_addrs": bbs_addrs,
+                "full_setup": full_setup}
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
