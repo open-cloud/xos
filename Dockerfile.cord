@@ -3,3 +3,4 @@ MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 
 ADD xos/observers/vcpe/supervisor/vcpe-observer.conf /etc/supervisor/conf.d/
 RUN sed -i 's/ubuntu-vcpe4/trusty-server-multi-nic/' /opt/xos/cord/models.py
+RUN sed -i 's/proxy_ssh=True/proxy_ssh=False/' /opt/xos/observers/vcpe/vcpe_observer_config

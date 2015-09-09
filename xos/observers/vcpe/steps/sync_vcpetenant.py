@@ -116,10 +116,16 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
         if o.volt:
             vlan_ids.append(o.volt.vlan_id)
 
+        try:
+            full_setup = Config().observer_full_setup
+        except:
+            full_setup = True
+
         fields = {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
-                "bbs_addrs": bbs_addrs}
+                "bbs_addrs": bbs_addrs,
+                "full_setup": full_setup}
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -203,4 +209,3 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
 
     def delete_record(self, m):
         pass
-

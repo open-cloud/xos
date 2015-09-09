@@ -33,6 +33,8 @@ driver=None
 pretend=False
 backoff_disabled=True
 save_ansible_output=True
+proxy_ssh=True
+full_setup=True
 
 [feefie]
 client_id='vicci_dev_central'
