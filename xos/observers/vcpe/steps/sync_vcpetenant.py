@@ -116,8 +116,10 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
         if o.volt:
             vlan_ids.append(o.volt.vlan_id)
 
-        # Probably should expose this in a config file
-        full_setup = True
+        try:
+            full_setup = Config().observer_full_setup
+        except:
+            full_setup = True
 
         fields = {"vlan_ids": vlan_ids,
                 "dnsdemux_ip": dnsdemux_ip,
@@ -207,4 +209,3 @@ class SyncVCPETenant(SyncSliverUsingAnsible):
 
     def delete_record(self, m):
         pass
-
