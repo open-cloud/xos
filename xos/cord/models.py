@@ -463,12 +463,11 @@ class VCPETenant(Tenant):
 
     KIND = VCPE_KIND
 
-    sync_attributes = ("nat_ip",
-                       "lan_ip",
-                       "wan_ip",
-                       "private_ip",
-                       "hpc_client_ip",
-                       "wan_mac")
+    sync_attributes = ("nat_ip", "nat_mac",
+                       "lan_ip", "lan_mac",
+                       "wan_ip", "wan_mac",
+                       "private_ip", "private_mac",
+                       "hpc_client_ip", "hpc_client_mac")
 
     default_attributes = {"sliver_id": None,
                           "users": [],
@@ -601,28 +600,36 @@ class VCPETenant(Tenant):
         addresses = {}
         for ns in self.sliver.ports.all():
             if "lan" in ns.network.name.lower():
-                addresses["lan"] = ns.ip
+                addresses["lan"] = (ns.ip, ns.mac)
             elif "wan" in ns.network.name.lower():
-                addresses["wan"] = ns.ip
+                addresses["wan"] = (ns.ip, ns.mac)
             elif "private" in ns.network.name.lower():
-                addresses["private"] = ns.ip
+                addresses["private"] = (ns.ip, ns.mac)
             elif "nat" in ns.network.name.lower():
-                addresses["nat"] = ns.ip
+                addresses["nat"] = (ns.ip, ns.mac)
             elif "hpc_client" in ns.network.name.lower():
-                addresses["hpc_client"] = ns.ip
+                addresses["hpc_client"] = (ns.ip, ns.mac)
         return addresses
 
     @property
     def nat_ip(self):
-        return self.addresses.get("nat",None)
+        return self.addresses.get("nat", (None,None) )[0]
+
+    @property
+    def nat_mac(self):
+        return self.addresses.get("nat", (None,None) )[1]
 
     @property
     def lan_ip(self):
-        return self.addresses.get("lan",None)
+        return self.addresses.get("lan", (None, None) )[0]
+
+    @property
+    def lan_mac(self):
+        return self.addresses.get("lan", (None, None) )[1]
 
     @property
     def wan_ip(self):
-        return self.addresses.get("wan",None)
+        return self.addresses.get("wan", (None, None) )[0]
 
     @property
     def wan_mac(self):
@@ -638,11 +645,19 @@ class VCPETenant(Tenant):
 
     @property
     def private_ip(self):
-        return self.addresses.get("private",None)
+        return self.addresses.get("private", (None, None) )[0]
+
+    @property
+    def private_mac(self):
+        return self.addresses.get("private", (None, None) )[1]
 
     @property
     def hpc_client_ip(self):
-        return self.addresses.get("hpc_client",None)
+        return self.addresses.get("hpc_client", (None, None) )[0]
+
+    @property
+    def hpc_client_mac(self):
+        return self.addresses.get("hpc_client", (None, None) )[1]
 
     @property
     def is_synced(self):
