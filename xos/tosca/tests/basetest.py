@@ -68,6 +68,9 @@ topology_template:
         return yml
 
     def make_compute(self, slice, name, caps={}, props={}, reqs=[], num_cpus="1", disk_size="10 GB", mem_size="4 MB"):
+        reqs = reqs[:]
+        caps = caps.copy()
+
         caps.update( {"host": {"num_cpus": num_cpus, "disk_size": disk_size, "mem_size": mem_size},
                       "os": {"architecture": "x86_64", "type": "linux", "distribution": "rhel", "version": "6.5"}} )
         reqs.append( (slice, "tosca.relationships.MemberOfSlice") )
