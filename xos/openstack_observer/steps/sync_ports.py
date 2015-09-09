@@ -127,11 +127,13 @@ class SyncPorts(OpenStackSyncStep):
                 continue
 
             ip=port["fixed_ips"][0]["ip_address"]
+            mac=port["mac_address"]
             logger.info("creating Port (%s, %s, %s, %s)" % (str(network), str(sliver), ip, str(port["id"])))
 
             ns = Port(network=network,
                                sliver=sliver,
                                ip=ip,
+                               mac=mac,
                                port_id=port["id"])
 
             try:
