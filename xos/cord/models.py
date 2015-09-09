@@ -485,6 +485,7 @@ class VCPETenant(Tenant):
         LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
                          "Ubuntu 14.04 LTS",    # portal
                          "Ubuntu-14.04-LTS",    # ONOS demo machine
+                         "trusty-server-multi-nic", # CloudLab
                         ]
         for image_name in LOOK_FOR_IMAGES:
             images = Image.objects.filter(name = image_name)
