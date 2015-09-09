@@ -43,12 +43,6 @@ class PortTest(BaseToscaTest):
     def test_slice2_2(self):
         return Sliver.objects.get(name="test_slice2-2")
 
-    def make_compute(self, slice, name):
-        return self.make_nodetemplate(name, "tosca.nodes.Compute",
-                                      caps={"host": {"num_cpus": "1", "disk_size": "10 GB", "mem_size": "4 MB"},
-                                            "os": {"architecture": "x86_64", "type": "linux", "distribution": "rhel", "version": "6.5"}},
-                                      reqs=[(slice, "tosca.relationships.MemberOfSlice")])
-
     def get_base_templates(self):
         return self.make_nodetemplate("testsite", "tosca.nodes.Site") + \
                self.make_nodetemplate("testsite_slice1", "tosca.nodes.Slice", reqs=[("testsite", "tosca.relationships.MemberOfSite")]) + \
