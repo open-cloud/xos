@@ -76,7 +76,7 @@ class SyncStep(object):
 
         main_objs = self.observes
 	if (type(main_objs) is not list):
-		main_objs=[main_obj]
+		main_objs=[main_objs]
 	
 	objs = []
 	for main_obj in main_objs:
