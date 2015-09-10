@@ -31,7 +31,6 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         if ceilometer_services:
             self._meta.get_field("provider_service").default = ceilometer_services[0].id
         super(MonitoringChannel, self).__init__(*args, **kwargs)
-        self.sliver = None
 
     def save(self, *args, **kwargs):
         if not self.creator:
@@ -46,7 +45,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         model_policy_monitoring_channel(self.pk)
 
     def delete(self, *args, **kwargs):
-        self.cleanup_sliver()
+        self.cleanup_container()
         super(MonitoringChannel, self).delete(*args, **kwargs)
 
 def model_policy_monitoring_channel(pk):

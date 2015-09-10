@@ -64,12 +64,13 @@ class MonitoringChannelForm(forms.ModelForm):
         model = MonitoringChannel
 
 class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'service_specific_id', )
+    list_display = ('backend_status_icon', 'id', )
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', # 'service_specific_id', # 'service_specific_attribute',
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_attribute',
+                                     'sliver',
                                      'creator'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
+    readonly_fields = ('backend_status_text', 'sliver', 'service_specific_attribute')
     form = MonitoringChannelForm
 
     suit_form_tabs = (('general','Details'),)
