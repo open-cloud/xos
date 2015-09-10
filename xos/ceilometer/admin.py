@@ -49,12 +49,17 @@ class MonitoringChannelForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (MonitoringChannelForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = CEILOMETER_KIND
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = CeilometerService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
             self.fields['creator'].initial = self.instance.creator
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = CEILOMETER_KIND
+            if CeilometerService.get_service_objects().exists():
+               self.fields["provider_service"].initial = CeilometerService.get_service_objects().all()[0]
+
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
