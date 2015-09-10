@@ -146,6 +146,7 @@ function remigrate {
     python ./manage.py makemigrations requestrouter
     python ./manage.py makemigrations syndicate_storage
     python ./manage.py makemigrations cord
+    python ./manage.py makemigrations ceilometer
     #python ./manage.py makemigrations servcomp
 }
 

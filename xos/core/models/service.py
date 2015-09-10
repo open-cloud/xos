@@ -332,6 +332,130 @@ class Tenant(PlCoreBase, AttributeMixin):
             return None
         return sorted(st, key=attrgetter('id'))[0]
 
+class TenantWithContainer(Tenant):
+    """ A tenant that manages a container """
+
+    # this is a hack and should be replaced by something smarter...
+    LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
+                     "Ubuntu 14.04 LTS",    # portal
+                     "Ubuntu-14.04-LTS",    # ONOS demo machine
+                     "trusty-server-multi-nic", # CloudLab
+                    ]
+
+    class Meta:
+        proxy = True
+
+    def __init__(self, *args, **kwargs):
+        super(TenantWithContainer, self).__init__(*args, **kwargs)
+        self.cached_sliver=None
+        self.orig_sliver_id = self.get_initial_attribute("sliver_id")
+
+    @property
+    def sliver(self):
+        from core.models import Sliver
+        if getattr(self, "cached_sliver", None):
+            return self.cached_sliver
+        sliver_id=self.get_attribute("sliver_id")
+        if not sliver_id:
+            return None
+        slivers=Sliver.objects.filter(id=sliver_id)
+        if not slivers:
+            return None
+        sliver=slivers[0]
+        sliver.caller = self.creator
+        self.cached_sliver = sliver
+        return sliver
+
+    @sliver.setter
+    def sliver(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("sliver_id", None)):
+            self.cached_sliver=None
+        self.set_attribute("sliver_id", value)
+
+    @property
+    def creator(self):
+        from core.models import User
+        if getattr(self, "cached_creator", None):
+            return self.cached_creator
+        creator_id=self.get_attribute("creator_id")
+        if not creator_id:
+            return None
+        users=User.objects.filter(id=creator_id)
+        if not users:
+            return None
+        user=users[0]
+        self.cached_creator = users[0]
+        return user
+
+    @creator.setter
+    def creator(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("creator_id", None)):
+            self.cached_creator=None
+        self.set_attribute("creator_id", value)
+
+    @property
+    def image(self):
+        from core.models import Image
+        # Implement the logic here to pick the image that should be used when
+        # instantiating the VM that will hold the container.
+        for image_name in self.LOOK_FOR_IMAGES:
+            images = Image.objects.filter(name = image_name)
+            if images:
+                return images[0]
+
+        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(self.LOOK_FOR_IMAGES))
+
+    def pick_node(self):
+        from core.models import Node
+        nodes = list(Node.objects.all())
+        # TODO: logic to filter nodes by which nodes are up, and which
+        #   nodes the slice can instantiate on.
+        nodes = sorted(nodes, key=lambda node: node.slivers.all().count())
+        return nodes[0]
+
+    def manage_container(self):
+        from core.models import Sliver, Flavor
+
+        if self.deleted:
+            return
+
+        if (self.sliver is not None) and (self.sliver.image != self.image):
+            self.sliver.delete()
+            self.sliver = None
+
+        if self.sliver is None:
+            if not self.provider_service.slices.count():
+                raise XOSConfigurationError("The VCPE service has no slices")
+
+            flavors = Flavor.objects.filter(name="m1.small")
+            if not flavors:
+                raise XOSConfigurationError("No m1.small flavor")
+
+            node =self.pick_node()
+            sliver = Sliver(slice = self.provider_service.slices.all()[0],
+                            node = node,
+                            image = self.image,
+                            creator = self.creator,
+                            deployment = node.site_deployment.deployment,
+                            flavor = flavors[0])
+            sliver.save()
+
+            try:
+                self.sliver = sliver
+                super(TenantWithContainer, self).save()
+            except:
+                sliver.delete()
+                raise
+
+    def cleanup_container(self):
+        if self.sliver:
+            # print "XXX cleanup sliver", self.sliver
+            self.sliver.delete()
+            self.sliver = None
 
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """

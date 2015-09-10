@@ -13,7 +13,7 @@ from xosresource import XOSResource
 class XOSService(XOSResource):
     provides = "tosca.nodes.Service"
     xos_model = Service
-    copyin_props = ["view_url", "kind", "enabled", "published", "public_key"]
+    copyin_props = ["view_url", "icon_url", "kind", "enabled", "published", "public_key", "versionNumber"]
 
     def postprocess(self, obj):
         for provider_service_name in self.get_requirements("tosca.relationships.TenantOfService"):
@@ -21,7 +21,7 @@ class XOSService(XOSResource):
 
             existing_tenancy = CoarseTenant.get_tenant_objects().filter(provider_service = provider_service, subscriber_service = obj)
             if existing_tenancy:
-                self.info("Tenancy relationship from %s to %s already exists" % (str(service), str(provider_service)))
+                self.info("Tenancy relationship from %s to %s already exists" % (str(obj), str(provider_service)))
             else:
                 tenancy = CoarseTenant(provider_service = provider_service,
                                        subscriber_service = obj)

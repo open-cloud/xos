@@ -6,17 +6,19 @@ sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
-from core.models import Slice,User,Network,NetworkTemplate
+from core.models import Slice,User,Network,NetworkTemplate,NetworkSlice
 
 from xosresource import XOSResource
 
 class XOSNetwork(XOSResource):
     provides = ["tosca.nodes.network.Network", "tosca.nodes.network.Network.XOS"]
     xos_model = Network
+    copyin_props = ["ports", "labels"]
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name,
-                "autoconnect": False,}
+        args = super(XOSNetwork, self).get_xos_args()
+
+        args["autoconnect"] = False
 
         slice_name = self.get_requirement("tosca.relationships.MemberOfSlice")
         if slice_name:
@@ -40,7 +42,13 @@ class XOSNetwork(XOSResource):
         return args
 
     def postprocess(self, obj):
-        pass
+        for sliceName in self.get_requirements("tosca.relationships.ConnectsToSlice"):
+            slice = self.get_xos_object(Slice, name=sliceName)
+            netSlices = NetworkSlice.objects.filter(network=obj, slice = slice)
+            if not netSlices:
+                self.info("Attached Network %s to Slice %s" % (obj, slice))
+                ns = NetworkSlice(network = obj, slice=slice)
+                ns.save()
 
 #        v = self.get_property("permitted_slices")
 #        if v:

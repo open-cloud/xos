@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, Node, Image, User, Flavor, Subscriber
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -457,18 +457,17 @@ class VCPEService(Service):
 VCPEService.setup_simple_attributes()
 
 
-class VCPETenant(Tenant):
+class VCPETenant(TenantWithContainer):
     class Meta:
         proxy = True
 
     KIND = VCPE_KIND
 
-    sync_attributes = ("nat_ip",
-                       "lan_ip",
-                       "wan_ip",
-                       "private_ip",
-                       "hpc_client_ip",
-                       "wan_mac")
+    sync_attributes = ("nat_ip", "nat_mac",
+                       "lan_ip", "lan_mac",
+                       "wan_ip", "wan_mac",
+                       "private_ip", "private_mac",
+                       "hpc_client_ip", "hpc_client_mac")
 
     default_attributes = {"instance_id": None,
                           "users": [],
@@ -599,50 +598,58 @@ class VCPETenant(Tenant):
             return {}
 
         addresses = {}
-        for ns in self.sliver.ports.all():
+        for ns in self.instance.ports.all():
             if "lan" in ns.network.name.lower():
-                addresses["lan"] = ns.ip
+                addresses["lan"] = (ns.ip, ns.mac)
             elif "wan" in ns.network.name.lower():
-                addresses["wan"] = ns.ip
+                addresses["wan"] = (ns.ip, ns.mac)
             elif "private" in ns.network.name.lower():
-                addresses["private"] = ns.ip
+                addresses["private"] = (ns.ip, ns.mac)
             elif "nat" in ns.network.name.lower():
-                addresses["nat"] = ns.ip
+                addresses["nat"] = (ns.ip, ns.mac)
             elif "hpc_client" in ns.network.name.lower():
-                addresses["hpc_client"] = ns.ip
+                addresses["hpc_client"] = (ns.ip, ns.mac)
         return addresses
 
     @property
     def nat_ip(self):
-        return self.addresses.get("nat",None)
+        return self.addresses.get("nat", (None,None) )[0]
+
+    @property
+    def nat_mac(self):
+        return self.addresses.get("nat", (None,None) )[1]
 
     @property
     def lan_ip(self):
-        return self.addresses.get("lan",None)
+        return self.addresses.get("lan", (None, None) )[0]
+
+    @property
+    def lan_mac(self):
+        return self.addresses.get("lan", (None, None) )[1]
 
     @property
     def wan_ip(self):
-        return self.addresses.get("wan",None)
+        return self.addresses.get("wan", (None, None) )[0]
 
     @property
     def wan_mac(self):
-        ip = self.wan_ip
-        if not ip:
-           return None
-        try:
-           (a,b,c,d) = ip.split('.')
-           wan_mac = "02:42:%2x:%2x:%2x:%2x" % (int(a), int(b), int(c), int(d))
-        except:
-           wan_mac = "Exception"
-        return wan_mac
+        return self.addresses.get("wan", (None, None) )[1]
 
     @property
     def private_ip(self):
-        return self.addresses.get("private",None)
+        return self.addresses.get("private", (None, None) )[0]
+
+    @property
+    def private_mac(self):
+        return self.addresses.get("private", (None, None) )[1]
 
     @property
     def hpc_client_ip(self):
-        return self.addresses.get("hpc_client",None)
+        return self.addresses.get("hpc_client", (None, None) )[0]
+
+    @property
+    def hpc_client_mac(self):
+        return self.addresses.get("hpc_client", (None, None) )[1]
 
     @property
     def is_synced(self):
@@ -767,7 +774,7 @@ class VCPETenant(Tenant):
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
-        self.cleanup_instance()
+        self.cleanup_container()
         super(VCPETenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):
@@ -777,7 +784,7 @@ def model_policy_vcpe(pk):
         if not vcpe:
             return
         vcpe = vcpe[0]
-        vcpe.manage_instance()
+        vcpe.manage_container()
         vcpe.manage_vbng()
         vcpe.manage_bbs_account()
         vcpe.cleanup_orphans()
