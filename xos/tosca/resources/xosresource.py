@@ -71,10 +71,13 @@ class XOSResource(object):
     def get_xos_args(self):
         return {}
 
+    def get_model_class_name(self):
+        return self.xos_model.__name__
+
     def create_or_update(self):
         existing_objs = self.get_existing_objs()
         if existing_objs:
-            self.info("%s %s already exists" % (self.xos_model.__name__, self.nodetemplate.name))
+            self.info("%s %s already exists" % (self.get_model_class_name(), self.nodetemplate.name))
             self.update(existing_objs[0])
         else:
             self.create()
@@ -128,7 +131,7 @@ class XOSResource(object):
 
             v = self.try_intrinsic_function(v)
 
-            if v:
+            if v is not None:
                 args[prop] = v
 
         return args
@@ -144,7 +147,11 @@ class XOSResource(object):
         self.postprocess(xos_obj)
 
     def update(self, obj):
-        pass
+        xos_args = self.get_xos_args()
+        for (k,v) in xos_args.items():
+            setattr(obj, k, v)
+        self.postprocess(obj)
+        obj.save()
 
     def delete(self, obj):
         if (self.can_delete(obj)):

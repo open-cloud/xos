@@ -44,7 +44,7 @@ class XOSTosca(object):
 
         self.ordered_nodetemplates = []
         self.ordered_names = self.topsort_dependencies()
-        print "ordered_names", self.ordered_names
+        self.log("ordered_names: %s" % self.ordered_names)
         for name in self.ordered_names:
             if name in self.nodetemplates_by_name:
                 self.ordered_nodetemplates.append(self.nodetemplates_by_name[name])

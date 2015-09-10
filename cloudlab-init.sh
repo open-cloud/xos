@@ -1,23 +1,40 @@
 #!/bin/bash
 set -x
 
-# This script assumes that it is being run on the ctl node of the Tutorial-OpenStack
+# This script assumes that it is being run on the ctl node of the OpenStack
 # profile on CloudLab.
 
 XOS="http://ctl:9999/"
 AUTH="padmin@vicci.org:letmein"
+CORD=0
+IMAGE="xos"
+
+# Create public key if none present
+[ -e ~/.ssh/id_rsa ] || cat /dev/zero | ssh-keygen -q -N ""
 
 # Install Docker
-wget -qO- https://get.docker.com/ | sh
+which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker $(whoami)
 
 sudo apt-get install httpie
 
+if [ "$CORD" -ne 0 ]
+then
+    cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
+    cp ~/.ssh/id_rsa     xos/observers/vcpe/vcpe_private_key
+fi
+
 sudo docker build -t xos .
+
+if [ "$CORD" -ne 0 ]
+then
+    sudo docker build -t cord -f Dockerfile.cord .
+    IMAGE="cord"
+fi
 
 # OpenStack is using port 8000...
 MYIP=$( hostname -i )
-sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 xos
+sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 $IMAGE
 
 echo "Waiting for XOS to come up"
 until http $XOS &> /dev/null
@@ -25,12 +42,9 @@ do
     sleep 1
 done
 
-# Create public key if none present
-cat /dev/zero | ssh-keygen -q -N ""
-PUBKEY=$( cat ~/.ssh/id_rsa.pub )
-
 # Copy public key
 # BUG: Shouldn't have to set the 'enacted' field...
+PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 http --auth $AUTH PATCH $XOS/xos/users/1/ public_key="$PUBKEY" enacted=$( date "+%Y-%m-%dT%T")
 
 # Set up controller
@@ -56,3 +70,9 @@ done
 # BUG: Shouldn't have to set the controller_kind field, it's invalid in the initial fixture
 FLATNET=$( sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{print $4}' )
 http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=$FLATNET controller_kind=""
+
+if [ "$CORD" -ne 0 ]
+then
+    DOCKER=$( docker ps|grep $IMAGE|awk '{print $NF}' )
+    docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml"
+fi

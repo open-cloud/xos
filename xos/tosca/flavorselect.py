@@ -18,7 +18,11 @@ class XOSFlavorSelector(object):
         return int(s)
 
     def get_mb(self, s):
-        return self.get_gb(s) * 1024
+        if "GB" in s:
+            return int(s.split("GB")[0].strip())*1024
+        if "MB" in s:
+            return int(s.split("MB")[0].strip())
+        return int(s)
 
     def get_flavor(self):
         flavor = "m1.tiny"

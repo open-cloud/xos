@@ -12,5 +12,5 @@ from service import XOSService
 class XOSVBGNService(XOSService):
     provides = "tosca.nodes.VBNGService"
     xos_model = VBNGService
-    copyin_props = ["view_url", "icon_url", "vnbg_url"]
+    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "versionNumber", "vbng_url"]
 
