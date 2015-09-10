@@ -55,13 +55,17 @@ class VOLTTenantForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (VOLTTenantForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = "vOLT"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VOLTService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
             self.fields['vlan_id'].initial = self.instance.vlan_id
             self.fields['creator'].initial = self.instance.creator
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = VOLT_KIND
+            if VOLTService.get_service_objects().exists():
+               self.fields["provider_service"].initial = VOLTService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.vlan_id = self.cleaned_data.get("vlan_id")
@@ -157,7 +161,6 @@ class VCPETenantForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (VCPETenantForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = "vCPE"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VCPEService.get_service_objects().all()
         if self.instance:
@@ -166,6 +169,11 @@ class VCPETenantForm(forms.ModelForm):
             self.fields['creator'].initial = self.instance.creator
             self.fields['sliver'].initial = self.instance.sliver
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = VCPE_KIND
+            if VCPEService.get_service_objects().exists():
+               self.fields["provider_service"].initial = VCPEService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
@@ -248,7 +256,6 @@ class VBNGTenantForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (VBNGTenantForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = "vBNG"
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VBNGService.get_service_objects().all()
         if self.instance:
@@ -257,6 +264,11 @@ class VBNGTenantForm(forms.ModelForm):
             self.fields['mapped_hostname'].initial = self.instance.mapped_hostname
             self.fields['mapped_ip'].initial = self.instance.mapped_ip
             self.fields['mapped_mac'].initial = self.instance.mapped_mac
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = VBNG_KIND
+            if VBNGService.get_service_objects().exists():
+               self.fields["provider_service"].initial = VBNGService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.routeable_subnet = self.cleaned_data.get("routeable_subnet")
@@ -310,10 +322,12 @@ class CordSubscriberRootForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = CORD_SUBSCRIBER_KIND
         self.fields['kind'].widget.attrs['readonly'] = True
         if self.instance:
             self.fields['url_filter_level'].initial = self.instance.url_filter_level
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = CORD_SUBSCRIBER_KIND
 
     def save(self, commit=True):
         self.instance.url_filter_level = self.cleaned_data.get("url_filter_level")
