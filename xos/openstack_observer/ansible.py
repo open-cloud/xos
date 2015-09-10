@@ -55,8 +55,8 @@ def parse_unreachable(msg):
             failed=int(failed)
 
             total_unreachable += unreachable
-    return total_unreachable
-
+    return {'unreachable':unreachable,'failed':failed}
+	
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -118,7 +118,12 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
 
-        total_unreachable = parse_unreachable(msg)
+        parsed = parse_unreachable(msg)
+        total_unreachable = parsed['unreachable']
+	failed = parsed['failed']
+	if (failed):
+		raise ValueError('Ansible playbook failed.')
+
         if (total_unreachable > 0):
             raise ValueError("Unreachable results in ansible recipe")
     except ValueError,e:
@@ -181,7 +186,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     print "ANSIBLE_CONFIG=%s" % config_pathname
     print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
-    return run_template(name, opts, path, expected_num, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
+    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
 
 
 
