@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
+from core.middleware import get_request
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -64,6 +65,7 @@ class VOLTTenantForm(forms.ModelForm):
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VOLT_KIND
+            self.fields['creator'].initial = get_request().user
             if VOLTService.get_service_objects().exists():
                self.fields["provider_service"].initial = VOLTService.get_service_objects().all()[0]
 
@@ -172,6 +174,7 @@ class VCPETenantForm(forms.ModelForm):
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VCPE_KIND
+            self.fields['creator'].initial = get_request().user
             if VCPEService.get_service_objects().exists():
                self.fields["provider_service"].initial = VCPEService.get_service_objects().all()[0]
 
