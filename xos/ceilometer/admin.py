@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
+from core.middleware import get_request
 
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
@@ -49,12 +50,18 @@ class MonitoringChannelForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (MonitoringChannelForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].default = CEILOMETER_KIND
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = CeilometerService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
             self.fields['creator'].initial = self.instance.creator
+        if (not self.instance) or (not self.instance.pk):
+            # default fields for an 'add' form
+            self.fields['kind'].initial = CEILOMETER_KIND
+            self.fields['creator'].initial = get_request().user
+            if CeilometerService.get_service_objects().exists():
+               self.fields["provider_service"].initial = CeilometerService.get_service_objects().all()[0]
+
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
@@ -67,10 +74,10 @@ class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_attribute',
-                                     'sliver',
-                                     'creator'],
+                                     'ceilometer_url', 'tenant_list_str',
+                                     'sliver', 'creator'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'sliver', 'service_specific_attribute')
+    readonly_fields = ('backend_status_text', 'sliver', 'service_specific_attribute', 'ceilometer_url', 'tenant_list_str')
     form = MonitoringChannelForm
 
     suit_form_tabs = (('general','Details'),)
