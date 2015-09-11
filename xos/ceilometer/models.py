@@ -61,13 +61,17 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
                 addresses["private"] = (ns.ip, ns.mac)
             elif "nat" in ns.network.name.lower():
                 addresses["nat"] = (ns.ip, ns.mac)
-            elif "hpc_client" in ns.network.name.lower():
-                addresses["hpc_client"] = (ns.ip, ns.mac)
+            elif "ceilometer_client_access" in ns.network.labels.lower():
+                addresses["ceilometer"] = (ns.ip, ns.mac)
         return addresses
 
     @property
     def private_ip(self):
         return self.addresses.get("nat", (None, None))[0]
+
+    @property
+    def ceilometer_ip(self):
+        return self.addresses.get("ceilometer", (None, None))[0]
 
     @property
     def site_tenant_list(self):
@@ -103,9 +107,9 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     @property
     def ceilometer_url(self):
-        if not self.private_ip:
+        if not self.ceilometer_ip:
             return None
-        return "http://" + self.private_ip + "/uri/to/ceilometer/api/"
+        return "http://" + self.ceilometer_ip + "/uri/to/ceilometer/api/"
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy

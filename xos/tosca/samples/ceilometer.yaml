@@ -21,6 +21,22 @@ topology_template:
     Private:
       type: tosca.nodes.NetworkTemplate
 
+    ceilometer_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: ceilometer_client_access
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_ceilometer
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_ceilometer
+              relationship: tosca.relationships.ConnectsToSlice
+
     mysite:
       type: tosca.nodes.Site
 
