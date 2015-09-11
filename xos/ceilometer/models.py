@@ -8,6 +8,8 @@ from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
 import traceback
 from xos.exceptions import *
+from core.models import SlicePrivilege, SitePrivilege
+from sets import Set
 
 CEILOMETER_KIND = "ceilometer"
 
@@ -47,6 +49,67 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     def delete(self, *args, **kwargs):
         self.cleanup_container()
         super(MonitoringChannel, self).delete(*args, **kwargs)
+
+    @property
+    def addresses(self):
+        if not self.sliver:
+            return {}
+
+        addresses = {}
+        for ns in self.sliver.ports.all():
+            if "private" in ns.network.name.lower():
+                addresses["private"] = (ns.ip, ns.mac)
+            elif "nat" in ns.network.name.lower():
+                addresses["nat"] = (ns.ip, ns.mac)
+            elif "ceilometer_client_access" in ns.network.labels.lower():
+                addresses["ceilometer"] = (ns.ip, ns.mac)
+        return addresses
+
+    @property
+    def private_ip(self):
+        return self.addresses.get("nat", (None, None))[0]
+
+    @property
+    def ceilometer_ip(self):
+        return self.addresses.get("ceilometer", (None, None))[0]
+
+    @property
+    def site_tenant_list(self):
+        tenant_ids = Set()
+        for sp in SitePrivilege.objects.filter(user=self.creator):
+            site = sp.site
+            for cs in site.controllersite.all():
+               if cs.tenant_id:
+                   tenant_ids.add(cs.tenant_id)
+        return tenant_ids
+
+    @property
+    def slice_tenant_list(self):
+        tenant_ids = Set()
+        for sp in SlicePrivilege.objects.filter(user=self.creator):
+            slice = sp.slice
+            for cs in slice.controllerslices.all():
+               if cs.tenant_id:
+                   tenant_ids.add(cs.tenant_id)
+        for slice in Slice.objects.filter(creator=self.creator):
+            for cs in slice.controllerslices.all():
+                if cs.tenant_id:
+                    tenant_ids.add(cs.tenant_id)
+        return tenant_ids
+
+    @property
+    def tenant_list(self):
+        return self.slice_tenant_list | self.site_tenant_list
+
+    @property
+    def tenant_list_str(self):
+        return ", ".join(self.tenant_list)
+
+    @property
+    def ceilometer_url(self):
+        if not self.ceilometer_ip:
+            return None
+        return "http://" + self.ceilometer_ip + "/uri/to/ceilometer/api/"
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
