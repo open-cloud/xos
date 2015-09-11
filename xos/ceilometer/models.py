@@ -8,6 +8,8 @@ from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
 import traceback
 from xos.exceptions import *
+from core.models import SlicePrivilege, SitePrivilege
+from sets import Set
 
 CEILOMETER_KIND = "ceilometer"
 
@@ -47,6 +49,41 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     def delete(self, *args, **kwargs):
         self.cleanup_container()
         super(MonitoringChannel, self).delete(*args, **kwargs)
+
+    @property
+    def site_tenant_list(self):
+        tenant_ids = Set()
+        for sp in SitePrivilege.objects.filter(user=self.creator):
+            site = sp.site
+            for cs in site.controllersite.all():
+               if cs.tenant_id:
+                   tenant_ids.add(cs.tenant_id)
+        return tenant_ids
+
+    @property
+    def slice_tenant_list(self):
+        tenant_ids = Set()
+        for sp in SlicePrivilege.objects.filter(user=self.creator):
+            slice = sp.slice
+            for cs in slice.controllerslices.all():
+               if cs.tenant_id:
+                   tenant_ids.add(cs.tenant_id)
+        for slice in Slice.objects.filter(creator=self.creator):
+            for cs in slice.controllerslices.all():
+                if cs.tenant_id:
+                    tenant_ids.add(cs.tenant_id)
+        return tenant_ids
+
+    @property
+    def tenant_list(self):
+        return self.slice_tenant_list | self.site_tenant_list
+
+    @property
+    def tenant_list_str(self):
+        return ", ".join(self.tenant_list)
+
+
+
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
