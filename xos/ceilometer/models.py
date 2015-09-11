@@ -51,6 +51,25 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         super(MonitoringChannel, self).delete(*args, **kwargs)
 
     @property
+    def addresses(self):
+        if not self.sliver:
+            return {}
+
+        addresses = {}
+        for ns in self.sliver.ports.all():
+            if "private" in ns.network.name.lower():
+                addresses["private"] = (ns.ip, ns.mac)
+            elif "nat" in ns.network.name.lower():
+                addresses["nat"] = (ns.ip, ns.mac)
+            elif "hpc_client" in ns.network.name.lower():
+                addresses["hpc_client"] = (ns.ip, ns.mac)
+        return addresses
+
+    @property
+    def private_ip(self):
+        return self.addresses.get("nat", (None, None))[0]
+
+    @property
     def site_tenant_list(self):
         tenant_ids = Set()
         for sp in SitePrivilege.objects.filter(user=self.creator):
@@ -82,8 +101,11 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     def tenant_list_str(self):
         return ", ".join(self.tenant_list)
 
-
-
+    @property
+    def ceilometer_url(self):
+        if not self.private_ip:
+            return None
+        return "http://" + self.private_ip + "/uri/to/ceilometer/api/"
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
