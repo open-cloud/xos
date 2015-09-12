@@ -24,16 +24,16 @@ def get_service_slices(service):
     except:
         return service.service.all()
 
-def lookup_tag(service, sliver, name, default=None):
-    sliver_type = ContentType.objects.get_for_model(sliver)
-    t = Tag.objects.filter(service=service, name=name, content_type__pk=sliver_type.id, object_id=sliver.id)
+def lookup_tag(service, instance, name, default=None):
+    instance_type = ContentType.objects.get_for_model(instance)
+    t = Tag.objects.filter(service=service, name=name, content_type__pk=instance_type.id, object_id=instance.id)
     if t:
         return t[0].value
     else:
         return default
 
-def lookup_time(service, sliver, name):
-    v = lookup_tag(service, sliver, name)
+def lookup_time(service, instance, name):
+    v = lookup_tag(service, instance, name)
     if v:
         return str(time.time() - float(v))
     else:
@@ -69,22 +69,22 @@ def compute_config_run(d):
     return config_run
 
 # from hpc_watcher.py
-def get_public_ip(service, sliver):
+def get_public_ip(service, instance):
     network_name = None
-    if "hpc" in sliver.slice.name:
+    if "hpc" in instance.slice.name:
         network_name = getattr(service, "watcher_hpc_network", None)
-    elif "demux" in sliver.slice.name:
+    elif "demux" in instance.slice.name:
         network_name = getattr(service, "watcher_dnsdemux_network", None)
-    elif "redir" in sliver.slice.name:
+    elif "redir" in instance.slice.name:
         network_name = getattr(service, "watcher_dnsredir_network", None)
 
     if network_name and network_name.lower()=="nat":
         return None
 
     if (network_name is None) or (network_name=="") or (network_name.lower()=="public"):
-        return sliver.get_public_ip()
+        return instance.get_public_ip()
 
-    for ns in sliver.networkslivers.all():
+    for ns in instance.networkinstances.all():
         if (ns.ip) and (ns.network.name==network_name):
             return ns.ip
 
@@ -143,50 +143,50 @@ def getHpcDict(user, pk):
             nameservers[nameserver] = {"name": nameserver, "ip": "exception", "hit": False}
 
     dnsdemux=[]
-    for sliver in dnsdemux_slice.slivers.all():
+    for instance in dnsdemux_slice.instances.all():
         ip=None
         try:
-            ip = get_public_ip(dnsdemux_service, sliver)
+            ip = get_public_ip(dnsdemux_service, instance)
         except Exception, e:
             ip = "Exception: " + str(e)
         if not ip:
             try:
-                ip = socket.gethostbyname(sliver.node.name)
+                ip = socket.gethostbyname(instance.node.name)
             except:
-                ip = "??? " + sliver.node.name
+                ip = "??? " + instance.node.name
 
-        sliver_nameservers = []
+        instance_nameservers = []
         for ns in nameservers.values():
             if ns["ip"]==ip:
-                sliver_nameservers.append(ns["name"])
+                instance_nameservers.append(ns["name"])
                 ns["hit"]=True
 
-        # now find the dnsredir sliver that is also on this node
-        watcherd_dnsredir = "no-redir-sliver"
-        for dnsredir_sliver in dnsredir_slice.slivers.all():
-            if dnsredir_sliver.node == sliver.node:
-                watcherd_dnsredir = lookup_tag(dnsredir_service, dnsredir_sliver, "watcher.watcher.msg")
+        # now find the dnsredir instance that is also on this node
+        watcherd_dnsredir = "no-redir-instance"
+        for dnsredir_instance in dnsredir_slice.instances.all():
+            if dnsredir_instance.node == instance.node:
+                watcherd_dnsredir = lookup_tag(dnsredir_service, dnsredir_instance, "watcher.watcher.msg")
 
-        watcherd_dnsdemux = lookup_tag(dnsdemux_service, sliver, "watcher.watcher.msg")
+        watcherd_dnsdemux = lookup_tag(dnsdemux_service, instance, "watcher.watcher.msg")
 
-        dnsdemux.append( {"name": sliver.node.name,
-                       "watcher.DNS.msg": lookup_tag(dnsdemux_service, sliver, "watcher.DNS.msg"),
-                       "watcher.DNS.time": lookup_time(dnsdemux_service, sliver, "watcher.DNS.time"),
+        dnsdemux.append( {"name": instance.node.name,
+                       "watcher.DNS.msg": lookup_tag(dnsdemux_service, instance, "watcher.DNS.msg"),
+                       "watcher.DNS.time": lookup_time(dnsdemux_service, instance, "watcher.DNS.time"),
                        "ip": ip,
-                       "nameservers": sliver_nameservers,
+                       "nameservers": instance_nameservers,
                        "dnsdemux_config_age": compute_config_run(watcherd_dnsdemux),
                        "dnsredir_config_age": compute_config_run(watcherd_dnsredir) })
 
     hpc=[]
-    for sliver in hpc_slice.slivers.all():
-        watcherd_hpc = lookup_tag(hpc_service, sliver, "watcher.watcher.msg")
+    for instance in hpc_slice.instances.all():
+        watcherd_hpc = lookup_tag(hpc_service, instance, "watcher.watcher.msg")
 
-        hpc.append( {"name": sliver.node.name,
-                     "watcher.HPC-hb.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-hb.msg"),
-                     "watcher.HPC-hb.time": lookup_time(hpc_service, sliver, "watcher.HPC-hb.time"),
-                     "watcher.HPC-fetch.msg": lookup_tag(hpc_service, sliver, "watcher.HPC-fetch.msg"),
-                     "watcher.HPC-fetch.time": lookup_time(hpc_service, sliver, "watcher.HPC-fetch.time"),
-                     "watcher.HPC-fetch.urls": json_default(lookup_tag(hpc_service, sliver, "watcher.HPC-fetch-urls.msg"), []),
+        hpc.append( {"name": instance.node.name,
+                     "watcher.HPC-hb.msg": lookup_tag(hpc_service, instance, "watcher.HPC-hb.msg"),
+                     "watcher.HPC-hb.time": lookup_time(hpc_service, instance, "watcher.HPC-hb.time"),
+                     "watcher.HPC-fetch.msg": lookup_tag(hpc_service, instance, "watcher.HPC-fetch.msg"),
+                     "watcher.HPC-fetch.time": lookup_time(hpc_service, instance, "watcher.HPC-fetch.time"),
+                     "watcher.HPC-fetch.urls": json_default(lookup_tag(hpc_service, instance, "watcher.HPC-fetch-urls.msg"), []),
                      "config_age": compute_config_run(watcherd_hpc),
 
         })

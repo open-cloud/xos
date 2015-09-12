@@ -2,12 +2,12 @@
     Network Data Model Test
 
     1) Create a slice1
-    2) Create sliver1 on slice1
-    3) Verify one quantum network created for sliver1
+    2) Create instance1 on slice1
+    3) Verify one quantum network created for instance1
     4) Create a private network, network1
     5) Connect network1 to slice1
-    6) Create sliver1_2 on slice1
-    7) Verify two quantum networks created for sliver1_2
+    6) Create instance1_2 on slice1
+    7) Verify two quantum networks created for instance1_2
 """
 
 import os
@@ -19,7 +19,7 @@ sys.path.append("/opt/xos")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from openstack.manager import OpenStackManager
-from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
+from core.models import Slice, Instance, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice
 
 from planetstacktest import PlanetStackTest, fail_unless, fail
 
@@ -27,10 +27,10 @@ class NetworkTest(PlanetStackTest):
     def __init__(self):
         PlanetStackTest.__init__(self)
 
-    def wait_for_ports(self, sliver, count=1, max_time=120):
-        print "waiting for %d ports on %s" % (count, str(sliver))
+    def wait_for_ports(self, instance, count=1, max_time=120):
+        print "waiting for %d ports on %s" % (count, str(instance))
         while max_time>0:
-            ports = self.manager.driver.shell.quantum.list_ports(device_id=sliver.instance_id)["ports"]
+            ports = self.manager.driver.shell.quantum.list_ports(device_id=instance.instance_id)["ports"]
             if len(ports)==count:
                 return ports
 
@@ -70,15 +70,15 @@ class NetworkTest(PlanetStackTest):
                        creator=self.testUser)
         slice1=self.save_and_wait_for_enacted(slice1, nonempty_fields=["tenant_id"])
 
-        sliver1 = Sliver(image = self.testImage,
+        instance1 = Instance(image = self.testImage,
                          creator=self.testUser,
                          slice=slice1,
                          node=self.testNode,
                          deploymentNetwork=self.testDeployment)
-        sliver1=self.save_and_wait_for_enacted(sliver1, nonempty_fields=["instance_id", "ip"])
+        instance1=self.save_and_wait_for_enacted(instance1, nonempty_fields=["instance_id", "ip"])
 
-        # sliver1 should have only one port, its private network
-        ports = self.wait_for_ports(sliver1, count=1)
+        # instance1 should have only one port, its private network
+        ports = self.wait_for_ports(instance1, count=1)
         self.verify_network_names(ports, [slice1.name])
 
         network1 = Network(name = slice1Name + "-pvt",
@@ -89,14 +89,14 @@ class NetworkTest(PlanetStackTest):
         network1_slice1 = NetworkSlice(network=network1, slice=slice1)
         network1_slice1.save() # does not need to be enacted
 
-        sliver1_2 = Sliver(image = self.testImage,
+        instance1_2 = Instance(image = self.testImage,
                          creator=self.testUser,
                          slice=slice1,
                          node=self.testNode,
                          deploymentNetwork=self.testDeployment)
-        sliver1_2=self.save_and_wait_for_enacted(sliver1_2, nonempty_fields=["instance_id", "ip"])
+        instance1_2=self.save_and_wait_for_enacted(instance1_2, nonempty_fields=["instance_id", "ip"])
 
-        ports = self.wait_for_ports(sliver1_2, count=2)
+        ports = self.wait_for_ports(instance1_2, count=2)
         self.verify_network_names(ports, [slice1.name, network1.name])
 
         self.slice1 = slice1
@@ -118,14 +118,14 @@ class NetworkTest(PlanetStackTest):
         network2_slice2 = NetworkSlice(network=network2, slice=slice2)
         network2_slice2.save() # does not need to be enacted
 
-        sliver2_1 = Sliver(image = self.testImage,
+        instance2_1 = Instance(image = self.testImage,
                          creator=self.testUser,
                          slice=slice2,
                          node=self.testNode,
                          deploymentNetwork=self.testDeployment)
-        sliver2_1=self.save_and_wait_for_enacted(sliver2_1, nonempty_fields=["instance_id", "ip"])
+        instance2_1=self.save_and_wait_for_enacted(instance2_1, nonempty_fields=["instance_id", "ip"])
 
-        ports = self.wait_for_ports(sliver2_1, count=2)
+        ports = self.wait_for_ports(instance2_1, count=2)
         self.verify_network_names(ports, [slice2.name, network2.name])
 
         self.slice2 = slice2
@@ -137,14 +137,14 @@ class NetworkTest(PlanetStackTest):
         network2_slice1 = NetworkSlice(network=self.network2, slice=self.slice1)
         network2_slice1.save()
 
-        sliver1_3 = Sliver(image = self.testImage,
+        instance1_3 = Instance(image = self.testImage,
                          creator=self.testUser,
                          slice=self.slice1,
                          node=self.testNode,
                          deploymentNetwork=self.testDeployment)
-        sliver1_3=self.save_and_wait_for_enacted(sliver1_3, nonempty_fields=["instance_id", "ip"])
+        instance1_3=self.save_and_wait_for_enacted(instance1_3, nonempty_fields=["instance_id", "ip"])
 
-        ports = self.wait_for_ports(sliver1_3, count=3)
+        ports = self.wait_for_ports(instance1_3, count=3)
         self.verify_network_names(ports, [self.slice1.name, self.network1.name, self.network2.name])
 
     def test_nat_net(self):
@@ -164,14 +164,14 @@ class NetworkTest(PlanetStackTest):
         network3_slice3 = NetworkSlice(network=network3, slice=slice3)
         network3_slice3.save() # does not need to be enacted
 
-        sliver3_1 = Sliver(image = self.testImage,
+        instance3_1 = Instance(image = self.testImage,
                          creator=self.testUser,
                          slice=slice3,
                          node=self.testNode,
                          deploymentNetwork=self.testDeployment)
-        sliver3_1=self.save_and_wait_for_enacted(sliver3_1, nonempty_fields=["instance_id", "ip"])
+        instance3_1=self.save_and_wait_for_enacted(instance3_1, nonempty_fields=["instance_id", "ip"])
 
-        ports = self.wait_for_ports(sliver3_1, count=2)
+        ports = self.wait_for_ports(instance3_1, count=2)
         self.verify_network_names(ports, [slice3.name, "nat-net"])
 
     def run(self):

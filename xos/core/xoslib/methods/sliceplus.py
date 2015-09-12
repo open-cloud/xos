@@ -66,7 +66,7 @@ class SlicePlusIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = SlicePlus
-            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','mount_data_sets',
+            fields = ('humanReadableName', 'id','created','updated','enacted','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','mount_data_sets',
                       'default_image', 'default_flavor',
                       'serviceClass','creator','networks','sliceInfo','network_ports','backendIcon','backendHtml','site_allocation','site_ready','users',"user_names","current_user_can_see")
 

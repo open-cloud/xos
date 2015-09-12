@@ -99,11 +99,11 @@ class HpcLibrary:
 
         for slice in slices:
             if slice.name.endswith("cmi"):
-                for sliver in slice.slivers.all():
-                    if sliver.node:
-                         return sliver.node.name
+                for instance in slice.instances.all():
+                    if instance.node:
+                         return instance.node.name
 
-        raise Exception("Failed to find a CMI sliver")
+        raise Exception("Failed to find a CMI instance")
 
     @property
     def client(self):

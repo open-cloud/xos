@@ -5,7 +5,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from xos.settings import RESTAPI_HOSTNAME, RESTAPI_PORT
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.sliver import Sliver
+from core.models.instance import Instance
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
 from core.models.network import Network, NetworkSlice, ControllerNetwork
 from observer.ansible import *
@@ -16,44 +16,44 @@ def escape(s):
     s = s.replace('\n',r'\n').replace('"',r'\"')
     return s
 
-class SyncSlivers(OpenStackSyncStep):
-    provides=[Sliver]
+class SyncInstances(OpenStackSyncStep):
+    provides=[Instance]
     requested_interval=0
-    observes=Sliver
+    observes=Instance
 
-    def get_userdata(self, sliver, pubkeys):
-        userdata = '#cloud-config\n\nopencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (sliver.slice.name, sliver.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
+    def get_userdata(self, instance, pubkeys):
+        userdata = '#cloud-config\n\nopencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (instance.slice.name, instance.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
         userdata += 'ssh_authorized_keys:\n'
         for key in pubkeys:
             userdata += '  - %s\n' % key
         return userdata
 
-    def sync_record(self, sliver):
-        logger.info("sync'ing sliver:%s slice:%s controller:%s " % (sliver, sliver.slice.name, sliver.node.site_deployment.controller))
-        controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
+    def sync_record(self, instance):
+        logger.info("sync'ing instance:%s slice:%s controller:%s " % (instance, instance.slice.name, instance.node.site_deployment.controller))
+        controller_register = json.loads(instance.node.site_deployment.controller.backend_register)
 
         if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+            raise InnocuousException('Controller %s is disabled'%instance.node.site_deployment.controller.name)
 
         metadata_update = {}
-        if (sliver.numberCores):
-            metadata_update["cpu_cores"] = str(sliver.numberCores)
+        if (instance.numberCores):
+            metadata_update["cpu_cores"] = str(instance.numberCores)
 
-        for tag in sliver.slice.tags.all():
+        for tag in instance.slice.tags.all():
             if tag.name.startswith("sysctl-"):
                 metadata_update[tag.name] = tag.value
 
         # public keys
-        slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
+        slice_memberships = SlicePrivilege.objects.filter(slice=instance.slice)
         pubkeys = set([sm.user.public_key for sm in slice_memberships if sm.user.public_key])
-        if sliver.creator.public_key:
-            pubkeys.add(sliver.creator.public_key)
+        if instance.creator.public_key:
+            pubkeys.add(instance.creator.public_key)
 
-        if sliver.slice.creator.public_key:
-            pubkeys.add(sliver.slice.creator.public_key)
+        if instance.slice.creator.public_key:
+            pubkeys.add(instance.slice.creator.public_key)
 
-        if sliver.slice.service and sliver.slice.service.public_key:
-            pubkeys.add(sliver.slice.service.public_key)
+        if instance.slice.service and instance.slice.service.public_key:
+            pubkeys.add(instance.slice.service.public_key)
 
         # Handle any ports that are already created and attached to the sliver.
         # If we do have a port for a network, then add that network to an
@@ -70,10 +70,10 @@ class SyncSlivers(OpenStackSyncStep):
             exclude_templates.add(ns.network.template)
 
         nics = []
-        networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]
+        networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice)]
         networks = [n for n in networks if (n not in exclude_networks)]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
-                                                                controller=sliver.node.site_deployment.controller)
+                                                                controller=instance.node.site_deployment.controller)
 
         for controller_network in controller_networks:
             if controller_network.network.template.visibility == 'private' and \
@@ -88,8 +88,8 @@ class SyncSlivers(OpenStackSyncStep):
                              if network.template.shared_network_name]
         network_templates = [nt for nt in network_templates if (nt not in exclude_templates)]
 
-        #driver = self.driver.client_driver(caller=sliver.creator, tenant=sliver.slice.name, controller=sliver.controllerNetwork)
-        driver = self.driver.admin_driver(tenant='admin', controller=sliver.node.site_deployment.controller)
+        #driver = self.driver.client_driver(caller=instance.creator, tenant=instance.slice.name, controller=instance.controllerNetwork)
+        driver = self.driver.admin_driver(tenant='admin', controller=instance.node.site_deployment.controller)
         nets = driver.shell.quantum.list_networks()['networks']
         for net in nets:
             if net['name'] in network_templates:
@@ -103,16 +103,16 @@ class SyncSlivers(OpenStackSyncStep):
                     nics.append(net['id'])
 
         image_name = None
-        controller_images = sliver.image.controllerimages.filter(controller=sliver.node.site_deployment.controller)
+        controller_images = instance.image.controllerimages.filter(controller=instance.node.site_deployment.controller)
         if controller_images:
             image_name = controller_images[0].image.name
             logger.info("using image from ControllerImage object: " + str(image_name))
 
         if image_name is None:
-            controller_driver = self.driver.admin_driver(controller=sliver.node.site_deployment.controller)
+            controller_driver = self.driver.admin_driver(controller=instance.node.site_deployment.controller)
             images = controller_driver.shell.glanceclient.images.list()
             for image in images:
-                if image.name == sliver.image.name or not image_name:
+                if image.name == instance.image.name or not image_name:
                     image_name = image.name
                     logger.info("using image from glance: " + str(image_name))
 
@@ -122,75 +122,75 @@ class SyncSlivers(OpenStackSyncStep):
             legacy = False
 
         if (legacy):
-            host_filter = sliver.node.name.split('.',1)[0]
+            host_filter = instance.node.name.split('.',1)[0]
         else:
-            host_filter = sliver.node.name.strip()
+            host_filter = instance.node.name.strip()
 
         availability_zone_filter = 'nova:%s'%host_filter
-        sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
+        instance_name = '%s-%d'%(instance.slice.name,instance.id)
 
-        userData = self.get_userdata(sliver, pubkeys)
-        if sliver.userData:
-            userData = sliver.userData
+        userData = self.get_userdata(instance, pubkeys)
+        if instance.userData:
+            userData = instance.userData
 
-        controller = sliver.node.site_deployment.controller
+        controller = instance.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
-                     'admin_user': sliver.creator.email,
-                     'admin_password': sliver.creator.remote_password,
-                     'admin_tenant': sliver.slice.name,
-                     'tenant': sliver.slice.name,
-                     'tenant_description': sliver.slice.description,
-                     'name':sliver_name,
-                     'ansible_tag':sliver_name,
+                     'admin_user': instance.creator.email,
+                     'admin_password': instance.creator.remote_password,
+                     'admin_tenant': instance.slice.name,
+                     'tenant': instance.slice.name,
+                     'tenant_description': instance.slice.description,
+                     'name':instance_name,
+                     'ansible_tag':instance_name,
                      'availability_zone': availability_zone_filter,
                      'image_name':image_name,
-                     'flavor_name':sliver.flavor.name,
+                     'flavor_name':instance.flavor.name,
                      'nics':nics,
                      'ports':ports,
                      'meta':metadata_update,
                      'user_data':r'%s'%escape(userData)}
 
-        res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
-        sliver_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
-        sliver_uuid = res[0]['id']
+        res = run_template('sync_instances.yaml', tenant_fields,path='instances', expected_num=1)
+        instance_id = res[0]['info']['OS-EXT-SRV-ATTR:instance_name']
+        instance_uuid = res[0]['id']
 
         try:
             hostname = res[0]['info']['OS-EXT-SRV-ATTR:hypervisor_hostname']
             ip = socket.gethostbyname(hostname)
-            sliver.ip = ip
+            instance.ip = ip
         except:
             pass
 
-        sliver.instance_id = sliver_id
-        sliver.instance_uuid = sliver_uuid
-        sliver.instance_name = sliver_name
-        sliver.save()
+        instance.instance_id = instance_id
+        instance.instance_uuid = instance_uuid
+        instance.instance_name = instance_name
+        instance.save()
 
-    def delete_record(self, sliver):
-        controller_register = json.loads(sliver.node.site_deployment.controller.backend_register)
+    def delete_record(self, instance):
+        controller_register = json.loads(instance.node.site_deployment.controller.backend_register)
 
         if (controller_register.get('disabled',False)):
-            raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+            raise InnocuousException('Controller %s is disabled'%instance.node.site_deployment.controller.name)
 
-        sliver_name = '%s-%d'%(sliver.slice.name,sliver.id)
-        controller = sliver.node.site_deployment.controller
+        instance_name = '%s-%d'%(instance.slice.name,instance.id)
+        controller = instance.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
-                     'admin_user': sliver.creator.email,
-                     'admin_password': sliver.creator.remote_password,
-                     'admin_tenant': sliver.slice.name,
-                     'tenant': sliver.slice.name,
-                     'tenant_description': sliver.slice.description,
-                     'name':sliver_name,
-                     'ansible_tag':sliver_name,
+                     'admin_user': instance.creator.email,
+                     'admin_password': instance.creator.remote_password,
+                     'admin_tenant': instance.slice.name,
+                     'tenant': instance.slice.name,
+                     'tenant_description': instance.slice.description,
+                     'name':instance_name,
+                     'ansible_tag':instance_name,
                      'delete': True}
 
         try:
-            res = run_template('sync_slivers.yaml', tenant_fields,path='slivers', expected_num=1)
+            res = run_template('sync_instances.yaml', tenant_fields,path='instances', expected_num=1)
         except Exception,e:
-            print "Could not sync %s"%sliver_name
+            print "Could not sync %s"%instance_name
             #import traceback
             #traceback.print_exc()
             raise e
 
         if (len(res)!=1):
-            raise Exception('Could not delete sliver %s'%sliver.slice.name)
+            raise Exception('Could not delete instance %s'%instance.slice.name)

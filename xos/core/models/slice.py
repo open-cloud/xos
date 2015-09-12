@@ -25,7 +25,7 @@ class Slice(PlCoreBase):
     description=models.TextField(blank=True,help_text="High level description of the slice and expected activities", max_length=1024)
     slice_url = models.URLField(blank=True, max_length=512)
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
-    max_slivers = models.IntegerField(default=10)
+    max_instances = models.IntegerField(default=10)
     service = models.ForeignKey(Service, related_name='slices', null=True, blank=True)
     network = StrippedCharField(default="Private Only",null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
@@ -192,4 +192,4 @@ class ControllerSlice(PlCoreBase):
         return monitor.get_meter('network.outgoing.bytes',filter,None)
 
     def get_node_stats(self):
-        return len(self.slice.slivers)
+        return len(self.slice.instances)

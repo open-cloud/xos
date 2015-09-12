@@ -9,8 +9,8 @@ class DownloadSSHCommandsView(View):
 
     def get(self, request, sliceid=None, **kwargs):
         #slice = Slices.objects.get(id=sliceid);
-        #for sliver in slice.slivers.all():
-        #    if (sliver.instance_id && sliver.instance_name):
+        #for instance in slice.instances.all():
+        #    if (instance.instance_id && instance.instance_name):
 
         slice = SlicePlus.objects.get(id=sliceid)
 

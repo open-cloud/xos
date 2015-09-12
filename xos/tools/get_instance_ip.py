@@ -11,7 +11,7 @@ REST_API="http://alpha.opencloud.us:8000/xos/"
 
 NODES_API = REST_API + "nodes/"
 SLICES_API = REST_API + "slices/"
-SLIVERS_API = REST_API + "slivers/"
+INSTANCES_API = REST_API + "instances/"
 PORTS_API = REST_API + "ports/"
 
 opencloud_auth=("demo@onlab.us", "demo")
@@ -29,7 +29,7 @@ def get_node_id(host_name):
      print >> sys.stderr, "Error: failed to find node %s" % host_name
      sys.exit(-1)
 
-def get_slivers(slice_id=None, node_id=None):
+def get_instances(slice_id=None, node_id=None):
     queries = []
     if slice_id:
         queries.append("slice=%s" % str(slice_id))
@@ -41,7 +41,7 @@ def get_slivers(slice_id=None, node_id=None):
     else:
         query_string = ""
 
-    r = requests.get(SLIVERS_API + query_string, auth=opencloud_auth)
+    r = requests.get(INSTANCES_API + query_string, auth=opencloud_auth)
     return r.json()
 
 def main():
@@ -60,19 +60,18 @@ def main():
 
     slice_id = get_slice_id(slice_name)
     node_id = get_node_id(hostname)
-    slivers = get_slivers(slice_id, node_id)
+    instances = get_instances(slice_id, node_id)
 
     # get (instance_name, ip) pairs for instances with names and ips
 
-    slivers = [x for x in slivers if x["instance_name"]]
-    slivers = sorted(slivers, key = lambda sliver: sliver["instance_name"])
+    instances = [x for x in instances if x["instance_name"]]
+    instances = sorted(instances, key = lambda instance: instance["instance_name"])
 
     # return the last one in the list (i.e. the newest one)
 
-    sliver_id = slivers[-1]["id"]
+    instance_id = instances[-1]["id"]
 
-    r = requests.get(PORTS_API + "?sliver=%s" % sliver_id, auth=opencloud_auth)
-
+    r = requests.get(NETWORKINSTANCES_API + "?instance=%s" % instance_id, auth=opencloud_auth)
     ports = r.json()
     ips = [x["ip"] for x in ports]
 

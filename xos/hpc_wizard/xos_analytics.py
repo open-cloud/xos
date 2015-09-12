@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.conf import settings
 from django import db
 from django.db import connection
-from core.models import Slice, Sliver, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice, Service
+from core.models import Slice, Instance, ServiceClass, Reservation, Tag, Network, User, Node, Image, Deployment, Site, NetworkTemplate, NetworkSlice, Service
 
 BLUE_LOAD=5000000
 RED_LOAD=15000000
@@ -228,17 +228,17 @@ class XOSAnalytics(BigQueryAnalytics):
                 # we didn't find it in the data model
                 continue
 
-            allocated_slivers = 0
+            allocated_instances = 0
             if model_site and slice:
-                for sliver in slice.slivers.all():
-                    if sliver.node.site == model_site:
-                        allocated_slivers = allocated_slivers + 1
+                for instance in slice.instances.all():
+                    if instance.node.site == model_site:
+                        allocated_instances = allocated_instances + 1
 
             row["lat"] = float(model_site.location.latitude)
             row["long"] = float(model_site.location.longitude)
             row["url"] = model_site.site_url
             row["numNodes"] = model_site.nodes.count()
-            row["allocated_slivers"] = allocated_slivers
+            row["allocated_instances"] = allocated_instances
 
             max_cpu = row.get("max_avg_cpu", row.get("max_cpu",0))
             cpu=float(max_cpu)/100.0

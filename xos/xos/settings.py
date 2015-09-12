@@ -192,7 +192,7 @@ SUIT_CONFIG = {
          'auth.group',
          'auth', 
          'core.network',
-         'core.sliver',
+         'core.instance',
          'core.node',
          'core.image',
          'core.deploymentrole',

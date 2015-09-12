@@ -20,20 +20,20 @@ def ensure_serializable(d):
             d2[k] = v
     return d2
 
-def sliver_to_dict(sliver):
-    d = model_to_dict(sliver)
-    d["slice_id"] = sliver.slice.id
-    d["node_id"] = sliver.node.id
+def instance_to_dict(instance):
+    d = model_to_dict(instance)
+    d["slice_id"] = instance.slice.id
+    d["node_id"] = instance.node.id
     return d
 
 def slice_to_dict(slice):
     d = model_to_dict(slice)
-    d["slivers"] = [sliver_to_dict(x) for x in slice.slivers]
+    d["instances"] = [instance_to_dict(x) for x in slice.instances]
     return d
 
 def node_to_dict(node):
     d = model_to_dict(node)
-    d["slivers"] = []
+    d["instances"] = []
 
 
 class OpenCloudData:
@@ -43,7 +43,7 @@ class OpenCloudData:
     def loadAll(self):
         self.allNodes = list(Node.objects.all())
         self.allSlices = list(Slice.objects.all())
-        self.allSlivers = list(Sliver.objects.all())
+        self.allInstances = list(Instance.objects.all())
         self.allSites = list(Site.objects.all())
 
         self.site_id = {}
@@ -56,29 +56,29 @@ class OpenCloudData:
         self.node_id = {}
         for node in self.allNodes:
             d = model_to_dict(node)
-            d["sliver_ids"] = []
+            d["instance_ids"] = []
             self.node_id[node.id] = ensure_serializable(d)
             self.site_id[node.site_id]["node_ids"].append(node.id)
 
         self.slice_id = {}
         for slice in self.allSlices:
             d = model_to_dict(slice)
-            d["sliver_ids"] = []
+            d["instance_ids"] = []
             self.slice_id[slice.id] = ensure_serializable(d)
             self.site_id[slice.site_id]["slice_ids"].append(site.id)
 
         print self.slice_id.keys()
 
-        self.sliver_id = {}
-        for sliver in self.allSlivers:
-            self.sliver_id[sliver.id] = model_to_dict(sliver)
+        self.instance_id = {}
+        for instance in self.allInstances:
+            self.instance_id[instance.id] = model_to_dict(instance)
 
-            self.slice_id[sliver.slice_id]["sliver_ids"].append(sliver.id)
-            self.node_id[sliver.node_id]["sliver_ids"].append(sliver.id)
+            self.slice_id[instance.slice_id]["instance_ids"].append(instance.id)
+            self.node_id[instance.node_id]["instance_ids"].append(instance.id)
 
     def get_opencloud_data(self):
         return {"slices": self.slice_id.values(),
-                "slivers": self.sliver_id.values(),
+                "instances": self.instance_id.values(),
                 "nodes": self.node_id.values(),
                 "sites": self.site_id.values()}
 

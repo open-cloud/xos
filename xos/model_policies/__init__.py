@@ -1,5 +1,5 @@
 from .model_policy_Slice import *
-from .model_policy_Sliver import *
+from .model_policy_Instance import *
 from .model_policy_User import *
 from .model_policy_Network import *
 from .model_policy_Site import *

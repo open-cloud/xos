@@ -8,7 +8,7 @@ from observer.openstacksyncstep import OpenStackSyncStep
 from observer.syncstep import *
 from core.models.network import *
 from core.models.slice import *
-from core.models.sliver import Sliver
+from core.models.instance import Instance
 from util.logger import observer_logger as logger
 from observer.ansible import *
 from openstack.driver import OpenStackDriver

@@ -109,7 +109,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     site = serializers.HyperlinkedRelatedField(view_name='site-detail')
-    slivers = serializers.HyperlinkedRelatedField(view_name='sliver-detail')
+    instances = serializers.HyperlinkedRelatedField(view_name='instance-detail')
     class Meta:
         model = Slice
         fields = ('id',
@@ -128,7 +128,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
 		  'network',
 		  'mountDataSets',
                   'site',
-                  'slivers',
+                  'instances',
                   'updated',
                   'created')
 
@@ -185,7 +185,7 @@ class SitePrivilegeSerializer(serializers.HyperlinkedModelSerializer):
                   'site',
                   'role')
 
-class SliverSerializer(serializers.HyperlinkedModelSerializer):
+class InstanceSerializer(serializers.HyperlinkedModelSerializer):
     # HyperlinkedModelSerializer doesn't include the id by default
     id = serializers.Field()
     image = serializers.HyperlinkedRelatedField(view_name='image-detail')
@@ -196,7 +196,7 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
     #slice = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        model = Sliver
+        model = Instance
         fields = ('id',
                   'url',
                   'instance_id',
@@ -261,7 +261,7 @@ serializerLookUp = {
                  SitePrivilege: SitePrivilegeSerializer,
                  Slice: SliceSerializer,
                  SlicePrivilege: SlicePrivilegeSerializer,
-                 Sliver: SliverSerializer,
+                 Instance: InstanceSerializer,
                  Tag: TagSerializer,
                  User: UserSerializer,
                  None: None,

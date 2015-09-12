@@ -21,7 +21,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 config = Config()
 
 def get_default_flavor(controller = None):
-    # Find a default flavor that can be used for a sliver. This is particularly
+    # Find a default flavor that can be used for a instance. This is particularly
     # useful in evolution. It's also intended this helper function can be used
     # for admin.py when users
 
@@ -39,9 +39,9 @@ def get_default_flavor(controller = None):
 
     return flavors[0]
 
-class SliverDeletionManager(PlCoreBaseDeletionManager):
+class InstanceDeletionManager(PlCoreBaseDeletionManager):
     def get_queryset(self):
-        parent=super(SliverDeletionManager, self)
+        parent=super(InstanceDeletionManager, self)
         try:
             backend_type = config.observer_backend_type
         except AttributeError:
@@ -58,9 +58,9 @@ class SliverDeletionManager(PlCoreBaseDeletionManager):
         return self.get_queryset()
 
 
-class SliverManager(PlCoreBaseManager):
+class InstanceManager(PlCoreBaseManager):
     def get_queryset(self):
-        parent=super(SliverManager, self)
+        parent=super(InstanceManager, self)
 
         try:
             backend_type = config.observer_backend_type
@@ -79,21 +79,21 @@ class SliverManager(PlCoreBaseManager):
         return self.get_queryset()
 
 # Create your models here.
-class Sliver(PlCoreBase):
-    objects = SliverManager()
-    deleted_objects = SliverDeletionManager()
+class Instance(PlCoreBase):
+    objects = InstanceManager()
+    deleted_objects = InstanceDeletionManager()
     instance_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Nova instance id")
     instance_uuid = StrippedCharField(null=True, blank=True, max_length=200, help_text="Nova instance uuid")
-    name = StrippedCharField(max_length=200, help_text="Sliver name")
+    name = StrippedCharField(max_length=200, help_text="Instance name")
     instance_name = StrippedCharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")
-    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
-    image = models.ForeignKey(Image, related_name='slivers')
-    #key = models.ForeignKey(Key, related_name='slivers')
-    creator = models.ForeignKey(User, related_name='slivers', blank=True, null=True)
-    slice = models.ForeignKey(Slice, related_name='slivers')
-    deployment = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deployment')
-    node = models.ForeignKey(Node, related_name='slivers')
-    numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
+    ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
+    image = models.ForeignKey(Image, related_name='instances')
+    #key = models.ForeignKey(Key, related_name='instances')
+    creator = models.ForeignKey(User, related_name='instances', blank=True, null=True)
+    slice = models.ForeignKey(Slice, related_name='instances')
+    deployment = models.ForeignKey(Deployment, verbose_name='deployment', related_name='instance_deployment')
+    node = models.ForeignKey(Node, related_name='instances')
+    numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for instance", default=0)
     flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
@@ -106,16 +106,16 @@ class Sliver(PlCoreBase):
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
             # NOTE: The weird check on self.slice_id was due to a problem when
-            #   deleting the slice before the sliver.
+            #   deleting the slice before the instance.
             return u'%s' % self.name
         elif self.instance_name:
             return u'%s' % (self.instance_name)
         elif self.id:
             return u'uninstantiated-%s' % str(self.id)
         elif self.slice:
-            return u'unsaved-sliver on %s' % self.slice.name
+            return u'unsaved-instance on %s' % self.slice.name
         else:
-            return u'unsaved-sliver'
+            return u'unsaved-instance'
 
     def save(self, *args, **kwds):
         if not self.name:
@@ -123,20 +123,20 @@ class Sliver(PlCoreBase):
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
         if not self.creator:
-            raise ValidationError('sliver has no creator')
+            raise ValidationError('instance has no creator')
 
         if (self.slice.creator != self.creator):
             # Check to make sure there's a slice_privilege for the user. If there
             # isn't, then keystone will throw an exception inside the observer.
             slice_privs = SlicePrivilege.objects.filter(slice=self.slice, user=self.creator)
             if not slice_privs:
-                raise ValidationError('sliver creator has no privileges on slice')
+                raise ValidationError('instance creator has no privileges on slice')
 
 # XXX smbaker - disabled for now, was causing fault in tenant view create slice
 #        if not self.controllerNetwork.test_acl(slice=self.slice):
 #            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.controllerNetwork.name, self.slice.name))
 
-        super(Sliver, self).save(*args, **kwds)
+        super(Instance, self).save(*args, **kwds)
 
     def can_update(self, user):
         return user.can_update_slice(self.slice)
@@ -166,18 +166,18 @@ class Sliver(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = Sliver.objects.all()
+            qs = Instance.objects.all()
         else:
             slices = Slice.select_by_user(user)
-            qs = Sliver.objects.filter(slice__in=slices)
+            qs = Instance.objects.filter(slice__in=slices)
         return qs
 
     def get_cpu_stats(self):
-        filter = 'instance_id=%s'%self.sliver_id
+        filter = 'instance_id=%s'%self.instance_id
         return monitor.get_meter('cpu',filter,None)
 
     def get_bw_stats(self):
-        filter = 'instance_id=%s'%self.sliver_id
+        filter = 'instance_id=%s'%self.instance_id
         return monitor.get_meter('network.outgoing.bytes',filter,None)
 
     def get_node_stats(self):
@@ -211,4 +211,4 @@ def controller_setter(instance, **kwargs):
     except:
         instance.controller = None
 
-models.signals.post_init.connect(controller_setter, Sliver)
+models.signals.post_init.connect(controller_setter, Instance)

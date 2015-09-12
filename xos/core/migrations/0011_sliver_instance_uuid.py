@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='sliver',
+            model_name='instance',
             name='instance_uuid',
             field=models.CharField(help_text=b'Nova instance uuid', max_length=200, null=True, blank=True),
             preserve_default=True,

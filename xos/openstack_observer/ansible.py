@@ -136,7 +136,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
 
 def run_template_ssh(name, opts, path='', expected_num=None):
     instance_id = opts["instance_id"]
-    sliver_name = opts["sliver_name"]
+    instance_name = opts["instance_name"]
     hostname = opts["hostname"]
     private_key = opts["private_key"]
     nat_ip = opts["nat_ip"]
@@ -167,7 +167,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f.close()
 
     f = open(hosts_pathname, "w")
-    f.write("[%s]\n" % sliver_name)
+    f.write("[%s]\n" % instance_name)
     if proxy_ssh:
         f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
     else:
