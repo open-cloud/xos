@@ -158,7 +158,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
 class VCPETenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
     creator = forms.ModelChoiceField(queryset=User.objects.all())
-    sliver = forms.ModelChoiceField(queryset=Sliver.objects.all(),required=False)
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     last_ansible_hash = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
@@ -169,7 +169,7 @@ class VCPETenantForm(forms.ModelForm):
             # fields for the attributes
             self.fields['bbs_account'].initial = self.instance.bbs_account
             self.fields['creator'].initial = self.instance.creator
-            self.fields['sliver'].initial = self.instance.sliver
+            self.fields['instance'].initial = self.instance.instance
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
@@ -180,7 +180,7 @@ class VCPETenantForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
-        self.instance.sliver = self.cleaned_data.get("sliver")
+        self.instance.instance = self.cleaned_data.get("instance")
         self.instance.last_ansible_hash = self.cleaned_data.get("last_ansible_hash")
         return super(VCPETenantForm, self).save(commit=commit)
 
@@ -191,7 +191,7 @@ class VCPETenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'bbs_account', 'creator', 'sliver', 'last_ansible_hash'],
+                                     'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
     form = VCPETenantForm

@@ -339,12 +339,12 @@ class User(AbstractBaseUser, PlModelMixIn):
 
     def get_readable_objects(self, filter_by=None):
        """ Returns a list of objects that the user is allowed to read. """
-       from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Sliver, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
+       from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege
        models = []
        if filter_by and isinstance(filter_by, list):
            models = [m for m in filter_by if issubclass(m, PlModelMixIn)]
        if not models:
-           models = [Deployment, Network, Site, Slice, SliceTag, Sliver, Tag, User]
+           models = [Deployment, Network, Site, Slice, SliceTag, Instance, Tag, User]
        readable_objects = []
        for model in models:
            readable_objects.extend(model.select_by_user(self))
@@ -362,7 +362,7 @@ class User(AbstractBaseUser, PlModelMixIn):
           list of dicts  
        
         """
-        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Sliver, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege   
+        from core.models import Deployment, Flavor, Image, Network, NetworkTemplate, Node, PlModelMixIn, Site, Slice, SliceTag, Instance, Tag, User, DeploymentPrivilege, SitePrivilege, SlicePrivilege   
         READ = 'r'
         READWRITE = 'rw'
         models = []
@@ -371,7 +371,7 @@ class User(AbstractBaseUser, PlModelMixIn):
 
         deployment_priv_objs = [Image, NetworkTemplate, Flavor]
         site_priv_objs = [Node, Slice, User]
-        slice_priv_objs = [Sliver, Network] 
+        slice_priv_objs = [Instance, Network] 
         
         # maps the set of objects a paticular role has write access
         write_map = {

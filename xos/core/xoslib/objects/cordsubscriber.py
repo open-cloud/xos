@@ -1,4 +1,4 @@
-from core.models import Slice, SlicePrivilege, SliceRole, Sliver, Site, Node, User
+from core.models import Slice, SlicePrivilege, SliceRole, Instance, Site, Node, User
 from cord.models import VOLTTenant, CordSubscriberRoot
 from plus import PlusObjectMixin
 from operator import itemgetter, attrgetter
@@ -40,8 +40,8 @@ class CordSubscriberOld(VOLTTenant, PlusObjectMixin):
                      ("cdn_enable", "vcpe.cdn_enable"),
                      ("image", "vcpe.image.id"),
                      ("image_name", "vcpe.image.name"),
-                     ("sliver", "vcpe.sliver.id"),
-                     ("sliver_name", "vcpe.sliver.name"),
+                     ("instance", "vcpe.instance.id"),
+                     ("instance_name", "vcpe.instance.name"),
                      ("routeable_subnet", "vcpe.vbng.routeable_subnet"),
                      ("vcpe_id", "vcpe.id"),
                      ("vbng_id", "vcpe.vbng.id"),
@@ -119,8 +119,8 @@ class CordSubscriber(CordSubscriberRoot):
                      ("ssh_command", "volt.vcpe.ssh_command"),
                      ("image", "volt.vcpe.image.id"),
                      ("image_name", "volt.vcpe.image.name"),
-                     ("sliver", "volt.vcpe.sliver.id"),
-                     ("sliver_name", "volt.vcpe.sliver.name"),
+                     ("instance", "volt.vcpe.instance.id"),
+                     ("instance_name", "volt.vcpe.instance.name"),
                      ("routeable_subnet", "volt.vcpe.vbng.routeable_subnet"),
                      ("vcpe_id", "volt.vcpe.id"),
                      ("vbng_id", "volt.vcpe.vbng.id"),

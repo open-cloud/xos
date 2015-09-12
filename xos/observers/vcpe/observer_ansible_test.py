@@ -37,7 +37,7 @@ EBXj5zECgYEAk+HuwksUPkSxg/AiJGbapGDK6XGymEUzo2duWlnofRqGcZ3NT3bB
 """
 
 observer.ansible.run_template_ssh("test.yaml",
-                                  {"sliver_name": "onlab_test405-378",
+                                  {"instance_name": "onlab_test405-378",
                                    "instance_id": "instance-0000004d",
                                    "hostname": "node67.washington.vicci.org",
                                    "private_key": private_key})

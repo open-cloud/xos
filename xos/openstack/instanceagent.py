@@ -2,10 +2,10 @@ import os
 import sys
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import time
-from core.models.sliver import Sliver
+from core.models.instance import Instance
 from openstack.manager import OpenStackManager
 
-class SliverAgent:
+class InstanceAgent:
 
     def run(self):
         manager = OpenStackManager()
@@ -15,25 +15,25 @@ class SliverAgent:
 
         while True :
             # fill in null ip addresses 
-            slivers = Sliver.objects.filter(ip=None)
-            for sliver in slivers:
+            instances = Instance.objects.filter(ip=None)
+            for instance in instances:
                 # update connection
                 manager.client.connect(username=manager.client.keystone.username,
                                password=manager.client.keystone.password,
-                               tenant=sliver.slice.name)  
-                sliver.os_manager = manager
-                servers = manager.client.nova.servers.findall(id=sliver.instance_id)
+                               tenant=instance.slice.name)  
+                instance.os_manager = manager
+                servers = manager.client.nova.servers.findall(id=instance.instance_id)
                 if not servers:
                     continue
                 server = servers[0]
-                ips = server.addresses.get(sliver.slice.name, [])
+                ips = server.addresses.get(instance.slice.name, [])
                 if not ips:
                     continue
-                sliver.ip = ips[0]['addr']
-                sliver.save()
+                instance.ip = ips[0]['addr']
+                instance.save()
             time.sleep(7)
                 
                                         
 if __name__ == '__main__':
-    SliverAgent().run()
+    InstanceAgent().run()
                  

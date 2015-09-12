@@ -42,7 +42,7 @@ class SyncControllerSlices(OpenStackSyncStep):
             controller_user = controller_users[0]
             roles = ['admin']
 
-        max_instances=int(controller_slice.slice.max_slivers)
+        max_instances=int(controller_slice.slice.max_instances)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,
                          'admin_user': controller_slice.controller.admin_user,
                          'admin_password': controller_slice.controller.admin_password,
@@ -60,7 +60,7 @@ class SyncControllerSlices(OpenStackSyncStep):
         if (not controller_slice.tenant_id):
             try:
                 driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)
-                driver.shell.nova.quotas.update(tenant_id=tenant_id, instances=int(controller_slice.slice.max_slivers))
+                driver.shell.nova.quotas.update(tenant_id=tenant_id, instances=int(controller_slice.slice.max_instances))
             except:
                 logger.log_exc('Could not update quota for %s'%controller_slice.slice.name)
                 raise Exception('Could not update quota for %s'%controller_slice.slice.name)

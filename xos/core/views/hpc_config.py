@@ -58,11 +58,11 @@ def HpcConfig(request):
         if not cmiSlice:
             return HttpResponseServerError("Error: no CMI slice")
 
-        if len(cmiSlice.slivers.all())==0:
-            return HttpResponseServerError("Error: CMI slice has no slivers")
+        if len(cmiSlice.instances.all())==0:
+            return HttpResponseServerError("Error: CMI slice has no instances")
 
         # for now, assuming using NAT
-        cmi_hostname = cmiSlice.slivers.all()[0].node.name
+        cmi_hostname = cmiSlice.instances.all()[0].node.name
 
     if not hpcSlice:
         return HttpResponseServerError("Error: no HPC slice")

@@ -75,8 +75,8 @@ def get_REST_patterns():
         url(r'xos/slice_privileges/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
         url(r'xos/slice_privileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SlicePrivilegeDetail.as_view(), name ='sliceprivilege-detail'),
     
-        url(r'xos/networkslivers/$', NetworkSliverList.as_view(), name='networksliver-list'),
-        url(r'xos/networkslivers/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkSliverDetail.as_view(), name ='networksliver-detail'),
+        url(r'xos/networkinstances/$', NetworkInstanceList.as_view(), name='networkinstance-list'),
+        url(r'xos/networkinstances/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkInstanceDetail.as_view(), name ='networkinstance-detail'),
     
         url(r'xos/flavors/$', FlavorList.as_view(), name='flavor-list'),
         url(r'xos/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
@@ -123,8 +123,8 @@ def get_REST_patterns():
         url(r'xos/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
         url(r'xos/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
     
-        url(r'xos/slivers/$', SliverList.as_view(), name='sliver-list'),
-        url(r'xos/slivers/(?P<pk>[a-zA-Z0-9\-]+)/$', SliverDetail.as_view(), name ='sliver-detail'),
+        url(r'xos/instances/$', InstanceList.as_view(), name='instance-list'),
+        url(r'xos/instances/(?P<pk>[a-zA-Z0-9\-]+)/$', InstanceDetail.as_view(), name ='instance-detail'),
     
         url(r'xos/nodes/$', NodeList.as_view(), name='node-list'),
         url(r'xos/nodes/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeDetail.as_view(), name ='node-detail'),
@@ -245,7 +245,7 @@ def api_root(request, format=None):
         'tags': reverse('tag-list', request=request, format=format),
         'invoices': reverse('invoice-list', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
-        'networkslivers': reverse('networksliver-list', request=request, format=format),
+        'networkinstances': reverse('networkinstance-list', request=request, format=format),
         'flavors': reverse('flavor-list', request=request, format=format),
         'controllersites': reverse('controllersite-list', request=request, format=format),
         'projects': reverse('project-list', request=request, format=format),
@@ -261,7 +261,7 @@ def api_root(request, format=None):
         'usableobjects': reverse('usableobject-list', request=request, format=format),
         'providers': reverse('provider-list', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list', request=request, format=format),
-        'slivers': reverse('sliver-list', request=request, format=format),
+        'instances': reverse('instance-list', request=request, format=format),
         'nodes': reverse('node-list', request=request, format=format),
         'dashboardviews': reverse('dashboardview-list', request=request, format=format),
         'controllernetworks': reverse('controllernetwork-list', request=request, format=format),
@@ -791,7 +791,7 @@ class SlicePrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
+class NetworkInstanceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -804,10 +804,10 @@ class NetworkSliverSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
-        model = NetworkSliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+        model = NetworkInstance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
-class NetworkSliverIdSerializer(XOSModelSerializer):
+class NetworkInstanceIdSerializer(XOSModelSerializer):
     id = IdField()
     
     humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -820,8 +820,8 @@ class NetworkSliverIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
-        model = NetworkSliver
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+        model = NetworkInstance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
 
 
@@ -961,7 +961,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instance','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -985,8 +985,7 @@ class SliceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
-
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 
 
@@ -1002,7 +1001,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
     
     
     
-    slivers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='sliver-detail')
+    instances = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='instance-detail')
     
     
     
@@ -1024,7 +1023,7 @@ class NetworkSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
 class NetworkIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1038,7 +1037,7 @@ class NetworkIdSerializer(XOSModelSerializer):
     
     
     
-    slivers = serializers.PrimaryKeyRelatedField(many=True,  queryset = Sliver.objects.all())
+    instances = serializers.PrimaryKeyRelatedField(many=True,  queryset = Instance.objects.all())
     
     
     
@@ -1060,7 +1059,7 @@ class NetworkIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Network
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','slivers','routers','routers',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
 
 
@@ -1415,7 +1414,7 @@ class SliceCredentialIdSerializer(XOSModelSerializer):
 
 
 
-class SliverSerializer(serializers.HyperlinkedModelSerializer):
+class InstanceSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
     
@@ -1432,10 +1431,15 @@ class SliverSerializer(serializers.HyperlinkedModelSerializer):
         except:
             return None
     class Meta:
+<<<<<<< HEAD
+        model = Instance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+=======
         model = Sliver
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+>>>>>>> origin/master
 
-class SliverIdSerializer(XOSModelSerializer):
+class InstanceIdSerializer(XOSModelSerializer):
     id = IdField()
     
     
@@ -1452,8 +1456,13 @@ class SliverIdSerializer(XOSModelSerializer):
         except:
             return None
     class Meta:
+<<<<<<< HEAD
+        model = Instance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+=======
         model = Sliver
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+>>>>>>> origin/master
 
 
 
@@ -1663,7 +1672,7 @@ class ReservedResourceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = ReservedResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','sliver','resource','quantity','reservationSet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance','resource','quantity','reservationSet',)
 
 class ReservedResourceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1679,7 +1688,7 @@ class ReservedResourceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = ReservedResource
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','sliver','resource','quantity','reservationSet',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance','resource','quantity','reservationSet',)
 
 
 
@@ -1715,6 +1724,7 @@ class NetworkTemplateIdSerializer(XOSModelSerializer):
     class Meta:
         model = NetworkTemplate
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
+>>>>>>> origin/master
 
 
 
@@ -1846,7 +1856,7 @@ class PortSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Port
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
 class PortIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -1862,7 +1872,7 @@ class PortIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = Port
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
 
 
@@ -2746,7 +2756,7 @@ serializerLookUp = {
 
                  SlicePrivilege: SlicePrivilegeSerializer,
 
-                 NetworkSliver: NetworkSliverSerializer,
+                 NetworkInstance: NetworkInstanceSerializer,
 
                  Flavor: FlavorSerializer,
 
@@ -2778,7 +2788,7 @@ serializerLookUp = {
 
                  SliceCredential: SliceCredentialSerializer,
 
-                 Sliver: SliverSerializer,
+                 Instance: InstanceSerializer,
 
                  Node: NodeSerializer,
 
@@ -3418,12 +3428,12 @@ class SlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkSliverList(XOSListCreateAPIView):
-    queryset = NetworkSliver.objects.select_related().all()
-    serializer_class = NetworkSliverSerializer
-    id_serializer_class = NetworkSliverIdSerializer
+class NetworkInstanceList(XOSListCreateAPIView):
+    queryset = NetworkInstance.objects.select_related().all()
+    serializer_class = NetworkInstanceSerializer
+    id_serializer_class = NetworkInstanceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3437,13 +3447,13 @@ class NetworkSliverList(XOSListCreateAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return NetworkSliver.select_by_user(self.request.user)
+        return NetworkInstance.select_by_user(self.request.user)
 
 
-class NetworkSliverDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = NetworkSliver.objects.select_related().all()
-    serializer_class = NetworkSliverSerializer
-    id_serializer_class = NetworkSliverIdSerializer
+class NetworkInstanceDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = NetworkInstance.objects.select_related().all()
+    serializer_class = NetworkInstanceSerializer
+    id_serializer_class = NetworkInstanceIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3457,7 +3467,7 @@ class NetworkSliverDetail(XOSRetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return NetworkSliver.select_by_user(self.request.user)
+        return NetworkInstance.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -3611,7 +3621,7 @@ class SliceList(XOSListCreateAPIView):
     serializer_class = SliceSerializer
     id_serializer_class = SliceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_slivers','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -3658,7 +3668,7 @@ class NetworkList(XOSListCreateAPIView):
     serializer_class = NetworkSerializer
     id_serializer_class = NetworkIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','slivers','routers','routers',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','template','subnet','ports','labels','owner','guaranteed_bandwidth','permit_all_slices','topology_parameters','controller_url','controller_parameters','network_id','router_id','subnet_id','autoconnect','slices','slices','instances','routers','routers',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4170,10 +4180,10 @@ class SliceCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class SliverList(XOSListCreateAPIView):
-    queryset = Sliver.objects.select_related().all()
-    serializer_class = SliverSerializer
-    id_serializer_class = SliverIdSerializer
+class InstanceList(XOSListCreateAPIView):
+    queryset = Instance.objects.select_related().all()
+    serializer_class = InstanceSerializer
+    id_serializer_class = InstanceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 
@@ -4189,13 +4199,13 @@ class SliverList(XOSListCreateAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return Sliver.select_by_user(self.request.user)
+        return Instance.select_by_user(self.request.user)
 
 
-class SliverDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = Sliver.objects.select_related().all()
-    serializer_class = SliverSerializer
-    id_serializer_class = SliverIdSerializer
+class InstanceDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = Instance.objects.select_related().all()
+    serializer_class = InstanceSerializer
+    id_serializer_class = InstanceIdSerializer
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4209,7 +4219,7 @@ class SliverDetail(XOSRetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
-        return Sliver.select_by_user(self.request.user)
+        return Instance.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -4457,7 +4467,7 @@ class ReservedResourceList(XOSListCreateAPIView):
     serializer_class = ReservedResourceSerializer
     id_serializer_class = ReservedResourceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','sliver','resource','quantity','reservationSet',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance','resource','quantity','reservationSet',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
@@ -4692,7 +4702,7 @@ class PortList(XOSListCreateAPIView):
     serializer_class = PortSerializer
     id_serializer_class = PortIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','sliver','ip','port_id',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
     def get_serializer_class(self):
         no_hyperlinks=False

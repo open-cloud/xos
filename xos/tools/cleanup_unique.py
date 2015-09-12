@@ -57,7 +57,7 @@ for obj in NetworkSlice.objects.all():
 seen=[]
 for obj in Port.objects.all():
      seen.append(obj.id)
-     conflicts = Port.objects.filter(network=obj.network, sliver=obj.sliver)
+     conflicts = Port.objects.filter(network=obj.network, instance=obj.instanc)
      for conflict in conflicts:
          if conflict.id not in seen:
              print "Purging", conflict, conflict.id, "due to duplicate of", obj.id

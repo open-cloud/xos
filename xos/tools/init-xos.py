@@ -59,6 +59,6 @@ DashboardView(name="Developer", url="template:xosDeveloper_datatables", enabled=
 ServiceClass(name="Best Effort", description="Best Effort").save()
 
 NetworkTemplate(name="Private", description="A private virtual network", visibility="private", translation="none", topology_kind="bigswitch", controller_kind="none").save()
-NetworkTemplate(name="Public shared IPv4", description="Connect a sliver to the public network", visibility="private", translation="NAT", shared_network_name="nat-net", topology_kind="bigswitch", controller_kind="none").save()
-NetworkTemplate(name="Public dedicated IPv4", description="Connect a sliver to the public network", visibility="public", translation="none", shared_network_name="ext-net", topology_kind="bigswitch", controller_kind="none").save()
+NetworkTemplate(name="Public shared IPv4", description="Connect a instance to the public network", visibility="private", translation="NAT", shared_network_name="nat-net", topology_kind="bigswitch", controller_kind="none").save()
+NetworkTemplate(name="Public dedicated IPv4", description="Connect a instance to the public network", visibility="public", translation="none", shared_network_name="ext-net", topology_kind="bigswitch", controller_kind="none").save()
 

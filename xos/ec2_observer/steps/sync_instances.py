@@ -4,7 +4,7 @@ import base64
 from django.db.models import F, Q
 from xos.config import Config
 from ec2_observer.syncstep import SyncStep
-from core.models.sliver import Sliver
+from core.models.instance import Instance
 from core.models.slice import SlicePrivilege, SliceDeployments
 from core.models.network import Network, NetworkSlice, NetworkDeployments
 from util.logger import Logger, logging
@@ -16,53 +16,53 @@ import pdb
 
 logger = Logger(level=logging.INFO)
 
-class SyncSlivers(SyncStep):
-    provides=[Sliver]
+class SyncInstances(SyncStep):
+    provides=[Instance]
     requested_interval=0
 
     def fetch_pending(self, deletion):
         if deletion:
-            object_source = Sliver.deleted_objects
+            object_source = Instance.deleted_objects
         else:
-            object_source = Sliver.objects
+            object_source = Instance.objects
 
-        all_slivers = object_source.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-        my_slivers = [] 
+        all_instances = object_source.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
+        my_instances = [] 
 
-        for sliver in all_slivers:
-            sd = SliceDeployments.objects.filter(Q(slice=sliver.slice))
+        for instance in all_instances:
+            sd = SliceDeployments.objects.filter(Q(slice=instance.slice))
             if (sd):
                 if (sd.deployment.name=='Amazon EC2'):
-                    my_slivers.append(sliver)
-            if (sliver.node.deployment.name=='Amazon EC2'):
-                my_slivers.append(sliver)
-        return my_slivers
+                    my_instances.append(instance)
+            if (instance.node.deployment.name=='Amazon EC2'):
+                my_instances.append(instance)
+        return my_instances
 
-    def delete_record(self, sliver):
-        user = sliver.creator
+    def delete_record(self, instance):
+        user = instance.creator
         e = get_creds(user=user, site=user.site)
-        result = aws_run('ec2 terminate-instances --instance-ids=%s'%sliver.instance_id, env=e)
+        result = aws_run('ec2 terminate-instances --instance-ids=%s'%instance.instance_id, env=e)
 
-    def sync_record(self, sliver):
-        logger.info("sync'ing sliver:%s deployment:%s " % (sliver, sliver.node.deployment))
+    def sync_record(self, instance):
+        logger.info("sync'ing instance:%s deployment:%s " % (instance, instance.node.deployment))
 
-        if not sliver.instance_id:
+        if not instance.instance_id:
             # public keys
-            slice_memberships = SlicePrivilege.objects.filter(slice=sliver.slice)
+            slice_memberships = SlicePrivilege.objects.filter(slice=instance.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
 
-            if sliver.creator.public_key:
-                pubkeys.append(sliver.creator.public_key)
+            if instance.creator.public_key:
+                pubkeys.append(instance.creator.public_key)
 
-            if sliver.slice.creator.public_key:
-                pubkeys.append(sliver.slice.creator.public_key) 
+            if instance.slice.creator.public_key:
+                pubkeys.append(instance.slice.creator.public_key) 
 
             # netowrks
             # include all networks available to the slice and/or associated network templates
             #nics = []
-            #networks = [ns.network for ns in NetworkSlice.objects.filter(slice=sliver.slice)]  
+            #networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice)]  
             #network_deployments = NetworkDeployments.objects.filter(network__in=networks, 
-                                                                    #deployment=sliver.node.deployment)
+                                                                    #deployment=instance.node.deployment)
             # Gather private networks first. This includes networks with a template that has
             # visibility = private and translation = none
             #for network_deployment in network_deployments:
@@ -78,11 +78,11 @@ class SyncSlivers(SyncStep):
             #       nics.append({'net-id': net['id']}) 
             # look up image id
 
-            instance_type = sliver.node.name.rsplit('.',1)[0]
+            instance_type = instance.node.name.rsplit('.',1)[0]
 
             # Bail out of we don't have a key
-            key_name = sliver.creator.email.lower().replace('@', 'AT').replace('.', '')
-            u = sliver.creator
+            key_name = instance.creator.email.lower().replace('@', 'AT').replace('.', '')
+            u = instance.creator
             s = u.site
             e = get_creds(user=u, site=s)
             key_sig = aws_run('ec2 describe-key-pairs', env=e)
@@ -95,23 +95,23 @@ class SyncSlivers(SyncStep):
 
             if (not key_found):
                 # set backend_status
-                raise Exception('Will not sync sliver without key')
+                raise Exception('Will not sync instance without key')
 
-            image_id = sliver.image.path
-            instance_sig = aws_run('ec2 run-instances --image-id %s --instance-type %s --count 1 --key-name %s --placement AvailabilityZone=%s'%(image_id,instance_type,key_name,sliver.node.site.name), env=e)
-            sliver.instance_id = instance_sig['Instances'][0]['InstanceId']
-            sliver.save()
+            image_id = instance.image.path
+            instance_sig = aws_run('ec2 run-instances --image-id %s --instance-type %s --count 1 --key-name %s --placement AvailabilityZone=%s'%(image_id,instance_type,key_name,instance.node.site.name), env=e)
+            instance.instance_id = instance_sig['Instances'][0]['InstanceId']
+            instance.save()
             state = instance_sig['Instances'][0]['State']['Code']
             if (state==16):
-                sliver.ip = instance_sig['Instances'][0]['PublicIpAddress']
-                sliver.save()
+                instance.ip = instance_sig['Instances'][0]['PublicIpAddress']
+                instance.save()
             else:
                 # This status message should go into backend_status
                 raise Exception('Waiting for instance to start')
         else:
-            ret = aws_run('ec2 describe-instances --instance-ids %s'%sliver.instance_id, env=e)
+            ret = aws_run('ec2 describe-instances --instance-ids %s'%instance.instance_id, env=e)
             state = ret['Reservations'][0]['Instances'][0]['State']['Code']
             if (state==16):
-                sliver.ip = ret['Reservations'][0]['Instances'][0]['PublicIpAddress']
-                sliver.save()
+                instance.ip = ret['Reservations'][0]['Instances'][0]['PublicIpAddress']
+                instance.save()
 

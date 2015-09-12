@@ -61,7 +61,7 @@ try:
    import syndicate_storage.models as models
 
    # get OpenCloud models 
-   from core.models import Slice,Sliver
+   from core.models import Slice,Instance
    
    from django.core.exceptions import ObjectDoesNotExist
    from django.db import IntegrityError
@@ -501,7 +501,7 @@ def create_slice_credential_blob( private_key_pem, slice_name, slice_secret, syn
 def put_principal_data( user_email, observer_secret, public_key_pem, private_key_pem ):
     """
     Seal and store the principal's private key into the database, in a SyndicatePrincipal object,
-    so the sliver-side Syndicate daemon syndicated.py can get them later.
+    so the instance-side Syndicate daemon syndicated.py can get them later.
     Overwrite an existing principal if one exists.
     """
     
@@ -814,9 +814,9 @@ def get_volumeslice( volume_name, slice_name ):
 
 
 #-------------------------------
-def do_push( sliver_hosts, portnum, payload ):
+def do_push( instance_hosts, portnum, payload ):
     """
-    Push a payload to a list of slivers.
+    Push a payload to a list of instances.
     NOTE: this has to be done in one go, since we can't import grequests
     into the global namespace (without wrecking havoc on the credential server),
     but it has to stick around for the push to work.
@@ -837,7 +837,7 @@ def do_push( sliver_hosts, portnum, payload ):
     
     # fan-out 
     requests = []
-    for sh in sliver_hosts:
+    for sh in instance_hosts:
       rs = grequests.post( "http://" + sh + ":" + str(portnum), data={"observer_message": payload}, timeout=getattr(CONFIG, "SYNDICATE_HTTP_PUSH_TIMEOUT", 60) )
       requests.append( rs )
       
@@ -873,7 +873,7 @@ def get_slice_hostnames( slice_name ):
        logger.error("No such slice '%s'" % slice_name)
        return None
 
-   hostnames = [s.node.name for s in openstack_slice.slivers.all()]
+   hostnames = [s.node.name for s in openstack_slice.instances.all()]
 
    return hostnames
 
@@ -894,8 +894,8 @@ class CredentialServerHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
    for volume state.
    
    NOTE: this is a fall-back mechanism.  The observer should push new 
-   volume state to the slices' slivers.  However, if that fails, the 
-   slivers are configured to poll for volume state periodically.  This 
+   volume state to the slices' instances.  However, if that fails, the 
+   instances are configured to poll for volume state periodically.  This 
    server allows them to do just that.
    
    Responses:
@@ -906,12 +906,12 @@ class CredentialServerHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
       GET /<slicename>/SYNDICATE_SLICE_SECRET    -- Reply with the slice secret (TEMPORARY)
    
    
-   NOTE: We want to limit who can learn which Volumes a slice can access, so we'll seal its slivers'
-   credentials with the SliceSecret secret.  The slivers (which have the slice-wide secret) can then decrypt it.
+   NOTE: We want to limit who can learn which Volumes a slice can access, so we'll seal its instances'
+   credentials with the SliceSecret secret.  The instances (which have the slice-wide secret) can then decrypt it.
    However, sealing the listing is a time-consuming process (on the order of 10s), so we only want 
    to do it when we have to.  Since *anyone* can ask for the ciphertext of the volume list,
    we will cache the list ciphertext for each slice for a long-ish amount of time, so we don't
-   accidentally DDoS this server.  This necessarily means that the sliver might see a stale
+   accidentally DDoS this server.  This necessarily means that the instance might see a stale
    volume listing, but that's okay, since the Observer is eventually consistent anyway.
    """
    
@@ -971,7 +971,7 @@ class CredentialServerHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
       
       # block the cache.
       # NOTE: don't release the lock until we've generated credentials.
-      # Chances are, there's a thundering herd of slivers coming online.
+      # Chances are, there's a thundering herd of instances coming online.
       # Block them all until we've generated their slice's credentials,
       # and then serve them the cached one.
       

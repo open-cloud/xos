@@ -1,6 +1,6 @@
 from PLC.Nodes import Nodes
 
-class SliverImporter:
+class InstanceImporter:
 
     def __init__(self, api):
         self.api = api

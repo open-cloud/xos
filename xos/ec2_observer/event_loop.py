@@ -49,7 +49,7 @@ def invert_graph(g):
 	return ig
 
 class XOSObserver:
-	#sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivilege,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
+	#sync_steps = [SyncNetworks,SyncNetworkInstances,SyncSites,SyncSitePrivilege,SyncSlices,SyncSliceMemberships,SyncInstances,SyncInstanceIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
 	sync_steps = []
 
 	

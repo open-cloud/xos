@@ -28,11 +28,11 @@ class DashboardSliceInteractions(View):
         elif name=="sites":
             result["title"] = "Slice interactions by site ownership"
             result["objectName"] = "sites"
-        elif name=="sliver_sites":
-            result["title"] = "Slice interactions by sliver sites"
+        elif name=="instance_sites":
+            result["title"] = "Slice interactions by instance sites"
             result["objectName"] = "sites"
-        elif name=="sliver_nodes":
-            result["title"] = "Slice interactions by sliver nodes"
+        elif name=="instance_nodes":
+            result["title"] = "Slice interactions by instance nodes"
             result["objectName"] = "nodes"
 
         return HttpResponse(json.dumps(result), content_type='application/javascript')
@@ -83,12 +83,12 @@ class DashboardSliceInteractions(View):
                         ids.append(sp.network.id)
         elif name=="sites":
             ids = [slice.site.id]
-        elif name=="sliver_sites":
-            for sp in slice.slivers.all():
+        elif name=="instance_sites":
+            for sp in slice.instances.all():
                  if sp.node.site.id not in ids:
                      ids.append(sp.node.site.id)
-        elif name=="sliver_nodes":
-            for sp in slice.slivers.all():
+        elif name=="instance_nodes":
+            for sp in slice.instances.all():
                  if sp.node.id not in ids:
                      ids.append(sp.node.id)
         return ids

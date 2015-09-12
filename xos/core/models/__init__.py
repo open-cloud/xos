@@ -23,10 +23,10 @@ from .site import SiteRole
 from .site import SitePrivilege
 from .node import Node
 from .slicetag import SliceTag
-from .sliver import Sliver
+from .instance import Instance
 from .reservation import ReservedResource
 from .reservation import Reservation
-from .network import Network, NetworkParameterType, NetworkParameter, NetworkSliver, Port, NetworkTemplate, Router, NetworkSlice, ControllerNetwork
+from .network import Network, NetworkParameterType, NetworkParameter, NetworkInstance, Port, NetworkTemplate, Router, NetworkSlice, ControllerNetwork
 from .billing import Account, Invoice, Charge, UsableObject, Payment
 from .program import Program
 
