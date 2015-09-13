@@ -347,32 +347,32 @@ class TenantWithContainer(Tenant):
 
     def __init__(self, *args, **kwargs):
         super(TenantWithContainer, self).__init__(*args, **kwargs)
-        self.cached_sliver=None
-        self.orig_sliver_id = self.get_initial_attribute("sliver_id")
+        self.cached_instance=None
+        self.orig_instance_id = self.get_initial_attribute("instance_id")
 
     @property
-    def sliver(self):
-        from core.models import Sliver
-        if getattr(self, "cached_sliver", None):
-            return self.cached_sliver
-        sliver_id=self.get_attribute("sliver_id")
-        if not sliver_id:
+    def instance(self):
+        from core.models import Instance
+        if getattr(self, "cached_instance", None):
+            return self.cached_instance
+        instance_id=self.get_attribute("instance_id")
+        if not instance_id:
             return None
-        slivers=Sliver.objects.filter(id=sliver_id)
-        if not slivers:
+        instances=Instance.objects.filter(id=instance_id)
+        if not instances:
             return None
-        sliver=slivers[0]
-        sliver.caller = self.creator
-        self.cached_sliver = sliver
-        return sliver
+        instance=instances[0]
+        instance.caller = self.creator
+        self.cached_instance = instance
+        return instance
 
-    @sliver.setter
-    def sliver(self, value):
+    @instance.setter
+    def instance(self, value):
         if value:
             value = value.id
-        if (value != self.get_attribute("sliver_id", None)):
-            self.cached_sliver=None
-        self.set_attribute("sliver_id", value)
+        if (value != self.get_attribute("instance_id", None)):
+            self.cached_instance=None
+        self.set_attribute("instance_id", value)
 
     @property
     def creator(self):
@@ -414,20 +414,20 @@ class TenantWithContainer(Tenant):
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.slivers.all().count())
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return nodes[0]
 
     def manage_container(self):
-        from core.models import Sliver, Flavor
+        from core.models import Instance, Flavor
 
         if self.deleted:
             return
 
-        if (self.sliver is not None) and (self.sliver.image != self.image):
-            self.sliver.delete()
-            self.sliver = None
+        if (self.instance is not None) and (self.instance.image != self.image):
+            self.instance.delete()
+            self.instance = None
 
-        if self.sliver is None:
+        if self.instance is None:
             if not self.provider_service.slices.count():
                 raise XOSConfigurationError("The VCPE service has no slices")
 
@@ -436,26 +436,26 @@ class TenantWithContainer(Tenant):
                 raise XOSConfigurationError("No m1.small flavor")
 
             node =self.pick_node()
-            sliver = Sliver(slice = self.provider_service.slices.all()[0],
+            instance = Instance(slice = self.provider_service.slices.all()[0],
                             node = node,
                             image = self.image,
                             creator = self.creator,
                             deployment = node.site_deployment.deployment,
                             flavor = flavors[0])
-            sliver.save()
+            instance.save()
 
             try:
-                self.sliver = sliver
+                self.instance = instance
                 super(TenantWithContainer, self).save()
             except:
-                sliver.delete()
+                instance.delete()
                 raise
 
     def cleanup_container(self):
-        if self.sliver:
-            # print "XXX cleanup sliver", self.sliver
-            self.sliver.delete()
-            self.sliver = None
+        if self.instance:
+            # print "XXX cleanup instance", self.instance
+            self.instance.delete()
+            self.instance = None
 
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """

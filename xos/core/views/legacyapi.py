@@ -125,7 +125,7 @@ def GetSites(slice_remap={}):
                 "node_ids": node_ids,
                 "pcu_ids": [],
                 "max_slices": 100,
-                "max_slivers": 1000,
+                "max_instances": 1000,
                 "is_public": False,
                 "peer_site_id": None,
                 "abbrebiated_name": ps_site.abbreviated_name,
@@ -285,7 +285,7 @@ def GetConfiguration(name, slice_remap={}):
             'hostipmap':hostipmap,
             'hostnatmap':hostnatmap,
             'hostprivmap':hostprivmap,
-            'slivers': instances,
+            'instances': instances,
             'interfaces': allinterfaces,
             'sites': sites,
             'nodes': nodes}

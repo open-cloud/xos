@@ -13,7 +13,7 @@
         slicename = row.get("name");
         sliceid = row.get("id");
         role = row.get("sliceInfo").roles[0] || "";
-        slivercount = row.get("sliceInfo").sliverCount;
+        instancecount = row.get("sliceInfo").instanceCount;
         sitecount = row.get("sliceInfo").siteCount;
         backendHtml = row.get("backendHtml")
 
@@ -26,7 +26,7 @@
         }
 
         actualEntries.push([backendHtml + ' <a href="/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
-                            role, slivercount, sitecount]);
+                            role, instancecount, sitecount]);
     }
     oTable = $('#dynamicusersliceinfo').dataTable( {
         "bJQueryUI": true,
@@ -35,7 +35,7 @@
         "aoColumns": [
             { "sTitle": "Slice" },
             { "sTitle": "Privilege" , sClass: "alignCenter"},
-            { "sTitle": "Number of Slivers" , sClass: "alignCenter"},
+            { "sTitle": "Number of Instances" , sClass: "alignCenter"},
             { "sTitle": "Number of Sites" , sClass: "alignCenter"},
         ]
     } );

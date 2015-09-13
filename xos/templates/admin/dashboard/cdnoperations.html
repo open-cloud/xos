@@ -1,7 +1,7 @@
     <div id="HPCDashboard">
     <h1>CDN Operations View</h1>
     <span id="hpcSummary">
-        <span class="summary-attr"><b>Allocated Slivers:</b> <span id="active-slivers-value"> </span> </span>
+        <span class="summary-attr"><b>Allocated Instances:</b> <span id="active-instances-value"> </span> </span>
         <span class="summary-attr"><b>CDN Bandwidth:</b> <span id="overall-throughput-value"> </span>  </span>
         <span class="summary-attr-util"><b>CDN Load:</b> <span id="cpu-utilization-value"> </span>  </span>
     </span>
@@ -63,7 +63,7 @@ for ( var key in mapData ) {
     arrayOfLatLngs.push([mapData[key]['lat'],mapData[key]['long']]);
     log.debug( arrayOfLatLngs );
 
-    mapData[key]['marker'] = L.marker([mapData[key]['lat'], mapData[key]['long']], {icon: getIcon(mapData[key]['numNodes'], mapData[key]['numHPCSlivers'], 0, mapData[key]['hot']) });
+    mapData[key]['marker'] = L.marker([mapData[key]['lat'], mapData[key]['long']], {icon: getIcon(mapData[key]['numNodes'], mapData[key]['numHPCInstances'], 0, mapData[key]['hot']) });
     mapData[key]['marker'].addTo(map).bindPopup(setPopupVals(key, mapData[key]));
 
 }
@@ -76,20 +76,20 @@ var popup = L.popup();
 function setPopupVals (site, siteData) {
     var retVal = '<span class="SiteDetail"><b>' + site + '</b></span>' +
                    '</br><a href="' + siteData['siteUrl'] + '">' + siteData['siteUrl'] + '</a>' +
-                   '</br><b>HPC Slivers: </b>' + siteData['numHPCSlivers'] +
+                   '</br><b>HPC Instances: </b>' + siteData['numHPCInstances'] +
                    '</br><b>Total Nodes: </b>' + siteData['numNodes'] +
 //                   '</br><b>Hot: </b>' + Math.round(siteData['hot']*100) +
                    '</br><b>Measured Load: </b>' + siteData['load'] + '%' +
-                   '<span id="addSlivers"></br><a href="#" id="addHPCSliver" data-site="' + site + '" data-availNodes="' + siteData['numNodes'] +'">Add HPC Slivers</a> </span>' +
-                   '<span id="remSlivers"><a href="#" id="remHPCSliver" data-site="' + site + '">Remove HPC Slivers</a> </span>';
+                   '<span id="addInstances"></br><a href="#" id="addHPCInstance" data-site="' + site + '" data-availNodes="' + siteData['numNodes'] +'">Add HPC Instances</a> </span>' +
+                   '<span id="remInstances"><a href="#" id="remHPCInstance" data-site="' + site + '">Remove HPC Instances</a> </span>';
 
    return retVal;
 }
 
-$('#map-us').on('click', '#remHPCSliver', function() {
+$('#map-us').on('click', '#remHPCInstance', function() {
 
     $.ajax({
-        url : '/dashboardaddorremsliver/',
+        url : '/dashboardaddorreminstance/',
         dataType : 'json',
         data: {site: $(this).data('site'),
                actionToDo: "rem",
@@ -97,7 +97,7 @@ $('#map-us').on('click', '#remHPCSliver', function() {
                state:"inactive" },
         type : 'POST',
         success:function(){
-            confirmDialog("Info","Removed an HPC Sliver from Site ");
+            confirmDialog("Info","Removed an HPC Instance from Site ");
         },
         error:function (xhr, textStatus, thrownError){
             errorDialog("Error", textStatus + " " + xhr.responseText);
@@ -105,10 +105,10 @@ $('#map-us').on('click', '#remHPCSliver', function() {
     });
 });
 
-$('#map-us').on('click', '#addHPCSliver', function() {
+$('#map-us').on('click', '#addHPCInstance', function() {
 
     $.ajax({
-        url : '/dashboardaddorremsliver/',
+        url : '/dashboardaddorreminstance/',
         dataType : 'json',
         data: {site: $(this).data('site'),
                actionToDo: "add",
@@ -117,7 +117,7 @@ $('#map-us').on('click', '#addHPCSliver', function() {
         type : 'POST',
         success: function(response)
         {
-            confirmDialog("Info","Added an HPC Sliver to Site ");
+            confirmDialog("Info","Added an HPC Instance to Site ");
         },
         error:function (xhr, textStatus, thrownError){
             errorDialog("Error", textStatus + " " + xhr.responseText);
@@ -125,11 +125,11 @@ $('#map-us').on('click', '#addHPCSliver', function() {
     });
 });
 
-function getIcon(numNodes, numHPCSlivers, currentBW, hot) {
+function getIcon(numNodes, numHPCInstances, currentBW, hot) {
     //var colorChoices = ["#007FFF", "#0000FF", "#7f00ff", "#FF00FF", "#FF007F", "#FF0000"];
     var colorChoices = ["#0000FF", "#00FFFF", "#00FF00", "#FFFF00", "#FF0000"];
 
-    var ratio = hot * 100; //(numHPCSlivers/numNodes) * 100;
+    var ratio = hot * 100; //(numHPCInstances/numNodes) * 100;
     var numColors = colorChoices.length;
     var colorBands = 100/numColors;
 
@@ -144,7 +144,7 @@ function getIcon(numNodes, numHPCSlivers, currentBW, hot) {
         }
     }
 
-    if (numHPCSlivers < 1) {
+    if (numHPCInstances < 1) {
         iconColor = "#7F7F7F";
     } else {
         iconColor = colorChoices[iconColor];
@@ -182,7 +182,7 @@ function updateMapData(newData) {
             //take ownership of marker
             newData[site]['marker'] = mapData[site]['marker'];
             delete mapData[site];
-            newData[site]['marker'].setIcon(getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers'],  0, newData[site]['hot']));
+            newData[site]['marker'].setIcon(getIcon(newData[site]['numNodes'], newData[site]['numHPCInstances'],  0, newData[site]['hot']));
             // workaround, markers currently don't have a setPopup Content method -- so have to grab object directly
             newData[site]['marker']._popup.setContent(setPopupVals(site, newData[site]));
         }
@@ -190,7 +190,7 @@ function updateMapData(newData) {
             isNewSite = true;
             log.debug("New Site detected: " + site);
             newData[site]['marker'] = L.marker([newData[site]['lat'], newData[site]['long']],
-                                              {icon: getIcon(newData[site]['numNodes'], newData[site]['numHPCSlivers'],  0, newData[site]['hot']) });
+                                              {icon: getIcon(newData[site]['numNodes'], newData[site]['numHPCInstances'],  0, newData[site]['hot']) });
             newData[site]['marker'].addTo(map).bindPopup(setPopupVals(site, newData[site])); //.openPopup();
             log.debug("Should have added the new site");
 
@@ -237,7 +237,7 @@ function setInnerText (elementId, text) {
 }
 
 function updateLabelData(summaryData) {
-    setInnerText("active-slivers-value", summaryData["total_slivers"]);
+    setInnerText("active-instances-value", summaryData["total_instances"]);
     setInnerText("overall-throughput-value", (summaryData["total_bandwidth"]*8/1024/1024/1024).toFixed(2) + " Gbps");
     setInnerText("cpu-utilization-value", summaryData["average_cpu"] + "%");
 }

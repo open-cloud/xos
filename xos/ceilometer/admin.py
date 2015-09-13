@@ -75,9 +75,9 @@ class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'service_specific_attribute',
                                      'ceilometer_url', 'tenant_list_str',
-                                     'sliver', 'creator'],
+                                     'instance', 'creator'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'sliver', 'service_specific_attribute', 'ceilometer_url', 'tenant_list_str')
+    readonly_fields = ('backend_status_text', 'instance', 'service_specific_attribute', 'ceilometer_url', 'tenant_list_str')
     form = MonitoringChannelForm
 
     suit_form_tabs = (('general','Details'),)

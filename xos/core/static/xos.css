@@ -158,7 +158,7 @@ background-color: white !important;
 table.dataTable thead th div.DataTables_sort_wrapper {
     font-weight: bold;
 }
-.dashboard-hpc-sliver .ui-widget-header, .dashboard-hpc-sliver .ui-dialog-title, .dashboard-hpc-sliver .ui-dialog-titlebar{
+.dashboard-hpc-instance .ui-widget-header, .dashboard-hpc-instance .ui-dialog-title, .dashboard-hpc-instance .ui-dialog-titlebar{
 }
 .ui-widget-overlay {
     background: black !important;
@@ -823,12 +823,12 @@ background-image: url("Reservations_over.png");
 color: darkBlue;
     font-size: 1.5em;
 }
-#addSlivers {
+#addInstances {
  color: green;
 text-decoration: underline;
     padding-right: 20px;
 }
-#remSlivers {
+#remInstances {
  color: red;
  text-decoration: underline;
 }
@@ -1067,14 +1067,14 @@ margin-right: 0.3%;
 #adv-dataset-dropdown{
 margin-left: 3.7%;
 }
-#advanced-tenant,#basic-tenant,#sliver-btn,#save-btn{
+#advanced-tenant,#basic-tenant,#instance-btn,#save-btn{
   float:right;
 }
  #delete-slice-btn,#download-details,#add-user-btn{
 	margin-left:1%;
 }
 
-#sliver-btn,#save-btn,#create-slice-btn,#delete-slice-btn,#add-user-btn,#download-details{
+#instance-btn,#save-btn,#create-slice-btn,#delete-slice-btn,#add-user-btn,#download-details{
   margin-top:1%;
 }
 
@@ -1145,7 +1145,7 @@ display:none;
 	margin-right: 1%;
 }
 
-#advNumOfSlivers{
+#advNumOfInstances{
         margin-right: 1% !important;
 }
 

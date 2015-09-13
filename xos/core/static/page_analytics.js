@@ -27,7 +27,7 @@ function updateMiniDashStatistic(meter, buttonSelector) {
 }
 
 $( document ).ready(function() {
-    if (admin_object_name == "Sliver" && admin_object_id != undefined) {
+    if (admin_object_name == "Instance" && admin_object_id != undefined) {
         updateMiniDashStatistic("cpu", "#miniDashCPU");
         updateMiniDashStatistic("network.outgoing.bytes", "#miniDashBandwidthIn");
         updateMiniDashStatistic("network.incoming.bytes", "#miniDashBandwidthOut");

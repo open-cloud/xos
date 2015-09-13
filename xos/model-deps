@@ -14,7 +14,7 @@
         "Controller"
     ], 
     "ReservedResource": [
-        "Sliver"
+        "Instance"
     ], 
     "ControllerNetwork": [
         "Network", 
@@ -69,7 +69,7 @@
     "ServiceResource": [
         "ServiceClass"
     ], 
-    "Sliver": [
+    "Instance": [
         "Image", 
         "User", 
         "Slice", 
@@ -101,7 +101,7 @@
     ], 
     "Port": [
         "Network", 
-        "Sliver"
+        "Instance"
     ], 
     "SitePrivilege": [
         "User", 
