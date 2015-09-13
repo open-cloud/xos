@@ -1,6 +1,6 @@
 from basetest import BaseToscaTest
 
-from core.models import Network, Slice, NetworkTemplate, NetworkSlice, Port, Sliver
+from core.models import Network, Slice, NetworkTemplate, NetworkSlice, Port, Instance
 
 class PortTest(BaseToscaTest):
     tests = ["create_port_minimal",
@@ -9,8 +9,8 @@ class PortTest(BaseToscaTest):
              "add_port_after_network"]
 
     def cleanup(self):
-        self.try_to_delete(Sliver, name="test_compute1")
-        self.try_to_delete(Sliver, name="test_compute2")
+        self.try_to_delete(Instance, name="test_compute1")
+        self.try_to_delete(Instance, name="test_compute2")
         self.try_to_delete(Network, name="test_net")
         self.try_to_delete(Slice, name="testsite_slice1")
         self.try_to_delete(Slice, name="testsite_slice2")
@@ -29,19 +29,19 @@ class PortTest(BaseToscaTest):
 
     @property
     def test_slice1_1(self):
-        return Sliver.objects.get(name="test_slice1-1")
+        return Instance.objects.get(name="test_slice1-1")
 
     @property
     def test_slice1_2(self):
-        return Sliver.objects.get(name="test_slice1-2")
+        return Instance.objects.get(name="test_slice1-2")
 
     @property
     def test_slice2_1(self):
-        return Sliver.objects.get(name="test_slice2-1")
+        return Instance.objects.get(name="test_slice2-1")
 
     @property
     def test_slice2_2(self):
-        return Sliver.objects.get(name="test_slice2-2")
+        return Instance.objects.get(name="test_slice2-2")
 
     def get_base_templates(self):
         return self.make_nodetemplate("testsite", "tosca.nodes.Site") + \
@@ -65,7 +65,7 @@ class PortTest(BaseToscaTest):
 
         net=self.assert_obj(Network, "test_net")
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_1)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_1)
         assert(len(port)==1)
         port=port[0]
 
@@ -84,11 +84,11 @@ class PortTest(BaseToscaTest):
 
         net=self.assert_obj(Network, "test_net")
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_1)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_1)
         assert(len(port)==1)
         port=port[0]
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_2)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_2)
         assert(len(port)==1)
         port=port[0]
 
@@ -113,19 +113,19 @@ class PortTest(BaseToscaTest):
 
         net=self.assert_obj(Network, "test_net")
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_1)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_1)
         assert(len(port)==1)
         port=port[0]
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_2)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_2)
         assert(len(port)==1)
         port=port[0]
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice2_2)
+        port=Port.objects.filter(network=net, instance=self.test_slice2_2)
         assert(len(port)==1)
         port=port[0]
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice2_2)
+        port=Port.objects.filter(network=net, instance=self.test_slice2_2)
         assert(len(port)==1)
         port=port[0]
 
@@ -151,7 +151,7 @@ class PortTest(BaseToscaTest):
 
         assert(orig_net.id == net.id)
 
-        port=Port.objects.filter(network=net, sliver=self.test_slice1_1)
+        port=Port.objects.filter(network=net, instance=self.test_slice1_1)
         assert(len(port)==1)
         port=port[0]
 

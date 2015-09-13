@@ -7,7 +7,7 @@
         "Site"
     ], 
     "ReservedResource": [
-        "Sliver"
+        "Instance"
     ], 
     "SliceMembership": [
         "User", 
@@ -30,16 +30,16 @@
     "Reservation": [
         "Slice"
     ], 
-    "NetworkSliver": [
+    "NetworkInstance": [
         "Network", 
-        "Sliver"
+        "Instance"
     ], 
     "SitePrivilege": [
         "User", 
         "Site", 
         "Role"
     ], 
-    "Sliver": [
+    "Instance": [
         "Image", 
         "Slice", 
         "Node"

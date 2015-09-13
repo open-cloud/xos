@@ -3,7 +3,7 @@ if (! window.XOSLIB_LOADED ) {
 
     XOS_BASE = "/xos";
 
-    SLIVER_API = XOS_BASE+"/slivers/";
+    SLIVER_API = XOS_BASE+"/instances/";
     SLICE_API = XOS_BASE+"/slices/";
     SLICEROLE_API = XOS_BASE+"/slice_roles/";
     NODE_API = XOS_BASE+"/nodes/";
@@ -474,10 +474,10 @@ if (! window.XOSLIB_LOADED ) {
         */
 
         define_model(this, {urlRoot: SLIVER_API,
-                            relatedCollections: {"ports": "sliver"},
+                            relatedCollections: {"ports": "instance"},
                             foreignCollections: ["slices", "deployments", "images", "nodes", "users", "flavors"],
                             foreignFields: {"creator": "users", "image": "images", "node": "nodes", "deployment": "deployments", "slice": "slices", "flavor": "flavors"},
-                            modelName: "sliver",
+                            modelName: "instance",
                             listFields: ["backend_status", "id", "name", "instance_id", "instance_name", "slice", "deployment", "image", "node", "flavor"],
                             addFields: ["slice", "deployment", "flavor", "image", "node"],
                             detailFields: ["backend_status", "backend_register", "name", "instance_id", "instance_name", "slice", "deployment", "flavor", "image", "node", "creator"],
@@ -485,11 +485,11 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SLICE_API,
-                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner", "controller_slices": "slice"},
+                           relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner", "controller_slices": "slice"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
-                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
-                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
+                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slice",
                            xosValidate: function(attrs, options) {
@@ -556,7 +556,7 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, { urlRoot: DEPLOYMENT_API,
-                             relatedCollections: {"nodes": "deployment", "slivers": "deployment"},
+                             relatedCollections: {"nodes": "deployment", "instances": "deployment"},
                              m2mFields: {"flavors": "flavors", "sites": "sites", "images": "images"},
                              modelName: "deployment",
                              listFields: ["backend_status", "id", "name", "backend_type", "admin_tenant"],
@@ -589,9 +589,9 @@ if (! window.XOSLIB_LOADED ) {
 
         define_model(this, {urlRoot: PORT_API,
                             modelName: "port",
-                            foreignFields: {"network": "networks", "sliver": "slivers"},
-                            listFields: ["backend_status", "id", "network", "sliver", "ip", "port_id"],
-                            detailFields: ["backend_status", "backend_register", "network", "sliver", "ip", "port_id"],
+                            foreignFields: {"network": "networks", "instance": "instances"},
+                            listFields: ["backend_status", "id", "network", "instance", "ip", "port_id"],
+                            detailFields: ["backend_status", "backend_register", "network", "instance", "ip", "port_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,
@@ -698,11 +698,11 @@ if (! window.XOSLIB_LOADED ) {
         // enhanced REST
         // XXX this really needs to somehow be combined with Slice, to avoid duplication
         define_model(this, {urlRoot: SLICEPLUS_API,
-                           relatedCollections: {"slivers": "slice", "slicePrivileges": "slice", "networks": "owner"},
+                           relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner"},
                            foreignCollections: ["services", "sites"],
                            foreignFields: {"service": "services", "site": "sites"},
-                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_slivers", "service"],
-                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_slivers"],
+                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
+                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
                            inputType: {"enabled": "checkbox"},
                            modelName: "slicePlus",
                            collectionName: "slicesPlus",
@@ -741,7 +741,7 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "cordSubscriber",
                             relatedCollections: {"cordUsers": "subscriber"},
                             listFields: ["id", "service_specific_id", "vlan_id", "routeable_subnet"],
-                            detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "sliver_name",
+                            detailFields: ["id", "service_specific_id", "vcpe_id", "image_name", "instance_name",
                                            "firewall_enable", "firewall_rules", "url_filter_enable", "url_filter_rules", "cdn_enable",
                                            "nat_ip", "lan_ip", "wan_ip", "private_ip",
                                            "vbng_id", "routeable_subnet"],

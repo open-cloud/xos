@@ -1293,7 +1293,7 @@ class InstanceAdmin(XOSBaseAdmin):
 
     suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
 
-    inlines = [TagInline, SliverPortInline]
+    inlines = [TagInline, InstancePortInline]
 
     user_readonly_fields = ['slice', 'deployment', 'node', 'ip', 'instance_name', 'flavor', 'image']
 

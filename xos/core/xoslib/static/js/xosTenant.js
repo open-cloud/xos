@@ -153,9 +153,9 @@ XOSTenantApp.buildViews = function() {
                                                 app: XOSTenantApp,
                                                 detailFields: ["serviceClass", "default_image", "default_flavor", "network_ports"],
                                                 fieldDisplayNames: {serviceClass: "Service Level", "default_flavor": "Flavor", "default_image": "Image", "mount_data_sets": "Data Sets"},
-                                                helpText: {"serviceClass": "Existing slivers will be re-instantiated if changed",
-                                                           "default_image": "Existing slivers will be re-instantiated if changed",
-                                                           "default_flavor": "Existing slivers will be re-instantiated if changed"},
+                                                helpText: {"serviceClass": "Existing instances will be re-instantiated if changed",
+                                                           "default_image": "Existing instances will be re-instantiated if changed",
+                                                           "default_flavor": "Existing instances will be re-instantiated if changed"},
 
                                                 onShow: function() {
                                                     // the slice selector is in a different table, so make every label cell the maximal width
@@ -305,7 +305,7 @@ XOSTenantApp.downloadSSH = function(model) {
     }
 
     if (sshCommands.length == 0) {
-         alert("this slice has no instantiated slivers yet");
+         alert("this slice has no instantiated instances yet");
          return;
     }
 
@@ -340,7 +340,7 @@ XOSTenantApp.deleteSlice = function(model) {
 
 XOSTenantApp.viewSlice = function(model) {
     if (XOSTenantApp.dirty) {
-        if (!confirm("The current sliver has unsaved data -- view new sliver anyway ?")) {
+        if (!confirm("The current instance has unsaved data -- view new instance anyway ?")) {
             $("#tenantSliceSelector select").val(XOSTenantApp.currentSlice.id);
             return;
         }

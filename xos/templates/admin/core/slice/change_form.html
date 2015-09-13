@@ -85,9 +85,9 @@ function update_images(deployment_select, image_select) {
     image_select.empty().append(html);
 }
 
-function sliver_deployment_changed(any_control) {
+function instance_deployment_changed(any_control) {
    /* This function handles someone changing the deployment control
-      in the add-sliver line. It updats the flavors and nodes dialogs
+      in the add-instance line. It updats the flavors and nodes dialogs
       accordingly.
    */
 
@@ -107,8 +107,8 @@ function sliver_deployment_changed(any_control) {
     update_images(deployment_select, image_select);
 }
 
-function sliver_flavor_changed(any_control) {
-    /* this is like sliver_flavor changed, but does not update the flavors
+function instance_flavor_changed(any_control) {
+    /* this is like instance_flavor changed, but does not update the flavors
        control
     */
     deployment_select = $("#" + $($(any_control).closest('tr')[0]).find('.field-deployment select')[0].id);

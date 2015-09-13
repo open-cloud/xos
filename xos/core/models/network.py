@@ -123,10 +123,10 @@ class Network(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-    # TODO: Remove when NetworkSliver->Port rename is complete
+    # TODO: Remove when NetworkInstance->Port rename is complete
     @property
     def links(self):
-        return self.networkslivers
+        return self.networkinstances
 
     def save(self, *args, **kwds):
         if (not self.subnet) and (NO_OBSERVER):
@@ -212,7 +212,7 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class NetworkInstance(PlCoreBase):
-    # Please use "Port" instead of "NetworkSliver". NetworkSliver will soon be
+    # Please use "Port" instead of "NetworkInstance". NetworkInstance will soon be
     # removed.
 
     network = models.ForeignKey(Network,related_name='networkinstances')
@@ -263,7 +263,7 @@ class NetworkInstance(PlCoreBase):
         return qs
 
 class Port(NetworkInstance):
-    # Rename in progress: NetworkSliver->Port
+    # Rename in progress: NetworkInstance->Port
     class Meta:
         proxy = True
 

@@ -1,5 +1,5 @@
 ---
-- hosts: {{ sliver_name }}
+- hosts: {{ instance_name }}
   gather_facts: False
   connection: ssh
   user: ubuntu

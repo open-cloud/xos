@@ -55,16 +55,16 @@ class SyncInstances(OpenStackSyncStep):
         if instance.slice.service and instance.slice.service.public_key:
             pubkeys.add(instance.slice.service.public_key)
 
-        # Handle any ports that are already created and attached to the sliver.
+        # Handle any ports that are already created and attached to the instance.
         # If we do have a port for a network, then add that network to an
         # exclude list so we won't try to auto-create ports on that network
         # when instantiating.
         ports = []
         exclude_networks = set()
         exclude_templates = set()
-        for ns in sliver.ports.all():
+        for ns in instance.ports.all():
             if not ns.port_id:
-                raise DeferredException("Port %s on sliver %s has no id; Try again later" % (str(ns), str(sliver)) )
+                raise DeferredException("Port %s on instance %s has no id; Try again later" % (str(ns), str(instance)) )
             ports.append(ns.port_id)
             exclude_networks.add(ns.network)
             exclude_templates.add(ns.network.template)
