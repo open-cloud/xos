@@ -46,11 +46,11 @@ function confirmDialog(title,msg) {
         title: title,
         autoOpen: true,
         modal: true,
-        dialogClass: "dashboard-hpc-sliver",
+        dialogClass: "dashboard-hpc-instance",
         buttons: {
             'OK': function() {
                 def.resolve();
-                log.debug("Chose to add a sliver");
+                log.debug("Chose to add a instance");
                 $( this ).dialog( "close" );
             },
             'Cancel': function() {
@@ -73,7 +73,7 @@ function errorDialog(title,msg) {
         title: title,
         autoOpen: true,
         modal: true,
-        dialogClass: "dashboard-hpc-sliver",
+        dialogClass: "dashboard-hpc-instance",
         buttons: {
             'OK': function() {
                 def.resolve();

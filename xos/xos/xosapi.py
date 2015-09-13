@@ -1435,7 +1435,7 @@ class InstanceSerializer(serializers.HyperlinkedModelSerializer):
         model = Instance
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 =======
-        model = Sliver
+        model = Instance
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 >>>>>>> origin/master
 
@@ -1460,7 +1460,7 @@ class InstanceIdSerializer(XOSModelSerializer):
         model = Instance
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 =======
-        model = Sliver
+        model = Instance
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
 >>>>>>> origin/master
 

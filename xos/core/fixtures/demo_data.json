@@ -1863,7 +1863,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -1887,7 +1887,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -1911,7 +1911,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
@@ -1935,7 +1935,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
@@ -1959,7 +1959,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -1983,7 +1983,7 @@
         "site": 24, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -2007,7 +2007,7 @@
         "site": 24, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -2031,7 +2031,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -2055,7 +2055,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -2079,7 +2079,7 @@
         "site": 10, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank", 
         "backend_status": "Provisioning in progress", 
         "creator": 1, 
@@ -2103,7 +2103,7 @@
         "site": 22, 
         "omf_friendly": false, 
         "network": "Private Only", 
-        "max_slivers": 10, 
+        "max_instances": 10, 
         "mount_data_sets": "GenBank-11-2013", 
         "backend_status": "Provisioning in progress", 
         "creator": 8, 
@@ -9785,7 +9785,7 @@
 },
 {
     "pk": 40, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 613, 
         "instance_name": "instance-000003e8", 
@@ -9807,7 +9807,7 @@
 },
 {
     "pk": 41, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 615, 
         "instance_name": "instance-000003e9", 
@@ -9829,7 +9829,7 @@
 },
 {
     "pk": 42, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 617, 
         "instance_name": "instance-000003ea", 
@@ -9851,7 +9851,7 @@
 },
 {
     "pk": 43, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 622, 
         "instance_name": "instance-000003eb", 
@@ -9873,7 +9873,7 @@
 },
 {
     "pk": 44, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 623, 
         "instance_name": "instance-000003ec", 
@@ -9895,7 +9895,7 @@
 },
 {
     "pk": 46, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 625, 
         "instance_name": "instance-000003ee", 
@@ -9917,7 +9917,7 @@
 },
 {
     "pk": 47, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 630, 
         "instance_name": "instance-000003ef", 
@@ -9939,7 +9939,7 @@
 },
 {
     "pk": 48, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 666, 
         "instance_name": "instance-000003f0", 
@@ -9961,7 +9961,7 @@
 },
 {
     "pk": 49, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 683, 
         "instance_name": "instance-000003f1", 
@@ -9983,7 +9983,7 @@
 },
 {
     "pk": 50, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 684, 
         "instance_name": "instance-000003f2", 
@@ -10005,7 +10005,7 @@
 },
 {
     "pk": 51, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 686, 
         "instance_name": "instance-000003f3", 
@@ -10027,7 +10027,7 @@
 },
 {
     "pk": 52, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 687, 
         "instance_name": "instance-000003f4", 
@@ -10049,7 +10049,7 @@
 },
 {
     "pk": 53, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 691, 
         "instance_name": "instance-000003f5", 
@@ -10071,7 +10071,7 @@
 },
 {
     "pk": 54, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 693, 
         "instance_name": "instance-000003f6", 
@@ -10093,7 +10093,7 @@
 },
 {
     "pk": 55, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 694, 
         "instance_name": "instance-000003f7", 
@@ -10115,7 +10115,7 @@
 },
 {
     "pk": 58, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 561, 
         "instance_name": "instance-000003fa", 
@@ -10137,7 +10137,7 @@
 },
 {
     "pk": 59, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 562, 
         "instance_name": "instance-000003fb", 
@@ -10159,7 +10159,7 @@
 },
 {
     "pk": 60, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 563, 
         "instance_name": "instance-000003fc", 
@@ -10181,7 +10181,7 @@
 },
 {
     "pk": 61, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 565, 
         "instance_name": "instance-000003fd", 
@@ -10203,7 +10203,7 @@
 },
 {
     "pk": 62, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 566, 
         "instance_name": "instance-000003fe", 
@@ -10225,7 +10225,7 @@
 },
 {
     "pk": 63, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 568, 
         "instance_name": "instance-000003ff", 
@@ -10247,7 +10247,7 @@
 },
 {
     "pk": 64, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 404, 
         "instance_name": "instance-00000400", 
@@ -10269,7 +10269,7 @@
 },
 {
     "pk": 65, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 405, 
         "instance_name": "instance-00000401", 
@@ -10291,7 +10291,7 @@
 },
 {
     "pk": 66, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 406, 
         "instance_name": "instance-00000402", 
@@ -10313,7 +10313,7 @@
 },
 {
     "pk": 67, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 407, 
         "instance_name": "instance-00000403", 
@@ -10335,7 +10335,7 @@
 },
 {
     "pk": 68, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 408, 
         "instance_name": "instance-00000404", 
@@ -10357,7 +10357,7 @@
 },
 {
     "pk": 69, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 409, 
         "instance_name": "instance-00000405", 
@@ -10379,7 +10379,7 @@
 },
 {
     "pk": 70, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 412, 
         "instance_name": "instance-00000406", 
@@ -10401,7 +10401,7 @@
 },
 {
     "pk": 71, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 413, 
         "instance_name": "instance-00000407", 
@@ -10423,7 +10423,7 @@
 },
 {
     "pk": 72, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 460, 
         "instance_name": "instance-00000408", 
@@ -10445,7 +10445,7 @@
 },
 {
     "pk": 73, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 467, 
         "instance_name": "instance-00000409", 
@@ -10467,7 +10467,7 @@
 },
 {
     "pk": 76, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 470, 
         "instance_name": "instance-0000040c", 
@@ -10489,7 +10489,7 @@
 },
 {
     "pk": 77, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 553, 
         "instance_name": "instance-0000040d", 
@@ -10511,7 +10511,7 @@
 },
 {
     "pk": 78, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 553, 
         "instance_name": "instance-0000040e", 
@@ -10533,7 +10533,7 @@
 },
 {
     "pk": 79, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 469, 
         "instance_name": null, 
@@ -10555,7 +10555,7 @@
 },
 {
     "pk": 80, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 438, 
         "instance_name": null, 
@@ -10577,7 +10577,7 @@
 },
 {
     "pk": 81, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 588, 
         "instance_name": null, 
@@ -10599,7 +10599,7 @@
 },
 {
     "pk": 82, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 589, 
         "instance_name": null, 
@@ -10621,7 +10621,7 @@
 },
 {
     "pk": 83, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 590, 
         "instance_name": null, 
@@ -10643,7 +10643,7 @@
 },
 {
     "pk": 84, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 384, 
         "instance_name": null, 
@@ -10665,7 +10665,7 @@
 },
 {
     "pk": 85, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 473, 
         "instance_name": null, 
@@ -10687,7 +10687,7 @@
 },
 {
     "pk": 86, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 535, 
         "instance_name": null, 
@@ -10709,7 +10709,7 @@
 },
 {
     "pk": 87, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 592, 
         "instance_name": null, 
@@ -10731,7 +10731,7 @@
 },
 {
     "pk": 88, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 593, 
         "instance_name": null, 
@@ -10753,7 +10753,7 @@
 },
 {
     "pk": 288, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 433, 
         "instance_name": "instance-000005dc", 
@@ -10775,7 +10775,7 @@
 },
 {
     "pk": 289, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 643, 
         "instance_name": "instance-000005dd", 
@@ -10797,7 +10797,7 @@
 },
 {
     "pk": 290, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 713, 
         "instance_name": "instance-000005de", 
@@ -10819,7 +10819,7 @@
 },
 {
     "pk": 291, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 503, 
         "instance_name": "instance-000005df", 
@@ -10841,7 +10841,7 @@
 },
 {
     "pk": 292, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 513, 
         "instance_name": "instance-000005e0", 
@@ -10863,7 +10863,7 @@
 },
 {
     "pk": 293, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 723, 
         "instance_name": "instance-000005e1", 
@@ -10885,7 +10885,7 @@
 },
 {
     "pk": 294, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 603, 
         "instance_name": "instance-000005e2", 
@@ -10907,7 +10907,7 @@
 },
 {
     "pk": 295, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 559, 
         "instance_name": "instance-000005e3", 
@@ -10929,7 +10929,7 @@
 },
 {
     "pk": 296, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 560, 
         "instance_name": "instance-000005e4", 
@@ -10951,7 +10951,7 @@
 },
 {
     "pk": 297, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 561, 
         "instance_name": "instance-000005e5", 
@@ -10973,7 +10973,7 @@
 },
 {
     "pk": 298, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 562, 
         "instance_name": "instance-000005e6", 
@@ -10995,7 +10995,7 @@
 },
 {
     "pk": 299, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 563, 
         "instance_name": "instance-000005e7", 
@@ -11017,7 +11017,7 @@
 },
 {
     "pk": 300, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 564, 
         "instance_name": "instance-000005e8", 
@@ -11039,7 +11039,7 @@
 },
 {
     "pk": 301, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 565, 
         "instance_name": "instance-000005e9", 
@@ -11061,7 +11061,7 @@
 },
 {
     "pk": 302, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 566, 
         "instance_name": "instance-000005ea", 
@@ -11083,7 +11083,7 @@
 },
 {
     "pk": 303, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 567, 
         "instance_name": "instance-000005eb", 
@@ -11105,7 +11105,7 @@
 },
 {
     "pk": 304, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 568, 
         "instance_name": "instance-000005ec", 
@@ -11127,7 +11127,7 @@
 },
 {
     "pk": 305, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 569, 
         "instance_name": "instance-000005ed", 
@@ -11149,7 +11149,7 @@
 },
 {
     "pk": 306, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 570, 
         "instance_name": "instance-000005ee", 
@@ -11171,7 +11171,7 @@
 },
 {
     "pk": 307, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 571, 
         "instance_name": "instance-000005ef", 
@@ -11193,7 +11193,7 @@
 },
 {
     "pk": 308, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 572, 
         "instance_name": "instance-000005f0", 
@@ -11215,7 +11215,7 @@
 },
 {
     "pk": 309, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 573, 
         "instance_name": "instance-000005f1", 
@@ -11237,7 +11237,7 @@
 },
 {
     "pk": 310, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 574, 
         "instance_name": "instance-000005f2", 
@@ -11259,7 +11259,7 @@
 },
 {
     "pk": 311, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 575, 
         "instance_name": "instance-000005f3", 
@@ -11281,7 +11281,7 @@
 },
 {
     "pk": 312, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 576, 
         "instance_name": "instance-000005f4", 
@@ -11303,7 +11303,7 @@
 },
 {
     "pk": 313, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 577, 
         "instance_name": "instance-000005f5", 
@@ -11325,7 +11325,7 @@
 },
 {
     "pk": 314, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 578, 
         "instance_name": "instance-000005f6", 
@@ -11347,7 +11347,7 @@
 },
 {
     "pk": 315, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 579, 
         "instance_name": "instance-000005f7", 
@@ -11369,7 +11369,7 @@
 },
 {
     "pk": 316, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 580, 
         "instance_name": "instance-000005f8", 
@@ -11391,7 +11391,7 @@
 },
 {
     "pk": 317, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 581, 
         "instance_name": "instance-000005f9", 
@@ -11413,7 +11413,7 @@
 },
 {
     "pk": 318, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 582, 
         "instance_name": "instance-000005fa", 
@@ -11435,7 +11435,7 @@
 },
 {
     "pk": 319, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 583, 
         "instance_name": "instance-000005fb", 
@@ -11457,7 +11457,7 @@
 },
 {
     "pk": 320, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 584, 
         "instance_name": "instance-000005fc", 
@@ -11479,7 +11479,7 @@
 },
 {
     "pk": 321, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 585, 
         "instance_name": "instance-000005fd", 
@@ -11501,7 +11501,7 @@
 },
 {
     "pk": 322, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 586, 
         "instance_name": "instance-000005fe", 
@@ -11523,7 +11523,7 @@
 },
 {
     "pk": 323, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 587, 
         "instance_name": "instance-000005ff", 
@@ -11545,7 +11545,7 @@
 },
 {
     "pk": 324, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 588, 
         "instance_name": "instance-00000600", 
@@ -11567,7 +11567,7 @@
 },
 {
     "pk": 325, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 589, 
         "instance_name": "instance-00000601", 
@@ -11589,7 +11589,7 @@
 },
 {
     "pk": 326, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 590, 
         "instance_name": "instance-00000602", 
@@ -11611,7 +11611,7 @@
 },
 {
     "pk": 327, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 591, 
         "instance_name": "instance-00000603", 
@@ -11633,7 +11633,7 @@
 },
 {
     "pk": 328, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 592, 
         "instance_name": "instance-00000604", 
@@ -11655,7 +11655,7 @@
 },
 {
     "pk": 329, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 593, 
         "instance_name": "instance-00000605", 
@@ -11677,7 +11677,7 @@
 },
 {
     "pk": 330, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 453, 
         "instance_name": null, 
@@ -11699,7 +11699,7 @@
 },
 {
     "pk": 331, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 523, 
         "instance_name": null, 
@@ -11721,7 +11721,7 @@
 },
 {
     "pk": 332, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 452, 
         "instance_name": null, 
@@ -11743,7 +11743,7 @@
 },
 {
     "pk": 333, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 522, 
         "instance_name": null, 
@@ -11765,7 +11765,7 @@
 },
 {
     "pk": 334, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 451, 
         "instance_name": null, 
@@ -11787,7 +11787,7 @@
 },
 {
     "pk": 335, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 521, 
         "instance_name": null, 
@@ -11809,7 +11809,7 @@
 },
 {
     "pk": 336, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 450, 
         "instance_name": null, 
@@ -11831,7 +11831,7 @@
 },
 {
     "pk": 337, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 593, 
         "instance_name": null, 
@@ -11853,7 +11853,7 @@
 },
 {
     "pk": 338, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 520, 
         "instance_name": null, 
@@ -11875,7 +11875,7 @@
 },
 {
     "pk": 339, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 449, 
         "instance_name": null, 
@@ -11897,7 +11897,7 @@
 },
 {
     "pk": 340, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 592, 
         "instance_name": null, 
@@ -11919,7 +11919,7 @@
 },
 {
     "pk": 341, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 519, 
         "instance_name": null, 
@@ -11941,7 +11941,7 @@
 },
 {
     "pk": 342, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 591, 
         "instance_name": null, 
@@ -11963,7 +11963,7 @@
 },
 {
     "pk": 343, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 590, 
         "instance_name": null, 
@@ -11985,7 +11985,7 @@
 },
 {
     "pk": 344, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 589, 
         "instance_name": null, 
@@ -12007,7 +12007,7 @@
 },
 {
     "pk": 345, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 535, 
         "instance_name": null, 
@@ -12029,7 +12029,7 @@
 },
 {
     "pk": 346, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 384, 
         "instance_name": null, 
@@ -12051,7 +12051,7 @@
 },
 {
     "pk": 347, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 454, 
         "instance_name": null, 
@@ -12073,7 +12073,7 @@
 },
 {
     "pk": 348, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 385, 
         "instance_name": null, 
@@ -12095,7 +12095,7 @@
 },
 {
     "pk": 349, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 455, 
         "instance_name": null, 
@@ -12117,7 +12117,7 @@
 },
 {
     "pk": 350, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 524, 
         "instance_name": null, 
@@ -12139,7 +12139,7 @@
 },
 {
     "pk": 351, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 386, 
         "instance_name": null, 
@@ -12161,7 +12161,7 @@
 },
 {
     "pk": 352, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 456, 
         "instance_name": null, 
@@ -12183,7 +12183,7 @@
 },
 {
     "pk": 353, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 525, 
         "instance_name": null, 
@@ -12205,7 +12205,7 @@
 },
 {
     "pk": 354, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 457, 
         "instance_name": null, 
@@ -12227,7 +12227,7 @@
 },
 {
     "pk": 355, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 526, 
         "instance_name": null, 
@@ -12249,7 +12249,7 @@
 },
 {
     "pk": 356, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 458, 
         "instance_name": null, 
@@ -12271,7 +12271,7 @@
 },
 {
     "pk": 357, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 527, 
         "instance_name": null, 
@@ -12293,7 +12293,7 @@
 },
 {
     "pk": 358, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 459, 
         "instance_name": null, 
@@ -12315,7 +12315,7 @@
 },
 {
     "pk": 359, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 528, 
         "instance_name": null, 
@@ -12337,7 +12337,7 @@
 },
 {
     "pk": 360, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 387, 
         "instance_name": null, 
@@ -12359,7 +12359,7 @@
 },
 {
     "pk": 361, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 388, 
         "instance_name": null, 
@@ -12381,7 +12381,7 @@
 },
 {
     "pk": 362, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 389, 
         "instance_name": null, 
@@ -12403,7 +12403,7 @@
 },
 {
     "pk": 363, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 663, 
         "instance_name": null, 
@@ -12425,7 +12425,7 @@
 },
 {
     "pk": 365, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 661, 
         "instance_name": null, 
@@ -12447,7 +12447,7 @@
 },
 {
     "pk": 366, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 593, 
         "instance_name": null, 
@@ -12469,7 +12469,7 @@
 },
 {
     "pk": 368, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 453, 
         "instance_name": null, 
@@ -12491,7 +12491,7 @@
 },
 {
     "pk": 369, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 452, 
         "instance_name": null, 
@@ -12513,7 +12513,7 @@
 },
 {
     "pk": 370, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 660, 
         "instance_name": null, 
@@ -12535,7 +12535,7 @@
 },
 {
     "pk": 371, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 523, 
         "instance_name": null, 
@@ -12557,7 +12557,7 @@
 },
 {
     "pk": 372, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 522, 
         "instance_name": null, 
@@ -12579,7 +12579,7 @@
 },
 {
     "pk": 373, 
-    "model": "core.sliver", 
+    "model": "core.instance", 
     "fields": {
         "node": 733, 
         "instance_name": null, 
@@ -12663,7 +12663,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:32:41.622Z", 
         "deleted": false, 
-        "sliver": 78, 
+        "instance": 78, 
         "reservationSet": 1, 
         "backend_status": "Provisioning in progress", 
         "quantity": 5, 
@@ -12678,7 +12678,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:34:02.152Z", 
         "deleted": false, 
-        "sliver": 77, 
+        "instance": 77, 
         "reservationSet": 2, 
         "backend_status": "Provisioning in progress", 
         "quantity": 5, 
@@ -12693,7 +12693,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:25.731Z", 
         "deleted": false, 
-        "sliver": 84, 
+        "instance": 84, 
         "reservationSet": 4, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12708,7 +12708,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:25.732Z", 
         "deleted": false, 
-        "sliver": 85, 
+        "instance": 85, 
         "reservationSet": 4, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12723,7 +12723,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:25.733Z", 
         "deleted": false, 
-        "sliver": 86, 
+        "instance": 86, 
         "reservationSet": 4, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12738,7 +12738,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:45.486Z", 
         "deleted": false, 
-        "sliver": 84, 
+        "instance": 84, 
         "reservationSet": 3, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12753,7 +12753,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:45.487Z", 
         "deleted": false, 
-        "sliver": 85, 
+        "instance": 85, 
         "reservationSet": 3, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12768,7 +12768,7 @@
         "resource": 8, 
         "created": "2013-12-18T23:35:45.488Z", 
         "deleted": false, 
-        "sliver": 86, 
+        "instance": 86, 
         "reservationSet": 3, 
         "backend_status": "Provisioning in progress", 
         "quantity": 1, 
@@ -12783,7 +12783,7 @@
         "name": "Public dedicated IPv4", 
         "created": "2013-12-09T14:15:16.899Z", 
         "deleted": false, 
-        "description": "Connect a sliver to the public network using dedicated public IPv4 address", 
+        "description": "Connect a instance to the public network using dedicated public IPv4 address", 
         "shared_network_name": "ext-net", 
         "guaranteed_bandwidth": 0, 
         "visibility": "public", 
@@ -12801,7 +12801,7 @@
         "name": "Public shared IPv4", 
         "created": "2013-12-09T14:17:29.551Z", 
         "deleted": false, 
-        "description": "Connect a sliver to the public network via NAT, with port forwarding", 
+        "description": "Connect a instance to the public network via NAT, with port forwarding", 
         "shared_network_name": "nat-net", 
         "guaranteed_bandwidth": 0, 
         "visibility": "private", 

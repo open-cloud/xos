@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Sliver, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -52,11 +52,11 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     @property
     def addresses(self):
-        if not self.sliver:
+        if not self.instance:
             return {}
 
         addresses = {}
-        for ns in self.sliver.ports.all():
+        for ns in self.instance.ports.all():
             if "private" in ns.network.name.lower():
                 addresses["private"] = (ns.ip, ns.mac)
             elif "nat" in ns.network.name.lower():

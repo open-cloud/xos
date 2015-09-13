@@ -1,20 +1,20 @@
 <!doctype html>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<div id="dialog-form" title="Add/Remove Slivers" style="display: none;">
+<div id="dialog-form" title="Add/Remove Instances" style="display: none;">
 	<form>
 		<fieldset>
-			<label for="numberOfSlivers">Number of Slivers</label>
-			<input type="text" name="numberOfSlivers" id="numOfSlivers" class="text ui-widget-content ui-corner-all">
-			<div id=basic-tooltip>Please enter number of slivers</div>
+			<label for="numberOfInstances">Number of Instances</label>
+			<input type="text" name="numberOfInstances" id="numOfInstances" class="text ui-widget-content ui-corner-all">
+			<div id=basic-tooltip>Please enter number of instances</div>
 		</fieldset>
 	</form>
 </div>
-<div id="adv-dialog-form" title="Add/Remove Slivers" style="display: none;">
+<div id="adv-dialog-form" title="Add/Remove Instances" style="display: none;">
 	<form>
 		<fieldset>
-			<label for="numberOfSlivers">Number of Slivers</label>
-			<input type="text" name="numberOfSlivers" id="advNumOfSlivers" class="text ui-widget-content ui-corner-all">
-			<div id=adv-tooltip>Please enter number of slivers</div>
+			<label for="numberOfInstances">Number of Instances</label>
+			<input type="text" name="numberOfInstances" id="advNumOfInstances" class="text ui-widget-content ui-corner-all">
+			<div id=adv-tooltip>Please enter number of instances</div>
 		</fieldset>
 	</form>
 </div>
@@ -60,8 +60,8 @@
                                 <select id="mount-data-sets" class="tenant-create-slice"></select>
                         </div>
 			<div class="create-slice-row">
-                                <label for="number-of-slivers">Number Of Slivers</label>
-                                <input type="text" name="number-of-slivers" id="number-of-slivers">
+                                <label for="number-of-instances">Number Of Instances</label>
+                                <input type="text" name="number-of-instances" id="number-of-instances">
                         </div>
 			<div id=tooltip>Slice Name cannot be empty</div>
 		</fieldset>
@@ -91,7 +91,7 @@
 			$('#tenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="tenantSiteTableData"></table>');
 			$("#tenantSliceDropDown").val(value);
 			var siteNames = [];
-			var sliverCount;
+			var instanceCount;
 			for (row in rows) {
 				if (rows[row]['sliceName'] == value) {
 					sliceImageData = rows[row]['preferredImage'];
@@ -100,8 +100,8 @@
 					$("#service-level-value").html(serviceLevelDataBasic);
 					var innerRows = rows[row]['sliceSite'];
 					for (innerRow in innerRows) {
-						sliverCount = innerRows[innerRow];
-						siteNames.push([innerRow, sliverCount]);
+						instanceCount = innerRows[innerRow];
+						siteNames.push([innerRow, instanceCount]);
 					}
 				}
 			}
@@ -138,7 +138,7 @@
 					var sliceInfo;
 					for (row in rows){
 						if(rows[row]['sliceName']==value){
-							sliceInfo = "Slice Name: "+rows[row]['sliceName']+"\nNumber of Slivers: "+rows[row]['numOfSlivers']+"\nService Level: "+rows[row]['sliceServiceClass']+"\nImage: "+rows[row]['preferredImage']+"\n";	
+							sliceInfo = "Slice Name: "+rows[row]['sliceName']+"\nNumber of Instances: "+rows[row]['numOfInstances']+"\nService Level: "+rows[row]['sliceServiceClass']+"\nImage: "+rows[row]['preferredImage']+"\n";	
 						for (instanceNodePairs in rows[row]['instanceNodePair']){
 							sliceInfo += instanceNodePairs+"@"+rows[row]['instanceNodePair'][instanceNodePairs]+"\n";
 						}
@@ -147,13 +147,13 @@
 					download('slice.txt', sliceInfo);
                           });
 		}
-		function editSliverAdv() {
+		function editInstanceAdv() {
 			$(".edit-view").click(function () {
-				var allocatedSlivers = parseInt($(this).parent().siblings(".allocated").html());
+				var allocatedInstances = parseInt($(this).parent().siblings(".allocated").html());
 				var td = $(this).parent().siblings(".allocated");
 				var pos = oTable.fnGetPosition(td[0]);
-				$("#numOfSlivers").val("");;
-				$("#advNumOfSlivers").val("");;
+				$("#numOfInstances").val("");;
+				$("#advNumOfInstances").val("");;
 				$("#adv-tooltip").css("display", "none");
 				$("#adv-dialog-form").dialog({
 					autoOpen: false,
@@ -163,16 +163,16 @@
 					dialogClass: "tenantDialog",
 					buttons: {
 						"Add": function () {
-							allocatedSlivers += parseInt($("#advNumOfSlivers").val());
+							allocatedInstances += parseInt($("#advNumOfInstances").val());
 								$("#adv-tooltip").css("display", "block");
 								$(this).dialog("close");
-								td.html(allocatedSlivers);
+								td.html(allocatedInstances);
 						},
 						"Remove": function () {
-							allocatedSlivers -= parseInt($("#advNumOfSlivers").val());
+							allocatedInstances -= parseInt($("#advNumOfInstances").val());
 								$("#adv-tooltip").css("display", "block");
 								$(this).dialog("close");
-								td.html(allocatedSlivers);
+								td.html(allocatedInstances);
 						}
 					}
 				});
@@ -190,7 +190,7 @@
 			$("<select></select>").attr('id', 'adv-dataset-dropdown').appendTo('#adv-slice-data-set-value');
 			$('#advTenantSiteTable').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="advTenantSiteTableData"></table>');
 			var siteNames = [];
-			var sliverCount;
+			var instanceCount;
 			var tableData = {};
 			for (row in serviceLevelData) {
                                 $("#adv-service-level-dropdown").append("<option>" + serviceLevelData[row]['serviceClass'] + "</option>");
@@ -234,7 +234,7 @@
 				for (newRow in newTableData) {
 					if (newTableData[newRow] > tableData[newRow]) {
 						$.ajax({
-							url: '/tenantaddorremsliver/',
+							url: '/tenantaddorreminstance/',
 							dataType: 'json',
 							data: {
 								siteName: newRow,
@@ -253,7 +253,7 @@
 						});
 					} else if (newTableData[newRow] < tableData[newRow]) {
 						$.ajax({
-							url: '/tenantaddorremsliver/',
+							url: '/tenantaddorreminstance/',
 							dataType: 'json',
 							data: {
 								siteName: newRow,
@@ -316,7 +316,7 @@
 					sClass: "alignCenter"
 				}]
 			});
-			editSliverAdv();
+			editInstanceAdv();
 				$('#advTenantSliceDropDown').on('change', function () {
 					var selectedValue = $("#advTenantSliceDropDown").val();
 					checkForBasicAdvView(selectedValue, rows,imageData,serviceLevelData,siteRows,dataSet);
@@ -333,7 +333,7 @@
 						$("#advancedTenantSliceDataWrapper").css("display","block");
 						$("#advTenantSiteTable").css("display","block");
 						$("#tenantSiteTable").css("display","none");
-						$("#sliver-btn").css("display","none");
+						$("#instance-btn").css("display","none");
 						$("#save-btn").css("display","block");
 						break;
 					} else if(rows[row]['numOfSites'] <= 1){
@@ -343,7 +343,7 @@
 						$("#advancedTenantSliceDataWrapper").css("display","none");
 						$("#advTenantSiteTable").css("display","none");
 						$("#tenantSiteTable").css("display","block");
-						$("#sliver-btn").css("display","block");
+						$("#instance-btn").css("display","block");
                                                 $("#save-btn").css("display","none");
 						break;
 					}break;
@@ -358,7 +358,7 @@
 				var sliceData = '';
 				sliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="slice-name-value"> </span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="service-level-value"> </span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="slice-image-value"> </span>  </span><br></div><div class="btn btn-high btn-info" id="advanced-tenant">Go to Advanced View</div>';
 				var advSliceData = '';
-				advSliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing slivers</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing slivers</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <input type="text" name="adv-network-value" id="adv-network-value"> <span class="help-inline">List of port ranges(if any) e.g. 1021-1026,1029</span><br></div><div class="tenant-row"><span class="summary-attr"><b>Data Set:</b> <span id="adv-slice-data-set-value"> </span>  <input type="checkbox" name="checkbox" id="private-vol-checkbox" value="value"><span class="help-inline">Include Private Volume</span></span></div>';
+				advSliceData += '<div class="tenant-row public-key-warning"><span class="summary-attr">You have not uploaded your Public Key. <a href="http://{{ request.get_host}}/admin/core/user/{{user.id}}">Click here</a> to upload it now.</span></div><div class="adv-tenant-row"><span class="summary-attr"><b>Slice Name:</b> <span id="adv-slice-name-value"> </span> </span><br><br></div><div class="tenant-row"><span class="summary-attr"><b>Service Level:</b> <span id="adv-service-level-value"> </span> <span class="help-inline">Changes are potentially disruptive to existing instances</span> </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Image:</b> <span id="adv-slice-image-value"> </span><span class="help-inline">Changes are potentially disruptive to existing instances</span>  </span><br></div><div class="tenant-row"><span class="summary-attr"><b>Network:</b> <input type="text" name="adv-network-value" id="adv-network-value"> <span class="help-inline">List of port ranges(if any) e.g. 1021-1026,1029</span><br></div><div class="tenant-row"><span class="summary-attr"><b>Data Set:</b> <span id="adv-slice-data-set-value"> </span>  <input type="checkbox" name="checkbox" id="private-vol-checkbox" value="value"><span class="help-inline">Include Private Volume</span></span></div>';
 				$('#tenantSliceDataWrapper').append(sliceData).css("display", "none");
 				$('#advancedTenantSliceDataWrapper').append(advSliceData);
 				$("#advancedTenantSliceDataWrapper").css("display", "none");
@@ -376,7 +376,7 @@
 				$('<div class="btn btn-success" id="delete-slice-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Delete a Slice</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-success" id="add-user-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add User</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-high btn-info" id="download-details">Download Slice Details</div>').appendTo("#tabs-5");
-				$('<div class="btn btn-success" id="sliver-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Slivers</div>').appendTo("#tabs-5");
+				$('<div class="btn btn-success" id="instance-btn"><i class="icon-plus-sign icon-white"></i>&nbsp;Add/Remove Instances</div>').appendTo("#tabs-5");
 				$('<div class="btn btn-high btn-info" id="save-btn">Save</div>').appendTo("#tabs-5").css("display", "none");
 				$("#advanced-tenant").unbind().click(function () {
 					var value = $("#tenantSliceDropDown").val();
@@ -385,11 +385,11 @@
                                                 $("#advancedTenantSliceDataWrapper").css("display","block");
                                                 $("#advTenantSiteTable").css("display","block");
                                                 $("#tenantSiteTable").css("display","none");
-                                                $("#sliver-btn").toggle();
+                                                $("#instance-btn").toggle();
                                                 $("#save-btn").toggle();
 
 			});
-			$("#sliver-btn").click(function () {
+			$("#instance-btn").click(function () {
 				$("#basic-tooltip").css("display", "none");
 				$("#dialog-form").dialog({
 					autoOpen: false,
@@ -400,10 +400,10 @@
 					buttons: {
 						"Add": function () {
 							$.ajax({
-								url: '/tenantaddorremsliver/',
+								url: '/tenantaddorreminstance/',
 								dataType: 'json',
 								data: {
-									count: parseInt($("#numOfSlivers").val()),
+									count: parseInt($("#numOfInstances").val()),
 									slice: $("#tenantSliceDropDown").val(),
 									image: $("#slice-image-value").html(),
 									actionToDo: "add",
@@ -412,7 +412,7 @@
 								},
 								type: 'POST',
 								beforeSend: function () {
-									if (!$("#numOfSlivers").val()) {
+									if (!$("#numOfInstances").val()) {
 										$("#basic-tooltip").css("display", "block");
 										return false;
 									} else {
@@ -427,10 +427,10 @@ $("#dialog-form").dialog("close");
 						},
 						Remove: function () {
 							$.ajax({
-								url: '/tenantaddorremsliver/',
+								url: '/tenantaddorreminstance/',
 								dataType: 'json',
 								data: {
-									count: parseInt($("#numOfSlivers").val()),
+									count: parseInt($("#numOfInstances").val()),
 									slice: $("#tenantSliceDropDown").val(),
 									image: $("#slice-image-value").html(),
 									actionToDo: "rem",
@@ -439,7 +439,7 @@ $("#dialog-form").dialog("close");
 								},
 								type: 'POST',
 								beforeSend: function () {
-									if (!$("#numOfSlivers").val()) {
+									if (!$("#numOfInstances").val()) {
 										$("#basic-tooltip").css("display", "block");
 										return false;
 									} else {
@@ -555,10 +555,10 @@ location.reload();
 								}
 							});
 						   $.ajax({
-                                                                url: '/tenantaddorremsliver/',
+                                                                url: '/tenantaddorreminstance/',
                                                                 dataType: 'json',
                                                                 data: {
-                                                                        count: parseInt($("#number-of-slivers").val()),
+                                                                        count: parseInt($("#number-of-instances").val()),
                                                                         slice: $("#new-slice-name").val(),
 									image: $("#new-image").val(),
                                                                         actionToDo: "add",

@@ -98,10 +98,10 @@ class Instance(PlCoreBase):
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
-    # TODO: Remove when NetworkSliver->Port rename is complete
+    # TODO: Remove when NetworkInstance->Port rename is complete
     @property
     def ports(self):
-        return self.networkslivers
+        return self.networkinstances
 
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):

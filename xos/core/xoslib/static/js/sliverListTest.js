@@ -1,8 +1,8 @@
 (function(){
 
-window.SliverView = Backbone.View.extend({
+window.InstanceView = Backbone.View.extend({
     tagName: 'li',
-    className: 'sliver',
+    className: 'instance',
 
     events: {
         'click .permalink': 'navigate'
@@ -18,7 +18,7 @@ window.SliverView = Backbone.View.extend({
     },
 
     render: function(){
-        $(this.el).html(ich.sliverTemplate(this.model.toJSON()));
+        $(this.el).html(ich.instanceTemplate(this.model.toJSON()));
         return this;
     }
 });
@@ -54,9 +54,9 @@ window.ListView = Backbone.View.extend({
         this.collection.each(this.addOne);
     },
 
-    addOne: function(sliver){
-        var view = new SliverView({
-            model: sliver
+    addOne: function(instance){
+        var view = new InstanceView({
+            model: instance
         });
         $(this.el).prepend(view.render().el);
         this.views.push(view);
@@ -82,7 +82,7 @@ window.ListApp = Backbone.View.extend({
         $(this.el).html(ich.listApp({}));
         var list = new ListView({
             collection: this.collection,
-            el: this.$('#slivers')
+            el: this.$('#instances')
         });
         list.addAll();
         list.bind('all', this.rethrow, this);
@@ -110,21 +110,21 @@ window.Router = Backbone.Router.extend({
 $(function(){
     window.app = window.app || {};
     app.router = new Router();
-    app.slivers = xos.slivers; //new XOSLib.slivers();
+    app.instances = xos.instances; //new XOSLib.instances();
     app.list = new ListApp({
         el: $("#app"),
-        collection: app.slivers
+        collection: app.instances
     });
     app.detail = new DetailApp({
         el: $("#app")
     });
     app.router.bind('route:list', function(){
-        app.slivers.maybeFetch({
+        app.instances.maybeFetch({
             success: _.bind(app.list.render, app.list)
         });
     });
     app.router.bind('route:detail', function(id){
-        app.slivers.getOrFetch(app.slivers.urlRoot + id + '/', {
+        app.instances.getOrFetch(app.instances.urlRoot + id + '/', {
             success: function(model){
                 app.detail.model = model;
                 app.detail.render();
@@ -132,7 +132,7 @@ $(function(){
         });
     });
 
-    app.slivers.maybeFetch({
+    app.instances.maybeFetch({
         success: _.bind(app.list.render, app.list)
     });
 

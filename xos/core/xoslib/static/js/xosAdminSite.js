@@ -1,5 +1,5 @@
 OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'port',
-        'node', 'service', 'site', 'slice',  'slicePrivilege', 'sliver',
+        'node', 'service', 'site', 'slice',  'slicePrivilege', 'instance',
         'user', 'sliceRole',  'flavor', 'controller', 'siteDeployment',
         'controller_image', 'controller_network', 'controller_slice', 'controller_user'];
 NAV_OBJS = ['deployment', 'site', 'slice', 'user'];

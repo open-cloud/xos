@@ -18,7 +18,7 @@
     <tr class="developer-header">
       <th>Slice <span class="sort" id="sort-asc-name">&#9650;</span><span class="sort" id="sort-desc-name">&#9660;</span></th>
       <th>Privilege<span class="sort" id="sort-asc-sliceInfo.roles">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.roles">&#9660;</span></th>
-      <th>Number of Slivers<span class="sort" id="sort-asc-sliceInfo.sliverCount">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.sliverCount">&#9660;</span></th>
+      <th>Number of Instances<span class="sort" id="sort-asc-sliceInfo.instanceCount">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.instanceCount">&#9660;</span></th>
       <th>Number of Sites<span class="sort" id="sort-asc-sliceInfo.siteCount">&#9650;</span><span class="sort" id="sort-desc-sliceInfo.siteCount">&#9660;</span></th>
     </tr>
   </thead>
@@ -27,6 +27,6 @@
 </script>
 
 <script type="text/template" id="developer-slicedetail-template">
-  <td><a href="http://{{request.get_host}}/admin/core/slice/<%= id %>/"><%= name %></a></td><td><%= sliceInfo.roles[0] %></td><td><%= sliceInfo.sliverCount %></td><td><%= sliceInfo.siteCount %></td>
+  <td><a href="http://{{request.get_host}}/admin/core/slice/<%= id %>/"><%= name %></a></td><td><%= sliceInfo.roles[0] %></td><td><%= sliceInfo.instanceCount %></td><td><%= sliceInfo.siteCount %></td>
 </script>
 
