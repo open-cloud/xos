@@ -9,7 +9,7 @@ TestApp.addRegions({
     serviceList: "#serviceList",
     siteList: "#siteList",
     sliceList: "#sliceList",
-    sliverList: "#sliverList",
+    instanceList: "#instanceList",
     userList: "#userList",
     detail: "#detail",
     linkedObjs1: "#linkedObjs1",
@@ -35,7 +35,7 @@ TestApp.navigateToModel = function(app, detailClass, detailNavLink, model) {
 };
 
 TestApp.on("start", function() {
-     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'port', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'sliver', 'user', 'sliceRole', 'userDeployment'];
+     var objs = ['deployment', 'image', 'networkTemplate', 'network', 'port', 'networkDeployment', 'node', 'service', 'site', 'slice', 'sliceDeployment', 'slicePrivilege', 'instance', 'user', 'sliceRole', 'userDeployment'];
 
      for (var index in objs) {
          name = objs[index];

@@ -1,5 +1,5 @@
 ---
-- hosts: {{ sliver_name }}
+- hosts: {{ instance_name }}
   connection: ssh
   user: ubuntu
   tasks:

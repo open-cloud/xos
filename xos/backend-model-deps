@@ -1,5 +1,5 @@
 {
-    "Sliver": [
+    "Instance": [
 	["SlicePrivilege","slice.sliceprivileges"],
 	["SitePrivilege","slice.site.siteprivileges"],
 	["ControllerImages","image.controllerimages"]

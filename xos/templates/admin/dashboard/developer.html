@@ -37,10 +37,10 @@ function createUserSliceTable(data) {
         slicename = rows[row]['slicename'];
         sliceid = rows[row]['sliceid'];
         role = rows[row]['role'];
-        slivercount = rows[row]['slivercount'];
+        instancecount = rows[row]['instancecount'];
         sitecount = rows[row]['sitecount'];
         actualEntries.push(['<a href="http://{{request.get_host}}/admin/core/slice/' + sliceid + '">' + slicename + '</a>',
-                            role, slivercount, sitecount]);
+                            role, instancecount, sitecount]);
     }
     oTable = $('#dynamicusersliceinfo').dataTable( {
         "bJQueryUI": true,
@@ -49,7 +49,7 @@ function createUserSliceTable(data) {
         "aoColumns": [
             { "sTitle": "Slice" },
             { "sTitle": "Privilege" , sClass: "alignCenter"},
-            { "sTitle": "Number of Slivers" , sClass: "alignCenter"},
+            { "sTitle": "Number of Instances" , sClass: "alignCenter"},
             { "sTitle": "Number of Sites" , sClass: "alignCenter"},
         ]
     } );

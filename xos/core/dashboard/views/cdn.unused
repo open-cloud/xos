@@ -33,17 +33,17 @@ def getCDNOperatorData(randomizeData = False, wait=True):
 
     slice = Slice.objects.filter(name=HPC_SLICE_NAME)
     if slice:
-        slice_slivers = list(slice[0].slivers.all())
+        slice_instances = list(slice[0].instances.all())
     else:
-        slice_slivers = []
+        slice_instances = []
 
     new_rows = {}
     for site in Site.objects.all():
-        # compute number of slivers allocated in the data model
-        allocated_slivers = 0
-        for sliver in slice_slivers:
-            if sliver.node.site == site:
-                allocated_slivers = allocated_slivers + 1
+        # compute number of instances allocated in the data model
+        allocated_instances = 0
+        for instance in slice_instances:
+            if instance.node.site == site:
+                allocated_instances = allocated_instances + 1
 
         stats_row = stats_rows.get(site.name,{})
 
@@ -63,20 +63,20 @@ def getCDNOperatorData(randomizeData = False, wait=True):
                "long": long,
                "health": 0,
                #"numNodes": int(site.nodes.count()),
-               "activeHPCSlivers": int(stats_row.get("count_hostname", 0)),     # measured number of slivers, from bigquery statistics
-               "numHPCSlivers": allocated_slivers,                              # allocated number of slivers, from data model
+               "activeHPCInstances": int(stats_row.get("count_hostname", 0)),     # measured number of instances, from bigquery statistics
+               "numHPCInstances": allocated_instances,                              # allocated number of instances, from data model
                "siteUrl": str(site.site_url),
                "bandwidth": stats_row.get("sum_computed_bytes_sent_div_elapsed",0),
                "load": max_cpu,
                "hot": float(hotness)}
         new_rows[str(site.name)] = new_row
 
-    # get rid of sites with 0 slivers that overlap other sites with >0 slivers
+    # get rid of sites with 0 instances that overlap other sites with >0 instances
     for (k,v) in new_rows.items():
         bad=False
-        if v["numHPCSlivers"]==0:
+        if v["numHPCInstances"]==0:
             for v2 in new_rows.values():
-                if (v!=v2) and (v2["numHPCSlivers"]>=0):
+                if (v!=v2) and (v2["numHPCInstances"]>=0):
                     d = haversine(v["lat"],v["long"],v2["lat"],v2["long"])
                     if d<100:
                          bad=True
@@ -96,22 +96,22 @@ class DashboardSummaryAjaxView(View):
 
         sites = getCDNOperatorData().values()
 
-        sites = [site for site in sites if site["numHPCSlivers"]>0]
+        sites = [site for site in sites if site["numHPCInstances"]>0]
 
-        total_slivers = sum( [site["numHPCSlivers"] for site in sites] )
+        total_instances = sum( [site["numHPCInstances"] for site in sites] )
         total_bandwidth = sum( [site["bandwidth"] for site in sites] )
         average_cpu = int(avg( [site["load"] for site in sites] ))
 
-        result= {"total_slivers": total_slivers,
+        result= {"total_instances": total_instances,
                 "total_bandwidth": total_bandwidth,
                 "average_cpu": average_cpu}
 
         return HttpResponse(json.dumps(result), content_type='application/javascript')
 
-class DashboardAddOrRemoveSliverView(View):
-    # TODO: deprecate this view in favor of using TenantAddOrRemoveSliverView
+class DashboardAddOrRemoveInstanceView(View):
+    # TODO: deprecate this view in favor of using TenantAddOrRemoveInstanceView
 
-    url=r'^dashboardaddorremsliver/$'
+    url=r'^dashboardaddorreminstance/$'
 
     def post(self, request, *args, **kwargs):
         siteName = request.POST.get("site", None)
@@ -125,12 +125,12 @@ class DashboardAddOrRemoveSliverView(View):
 
         if (actionToDo == "add"):
             user_ip = request.GET.get("ip", get_ip(request))
-            slice_increase_slivers(request.user, user_ip, siteList, slice, image.objects.all()[0], 1)
+            slice_increase_instances(request.user, user_ip, siteList, slice, image.objects.all()[0], 1)
         elif (actionToDo == "rem"):
-            slice_decrease_slivers(request.user, siteList, slice, 1)
+            slice_decrease_instances(request.user, siteList, slice, 1)
 
         print '*' * 50
-        print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Sliver'
+        print 'Ask for site: ' + siteName + ' to ' + actionToDo + ' another HPC Instance'
         return HttpResponse(json.dumps("Success"), content_type='application/javascript')
 
 class DashboardAjaxView(View):

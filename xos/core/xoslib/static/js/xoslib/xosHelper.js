@@ -699,7 +699,7 @@ XOSDetailView = Marionette.ItemView.extend({
              disableAdd: function() { return this.disableAdd || this.options.disableAdd || this.model.disableAdd; },
 });
 
-XOSDetailView_sliver = XOSDetailView.extend( {
+XOSDetailView_instance = XOSDetailView.extend( {
     events: $.extend(XOSDetailView.events,
         {"change #field_deployment": "onDeploymentChange"}
     ),

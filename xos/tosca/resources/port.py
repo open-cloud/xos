@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Sliver,User,Network,NetworkTemplate,Port
+from core.models import Instance,User,Network,NetworkTemplate,Port
 
 from xosresource import XOSResource
 
@@ -14,20 +14,20 @@ class XOSPort(XOSResource):
     xos_model = Port
 
     def get_existing_objs(self):
-        # Port objects have no name, their unique key is (sliver, network)
+        # Port objects have no name, their unique key is (instance, network)
         args = self.get_xos_args(throw_exception=False)
-        sliver = args.get('sliver',None)
+        instance = args.get('instance',None)
         network = args.get('network',None)
-        if (not sliver) or (not network):
+        if (not instance) or (not network):
             return []
-        return self.xos_model.objects.filter(**{'sliver': sliver, 'network': network})
+        return self.xos_model.objects.filter(**{'instance': instance, 'network': network})
 
     def get_xos_args(self, throw_exception=True):
         args = {}
 
-        sliver_name = self.get_requirement("tosca.relationships.network.BindsTo")
-        if sliver_name:
-            args["sliver"] = self.get_xos_object(Sliver, throw_exception, name=sliver_name)
+        instance_name = self.get_requirement("tosca.relationships.network.BindsTo")
+        if instance_name:
+            args["instance"] = self.get_xos_object(Instance, throw_exception, name=instance_name)
 
         net_name = self.get_requirement("tosca.relationships.network.LinksTo")
         if net_name:
@@ -41,7 +41,7 @@ class XOSPort(XOSResource):
     def create(self):
         xos_args = self.get_xos_args()
 
-        if not xos_args.get("sliver", None):
+        if not xos_args.get("instance", None):
             raise Exception("Must specify slver when creating port")
         if not xos_args.get("network", None):
             raise Exception("Must specify network when creating port")
@@ -52,7 +52,7 @@ class XOSPort(XOSResource):
 
         self.postprocess(port)
 
-        self.info("Created Port '%s' connect sliver '%s' to network %s" % (str(port), str(port.sliver), str(port.network)))
+        self.info("Created Port '%s' connect instance '%s' to network %s" % (str(port), str(port.instance), str(port.network)))
 
     def delete(self, obj):
         super(XOSPort, self).delete(obj)

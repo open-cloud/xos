@@ -12,5 +12,5 @@ def purge(cls):
     for obj in cls.deleted_objects.all():
         obj.delete(purge=True)
 
-for model in [Sliver, Slice, Site, Service, User, Image, ImageDeployments, Port]:
+for model in [Instance, Slice, Site, Service, User, Image, ImageDeployments, Port]:
     purge(model)
