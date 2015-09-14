@@ -135,6 +135,8 @@ class SyncInstances(OpenStackSyncStep):
 
         controller = instance.node.site_deployment.controller
         tenant_fields = {'endpoint':controller.auth_url,
+                     'endpoint_v3': controller.auth_url_v3,
+                     'domain': controller.domain,
                      'admin_user': instance.creator.email,
                      'admin_password': instance.creator.remote_password,
                      'admin_tenant': instance.slice.name,
