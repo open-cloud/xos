@@ -178,10 +178,10 @@ class SyncPorts(OpenStackSyncStep):
                     client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
                     driver = OpenStackDriver(client=client)
 
-                    port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
-                    port.port_id = port["id"]
-                    if port["fixed_ips"]:
-                        port.ip = port["fixed_ips"][0]["ip_address"]
+                    neutron_port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
+                    port.port_id = neutron_port["id"]
+                    if neutron_port["fixed_ips"]:
+                        port.ip = neutron_port["fixed_ips"][0]["ip_address"]
                 except:
                     logger.log_exc("failed to create neutron port for %s" % port)
                     continue
