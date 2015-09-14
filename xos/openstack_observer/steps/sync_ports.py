@@ -182,6 +182,7 @@ class SyncPorts(OpenStackSyncStep):
                     port.port_id = neutron_port["id"]
                     if neutron_port["fixed_ips"]:
                         port.ip = neutron_port["fixed_ips"][0]["ip_address"]
+                    port.mac = neutron_port["mac_address"]
                 except:
                     logger.log_exc("failed to create neutron port for %s" % port)
                     continue
