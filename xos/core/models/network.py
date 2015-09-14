@@ -207,9 +207,6 @@ class NetworkSlice(PlCoreBase):
         return qs
 
 class Port(PlCoreBase):
-    # Please use "Port" instead of "NetworkInstance". NetworkInstance will soon be
-    # removed.
-
     network = models.ForeignKey(Network,related_name='links')
     instance = models.ForeignKey(Instance, null=True, blank=True, related_name='ports')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
