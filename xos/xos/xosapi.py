@@ -212,9 +212,6 @@ def get_REST_patterns():
         url(r'xos/tenantrootprivileges/$', TenantRootPrivilegeList.as_view(), name='tenantrootprivilege-list'),
         url(r'xos/tenantrootprivileges/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantRootPrivilegeDetail.as_view(), name ='tenantrootprivilege-detail'),
     
-        url(r'xos/networkinstances/$', NetworkInstanceList.as_view(), name='networkinstance-list'),
-        url(r'xos/networkinstances/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkInstanceDetail.as_view(), name ='networkinstance-detail'),
-    
         url(r'xos/slicetags/$', SliceTagList.as_view(), name='slicetag-list'),
         url(r'xos/slicetags/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceTagDetail.as_view(), name ='slicetag-detail'),
     
@@ -293,7 +290,6 @@ def api_root(request, format=None):
         'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
         'usercredentials': reverse('usercredential-list', request=request, format=format),
         'tenantrootprivileges': reverse('tenantrootprivilege-list', request=request, format=format),
-        'networkinstances': reverse('networkinstance-list', request=request, format=format),
         'slicetags': reverse('slicetag-list', request=request, format=format),
         'coarsetenants': reverse('coarsetenant-list', request=request, format=format),
         'routers': reverse('router-list', request=request, format=format),
@@ -2532,41 +2528,6 @@ class TenantRootPrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class NetworkInstanceSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkInstance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
-
-class NetworkInstanceIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkInstance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
-
-
-
-
 class SliceTagSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -2875,8 +2836,6 @@ serializerLookUp = {
                  UserCredential: UserCredentialSerializer,
 
                  TenantRootPrivilege: TenantRootPrivilegeSerializer,
-
-                 NetworkInstance: NetworkInstanceSerializer,
 
                  SliceTag: SliceTagSerializer,
 
@@ -5613,53 +5572,6 @@ class TenantRootPrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return TenantRootPrivilege.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
-class NetworkInstanceList(XOSListCreateAPIView):
-    queryset = NetworkInstance.objects.select_related().all()
-    serializer_class = NetworkInstanceSerializer
-    id_serializer_class = NetworkInstanceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return NetworkInstance.select_by_user(self.request.user)
-
-
-class NetworkInstanceDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = NetworkInstance.objects.select_related().all()
-    serializer_class = NetworkInstanceSerializer
-    id_serializer_class = NetworkInstanceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return NetworkInstance.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
