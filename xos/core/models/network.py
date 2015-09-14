@@ -108,7 +108,7 @@ class Network(PlCoreBase):
     permit_all_slices = models.BooleanField(default=False)
     permitted_slices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
     slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
-    instances = models.ManyToManyField(Instance, blank=True, related_name="networks", through="NetworkInstance")
+    instances = models.ManyToManyField(Instance, blank=True, related_name="networks", through="Port")
 
     topology_parameters = models.TextField(null=True, blank=True)
     controller_url = models.CharField(null=True, blank=True, max_length=1024)
@@ -122,11 +122,6 @@ class Network(PlCoreBase):
     autoconnect = models.BooleanField(default=True, help_text="This network can be autoconnected to the slice that owns it")
 
     def __unicode__(self):  return u'%s' % (self.name)
-
-    # TODO: Remove when NetworkInstance->Port rename is complete
-    @property
-    def links(self):
-        return self.networkinstances
 
     def save(self, *args, **kwds):
         if (not self.subnet) and (NO_OBSERVER):
@@ -211,12 +206,12 @@ class NetworkSlice(PlCoreBase):
             qs = NetworkSlice.objects.filter(id__in=slice_ids)
         return qs
 
-class NetworkInstance(PlCoreBase):
+class Port(PlCoreBase):
     # Please use "Port" instead of "NetworkInstance". NetworkInstance will soon be
     # removed.
 
-    network = models.ForeignKey(Network,related_name='networkinstances')
-    instance = models.ForeignKey(Instance, null=True, blank=True, related_name='networkinstances')
+    network = models.ForeignKey(Network,related_name='links')
+    instance = models.ForeignKey(Instance, null=True, blank=True, related_name='ports')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
@@ -234,11 +229,7 @@ class NetworkInstance(PlCoreBase):
                 #   3) network's permitAllSlices is true
                 raise ValueError("Slice %s is not allowed to connect to network %s" % (str(slice), str(self.network)))
 
-        if (not self.ip) and (NO_OBSERVER):
-            from util.network_subnet_allocator import find_unused_address
-            self.ip = find_unused_address(self.network.subnet,
-                                          [x.ip for x in self.network.networkinstance_set.all()])
-        super(NetworkInstance, self).save(*args, **kwds)
+        super(Port, self).save(*args, **kwds)
 
     def __unicode__(self):
         if self.instance:
@@ -256,16 +247,11 @@ class NetworkInstance(PlCoreBase):
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
-            qs = NetworkInstance.objects.all()
+            qs = Port.objects.all()
         else:
-            instance_ids = [s.id for s in NetworkInstance.select_by_user(user)]
-            qs = NetworkInstance.objects.filter(id__in=instance_ids)
+            instance_ids = [s.id for s in Port.select_by_user(user)]
+            qs = Port.objects.filter(id__in=instance_ids)
         return qs
-
-class Port(NetworkInstance):
-    # Rename in progress: NetworkInstance->Port
-    class Meta:
-        proxy = True
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
