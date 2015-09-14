@@ -477,66 +477,6 @@ class VCPETenant(TenantWithContainer):
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
-        self.cached_instance=None
-        self.orig_instance_id = self.get_initial_attribute("instance_id")
-
-    @property
-    def image(self):
-        LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
-                         "Ubuntu 14.04 LTS",    # portal
-                         "Ubuntu-14.04-LTS",    # ONOS demo machine
-                        ]
-        for image_name in LOOK_FOR_IMAGES:
-            images = Image.objects.filter(name = image_name)
-            if images:
-                return images[0]
-
-        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(LOOK_FOR_IMAGES))
-
-    @property
-    def instance(self):
-        if getattr(self, "cached_instance", None):
-            return self.cached_instance
-        instance_id=self.get_attribute("instance_id")
-        if not instance_id:
-            return None
-        instances=Instance.objects.filter(id=instance_id)
-        if not instances:
-            return None
-        instance=instances[0]
-        instance.caller = self.creator
-        self.cached_instance = instance
-        return instance
-
-    @instance.setter
-    def instance(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("instance_id", None)):
-            self.cached_instance=None
-        self.set_attribute("instance_id", value)
-
-    @property
-    def creator(self):
-        if getattr(self, "cached_creator", None):
-            return self.cached_creator
-        creator_id=self.get_attribute("creator_id")
-        if not creator_id:
-            return None
-        users=User.objects.filter(id=creator_id)
-        if not users:
-            return None
-        user=users[0]
-        self.cached_creator = users[0]
-        return user
-
-    @creator.setter
-    def creator(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator=None
-        self.set_attribute("creator_id", value)
 
     @property
     def vbng(self):
@@ -658,53 +598,6 @@ class VCPETenant(TenantWithContainer):
     @is_synced.setter
     def is_synced(self, value):
         pass
-
-    def pick_node(self):
-        nodes = list(Node.objects.all())
-        # TODO: logic to filter nodes by which nodes are up, and which
-        #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
-        return nodes[0]
-
-    def manage_instance(self):
-        # Each VCPE object owns exactly one instance.
-
-        if self.deleted:
-            return
-
-        if (self.instance is not None) and (self.instance.image != self.image):
-            self.instance.delete()
-            self.instance = None
-
-        if self.instance is None:
-            if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The VCPE service has no slices")
-
-            flavors = Flavor.objects.filter(name="m1.small")
-            if not flavors:
-                raise XOSConfigurationError("No m1.small flavor")
-
-            node =self.pick_node()
-            instance = Instance(slice = self.provider_service.slices.all()[0],
-                            node = node,
-                            image = self.image,
-                            creator = self.creator,
-                            deployment = node.site_deployment.deployment,
-                            flavor = flavors[0])
-            instance.save()
-
-            try:
-                self.instance = instance
-                super(VCPETenant, self).save()
-            except:
-                instance.delete()
-                raise
-
-    def cleanup_instance(self):
-        if self.instance:
-            # print "XXX cleanup instance", self.instance
-            self.instance.delete()
-            self.instance = None
 
     def manage_vbng(self):
         # Each vCPE object owns exactly one vBNG object
