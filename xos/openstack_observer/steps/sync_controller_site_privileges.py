@@ -52,13 +52,15 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
             #    tenant_id = ctrl_site_deployments[0].tenant_id  
             #    tenant_name = ctrl_site_deployments[0].site_deployment.site.login_base
             user_fields = {
-                       'endpoint':controller_site_privilege.controller.auth_url,
+               'endpoint':controller_site_privilege.controller.auth_url,
+               'endpoint_v3': controller_site_privilege.controller.auth_url_v3,
+               'domain': controller_site_privilege.controller.domain,
 		       'name': controller_site_privilege.site_privilege.user.email,
-                       'email': controller_site_privilege.site_privilege.user.email,
-                       'password': controller_site_privilege.site_privilege.user.remote_password,
-                       'admin_user': controller_site_privilege.controller.admin_user,
+               'email': controller_site_privilege.site_privilege.user.email,
+               'password': controller_site_privilege.site_privilege.user.remote_password,
+               'admin_user': controller_site_privilege.controller.admin_user,
 		       'admin_password': controller_site_privilege.controller.admin_password,
-	               'ansible_tag':'%s@%s'%(controller_site_privilege.site_privilege.user.email.replace('@','-at-'),controller_site_privilege.controller.name),
+	           'ansible_tag':'%s@%s'%(controller_site_privilege.site_privilege.user.email.replace('@','-at-'),controller_site_privilege.controller.name),
 		       'admin_tenant': controller_site_privilege.controller.admin_tenant,
 		       'roles':roles,
 		       'tenant':controller_site_privilege.site_privilege.site.login_base}    

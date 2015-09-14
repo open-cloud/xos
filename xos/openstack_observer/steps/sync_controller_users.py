@@ -58,6 +58,8 @@ class SyncControllerUsers(OpenStackSyncStep):
             #    tenant_name = ctrl_site_deployments[0].site_deployment.site.login_base
             user_fields = {
                 'endpoint':controller_user.controller.auth_url,
+                'endpoint_v3': controller_user.controller.auth_url_v3,
+                'domain': controller_user.controller.domain,
                 'name': controller_user.user.email,
                 'email': controller_user.user.email,
                 'password': controller_user.user.remote_password,
