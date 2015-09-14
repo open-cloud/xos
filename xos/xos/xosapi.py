@@ -1,4 +1,3 @@
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -75,11 +74,11 @@ def get_REST_patterns():
         url(r'xos/slice_privileges/$', SlicePrivilegeList.as_view(), name='sliceprivilege-list'),
         url(r'xos/slice_privileges/(?P<pk>[a-zA-Z0-9\-]+)/$', SlicePrivilegeDetail.as_view(), name ='sliceprivilege-detail'),
     
-        url(r'xos/networkinstances/$', NetworkInstanceList.as_view(), name='networkinstance-list'),
-        url(r'xos/networkinstances/(?P<pk>[a-zA-Z0-9\-]+)/$', NetworkInstanceDetail.as_view(), name ='networkinstance-detail'),
-    
         url(r'xos/flavors/$', FlavorList.as_view(), name='flavor-list'),
         url(r'xos/flavors/(?P<pk>[a-zA-Z0-9\-]+)/$', FlavorDetail.as_view(), name ='flavor-detail'),
+    
+        url(r'xos/ports/$', PortList.as_view(), name='port-list'),
+        url(r'xos/ports/(?P<pk>[a-zA-Z0-9\-]+)/$', PortDetail.as_view(), name ='port-detail'),
     
         url(r'xos/controllersites/$', ControllerSiteList.as_view(), name='controllersite-list'),
         url(r'xos/controllersites/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerSiteDetail.as_view(), name ='controllersite-detail'),
@@ -105,6 +104,9 @@ def get_REST_patterns():
         url(r'xos/subscribers/$', SubscriberList.as_view(), name='subscriber-list'),
         url(r'xos/subscribers/(?P<pk>[a-zA-Z0-9\-]+)/$', SubscriberDetail.as_view(), name ='subscriber-detail'),
     
+        url(r'xos/instances/$', InstanceList.as_view(), name='instance-list'),
+        url(r'xos/instances/(?P<pk>[a-zA-Z0-9\-]+)/$', InstanceDetail.as_view(), name ='instance-detail'),
+    
         url(r'xos/charges/$', ChargeList.as_view(), name='charge-list'),
         url(r'xos/charges/(?P<pk>[a-zA-Z0-9\-]+)/$', ChargeDetail.as_view(), name ='charge-detail'),
     
@@ -122,9 +124,6 @@ def get_REST_patterns():
     
         url(r'xos/slicecredentials/$', SliceCredentialList.as_view(), name='slicecredential-list'),
         url(r'xos/slicecredentials/(?P<pk>[a-zA-Z0-9\-]+)/$', SliceCredentialDetail.as_view(), name ='slicecredential-detail'),
-    
-        url(r'xos/instances/$', InstanceList.as_view(), name='instance-list'),
-        url(r'xos/instances/(?P<pk>[a-zA-Z0-9\-]+)/$', InstanceDetail.as_view(), name ='instance-detail'),
     
         url(r'xos/nodes/$', NodeList.as_view(), name='node-list'),
         url(r'xos/nodes/(?P<pk>[a-zA-Z0-9\-]+)/$', NodeDetail.as_view(), name ='node-detail'),
@@ -155,9 +154,6 @@ def get_REST_patterns():
     
         url(r'xos/controllers/$', ControllerList.as_view(), name='controller-list'),
         url(r'xos/controllers/(?P<pk>[a-zA-Z0-9\-]+)/$', ControllerDetail.as_view(), name ='controller-detail'),
-    
-        url(r'xos/ports/$', PortList.as_view(), name='port-list'),
-        url(r'xos/ports/(?P<pk>[a-zA-Z0-9\-]+)/$', PortDetail.as_view(), name ='port-detail'),
     
         url(r'xos/users/$', UserList.as_view(), name='user-list'),
         url(r'xos/users/(?P<pk>[a-zA-Z0-9\-]+)/$', UserDetail.as_view(), name ='user-detail'),
@@ -204,6 +200,9 @@ def get_REST_patterns():
         url(r'xos/sitedeployments/$', SiteDeploymentList.as_view(), name='sitedeployment-list'),
         url(r'xos/sitedeployments/(?P<pk>[a-zA-Z0-9\-]+)/$', SiteDeploymentDetail.as_view(), name ='sitedeployment-detail'),
     
+        url(r'xos/tenantwithcontainers/$', TenantWithContainerList.as_view(), name='tenantwithcontainer-list'),
+        url(r'xos/tenantwithcontainers/(?P<pk>[a-zA-Z0-9\-]+)/$', TenantWithContainerDetail.as_view(), name ='tenantwithcontainer-detail'),
+    
         url(r'xos/deploymentroles/$', DeploymentRoleList.as_view(), name='deploymentrole-list'),
         url(r'xos/deploymentroles/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentRoleDetail.as_view(), name ='deploymentrole-detail'),
     
@@ -245,8 +244,8 @@ def api_root(request, format=None):
         'tags': reverse('tag-list', request=request, format=format),
         'invoices': reverse('invoice-list', request=request, format=format),
         'sliceprivileges': reverse('sliceprivilege-list', request=request, format=format),
-        'networkinstances': reverse('networkinstance-list', request=request, format=format),
         'flavors': reverse('flavor-list', request=request, format=format),
+        'ports': reverse('port-list', request=request, format=format),
         'controllersites': reverse('controllersite-list', request=request, format=format),
         'projects': reverse('project-list', request=request, format=format),
         'slices': reverse('slice-list', request=request, format=format),
@@ -255,13 +254,13 @@ def api_root(request, format=None):
         'serviceclasses': reverse('serviceclass-list', request=request, format=format),
         'payments': reverse('payment-list', request=request, format=format),
         'subscribers': reverse('subscriber-list', request=request, format=format),
+        'instances': reverse('instance-list', request=request, format=format),
         'charges': reverse('charge-list', request=request, format=format),
         'programs': reverse('program-list', request=request, format=format),
         'roles': reverse('role-list', request=request, format=format),
         'usableobjects': reverse('usableobject-list', request=request, format=format),
         'providers': reverse('provider-list', request=request, format=format),
         'slicecredentials': reverse('slicecredential-list', request=request, format=format),
-        'instances': reverse('instance-list', request=request, format=format),
         'nodes': reverse('node-list', request=request, format=format),
         'dashboardviews': reverse('dashboardview-list', request=request, format=format),
         'controllernetworks': reverse('controllernetwork-list', request=request, format=format),
@@ -272,7 +271,6 @@ def api_root(request, format=None):
         'networkslices': reverse('networkslice-list', request=request, format=format),
         'userdashboardviews': reverse('userdashboardview-list', request=request, format=format),
         'controllers': reverse('controller-list', request=request, format=format),
-        'ports': reverse('port-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
         'deployments': reverse('deployment-list', request=request, format=format),
         'reservations': reverse('reservation-list', request=request, format=format),
@@ -288,6 +286,7 @@ def api_root(request, format=None):
         'deploymentprivileges': reverse('deploymentprivilege-list', request=request, format=format),
         'controllersliceprivileges': reverse('controllersliceprivilege-list', request=request, format=format),
         'sitedeployments': reverse('sitedeployment-list', request=request, format=format),
+        'tenantwithcontainers': reverse('tenantwithcontainer-list', request=request, format=format),
         'deploymentroles': reverse('deploymentrole-list', request=request, format=format),
         'usercredentials': reverse('usercredential-list', request=request, format=format),
         'tenantrootprivileges': reverse('tenantrootprivilege-list', request=request, format=format),
@@ -791,41 +790,6 @@ class SlicePrivilegeIdSerializer(XOSModelSerializer):
 
 
 
-class NetworkInstanceSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkInstance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
-
-class NetworkInstanceIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = NetworkInstance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
-
-
-
-
 class FlavorSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -865,6 +829,41 @@ class FlavorIdSerializer(XOSModelSerializer):
     class Meta:
         model = Flavor
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','description','flavor','order','default','deployments',)
+
+
+
+
+class PortSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Port
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
+
+class PortIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Port
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
 
 
 
@@ -961,7 +960,7 @@ class SliceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Slice
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instance','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
 
 class SliceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -986,6 +985,7 @@ class SliceIdSerializer(XOSModelSerializer):
     class Meta:
         model = Slice
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','enabled','omf_friendly','description','slice_url','site','max_instances','service','network','serviceClass','creator','default_flavor','default_image','mount_data_sets','networks','networks',)
+
 
 
 
@@ -1204,6 +1204,49 @@ class SubscriberIdSerializer(XOSModelSerializer):
 
 
 
+class InstanceSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    
+    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
+    
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Instance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+
+class InstanceIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    
+    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
+    
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = Instance
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+
+
+
+
 class ChargeSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -1410,59 +1453,6 @@ class SliceCredentialIdSerializer(XOSModelSerializer):
     class Meta:
         model = SliceCredential
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','slice','name','key_id','enc_value',)
-
-
-
-
-class InstanceSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    
-    networks = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='network-detail')
-    
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-<<<<<<< HEAD
-        model = Instance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
-=======
-        model = Instance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
->>>>>>> origin/master
-
-class InstanceIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    
-    networks = serializers.PrimaryKeyRelatedField(many=True,  queryset = Network.objects.all())
-    
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-<<<<<<< HEAD
-        model = Instance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
-=======
-        model = Instance
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
->>>>>>> origin/master
 
 
 
@@ -1724,7 +1714,6 @@ class NetworkTemplateIdSerializer(XOSModelSerializer):
     class Meta:
         model = NetworkTemplate
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','description','guaranteed_bandwidth','visibility','translation','shared_network_name','shared_network_id','topology_kind','controller_kind',)
->>>>>>> origin/master
 
 
 
@@ -1838,41 +1827,6 @@ class ControllerIdSerializer(XOSModelSerializer):
     class Meta:
         model = Controller
         fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
-
-
-
-
-class PortSerializer(serializers.HyperlinkedModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Port
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
-
-class PortIdSerializer(XOSModelSerializer):
-    id = IdField()
-    
-    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
-    validators = serializers.SerializerMethodField("getValidators")
-    def getHumanReadableName(self, obj):
-        return str(obj)
-    def getValidators(self, obj):
-        try:
-            return obj.getValidators()
-        except:
-            return None
-    class Meta:
-        model = Port
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
 
 
 
@@ -2434,6 +2388,41 @@ class SiteDeploymentIdSerializer(XOSModelSerializer):
 
 
 
+class TenantWithContainerSerializer(serializers.HyperlinkedModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = TenantWithContainer
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','kind','provider_service','subscriber_service','subscriber_tenant','subscriber_user','subscriber_root','service_specific_id','service_specific_attribute','connect_method',)
+
+class TenantWithContainerIdSerializer(XOSModelSerializer):
+    id = IdField()
+    
+    humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
+    validators = serializers.SerializerMethodField("getValidators")
+    def getHumanReadableName(self, obj):
+        return str(obj)
+    def getValidators(self, obj):
+        try:
+            return obj.getValidators()
+        except:
+            return None
+    class Meta:
+        model = TenantWithContainer
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','kind','provider_service','subscriber_service','subscriber_tenant','subscriber_user','subscriber_root','service_specific_id','service_specific_attribute','connect_method',)
+
+
+
+
 class DeploymentRoleSerializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
     
@@ -2756,9 +2745,9 @@ serializerLookUp = {
 
                  SlicePrivilege: SlicePrivilegeSerializer,
 
-                 NetworkInstance: NetworkInstanceSerializer,
-
                  Flavor: FlavorSerializer,
+
+                 Port: PortSerializer,
 
                  ControllerSite: ControllerSiteSerializer,
 
@@ -2776,6 +2765,8 @@ serializerLookUp = {
 
                  Subscriber: SubscriberSerializer,
 
+                 Instance: InstanceSerializer,
+
                  Charge: ChargeSerializer,
 
                  Program: ProgramSerializer,
@@ -2787,8 +2778,6 @@ serializerLookUp = {
                  Provider: ProviderSerializer,
 
                  SliceCredential: SliceCredentialSerializer,
-
-                 Instance: InstanceSerializer,
 
                  Node: NodeSerializer,
 
@@ -2809,8 +2798,6 @@ serializerLookUp = {
                  UserDashboardView: UserDashboardViewSerializer,
 
                  Controller: ControllerSerializer,
-
-                 Port: PortSerializer,
 
                  User: UserSerializer,
 
@@ -2841,6 +2828,8 @@ serializerLookUp = {
                  ControllerSlicePrivilege: ControllerSlicePrivilegeSerializer,
 
                  SiteDeployment: SiteDeploymentSerializer,
+
+                 TenantWithContainer: TenantWithContainerSerializer,
 
                  DeploymentRole: DeploymentRoleSerializer,
 
@@ -3428,53 +3417,6 @@ class SlicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
-class NetworkInstanceList(XOSListCreateAPIView):
-    queryset = NetworkInstance.objects.select_related().all()
-    serializer_class = NetworkInstanceSerializer
-    id_serializer_class = NetworkInstanceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return NetworkInstance.select_by_user(self.request.user)
-
-
-class NetworkInstanceDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = NetworkInstance.objects.select_related().all()
-    serializer_class = NetworkInstanceSerializer
-    id_serializer_class = NetworkInstanceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return NetworkInstance.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
 class FlavorList(XOSListCreateAPIView):
     queryset = Flavor.objects.select_related().all()
     serializer_class = FlavorSerializer
@@ -3515,6 +3457,53 @@ class FlavorDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return Flavor.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
+class PortList(XOSListCreateAPIView):
+    queryset = Port.objects.select_related().all()
+    serializer_class = PortSerializer
+    id_serializer_class = PortIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id','mac',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return Port.select_by_user(self.request.user)
+
+
+class PortDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = Port.objects.select_related().all()
+    serializer_class = PortSerializer
+    id_serializer_class = PortIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return Port.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -3898,6 +3887,53 @@ class SubscriberDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
+class InstanceList(XOSListCreateAPIView):
+    queryset = Instance.objects.select_related().all()
+    serializer_class = InstanceSerializer
+    id_serializer_class = InstanceIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return Instance.select_by_user(self.request.user)
+
+
+class InstanceDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = Instance.objects.select_related().all()
+    serializer_class = InstanceSerializer
+    id_serializer_class = InstanceIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return Instance.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
 class ChargeList(XOSListCreateAPIView):
     queryset = Charge.objects.select_related().all()
     serializer_class = ChargeSerializer
@@ -4173,53 +4209,6 @@ class SliceCredentialDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return SliceCredential.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
-class InstanceList(XOSListCreateAPIView):
-    queryset = Instance.objects.select_related().all()
-    serializer_class = InstanceSerializer
-    id_serializer_class = InstanceIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','instance_id','instance_uuid','name','instance_name','ip','image','creator','slice','deployment','node','numberCores','flavor','userData','networks',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Instance.select_by_user(self.request.user)
-
-
-class InstanceDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = Instance.objects.select_related().all()
-    serializer_class = InstanceSerializer
-    id_serializer_class = InstanceIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Instance.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -4690,53 +4679,6 @@ class ControllerDetail(XOSRetrieveUpdateDestroyAPIView):
         if (not self.request.user.is_authenticated()):
             raise XOSNotAuthenticated()
         return Controller.select_by_user(self.request.user)
-
-    # update() is handled by XOSRetrieveUpdateDestroyAPIView
-
-    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
-
-
-
-class PortList(XOSListCreateAPIView):
-    queryset = Port.objects.select_related().all()
-    serializer_class = PortSerializer
-    id_serializer_class = PortIdSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','network','instance','ip','port_id',)
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Port.select_by_user(self.request.user)
-
-
-class PortDetail(XOSRetrieveUpdateDestroyAPIView):
-    queryset = Port.objects.select_related().all()
-    serializer_class = PortSerializer
-    id_serializer_class = PortIdSerializer
-
-    def get_serializer_class(self):
-        no_hyperlinks=False
-        if hasattr(self.request,"QUERY_PARAMS"):
-            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
-        if (no_hyperlinks):
-            return self.id_serializer_class
-        else:
-            return self.serializer_class
-
-    def get_queryset(self):
-        if (not self.request.user.is_authenticated()):
-            raise XOSNotAuthenticated()
-        return Port.select_by_user(self.request.user)
 
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
@@ -5449,6 +5391,53 @@ class SiteDeploymentDetail(XOSRetrieveUpdateDestroyAPIView):
 
 
 
+class TenantWithContainerList(XOSListCreateAPIView):
+    queryset = TenantWithContainer.objects.select_related().all()
+    serializer_class = TenantWithContainerSerializer
+    id_serializer_class = TenantWithContainerIdSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','kind','provider_service','subscriber_service','subscriber_tenant','subscriber_user','subscriber_root','service_specific_id','service_specific_attribute','connect_method',)
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return TenantWithContainer.select_by_user(self.request.user)
+
+
+class TenantWithContainerDetail(XOSRetrieveUpdateDestroyAPIView):
+    queryset = TenantWithContainer.objects.select_related().all()
+    serializer_class = TenantWithContainerSerializer
+    id_serializer_class = TenantWithContainerIdSerializer
+
+    def get_serializer_class(self):
+        no_hyperlinks=False
+        if hasattr(self.request,"QUERY_PARAMS"):
+            no_hyperlinks = self.request.QUERY_PARAMS.get('no_hyperlinks', False)
+        if (no_hyperlinks):
+            return self.id_serializer_class
+        else:
+            return self.serializer_class
+
+    def get_queryset(self):
+        if (not self.request.user.is_authenticated()):
+            raise XOSNotAuthenticated()
+        return TenantWithContainer.select_by_user(self.request.user)
+
+    # update() is handled by XOSRetrieveUpdateDestroyAPIView
+
+    # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
 class DeploymentRoleList(XOSListCreateAPIView):
     queryset = DeploymentRole.objects.select_related().all()
     serializer_class = DeploymentRoleSerializer
@@ -5822,3 +5811,6 @@ class ServicePrivilegeDetail(XOSRetrieveUpdateDestroyAPIView):
     # update() is handled by XOSRetrieveUpdateDestroyAPIView
 
     # destroy() is handled by XOSRetrieveUpdateDestroyAPIView
+
+
+
