@@ -73,6 +73,6 @@ http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=$FLATNE
 
 if [ "$CORD" -ne 0 ]
 then
-    DOCKER=$( docker ps|grep $IMAGE|awk '{print $NF}' )
-    docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml"
+    DOCKER=$( sudo docker ps|grep $IMAGE|awk '{print $NF}' )
+    sudo docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml"
 fi
