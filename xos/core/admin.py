@@ -1041,6 +1041,7 @@ class SliceAdmin(XOSBaseAdmin):
     normal_inlines = [SlicePrivilegeInline, InstanceInline, TagInline, ReservationInline, SliceNetworkInline]
     inlines = normal_inlines
     admin_inlines = [ControllerSliceInline]
+    suit_form_includes = (('slice_instance_tab.html', 'bottom', 'instances'),)
 
     user_readonly_fields = fieldList
 
@@ -1291,11 +1292,7 @@ class InstanceAdmin(XOSBaseAdmin):
             self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string', 'slice', 'flavor', 'image', 'node')
 
         for inline in self.get_inline_instances(request, obj):
-            # hide MyInline in the add view
-            if obj is None:
-                continue
-            if isinstance(inline, InstanceInline):
-                inline.model.caller = request.user
+            # dead code was eliminated here
             yield inline.get_formset(request, obj)
 
     #def save_model(self, request, obj, form, change):
