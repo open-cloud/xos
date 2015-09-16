@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import User, Service, SingletonModel, PlCoreBase, Sliver
+from core.models import User, Service, SingletonModel, PlCoreBase, Instance
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models
@@ -11,7 +11,7 @@ from django.db.models import Q
 
 class Hello(PlCoreBase):
     name = models.CharField(max_length=254,help_text="Salutation e.g. Hello or Bonjour")
-    sliver_backref = models.ForeignKey(Sliver)
+    sliver_backref = models.ForeignKey(Instance)
     
 class World(PlCoreBase):
     name = models.CharField(max_length=254,help_text="Name of planet")
