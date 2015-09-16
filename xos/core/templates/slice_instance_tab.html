@@ -1,4 +1,6 @@
-<a href="/admin/core/instance/add/?_to_field=id&slice=1" class="add-another" id="add_instance_advanced"
+{% if slice_id %}
+
+<a href="/admin/core/instance/add/?_to_field=id&slice={{ slice_id }}" class="add-another" id="add_instance_advanced"
 onclick="return showAddInstancePopup(this);">
 Add Instance using expert settings window
 </a>
@@ -35,3 +37,5 @@ function showAddInstancePopup(triggeringLink) {
 }
 
 </script>
+
+{% endif %}

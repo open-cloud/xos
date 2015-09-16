@@ -1120,6 +1120,12 @@ class SliceAdmin(XOSBaseAdmin):
                 inline.model.caller = request.user
             yield inline.get_formset(request, obj)
 
+    def add_extra_context(self, request, extra_context):
+        super(SliceAdmin, self).add_extra_context(request, extra_context)
+        # set context["slice_id"] to the PK passed in the URL to this view
+        if len(request.resolver_match.args)>0:
+            extra_context["slice_id"] = request.resolver_match.args[0]
+
     def UNUSED_get_inline_instances(self, request, obj=None):
         # HACK for CORD to do something special on vcpe slice page
         #    this was a good idea, but failed miserably, as something still
