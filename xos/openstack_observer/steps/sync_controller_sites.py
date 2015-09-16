@@ -16,8 +16,8 @@ class SyncControllerSites(OpenStackSyncStep):
     playbook = 'sync_controller_sites.yaml'
 
     def fetch_pending(self, deleted=False):
-        pending = super(OpenStackSyncStep, self).fetch_pending(deleted)
-        return pending.filter(controller__isnull=False)
+        lobjs = ControllerSite.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False),Q(controller__isnull=False))
+        return lobjs
 
     def map_sync_inputs(self, controller_site):
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
