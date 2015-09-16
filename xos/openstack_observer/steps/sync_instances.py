@@ -104,6 +104,7 @@ class SyncInstances(OpenStackSyncStep):
 
         availability_zone_filter = 'nova:%s'%host_filter
         instance_name = '%s-%d'%(instance.slice.name,instance.id)
+        self.instance_name = instance_name
 
         userData = self.get_userdata(instance, pubkeys)
         if instance.userData:
@@ -140,7 +141,7 @@ class SyncInstances(OpenStackSyncStep):
 
         instance.instance_id = instance_id
         instance.instance_uuid = instance_uuid
-        instance.instance_name = instance_name
+        instance.instance_name = self.instance_name
         instance.save()
 	
 	
