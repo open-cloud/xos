@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey
 
 # defaults
-apps = ["core", "hpc", "cord", "requestrouter", "helloworld"]
+apps = ["core", "hpc", "cord", "requestrouter"]
 output = "-json"
 
 # syntax: dmdot [-json | -dot] [app_name]
