@@ -72,10 +72,7 @@
     "Instance": [
         "Image", 
         "User", 
-        "Slice", 
-        "Deployment", 
-        "Node", 
-        "Flavor"
+        "Slice"
     ], 
     "Payment": [
         "Account"
