@@ -83,7 +83,7 @@ class SyncStep(object):
 	objs = []
 	for main_obj in main_objs:
 		if (not deletion):
-		    lobjs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False,Q(no_sync=False)))
+		    lobjs = main_obj.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False),Q(no_sync=False))
 		else:
 		    lobjs = main_obj.deleted_objects.all()
 	        objs.extend(lobjs)
