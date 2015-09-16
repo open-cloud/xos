@@ -38,6 +38,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
         cidr = self.alloc_subnet(controller_network.pk)
+        self.cidr=cidr
         slice = controller_network.network.owner
 
         network_fields = {'endpoint':controller_network.controller.auth_url,
@@ -56,7 +57,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_id = res[0]['id']
         subnet_id = res[1]['id']
         controller_network.net_id = network_id
-        controller_network.subnet = cidr
+        controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id
 	controller_network.backend_status = '1 - OK'
         controller_network.save()
