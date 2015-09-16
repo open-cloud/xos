@@ -20,6 +20,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
     requested_interval = 0
     provides=[Network]
     observes=ControllerNetwork	
+    playbook='sync_controller_networks.yaml'
 
     def alloc_subnet(self, uuid):
         # 16 bits only
@@ -37,6 +38,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
         cidr = self.alloc_subnet(controller_network.pk)
+        self.cidr=cidr
         slice = controller_network.network.owner
 
         network_fields = {'endpoint':controller_network.controller.auth_url,
@@ -49,46 +51,37 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'cidr':cidr,
                     'delete':False	
                     }
+        return network_fields
 
-        res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=2)
-
+    def map_sync_outputs(self, controller_network,res):
         network_id = res[0]['id']
         subnet_id = res[1]['id']
         controller_network.net_id = network_id
-        controller_network.subnet = cidr
+        controller_network.subnet = self.cidr
         controller_network.subnet_id = subnet_id
 	controller_network.backend_status = '1 - OK'
         controller_network.save()
 
 
-    def sync_record(self, controller_network):
+    def map_sync_inputs(self, controller_network):
         if (controller_network.network.template.name!='Private'):
             logger.info("skipping network controller %s because it is not private" % controller_network)
             # We only sync private networks
             return
         
-        logger.info("sync'ing network controller %s for network %s slice %s controller %s" % (controller_network, controller_network.network, str(controller_network.network.owner), controller_network.controller))
-
-	controller_register = json.loads(controller_network.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%controller_network.controller.name)
-
         if not controller_network.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)
             return
 
         if controller_network.network.owner and controller_network.network.owner.creator:
-	    self.save_controller_network(controller_network)
-	    logger.info("saved network controller: %s" % (controller_network))
+	    return self.save_controller_network(controller_network)
+        else:
+            raise Exception('Could not save network controller %s'%controller_network)
 
-    def delete_record(self, controller_network):
+    def map_delete_inputs(self, controller_network):
 	if (controller_network.network.template.name!='Private'):
             # We only sync private networks
             return
-	controller_register = json.loads(controller_network.controller.backend_register)
-        if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%controller_network.controller.name)
-
 	try:
         	slice = controller_network.network.owner # XXX: FIXME!!
         except:
@@ -108,7 +101,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
 		    'delete':True	
                     }
 
-        res = run_template('sync_controller_networks.yaml', network_fields, path = 'controller_networks',expected_num=1)
+        return network_fields
 
 	"""
         driver = OpenStackDriver().client_driver(caller=controller_network.network.owner.creator,
