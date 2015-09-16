@@ -3,8 +3,6 @@
   connection: local
   tasks:
   - nova_compute:
-    register: instance
-    ignore_errors: yes
       auth_url: {{ endpoint }}
       login_username: {{ admin_user }}
       login_password: {{ admin_password }}
@@ -34,5 +32,3 @@
       {% endfor %}
       {% endif %}
       {% endif %}
-  
-  - command: "dig +short -x {{ instance.info['OS-EXT-SRV-ATTR:hypervisor_hostname'] }}" 
