@@ -7,6 +7,8 @@ from observer.steps import *
 from django.db.models import F, Q
 from core.models import *
 from django.db import reset_queries
+from observer.ansible import *
+
 import json
 import time
 import pdb
@@ -114,8 +116,58 @@ class SyncStep(object):
                     obj.save(update_fields=['backend_status'])
                 raise FailedDependency("Failed dependency for %s:%s peer %s:%s failed  %s:%s" % (obj.__class__.__name__, str(getattr(obj,"pk","no_pk")), peer_object.__class__.__name__, str(getattr(peer_object,"pk","no_pk")), failed.__class__.__name__, str(getattr(failed,"pk","no_pk"))))
 
+
+    def sync_record(self, o):
+        try:
+            controller = o.get_controller()
+            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
+
+            if (controller_register.get('disabled',False)):
+                raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+        except AttributeError:
+            pass
+
+        tenant_fields = self.map_sync_inputs(o)
+        main_objs=self.observes
+        if (type(main_objs) is list):
+            main_objs=main_objs[0]
+
+        path = ''.join(main_objs.__name__).lower()
+        res = run_template(self.playbook,tenant_fields,path=path)
+
+        try:
+            self.map_sync_outputs(o,res)
+        except AttributeError:
+            pass
+         
+    def delete_record(self, o):
+        try:
+            controller = o.get_controller()
+            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
+
+            if (controller_register.get('disabled',False)):
+                raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+        except AttributeError:
+            pass
+
+        tenant_fields = self.map_delete_outputs(o)
+
+        main_objs=self.observes
+        if (type(main_objs) is list):
+            main_objs=main_objs[0]
+
+        path = ''.join(main_objs.__name__).lower()
+
+        tenant_fields['delete']=True
+        res = run_template(self.playbook,tenant_fields,path=path)
+        try:
+                self.map_delete_outputs(o,res)
+        except AttributeError:
+                pass
+
     def call(self, failed=[], deletion=False):
         pending = self.fetch_pending(deletion)
+
         for o in pending:
             # another spot to clean up debug state
             try:
@@ -213,12 +265,6 @@ class SyncStep(object):
                 failed.append(o)
 
         return failed
-
-    def sync_record(self, o):
-        return
-
-    def delete_record(self, o):
-        return
 
     def __call__(self, **args):
         return self.call(**args)

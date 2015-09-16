@@ -14,7 +14,7 @@ import json
 class SyncObject(OpenStackSyncStep):
     provides=[] # Caller fills this in
     requested_interval=0
-    observes=None # Caller fills this in
+    observes=[] # Caller fills this in
 
     def sync_record(self, r):
         raise Exception('Waiting for Service dependency')
