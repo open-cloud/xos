@@ -179,6 +179,8 @@ class XOSObserver:
 								except:
 									step_graph[source]=[dest]
 						except KeyError:
+							if (not provides_dict.has_key(m)):
+								step_graph[source]='#%s'%m	
 							pass
 					
 			except KeyError:
@@ -244,7 +246,17 @@ class XOSObserver:
 			for e in self.ordered_steps:
 				self.last_deletion_run_times[e]=0
 
-
+	def lookup_step(self,s):
+		if ('#' in s):
+			objname = s[1:]
+			so = SyncObject()
+			so.provides=[globals()[objname]]
+			so.observes=globals()[objname]
+			step = so
+		else:
+			step = self.step_lookup[s]
+		return step
+			
 	def save_run_times(self):
 		run_times = json.dumps(self.last_run_times)
 		open('/tmp/%sobserver_run_times'%self.observer_name,'w').write(run_times)
@@ -264,7 +276,7 @@ class XOSObserver:
 
 	def sync(self, S, deletion):
             try:
-		step = self.step_lookup[S]
+		step = self.lookup_step(S)
 		start_time=time.time()
 
                 logger.info("Starting to work on step %s, deletion=%s" % (step.__name__, str(deletion)))

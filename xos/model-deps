@@ -10,8 +10,7 @@
         "Deployment"
     ], 
     "ControllerImages": [
-        "Image", 
-        "Controller"
+        "Image"
     ], 
     "ReservedResource": [
         "Instance"
@@ -72,10 +71,7 @@
     "Instance": [
         "Image", 
         "User", 
-        "Slice", 
-        "Deployment", 
-        "Node", 
-        "Flavor"
+        "Slice"
     ], 
     "Payment": [
         "Account"
