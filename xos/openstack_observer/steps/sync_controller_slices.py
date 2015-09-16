@@ -16,6 +16,7 @@ class SyncControllerSlices(OpenStackSyncStep):
     provides=[Slice]
     requested_interval=0
     observes=ControllerSlice
+    playbook='sync_controller_slices.yaml'
 
     def map_sync_inputs(self, controller_slice):
         logger.info("sync'ing slice controller %s" % controller_slice)
