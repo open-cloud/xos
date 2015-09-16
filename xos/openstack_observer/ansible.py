@@ -45,6 +45,7 @@ def parse_output(msg):
 
 def parse_unreachable(msg):
     total_unreachable=0
+    total_failed=0
     for l in msg.splitlines():
         x = re.findall('ok=([0-9]+).*changed=([0-9]+).*unreachable=([0-9]+).*failed=([0-9]+)', l)
         if x:
@@ -55,7 +56,8 @@ def parse_unreachable(msg):
             failed=int(failed)
 
             total_unreachable += unreachable
-    return {'unreachable':unreachable,'failed':failed}
+            total_failed += failed
+    return {'unreachable':total_unreachable,'failed':total_failed}
 	
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
