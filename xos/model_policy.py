@@ -97,9 +97,14 @@ def noop(o,p):
         pass
 
 def run_policy():
-    from core.models import Instance,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
     while (True):
         start = time.time()
+        run_policy_once()
+        if (time.time()-start<1):
+            time.sleep(1)
+
+def run_policy_once():
+        from core.models import Instance,Slice,Controller,Network,User,SlicePrivilege,Site,SitePrivilege,Image,ControllerSlice,ControllerUser,ControllerSite
         models = [Instance,Slice, Controller, Network, User, SlicePrivilege, Site, SitePrivilege, Image, ControllerSlice, ControllerSite, ControllerUser]
         objects = []
         deleted_objects = []
@@ -132,6 +137,3 @@ def run_policy():
         except:
             # this shouldn't happen, but in case it does, catch it...
             logger.log_exc("exception in reset_queries")
-
-        if (time.time()-start<1):
-            time.sleep(1)
