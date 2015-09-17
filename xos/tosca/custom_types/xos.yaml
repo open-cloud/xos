@@ -201,6 +201,9 @@ node_types:
             service_specific_id:
                 type: string
                 required: false
+            vlan_id:
+                type: string
+                required: false
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root

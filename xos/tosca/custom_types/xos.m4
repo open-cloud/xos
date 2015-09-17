@@ -139,6 +139,9 @@ node_types:
         derived_from: tosca.nodes.Root
         properties:
             xos_base_tenant_props
+            vlan_id:
+                type: string
+                required: false
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
