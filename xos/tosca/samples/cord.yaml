@@ -125,6 +125,7 @@ topology_template:
         type: tosca.nodes.VOLTTenant
         properties:
             service_specific_id: 1234
+            vlan_id: 4321
         requirements:
             - provider_service:
                 node: service_volt
