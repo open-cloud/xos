@@ -7,10 +7,14 @@ class ObserverComputeTest(BaseObserverToscaTest):
     # hide_observer_output = False # uncomment to display lots of stuff to screen
 
     def cleanup(self):
+        # We don't want to leak resources, so we make sure to let the observer
+        # attempt to delete these objects.
         self.try_to_delete(Instance, purge=False, name="test_compute1")
         self.try_to_delete(Site, purge=False, name="testsite")
         self.run_observer()
-        self.try_to_delete(Site, purge=True, name="testsite")   # make it go away
+        # The site objects don't seem to go away nicely, they linger about and
+        # cause an IntegrityError due to a duplicate login_base
+        self.try_to_delete(Site, purge=True, name="testsite")
 
     def get_base_templates(self):
         return self.make_nodetemplate("testsite", "tosca.nodes.Site") + \
@@ -25,14 +29,14 @@ class ObserverComputeTest(BaseObserverToscaTest):
 
         self.run_model_policy()
 
-        # this should make the ports
+        # first observer pass should make any necessary networks or ports
         self.run_observer()
 
         # reset the exponential backoff
         instance = self.assert_obj(Instance, "test_compute1")
         instance.backend_register="{}"
 
-        # this should instantiate the instance
+        # second observer pass should instantiate the instance
         self.run_observer()
 
         instance = self.assert_obj(Instance, "test_compute1")
