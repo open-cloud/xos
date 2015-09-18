@@ -25,6 +25,11 @@ def isbool(v):
 def str2bool(v):
 	return v.lower() in ("true", "1")
 
+# allow the test framework to apply global overrides to the config framework
+override = {}
+def set_override(name, value):
+    override[name] = value
+
 class Config:
 
 	def __init__(self, config_file=None):
@@ -251,6 +256,8 @@ DO NOT EDIT. This file was automatically generated at
 		self.write(filename)
 
 	def __getattr__(self, attr):
+                if attr in override:
+                    return override[attr]
 		return getattr(self.config, attr)
 
 if __name__ == '__main__':
