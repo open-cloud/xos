@@ -68,7 +68,7 @@ def invert_graph(g):
 class XOSObserver:
 	sync_steps = []
 
-	
+
 	def __init__(self):
 		# The Condition object that gets signalled by Feefie events
 		self.step_lookup = {}
@@ -82,6 +82,10 @@ class XOSObserver:
 			self.driver = OpenStackDriver()
 		else:
 			self.driver = NoOpDriver()
+
+        def consolePrint(self, what):
+            if getattr(Config(), "observer_console_print", True):
+                print what
 
 	def wait_for_event(self, timeout):
 		self.event_cond.acquire()
@@ -115,7 +119,6 @@ class XOSObserver:
 					if inspect.isclass(c) and (issubclass(c, SyncStep) or issubclass(c,OpenStackSyncStep)) and hasattr(c,"provides") and (c not in self.sync_steps):
 						self.sync_steps.append(c)
 		logger.info('loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps]))
-		# print 'loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps])
 
 	def load_sync_steps(self):
 		dep_path = Config().observer_dependency_graph
@@ -192,14 +195,10 @@ class XOSObserver:
 		self.deletion_dependency_graph = invert_graph(step_graph)
 
 		pp = pprint.PrettyPrinter(indent=4)
-		pp.pprint(step_graph)
+                logger.info(pp.pformat(step_graph))
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
-		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncInstances']
-		#self.ordered_steps = ['SyncControllerSites','SyncRoles','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
-		#self.ordered_steps = ['SyncControllerNetworks']
-		#self.ordered_steps = ['SyncInstances','SyncNetworkInstances']
 
-		print "Order of steps=",self.ordered_steps
+		logger.info("Order of steps=%s" % self.ordered_steps)
 
 		self.load_run_times()
 		
@@ -319,7 +318,7 @@ class XOSObserver:
 			go = True
 
 		if (not go):
-                        print bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC
+                        self.consolePrint(bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC)
                         # SMBAKER: sync_step was not defined here, so I changed
                         #    this from 'sync_step' to 'step'. Verify.
 			self.failed_steps.append(step)
@@ -362,7 +361,7 @@ class XOSObserver:
 
 					logger.info('Executing step %s, deletion=%s' % (sync_step.__name__, deletion))
 
-					print bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC
+					self.consolePrint(bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC)
 					failed_objects = sync_step(failed=list(self.failed_step_objects), deletion=deletion)
 
 					self.check_duration(sync_step, duration)
@@ -371,11 +370,11 @@ class XOSObserver:
 						self.failed_step_objects.update(failed_objects)
 
                                         logger.info("Step %r succeeded" % sync_step.__name__)
-                                        print bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC
+                                        self.consolePrint(bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC)
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
 				except Exception,e:
-                        		print bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC
+                        		self.consolePrint(bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC)
 					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (sync_step.__name__, e))
 					logger.log_exc(e)
 					self.failed_steps.append(S)
