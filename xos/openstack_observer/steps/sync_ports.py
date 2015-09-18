@@ -115,7 +115,7 @@ class SyncPorts(OpenStackSyncStep):
                 network = None
                 for candidate_network in networks:
                     if (candidate_network.owner == instance.slice):
-                        print "found network", candidate_network
+                        logger.info("found network %s" % candidate_network)
                         network = candidate_network
 
                 if not network:
