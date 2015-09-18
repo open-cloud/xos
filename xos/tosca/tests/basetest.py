@@ -96,10 +96,13 @@ topology_template:
                 assert(False)
         return obj
 
-    def try_to_delete(self, cls, **kwargs):
-        objs = cls.objects.filter(**kwargs)
-        for obj in objs:
-            obj.delete(purge=True)
+    def try_to_delete(self, cls, purge=True, **kwargs):
+        for obj in cls.objects.filter(**kwargs):
+            obj.delete(purge=purge)
+
+        if purge:
+            for obj in cls.deleted_objects.filter(**kwargs):
+                obj.delete(purge=True)
 
     def execute(self, yml):
         u = User.objects.get(email=self.username)
