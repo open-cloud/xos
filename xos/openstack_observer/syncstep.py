@@ -150,7 +150,7 @@ class SyncStep(object):
         except AttributeError:
             pass
 
-        tenant_fields = self.map_delete_outputs(o)
+        tenant_fields = self.map_delete_inputs(o)
 
         main_objs=self.observes
         if (type(main_objs) is list):
