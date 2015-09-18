@@ -10,6 +10,7 @@ import re
 import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
+from util.logger import observer_logger
 
 try:
     step_dir = Config().observer_steps_dir
@@ -24,7 +25,8 @@ os_template_env = jinja2.Environment(loader=os_template_loader)
 def parse_output(msg):
     lines = msg.splitlines()
     results = []
-    print msg
+
+    observer_logger.info(msg)
 
     for l in lines:
         magic_str = 'ok: [127.0.0.1] => '
