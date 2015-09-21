@@ -35,6 +35,8 @@ class SyncControllerSlices(OpenStackSyncStep):
 
         max_instances=int(controller_slice.slice.max_instances)
         tenant_fields = {'endpoint':controller_slice.controller.auth_url,
+                         'endpoint_v3': controller_slice.controller.auth_url_v3,
+                         'domain': controller_slice.controller.domain,
                          'admin_user': controller_slice.controller.admin_user,
                          'admin_password': controller_slice.controller.admin_password,
                          'admin_tenant': 'admin',
