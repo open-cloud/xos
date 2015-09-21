@@ -265,6 +265,13 @@ class Controller(PlCoreBase):
 
     def __unicode__(self):  return u'%s %s %s' % (self.name, self.backend_type, self.version)
 
+    @property
+    def auth_url_v3(self):
+        if self.auth_url and self.auth_url[-1] == '/':
+            return '{}/v3/'.format('/'.join(self.auth_url.split('/')[:-2]))
+        else:
+            return '{}/v3/'.format('/'.join(self.auth_url.split('/')[:-1]))
+
     @staticmethod
     def select_by_user(user):
 

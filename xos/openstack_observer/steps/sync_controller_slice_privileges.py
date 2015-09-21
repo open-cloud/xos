@@ -39,13 +39,15 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
             #    tenant_id = ctrl_slice_deployments[0].tenant_id  
             #    tenant_name = ctrl_slice_deployments[0].slice_deployment.slice.login_base
             user_fields = {
-                       'endpoint':controller_slice_privilege.controller.auth_url,
+               'endpoint':controller_slice_privilege.controller.auth_url,
+               'endpoint_v3': controller_slice_privilege.controller.auth_url_v3,
+               'domain': controller_slice_privilege.controller.domain,
 		       'name': controller_slice_privilege.slice_privilege.user.email,
-                       'email': controller_slice_privilege.slice_privilege.user.email,
-                       'password': controller_slice_privilege.slice_privilege.user.remote_password,
-                       'admin_user': controller_slice_privilege.controller.admin_user,
+               'email': controller_slice_privilege.slice_privilege.user.email,
+               'password': controller_slice_privilege.slice_privilege.user.remote_password,
+               'admin_user': controller_slice_privilege.controller.admin_user,
 		       'admin_password': controller_slice_privilege.controller.admin_password,
-                       'ansible_tag':'%s@%s@%s'%(controller_slice_privilege.slice_privilege.user.email.replace('@','-at-'),controller_slice_privilege.slice_privilege.slice.name,controller_slice_privilege.controller.name),
+               'ansible_tag':'%s@%s@%s'%(controller_slice_privilege.slice_privilege.user.email.replace('@','-at-'),controller_slice_privilege.slice_privilege.slice.name,controller_slice_privilege.controller.name),
 		       'admin_tenant': controller_slice_privilege.controller.admin_tenant,
 		       'roles':roles,
 		       'tenant':controller_slice_privilege.slice_privilege.slice.name}    
