@@ -404,8 +404,9 @@ class TagInline(PlStackGenericTabularInline):
 
 class InstanceInline(XOSTabularInline):
     model = Instance
-    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node', 'no_sync']
+    fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
+    max_num = 0
     readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
     suit_classes = 'suit-tab suit-tab-instances'
 
@@ -557,7 +558,8 @@ class SiteDeploymentInline(XOSTabularInline):
             kwargs['queryset'] = Deployment.select_by_user(request.user)
 
         if db_field.name == 'controller':
-            kwargs['queryset'] = Controller.select_by_user(request.user).filter(deployment__id=int(resolve(request.path).args[0]))
+            if len(resolve(request.path).args) > 0:
+                kwargs['queryset'] = Controller.select_by_user(request.user).filter(deployment__id=int(resolve(request.path).args[0]))
 
         return super(SiteDeploymentInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 

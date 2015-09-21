@@ -2,7 +2,7 @@
 
 <a href="/admin/core/instance/add/?_to_field=id&slice={{ slice_id }}" class="add-another" id="add_instance_advanced"
 onclick="return showAddInstancePopup(this);">
-Add Instance using expert settings window
+Add Instance
 </a>
 <!-- div id="instance_advanced" style="display: node;" onchange="console.log('changed');" -->
 <input type="hidden" id="instance_advanced" name="instance_advanced" onchange="console.log('changed');" value="initial">
@@ -37,5 +37,9 @@ function showAddInstancePopup(triggeringLink) {
 }
 
 </script>
+
+{% else %}
+
+Please save this slice before adding Instances.
 
 {% endif %}
