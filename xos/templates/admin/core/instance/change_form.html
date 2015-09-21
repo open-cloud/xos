@@ -1,0 +1,114 @@
+{% extends 'admin/change_form.html' %}
+{% block extrahead %}
+{{ block.super }} 
+<script>
+deployment_nodes = [
+{% for dn in deployment_nodes %}
+   [{{ dn.0 }}, {{ dn.1 }} , "{{ dn.2 }}"],
+{% endfor %}
+];
+
+deployment_flavors = [
+{% for dn in deployment_flavors %}
+   [{{ dn.0 }}, {{ dn.1 }} , "{{ dn.2 }}"],
+{% endfor %}
+];
+
+deployment_images = [
+{% for dn in deployment_images %}
+   [{{ dn.0 }}, {{ dn.1 }} , "{{ dn.2 }}"],
+{% endfor %}
+];
+
+site_login_bases = [
+{% for s in site_login_bases %}
+  [{{ s.0 }}, "{{ s.1 }}"],
+{% endfor %}
+];
+
+function option_html(val, text, selected) {
+    if (selected) {
+        return '<option value="' + val + '" selected>' + text + '</option>\n';
+    } else {
+        return '<option value="' + val + '">' + text + '</option>\n';
+    }
+}
+
+function update_nodes(deployment_select, flavor_select, node_select) {
+    deployment_id = $(deployment_select).val();
+    node_id = $(node_select).val();
+    flavor_name = $(flavor_select).children(":selected").text()
+    html="";
+    for (i in deployment_nodes) {
+        // this is for EC2, where the node hostnames imply the flavor.
+        dn = deployment_nodes[i];
+        if ((dn[0] == deployment_id) && (dn[2].lastIndexOf(flavor_name,0) === 0)) {
+            html = html + option_html(dn[1], dn[2], dn[1]==node_id);
+        }
+    }
+    if (!html) {
+        // now try it without the flavor hostname prefix matching
+        for (i in deployment_nodes) {
+            dn = deployment_nodes[i];
+            if (dn[0] == deployment_id) {
+                html = html + option_html(dn[1], dn[2], dn[1]==node_id);
+            }
+        }
+    }
+    html = "<option value=''>---------</option>\n" + html;
+    node_select.empty().append(html);
+}
+
+function update_flavors(deployment_select, flavor_select) {
+    deployment_id = $(deployment_select).val();
+    flavor_id = $(flavor_select).val();
+    html = "<option value=''>---------</option>\n";
+    for (i in deployment_flavors) {
+        dn = deployment_flavors[i];
+        if (dn[0] == deployment_id) {
+            html = html + option_html(dn[1], dn[2], dn[1] == flavor_id);
+        }
+    }
+    flavor_select.empty().append(html);
+}
+
+function update_images(deployment_select, image_select) {
+    deployment_id = $(deployment_select).val();
+    image_id = $(image_select).val();
+    html = "<option value=''>---------</option>\n";
+    for (i in deployment_images) {
+        dn = deployment_images[i];
+        if (dn[0] == deployment_id) {
+            html = html + option_html(dn[1], dn[2], dn[1] == image_id);
+        }
+    }
+    image_select.empty().append(html);
+}
+
+function instance_deployment_changed(any_control) {
+   /* This function handles someone changing the deployment control
+      It updates the flavors and nodes dialogs
+      accordingly.
+   */
+
+    deployment_select = $("#id_deployment");
+    node_select = $("#id_node");
+    flavor_select = $("#id_flavor");
+    image_select = $("#id_image");
+
+    update_nodes(deployment_select, flavor_select, node_select);
+    update_flavors(deployment_select, flavor_select);
+    update_images(deployment_select, image_select);
+}
+
+function instance_flavor_changed(any_control) {
+    deployment_select = $("#id_deployment");
+    node_select = $("#id_node");
+    flavor_select = $("#id_flavor");
+    update_nodes(deployment_select, flavor_select, node_select);
+}
+
+</script>
+
+{% endblock %}
+

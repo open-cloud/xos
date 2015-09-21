@@ -1307,6 +1307,42 @@ class InstanceAdmin(XOSBaseAdmin):
             # dead code was eliminated here
             yield inline.get_formset(request, obj)
 
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        deployment_nodes = []
+        for node in Node.objects.all():
+            deployment_nodes.append( (node.site_deployment.deployment.id, node.id, node.name) )
+
+        deployment_flavors = []
+        for flavor in Flavor.objects.all():
+            for deployment in flavor.deployments.all():
+                deployment_flavors.append( (deployment.id, flavor.id, flavor.name) )
+
+        deployment_images = []
+        for image in Image.objects.all():
+            for deployment_image in image.imagedeployments.all():
+                deployment_images.append( (deployment_image.deployment.id, image.id, image.name) )
+
+        site_login_bases = []
+        for site in Site.objects.all():
+            site_login_bases.append((site.id, site.login_base))
+
+        context["deployment_nodes"] = deployment_nodes
+        context["deployment_flavors"] = deployment_flavors
+        context["deployment_images"] = deployment_images
+        context["site_login_bases"] = site_login_bases
+        return super(InstanceAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'deployment':
+           kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_deployment_changed(this);"})
+        if db_field.name == 'flavor':
+           kwargs['widget'] = forms.Select(attrs={'onChange': "instance_flavor_changed(this);"})
+
+        field = super(InstanceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return field
+
     #def save_model(self, request, obj, form, change):
     #    # update openstack connection to use this site/tenant
     #    auth = request.session.get('auth', {})
