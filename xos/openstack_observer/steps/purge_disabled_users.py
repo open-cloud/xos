@@ -20,5 +20,6 @@ class SyncRoles(OpenStackSyncStep):
             # disabled users that haven't been updated in over a week 
             one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
             return User.objects.filter(is_active=False, updated__gt=one_week_ago)             
+
     def sync_record(self, user):
         user.delete() 

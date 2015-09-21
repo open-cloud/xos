@@ -115,7 +115,7 @@ class SyncPorts(OpenStackSyncStep):
                 network = None
                 for candidate_network in networks:
                     if (candidate_network.owner == instance.slice):
-                        print "found network", candidate_network
+                        logger.info("found network %s" % candidate_network)
                         network = candidate_network
 
                 if not network:
@@ -178,10 +178,11 @@ class SyncPorts(OpenStackSyncStep):
                     client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
                     driver = OpenStackDriver(client=client)
 
-                    port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
-                    port.port_id = port["id"]
-                    if port["fixed_ips"]:
-                        port.ip = port["fixed_ips"][0]["ip_address"]
+                    neutron_port = driver.shell.quantum.create_port({"port": {"network_id": cn.net_id}})["port"]
+                    port.port_id = neutron_port["id"]
+                    if neutron_port["fixed_ips"]:
+                        port.ip = neutron_port["fixed_ips"][0]["ip_address"]
+                    port.mac = neutron_port["mac_address"]
                 except:
                     logger.log_exc("failed to create neutron port for %s" % port)
                     continue

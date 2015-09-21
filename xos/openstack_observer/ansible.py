@@ -10,6 +10,7 @@ import re
 import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
+from util.logger import observer_logger
 
 try:
     step_dir = Config().observer_steps_dir
@@ -24,7 +25,8 @@ os_template_env = jinja2.Environment(loader=os_template_loader)
 def parse_output(msg):
     lines = msg.splitlines()
     results = []
-    print msg
+
+    observer_logger.info(msg)
 
     for l in lines:
         magic_str = 'ok: [127.0.0.1] => '
@@ -45,6 +47,7 @@ def parse_output(msg):
 
 def parse_unreachable(msg):
     total_unreachable=0
+    total_failed=0
     for l in msg.splitlines():
         x = re.findall('ok=([0-9]+).*changed=([0-9]+).*unreachable=([0-9]+).*failed=([0-9]+)', l)
         if x:
@@ -55,8 +58,9 @@ def parse_unreachable(msg):
             failed=int(failed)
 
             total_unreachable += unreachable
-    return total_unreachable
-
+            total_failed += failed
+    return {'unreachable':total_unreachable,'failed':total_failed}
+	
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -118,7 +122,12 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
         if (expected_num is not None) and (len(ok_results) != expected_num):
             raise ValueError('Unexpected num %s!=%d' % (str(expected_num), len(ok_results)) )
 
-        total_unreachable = parse_unreachable(msg)
+        parsed = parse_unreachable(msg)
+        total_unreachable = parsed['unreachable']
+	failed = parsed['failed']
+	if (failed):
+		raise ValueError('Ansible playbook failed.')
+
         if (total_unreachable > 0):
             raise ValueError("Unreachable results in ansible recipe")
     except ValueError,e:
@@ -181,7 +190,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     print "ANSIBLE_CONFIG=%s" % config_pathname
     print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
-    return run_template(name, opts, path, expected_num, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
+    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
 
 
 

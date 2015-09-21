@@ -1,0 +1,19 @@
+{
+    "OriginServer": [
+        "ContentProvider"
+    ], 
+    "ContentProvider": [
+        "ServiceProvider"
+    ], 
+    "CDNPrefix": [
+        "ContentProvider"
+    ], 
+    "AccessMap": [
+        "ContentProvider"
+    ], 
+    "SiteMap": [
+        "ContentProvider", 
+        "ServiceProvider", 
+        "CDNPrefix"
+    ]
+}

@@ -71,7 +71,7 @@ def main():
 
     instance_id = instances[-1]["id"]
 
-    r = requests.get(NETWORKINSTANCES_API + "?instance=%s" % instance_id, auth=opencloud_auth)
+    r = requests.get(PORTS_API + "?instance=%s" % instance_id, auth=opencloud_auth)
     ports = r.json()
     ips = [x["ip"] for x in ports]
 

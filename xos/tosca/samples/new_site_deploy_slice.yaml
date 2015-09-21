@@ -40,7 +40,7 @@ topology_template:
                requirements:
                    - controller:
                        node: newcontroller
-                       relationship: tosca.relationship.UsesController
+                       relationship: tosca.relationships.UsesController
 
     newsite_tosca:
       type: tosca.nodes.Slice
