@@ -407,7 +407,7 @@ class InstanceInline(XOSTabularInline):
     fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     extra = 0
     max_num = 0
-    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name']
+    readonly_fields = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'deployment', 'flavor', 'image', 'node']
     suit_classes = 'suit-tab suit-tab-instances'
 
     def queryset(self, request):
@@ -415,7 +415,6 @@ class InstanceInline(XOSTabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'deployment':
-             
            kwargs['queryset'] = Deployment.select_by_acl(request.user).filter(sitedeployments__nodes__isnull=False).distinct()
            kwargs['widget'] = forms.Select(attrs={'onChange': "instance_deployment_changed(this);"})
         if db_field.name == 'flavor':
