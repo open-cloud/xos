@@ -1203,6 +1203,7 @@ class ImageAdmin(XOSBaseAdmin):
 
 class NodeForm(forms.ModelForm):
     class Meta:
+        model = Node
         widgets = {
             'site': LinkedSelect,
             'deployment': LinkedSelect
@@ -1215,7 +1216,7 @@ class NodeAdmin(XOSBaseAdmin):
     list_filter = ('site_deployment',)
 
     inlines = [TagInline,InstanceInline]
-    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name','site_deployment'], 'classes':['suit-tab suit-tab-details']})]
+    fieldsets = [('Node Details', {'fields': ['backend_status_text', 'name', 'site_deployment'], 'classes':['suit-tab suit-tab-details']})]
     readonly_fields = ('backend_status_text', )
 
     user_readonly_fields = ['name','site_deployment']
@@ -1226,6 +1227,10 @@ class NodeAdmin(XOSBaseAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             kwargs['queryset'] = Site.select_by_user(request.user).filter(hosts_nodes=True)
+
+        field = super(NodeAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return field
 
 class InstanceForm(forms.ModelForm):
     class Meta:
