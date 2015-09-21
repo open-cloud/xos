@@ -21,10 +21,12 @@ class SyncControllerSites(OpenStackSyncStep):
 
     def map_sync_inputs(self, controller_site):
 	tenant_fields = {'endpoint':controller_site.controller.auth_url,
+                 'endpoint_v3': controller_site.controller.auth_url_v3,
+                 'domain': controller_site.controller.domain,
 		         'admin_user': controller_site.controller.admin_user,
 		         'admin_password': controller_site.controller.admin_password,
 		         'admin_tenant': controller_site.controller.admin_tenant,
-	                 'ansible_tag': '%s@%s'%(controller_site.site.login_base,controller_site.controller.name), # name of ansible playbook
+	             'ansible_tag': '%s@%s'%(controller_site.site.login_base,controller_site.controller.name), # name of ansible playbook
 		         'tenant': controller_site.site.login_base,
 		         'tenant_description': controller_site.site.name}
         return tenant_fields
