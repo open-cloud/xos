@@ -2,11 +2,13 @@
 - hosts: 127.0.0.1
   connection: local
   tasks:
+  - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT={{admin_tenant}} DOMAIN={{domain}} openstack/get_token.sh
+    register: token
   {% if delete -%}
-  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} tenant={{ tenant }} tenant_description="{{ tenant_description }}" state=absent
+  - keystone_user: endpoint={{ endpoint }} token={{ token.stdout }}  tenant={{ tenant }} tenant_description="{{ tenant_description }}" state=absent
   {% else -%}	
-  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"
+  - keystone_user: endpoint={{ endpoint }} token={{ token.stdout }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"
   {% for role in roles %}
-  - keystone_user: endpoint={{ endpoint}} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
+  - keystone_user: endpoint={{ endpoint}} token={{ token.stdout }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
   {% endfor %}
   {% endif %} 

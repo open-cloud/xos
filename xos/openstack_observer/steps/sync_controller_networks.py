@@ -42,9 +42,11 @@ class SyncControllerNetworks(OpenStackSyncStep):
         slice = controller_network.network.owner
 
         network_fields = {'endpoint':controller_network.controller.auth_url,
+                    'endpoint_v3': controller_network.controller.auth_url_v3,
                     'admin_user':slice.creator.email,
                     'tenant_name':slice.name,
                     'admin_password':slice.creator.remote_password,
+                    'domain': congroller_network.controller.domain,
                     'name':network_name,
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
