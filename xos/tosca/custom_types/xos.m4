@@ -139,6 +139,9 @@ node_types:
         derived_from: tosca.nodes.Root
         properties:
             xos_base_tenant_props
+            vlan_id:
+                type: string
+                required: false
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
@@ -377,6 +380,12 @@ node_types:
             slice:
                 type: tosca.capabilities.xos.Slice
 
+    tosca.nodes.Node:
+        derived_from: tosca.nodes.Root
+        capability:
+            node:
+                type: tosca.capabilities.xos.Node
+
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Slice ]
@@ -388,6 +397,10 @@ node_types:
     tosca.relationships.MemberOfSite:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Site ]
+
+    tosca.relationships.MemberOfDeployment:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Deployment ]
 
     tosca.relationships.TenantOfService:
         derived_from: tosca.relationships.Root
@@ -477,4 +490,8 @@ node_types:
     tosca.capabilities.xos.Subscriber:
         derived_from: tosca.capabilities.Root
         description: An XOS Subscriber
+
+    tosca.capabilities.xos.Node:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Node
 

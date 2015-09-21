@@ -591,7 +591,7 @@ if (! window.XOSLIB_LOADED ) {
                             modelName: "port",
                             foreignFields: {"network": "networks", "instance": "instances"},
                             listFields: ["backend_status", "id", "network", "instance", "ip", "port_id"],
-                            detailFields: ["backend_status", "backend_register", "network", "instance", "ip", "port_id"],
+                            detailFields: ["backend_status", "backend_register", "network", "instance", "ip", "mac", "port_id"],
                             });
 
         define_model(this, {urlRoot: SERVICE_API,

@@ -68,7 +68,7 @@ def invert_graph(g):
 class XOSObserver:
 	sync_steps = []
 
-	
+
 	def __init__(self):
 		# The Condition object that gets signalled by Feefie events
 		self.step_lookup = {}
@@ -82,6 +82,10 @@ class XOSObserver:
 			self.driver = OpenStackDriver()
 		else:
 			self.driver = NoOpDriver()
+
+        def consolePrint(self, what):
+            if getattr(Config(), "observer_console_print", True):
+                print what
 
 	def wait_for_event(self, timeout):
 		self.event_cond.acquire()
@@ -115,7 +119,6 @@ class XOSObserver:
 					if inspect.isclass(c) and (issubclass(c, SyncStep) or issubclass(c,OpenStackSyncStep)) and hasattr(c,"provides") and (c not in self.sync_steps):
 						self.sync_steps.append(c)
 		logger.info('loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps]))
-		# print 'loaded sync steps: %s' % ",".join([x.__name__ for x in self.sync_steps])
 
 	def load_sync_steps(self):
 		dep_path = Config().observer_dependency_graph
@@ -179,6 +182,8 @@ class XOSObserver:
 								except:
 									step_graph[source]=[dest]
 						except KeyError:
+							if (not provides_dict.has_key(m)):
+								step_graph[source]='#%s'%m	
 							pass
 					
 			except KeyError:
@@ -190,14 +195,10 @@ class XOSObserver:
 		self.deletion_dependency_graph = invert_graph(step_graph)
 
 		pp = pprint.PrettyPrinter(indent=4)
-		pp.pprint(step_graph)
+                logger.info(pp.pformat(step_graph))
 		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
-		#self.ordered_steps = ['SyncRoles', 'SyncControllerSites', 'SyncControllerSitePrivileges','SyncImages', 'SyncControllerImages','SyncControllerUsers','SyncControllerUserSitePrivileges','SyncControllerSlices', 'SyncControllerSlicePrivileges', 'SyncControllerUserSlicePrivileges', 'SyncControllerNetworks','SyncInstances']
-		#self.ordered_steps = ['SyncControllerSites','SyncRoles','SyncControllerUsers','SyncControllerSlices','SyncControllerNetworks']
-		#self.ordered_steps = ['SyncControllerNetworks']
-		#self.ordered_steps = ['SyncInstances','SyncNetworkInstances']
 
-		print "Order of steps=",self.ordered_steps
+		logger.info("Order of steps=%s" % self.ordered_steps)
 
 		self.load_run_times()
 		
@@ -244,7 +245,17 @@ class XOSObserver:
 			for e in self.ordered_steps:
 				self.last_deletion_run_times[e]=0
 
-
+	def lookup_step(self,s):
+		if ('#' in s):
+			objname = s[1:]
+			so = SyncObject()
+			so.provides=[globals()[objname]]
+			so.observes=globals()[objname]
+			step = so
+		else:
+			step = self.step_lookup[s]
+		return step
+			
 	def save_run_times(self):
 		run_times = json.dumps(self.last_run_times)
 		open('/tmp/%sobserver_run_times'%self.observer_name,'w').write(run_times)
@@ -264,7 +275,7 @@ class XOSObserver:
 
 	def sync(self, S, deletion):
             try:
-		step = self.step_lookup[S]
+		step = self.lookup_step(S)
 		start_time=time.time()
 
                 logger.info("Starting to work on step %s, deletion=%s" % (step.__name__, str(deletion)))
@@ -307,7 +318,7 @@ class XOSObserver:
 			go = True
 
 		if (not go):
-                        print bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC
+                        self.consolePrint(bcolors.FAIL + "Step %r skipped on %r" % (step,failed_dep) + bcolors.ENDC)
                         # SMBAKER: sync_step was not defined here, so I changed
                         #    this from 'sync_step' to 'step'. Verify.
 			self.failed_steps.append(step)
@@ -350,7 +361,7 @@ class XOSObserver:
 
 					logger.info('Executing step %s, deletion=%s' % (sync_step.__name__, deletion))
 
-					print bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC
+					self.consolePrint(bcolors.OKBLUE + "Executing step %s" % sync_step.__name__ + bcolors.ENDC)
 					failed_objects = sync_step(failed=list(self.failed_step_objects), deletion=deletion)
 
 					self.check_duration(sync_step, duration)
@@ -359,11 +370,11 @@ class XOSObserver:
 						self.failed_step_objects.update(failed_objects)
 
                                         logger.info("Step %r succeeded" % sync_step.__name__)
-                                        print bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC
+                                        self.consolePrint(bcolors.OKGREEN + "Step %r succeeded" % sync_step.__name__ + bcolors.ENDC)
 					my_status = STEP_STATUS_OK
 					self.update_run_time(sync_step,deletion)
 				except Exception,e:
-                        		print bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC
+                        		self.consolePrint(bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC)
 					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (sync_step.__name__, e))
 					logger.log_exc(e)
 					self.failed_steps.append(S)
@@ -398,72 +409,74 @@ class XOSObserver:
 			return
 
 		while True:
-			try:
-				loop_start = time.time()
-				error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
-				self.error_mapper = ErrorMapper(error_map_file)
+                    logger.info('Waiting for event')
+                    self.wait_for_event(timeout=5)
+                    logger.info('Observer woke up')
 
-				logger.info('Waiting for event')
-				tBeforeWait = time.time()
-				self.wait_for_event(timeout=5)
-				logger.info('Observer woke up')
+                    self.run_once()
 
-				# Two passes. One for sync, the other for deletion.
-				for deletion in [False,True]:
-					# Set of individual objects within steps that failed
-					self.failed_step_objects = set()
+        def run_once(self):
+                try:
+                        loop_start = time.time()
+                        error_map_file = getattr(Config(), "error_map_path", XOS_DIR + "/error_map.txt")
+                        self.error_mapper = ErrorMapper(error_map_file)
 
-					# Set up conditions and step status
-					# This is needed for steps to run in parallel
-					# while obeying dependencies.
+                        # Two passes. One for sync, the other for deletion.
+                        for deletion in [False,True]:
+                                # Set of individual objects within steps that failed
+                                self.failed_step_objects = set()
 
-					providers = set()
-					dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
+                                # Set up conditions and step status
+                                # This is needed for steps to run in parallel
+                                # while obeying dependencies.
 
-					for v in dependency_graph.values():
-						if (v):
-							providers.update(v)
+                                providers = set()
+                                dependency_graph = self.dependency_graph if not deletion else self.deletion_dependency_graph
 
-					self.step_conditions = {}
-					self.step_status = {}
+                                for v in dependency_graph.values():
+                                        if (v):
+                                                providers.update(v)
 
-					for p in list(providers):
-						self.step_conditions[p] = threading.Condition()
+                                self.step_conditions = {}
+                                self.step_status = {}
 
-						self.step_status[p] = STEP_STATUS_WORKING
+                                for p in list(providers):
+                                        self.step_conditions[p] = threading.Condition()
 
-					self.failed_steps = []
+                                        self.step_status[p] = STEP_STATUS_WORKING
 
-					threads = []
-					logger.info('Deletion=%r...'%deletion)
-					schedule = self.ordered_steps if not deletion else reversed(self.ordered_steps)
+                                self.failed_steps = []
 
-					for S in schedule:
-						thread = threading.Thread(target=self.sync, args=(S, deletion))
+                                threads = []
+                                logger.info('Deletion=%r...'%deletion)
+                                schedule = self.ordered_steps if not deletion else reversed(self.ordered_steps)
 
-						logger.info('Deletion=%r...'%deletion)
-						threads.append(thread)
+                                for S in schedule:
+                                        thread = threading.Thread(target=self.sync, args=(S, deletion))
 
-					# Start threads 
-					for t in threads:
-						t.start()
+                                        logger.info('Deletion=%r...'%deletion)
+                                        threads.append(thread)
 
-                                        # another spot to clean up debug state
-                                        try:
-                                            reset_queries()
-                                        except:
-                                            # this shouldn't happen, but in case it does, catch it...
-                                            logger.log_exc("exception in reset_queries")
+                                # Start threads
+                                for t in threads:
+                                        t.start()
 
-					# Wait for all threads to finish before continuing with the run loop
-					for t in threads:
-						t.join()
+                                # another spot to clean up debug state
+                                try:
+                                    reset_queries()
+                                except:
+                                    # this shouldn't happen, but in case it does, catch it...
+                                    logger.log_exc("exception in reset_queries")
 
-				self.save_run_times()
+                                # Wait for all threads to finish before continuing with the run loop
+                                for t in threads:
+                                        t.join()
 
-				loop_end = time.time()
-				open('/tmp/%sobserver_last_run'%self.observer_name,'w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
-			except Exception, e:
-				logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
-				logger.log_exc("Exception in observer run loop")
-				traceback.print_exc()
+                        self.save_run_times()
+
+                        loop_end = time.time()
+                        open('/tmp/%sobserver_last_run'%self.observer_name,'w').write(json.dumps({'last_run': loop_end, 'last_duration':loop_end - loop_start}))
+                except Exception, e:
+                        logger.error('Core error. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % e)
+                        logger.log_exc("Exception in observer run loop")
+                        traceback.print_exc()

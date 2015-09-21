@@ -46,7 +46,7 @@ class XOSSite(XOSResource):
                     controller_name = None
                     for sd_req in v["requirements"]:
                         for (sd_req_k, sd_req_v) in sd_req.items():
-                            if sd_req_v["relationship"] == "tosca.relationship.UsesController":
+                            if sd_req_v["relationship"] == "tosca.relationships.UsesController":
                                 controller_name = sd_req_v["node"]
                     if not controller_name:
                         raise Exception("Controller must be specified in SiteDeployment relationship")

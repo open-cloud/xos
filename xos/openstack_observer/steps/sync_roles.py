@@ -11,27 +11,7 @@ from util.logger import observer_logger as logger
 class SyncRoles(OpenStackSyncStep):
     provides=[Role]
     requested_interval=0
-    observes=Role
-
-    def fetch_pending(self, deleted):
-        # Deleting roles is not supported yet
-        if (deleted):
-            return []
-
-        site_roles = SiteRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-        slice_roles = SliceRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-        controller_roles = ControllerRole.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
-
-        roles = []
-        for site_role in site_roles:
-            roles.append(site_role)
-        for slice_role in slice_roles:
-            roles.append(slice_role)
-        for controller_role in controller_roles:
-            roles.append(controller_role)
-
-        return roles
-
+    observes=[SiteRole,SliceRole,ControllerRole]
 
     def sync_record(self, role):
         if not role.enacted:
