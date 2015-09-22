@@ -1265,7 +1265,7 @@ class InstancePortInline(XOSTabularInline):
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'flavor', 'image', 'ssh_command', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'flavor', 'image', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
@@ -1295,17 +1295,14 @@ class InstanceAdmin(XOSBaseAdmin):
         # the slices they belong to.
         return Instance.select_by_user(request.user)
 
+    def add_view(self, request, form_url='', extra_context = None):
+        self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
+        return super(InstanceAdmin,self).add_view(request, form_url, extra_context)
 
-    def get_formsets(self, request, obj=None):
-        # make some fields read only if we are updating an existing record
-        if obj == None:
-            self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
-        else:
-            self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string', 'slice', 'flavor', 'image', 'node')
-
-        for inline in self.get_inline_instances(request, obj):
-            # dead code was eliminated here
-            yield inline.get_formset(request, obj)
+    def change_view(self, request, object_id, extra_context=None):
+        self.readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string', 'deployment', 'slice', 'flavor', 'image', 'node')
+        self.readonly_save = self.readonly_fields # for XOSAdminMixin.change_view's user_readonly_fields switching code
+        return super(InstanceAdmin,self).change_view(request, object_id, extra_context)
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         deployment_nodes = []
