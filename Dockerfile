@@ -9,22 +9,26 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 # XXX End workaround
 
 # Install.
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-psycopg2
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y graphviz graphviz-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxslt1.1 libxslt1-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tar
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y gcc
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-httplib2
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y geoip-database libgeoip1
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libyaml-dev
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-pycurl
+RUN apt-get update && apt-get install -y \
+    git \
+    postgresql \
+    python-psycopg2 \
+    graphviz \
+    graphviz-dev \
+    libxslt1.1 \
+    libxslt1-dev \
+    python-pip \
+    tar \
+    gcc \
+    python-httplib2 \
+    geoip-database \
+    libgeoip1 \
+    wget \ 
+    curl \ 
+    python-dev \
+    libyaml-dev \ 
+    pkg-config \ 
+    python-pycurl 
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
