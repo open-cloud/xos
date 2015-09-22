@@ -2,7 +2,7 @@
 - hosts: 127.0.0.1
   connection: local 
   tasks:
-  - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT=admin DOMAIN={{domain}} openstack/get_token.sh
+  - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT=admin DOMAIN={{domain}} /opt/xos/openstack/get_token.sh
     register: token
 
   - glance_image:
