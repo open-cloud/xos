@@ -379,6 +379,19 @@ node_types:
         capability:
             slice:
                 type: tosca.capabilities.xos.Slice
+        properties:
+            enabled:
+                type: boolean
+                default: true
+            description:
+                type: string
+                required: false
+            slice_url:
+                type: string
+                required: false
+            max_instances:
+                type: integer
+                default: 10
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root

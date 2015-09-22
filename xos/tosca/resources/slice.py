@@ -12,9 +12,10 @@ from xosresource import XOSResource
 class XOSSlice(XOSResource):
     provides = "tosca.nodes.Slice"
     xos_model = Slice
+    copyin_props = ["enabled", "description", "slice_url", "max_instances"]
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name}
+        args = super(XOSSlice, self).get_xos_args()
 
         site_name = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=True)
         site = self.get_xos_object(Site, login_base=site_name)

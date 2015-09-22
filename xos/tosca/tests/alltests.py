@@ -7,6 +7,7 @@ from computetest import ComputeTest
 from sitetest import SiteTest
 from deploymenttest import DeploymentTest
 from nodetest import NodeTest
+from slicetest import SliceTest
 
 if __name__ == "__main__":
     SiteTest()
@@ -17,4 +18,5 @@ if __name__ == "__main__":
     CoarseTenancyTest()
     ServiceTest()
     UserTest()
+    SliceTest()
     ComputeTest()
