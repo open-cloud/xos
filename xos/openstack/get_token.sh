@@ -1,4 +1,4 @@
-curl --insecure -X POST $ENDPOINT/auth/tokens \
+curl --insecure -i -X POST $ENDPOINT/auth/tokens \
   -H "Content-type: application/json" \
   -d '
 { "auth": {
