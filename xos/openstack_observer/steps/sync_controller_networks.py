@@ -46,7 +46,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'admin_user':slice.creator.email,
                     'tenant_name':slice.name,
                     'admin_password':slice.creator.remote_password,
-                    'domain': congroller_network.controller.domain,
+                    'domain': controller_network.controller.domain,
                     'name':network_name,
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
