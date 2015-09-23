@@ -15,9 +15,10 @@ from xosresource import XOSResource
 class XOSDeployment(XOSResource):
     provides = "tosca.nodes.Deployment"
     xos_model = Deployment
+    copyin_props = ["accessControl"]
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name}
+        args = super(XOSDeployment, self).get_xos_args()
 
         return args
 

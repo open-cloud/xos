@@ -380,6 +380,10 @@ node_types:
         capabilities:
             deployment:
                 type: tosca.capabilities.xos.Deployment
+        properties:
+            accessControl:
+                type: string
+                default: allow all
 
     tosca.nodes.Controller:
         derived_from: tosca.nodes.Root
