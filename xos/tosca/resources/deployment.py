@@ -8,7 +8,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import User,Deployment
+from core.models import User,Deployment,Image,ImageDeployments,Flavor
 
 from xosresource import XOSResource
 
@@ -22,14 +22,30 @@ class XOSDeployment(XOSResource):
 
         return args
 
-    def create(self):
-        xos_args = self.get_xos_args()
+    def postprocess(self, obj):
+        for imageName in self.get_requirements("tosca.relationships.SupportsImage"):
+            image = self.get_xos_object(Image, name=imageName)
+            imageDeps = ImageDeployments.objects.filter(deployment=obj, image=image)
+            if not imageDeps:
+                self.info("Attached Image %s to Deployment %s" % (image, obj))
+                imageDep = ImageDeployments(deployment=obj, image=image)
+                imageDep.save()
 
-        slice = Deployment(**xos_args)
-        slice.caller = self.user
-        slice.save()
+        # Be a little more lightweight with 'flavors'. Since we install flavors
+        # as a fixture rather than using TOSCA, we can just let the user
+        # use a comma-separated list.
 
-        self.info("Created Deployment '%s'" % (str(slice), ))
+        flavors = self.get_property("flavors")
+        if flavors:
+            flavors = flavors.split(",")
+            flavors = [x.strip() for x in flavors]
+
+            for flavor in flavors:
+                flavor = self.get_xos_object(Flavor, name=flavor)
+                if not flavor.deployments.filter(id=obj.id).exists():
+                    self.info("Attached flavor %s to deployment %s" % (flavor, obj))
+                    flavor.deployments.add(obj)
+                    flavor.save()
 
     def delete(self, obj):
         if obj.sites.exists():
