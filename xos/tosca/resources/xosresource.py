@@ -85,6 +85,16 @@ class XOSResource(object):
     def can_delete(self, obj):
         return True
 
+    def postprocess_privileges(self, roleclass, privclass, rolemap):
+        for (rel, role) in rolemap:
+            for email in self.get_requirements(rel):
+                role = self.get_xos_object(roleclass, role=role)
+                user = self.get_xos_object(User, email=email)
+                if not privclass.objects.filter(user=user, role=role, slice=obj):
+                    sp = privclass(user=user, role=role, slice=obj)
+                    sp.save()
+                    self.info("Added privilege on %s role %s for %s" % (str(obj), str(role), str(user)))
+
     def postprocess(self, obj):
         pass
 
