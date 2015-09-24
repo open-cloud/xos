@@ -8,7 +8,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import User,Deployment,Image,ImageDeployments,Flavor
+from core.models import User,Deployment,DeploymentRole,DeploymentPrivilege,Image,ImageDeployments,Flavor
 
 from xosresource import XOSResource
 
@@ -46,6 +46,9 @@ class XOSDeployment(XOSResource):
                     self.info("Attached flavor %s to deployment %s" % (flavor, obj))
                     flavor.deployments.add(obj)
                     flavor.save()
+
+        rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), )
+        self.postprocess_privileges(DeploymentRole, DeploymentPrivilege, rolemap, obj, "deployment")
 
     def delete(self, obj):
         if obj.sites.exists():
