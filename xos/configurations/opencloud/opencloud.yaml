@@ -1,0 +1,41 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: >
+    * Adds OpenCloud Sites, Deployments, and Controllers.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    ViCCI:
+      type: tosca.nodes.Deployment
+
+    princeton-vicci:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: ViCCI
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+           backend_type: OpenStack
+           version: Icehouse
+           auth_url: https://192.168.2.14:5000/v2.0
+           admin_user: admin
+           # admin_password: ...    (intentionally left out. administrator manually configure?)
+           admin_tenant: admin
+
+    vicci-pu:                            # this is Site.login_base
+      type: tosca.nodes.Site
+      properties:
+          display_name: US-Princeton     # this is Site.name
+          site_url: http://newsite.org/
+      requirements:
+          - deployment:
+               node: ViCCI
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: princeton-vicci
+                       relationship: tosca.relationships.UsesController
+
