@@ -1,13 +1,13 @@
 ---
 - hosts: 127.0.0.1
-  connection: local 
+  connection: local
   tasks:
   - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT={{tenant_name}} DOMAIN={{domain}} /opt/xos/openstack/get_token.sh
     register: token
 
   - quantum_network:
         auth_url={{ endpoint }}
-        token={{ token.stdout }} 
+        token={{ '{{' }} token.stdout {{ '}}' }}
         tenant_name={{ tenant_name }}
         name={{ name }}
         {% if delete %}
@@ -19,15 +19,15 @@
   {% if not delete %}
   - quantum_subnet:
         auth_url={{ endpoint }}
-        token={{ token.stdout }} 
+        token={{ '{{' }} token.stdout {{ '}}' }}
         tenant_name={{ tenant_name }}
-        name={{ subnet_name }} 
-        network_name={{ name }} 
+        name={{ subnet_name }}
+        network_name={{ name }}
         {% if delete %}
         state=absent
         {% else %}
-        state=present 
-        no_gateway=true 
+        state=present
+        no_gateway=true
         dns_nameservers=8.8.8.8
         cidr={{ cidr }}
         {% endif %}
