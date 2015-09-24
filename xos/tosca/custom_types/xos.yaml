@@ -384,6 +384,25 @@ node_types:
             accessControl:
                 type: string
                 default: allow all
+            flavors:
+                type: string
+                required: false
+
+    tosca.nodes.Image:
+        derived_from: tosca.nodes.Root
+        capabilities:
+            image:
+                type: tosca.capabilities.xos.Image
+        properties:
+            disk_format:
+                type: string
+                required: false
+            container_format:
+                type: string
+                required: false
+            path:
+                type: string
+                required: false
 
     tosca.nodes.Controller:
         derived_from: tosca.nodes.Root
@@ -501,6 +520,10 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Network ]
 
+    tosca.relationships.SupportsImage:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Image ]
+
     tosca.relationships.ConnectsToSlice:
         derived_from: tosca.relationships.Root
 
@@ -573,4 +596,8 @@ node_types:
     tosca.capabilities.xos.Node:
         derived_from: tosca.capabilities.Root
         description: An XOS Node
+
+    tosca.capabilities.xos.Image:
+        derived_from: tosca.capabilities.Root
+        description: An XOS Image
 
