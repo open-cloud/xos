@@ -1,6 +1,6 @@
 from basetest import BaseToscaTest
 
-from core.models import Deployment, Image
+from core.models import Deployment, Image, User, DeploymentPrivilege
 
 class DeploymentTest(BaseToscaTest):
     tests = ["create_deployment_minimal",
@@ -9,6 +9,7 @@ class DeploymentTest(BaseToscaTest):
              "create_deployment_two_flavors",
              "create_deployment_one_image",
              "create_deployment_two_images",
+             "create_deployment_privilege",
              "destroy_deployment",
                            ]
 
@@ -16,6 +17,7 @@ class DeploymentTest(BaseToscaTest):
         self.try_to_delete(Deployment, name="testdep")
         self.try_to_delete(Image, name="testimg1")
         self.try_to_delete(Image, name="testimg2")
+        self.try_to_delete(User, email="test@user.com")
 
     def create_deployment_minimal(self):
         self.assert_noobj(Deployment, "testdep")
@@ -72,6 +74,18 @@ class DeploymentTest(BaseToscaTest):
         dep = self.assert_obj(Deployment, "testdep",
                                    accessControl="allow all")
         assert( sorted([f.name for f in dep.images.all()]) == ["testimg1", "testimg2"] )
+
+    def create_deployment_privilege(self):
+        self.assert_noobj(Deployment, "testdep")
+        self.execute(self.make_nodetemplate("testsite", "tosca.nodes.Site") +
+                     self.make_user_template() +
+                     self.make_nodetemplate("testdep", "tosca.nodes.Deployment",
+                                            reqs=[("test@user.com", "tosca.relationships.AdminPrivilege")]))
+        dep = self.assert_obj(Deployment, "testdep")
+        user = User.objects.get(email="test@user.com")
+
+        dps = DeploymentPrivilege.objects.filter(user=user, deployment=dep)
+        assert(len(dps) == 1)
 
     def destroy_deployment(self):
         self.assert_noobj(Deployment, "testdep")

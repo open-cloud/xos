@@ -80,6 +80,11 @@ topology_template:
                                       props = props,
                                       reqs= reqs)
 
+    def make_user_template(self):
+        return self.make_nodetemplate("test@user.com", "tosca.nodes.User",
+             props = {"firstname": "test", "lastname": "user", "password": "letmein"},
+             reqs = [("testsite", "tosca.relationships.MemberOfSite")])
+
     def make_random_string(self,desired_len):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(desired_len))
 
