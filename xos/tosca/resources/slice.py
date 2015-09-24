@@ -38,7 +38,7 @@ class XOSSlice(XOSResource):
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
                     ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
-        self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap)
+        self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap, obj, "slice")
 
     def create(self):
         nodetemplate = self.nodetemplate
