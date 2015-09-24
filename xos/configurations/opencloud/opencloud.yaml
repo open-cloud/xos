@@ -8,8 +8,20 @@ imports:
 
 topology_template:
   node_templates:
+    Ubuntu 14.04 LTS:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: raw
+         container_format: bare
+
     ViCCI:
       type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: Ubuntu 14.04 LTS
+              relationship: tosca.relationships.SupportsImage
 
     princeton-vicci:
       type: tosca.nodes.Controller
@@ -29,7 +41,7 @@ topology_template:
       type: tosca.nodes.Site
       properties:
           display_name: US-Princeton     # this is Site.name
-          site_url: http://newsite.org/
+          site_url: http://cs.princeton.edu/
       requirements:
           - deployment:
                node: ViCCI
