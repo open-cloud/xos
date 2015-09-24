@@ -9,6 +9,7 @@ from deploymenttest import DeploymentTest
 from nodetest import NodeTest
 from slicetest import SliceTest
 from controllertest import ControllerTest
+from imagetest import ImageTest
 
 if __name__ == "__main__":
     SiteTest()
@@ -22,3 +23,4 @@ if __name__ == "__main__":
     UserTest()
     SliceTest()
     ComputeTest()
+    ImageTest()
