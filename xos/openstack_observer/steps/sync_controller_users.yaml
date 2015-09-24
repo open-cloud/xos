@@ -5,13 +5,13 @@
   - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT={{admin_tenant}} DOMAIN={{domain}} /opt/xos/openstack/get_token.sh
     register: token
 
-  - keystone_user: 
-       endpoint= {{ endpoint }} 
-       token= {{ token.stdout }}
-       user="{{ name }}" 
-       email={{ email }} 
-       password={{ password }} 
+  - keystone_user:
+       endpoint={{ endpoint }}
+       token={{ '{{' }} token.stdout {{ '}}' }}
+       user="{{ name }}"
+       email={{ email }}
+       password={{ password }}
        tenant={{ tenant }}
   {% for role in roles %}
-  - keystone_user: endpoint= {{ endpoint}} token= {{ token.stdout }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
+  - keystone_user: endpoint={{ endpoint}} token={{ '{{' }} token.stdout {{ '}}' }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
   {% endfor %}
