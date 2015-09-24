@@ -38,14 +38,7 @@ class XOSSlice(XOSResource):
 
         rolemap = ( ("tosca.relationships.AdminPrivilege", "admin"), ("tosca.relationships.AccessPrivilege", "access"),
                     ("tosca.relationships.PIPrivilege", "pi"), ("tosca.relationships.TechPrivilege", "tech") )
-        for (rel, role) in rolemap:
-            for email in self.get_requirements(rel):
-                role = self.get_xos_object(SliceRole, role=role)
-                user = self.get_xos_object(User, email=email)
-                if not SlicePrivilege.objects.filter(user=user, role=role, slice=obj):
-                    sp = SlicePrivilege(user=user, role=role, slice=obj)
-                    sp.save()
-                    self.info("Added slice privilege on %s role %s for %s" % (str(obj), str(role), str(user)))
+        self.postprocess_privileges(SliceRole, SlicePrivilege, rolemap)
 
     def create(self):
         nodetemplate = self.nodetemplate
