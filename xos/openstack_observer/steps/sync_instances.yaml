@@ -7,7 +7,7 @@
 
   - nova_compute:
       auth_url: {{ endpoint }}
-      token: {{ token.stdout }}
+      token: {{ '{{' }} token.stdout {{ '}}' }}
       name: {{ name }}
       {% if delete -%}
       state: absent

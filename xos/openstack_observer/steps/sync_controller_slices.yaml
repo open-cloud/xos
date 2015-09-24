@@ -5,10 +5,10 @@
   - shell: ENDPOINT={{endpoint_v3}} USERNAME={{admin_user}} PASSWORD={{admin_password}} TENANT={{admin_tenant}} DOMAIN={{domain}} /opt/xos/openstack/get_token.sh
     register: token
   {% if delete -%}
-  - keystone_user: endpoint={{ endpoint }} token={{ token.stdout }}  tenant={{ tenant }} tenant_description="{{ tenant_description }}" state=absent
-  {% else -%}	
-  - keystone_user: endpoint={{ endpoint }} token={{ token.stdout }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"
+  - keystone_user: endpoint={{ endpoint }} token={{ '{{' }} token.stdout {{ '}}' }} tenant={{ tenant }} tenant_description="{{ tenant_description }}" state=absent
+  {% else -%}
+  - keystone_user: endpoint={{ endpoint }} token={{ '{{' }} token.stdout {{ '}}' }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"
   {% for role in roles %}
-  - keystone_user: endpoint={{ endpoint}} token={{ token.stdout }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
+  - keystone_user: endpoint={{ endpoint }} token={{ '{{' }} token.stdout {{ '}}' }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
   {% endfor %}
-  {% endif %} 
+  {% endif %}
