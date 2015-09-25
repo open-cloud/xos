@@ -2,6 +2,8 @@ from observertest import BaseObserverToscaTest
 
 from core.models import Instance, Site
 
+# Note that as a side effect, these tests will also create a Site
+
 class ObserverComputeTest(BaseObserverToscaTest):
     tests = ["create_instance"]
     # hide_observer_output = False # uncomment to display lots of stuff to screen

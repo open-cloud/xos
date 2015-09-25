@@ -38,6 +38,8 @@ class XOSController(XOSResource):
 
         self.info("Created Controller '%s'" % (str(controller), ))
 
+        self.postprocess(controller)
+
     def delete(self, obj):
         if obj.controllersite.exists():
             self.info("Controller %s has active sites; skipping delete" % obj.name)
