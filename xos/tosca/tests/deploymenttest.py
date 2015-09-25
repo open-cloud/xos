@@ -11,6 +11,7 @@ class DeploymentTest(BaseToscaTest):
              "create_deployment_two_images",
              "create_deployment_privilege",
              "destroy_deployment",
+             "destroy_deployment_nodelete"
                            ]
 
     def cleanup(self):
@@ -93,6 +94,14 @@ class DeploymentTest(BaseToscaTest):
         instance = self.assert_obj(Deployment, "testdep")
         self.destroy(self.make_nodetemplate("testdep", "tosca.nodes.Deployment"))
         self.assert_noobj(Deployment, "testdep")
+
+    def destroy_deployment_nodelete(self):
+        self.assert_noobj(Deployment, "testdep")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment"))
+        instance = self.assert_obj(Deployment, "testdep")
+        self.destroy(self.make_nodetemplate("testdep", "tosca.nodes.Deployment",
+                                            props={"no-delete": True}))
+        self.assert_obj(Deployment, "testdep")
 
 if __name__ == "__main__":
     DeploymentTest()
