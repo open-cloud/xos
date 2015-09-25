@@ -319,6 +319,7 @@ node_types:
             deployment:
                 type: tosca.capabilities.xos.Deployment
         properties:
+            xos_base_props
             accessControl:
                 type: string
                 default: allow all

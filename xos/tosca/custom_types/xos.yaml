@@ -381,6 +381,14 @@ node_types:
             deployment:
                 type: tosca.capabilities.xos.Deployment
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: do not allow Tosca to create this object
             accessControl:
                 type: string
                 default: allow all
