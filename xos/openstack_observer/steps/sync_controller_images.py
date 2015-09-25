@@ -24,7 +24,7 @@ class SyncControllerImages(OpenStackSyncStep):
         # now we return all images that need to be enacted
         return ControllerImages.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None))
 
-    def map_inputs(self, controller_image):
+    def map_sync_inputs(self, controller_image):
         image_fields = {'endpoint':controller_image.controller.auth_url,
                         'endpoint_v3': controller_image.controller.auth_url_v3,
                         'admin_user':controller_image.controller.admin_user,
@@ -37,7 +37,7 @@ class SyncControllerImages(OpenStackSyncStep):
 
 	return image_fields
 
-    def map_outputs(self, controller_image):
+    def map_sync_outputs(self, controller_image, res):
         image_id = res[0]['id']
         controller_image.glance_image_id = image_id
 	controller_image.backend_status = '1 - OK'
