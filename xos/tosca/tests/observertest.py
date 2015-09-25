@@ -16,6 +16,9 @@ class BaseObserverToscaTest(BaseToscaTest):
     def __init__(self):
         super(BaseObserverToscaTest, self).__init__()
 
+    def get_usable_deployment(self):
+        return "MyDeployment"
+
     def ensure_observer_not_running(self):
         ps_output = subprocess.Popen("ps -elfy", shell=True, stdout=subprocess.PIPE).stdout.read()
         if "/opt/xos/xos-observer.py" in ps_output:

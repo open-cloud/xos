@@ -27,14 +27,21 @@ class ObserverImageTest(BaseObserverToscaTest):
 
         self.run_model_policy()
 
+        # make sure a ControllerImages object was created
+        cims = ControllerImages.objects.filter(image=image)
+        assert(len(cims) == 1)
+
         # first observer pass should make any necessary networks or ports
         self.run_observer()
 
         # reset the exponential backoff
         image = self.assert_obj(Image, "testimg")
 
+        # make sure the ControllerImages object has its image_id filled in
         cims = ControllerImages.objects.filter(image=image)
         assert(len(cims) == 1)
+        assert(cims[0].glance_image_id is not None)
+        assert(cims[0].glance_image_id != "")
 
 if __name__ == "__main__":
     ObserverImageTest()
