@@ -57,10 +57,14 @@ class BaseObserverToscaTest(BaseToscaTest):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        #if not self.hide_observer_output:
-        print self.logStream.getvalue()
+        if not self.hide_observer_output:
+            print self.logStream.getvalue()
 
-    def run_model_policy(self):
+    def save_output(self, what, fn):
+        file(fn,"w").write(self.logStream.getvalue())
+        print >> sys.__stdout__,"   (%s log saved to %s)" % (what, fn)
+
+    def run_model_policy(self, save_output=None):
         self.ensure_observer_not_running()
 
         self.hide_output()
@@ -68,10 +72,12 @@ class BaseObserverToscaTest(BaseToscaTest):
             print ">>>>> run model_policies"
             run_policy_once()
             print ">>>>> done model_policies"
+            if save_output:
+                self.save_output("model_policy",save_output)
         finally:
             self.restore_output()
 
-    def run_observer(self):
+    def run_observer(self, save_output=None):
         self.ensure_observer_not_running()
         self.log_to_memory()
 
@@ -81,6 +87,8 @@ class BaseObserverToscaTest(BaseToscaTest):
             observer = XOSObserver()
             observer.run_once()
             print ">>>>> done observer"
+            if save_output:
+                self.save_output("observer",save_output)
         finally:
             self.restore_output()
 

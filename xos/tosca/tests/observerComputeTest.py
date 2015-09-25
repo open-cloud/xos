@@ -29,17 +29,17 @@ class ObserverComputeTest(BaseObserverToscaTest):
         instance = self.assert_obj(Instance, "test_compute1")
         assert(instance.flavor.name == "m1.small")
 
-        self.run_model_policy()
+        self.run_model_policy(save_output="/tmp/instancetest:create_instance:model_policy")
 
         # first observer pass should make any necessary networks or ports
-        self.run_observer()
+        self.run_observer(save_output="/tmp/instancetest:create_instance:observer_first")
 
         # reset the exponential backoff
         instance = self.assert_obj(Instance, "test_compute1")
         instance.backend_register="{}"
 
         # second observer pass should instantiate the instance
-        self.run_observer()
+        self.run_observer(save_output="/tmp/instancetest:create_instance:observer_second")
 
         instance = self.assert_obj(Instance, "test_compute1")
 

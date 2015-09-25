@@ -25,14 +25,14 @@ class ObserverImageTest(BaseObserverToscaTest):
                                             props={"path": "/tmp/testimg"}))
         image = self.assert_obj(Image, "testimg")
 
-        self.run_model_policy()
+        self.run_model_policy(save_output="/tmp/imagetest:create_image:model_policy")
 
         # make sure a ControllerImages object was created
         cims = ControllerImages.objects.filter(image=image)
         assert(len(cims) == 1)
 
         # first observer pass should make any necessary networks or ports
-        self.run_observer()
+        self.run_observer(save_output="/tmp/imagetest:create_image:observer")
 
         # reset the exponential backoff
         image = self.assert_obj(Image, "testimg")
