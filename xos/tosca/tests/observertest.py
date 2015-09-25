@@ -27,41 +27,60 @@ class BaseObserverToscaTest(BaseToscaTest):
             sys.exit(-1)
 
     def log_to_memory(self):
+        logStream = StringIO.StringIO()
+        handler = logging.StreamHandler(stream=logStream)
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+
+        loggername = Logger().loggername
+        log = logging.getLogger(loggername)
+        for hdlr in log.handlers[:]:
+            log.removeHandler(hdlr)
+        log.addHandler(handler)
+        log.propagate = False
+
+        log = observer_logger.logger
+        for hdlr in log.handlers[:]:
+            log.removeHandler(hdlr)
+        log.addHandler(handler)
+        log.propagate = False
+
+        self.logStream = logStream
+
+    def hide_output(self):
         set_override("observer_console_print", False)
+        self.log_to_memory()
+        sys.stdout = self.logStream
+        sys.stderr = self.logStream
 
-        if self.hide_observer_output:
-            logStream = StringIO.StringIO()
-            handler = logging.StreamHandler(stream=logStream)
-            handler.setLevel(logging.DEBUG)
-            handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    def restore_output(self):
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
 
-            loggername = Logger().loggername
-            log = logging.getLogger(loggername)
-            for hdlr in log.handlers[:]:
-                log.removeHandler(hdlr)
-            log.addHandler(handler)
-            log.propagate = False
-
-            log = observer_logger.logger
-            for hdlr in log.handlers[:]:
-                log.removeHandler(hdlr)
-            log.addHandler(handler)
-            log.propagate = False
+        #if not self.hide_observer_output:
+        print self.logStream.getvalue()
 
     def run_model_policy(self):
         self.ensure_observer_not_running()
-        self.log_to_memory()
 
-        #print ">>>>> run model_policies"
-        run_policy_once()
-        #print ">>>>> done model_policies"
+        self.hide_output()
+        try:
+            print ">>>>> run model_policies"
+            run_policy_once()
+            print ">>>>> done model_policies"
+        finally:
+            self.restore_output()
 
     def run_observer(self):
         self.ensure_observer_not_running()
         self.log_to_memory()
 
-        observer = XOSObserver()
-        #print ">>>>> run observer"
-        observer.run_once()
-        #print ">>>>> done observer"
+        self.hide_output()
+        try:
+            print ">>>>> run observer"
+            observer = XOSObserver()
+            observer.run_once()
+            print ">>>>> done observer"
+        finally:
+            self.restore_output()
 
