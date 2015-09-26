@@ -50,7 +50,7 @@ class SyncPorts(OpenStackSyncStep):
                 logger.info("controller %s has no admin_tenant" % controller)
                 continue
             try:
-                driver = self.driver.admin_driver(controller = controller,tenant='admin')
+                driver = self.driver.admin_driver(controller = controller)
                 ports = driver.shell.quantum.list_ports()["ports"]
             except:
                 logger.log_exc("failed to get ports from controller %s" % controller)

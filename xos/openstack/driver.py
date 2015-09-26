@@ -45,6 +45,8 @@ class OpenStackDriver:
     def admin_driver(self, tenant=None, controller=None):
         if isinstance(controller, int):
             controller = Controller.objects.get(id=controller.id)
+        if not tenant:
+            tenant = controller.admin_tenant
         client = OpenStackClient(tenant=tenant, controller=controller, cacert=self.config.nova_ca_ssl_cert)
         driver = OpenStackDriver(client=client)
         driver.admin_user = client.keystone.users.find(name=controller.admin_user)
