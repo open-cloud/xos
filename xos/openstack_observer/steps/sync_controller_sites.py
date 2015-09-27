@@ -32,7 +32,7 @@ class SyncControllerSites(OpenStackSyncStep):
         return tenant_fields
 
     def map_sync_outputs(self, controller_site, res):
-	controller_site.tenant_id = res[0]['id']
+	controller_site.tenant_id = res[1]['id']
 	controller_site.backend_status = '1 - OK'
         controller_site.save()
             
