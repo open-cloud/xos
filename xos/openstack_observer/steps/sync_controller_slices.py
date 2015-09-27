@@ -50,7 +50,7 @@ class SyncControllerSlices(OpenStackSyncStep):
         return tenant_fields
 
     def map_sync_outputs(self, controller_slice, res):
-        tenant_id = res[0]['id']
+        tenant_id = res[1]['id']
         if (not controller_slice.tenant_id):
             try:
                 driver = OpenStackDriver().admin_driver(controller=controller_slice.controller)

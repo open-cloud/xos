@@ -59,7 +59,7 @@ class SyncControllerSitePrivileges(OpenStackSyncStep):
 	    # "ok" string received per operation. If we get as many oks as
 	    # the number of operations we issued, that means a grand success.
 	    # Otherwise, the number of oks tell us which operation failed.
-            controller_site_privilege.role_id = res[0]['id']
+            controller_site_privilege.role_id = res[1]['id']
             controller_site_privilege.save()
 
     def delete_record(self, controller_site_privilege):

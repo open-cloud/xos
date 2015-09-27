@@ -59,7 +59,7 @@ class SyncControllerUsers(OpenStackSyncStep):
 	    return user_fields
 
     def map_sync_outputs(self, controller_user, res):
-        controller_user.kuser_id = res[0]['id']
+        controller_user.kuser_id = res[1]['id']
         controller_user.backend_status = '1 - OK'
         controller_user.save()
 
