@@ -1,0 +1,88 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+# Note:
+#   assumes the following have been created and filled with appropriate data:
+#       /root/setup/auth_url
+#       /root/setup/admin_user
+#       /root/setup/admin_password
+#       /root/setup/flat_net_name
+#       /root/setup/pubkey
+
+description: >
+    * Adds OpenCloud Sites, Deployments, and Controllers.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: QCOW2
+         container_format: BARE
+
+    MyDeployment:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+    CloudLab:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: MyDeployment
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: { get_artifact: [ SELF, auth_url, LOCAL_FILE] }
+          admin_user: { get_artifact: [ SELF, os_username, LOCAL_FILE] }
+          admin_password: { get_artifact: [ SELF, os_password, LOCAL_FILE] }
+          domain: Default
+      artifacts:
+          auth_url: /root/setup/auth_url
+          admin_user: /root/setup/admin_user
+          admin_password: /root/setup/admin_password
+
+    mysite:
+      type: tosca.nodes.Site
+      properties:
+          display_name: MySite
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: MyDeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: CloudLab
+                       relationship: tosca.relationships.UsesController
+
+    Public shared IPv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+          shared_network_name: { get_artifact: [ SELF, flat_net_name, LOCAL_FILE] }
+      artifacts:
+          flat_net_name: /root/setup/flat_net_name
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE ] }
+          is_admin: true
+          is_active: true
+          firstname: XOS
+          lastname: admin
+      artifacts:
+          pubkey: /root/setup/pubkey
