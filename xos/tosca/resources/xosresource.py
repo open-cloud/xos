@@ -1,6 +1,7 @@
 import os
 import pdb
 import json
+import subprocess
 
 from core.models import User
 
@@ -114,6 +115,20 @@ class XOSResource(object):
 
         raise Exception("artifact %s not found" % name)
 
+    def intrinsic_get_script_env(self, obj=None, name=None, varname=None, method=None):
+        if obj!="SELF":
+            raise Exception("only SELF is supported for get_artifact first arg")
+        if method!="LOCAL_FILE":
+            raise Exception("only LOCAL_FILE is supported for get_artifact fourth arg")
+
+        for (k,v) in self.nodetemplate.entity_tpl.get("artifacts", {}).items():
+            if k == name:
+                if not os.path.exists(v):
+                    raise Exception("Artifact local file %s for artifact %s does not exist" % (v, k))
+                return subprocess.Popen('/bin/bash -c "source %s &> /dev/null; echo \\$%s"' % (v, varname), shell=True, stdout=subprocess.PIPE).stdout.read().strip()
+
+        raise Exception("artifact %s not found" % name)
+
     def try_intrinsic_function(self, v):
         try:
             jsv = v.replace("'", '"')
@@ -128,6 +143,8 @@ class XOSResource(object):
 
         if "get_artifact" in jsv:
             return self.intrinsic_get_artifact(*jsv["get_artifact"])
+        elif "get_script_env" in jsv:
+            return self.intrinsic_get_script_env(*jsv["get_script_env"])
 
         return v
 

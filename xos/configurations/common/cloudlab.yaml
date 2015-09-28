@@ -2,9 +2,7 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 
 # Note:
 #   assumes the following have been created and filled with appropriate data:
-#       /root/setup/auth_url
-#       /root/setup/admin_user
-#       /root/setup/admin_password
+#       /root/setup/admin_openrc
 #       /root/setup/flat_net_name
 #       /root/setup/pubkey
 
@@ -40,14 +38,12 @@ topology_template:
       properties:
           backend_type: OpenStack
           version: Juno
-          auth_url: { get_artifact: [ SELF, auth_url, LOCAL_FILE] }
-          admin_user: { get_artifact: [ SELF, os_username, LOCAL_FILE] }
-          admin_password: { get_artifact: [ SELF, os_password, LOCAL_FILE] }
+          auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
+          admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
+          admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
           domain: Default
       artifacts:
-          auth_url: /root/setup/auth_url
-          admin_user: /root/setup/admin_user
-          admin_password: /root/setup/admin_password
+          adminrc: /root/setup/admin-openrc.sh
 
     mysite:
       type: tosca.nodes.Site
