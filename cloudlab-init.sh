@@ -48,7 +48,10 @@ PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 http --auth $AUTH PATCH $XOS/xos/users/1/ public_key="$PUBKEY" enacted=$( date "+%Y-%m-%dT%T")
 
 # Set up controller
-source /root/setup/admin-openrc.sh
+sudo cp /root/setup/admin-openrc.sh /tmp
+sudo chmod a+r /tmp/admin-openrc.sh
+#sudo sed -i 's/:5000/:35357/' /tmp/admin-openrc.sh
+source /tmp/admin-openrc.sh
 http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Juno auth_url=$OS_AUTH_URL admin_user=$OS_USERNAME admin_tenant=$OS_TENANT_NAME admin_password=$OS_PASSWORD domain=Default
 
 # Add controller to site
