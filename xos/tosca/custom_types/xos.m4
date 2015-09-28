@@ -153,7 +153,7 @@ node_types:
         properties:
             password:
                 type: string
-                required: true
+                required: false
             firstname:
                 type: string
                 required: true
