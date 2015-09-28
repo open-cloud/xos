@@ -1,0 +1,7 @@
+all: flat_name nodes_yaml
+
+flat_name:
+	sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{print $$4}' > flat_net_name
+
+nodes_yaml:
+	bash ./make-cloudlab-nodes-yaml.sh
