@@ -1,3 +1,4 @@
+from enginetest import EngineTest
 from coarsetenancytest import CoarseTenancyTest
 from porttest import PortTest
 from networktest import NetworkTest
@@ -12,6 +13,7 @@ from controllertest import ControllerTest
 from imagetest import ImageTest
 
 if __name__ == "__main__":
+    EngineTest()
     SiteTest()
     DeploymentTest()
     ControllerTest()
