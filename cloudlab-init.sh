@@ -16,7 +16,7 @@ IMAGE="xos"
 which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker $(whoami)
 
-sudo apt-get install httpie
+sudo apt-get -y install httpie
 
 if [ "$CORD" -ne 0 ]
 then
@@ -48,7 +48,8 @@ PUBKEY=$( cat ~/.ssh/id_rsa.pub )
 http --auth $AUTH PATCH $XOS/xos/users/1/ public_key="$PUBKEY" enacted=$( date "+%Y-%m-%dT%T")
 
 # Set up controller
-http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Juno auth_url="http://ctl:5000/v2.0" admin_user=admin admin_tenant=admin admin_password="N!ceD3m0"
+source /root/setup/admin-openrc.sh
+http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Juno auth_url=$OS_AUTH_URL admin_user=$OS_USERNAME admin_tenant=$OS_TENANT_NAME admin_password=$OS_PASSWORD domain=Default
 
 # Add controller to site
 http --auth $AUTH PATCH $XOS/xos/sitedeployments/1/ controller=$XOS/xos/controllers/1/
