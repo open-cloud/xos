@@ -53,6 +53,7 @@ def handle(slice):
                 )
         nat_net.save()
         public_nets.append(nat_net)
+        print "MODEL POLICY: slice", slice, "made nat-net"
 
     if not private_nets:
         private_net = Network(
@@ -61,6 +62,7 @@ def handle(slice):
             owner = slice
         )
         private_net.save()
+        print "MODEL POLICY: slice", slice, "made private net"
         private_nets = [private_net]
     # create slice networks
     public_net_slice = None
@@ -74,10 +76,12 @@ def handle(slice):
     if not public_net_slice:
         public_net_slice = NetworkSlice(slice=slice, network=public_nets[0])
         public_net_slice.save()
+        print "MODEL POLICY: slice", slice, "made public_net_slice"
     if not private_net_slice:
         private_net_slice = NetworkSlice(slice=slice, network=private_nets[0])
         private_net_slice.save()
+        print "MODEL POLICY: slice", slice, "made private_net_slice"
 
-
+    print "MODEL POLICY: slice", slice, "DONE"
 
 
