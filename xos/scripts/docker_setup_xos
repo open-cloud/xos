@@ -1,0 +1,18 @@
+#! /bin/bash
+
+function wait_postgres {
+    sudo -u postgres psql -c '\q'
+    while [[ "$?" != "0" ]]; do
+        echo Waiting for postgres to start
+        sleep 1
+        sudo -u postgres psql -c '\q'
+    done
+}
+
+cd /tmp
+service postgresql start
+wait_postgres
+service supervisor start
+cd /opt/xos
+PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`
+python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure
