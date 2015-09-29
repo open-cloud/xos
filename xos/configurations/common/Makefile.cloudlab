@@ -17,4 +17,4 @@ public_key: ~/.ssh/id_rsa.pub
 
 install_docker:
 	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
-	sudo usermod -aG docker $(whoami)
+	sudo usermod -aG docker $(shell whoami)
