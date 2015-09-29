@@ -4,7 +4,7 @@ tosca_definitions_version: tosca_simple_yaml_1_0
 #   assumes the following have been created and filled with appropriate data:
 #       /root/setup/admin_openrc
 #       /root/setup/flat_net_name
-#       /root/setup/pubkey
+#       /root/setup/padmin_public_key
 
 description: >
     * Adds OpenCloud Sites, Deployments, and Controllers.
@@ -81,4 +81,4 @@ topology_template:
           firstname: XOS
           lastname: admin
       artifacts:
-          pubkey: /root/setup/pubkey
+          pubkey: /root/setup/padmin_public_key

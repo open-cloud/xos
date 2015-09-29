@@ -1,4 +1,4 @@
-all: admin-openrc flat_name nodes_yaml
+all: admin-openrc flat_name nodes_yaml public_key
 
 admin-openrc:
 	sudo cat /root/setup/admin-openrc.sh > admin-openrc.sh
@@ -8,3 +8,6 @@ flat_name:
 
 nodes_yaml:
 	bash ./make-cloudlab-nodes-yaml.sh
+
+public_key:
+	cp ~/.ssh/id_rsa.pub .
