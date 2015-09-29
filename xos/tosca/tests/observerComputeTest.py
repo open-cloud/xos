@@ -29,7 +29,11 @@ class ObserverComputeTest(BaseObserverToscaTest):
         instance = self.assert_obj(Instance, "test_compute1")
         assert(instance.flavor.name == "m1.small")
 
-        self.run_model_policy(save_output="/tmp/instancetest:create_instance:model_policy")
+        # first pass makes the Networks
+        self.run_model_policy(save_output="/tmp/instancetest:create_instance:model_policy_first")
+
+        # second pass makes the NetworkControllers
+        self.run_model_policy(save_output="/tmp/instancetest:create_instance:model_policy_second")
 
         # first observer pass should make any necessary networks or ports
         self.run_observer(save_output="/tmp/instancetest:create_instance:observer_first")
@@ -37,9 +41,22 @@ class ObserverComputeTest(BaseObserverToscaTest):
         # reset the exponential backoff
         instance = self.assert_obj(Instance, "test_compute1")
         instance.backend_register="{}"
+        instance.save()
 
-        # second observer pass should instantiate the instance
+        # third pass reset lazy_blocked
+        self.run_model_policy(save_output="/tmp/instancetest:create_instance:model_policy_third")
+
+        # second observer pass should instantiate the controller networks
+        #    (might instantiate the instance, too)
         self.run_observer(save_output="/tmp/instancetest:create_instance:observer_second")
+
+        # reset the exponential backoff
+        instance = self.assert_obj(Instance, "test_compute1")
+        instance.backend_register="{}"
+        instance.save()
+
+        # third observer pass should instantiate the instance
+        self.run_observer(save_output="/tmp/instancetest:create_instance:observer_third")
 
         instance = self.assert_obj(Instance, "test_compute1")
 
