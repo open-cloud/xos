@@ -12,15 +12,10 @@ from xosresource import XOSResource
 class XOSNetworkTemplate(XOSResource):
     provides = "tosca.nodes.NetworkTemplate"
     xos_model = NetworkTemplate
+    copyin_props = ["visibility", "translation", "shared_network_name", "shared_network_id", "toplogy_kind", "controller_kind"]
 
     def get_xos_args(self):
-        args = {"name": self.nodetemplate.name}
-
-        # copy simple string properties from the template into the arguments
-        for prop in ["visibility", "translation", "shared_network_name", "shared_network_id", "toplogy_kind", "controller_kind"]:
-            v = self.get_property(prop)
-            if v:
-                args[prop] = v
+        args = super(XOSNetworkTemplate, self).get_xos_args()
 
         return args
 
