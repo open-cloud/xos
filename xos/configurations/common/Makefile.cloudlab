@@ -9,5 +9,8 @@ flat_name:
 nodes_yaml:
 	bash ./make-cloudlab-nodes-yaml.sh
 
-public_key:
+public_key: ~/.ssh/id_rsa.pub
 	cp ~/.ssh/id_rsa.pub .
+
+~/.ssh/id_rsa.pub:
+	cat /dev/zero | ssh-keygen -q -N ""
