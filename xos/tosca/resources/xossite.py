@@ -51,11 +51,17 @@ class XOSSite(XOSResource):
                     if not controller_name:
                         raise Exception("Controller must be specified in SiteDeployment relationship")
 
-                    controller = self.get_xos_object(Controller, name=controller_name)
+                    controller = self.get_xos_object(Controller, name=controller_name, throw_exception=True)
 
                     existing_sitedeps = SiteDeployment.objects.filter(deployment=deployment, site=obj)
                     if existing_sitedeps:
-                        self.info("SiteDeployment from %s to %s already exists" % (str(obj), str(deployment)))
+                        sd = existing_sitedeps[0]
+                        if sd.controller != controller:
+                            sd.controller = controller
+                            sd.save()
+                            self.info("SiteDeployment from %s to %s updated controller" % (str(obj), str(deployment)))
+                        else:
+                            self.info("SiteDeployment from %s to %s already exists" % (str(obj), str(deployment)))
                     else:
                         sitedep = SiteDeployment(deployment=deployment, site=obj, controller=controller)
                         sitedep.save()
