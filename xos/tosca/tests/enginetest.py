@@ -16,7 +16,7 @@ class EngineTest(BaseToscaTest):
         self.execute(self.make_nodetemplate("testservice", "tosca.nodes.Service",
                                             props={"public_key": "{ get_artifact: [ SELF, somevar, LOCAL_FILE] }"},
                                             artifacts={"somevar": "/tmp/somevar"}))
-        self.assert_obj(Service, "test_svc", public_key="somevalue")
+        self.assert_obj(Service, "testservice", public_key="somevalue")
 
     def intrinsic_get_script_env(self):
         self.assert_noobj(Service, "testservice")
