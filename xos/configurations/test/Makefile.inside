@@ -10,3 +10,4 @@ setup_xos:
 run_tests:
 	supervisorctl stop observer
 	cd /opt/xos/tosca/tests; python ./alltests.py
+	cd /opt/xos/tosca/tests; python ./allObserverTests.py
