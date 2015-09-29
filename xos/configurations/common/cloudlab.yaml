@@ -41,6 +41,7 @@ topology_template:
           auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
           admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
           admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
+          admin_tenant: { get_script_env: [ SELF, adminrc, OS_TENANT_NAME, LOCAL_FILE] }
           domain: Default
       artifacts:
           adminrc: /root/setup/admin-openrc.sh
