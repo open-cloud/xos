@@ -1,4 +1,7 @@
-all: flat_name nodes_yaml
+all: admin-openrc flat_name nodes_yaml
+
+admin-openrc:
+	sudo cat /root/setup/admin-openrc.sh > admin-openrc.sh
 
 flat_name:
 	sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{print $$4}' > flat_net_name

@@ -13,6 +13,5 @@ cd /tmp
 service postgresql start
 wait_postgres
 service supervisor start
-cd /opt/xos
-PUBLIC_HOSTNAME=`./xos-config.py get server_hostname $HOSTNAME`
-python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure
+
+exit 0

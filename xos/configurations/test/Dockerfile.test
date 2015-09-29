@@ -1,5 +1,8 @@
-ADD /root/setup/admin-openrc.sh /root/setup/
-ADD .,/common/flat_net_name /root/setup/
-ADD ../common/cloudlab-nods.yaml /opt/xos/configurations/commmon/
+RUN mkdir -p /root/setup
+ADD xos/configurations/common/admin-openrc.sh /root/setup/
+ADD xos/configurations/common/flat_net_name /root/setup/
+ADD xos/configurations/common/cloudlab-nodes.yaml /opt/xos/configurations/commmon/
+
+#CMD ["/usr/bin/make -C /opt/xos/configurations/test -f Makefile.inside"]
 
 CMD ["/bin/bash"]

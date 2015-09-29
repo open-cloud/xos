@@ -1,4 +1,4 @@
 run_tests:
-	cd /opt/xos/tosca/tests
-	python ./alltests.py
-
+	bash /opt/xos/scripts/docker_setup_xos
+	supervisorctl stop observer
+	cd /opt/xos/tosca/tests; python ./alltests.py
