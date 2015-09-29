@@ -1,0 +1,5 @@
+ADD /root/setup/admin-openrc.sh /root/setup/
+ADD .,/common/flat_net_name /root/setup/
+ADD ../common/cloudlab-nods.yaml /opt/xos/configurations/commmon/
+
+CMD ["/bin/bash"]
