@@ -1,4 +1,12 @@
-run_tests:
+all: setup_xos run_tests
+
+setup_xos:
 	bash /opt/xos/scripts/docker_setup_xos
+	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab.yaml
+	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab-nodes.yaml
+	echo sleeping 30 seconds
+	sleep 30
+
+run_tests:
 	supervisorctl stop observer
 	cd /opt/xos/tosca/tests; python ./alltests.py
