@@ -1,4 +1,4 @@
-all: admin-openrc flat_name nodes_yaml public_key
+all: admin-openrc flat_name nodes_yaml public_key install_docker
 
 admin-openrc:
 	sudo cat /root/setup/admin-openrc.sh > admin-openrc.sh
@@ -14,3 +14,7 @@ public_key: ~/.ssh/id_rsa.pub
 
 ~/.ssh/id_rsa.pub:
 	cat /dev/zero | ssh-keygen -q -N ""
+
+install_docker:
+	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
+	sudo usermod -aG docker $(whoami)
