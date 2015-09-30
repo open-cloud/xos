@@ -38,7 +38,7 @@ class SyncControllerImages(OpenStackSyncStep):
 	return image_fields
 
     def map_sync_outputs(self, controller_image, res):
-        image_id = res[1]['id']
+        image_id = res[0]['id']
         controller_image.glance_image_id = image_id
 	controller_image.backend_status = '1 - OK'
         controller_image.save()
