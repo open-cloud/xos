@@ -563,6 +563,18 @@ topology_template:
                        relationship: tosca.relationships.UsesController
 
 # Users
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: campus_princeton
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: XOS
+          lastname: admin
+          password: letmein
 
     scott@onlab.us:
       type: tosca.nodes.User
