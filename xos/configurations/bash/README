@@ -1,0 +1,5 @@
+This configuration launches XOS on Cloudlab, leaving the user in an interactive bash session.
+
+The django UI is not started automatically. To start it, execute the following commands from the bash session:
+   cd /opt/xos
+   scripts/opencloud runserver
