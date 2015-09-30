@@ -188,42 +188,6 @@ class SyncPorts(OpenStackSyncStep):
                     continue
                 port.save()
 
-        # Now, handle port forwarding
-        # We get the list of Ports again, since we might have just
-        # added a few. Then, for each one of them we find it's quantum port and
-        # make sure quantum's nat:forward_ports argument is the same.
-
-        for port in Port.objects.all():
-            try:
-                nat_list = port.network.nat_list
-            except (TypeError, ValueError), e:
-                logger.info("Failed to decode nat_list: %s" % str(e))
-                continue
-
-            if not port.port_id:
-                continue
-
-            neutron_port = ports_by_id.get(port.port_id, None)
-            if not neutron_port:
-                continue
-
-            neutron_nat_list = neutron_port.get("nat:forward_ports", None)
-            if not neutron_nat_list:
-                # make sure that None and the empty set are treated identically
-                neutron_nat_list = []
-
-            if (neutron_nat_list != nat_list):
-                logger.info("Setting nat:forward_ports for port %s network %s instance %s to %s" % (str(port.port_id), str(port.network.id), str(port.instance), str(nat_list)))
-                try:
-                    driver = self.driver.admin_driver(controller=port.instance.node.site_deployment.controller,tenant='admin')
-                    driver.shell.quantum.update_port(port.port_id, {"port": {"nat:forward_ports": nat_list}})
-                except:
-                    logger.log_exc("failed to update port with nat_list %s" % str(nat_list))
-                    continue
-            else:
-                #logger.info("port %s network %s instance %s nat %s is already set" % (str(port.port_id), str(port.network.id), str(port.instance), str(nat_list)))
-                pass
-
     def delete_record(self, network_instance):
         # Nothing to do, this is an OpenCloud object
         pass
