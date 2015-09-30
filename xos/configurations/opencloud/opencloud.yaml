@@ -16,6 +16,14 @@ topology_template:
          disk_format: QCOW2
          container_format: BARE
 
+# network template
+    public-shared-ipv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+          shared_network_name: nat-net
+
 # deokoyments
     backbone:
       type: tosca.nodes.Deployment
@@ -567,3 +575,190 @@ topology_template:
           is_active: true
           firstname: Scott
           lastname: Baker
+          password: letmein
+
+    llp@onlab.us:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Larry
+          lastname: Peterson
+          password: letmein
+
+    luca@onlab.us:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Luca
+          lastname: Prete
+          password: letmein
+
+    sapanb@cs.princeton.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Sapan
+          lastname: Bhatia
+          password: letmein
+
+    tmack@cs.princeton.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: princeton
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Tony
+          lastname: Mack
+          password: letmein
+
+    acb@cs.princeton.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: princeton
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Andy
+          lastname: Bavier
+          password: letmein
+
+    mhw@cs.princeton.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: princeton
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Mike
+          lastname: Wawrzoniak
+          password: letmein
+
+    jcnelson@cs.princeton.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: princeton
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Jude
+          lastname: Nelson
+          password: letmein
+
+    rnobrega@internet2.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: internet2
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Ryan
+          lastname: Nobrega
+          password: letmein
+
+    matt@internet2.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: internet2
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Matthew
+          lastname: Zekauskas
+          password: letmein
+
+    jhh@cs.arizona.edu:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: arizona
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: John
+          lastname: Hartman
+          password: letmein
+
+
+# Slices
+    onlab_cmi:
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_hpc:
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_dnsredir:
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_dnsdemux:
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    princeton_publicdata:
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: princeton
+              relationship: tosca.relationships.MemberOfSite
+
+# Services
+    hypercache:
+      type: tosca.nodes.Service
+      capabilities:
+          scalable:
+              properties:
+                  max_instances: 25
+                  min_instances: 1
+                  default_instances: 1
+
+    syndicate:
+      type: tosca.nodes.Service
+      capabilities:
+          scalable:
+              properties:
+                  max_instances: 25
+                  min_instances: 1
+                  default_instances: 1
