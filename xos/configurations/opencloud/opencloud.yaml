@@ -8,46 +8,562 @@ imports:
 
 topology_template:
   node_templates:
-    Ubuntu 14.04 LTS:
+
+# Nodes
+    trusty-server-multi-nic:
       type: tosca.nodes.Image
       properties:
-         disk_format: raw
-         container_format: bare
+         disk_format: QCOW2
+         container_format: BARE
 
-    ViCCI:
+# deokoyments
+    backbone:
       type: tosca.nodes.Deployment
       properties:
           flavors: m1.large, m1.medium, m1.small
       requirements:
           - image:
-              node: Ubuntu 14.04 LTS
+              node: trusty-server-multi-nic
               relationship: tosca.relationships.SupportsImage
 
-    princeton-vicci:
+    campus:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+    ec2:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+# controllers
+    backbone-atl:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: ViCCI
+              node: backbone
               relationship: tosca.relationships.ControllerDeployment
       properties:
-           backend_type: OpenStack
-           version: Icehouse
-           auth_url: https://192.168.2.14:5000/v2.0
-           admin_user: admin
-           # admin_password: ...    (intentionally left out. administrator manually configure?)
-           admin_tenant: admin
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
 
-    vicci-pu:                            # this is Site.login_base
-      type: tosca.nodes.Site
-      properties:
-          display_name: US-Princeton     # this is Site.name
-          site_url: http://cs.princeton.edu/
+    backbone-chi:
+      type: tosca.nodes.Controller
       requirements:
           - deployment:
-               node: ViCCI
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-hou:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-kan:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-lax:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-nyc:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-slc:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-sea:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    backbone-sng:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+   backbone-wdc:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-princeton:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-stanford:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-washington:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-gatech:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-internet2:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-singapore:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+    campus-onlab:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: backbone
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
+# Sites
+
+    i2-atl:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-atl
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
                relationship: tosca.relationships.SiteDeployment
                requirements:
                    - controller:
-                       node: princeton-vicci
+                       node: backbone-atl
                        relationship: tosca.relationships.UsesController
 
+    i2-chi:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-chi
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-chi
+                       relationship: tosca.relationships.UsesController
+
+    i2-hou:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-hou
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-hou
+                       relationship: tosca.relationships.UsesController
+   
+    i2-kas:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-kas
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-kas
+                       relationship: tosca.relationships.UsesController
+
+    i2-lax:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-lax
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-lax
+                       relationship: tosca.relationships.UsesController
+
+    i2-nyc:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-nyc
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-nyc
+                       relationship: tosca.relationships.UsesController
+
+    i2-slc:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-slc
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-slc
+                       relationship: tosca.relationships.UsesController
+
+    i2-sea:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-seae
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-sea
+                       relationship: tosca.relationships.UsesController
+
+    i2-sng:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-sng
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-sng
+                       relationship: tosca.relationships.UsesController
+
+   i2-wdc:
+      type: tosca.nodes.Site
+      properties:
+          display_name: I2-wdc
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: backbone
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: backbone-wdc
+                       relationship: tosca.relationships.UsesController
+
+    princeton:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Princeton
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-princeton
+                       relationship: tosca.relationships.UsesController
+
+    stanford:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Stanford
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-stanford
+                       relationship: tosca.relationships.UsesController
+
+    washington:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Washington
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-washington
+                       relationship: tosca.relationships.UsesController
+
+    gtech:
+      type: tosca.nodes.Site
+      properties:
+          display_name: GTech
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-gatech
+                       relationship: tosca.relationships.UsesController
+
+    arizona:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Arizona
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-arizona
+                       relationship: tosca.relationships.UsesController
+
+    internet2:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Internet2
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-internet2
+                       relationship: tosca.relationships.UsesController
+
+    singapore:
+      type: tosca.nodes.Site
+      properties:
+          display_name: Singapore
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-singapore
+                       relationship: tosca.relationships.UsesController
+
+    onlab:
+      type: tosca.nodes.Site
+      properties:
+          display_name: ON.Lab
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: campus
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: campus-onlab
+                       relationship: tosca.relationships.UsesController
+
+# Users
+
+    scott@onlab.us:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: Scott
+          lastname: Baker
