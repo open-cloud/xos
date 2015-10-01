@@ -1,0 +1,91 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: >
+    * Some sample data to populate the demo frontend
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: QCOW2
+         container_format: BARE
+
+    MyDeployment:
+      type: tosca.nodes.Deployment
+      properties:
+          flavors: m1.large, m1.medium, m1.small
+      requirements:
+          - image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+
+    CloudLab:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: MyDeployment
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://sample/v2
+          admin_user: admin
+          admin_password: adminpassword
+          admin_tenant: admin
+          domain: Default
+
+    mysite:
+      type: tosca.nodes.Site
+      properties:
+          display_name: MySite
+          site_url: http://opencloud.us/
+      requirements:
+          - deployment:
+               node: MyDeployment
+               relationship: tosca.relationships.SiteDeployment
+               requirements:
+                   - controller:
+                       node: CloudLab
+                       relationship: tosca.relationships.UsesController
+
+    Public shared IPv4:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+      properties:
+          is_admin: true
+          is_active: true
+          firstname: XOS
+          lastname: admin
+
+    node1.opencloud.us:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: mysite
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: MyDeployment
+            relationship: tosca.relationships.MemberOfDeployment
+
+    node2.opencloud.us:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: mysite
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: MyDeployment
+            relationship: tosca.relationships.MemberOfDeployment
