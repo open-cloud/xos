@@ -1,0 +1,5 @@
+RUN mkdir -p /root/setup
+
+RUN echo "autostart=false" >> /etc/supervisor/conf.d/observer.conf
+
+CMD /usr/bin/make -C /opt/xos/configurations/frontend -f Makefile.inside
