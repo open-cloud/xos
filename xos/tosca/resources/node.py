@@ -19,7 +19,7 @@ class XOSNode(XOSResource):
         site = None
         siteName = self.get_requirement("tosca.relationships.MemberOfSite", throw_exception=False)
         if siteName:
-            site = self.get_xos_object(Site, name=siteName)
+            site = self.get_xos_object(Site, login_base=siteName)
             args["site"] = site
 
         deploymentName = self.get_requirement("tosca.relationships.MemberOfDeployment", throw_exception=False)
