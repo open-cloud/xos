@@ -25,6 +25,8 @@ class NodeTest(BaseToscaTest):
             relationship: tosca.relationships.ControllerDeployment
     testsite:
       type: tosca.nodes.Site
+      properties:
+        display_name: My Site
       requirements:
         - deployment:
              node: testdep
