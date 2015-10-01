@@ -17,3 +17,5 @@ stop:
 showlogs:
 	sudo docker logs $(LAST_CONTAINER)
 
+enter:
+	sudo docker exec -t -i $(EXISTING_CONTAINER) bash
