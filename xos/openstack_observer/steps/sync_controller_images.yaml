@@ -4,9 +4,9 @@
   tasks:
   - glance_image:
         auth_url={{ endpoint }}
-        login_username: {{ admin_user }}
-        login_tenant_name: 'admin'
-        login_password: {{ admin_password }}
+        login_username="{{ admin_user }}"
+        login_tenant_name="admin"
+        login_password="{{ admin_password }}"
         name="{{ name }}"
         file="{{ filepath }}"
         disk_format='raw'
