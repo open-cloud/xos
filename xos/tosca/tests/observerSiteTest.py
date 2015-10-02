@@ -9,11 +9,11 @@ class ObserverSiteTest(BaseObserverToscaTest):
     # hide_observer_output = False # uncomment to display lots of stuff to screen
 
     def cleanup(self):
-        # We don't want to leak resources, so we make sure to let the observer
+        # We don't want to leak rezsources, so we make sure to let the observer
         # attempt to delete these objects.
-        self.try_to_delete(Site, purge=False, name="testsite")
+        self.try_to_delete(Site, purge=False, login_base="testsite")
         self.run_observer()
-        self.try_to_delete(Site, purge=True, name="testsite")
+        self.try_to_delete(Site, purge=True, login_base="testsite")
 
     def create_site(self):
         self.assert_noobj(Site, "testsite")
@@ -23,7 +23,6 @@ class ObserverSiteTest(BaseObserverToscaTest):
     testsite:
       type: tosca.nodes.Site
       properties:
-          display_name: TestSite
           site_url: http://opencloud.us/
       requirements:
           - deployment:
@@ -35,7 +34,7 @@ class ObserverSiteTest(BaseObserverToscaTest):
                        relationship: tosca.relationships.UsesController
 """ % (self.get_usable_deployment(), self.get_usable_controller()))
 
-        testsite = self.assert_obj(Site, "TestSite")
+        testsite = self.assert_obj(Site, "testsite")
 
         self.run_model_policy(save_output="/tmp/sitetest:create_site:model_policy")
 
@@ -45,7 +44,7 @@ class ObserverSiteTest(BaseObserverToscaTest):
 
         self.run_observer(save_output="/tmp/sitetest:create_site:observer")
 
-        testsite = self.assert_obj(Site, "TestSite")
+        testsite = self.assert_obj(Site, "testsite")
 
         cs = ControllerSite.objects.filter(site=testsite)
         assert(len(cs) == 1)
