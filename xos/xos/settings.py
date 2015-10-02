@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'cord',
+    'helloworldservice',
     'ceilometer',
     'requestrouter',
 #    'urlfilter',
