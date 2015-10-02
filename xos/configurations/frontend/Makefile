@@ -18,4 +18,4 @@ showlogs:
 	sudo docker logs $(LAST_CONTAINER)
 
 enter:
-	sudo docker exec -t -i $(EXISTING_CONTAINER) bash
+	sudo docker exec -t -i $(RUNNING_CONTAINER) bash

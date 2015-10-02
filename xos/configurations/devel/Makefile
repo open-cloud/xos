@@ -1,5 +1,5 @@
 MYIP:=$(shell hostname -i)
-EXISTING_CONTAINER:=$(shell sudo docker ps|grep "xos"|awk '{print $$NF}')
+RUNNING_CONTAINER:=$(shell sudo docker ps|grep "xos"|awk '{print $$NF}')
 LAST_CONTAINER=$(shell sudo docker ps -l -q)
 
 test: common_cloudlab
@@ -13,10 +13,10 @@ common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
 stop:
-	sudo docker stop $(EXISTING_CONTAINER)
+	sudo docker stop $(RUNNING_CONTAINER)
 
 showlogs:
 	sudo docker logs $(LAST_CONTAINER)
 
 enter:
-	sudo docker exec -t -i $(EXISTING_CONTAINER) bash
+	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
