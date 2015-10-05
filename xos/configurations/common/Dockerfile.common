@@ -4,8 +4,8 @@ MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
 # Kernel 3.15 breaks docker, uss the line below as a workaround
-# until there is a fix 
-RUN ln -s -f /bin/true /usr/bin/chfn 
+# until there is a fix
+RUN ln -s -f /bin/true /usr/bin/chfn
 # XXX End workaround
 
 # Install.
@@ -23,12 +23,12 @@ RUN apt-get update && apt-get install -y \
     python-httplib2 \
     geoip-database \
     libgeoip1 \
-    wget \ 
-    curl \ 
+    wget \
+    curl \
     python-dev \
-    libyaml-dev \ 
-    pkg-config \ 
-    python-pycurl 
+    libyaml-dev \
+    pkg-config \
+    python-pycurl
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
@@ -64,6 +64,7 @@ RUN easy_install django_evolution
 RUN easy_install python_gflags
 RUN easy_install --upgrade httplib2
 RUN easy_install google_api_python_client
+RUN easy_install httplib2.ca_certs_locater
 
 # Install custom Ansible
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-crypto
@@ -97,7 +98,7 @@ RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
 ADD observer.conf /etc/supervisor/conf.d/
 
-# Get XOS 
+# Get XOS
 ADD xos /opt/xos
 
 # Initscript is broken in Ubuntu
