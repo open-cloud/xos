@@ -36,7 +36,7 @@ def parse_novarc(filename):
     return opts
 
 class Client:
-    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, controller=None, admin=True, *args, **kwds):
+    def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, controller=None, cacert=None, admin=True, *args, **kwds):
        
         self.has_openstack = has_openstack
         self.url = controller.auth_url
@@ -61,6 +61,8 @@ class Client:
             self.token = token    
         if endpoint:
             self.endpoint = endpoint
+
+        self.cacert = cacert
 
         #if '@' in self.username:
         #    self.username = self.username[:self.username.index('@')]
@@ -157,7 +159,8 @@ class QuantumClient(Client):
             self.client = quantum_client.Client(username=self.username,
                                                 password=self.password,
                                                 tenant_name=self.tenant,
-                                                auth_url=self.url)
+                                                auth_url=self.url,
+                                                ca_cert=self.cacert)
     @require_enabled
     def connect(self, *args, **kwds):
         self.__init__(*args, **kwds)
