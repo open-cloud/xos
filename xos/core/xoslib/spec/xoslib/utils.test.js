@@ -120,8 +120,21 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The strip_scripts method', () => {
-    xit('should be tested', () => {
-          
+    it('should be tested', () => {
+      const mockHtml = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Test</title>
+            <script src="myScript.js"></script>
+          </head>
+          <body></body>
+        </html>
+      `;
+
+      let res = strip_scripts(mockHtml);
+      expect(res.indexOf('script')).toBe(-1);
     });
   });
 
