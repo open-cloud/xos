@@ -40,7 +40,7 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The limitTableRows', () => {
-    it('should be tested', () => {
+    xit('should be tested', () => {
       
     });
   });
@@ -64,6 +64,121 @@ describe('The XOS Lib Utilities', function() {
     it('should return true for a valid url', () => {
       let res = validateField('url', 'www.onlab.us');
       expect(res).toBeTruthy();
+    });
+  });
+
+  describe('The array_diff method', () => {
+    it('should return the difference between two array', () => {
+      let res = array_diff([1,2,3], [1,2,5]);
+      expect(res).toEqual(['3', '5']); //is this right?
+      console.log('convert the array to a string, can\'t we use lodash?');
+    });
+  });
+
+  describe('The array_subtract method', () => {
+    it('should substract two arrays', () => {
+      let res = array_subtract([1,2],[1,2,3]);
+      expect(res).toEqual([1,2]);
+      console.log('[1,2] - [1,2,3] = [1,2]?');
+    });
+  });
+
+  describe('The array_same_elements method', () => {
+    it('should return true if array have same elements', () => {
+      let res = array_same_elements([1,2],[2,1]);
+      expect(res).toBeTruthy();
+    });
+
+    it('should return false if array have different elements', () => {
+      let res = array_same_elements([1,2],[2,2]);
+      expect(res).toBeFalsy();
+    });
+  });
+
+  describe('The array_pair_lookup method', () => {
+    it('should return corresponding values in other array', () => {
+      let res = array_pair_lookup('Baker', ['Scott', 'Jhon'], ['Baker', 'Snow']);
+      expect(res).toEqual('Scott');
+    });
+
+    it('should return missing value', () => {
+      let res = array_pair_lookup('Larry', ['Scott', 'Jhon'], ['Baker', 'Snow']);
+      expect(res).toEqual('object #Larry');
+    });
+  });
+
+  describe('The all_options method', () => {
+    xit('should be tested', () => {
+          
+    });
+  });
+
+  describe('The make_same_width method', () => {
+    xit('should be tested', () => {
+          
+    });
+  });
+
+  describe('The strip_scripts method', () => {
+    xit('should be tested', () => {
+          
+    });
+  });
+
+  describe('The parse_portlist method', () => {
+    it('should parse space separated ports', () => {
+      let res = parse_portlist('tcp 123, tcp 124');
+      expect(res).toEqual([{l4_protocol: 'tcp', l4_port: '123'},{l4_protocol: 'tcp', l4_port: '124'}]);
+    });
+
+    it('should parse / separated ports', () => {
+      let res = parse_portlist('tcp/123, tcp/124');
+      expect(res).toEqual([{l4_protocol: 'tcp', l4_port: '123'},{l4_protocol: 'tcp', l4_port: '124'}]);
+    });
+
+    it('should parse : joined ports', () => {
+      let res = parse_portlist('tcp 123:124');
+      expect(res).toEqual([{l4_protocol: 'tcp', l4_port: '123:124'}]);
+    });
+
+    it('should parse - joined ports', () => {
+      let res = parse_portlist('tcp 123-124');
+      expect(res).toEqual([{l4_protocol: 'tcp', l4_port: '123:124'}]);
+    });
+
+    it('should throw an error for malformed separator', () => {
+      let res = () => {
+        return parse_portlist('tcp+123, tcp+124');
+      }
+      expect(res).toThrow('malformed port specifier tcp+123, format example: "tcp 123, tcp 201:206, udp 333"');
+    });
+
+    it('should should throw if unknown protocol', () => {
+      let res = () => {
+        parse_portlist('abc 123');
+      }
+      expect(res).toThrow('unknown protocol abc');
+    });
+  });
+
+  describe('The portlist_regexp', () => {
+
+    const r = portlist_regexp();
+
+    it('should not match tcp', () => {
+      expect('tcp'.match(r)).toBeNull();
+    });
+
+    it('should match tcp 123', () => {
+      expect('tcp 123'.match(r)[0]).toEqual('tcp 123');
+    });
+
+    it('should match udp 123', () => {
+      expect('udp 123'.match(r)[0]).toEqual('udp 123');
+    });
+
+    it('should match tcp 123, upd 456', () => {
+      expect('tcp 123, udp 456'.match(r)[0]).toEqual('tcp 123, udp 456');
     });
   });
 });

@@ -177,7 +177,7 @@ function parse_portlist(ports) {
                 protocol=parts2[0];
                 ports=parts2[1];
             } else if (part.indexOf(" ")>=0) {
-                parts2 = part.split(" +",2);
+                parts2 = part.split(" ",2);
                 protocol=parts2[0];
                 ports=parts2[1];
             } else {
@@ -186,8 +186,6 @@ function parse_portlist(ports) {
 
             protocol = $.trim(protocol);
             ports = $.trim(ports);
-
-            console.log(ports);
 
             if (protocol!="tcp" && protocol!="udp") {
                 throw 'unknown protocol ' + protocol;
