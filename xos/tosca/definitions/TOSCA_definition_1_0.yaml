@@ -1,4 +1,4 @@
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+﻿#    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
@@ -47,6 +47,11 @@ tosca.nodes.Root:
 
 tosca.nodes.Compute:
   derived_from: tosca.nodes.Root
+  description: >
+    The TOSCA Compute node represents one or more real or virtual processors
+    of software applications or services along with other essential local
+    resources.  Collectively, the resources the compute node represents can
+    logically be viewed as a (real or virtual) server.
   attributes:
     private_address:
       type: string
