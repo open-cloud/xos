@@ -1,5 +1,7 @@
-describe('The test environment', function() {
-  it('should correctly work', function(){
+'use strict';
+
+describe('The test environment', () => {
+  it('should correctly work', () => {
     expect(true).toBe(true);
   });
 });

@@ -24,7 +24,7 @@ module.exports = function(config) {
       'static/js/vendor/backbone.syphon.js',
       'static/js/xoslib/*.js',
 
-      'spec/*.test.js'
+      'spec/**/*.test.js'
     ],
 
 
@@ -36,6 +36,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'spec/**/*.test.js': ['babel']
     },
 
 
