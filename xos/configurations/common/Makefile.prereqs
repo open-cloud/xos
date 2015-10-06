@@ -1,0 +1,34 @@
+UBUNTU:=$(shell which apt > /dev/null 2>&1; echo $$?)
+
+ifeq ($(UBUNTU),0)
+
+# ******************* apt-based distros ***************************
+prereqs: /usr/bin/http docker
+
+/usr/bin/http: 
+	sudo apt-get -y install httpie
+
+docker:
+	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
+	sudo usermod -aG docker $(shell whoami)
+
+else
+
+# ****************** RPM-based distros ******************
+
+# (untested / work-in-progress)
+
+prereqs: /usr/bin/pip /usr/bin/http docker
+
+/usr/bin/pip:
+	curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+	sudo python ./get-pip.py     
+
+docker:
+	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
+	sudo usermod -aG docker $(shell whoami)
+
+/usr/bin/http:
+	sudo pip install httpie
+
+endif
