@@ -4,7 +4,8 @@
   "description": "Add to the following in settings.py",
   "main": "index.js",
   "scripts": {
-    "test": "karma start"
+    "test": "karma start",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "BSD-2-Clause",
@@ -15,6 +16,7 @@
     "phantomjs": "~1.9.18",
     "karma-phantomjs-launcher": "~0.2.1",
     "karma-mocha-reporter": "~1.1.1",
-    "karma-babel-preprocessor": "~5.2.2"
+    "karma-babel-preprocessor": "~5.2.2",
+    "eslint": "~1.6.0"
   }
 }

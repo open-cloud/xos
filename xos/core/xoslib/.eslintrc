@@ -3,7 +3,7 @@
     "browser": true
   },
   "rules" : {
-    "quotes": [1, "single"],
+    "quotes": [1, "double"],
     "camelcase": [0],
     "no-underscore-dangle": [0],
     "eqeqeq": [1],
