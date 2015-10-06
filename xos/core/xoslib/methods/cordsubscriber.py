@@ -393,6 +393,8 @@ class CordSubscriberViewSet(XOSViewSet):
         return Response( {"vbng_mapping": mappings} )
 
 class CordDebugIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
+    # Swagger is failing because CordDebugViewSet has neither a model nor
+    # a serializer_class. Stuck this in here as a placeholder for now.
     id = ReadOnlyField()
     class Meta:
         model = CordSubscriber
