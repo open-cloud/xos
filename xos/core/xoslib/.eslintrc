@@ -1,0 +1,20 @@
+{
+  "env" : {
+    "browser": true
+  },
+  "rules" : {
+    "quotes": [1, "single"],
+    "camelcase": [0],
+    "no-underscore-dangle": [0],
+    "eqeqeq": [1],
+    "no-alert": [1],
+    "no-unused-vars": [1],
+    "key-spacing": [2, {
+        "beforeColon": false,
+        "afterColon": true
+    }],
+    "indent": [2, 2]
+  },
+  "globals": {
+  }
+}

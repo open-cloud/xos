@@ -1,7 +1,9 @@
 // Karma configuration
 // Generated on Tue Oct 06 2015 09:27:10 GMT+0000 (UTC)
 
+/*eslint-disable*/
 module.exports = function(config) {
+/*eslint-enable*/
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -71,5 +73,5 @@ module.exports = function(config) {
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
-  })
-}
+  });
+};
