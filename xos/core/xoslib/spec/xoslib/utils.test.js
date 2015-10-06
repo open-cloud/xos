@@ -18,6 +18,12 @@ describe('The XOS Lib Utilities', function() {
     });
   });
 
+  describe('The templateFromId method', () => {
+    xit('should behave...', () => {
+      
+    });
+  });
+
   describe('The firstCharUpper', () => {
     it('should return the first char UPPERCASE', () => {
       let res = firstCharUpper('test');
@@ -108,8 +114,20 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The all_options method', () => {
-    xit('should be tested', () => {
-          
+
+    beforeEach(() => {
+      jasmine.getFixtures().set(`
+        <select id="test-select">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3/option>
+        </select>
+      `);
+    });
+
+    it('should return all options from a select', () => {
+      let res = all_options('#test-select');
+      expect(res).toEqual(['1','2','3']);
     });
   });
 

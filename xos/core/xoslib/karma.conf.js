@@ -26,7 +26,10 @@ module.exports = function(config) {
       'static/js/vendor/backbone.syphon.js',
       'static/js/xoslib/*.js',
 
-      'spec/**/*.test.js'
+      'spec/helpers/jasmine-jquery.js',
+      'spec/**/*.test.js',
+
+      'spec/fixture/**/*.html'
     ],
 
 
