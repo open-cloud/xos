@@ -13,4 +13,7 @@ RUN sudo ln -s "$(which nodejs)" /usr/bin/node
 RUN echo "Node Version: "
 RUN node -v
 
+# TODO
+# - Enter /opt/xos/core/xoslib and run npm install
+
 CMD /usr/bin/make -C /opt/xos/configurations/frontend -f Makefile.inside
