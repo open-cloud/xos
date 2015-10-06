@@ -4,6 +4,7 @@
   "description": "Add to the following in settings.py",
   "main": "index.js",
   "scripts": {
+    "pretest": "npm install",
     "test": "karma start",
     "lint": "eslint ."
   },
