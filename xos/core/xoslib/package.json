@@ -14,6 +14,7 @@
     "karma-jasmine": "~0.3.6",
     "phantomjs": "~1.9.18",
     "karma-phantomjs-launcher": "~0.2.1",
-    "karma-mocha-reporter": "~1.1.1"
+    "karma-mocha-reporter": "~1.1.1",
+    "karma-babel-preprocessor": "~5.2.2"
   }
 }
