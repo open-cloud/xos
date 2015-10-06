@@ -3,3 +3,4 @@
 *.swp
 profile
 *.moved-aside
+xos/configurations/frontend/Dockerfile
