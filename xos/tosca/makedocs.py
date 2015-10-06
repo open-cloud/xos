@@ -24,8 +24,14 @@ class ToscaDocumenter(object):
     def __init__(self, fn="./custom_types/xos.yaml", templatedir="./doctemplates/html", templatename="toscadoctemplate.html", destfn="tosca_reference.html"):
         self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(templatedir))
 
+        self.node_types = {}
+        self.root_types = yaml.load(file("definitions/TOSCA_definition_1_0.yaml").read())
+        for x in self.root_types.keys():
+            if x in ["tosca.nodes.Compute", "tosca.nodes.network.Network"]:
+                self.node_types[x] = self.root_types[x]
+
         self.custom_types = yaml.load(file(fn).read())
-        self.node_types = self.custom_types.get("node_types")
+        self.node_types.update(self.custom_types.get("node_types"))
 
         self.destfn = destfn
         self.templatename = templatename
