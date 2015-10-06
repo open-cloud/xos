@@ -1,0 +1,46 @@
+<hr>
+<h2 id="{{ node_type.node_type_name }}">{{ node_type.node_type_name }}</h2>
+<blockquote>
+
+<h3>Description:</h3>
+{% if node_type.description %}
+  <blockquote>
+  {{ node_type.description }}
+  </blockquote>
+{% endif %}
+
+<h3>Capabilities:</h3>
+{% if node_type.capabilities %}
+  <blockquote>
+  <table class="properties">
+  <tr><th>name</th><th>type</th></tr>
+  {% for capname,cap in node_type.capabilities.iteritems() %}
+     <tr><td>{{ capname }}</td><td>{{ cap.type }}</td></tr>
+  {% endfor %}
+  </table>
+  </blockquote>
+{% endif %}
+
+<h3>Properties:</h3>
+{% if node_type.properties %}
+  <blockquote>
+  <table class="properties">
+  <tr><th>name</th><th>required</th><th>type</th><th>default</th></tr>
+  {% for propname,prop in node_type.properties.iteritems() %}
+     <tr><td>{{ propname }}</td>
+         <td>{{ prop.required }}</td>
+         <td>{{ prop.type }}</td>
+         <td>{{ prop.default }}</td>
+     </tr>
+     {% if prop.description %}
+     <tr><td colspan=4 class="helptext" style="apadding-left: 30px;">{{ prop.description }}</td></tr>
+     {% endif %}
+  {% endfor %}
+  </table>
+  </blockquote>
+{% endif %}
+
+</blockquote>
+
+
+

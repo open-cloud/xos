@@ -17,6 +17,7 @@
       wait_for: 200
       flavor_name: {{ flavor_name }}
       user_data: "{{ user_data }}"
+      config_drive: yes
       nics:
       {% for net in nics %}
           - net-id: {{ net }}
