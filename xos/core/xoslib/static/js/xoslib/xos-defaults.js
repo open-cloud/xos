@@ -1,3 +1,4 @@
+/* eslint indent: [2, 2]*/
 function xos_get_defaults() {
   this.account = {"updated": null, "policed": null, "created": null, "deleted": false, "site": null, "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "backend_status": "0 - Provisioning in progress", "no_sync": false, "enacted": null};
   this.charge = {"updated": null, "slice": null, "date": null, "policed": null, "created": null, "deleted": false, "object": null, "account": null, "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "amount": 0.0, "state": "pending", "invoice": null, "coreHours": 0.0, "backend_status": "0 - Provisioning in progress", "kind": "besteffort", "no_sync": false, "enacted": null};

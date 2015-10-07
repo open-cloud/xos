@@ -1,5 +1,27 @@
 'use strict';
 
+describe('The Xos Backbone', () => {
+  describe('get_defaults mehod', () => {
+
+    beforeEach(() => {
+      xosdefaults = {
+        test: {config: true}
+      };
+    });
+
+    it('should return default config', () => {
+      let res = get_defaults('test');
+      expect(res).toEqual({config: true});
+    });
+
+    it('should return undefined', () => {
+      let res = get_defaults('notset');
+      expect(res).toBeUndefined();
+    });
+
+  });
+});
+
 describe('The XOSModel', () => {
 
   var model;
