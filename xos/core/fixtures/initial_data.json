@@ -334,7 +334,7 @@
         "translation": "none",
         "backend_status": "0 - Provisioning in progress",
         "shared_network_name": null,
-        "controller_kind": "none",
+        "controller_kind": null,
         "enacted": null
     },
     "model": "core.networktemplate",
@@ -356,7 +356,7 @@
         "translation": "NAT",
         "backend_status": "0 - Provisioning in progress",
         "shared_network_name": "nat-net",
-        "controller_kind": "none",
+        "controller_kind": null,
         "enacted": null
     },
     "model": "core.networktemplate",
@@ -378,7 +378,7 @@
         "translation": "none",
         "backend_status": "0 - Provisioning in progress",
         "shared_network_name": "ext-net",
-        "controller_kind": "none",
+        "controller_kind": null,
         "enacted": null
     },
     "model": "core.networktemplate",
