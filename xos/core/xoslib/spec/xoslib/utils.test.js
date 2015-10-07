@@ -6,7 +6,7 @@ describe('The XOS Lib Utilities', function() {
 
   beforeEach(() => {
     f = jasmine.getFixtures();
-    f.fixturesPath = 'base/spec/xoslib';
+    f.fixturesPath = 'base/spec/xoslib/fixtures/xos-utils';
   });
 
   describe('The idInArray method', function() {
