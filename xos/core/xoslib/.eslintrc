@@ -13,7 +13,8 @@
         "beforeColon": false,
         "afterColon": true
     }],
-    "indent": [2, 2]
+    "indent": [2, 4],
+    "valid-jsdoc": 2
   },
   "globals": {
   }
