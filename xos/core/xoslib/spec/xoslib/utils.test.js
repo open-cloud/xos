@@ -1,6 +1,14 @@
 'use strict';
 
 describe('The XOS Lib Utilities', function() {
+
+  var f;
+
+  beforeEach(() => {
+    f = jasmine.getFixtures();
+    f.fixturesPath = 'base/spec/xoslib';
+  });
+
   describe('The idInArray method', function() {
     it('should match a string ID', () => {
       let res = idInArray('1', [1, 2, 3]);
@@ -19,8 +27,19 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The templateFromId method', () => {
-    xit('should behave...', () => {
-      
+
+    beforeEach(() => {
+      f.load('template_from_id.html');
+    });
+
+    it('should load a static template', () => {
+      let st = templateFromId('#static-test');
+      expect($(st()).text()).toEqual('Test Template');
+    });
+
+    it('should load a dynamic template', () => {
+      let dn = templateFromId('#dynamic-test');
+      expect($(dn({stuff: 'Template'})).text()).toEqual('Test Template');
     });
   });
 
@@ -46,8 +65,19 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The limitTableRows', () => {
-    xit('should be tested', () => {
-      
+    
+    beforeEach(() => {
+      f.load('table_rows.html');
+    });
+
+    it('should limit the table container height', () => {
+
+      // table border = 2, td height = 150, see fixture html
+      // resulting table height: 308
+      // .conatiner height: 308 + 2 (table border top)
+
+      limitTableRows('table.test-table', 2);
+      expect($('.container')[0]).toHaveCss({height: '310px'});
     });
   });
 
@@ -116,7 +146,7 @@ describe('The XOS Lib Utilities', function() {
   describe('The all_options method', () => {
 
     beforeEach(() => {
-      jasmine.getFixtures().set(`
+      f.set(`
         <select id="test-select">
           <option value="1">1</option>
           <option value="2">2</option>
@@ -132,13 +162,21 @@ describe('The XOS Lib Utilities', function() {
   });
 
   describe('The make_same_width method', () => {
-    xit('should be tested', () => {
-          
+
+    beforeEach(() => {
+      f.load('make_same_width.html');
+    });
+
+    it('should set elements to same width', () => {
+      make_same_width('.container', 'div');
+      $('.container div').each(function(){
+        expect($(this)).toHaveCss({width: '400px'});
+      });
     });
   });
 
   describe('The strip_scripts method', () => {
-    it('should be tested', () => {
+    it('should strip scripts tag', () => {
       const mockHtml = `
         <!DOCTYPE html>
         <html lang="en">

@@ -29,7 +29,7 @@ module.exports = function(config) {
       'spec/helpers/jasmine-jquery.js',
       'spec/**/*.test.js',
 
-      'spec/fixture/**/*.html'
+      'spec/**/*.html'
     ],
 
 

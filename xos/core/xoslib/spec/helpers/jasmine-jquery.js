@@ -136,6 +136,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           htmlText = $xhr.responseText
         }
       }).fail(function ($xhr, status, err) {
+          console.log($xhr.responseText);
+          console.log($xhr.getAllResponseHeaders());
           throw new Error('Fixture could not be loaded: ' + url + ' (status: ' + status + ', message: ' + err.message + ')')
       })
 
