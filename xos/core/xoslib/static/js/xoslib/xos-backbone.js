@@ -40,8 +40,6 @@ if (! window.XOSLIB_LOADED ) {
     CORDSUBSCRIBER_API = XOSLIB_BASE + "/cordsubscriber/";
     CORDUSER_API = XOSLIB_BASE + "/corduser/";
 
-    console.log(Backbone);
-
     XOSModel = Backbone.Model.extend({
         relatedCollections: [],
         foreignCollections: [],
