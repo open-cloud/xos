@@ -55,16 +55,20 @@ define(xos_base_subscriber_props,
             kind:
                 type: string
                 default: generic
+                description: Kind of subscriber
             service_specific_id:
                 type: string
-                required: false)
+                required: false
+                description: Service specific ID, opaque to XOS but meaningful to service)
 define(xos_base_tenant_props,
             kind:
                 type: string
                 default: generic
+                description: Kind of tenant
             service_specific_id:
                 type: string
-                required: false)
+                required: false
+                description: Service specific ID, opaque to XOS but meaningful to service)
 
 # end m4 macros
 #
@@ -157,6 +161,9 @@ node_types:
             CORD: User. The CORD user represents an individual device beloning
             to the CORD Subscriber. Each device may have its own parental
             controls.
+        capabilities:
+            device:
+                type: tosca.capabilities.xos.Device
         properties:
             level:
                 type: string
@@ -257,7 +264,7 @@ node_types:
             topology_kind:
                 type: string
                 default: BigSwitch
-                descrption: Describes the topology of the network.
+                description: Describes the topology of the network.
             controller_kind:
                 type: string
                 required: false
@@ -269,7 +276,8 @@ node_types:
           # using derived_from.
           derived_from: tosca.nodes.Root
           description: >
-            The TOSCA Network node represents a simple, logical network service.
+            This is a variant of the TOSCA Network object that includes additional
+            XOS-specific properties.
           properties:
             ip_version:
               type: integer
@@ -468,7 +476,7 @@ node_types:
         description: >
             An XOS Slice. A slice is a collection of instances that share
             common attributes.
-        capability:
+        capabilities:
             slice:
                 type: tosca.capabilities.xos.Slice
         properties:
@@ -539,6 +547,7 @@ node_types:
 
     tosca.relationships.ConnectsToSlice:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Slice ]
 
     #    tosca.relationships.OwnsNetwork:
     #        derived_from: tosca.relationships.Root
@@ -550,25 +559,27 @@ node_types:
 
     tosca.relationships.AdminPrivilege:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
+        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabilities.xos.Site ]
 
     tosca.relationships.AccessPrivilege:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabiltys.xos.Site ]
+        valid_target_types: [ tosca.capabilities.xos.Slice, tosca.capabilities.xos.Site ]
 
     tosca.relationships.PIPrivilege:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabiltys.xos.Site ]
+        valid_target_types: [ tosca.capabilities.xos.Site ]
 
     tosca.relationships.TechPrivilege:
         derived_from: tosca.relationships.Root
-        valid_target_types: [ tosca.capabiltys.xos.Site ]
+        valid_target_types: [ tosca.capabilities.xos.Site ]
 
     tosca.relationships.SubscriberDevice:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Subscriber ]
 
     tosca.relationships.BelongsToSubscriber:
         derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Subscriber ]
 
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
@@ -605,6 +616,10 @@ node_types:
     tosca.capabilities.xos.Subscriber:
         derived_from: tosca.capabilities.Root
         description: An XOS Subscriber
+
+    tosca.capabilities.xos.Device:
+        derived_from: tosca.capabilities.Root
+        description: A device belonging to an XOS subscriber
 
     tosca.capabilities.xos.Node:
         derived_from: tosca.capabilities.Root
