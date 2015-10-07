@@ -1,4 +1,4 @@
-all: prereqs admin-openrc flat_name nodes_yaml public_key
+all: prereqs admin-openrc flat_name nodes_yaml public_key private_key
 
 prereqs:
 	make -f Makefile.prereqs
@@ -14,6 +14,9 @@ nodes_yaml:
 
 public_key: ~/.ssh/id_rsa.pub
 	cp ~/.ssh/id_rsa.pub .
+
+private_key: ~/.ssh/id_rsa
+	cp ~/.ssh/id_rsa .
 
 ~/.ssh/id_rsa.pub:
 	cat /dev/zero | ssh-keygen -q -N ""
