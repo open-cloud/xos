@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Tue Oct 06 2015 09:27:10 GMT+0000 (UTC)
 
+/* eslint indent: [2,2], quotes: [2, "single"]*/
+
 /*eslint-disable*/
 module.exports = function(config) {
 /*eslint-enable*/

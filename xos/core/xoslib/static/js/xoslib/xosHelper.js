@@ -564,7 +564,7 @@ XOSDetailView = Marionette.ItemView.extend({
                 var that = this;
                 var isNew = !this.model.id;
 
-                console.log(data);
+                console.log('data', data);
 
                 this.$el.find(".help-inline").remove();
 
