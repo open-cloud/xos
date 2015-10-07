@@ -5,6 +5,6 @@ ADD xos/configurations/common/cloudlab-nodes.yaml /opt/xos/configurations/commmo
 ADD xos/configurations/common/id_rsa.pub /root/setup/padmin_public_key
 ADD xos/configurations/common/id_rsa.pub /opt/xos/observers/vcpe/vcpe_public_key
 
-CMD /usr/bin/make -C /opt/xos/configurations/devel -f Makefile.inside; /bin/bash
+CMD /usr/bin/make -C /opt/xos/configurations/cord -f Makefile.inside; /bin/bash
 
 #CMD ["/bin/bash"]
