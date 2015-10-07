@@ -53,6 +53,7 @@ if (! window.XOSLIB_LOADED ) {
 
         /* from backbone-tastypie.js */
         url: function() {
+                    // TODO handle error if no property
                     var url = this.attributes.resource_uri;
 
                     if (!url) {
