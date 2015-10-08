@@ -7,6 +7,7 @@ from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 # If true, then IP addresses will be allocated by the model. If false, then
 # we will assume the observer handles it.
@@ -203,7 +204,8 @@ class NetworkSlice(PlCoreBase):
             qs = NetworkSlice.objects.all()
         else:
             slice_ids = [s.id for s in Slice.select_by_user(user)]
-            qs = NetworkSlice.objects.filter(id__in=slice_ids)
+            network_ids = [network.id for network in Network.select_by_user(user)]
+            qs = NetworkSlice.objects.filter(Q(slice__in=slice_ids) | Q(network__in=network_ids))
         return qs
 
 class Port(PlCoreBase):
@@ -246,8 +248,11 @@ class Port(PlCoreBase):
         if user.is_admin:
             qs = Port.objects.all()
         else:
-            instance_ids = [s.id for s in Port.select_by_user(user)]
-            qs = Port.objects.filter(id__in=instance_ids)
+            instances = Instance.select_by_user(user)
+            instance_ids = [instance.id for instance in instances]
+            networks = Network.select_by_user(user)
+            network_ids = [network.id for network in networks]
+            qs = Port.objects.filter(Q(instance__in=instance_ids) | Q(network__in=network_ids))
         return qs
 
 class Router(PlCoreBase):

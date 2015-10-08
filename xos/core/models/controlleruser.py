@@ -26,7 +26,7 @@ class ControllerUser(PlCoreBase):
         if user.is_admin:
             qs = ControllerUser.objects.all()
         else:
-            users = Users.select_by_user(user)
+            users = User.select_by_user(user)
             qs = ControllerUser.objects.filter(user__in=users)
         return qs
 
