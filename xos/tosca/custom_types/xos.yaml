@@ -193,7 +193,7 @@ node_types:
             service_specific_id:
                 type: string
                 required: false
-                description: Service specific ID
+                description: Service specific ID opaque to XOS but meaningful to service
 
     tosca.nodes.CORDSubscriber:
         derived_from: tosca.nodes.Root
@@ -212,7 +212,7 @@ node_types:
             service_specific_id:
                 type: string
                 required: false
-                description: Service specific ID
+                description: Service specific ID opaque to XOS but meaningful to service
             firewall_enable:
                 type: boolean
                 default: false
@@ -262,7 +262,7 @@ node_types:
             service_specific_id:
                 type: string
                 required: false
-                description: Service specific ID
+                description: Service specific ID opaque to XOS but meaningful to service
             vlan_id:
                 type: string
                 required: false
@@ -460,6 +460,10 @@ node_types:
                 type: boolean
                 default: false
                 description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             accessControl:
                 type: string
                 default: allow all
@@ -499,6 +503,18 @@ node_types:
             controller:
                 type: tosca.capabilities.xos.Controller
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             backend_type:
                 type: string
                 required: false
@@ -536,29 +552,41 @@ node_types:
             site:
                 type: tosca.capabilities.xos.Site
         properties:
-             display_name:
-                 type: string
-                 required: false
-                 description: Name of the site.
-             site_url:
-                 type: string
-                 required: false
-                 description: URL of site web page.
-             enabled:
-                 type: boolean
-                 default: true
-             hosts_nodes:
-                 type: boolean
-                 default: true
-                 description: If True, then this site hosts nodes where Instances may be instantiated.
-             hosts_users:
-                 type: boolean
-                 default: true
-                 description: If True, then this site hosts users who may use XOS.
-             is_public:
-                 type: boolean
-                 default: true
-             # location, longitude, latitude
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+            display_name:
+                type: string
+                required: false
+                description: Name of the site.
+            site_url:
+                type: string
+                required: false
+                description: URL of site web page.
+            enabled:
+                type: boolean
+                default: true
+            hosts_nodes:
+                type: boolean
+                default: true
+                description: If True, then this site hosts nodes where Instances may be instantiated.
+            hosts_users:
+                type: boolean
+                default: true
+                description: If True, then this site hosts users who may use XOS.
+            is_public:
+                type: boolean
+                default: true
+            # location, longitude, latitude
 
     tosca.nodes.Slice:
         derived_from: tosca.nodes.Root
@@ -569,6 +597,18 @@ node_types:
             slice:
                 type: tosca.capabilities.xos.Slice
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             enabled:
                 type: boolean
                 default: true
@@ -590,7 +630,20 @@ node_types:
         description: >
             An XOS Node. Nodes are physical machines that host virtual machines
             and/or containers.
-        capability:
+        properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
+        capabilities:
             node:
                 type: tosca.capabilities.xos.Node
 
