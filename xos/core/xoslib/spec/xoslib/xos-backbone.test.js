@@ -1,13 +1,14 @@
 'use strict';
 
 describe('The Xos Backbone', () => {
-  describe('get_defaults mehod', () => {
+  
+  beforeEach(() => {
+    xosdefaults = {
+      test: {config: true}
+    };
+  });
 
-    beforeEach(() => {
-      xosdefaults = {
-        test: {config: true}
-      };
-    });
+  describe('get_defaults mehod', () => {
 
     it('should return default config', () => {
       let res = get_defaults('test');
@@ -19,6 +20,39 @@ describe('The Xos Backbone', () => {
       expect(res).toBeUndefined();
     });
 
+  });
+
+  describe('The extend_defaults method', () => {
+    
+    it('should return an extended config', () => {
+      let extended = extend_defaults('test', {extended: true});
+      expect(extended).toEqual({config: true, extended: true});
+    });
+
+    it('should return an new config', () => {
+      let extended = extend_defaults('notset', {extended: true});
+      expect(extended).toEqual({extended: true});
+    });
+
+  });
+
+  describe('getCookie method with no cookie', () => {
+    it('should return null', () => {
+      let res = getCookie('fakeCookie');
+      expect(res).toBeNull();
+    });
+  });
+
+  describe('getCookie method with a fake cookie', () => {
+  
+    beforeEach(() => {
+      document.cookie = 'fakeCookie=true';
+    });
+  
+    it('should return a cookie value', () => {
+      let res = getCookie('fakeCookie');
+      expect(res).toEqual('true');
+    });
   });
 });
 
