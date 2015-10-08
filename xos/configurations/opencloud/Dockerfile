@@ -31,8 +31,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     libyaml-dev \
     pkg-config \
     supervisor \
-    python-crypto
-    python-httplib2 \
+    python-crypto \
+    python-httplib2>=0.9.1 \
     python-jinja2 \
     python-paramiko \
     python-pip \
@@ -47,7 +47,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-ceilometerclient
 
 RUN pip install \
-    django==1.7
+    django==1.7 \
     djangorestframework==2.4.4 \
     markdown  \ 
     pyyaml \ 
@@ -69,13 +69,14 @@ RUN pip install \
     pygraphviz \
     dnslib
 
+RUN easy_install --upgrade httplib2
+
 RUN easy_install \
-    django_evolution
+    django_evolution \
     python_gflags \
     google_api_python_client \
     httplib2.ca_certs_locater
 
-RUN easy_install --upgrade httplib2
 
 # Install custom Ansible
 RUN git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible
