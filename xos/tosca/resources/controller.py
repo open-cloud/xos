@@ -44,6 +44,10 @@ class XOSController(XOSResource):
         if obj.controllersite.exists():
             self.info("Controller %s has active sites; skipping delete" % obj.name)
             return
+        for sd in obj.sitedeployments.all():
+            if sd.nodes.exists():
+                self.info("Controller %s has active nodes; skipping delete" % obj.name)
+                return
         super(XOSController, self).delete(obj)
 
 
