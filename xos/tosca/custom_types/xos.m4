@@ -12,7 +12,11 @@ define(xos_base_props,
             no-create:
                 type: boolean
                 default: false
-                description: Do not allow Tosca to create this object)
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object)
 # Service
 define(xos_base_service_caps,
             scalable:
@@ -59,7 +63,7 @@ define(xos_base_subscriber_props,
             service_specific_id:
                 type: string
                 required: false
-                description: Service specific ID, opaque to XOS but meaningful to service)
+                description: Service specific ID opaque to XOS but meaningful to service)
 define(xos_base_tenant_props,
             kind:
                 type: string
@@ -68,7 +72,7 @@ define(xos_base_tenant_props,
             service_specific_id:
                 type: string
                 required: false
-                description: Service specific ID, opaque to XOS but meaningful to service)
+                description: Service specific ID opaque to XOS but meaningful to service)
 
 # end m4 macros
 #
@@ -410,6 +414,7 @@ node_types:
             controller:
                 type: tosca.capabilities.xos.Controller
         properties:
+            xos_base_props
             backend_type:
                 type: string
                 required: false
@@ -447,29 +452,30 @@ node_types:
             site:
                 type: tosca.capabilities.xos.Site
         properties:
-             display_name:
-                 type: string
-                 required: false
-                 description: Name of the site.
-             site_url:
-                 type: string
-                 required: false
-                 description: URL of site web page.
-             enabled:
-                 type: boolean
-                 default: true
-             hosts_nodes:
-                 type: boolean
-                 default: true
-                 description: If True, then this site hosts nodes where Instances may be instantiated.
-             hosts_users:
-                 type: boolean
-                 default: true
-                 description: If True, then this site hosts users who may use XOS.
-             is_public:
-                 type: boolean
-                 default: true
-             # location, longitude, latitude
+            xos_base_props
+            display_name:
+                type: string
+                required: false
+                description: Name of the site.
+            site_url:
+                type: string
+                required: false
+                description: URL of site web page.
+            enabled:
+                type: boolean
+                default: true
+            hosts_nodes:
+                type: boolean
+                default: true
+                description: If True, then this site hosts nodes where Instances may be instantiated.
+            hosts_users:
+                type: boolean
+                default: true
+                description: If True, then this site hosts users who may use XOS.
+            is_public:
+                type: boolean
+                default: true
+            # location, longitude, latitude
 
     tosca.nodes.Slice:
         derived_from: tosca.nodes.Root
@@ -480,6 +486,7 @@ node_types:
             slice:
                 type: tosca.capabilities.xos.Slice
         properties:
+            xos_base_props
             enabled:
                 type: boolean
                 default: true
@@ -501,7 +508,9 @@ node_types:
         description: >
             An XOS Node. Nodes are physical machines that host virtual machines
             and/or containers.
-        capability:
+        properties:
+            xos_base_props
+        capabilities:
             node:
                 type: tosca.capabilities.xos.Node
 
