@@ -108,7 +108,7 @@ class SyncInstances(OpenStackSyncStep):
 
         userData = self.get_userdata(instance, pubkeys)
         if instance.userData:
-            userData = instance.userData
+            userData += instance.userData
 
         controller = instance.node.site_deployment.controller
         fields = {'endpoint':controller.auth_url,
