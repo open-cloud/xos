@@ -104,7 +104,7 @@ RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 ADD observer.conf /etc/supervisor/conf.d/
 
 # Get XOS
-ADD xos /opt/xos
+RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
 
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
