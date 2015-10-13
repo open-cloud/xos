@@ -134,6 +134,16 @@ if (! window.XOSLIB_LOADED) {
         xosValidate: function(attrs, options) {
             errors = {};
             foundErrors = false;
+            var self = this;
+
+            console.log(self);
+
+            // if(self.validators && self.validators.custom && typeof self.validators.custom === 'function'){
+            //     var error = self.validators.custom(attrs, options);
+            //     debugger;
+            //     console.log(error);
+            // }
+
             _.each(this.validators, function(validatorList, fieldName) {
                 _.each(validatorList, function(validator) {
                     if (fieldName in attrs) {
@@ -424,17 +434,24 @@ if (! window.XOSLIB_LOADED) {
             modelAttrs.defaults = get_defaults(modelName);
         }
 
-//        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
-//            modelAttrs["defaults"] = xosdefaults[modelName];
-//        }
-
+        // NOTE
+        // if(modelName === 'slicePlus'){
+        //     debugger;
+        // }
         if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
             modelAttrs["validators"] = $.extend({}, xosvalidators[modelName], attrs["validators"] || {});
-        } else if (attrs["validators"]) {
+        }
+        else if (attrs["validators"]) {
             modelAttrs["validators"] = attrs["validators"];
             console.log(attrs);
             console.log(modelAttrs);
         }
+
+        // NOTE this has been added by matteo to pass in custom validators
+        // will be evaluated by xosValidate on line 137
+        // if(typeof attrs.xosValidate === 'function' && attrs['validators']){
+        //     modelAttrs['validators'].custom = attrs.xosValidate;
+        // }
 
         lib[modelName] = XOSModel.extend(modelAttrs);
 
@@ -735,8 +752,11 @@ if (! window.XOSLIB_LOADED) {
                             defaults: extend_defaults("slice", {"network_ports": "", "site_allocation": []}),
                             validators: {"network_ports": ["portspec"]},
                             xosValidate: function(attrs, options) {
+                                // TODO this is not triggered
+                                // was it ment to override xosValidate in the XOS Model definition?
                                 errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
                                 // validate that slice.name starts with site.login_base
+                                console.log('SlicePlus XOSValidate', attrs.site, this.site);
                                 site = attrs.site || this.site;
                                 if ((site!=undefined) && (attrs.name!=undefined)) {
                                     site = xos.sites.get(site);
