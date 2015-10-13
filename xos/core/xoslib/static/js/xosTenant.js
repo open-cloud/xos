@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 XOSTenantSite = XOSModel.extend( {
     listFields: ["name", "allocated"],
     modelName: "tenantSite",
@@ -451,4 +453,4 @@ XOSTenantApp.on("start", function() {
 $(document).ready(function(){
     XOSTenantApp.start();
 });
-
+/* eslint-enable */

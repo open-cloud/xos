@@ -1,0 +1,4 @@
+node_modules/**/*.js
+static/js/xsh/**/*.js
+static/js/vendor/**/*.js
+spec/helpers/*.js

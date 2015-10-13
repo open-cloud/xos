@@ -1,3 +1,4 @@
+/* eslint-disable */
 (function(){
 
 window.InstanceView = Backbone.View.extend({
@@ -144,3 +145,4 @@ $(function(){
     });
 });
 })();
+/* eslint-enable */
