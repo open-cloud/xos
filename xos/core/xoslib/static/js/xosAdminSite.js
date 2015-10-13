@@ -1,3 +1,4 @@
+/* eslint-disable */
 OBJS = ['deployment', 'image', 'networkTemplate', 'network', 'port',
         'node', 'service', 'site', 'slice',  'slicePrivilege', 'instance',
         'user', 'sliceRole',  'flavor', 'controller', 'siteDeployment',
@@ -244,4 +245,4 @@ XOSAdminApp.on("start", function() {
 $(document).ready(function(){
     XOSAdminApp.start();
 });
-
+/* eslint-enable */

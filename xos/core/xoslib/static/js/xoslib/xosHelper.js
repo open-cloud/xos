@@ -1,3 +1,4 @@
+/* eslint-disable */
 HTMLView = Marionette.ItemView.extend({
   render: function() {
       this.$el.append(this.options.html);
@@ -1172,3 +1173,4 @@ escapeForFormField = function(s) {
         return String(s).replace(/"/g,'&quot;')
     }
 }
+/* eslint-enable */

@@ -60,12 +60,12 @@ describe('The XOS Lib Utilities', function() {
   describe('The fieldNameToHumanReadable method', () => {
     it('should convert lodash to spaces and apply toTitleCase', () => {
       let res = fieldNameToHumanReadable('tEst_fIelD');
-      expect(res).toEqual('Test Field')
+      expect(res).toEqual('Test Field');
     });
   });
 
   describe('The limitTableRows', () => {
-    
+
     beforeEach(() => {
       f.load('table_rows.html');
     });
@@ -169,8 +169,8 @@ describe('The XOS Lib Utilities', function() {
 
     it('should set elements to same width', () => {
       make_same_width('.container', 'div');
-      $('.container div').each(function(){
-        expect($(this)).toHaveCss({width: '400px'});
+      $('.container div').each(function(index, item) {
+        expect($(item)).toHaveCss({width: '400px'});
       });
     });
   });
@@ -218,14 +218,14 @@ describe('The XOS Lib Utilities', function() {
     it('should throw an error for malformed separator', () => {
       let res = () => {
         return parse_portlist('tcp+123, tcp+124');
-      }
+      };
       expect(res).toThrow('malformed port specifier tcp+123, format example: "tcp 123, tcp 201:206, udp 333"');
     });
 
     it('should should throw if unknown protocol', () => {
       let res = () => {
         parse_portlist('abc 123');
-      }
+      };
       expect(res).toThrow('unknown protocol abc');
     });
   });
