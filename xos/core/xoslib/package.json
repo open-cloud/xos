@@ -1,0 +1,24 @@
+{
+  "name": "xoslib",
+  "version": "0.0.0",
+  "description": "Add to the following in settings.py",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm install",
+    "test": "karma start",
+    "lint": "eslint ."
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "eslint": "~1.6.0",
+    "eslint-config-defaults": "^7.0.1",
+    "jasmine-core": "~2.3.4",
+    "karma": "~0.13.10",
+    "karma-babel-preprocessor": "~5.2.2",
+    "karma-jasmine": "~0.3.6",
+    "karma-mocha-reporter": "~1.1.1",
+    "karma-phantomjs-launcher": "~0.2.1",
+    "phantomjs": "~1.9.18"
+  }
+}
