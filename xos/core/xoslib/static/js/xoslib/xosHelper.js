@@ -573,7 +573,11 @@ XOSDetailView = Marionette.ItemView.extend({
                    model.save, we call it ourselves, so we can throw up our
                    validation error before creating the infoMsg in the log
                 */
+               
+                // NOTE
+                // this does NOT trigger the xosValidate function define in the model (eg: xos-backbone-js:755)
                 errors =  this.model.xosValidate(data);
+                console.log(this.model.xosValidate);
                 if (errors) {
                     this.onFormDataInvalid(errors);
                     return;

@@ -289,6 +289,9 @@ XOSTenantApp.addSlice = function() {
       'Create Slice': function() {
         var addDialog = this;
 
+        // TODO
+        // we should validate the slice with the custom xosValidate function defined in define_modle (xos-backbone.js:755)
+
         detailView.synchronous = true;
         detailView.afterSave = function() {
           $(addDialog).dialog('close');
