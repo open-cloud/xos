@@ -23,3 +23,11 @@ This will install the required `npm` dependencies and run the test.
 Tests are runned in a headless browser (_PhantomJs_) by _Karma_ and the assertions are made with _Jasmine_. This is a pretty common standard for FE testing so you should feel at home.
 
 You can find the tests in the `spec/` folder, each source file has a corresponding `.test` file in it.
+
+## JS Styleguide
+
+This project is following (Google JavaScript Style Guide)[https://google.github.io/styleguide/javascriptguide.xml]. To contribute please install (Eslint)[http://eslint.org/] in your editor and run `npm run eslint` before commit.
+
+> _NOTE_
+> Many of the already present file were not Style compliant. Linting for them has been disabled as it was to time consuming fix all of them. If **you are going to work** on that files, please **start fixing style issues**, and then **remove the `/* eslint-disable */`** comment
+
