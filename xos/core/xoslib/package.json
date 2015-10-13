@@ -11,13 +11,14 @@
   "author": "",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "karma": "~0.13.10",
+    "eslint": "~1.6.0",
+    "eslint-config-defaults": "^7.0.1",
     "jasmine-core": "~2.3.4",
-    "karma-jasmine": "~0.3.6",
-    "phantomjs": "~1.9.18",
-    "karma-phantomjs-launcher": "~0.2.1",
-    "karma-mocha-reporter": "~1.1.1",
+    "karma": "~0.13.10",
     "karma-babel-preprocessor": "~5.2.2",
-    "eslint": "~1.6.0"
+    "karma-jasmine": "~0.3.6",
+    "karma-mocha-reporter": "~1.1.1",
+    "karma-phantomjs-launcher": "~0.2.1",
+    "phantomjs": "~1.9.18"
   }
 }

@@ -1,9 +1,9 @@
 {
+  "extends": "defaults/configurations/google",
   "env" : {
     "browser": true
   },
   "rules" : {
-    "quotes": [1, "double"],
     "camelcase": [0],
     "no-underscore-dangle": [0],
     "eqeqeq": [1],
@@ -13,9 +13,15 @@
         "beforeColon": false,
         "afterColon": true
     }],
-    "indent": [2, 4],
-    "valid-jsdoc": 2
+    "valid-jsdoc": 2,
+    "max-len": [1, 120, 4, {"ignoreComments": true, "ignoreUrls": true}],
+    brace-style: [2, "stroustrup"]
   },
   "globals": {
+    "$": false,
+    "_": false,
+    "Backbone": false,
+    "Marionette": false,
+    "xos": false
   }
 }

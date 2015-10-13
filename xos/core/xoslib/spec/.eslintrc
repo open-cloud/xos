@@ -29,7 +29,9 @@
         "beforeColon": false,
         "afterColon": true
     }],
-    "indent": [2, 2]
+    "indent": [2, 2],
+    "no-undef": [0],
+    "newline-after-var": [0]
   },
   "globals": {
     "console": false,
@@ -41,6 +43,8 @@
     "beforeEach": false,
     "after": false,
     "afterEach": false,
-    "expect": false
+    "expect": false,
+    "jasmine": false,
+    "spyOn": false
   }
 }

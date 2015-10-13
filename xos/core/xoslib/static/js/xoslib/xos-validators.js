@@ -1,3 +1,5 @@
+/* eslint-disable quotes, no-undef, max-len, new-cap*/
+/* eslint indent: [2, 2]*/
 function xos_get_validators() {
   this.account = {"updated": [], "policed": [], "created": [], "deleted": [], "site": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "backend_status": ["notBlank"], "id": [], "no_sync": [], "enacted": []};
   this.charge = {"updated": [], "slice": [], "policed": [], "created": [], "deleted": [], "amount": ["notBlank"], "object": ["notBlank"], "account": ["notBlank"], "kind": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "state": ["notBlank"], "coreHours": ["notBlank"], "invoice": [], "date": ["notBlank"], "backend_status": ["notBlank"], "id": [], "no_sync": [], "enacted": []};
@@ -64,3 +66,4 @@ function xos_get_validators() {
   this.userDashboardView = {"updated": [], "policed": [], "created": [], "deleted": [], "dashboardView": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "user": ["notBlank"], "backend_status": ["notBlank"], "order": ["notBlank"], "id": [], "no_sync": [], "enacted": []};
 };
 xosvalidators = new xos_get_validators();
+/* eslint-enable quotes, no-undef, max-len, new-cap*/

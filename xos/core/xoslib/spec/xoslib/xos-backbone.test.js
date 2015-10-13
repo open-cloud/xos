@@ -1,7 +1,7 @@
 'use strict';
 
 describe('The Xos Backbone', () => {
-  
+
   beforeEach(() => {
     xosdefaults = {
       test: {config: true}
@@ -23,7 +23,7 @@ describe('The Xos Backbone', () => {
   });
 
   describe('The extend_defaults method', () => {
-    
+
     it('should return an extended config', () => {
       let extended = extend_defaults('test', {extended: true});
       expect(extended).toEqual({config: true, extended: true});
@@ -37,6 +37,11 @@ describe('The Xos Backbone', () => {
   });
 
   describe('getCookie method with no cookie', () => {
+
+    beforeEach(() => {
+      document.cookie = 'fakeCookie=true=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    });
+
     it('should return null', () => {
       let res = getCookie('fakeCookie');
       expect(res).toBeNull();
@@ -44,11 +49,11 @@ describe('The Xos Backbone', () => {
   });
 
   describe('getCookie method with a fake cookie', () => {
-  
+
     beforeEach(() => {
       document.cookie = 'fakeCookie=true';
     });
-  
+
     it('should return a cookie value', () => {
       let res = getCookie('fakeCookie');
       expect(res).toEqual('true');
@@ -68,18 +73,18 @@ describe('The XOSModel', () => {
     it('should set the correct url', () => {
       const ctx = {attributes: {resource_uri: 'onlab.us'}};
       let res = model.url.apply(ctx);
-      expect(res).toEqual('onlab.us/?no_hyperlinks=1')
+      expect(res).toEqual('onlab.us/?no_hyperlinks=1');
     });
 
     it('should remove query params', () => {
       const ctx = {attributes: {resource_uri: 'onlab.us?query=params'}};
       let res = model.url.apply(ctx);
-      expect(res).toEqual('onlab.us/?no_hyperlinks=1')
+      expect(res).toEqual('onlab.us/?no_hyperlinks=1');
     });
   });
 
   describe('listMethods method', () => {
-    
+
     const instance = {
       m1: () => {},
       m2: () => {}
@@ -132,7 +137,7 @@ describe('The XOSModel', () => {
 
     const instance = {
       validators: {'network_ports': ['portspec']}
-    }
+    };
 
     const validAttrs = {network_ports: 'tcp 123'};
 

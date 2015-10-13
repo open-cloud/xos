@@ -1,4 +1,6 @@
-if (! window.XOSLIB_LOADED ) {
+/* eslint-disable*/
+
+if (! window.XOSLIB_LOADED) {
     window.XOSLIB_LOADED=true;
 
     XOS_BASE = "/xos";
@@ -59,7 +61,8 @@ if (! window.XOSLIB_LOADED ) {
             if (!url) {
                 if (this.id) {
                     url = this.urlRoot + this.id;
-                } else {
+                }
+                else {
                     // this happens when creating a new model.
                     url = this.urlRoot;
                 }
@@ -67,12 +70,12 @@ if (! window.XOSLIB_LOADED ) {
 
             if (!url) {
                 // XXX I'm not sure this does anything useful
-                url = ( _.isFunction( this.collection.url ) ? this.collection.url() : this.collection.url );
+                url = _.isFunction(this.collection.url) ? this.collection.url() : this.collection.url;
                 url = url || this.urlRoot;
             }
 
             // remove any existing query parameters
-            url && ( url.indexOf("?") > -1 ) && ( url = url.split("?")[0] );
+            url && url.indexOf("?") > -1  && (url = url.split("?")[0]);
 
             url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
 
@@ -135,7 +138,7 @@ if (! window.XOSLIB_LOADED ) {
                 _.each(validatorList, function(validator) {
                     if (fieldName in attrs) {
                         // call validateField method in xos-utils.js
-                        validatorResult = validateField(validator, attrs[fieldName], this)
+                        validatorResult = validateField(validator, attrs[fieldName], this);
                         if (validatorResult != true) {
                             errors[fieldName] = validatorResult;
                             foundErrors = true;
@@ -160,16 +163,18 @@ if (! window.XOSLIB_LOADED ) {
 
     XOSCollection = Backbone.Collection.extend({
         objects: function() {
-            return this.models.map(function(element) { return element.attributes; });
+            return this.models.map(function(element) {
+                return element.attributes;
+            });
         },
 
-        initialize: function(){
+        initialize: function() {
             this.isLoaded = false;
             this.failedLoad = false;
             this.startedLoad = false;
             this.sortVar = 'name';
             this.sortOrder = 'asc';
-            this.on( "sort", this.sorted );
+            this.on('sort', this.sorted);
         },
 
         relatedCollections: [],
@@ -183,7 +188,7 @@ if (! window.XOSLIB_LOADED ) {
             //console.log("sorted " + this.modelName);
         },
 
-        simpleComparator: function( model ){
+        simpleComparator: function(model) {
             parts=this.sortVar.split(".");
             result = model.get(parts[0]);
             for (index=1; index<parts.length; ++index) {
@@ -192,16 +197,21 @@ if (! window.XOSLIB_LOADED ) {
             return result;
         },
 
-        comparator: function (left, right) {
+        comparator: function(left, right) {
             var l = this.simpleComparator(left);
             var r = this.simpleComparator(right);
 
-            if (l === void 0) return -1;
-            if (r === void 0) return 1;
+            if (l === void 0) {
+                return -1;
+            }
+            if (r === void 0) {
+                return 1;
+            }
 
             if (this.sortOrder == "desc") {
                 return l < r ? 1 : l > r ? -1 : 0;
-            } else {
+            }
+            else {
                 return l < r ? -1 : l > r ? 1 : 0;
             }
         },
@@ -223,7 +233,7 @@ if (! window.XOSLIB_LOADED ) {
         fetchFailure: function(collection, response, options) {
             //console.log("fetch failed " + collection.modelName);
             this.fetching = false;
-            if ((!this.isLoaded) && (!this.failedLoad)) {
+            if (!this.isLoaded && !this.failedLoad) {
                 this.failedLoad=true;
                 Backbone.trigger("xoslib:collectionLoadChange", this);
             }
@@ -235,6 +245,7 @@ if (! window.XOSLIB_LOADED ) {
 
         fetch: function(options) {
             var self=this;
+
             this.fetching=true;
             //console.log("fetch " + this.modelName);
             if (!this.startedLoad) {
@@ -247,7 +258,9 @@ if (! window.XOSLIB_LOADED ) {
             }
             options["orig_success"] = options["success"];
             options["orig_failure"] = options["failure"];
-            options["success"] = function(collection, response, options) { self.fetchSuccess.call(self, collection, response, options); };
+            options["success"] = function(collection, response, options) {
+                self.fetchSuccess.call(self, collection, response, options);
+            };
             options["failure"] = this.fetchFailure;
             Backbone.Collection.prototype.fetch.call(this, options);
         },
@@ -255,7 +268,10 @@ if (! window.XOSLIB_LOADED ) {
         startPolling: function() {
             if (!this._polling) {
                 var collection=this;
-                setInterval(function() { collection.fetch(); }, 10000);
+
+                setInterval(function() {
+                    collection.fetch();
+                }, 10000);
                 this._polling=true;
                 this.fetch();
             }
@@ -823,3 +839,4 @@ if (! window.XOSLIB_LOADED ) {
         };
     })();
 }
+/* eslint-enable */
