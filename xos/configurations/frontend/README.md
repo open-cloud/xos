@@ -26,7 +26,7 @@ You can find the tests in the `spec/` folder, each source file has a correspondi
 
 ## JS Styleguide
 
-This project is following (Google JavaScript Style Guide)[https://google.github.io/styleguide/javascriptguide.xml]. To contribute please install (Eslint)[http://eslint.org/] in your editor and run `npm run eslint` before commit.
+This project is following [Google JavaScript Style Guide](https://google.github.io/styleguide/javascriptguide.xml). To contribute please install [Eslint](http://eslint.org/) in your editor and run `npm run eslint` before commit.
 
 > _NOTE_
 > Many of the already present file were not Style compliant. Linting for them has been disabled as it was to time consuming fix all of them. If **you are going to work** on that files, please **start fixing style issues**, and then **remove the `/* eslint-disable */`** comment
