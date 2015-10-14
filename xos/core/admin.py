@@ -757,7 +757,7 @@ class DeploymentAdmin(XOSBaseAdmin):
 
 class ControllerAdmin(XOSBaseAdmin):
     model = Controller
-    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain']
+    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain', 'rabbit_host', 'rabbit_user', 'rabbit_password']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']

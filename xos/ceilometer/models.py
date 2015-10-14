@@ -27,6 +27,10 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     KIND = CEILOMETER_KIND
 
+    sync_attributes = ("private_ip", "private_mac",
+                       "ceilometer_ip", "ceilometer_mac",
+                       "nat_ip", "nat_mac",)
+
     default_attributes = {}
     def __init__(self, *args, **kwargs):
         ceilometer_services = CeilometerService.get_service_objects().all()
@@ -66,12 +70,28 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         return addresses
 
     @property
+    def nat_ip(self):
+        return self.addresses.get("nat", (None, None))[0]
+
+    @property
+    def nat_mac(self):
+        return self.addresses.get("nat", (None, None))[1]
+
+    @property
     def private_ip(self):
         return self.addresses.get("nat", (None, None))[0]
 
     @property
+    def private_mac(self):
+        return self.addresses.get("nat", (None, None))[1]
+
+    @property
     def ceilometer_ip(self):
         return self.addresses.get("ceilometer", (None, None))[0]
+
+    @property
+    def ceilometer_mac(self):
+        return self.addresses.get("ceilometer", (None, None))[1]
 
     @property
     def site_tenant_list(self):
@@ -109,7 +129,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     def ceilometer_url(self):
         if not self.ceilometer_ip:
             return None
-        return "http://" + self.ceilometer_ip + "/uri/to/ceilometer/api/"
+        return "http://" + self.private_ip + ":8888/"
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
