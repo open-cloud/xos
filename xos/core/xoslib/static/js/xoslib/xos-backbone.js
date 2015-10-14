@@ -461,6 +461,8 @@ if (! window.XOSLIB_LOADED) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
+            // NOTE xosValidate added by Matteo Scandolo
+            // check with Scott
             if ($.inArray(key, ["validate", "preSave", "readOnlyFields", "xosValidate"]) >= 0) {
                 modelAttrs[key] = value;
             }
