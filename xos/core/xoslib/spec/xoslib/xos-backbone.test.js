@@ -8,7 +8,7 @@ describe('The Xos Backbone', () => {
     });
   });
 
-  xdescribe('get_defaults mehod', () => {
+  describe('get_defaults mehod', () => {
 
     it('should return default config', () => {
       let res = get_defaults('test');
@@ -22,7 +22,7 @@ describe('The Xos Backbone', () => {
 
   });
 
-  xdescribe('The extend_defaults method', () => {
+  describe('The extend_defaults method', () => {
 
     it('should return an extended config', () => {
       let extended = extend_defaults('test', {extended: true});
@@ -223,7 +223,7 @@ describe('The Xos Backbone', () => {
     });
   });
 
-  xdescribe('getCookie method with no cookie', () => {
+  describe('getCookie method with no cookie', () => {
 
     beforeEach(() => {
       document.cookie = 'fakeCookie=true=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -235,7 +235,7 @@ describe('The Xos Backbone', () => {
     });
   });
 
-  xdescribe('getCookie method with a fake cookie', () => {
+  describe('getCookie method with a fake cookie', () => {
 
     beforeEach(() => {
       document.cookie = 'fakeCookie=true';
@@ -248,7 +248,7 @@ describe('The Xos Backbone', () => {
   });
 });
 
-xdescribe('The XOSModel', () => {
+describe('The XOSModel', () => {
 
   var model;
 
