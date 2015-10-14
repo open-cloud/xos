@@ -135,7 +135,6 @@ RUN git -C /opt/ansible/v2/ansible/modules/core pull
 RUN apt-get install -y m4
 RUN pip install python-dateutil
 RUN bash /opt/xos/tosca/install_tosca.sh
-RUN /usr/bin/python /opt/xos/tosca/run.py padmin@vicci.org ${TOSCA_CONFIG_PATH}
 
 EXPOSE 8000
 
