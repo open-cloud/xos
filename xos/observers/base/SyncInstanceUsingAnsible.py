@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
-from core.models import Service, Slice
+from core.models import Service, Slice, ControllerSlice, ControllerUser
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -71,10 +71,23 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         service_key = file(self.service_key_name).read()
 
+        cslice = ControllerSlice.objects.get(slice=instance.slice)
+        if not cslice:
+            raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+
+        cuser = ControllerUser.objects.get(user=instance.creator)
+        if not cuser:
+            raise Exception("Controller user object for %s does not exist" % instance.creator)
+
         fields = { "instance_name": instance.name,
                    "hostname": instance.node.name,
                    "instance_id": instance.instance_id,
                    "private_key": service_key,
+                   "keystone_tenant_id": cslice.tenant_id,
+                   "keystone_user_id": cuser.kuser_id,
+                   "rabbit_user": instance.controller.rabbit_user,
+                   "rabbit_password": instance.controller.rabbit_password,
+                   "rabbit_host": instance.controller.rabbit_host,
                    "ansible_tag": "vcpe_tenant_" + str(o.id)
                  }
 
