@@ -6,14 +6,17 @@
   "scripts": {
     "pretest": "npm install",
     "test": "karma start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "docs": "jsdoc static/js -r -c ./jsdoc.conf.json -d docs"
   },
   "author": "",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "eslint": "~1.6.0",
     "eslint-config-defaults": "^7.0.1",
+    "ink-docstrap": "^0.5.2",
     "jasmine-core": "~2.3.4",
+    "jsdoc": "^3.3.3",
     "karma": "~0.13.10",
     "karma-babel-preprocessor": "~5.2.2",
     "karma-jasmine": "~0.3.6",
