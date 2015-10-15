@@ -1,3 +1,9 @@
+/**
+* List of model validator
+*
+* @constructor
+*/
+
 /* eslint-disable quotes, no-undef, max-len, new-cap*/
 /* eslint indent: [2, 2]*/
 function xos_get_validators() {
