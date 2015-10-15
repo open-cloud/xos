@@ -17,10 +17,15 @@ class SyncHelloWorldServiceTenant(SyncStep):
     provides=[HelloWorldTenant]
     observes=HelloWorldTenant
     requested_interval=1
-    
+
     def sync_record(self, record):
 	logger.info("Syncing helloworldtenant");
-        open('log','w').write(record.name)
-        
+    open('log','w').write(record.display_message + '\n');
+    if (record.instance):
+        open('log','w').write(record.instance + '\n');
+        record.instance.userData = "packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.display_message
+        record.instance.save();
+
+
     def delete_record(self, m):
         return
