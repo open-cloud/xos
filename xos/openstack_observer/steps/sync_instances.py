@@ -56,10 +56,12 @@ class SyncInstances(OpenStackSyncStep):
                                                                 controller=instance.node.site_deployment.controller)
 
         for controller_network in controller_networks:
+
+            # Lenient exception - causes slow backoff
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
-                        raise Exception("Private Network %s has no id; Try again later" % controller_network.network.name)
+                        raise DeferredException("Private Network %s has no id; Try again later" % controller_network.network.name)
                    nics.append(controller_network.net_id)
 
         # now include network template
@@ -108,7 +110,7 @@ class SyncInstances(OpenStackSyncStep):
 
         userData = self.get_userdata(instance, pubkeys)
         if instance.userData:
-            userData = instance.userData
+            userData += instance.userData
 
         controller = instance.node.site_deployment.controller
         fields = {'endpoint':controller.auth_url,

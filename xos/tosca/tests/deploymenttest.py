@@ -10,6 +10,9 @@ class DeploymentTest(BaseToscaTest):
              "create_deployment_one_image",
              "create_deployment_two_images",
              "create_deployment_privilege",
+             "create_deployment_nocreate",
+             "update_deployment",
+             "update_deployment_noupdate",
              "destroy_deployment",
              "destroy_deployment_nodelete"
                            ]
@@ -87,6 +90,35 @@ class DeploymentTest(BaseToscaTest):
 
         dps = DeploymentPrivilege.objects.filter(user=user, deployment=dep)
         assert(len(dps) == 1)
+
+    def create_deployment_nocreate(self):
+        self.assert_noobj(Deployment, "testdep")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment",
+                                            props={"no-create": True}))
+        self.assert_noobj(Deployment, "testdep")
+
+    def update_deployment(self):
+        self.assert_noobj(Deployment, "testdep")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment"))
+        orig_dep = self.assert_obj(Deployment, "testdep",
+                                   accessControl="allow all")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment",
+                                            props={"accessControl": "allow padmin@vicci.org"}))
+        dep = self.assert_obj(Deployment, "testdep",
+                                   accessControl="allow padmin@vicci.org")
+        assert(dep.id == orig_dep.id)
+
+    def update_deployment_noupdate(self):
+        self.assert_noobj(Deployment, "testdep")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment"))
+        orig_dep = self.assert_obj(Deployment, "testdep",
+                                   accessControl="allow all")
+        self.execute(self.make_nodetemplate("testdep", "tosca.nodes.Deployment",
+                                            props={"accessControl": "allow padmin@vicci.org",
+                                                   "no-update": True}))
+        dep = self.assert_obj(Deployment, "testdep",
+                                   accessControl="allow all")
+        assert(dep.id == orig_dep.id)
 
     def destroy_deployment(self):
         self.assert_noobj(Deployment, "testdep")

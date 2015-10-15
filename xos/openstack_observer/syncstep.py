@@ -45,6 +45,12 @@ class SyncStep(object):
         psmodel        Model name the step synchronizes
         dependencies    list of names of models that must be synchronized first if the current model depends on them
     """
+
+    # map_sync_outputs can return this value to cause a step to be marked
+    # successful without running ansible. Used for sync_network_controllers
+    # on nat networks.
+    SYNC_WITHOUT_RUNNING = "sync_without_running"
+
     slow=False
     def get_prop(self, prop):
         try:
@@ -128,6 +134,8 @@ class SyncStep(object):
             pass
 
         tenant_fields = self.map_sync_inputs(o)
+        if tenant_fields == SyncStep.SYNC_WITHOUT_RUNNING:
+            return
         main_objs=self.observes
         if (type(main_objs) is list):
             main_objs=main_objs[0]

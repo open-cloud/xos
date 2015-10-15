@@ -51,13 +51,13 @@ class XOSDeployment(XOSResource):
         self.postprocess_privileges(DeploymentRole, DeploymentPrivilege, rolemap, obj, "deployment")
 
     def delete(self, obj):
-        if self.get_property("no-delete"):
-            self.info("Deployment %s is marked no-delete")
-            return
-
         if obj.sites.exists():
             self.info("Deployment %s has active sites; skipping delete" % obj.name)
             return
+        for sd in obj.sitedeployments.all():
+            if sd.nodes.exists():
+                self.info("Deployment %s has active nodes; skipping delete" % obj.name)
+                return
         #if obj.nodes.exists():
         #    self.info("Deployment %s has active nodes; skipping delete" % obj.name)
         #    return
