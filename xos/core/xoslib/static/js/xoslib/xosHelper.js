@@ -573,7 +573,9 @@ XOSDetailView = Marionette.ItemView.extend({
                    model.save, we call it ourselves, so we can throw up our
                    validation error before creating the infoMsg in the log
                 */
+               
                 errors =  this.model.xosValidate(data);
+
                 if (errors) {
                     this.onFormDataInvalid(errors);
                     return;
