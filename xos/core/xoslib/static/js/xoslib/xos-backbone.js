@@ -1,5 +1,5 @@
-/* eslint-disable*/
 
+/* eslint-disable*/
 if (! window.XOSLIB_LOADED) {
     window.XOSLIB_LOADED=true;
 
@@ -134,6 +134,7 @@ if (! window.XOSLIB_LOADED) {
         xosValidate: function(attrs, options) {
             errors = {};
             foundErrors = false;
+
             _.each(this.validators, function(validatorList, fieldName) {
                 _.each(validatorList, function(validator) {
                     if (fieldName in attrs) {
@@ -385,7 +386,50 @@ if (! window.XOSLIB_LOADED) {
         }
     }
 
+    /**
+    * This is an helper function to define XOS model.
+    *
+    * @param {object} lib A backbone collection library (eg: xos)
+    * @param {object} attrs The model attributes
+    * @param {string} attrs.modelName The name of the model
+    * @param {string} attrs.urlRoot The base url for the collection
+    * @param {object} [attrs.relatedCollections] collections which should be drawn as an inline 
+                                                 list when the detail view is displayed. 
+                                                 Format: **collection:collectionFieldName** 
+                                                 where **collectionFieldName** is the name of the field 
+                                                 in the collection that points back to the collection 
+                                                 in the detail view.
+    * @param {array} [attrs.foreignCollections] collections which are used in idToName() calls
+                                when presenting the data to the user. Used to
+                                create a listento event. Somewhat
+                                redundant with foreignFields.
+    * @param {object} [attrs.foreignFields] **localFieldName:collection**. Used to
+                                automatically map ids into humanReadableNames
+                                when presenting data to the user.
+    * @param {object} [attrs.m2mFields] **localFieldName:collection**. Used to
+                                populate choices in picker lists. Similar to
+                                foreignFields.
+    * @param {Array} [attrs.listFields] Fields to display in lists
+    * @param {Array} {attrs.detailFields} Fields to display in detail views
+    * @param {Array} [attrs.addFields] Fields to display in popup add windows
+    * @param {Object} [attrs.inputType] by default, "detailFields" will be displayed
+                                as text input controls. This will let you display
+                                a checkbox or a picker instead.
+    * @param {Object} [attrs.defaults] Override the model defaults, `extend_defaults` can be used.
+    * @param {Object} [attrs.validators] Add validators to this model. Use `validateField` method in xos-util.js
+    * @param {function} [attrs.preSave] A pre-save method
+    * @param {function} [attrs.xosValidate] Override the default xosValidate.
+    *                                       If you want to call it either start the function with
+    *                                       `errors = XOSModel.prototype.xosValidate.call(this, attrs, options);`
+    * @returns void
+    */
+
     function define_model(lib, attrs) {
+
+        // NOTE shouldn't we trhow an error if no:
+        // - attrs.urlRoot
+        // - attrs.modelName
+
         modelName = attrs.modelName;
         modelClassName = modelName;
         collectionClass = attrs.collectionClass || XOSCollection;
@@ -397,6 +441,8 @@ if (! window.XOSLIB_LOADED) {
 
         attrs.inputType = attrs.inputType || {};
         attrs.foreignFields = attrs.foreignFields || {};
+        // NOTE m2mFields are not set in modelAttr,
+        // see list in for loop
         attrs.m2mFields = attrs.m2mFields || {};
         attrs.readOnlyFields = attrs.readOnlyFields || [];
         attrs.detailLinkFields = attrs.detailLinkFields || ["id","name"];
@@ -415,7 +461,9 @@ if (! window.XOSLIB_LOADED) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
-            if ($.inArray(key, ["validate", "preSave", "readOnlyFields"]) >= 0) {
+            // NOTE xosValidate added by Matteo Scandolo
+            // check with Scott
+            if ($.inArray(key, ["validate", "preSave", "readOnlyFields", "xosValidate"]) >= 0) {
                 modelAttrs[key] = value;
             }
         }
@@ -424,17 +472,18 @@ if (! window.XOSLIB_LOADED) {
             modelAttrs.defaults = get_defaults(modelName);
         }
 
-//        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
-//            modelAttrs["defaults"] = xosdefaults[modelName];
-//        }
-
+        // if there are default validators for this model
+        // extend with customs
         if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
             modelAttrs["validators"] = $.extend({}, xosvalidators[modelName], attrs["validators"] || {});
-        } else if (attrs["validators"]) {
-            modelAttrs["validators"] = attrs["validators"];
-            console.log(attrs);
-            console.log(modelAttrs);
         }
+        // else use custom
+        else if (attrs["validators"]) {
+            modelAttrs["validators"] = attrs["validators"];
+            // console.log(attrs);
+            // console.log(modelAttrs);
+        }
+        // NOTE Why define validators in multiple places?
 
         lib[modelName] = XOSModel.extend(modelAttrs);
 
@@ -737,14 +786,15 @@ if (! window.XOSLIB_LOADED) {
                             xosValidate: function(attrs, options) {
                                 errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
                                 // validate that slice.name starts with site.login_base
-                                site = attrs.site || this.site;
+
+                                var site = xos.tenant().current_user_login_base;
                                 if ((site!=undefined) && (attrs.name!=undefined)) {
-                                    site = xos.sites.get(site);
-                                    if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
+                                    if (attrs.name.indexOf(site + "_") < 0) {
                                         errors = errors || {};
-                                        errors["name"] = "must start with " + site.attributes.login_base + "_";
+                                        errors["name"] = "must start with " + site + "_";
                                     }
                                 }
+
                                 return errors;
                             },
                         });
