@@ -2,7 +2,7 @@ from .plcorebase import PlCoreBase,PlCoreBaseManager,PlCoreBaseDeletionManager,P
 from .project import Project
 from .singletonmodel import SingletonModel
 from .service import Service, Tenant, TenantWithContainer, CoarseTenant, ServicePrivilege, TenantRoot, TenantRootPrivilege, TenantRootRole, Subscriber, Provider
-from .service import ServiceAttribute
+from .service import ServiceAttribute, TenantAttribute
 from .tag import Tag
 from .role import Role
 from .site import Site, Deployment, DeploymentRole, DeploymentPrivilege, Controller, ControllerRole, ControllerSite, SiteDeployment
