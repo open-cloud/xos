@@ -7,7 +7,7 @@ imports:
 
 topology_template:
   node_templates:
-    service_onos:
+    ONOS:
       type: tosca.nodes.ONOSService
       requirements:
       properties:
@@ -18,7 +18,7 @@ topology_template:
       type: tosca.nodes.ONOSvBNGApp
       requirements:
           - onos_tenant:
-              node: service_onos
+              node: ONOS
               relationship: tosca.relationships.TenantOfService
       properties:
           config_addresses_json: >
