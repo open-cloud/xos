@@ -571,11 +571,17 @@ if (! window.XOSLIB_LOADED) {
                                 errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
                                 // validate that slice.name starts with site.login_base
                                 site = attrs.site || this.site;
+                                console.log('Slice Validate!!!', site);
                                 if ((site!=undefined) && (attrs.name!=undefined)) {
                                     site = xos.sites.get(site);
                                     if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
                                         errors = errors || {};
                                         errors["name"] = "must start with " + site.attributes.login_base + "_";
+                                    }
+
+                                    if(attrs.name.indexOf(' ') >= 0){
+                                        errors = errors || {};
+                                        errors["name"] = "must not contain spaces";   
                                     }
                                 }
                                 return errors;
@@ -792,6 +798,11 @@ if (! window.XOSLIB_LOADED) {
                                     if (attrs.name.indexOf(site + "_") < 0) {
                                         errors = errors || {};
                                         errors["name"] = "must start with " + site + "_";
+                                    }
+
+                                    if(attrs.name.indexOf(' ') >= 0){
+                                        errors = errors || {};
+                                        errors["name"] = "must not contain spaces";   
                                     }
                                 }
 
