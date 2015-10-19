@@ -21,11 +21,13 @@ class SyncHelloWorldServiceTenant(SyncStep):
     def sync_record(self, record):
         logger.info("Syncing helloworldtenant");
         open('log','w').write(record.display_message + '\n');
-        if (record.instance):
-            open('log','w').write(record.instance + '\n');
-            record.instance.userData = "packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.display_message
-            record.instance.save();
-
+	service = HelloWorldService.get_service_objects().filter(id = record.provider_service.id)[0];
+	for slice in service.slices.all():
+		open('log','w').write(slice + '\n');
+		for instance in slice.instances.all():
+            		open('log','w').write(instance + '\n');
+            		instance.userData = "packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.display_message
+            		instance.save();
 
     def delete_record(self, m):
         return
