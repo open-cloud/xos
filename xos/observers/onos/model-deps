@@ -1,29 +1,5 @@
 {
-    "Slice": [
-        "Service", 
-        "User"
-    ], 
-    "TenantWithContainer": [
-        "Subscriber"
-    ], 
-    "Instance": [
-        "Image", 
-        "User", 
-        "Slice", 
-        "Node", 
-        "Flavor"
-    ], 
     "ONOSApp": [
-        "Subscriber"
+        "ONOSService"
     ], 
-    "SlicePrivilege": [
-        "User", 
-        "Slice"
-    ], 
-    "SitePrivilege": [
-        "User"
-    ], 
-    "Tenant": [
-        "Subscriber"
-    ]
 }
