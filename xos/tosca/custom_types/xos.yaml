@@ -108,6 +108,9 @@ node_types:
                 type: string
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
+            dependencies:
+                type: string
+                required: false
 
     tosca.nodes.ONOSvBNGApp:
         derived_from: tosca.nodes.Root
@@ -122,6 +125,9 @@ node_types:
                 type: string
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
+            dependencies:
+                type: string
+                required: false
             config_addresses_json:
                 type: string
                 required: false

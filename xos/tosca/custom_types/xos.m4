@@ -104,6 +104,9 @@ node_types:
             An ONOS Application.
         properties:
             xos_base_tenant_props
+            dependencies:
+                type: string
+                required: false
 
     tosca.nodes.ONOSvBNGApp:
         derived_from: tosca.nodes.Root
@@ -111,6 +114,9 @@ node_types:
             An ONOS Application.
         properties:
             xos_base_tenant_props
+            dependencies:
+                type: string
+                required: false
             config_addresses_json:
                 type: string
                 required: false

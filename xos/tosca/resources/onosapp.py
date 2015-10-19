@@ -14,7 +14,7 @@ from xosresource import XOSResource
 class XOSONOSApp(XOSResource):
     provides = ["tosca.nodes.ONOSApp", "tosca.nodes.ONOSvBNGApp"]
     xos_model = ONOSApp
-    copyin_props = ["service_specific_id"]
+    copyin_props = ["service_specific_id", "dependencies"]
 
     def get_xos_args(self, throw_exception=True):
         args = super(XOSONOSApp, self).get_xos_args()

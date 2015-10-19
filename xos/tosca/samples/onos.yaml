@@ -21,6 +21,7 @@ topology_template:
               node: ONOS
               relationship: tosca.relationships.TenantOfService
       properties:
+          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwdo
           config_addresses_json: >
             {
                 "addresses" : [
