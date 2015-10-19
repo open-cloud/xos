@@ -89,6 +89,35 @@ node_types:
         properties:
             xos_base_service_props
 
+    tosca.nodes.ONOSService:
+        derived_from: tosca.nodes.Root
+        description: >
+            ONOS Service
+        capabilities:
+            xos_base_service_caps
+        properties:
+            xos_base_service_props
+
+    tosca.nodes.ONOSApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Application.
+        properties:
+            xos_base_tenant_props
+
+    tosca.nodes.ONOSvBNGApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Application.
+        properties:
+            xos_base_tenant_props
+            config_addresses_json:
+                type: string
+                required: false
+            config_virtualbng_json:
+                type: string
+                required: false
+
     tosca.nodes.VCPEService:
         description: >
             CORD: The vCPE Service.
