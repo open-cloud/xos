@@ -43,8 +43,8 @@ class HelloWorldTenant(TenantWithContainer):
             self.creator = self.caller
             if not self.creator:
                 raise XOSProgrammingError("HelloWorldTennant's self.creator was not set")
-        
-	super(HelloWorldTenant, self).save(*args, **kwargs)
+
+        super(HelloWorldTenant, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         self.cleanup_container()
@@ -57,4 +57,3 @@ class HelloWorldTenant(TenantWithContainer):
     @display_message.setter
     def display_message(self, value):
         self.set_attribute("display_message", value)
-

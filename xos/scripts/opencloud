@@ -148,6 +148,7 @@ function remigrate {
     python ./manage.py makemigrations cord
     python ./manage.py makemigrations ceilometer
     python ./manage.py makemigrations helloworldservice
+    python ./manage.py makemigrations onos
     #python ./manage.py makemigrations servcomp
 }
 

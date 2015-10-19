@@ -787,6 +787,23 @@ class ControllerAdmin(XOSBaseAdmin):
 
         return tabs
 
+class TenantAttributeAdmin(XOSBaseAdmin):
+    model = TenantAttribute
+    list_display = ('backend_status_icon', 'tenant', 'name', 'value')
+    list_display_links = ('backend_status_icon', 'name')
+    fieldList = ('backend_status_text', 'tenant', 'name', 'value', )
+    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', )
+
+    suit_form_tabs =(('general', 'Tenant Root Details'),
+    )
+
+class TenantAttrAsTabInline(XOSTabularInline):
+    model = TenantAttribute
+    fields = ['name','value']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantattrs'
+
 class TenantRootRoleAdmin(XOSBaseAdmin):
     model = TenantRootRole
     fields = ('role',)
@@ -2006,4 +2023,5 @@ if True:
     admin.site.register(Flavor, FlavorAdmin)
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
+    admin.site.register(TenantAttribute, TenantAttributeAdmin)
 

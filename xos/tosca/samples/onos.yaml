@@ -1,0 +1,54 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    ONOS:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+
+    vBNG:
+      type: tosca.nodes.ONOSvBNGApp
+      requirements:
+          - onos_tenant:
+              node: ONOS
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          config_addresses_json: >
+            {
+                "addresses" : [
+                            {
+                                "dpid" : "00:00:00:00:00:00:00:a1",
+                                "port" : "2",
+                                "ips" : ["192.0.0.1/24"],
+                                "mac" : "00:00:00:00:00:99"
+
+                            },
+                            {
+                                "dpid" : "00:00:00:00:00:00:00:a5",
+                                "port" : "4",
+                                "ips" : ["200.0.0.5/24"],
+                                "mac" : "00:00:00:00:00:98"
+                            }
+                ]
+            }
+          config_virtualbng_json: >
+            {
+                "localPublicIpPrefixes" : [
+                    "200.0.0.0/32",
+                    "201.0.0.0/30",
+                    "202.0.0.0/30"
+                ],
+                "nextHopIpAddress" : "200.0.0.5",
+                "publicFacingMac" : "00:00:00:00:00:66",
+                "xosIpAddress" : "10.11.10.1",
+                "xosRestPort" : "9999"
+            }
+

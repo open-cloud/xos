@@ -9,7 +9,7 @@ config = Config()
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
  
-DEBUG = False 
+DEBUG = True 
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -148,7 +148,11 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'cord',
+<<<<<<< HEAD
     'helloworldservice',
+=======
+    'services.onos',
+>>>>>>> e4243b659f2285c47cc71779238e142b156c88c0
     'ceilometer',
     'requestrouter',
 #    'urlfilter',
