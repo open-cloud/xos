@@ -103,7 +103,7 @@ if (! window.XOSLIB_LOADED) {
 
         getChoices: function(fieldName, excludeChosen) {
             choices=[];
-            console.log(xos);
+
             if (fieldName in this.m2mFields) {
                 for (index in xos[this.m2mFields[fieldName]].models) {
                     candidate = xos[this.m2mFields[fieldName]].models[index];
@@ -463,7 +463,7 @@ if (! window.XOSLIB_LOADED) {
             }
             // NOTE xosValidate added by Matteo Scandolo
             // check with Scott
-            if ($.inArray(key, ["validate", "preSave", "readOnlyFields", "xosValidate"]) >= 0) {
+            if ($.inArray(key, ["validate", "preSave", "readOnlyFields", "xosValidate", "m2mFields"]) >= 0) {
                 modelAttrs[key] = value;
             }
         }
