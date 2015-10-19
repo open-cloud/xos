@@ -263,6 +263,9 @@ class Controller(PlCoreBase):
     admin_password = StrippedCharField(max_length=200, null=True, blank=True, help_text="Password of theadmin user at this controller")
     admin_tenant = StrippedCharField(max_length=200, null=True, blank=True, help_text="Name of the tenant the admin user belongs to")
     domain = StrippedCharField(max_length=200, null=True, blank=True, help_text="Name of the domain this controller belongs to")
+    rabbit_host = StrippedCharField(max_length=200, null=True, blank=True, help_text="IP address of rabbitmq server at this controller")
+    rabbit_user = StrippedCharField(max_length=200, null=True, blank=True, help_text="Username of rabbitmq server at this controller")
+    rabbit_password = StrippedCharField(max_length=200, null=True, blank=True, help_text="Password of rabbitmq server at this controller")
     deployment = models.ForeignKey(Deployment,related_name='controllerdeployments')
 
     def __init__(self, *args, **kwargs):
