@@ -1806,7 +1806,7 @@ class ControllerSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = Controller
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','rabbit_host','rabbit_user','rabbit_password','deployment','dashboardviews',)
 
 class ControllerIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -4644,7 +4644,7 @@ class ControllerList(XOSListCreateAPIView):
     serializer_class = ControllerSerializer
     id_serializer_class = ControllerIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','deployment','dashboardviews',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','name','backend_type','version','auth_url','admin_user','admin_password','admin_tenant','domain','rabbit_host','rabbit_user','rabbit_password','deployment','dashboardviews',)
 
     def get_serializer_class(self):
         no_hyperlinks=False
