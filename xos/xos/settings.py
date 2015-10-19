@@ -148,11 +148,8 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'cord',
-<<<<<<< HEAD
     'helloworldservice',
-=======
     'services.onos',
->>>>>>> e4243b659f2285c47cc71779238e142b156c88c0
     'ceilometer',
     'requestrouter',
 #    'urlfilter',
