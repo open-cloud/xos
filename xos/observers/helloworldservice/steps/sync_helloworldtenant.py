@@ -25,7 +25,7 @@ class SyncHelloWorldServiceTenant(SyncStep):
 	for slice in service.slices.all():
 		open('log','w').write("got a slice" + '\n');
 		for instance in slice.instances.all():
-            		open('log','w').write(instance + '\n');
+            		open('log','w').write("got an instance" + '\n');
             		instance.userData = "packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.display_message
             		instance.save();
 
