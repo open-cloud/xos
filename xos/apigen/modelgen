@@ -15,7 +15,6 @@ blacklist = ['SingletonModel','PlCoreBase']
 sys.path.append('.')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
-from core.models import *
 
 def singular(foo, keys):
 	for k in keys:
@@ -27,13 +26,24 @@ def singular(foo, keys):
 
 g = globals()
 
-def enum_classes():
-	model_classes = []
-	for c in g.values():
-		if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
-			model_classes.append(c)
-	return model_classes
+def enum_classes(apps):
+    model_classes = []
+    for app in apps:
+            app = app + ".models"
+            models_module = __import__(app)
+            for part in app.split(".")[1:]:
+                if hasattr(models_module, "PlCoreBase"):
+                    break
+                models_module = getattr(models_module,part)
 
+            PlCoreBase = getattr(models_module,"PlCoreBase")
+
+            for classname in dir(models_module):
+                    c = getattr(models_module, classname, None)
+                    if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
+                            model_classes.append(c)
+
+    return model_classes
 
 class GenObj(object):
 	def __str__(self):
@@ -146,15 +156,20 @@ class Generator(dict):
 
 			
 def main():
-	try:
-		output = sys.argv[1]
-	except:
-		print 'Usage: modelgen <output template>'
-		exit(1)
+        if len(sys.argv)==3:
+            apps = [x.strip() for x in sys.argv[1].split(",")]
+            output = sys.argv[2]
+        elif len(sys.argv)==2:
+            apps = ["core"]
+            output = sys.argv[1]
+        else:
+	    print 'Usage: modelgen <output_template>'
+            print 'Alternative Usage: modelgen <app> <output_template>'
+	    exit(1)
 
 	generator = Generator()
 
-	models = enum_classes()
+	models = enum_classes(apps)
 
 	for m in models:
 		generator.add_object(m)
