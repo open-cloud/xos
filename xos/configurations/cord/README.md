@@ -3,12 +3,38 @@
 This configuration can be used to set up a CORD development environment.
 It does the following:
 
-* Configures XOS with the CORD services: vCPE, vBNG, vOLT
-* Brings up ONOS apps for controlling the dataplane: virtualbng, olt
 * Sets up a basic dataplane for testing end-to-end packet flow between a subscriber client and the Internet
+* Brings up ONOS apps for controlling the dataplane: virtualbng, olt
+* Configures XOS with the CORD services: vCPE, vBNG, vOLT
 
 **NOTE:** This configuration is under **active development** and is not yet finished!  Some features are not
 fully working yet.
+
+## End-to-end dataplane
+
+The configuration uses XOS to set up an end-to-end dataplane for development of the XOS services and ONOS apps 
+used in CORD.  It abstracts away most of the complexity of the CORD hardware using virtual networks
+and Open vSwitch (OvS) switches.  At a high level the dataplane looks like this:
+
+```
+             olt                virtualbng
+             ----                 ----
+             ONOS                 ONOS
+              |                    |
+client ----> OvS ----> vCPE ----> OvS ----> Internet
+         1         2          3         4
+```
+
+On the datapath are two OvS switches, controlled by the `olt` and `virtualbng` ONOS applications.  Once all the pieces are in
+place, the client at left should be able to obtain an IP address via DHCP from the vCPE and send packets out to the Internet.
+
+All of the components in the above diagram (i.e., client, OvS switches, ONOS, and vCPE) currently run in distinct VMs
+created by XOS.  The numbers in the diagram correspond to networks set up by XOS:
+
+1. subscriber_network
+2. lan_network
+3. wan_network
+4. public_network
 
 ## How to run it
 
