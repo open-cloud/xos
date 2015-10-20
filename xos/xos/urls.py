@@ -5,6 +5,7 @@ from django.contrib import admin
 
 # This is the generated API
 from xosapi import *
+from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.services import ServiceGridView, ServiceGraphView
@@ -56,5 +57,5 @@ urlpatterns = patterns('',
 
     # XOSLib rest methods
     url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),
-  ) + get_REST_patterns()
+  ) + get_REST_patterns() + get_hpc_REST_patterns()
 
