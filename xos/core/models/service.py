@@ -67,6 +67,10 @@ class Service(PlCoreBase, AttributeMixin):
         return cls.objects.filter(kind = cls.KIND)
 
     @classmethod
+    def get_deleted_service_objects(cls):
+        return cls.deleted_objects.filter(kind = cls.KIND)
+
+    @classmethod
     def get_service_objects_by_user(cls, user):
         return cls.select_by_user(user).filter(kind = cls.KIND)
 
