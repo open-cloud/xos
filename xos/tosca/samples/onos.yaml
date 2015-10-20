@@ -13,6 +13,9 @@ topology_template:
       properties:
           kind: onos
           view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/onos/onos_key.pub
 
     vBNG:
       type: tosca.nodes.ONOSvBNGApp
@@ -21,7 +24,7 @@ topology_template:
               node: ONOS
               relationship: tosca.relationships.TenantOfService
       properties:
-          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwdo
+          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
           config_addresses_json: >
             {
                 "addresses" : [
@@ -52,4 +55,40 @@ topology_template:
                 "xosIpAddress" : "10.11.10.1",
                 "xosRestPort" : "9999"
             }
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_onos:
+      description: ONOS Controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: ONOS
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    my_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos
+                relationship: tosca.relationships.MemberOfSlice
 
