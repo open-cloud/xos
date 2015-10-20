@@ -24,6 +24,10 @@ Open a container shell: `make enter`
 
 View logs: `make showlogs`
 
+## Docs
+
+You can find a Swagger documentation for endpoint at: `http://0.0.0.0:9000/docs/`
+
 ## Test
 
 To run the FE tests, navigate to: `xos/core/xoslib`, and run 'npm test'.
