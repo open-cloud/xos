@@ -21,6 +21,16 @@ class ONOSService(Service):
         verbose_name = "ONOS Service"
         proxy = True
 
+    default_attributes = {"use_external_host": ""}
+
+    @property
+    def use_external_host(self):
+        return self.get_attribute("use_external_host", self.default_attributes["use_external_host"])
+
+    @use_external_host.setter
+    def use_external_host(self, value):
+        self.set_attribute("use_external_host", value)
+
 class ONOSApp(Tenant):   # aka 'ONOSTenant'
     class Meta:
         proxy = True
@@ -28,7 +38,7 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     KIND = ONOS_KIND
 
     default_attributes = {"name": "",
-                          "dependencies": ""}
+                          "dependencies": "",}
     def __init__(self, *args, **kwargs):
         onos_services = ONOSService.get_service_objects().all()
         if onos_services:
