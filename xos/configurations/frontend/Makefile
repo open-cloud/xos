@@ -17,6 +17,9 @@ frontend:
 stop:
 	sudo docker stop $(RUNNING_CONTAINER)
 
+start:
+	sudo docker start $(LAST_CONTAINER)
+
 showlogs:
 	sudo docker logs $(LAST_CONTAINER)
 
