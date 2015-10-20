@@ -72,4 +72,26 @@ The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice. 
 
 ```
 $ ssh -p 8101 karaf@10.11.10.30
+Password authentication
+Password:
+Welcome to Open Network Operating System (ONOS)!
+     ____  _  ______  ____
+    / __ \/ |/ / __ \/ __/
+   / /_/ /    / /_/ /\ \
+   \____/_/|_/\____/___/
+
+
+Hit '<tab>' for a list of available commands
+and '[cmd] --help' for help on a specific command.
+Hit '<ctrl-d>' or type 'system:shutdown' or 'logout' to shutdown ONOS.
+
+onos>
+```
+
+For instance, to check the IP address mappings managed by the `virtualbng` app:
+
+```
+onos> vbngs
+   Private IP - Public IP
+   10.0.1.3 - 10.254.0.129
 ```
