@@ -7,6 +7,7 @@ imports:
 
 topology_template:
   node_templates:
+
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -18,10 +19,80 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
+    service_vcpe:
+      type: tosca.nodes.VCPEService
+      requirements:
+          - vbng_tenant:
+              node: service_vbng
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          view_url: /admin/cord/vcpeservice/$id$/
+          backend_network_label: hpc_client
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
+
+    service_vbng:
+      type: tosca.nodes.VBNGService
+      properties:
+          view_url: /admin/cord/vbngservice/$id$/
+          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
+
+    service_ONOS:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/onos/onos_key.pub
+
+    vBNG_ONOS_app:
+      type: tosca.nodes.ONOSvBNGApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS
+              relationship: tosca.relationships.TenantOfService
+      properties:
+          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
+          config_addresses_json: >
+            {
+                "addresses" : [
+                            {
+                                "dpid" : "00:00:00:00:00:00:00:a1",
+                                "port" : "2",
+                                "ips" : ["192.0.0.1/24"],
+                                "mac" : "00:00:00:00:00:99"
+
+                            },
+                            {
+                                "dpid" : "00:00:00:00:00:00:00:a5",
+                                "port" : "4",
+                                "ips" : ["200.0.0.5/24"],
+                                "mac" : "00:00:00:00:00:98"
+                            }
+                ]
+            }
+          config_virtualbng_json: >
+            {
+                "localPublicIpPrefixes" : [
+                    "200.0.0.0/32",
+                    "201.0.0.0/30",
+                    "202.0.0.0/30"
+                ],
+                "nextHopIpAddress" : "200.0.0.5",
+                "publicFacingMac" : "00:00:00:00:00:66",
+                "xosIpAddress" : "10.11.10.1",
+                "xosRestPort" : "9999"
+            }
+
+
+    # Network templates
     Private:
       type: tosca.nodes.NetworkTemplate
 
-    # networks required by vCPE
+    # Networks required by the CORD setup
     lan_network:
       type: tosca.nodes.network.Network
       properties:
@@ -52,40 +123,6 @@ topology_template:
               node: mysite_vcpe
               relationship: tosca.relationships.ConnectsToSlice
 
-    hpc_client_network:
-      type: tosca.nodes.network.Network
-      properties:
-          ip_version: 4
-      requirements:
-          - network_template:
-              node: Private
-              relationship: tosca.relationships.UsesNetworkTemplate
-          - owner:
-              node: mysite_vcpe
-              relationship: tosca.relationships.MemberOfSlice
-          - connection:
-              node: mysite_vcpe
-              relationship: tosca.relationships.ConnectsToSlice
-
-    service_vcpe:
-      type: tosca.nodes.VCPEService
-      requirements:
-          - vbng_tenant:
-              node: service_vbng
-              relationship: tosca.relationships.TenantOfService
-      properties:
-          view_url: /admin/cord/vcpeservice/$id$/
-          backend_network_label: hpc_client
-          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-      artifacts:
-          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
-
-    service_vbng:
-      type: tosca.nodes.VBNGService
-      properties:
-          view_url: /admin/cord/vbngservice/$id$/
-          vbng_url: http://10.0.3.136:8181/onos/virtualbng/
-
     mysite:
       type: tosca.nodes.Site
 
@@ -100,66 +137,36 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    # Now let's add a subscriber
+    mysite_onos:
+      description: ONOS Controller Slice
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
 
-    My House:
-       type: tosca.nodes.CORDSubscriber
-       properties:
-           service_specific_id: 1234
-           firewall_enable: false
-           cdn_enable: false
-           url_filter_enable: false
-           url_filter_level: R
+    vbng_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos
+                relationship: tosca.relationships.MemberOfSlice
 
-    Mom's PC:
-       type: tosca.nodes.CORDUser
-       properties:
-           mac: 010203040506
-           level: PG_13
-       requirements:
-           - household:
-               node: My House
-               relationship: tosca.relationships.SubscriberDevice
-
-    Dad's PC:
-       type: tosca.nodes.CORDUser
-       properties:
-           mac: 90E2Ba82F975
-           level: PG_13
-       requirements:
-           - household:
-               node: My House
-               relationship: tosca.relationships.SubscriberDevice
-
-    Jack's Laptop:
-       type: tosca.nodes.CORDUser
-       properties:
-           mac: 685B359D91D5
-           level: PG_13
-       requirements:
-           - household:
-               node: My House
-               relationship: tosca.relationships.SubscriberDevice
-
-    Jill's Laptop:
-       type: tosca.nodes.CORDUser
-       properties:
-           mac: 34363BC9B6A6
-           level: PG_13
-       requirements:
-           - household:
-               node: My House
-               relationship: tosca.relationships.SubscriberDevice
-
-    My Volt:
-        type: tosca.nodes.VOLTTenant
-        properties:
-            service_specific_id: 1234
-            vlan_id: 4321
-        requirements:
-            - provider_service:
-                node: service_volt
-                relationship: tosca.relationships.MemberOfService
-            - subscriber:
-                node: My House
-                relationship: tosca.relationships.BelongsToSubscriber
