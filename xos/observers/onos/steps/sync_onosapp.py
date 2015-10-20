@@ -63,9 +63,19 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         return onoses[0]
 
+    def get_files_dir(self, o):
+        if not hasattr(Config(), "observer_steps_dir"):
+            # make steps_dir mandatory; there's no valid reason for it to not
+            # be defined.
+            raise Exception("observer_steps_dir is not defined in config file")
+
+        step_dir = Config().observer_steps_dir
+
+        return os.path.join(step_dir, "..", "files", str(self.get_onos_service(o).id), o.name)
+
     def write_configs(self, o):
         o.config_fns = []
-        o.files_dir = os.path.join("files", str(self.get_onos_service(o).id), o.name)
+        o.files_dir = self.get_files_dir(o)
 
         if not os.path.exists(o.files_dir):
             os.makedirs(o.files_dir)
@@ -81,7 +91,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
     def get_extra_attributes(self, o):
         fields={}
-        fields["files_dir"] = os.path.join("/opt/xos/observers/onos", "files", str(self.get_onos_service(o).id), o.name)
+        fields["files_dir"] = o.files_dir
         fields["appname"] = o.name
         fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
         fields["config_fns"] = o.config_fns
