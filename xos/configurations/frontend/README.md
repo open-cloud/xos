@@ -14,6 +14,16 @@ This configuration is intended for developing the XOS GUI.
 
 You'll be able to visit XOS at `0.0.0.0:9000` and the `xos/core/xoslib` folder is shared with the container. This means that any update to that folder is automatically reported in the container.
 
+### Docker Helpers
+
+Stop the container: `make stop`
+
+Restart (without rebuilding): `make start`
+
+Open a container shell: `make enter`
+
+View logs: `make showlogs`
+
 ## Test
 
 To run the FE tests, navigate to: `xos/core/xoslib`, and run 'npm test'.
