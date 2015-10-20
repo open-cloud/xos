@@ -42,7 +42,7 @@ the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in
 
 ## How to log into ONOS
 
-The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice.  All ports exposed by the ONOS container are forwarded to the outside, and can be accessed from the *ctl* node using the `flat-lan-1-net` address of the hosting VM.  For example, if the IP addresss of the VM is 10.11.10.30, then it is possible to SSH to ONOS as follows:
+The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice.  All ports exposed by the ONOS container are forwarded to the outside, and can be accessed from the *ctl* node using the `flat-lan-1-net` address of the hosting VM.  For example, if the IP addresss of the VM is 10.11.10.30, then it is possible to SSH to ONOS as follows (password is *karaf*):
 
 ```
 $ ssh -p 8101 karaf@10.11.10.30
