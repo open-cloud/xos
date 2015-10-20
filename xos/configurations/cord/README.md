@@ -29,11 +29,20 @@ Log into XOS, click on *Services* tab at left, then *service_vbng* icon.  Change
 `flat-lan-1-net` of the VM (it will start with 10.11).
 
 Once all the VMs are up and the ONOS apps are configured, XOS should be able to get an address mapping from the `virtualbng`
-ONOS app when creating a vCPE.  To test this:
+ONOS app when creating a vCPE.  To test this, enter the XOS Docker container and run:
 
-* Enter the XOS Docker container
-* `$ cd /opt/xos/configurations/cord/`
-* `$ make -f Makefile.inside setup_subscriber`
+```
+$ cd /opt/xos/configurations/cord/
+$ make -f Makefile.inside setup_subscriber
+```
 
 After a bit, a new VM should be created in slice *mysite_vcpe* running the vCPE Docker container.  To verify that it has
 received an IP address mapping, look at the **Routeable subnet:** field in the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
+
+## How to log into ONOS
+
+The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice.  All ports exposed by the ONOS container are forwarded to the outside, and can be accessed from the *ctl* node using the `flat-lan-1-net` address of the hosting VM.  For example, if the IP addresss of the VM is 10.11.10.30, then it is possible to SSH to ONOS as follows:
+
+```
+$ ssh -p 8101 karaf@10.11.10.30
+```
