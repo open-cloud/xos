@@ -18,15 +18,32 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse
 from django.contrib.admin.utils import quote
 
+class ONOSServiceForm(forms.ModelForm):
+    use_external_host = forms.CharField(required=False)
+
+    def __init__(self,*args,**kwargs):
+        super (ONOSServiceForm,self ).__init__(*args,**kwargs)
+        if self.instance:
+            # fields for the attributes
+            self.fields['use_external_host'].initial = self.instance.use_external_host
+
+    def save(self, commit=True):
+        self.instance.use_external_host = self.cleaned_data.get("use_external_host")
+        return super(ONOSServiceForm, self).save(commit=commit)
+
+    class Meta:
+        model = ONOSService
+
 class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     model = ONOSService
     verbose_name = "ONOS Service"
     verbose_name_plural = "ONOS Services"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url", "use_external_host" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    form = ONOSServiceForm
 
     extracontext_registered_admins = True
 
@@ -48,7 +65,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
 class ONOSAppForm(forms.ModelForm):
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     name = forms.CharField()
-    dependencies = forms.CharField()
+    dependencies = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (ONOSAppForm,self ).__init__(*args,**kwargs)
