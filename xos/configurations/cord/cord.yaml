@@ -61,15 +61,15 @@ topology_template:
                 "addresses" : [
                             {
                                 "dpid" : "00:00:00:00:00:00:00:a1",
-                                "port" : "2",
-                                "ips" : ["192.0.0.1/24"],
+                                "port" : "1",
+                                "ips" : [10.0.1.253/24"],
                                 "mac" : "00:00:00:00:00:99"
 
                             },
                             {
                                 "dpid" : "00:00:00:00:00:00:00:a5",
-                                "port" : "4",
-                                "ips" : ["200.0.0.5/24"],
+                                "port" : "2",
+                                "ips" : ["10.254.0.1/24"],
                                 "mac" : "00:00:00:00:00:98"
                             }
                 ]
@@ -77,11 +77,9 @@ topology_template:
           config_virtualbng_json: >
             {
                 "localPublicIpPrefixes" : [
-                    "200.0.0.0/32",
-                    "201.0.0.0/30",
-                    "202.0.0.0/30"
+                    "10.254.0.128/25"
                 ],
-                "nextHopIpAddress" : "200.0.0.5",
+                "nextHopIpAddress" : "10.254.0.1",
                 "publicFacingMac" : "00:00:00:00:00:66",
                 "xosIpAddress" : "10.11.10.1",
                 "xosRestPort" : "9999"
@@ -91,6 +89,14 @@ topology_template:
     # Network templates
     Private:
       type: tosca.nodes.NetworkTemplate
+
+    Public network hack:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: NAT
+          shared_network_name: tun0-net
+
 
     # Networks required by the CORD setup
     lan_network:
@@ -107,6 +113,9 @@ topology_template:
           - connection:
               node: mysite_vcpe
               relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_volt
+              relationship: tosca.relationships.ConnectsToSlice
 
     wan_network:
       type: tosca.nodes.network.Network
@@ -122,10 +131,48 @@ topology_template:
           - connection:
               node: mysite_vcpe
               relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_vbng
+              relationship: tosca.relationships.ConnectsToSlice
+
+    subscriber_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_volt
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_volt
+              relationship: tosca.relationships.ConnectsToSlice
+          - connection:
+              node: mysite_clients
+              relationship: tosca.relationships.ConnectsToSlice
+
+    public_network:
+      type: tosca.nodes.network.Network
+      properties:
+      requirements:
+          - network_template:
+              node: Public network hack
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_vbng
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_vbng
+              relationship: tosca.relationships.ConnectsToSlice
+
 
     mysite:
       type: tosca.nodes.Site
 
+
+    # CORD Slices
     mysite_vcpe:
       description: vCPE Controller Slice
       type: tosca.nodes.Slice
@@ -148,7 +195,33 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    vbng_server:
+    mysite_vbng:
+      description: slice running OVS controlled by vBNG
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_volt:
+      description: OVS controlled by vOLT
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_clients:
+      description: slice for clients at the subscriber 
+      type: tosca.nodes.Slice
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+
+    # Virtual machines
+    onos_app_1:
       type: tosca.nodes.Compute
       capabilities:
         # Host container properties
@@ -168,5 +241,96 @@ topology_template:
       requirements:
           - slice:
                 node: mysite_onos
+                relationship: tosca.relationships.MemberOfSlice
+
+    onos_app_2:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos
+                relationship: tosca.relationships.MemberOfSlice
+
+    # VM for running the OVS controlled by vBNG
+    ovs_vbng:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_vbng
+                relationship: tosca.relationships.MemberOfSlice
+
+    # VM for running the OVS controlled by vOLT
+    ovs_volt:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_volt
+                relationship: tosca.relationships.MemberOfSlice
+
+    # A subscriber client VM
+    client1:
+      type: tosca.nodes.Compute
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: ubuntu
+            version: 14.04
+      requirements:
+          - slice:
+                node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
 
