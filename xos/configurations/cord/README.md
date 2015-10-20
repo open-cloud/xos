@@ -36,8 +36,9 @@ $ cd /opt/xos/configurations/cord/
 $ make -f Makefile.inside setup_subscriber
 ```
 
-After a bit, a new VM should be created in slice *mysite_vcpe* running the vCPE Docker container.  To verify that it has
-received an IP address mapping, look at the **Routeable subnet:** field in the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
+This will run the TOSCA engine with `subscriber.yaml`.  After a bit, a new VM should be created in slice *mysite_vcpe* running
+the vCPE Docker container.  To verify that it has received an IP address mapping, look at the **Routeable subnet:** field in 
+the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
 
 ## How to log into ONOS
 
