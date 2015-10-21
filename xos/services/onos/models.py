@@ -38,7 +38,7 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     KIND = ONOS_KIND
 
     default_attributes = {"name": "",
-                          "dependencies": "",}
+                          "dependencies": ""}
     def __init__(self, *args, **kwargs):
         onos_services = ONOSService.get_service_objects().all()
         if onos_services:
@@ -83,6 +83,19 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     @dependencies.setter
     def dependencies(self, value):
         self.set_attribute("dependencies", value)
+
+    #@property
+    #def instance(self):
+    #    instance_id = self.get_attribute("instance_id", self.default_attributes["instance_id"])
+    #    if instance_id:
+    #        instances = Instance.objects.filter(id=instance_id)
+    #        if instances:
+    #            return instances[0]
+    #    return None
+
+    #@instance.setter
+    #def instance(self, value):
+    #    self.set_attribute("instance_id", value.id)
 
     def save(self, *args, **kwargs):
         if not self.creator:

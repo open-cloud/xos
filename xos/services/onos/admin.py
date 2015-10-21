@@ -95,7 +95,7 @@ class ONOSAppForm(forms.ModelForm):
 class ONOSAppAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', )
     list_display_links = ('backend_status_icon', 'name')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'provider_service', 'service_specific_attribute', "dependencies",
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'provider_service', 'subscriber_service', 'service_specific_attribute', "dependencies",
                                      'creator'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance', 'service_specific_attribute')
