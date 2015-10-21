@@ -25,12 +25,12 @@
     </ul>
   </div>
   <div class="span10">
-    <form>
+    <form ng-submit="vm.saveContentProvider(vm.cp)">
       <fieldset>
         <div class="row-fluid">
           <div class="span6">
             <label>Name:</label>
-            <input type="text" ng-model="vm.cp.humanReadableName"/>
+            <input type="text" ng-model="vm.cp.humanReadableName" required/>
           </div>
           <div class="span6">
             <label class="checkbox">
@@ -41,7 +41,7 @@
         <div class="row-fluid">
           <div class="span12">
             <label>Description</label>
-            <textarea style="width: 100%">{$ vm.cp.description $}</textarea>
+            <textarea style="width: 100%" ng-model="vm.cp.description"></textarea>
           </div>
         </div>
         <div class="row-fluid">
@@ -50,6 +50,14 @@
             <select ng-model="vm.cp.serviceProvider">
               <option ng-repeat="sp in vm.sp" ng-value="sp.id" ng-selected="vm.activeServiceProvide(sp.id, vm.cp.serviceProvider)">{$ sp.humanReadableName $}</option>
             </select>
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <button class="btn btn-success">Save</button>
+            <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+              {$ vm.result.msg $}
+            </div>
           </div>
         </div>
       </fieldset>
