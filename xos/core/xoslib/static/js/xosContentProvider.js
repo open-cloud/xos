@@ -20,6 +20,15 @@ angular.module('contentProviderApp', [
   .when('/contentProvider/:id', {
     template: '<content-provider-detail></content-provider-detail>'
   })
+  .when('/contentProvider/:id/cdn_prefix', {
+    templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html'
+  })
+  .when('/contentProvider/:id/origin_server', {
+    template: 'Origin Server view'
+  })
+  .when('/contentProvider/:id/users', {
+    template: 'User View'
+  })
   .otherwise('/');
 })
 .config(function($httpProvider) {
