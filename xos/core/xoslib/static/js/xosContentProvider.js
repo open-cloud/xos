@@ -21,13 +21,13 @@ angular.module('contentProviderApp', [
     template: '<content-provider-detail></content-provider-detail>'
   })
   .when('/contentProvider/:id/cdn_prefix', {
-    templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html'
+    template: '<content-provider-cdn></content-provider-cdn>'
   })
   .when('/contentProvider/:id/origin_server', {
-    template: 'Origin Server view'
+    template: '<content-provider-server></content-provider-server>'
   })
   .when('/contentProvider/:id/users', {
-    template: 'User View'
+    template: '<content-provider-users></content-provider-users>'
   })
   .otherwise('/');
 })
@@ -78,6 +78,7 @@ angular.module('contentProviderApp', [
     controllerAs: 'vm',
     templateUrl: '../../static/templates/contentProvider/cp_detail.html',
     controller: function() {
+      this.pageName = 'detail';
       var _this = this;
 
       ContentProvider.get({id: $routeParams.id}).$promise
@@ -115,6 +116,39 @@ angular.module('contentProviderApp', [
           };
         });
       };
+    }
+  };
+})
+.directive('contentProviderCdn', function($routeParams) {
+  return{
+    restrict: 'E',
+    controllerAs: 'vm',
+    templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
+    controller: function() {
+      this.pageName = 'cdn';
+      this.cp = {id: $routeParams.id};
+    }
+  };
+})
+.directive('contentProviderServer', function($routeParams) {
+  return{
+    restrict: 'E',
+    controllerAs: 'vm',
+    templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
+    controller: function() {
+      this.pageName = 'server';
+      this.cp = {id: $routeParams.id};
+    }
+  };
+})
+.directive('contentProviderUsers', function($routeParams) {
+  return{
+    restrict: 'E',
+    controllerAs: 'vm',
+    templateUrl: '../../static/templates/contentProvider/cp_user.html',
+    controller: function() {
+      this.pageName = 'user';
+      this.cp = {id: $routeParams.id};
     }
   };
 });
