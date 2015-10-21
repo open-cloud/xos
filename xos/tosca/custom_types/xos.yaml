@@ -745,6 +745,10 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Service ]
 
+    tosca.relationships.UsedByService:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Service ]
+
     tosca.relationships.ControllerDeployment:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Deployment ]

@@ -54,6 +54,9 @@ topology_template:
           - onos_tenant:
               node: service_ONOS
               relationship: tosca.relationships.TenantOfService
+          - vbng_service:
+              node: service_vbng
+              relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
           config_addresses.json: >

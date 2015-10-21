@@ -6,7 +6,7 @@ sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
-from core.models import User, TenantAttribute
+from core.models import User, TenantAttribute, Service
 from services.onos.models import ONOSApp, ONOSService
 
 from xosresource import XOSResource
@@ -19,9 +19,15 @@ class XOSONOSApp(XOSResource):
     def get_xos_args(self, throw_exception=True):
         args = super(XOSONOSApp, self).get_xos_args()
 
+        # provider_service is mandatory and must be the ONOS Service
         provider_name = self.get_requirement("tosca.relationships.TenantOfService", throw_exception=throw_exception)
         if provider_name:
             args["provider_service"] = self.get_xos_object(ONOSService, throw_exception=throw_exception, name=provider_name)
+
+        # subscriber_service is optional and can be any service
+        subscriber_name = self.get_requirement("tosca.relationships.UsedByService", throw_exception=False)
+        if subscriber_name:
+            args["subscriber_service"] = self.get_xos_object(Service, throw_exception=throw_exception, name=subscriber_name)
 
         return args
 
