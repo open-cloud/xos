@@ -60,6 +60,12 @@ class XOSResource(object):
     def get_property(self, name):
         return self.nodetemplate.get_property_value(name)
 
+    def get_property_default(self, name, default=None):
+        props = self.nodetemplate.get_properties()
+        if props and name in props.keys():
+            return props[name].value
+        return default
+
     def get_xos_object(self, cls, throw_exception=True, **kwargs):
         objs = cls.objects.filter(**kwargs)
         if not objs:
@@ -80,12 +86,21 @@ class XOSResource(object):
     def create_or_update(self):
         existing_objs = self.get_existing_objs()
         if existing_objs:
-            self.info("%s %s already exists" % (self.get_model_class_name(), self.nodetemplate.name))
-            self.update(existing_objs[0])
+            if self.get_property_default("no-update", False):
+                self.info("%s %s already exists. Skipping update due to 'no-update' property" % (self.get_model_class_name(), self.nodetemplate.name))
+            else:
+                self.info("%s %s already exists" % (self.get_model_class_name(), self.nodetemplate.name))
+                self.update(existing_objs[0])
         else:
-            self.create()
+            if self.get_property_default("no-create", False):
+                self.info("%s %s does not exist, but 'no-create' is specified" % (self.get_model_class_name(), self.nodetemplate.name))
+            else:
+                self.create()
 
     def can_delete(self, obj):
+        if self.get_property_default("no-delete",False):
+            self.info("%s %s is marked 'no-delete'. Skipping delete." % (self.get_model_class_name(), self.nodetemplate.name))
+            return False
         return True
 
     def postprocess_privileges(self, roleclass, privclass, rolemap, obj, toFieldName):

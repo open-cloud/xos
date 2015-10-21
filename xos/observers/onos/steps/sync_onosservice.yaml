@@ -1,0 +1,66 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+
+  tasks:
+
+  - name: Fix /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="127.0.0.1 localhost"
+      line="127.0.0.1 localhost {{ instance_hostname }}"
+
+  - name: Add repo key
+    apt_key:
+      keyserver=hkp://pgp.mit.edu:80
+      id=58118E89F3A912897C070ADBF76221572C52609D
+
+  - name: Install Docker repo
+    apt_repository:
+      repo="deb https://apt.dockerproject.org/repo ubuntu-trusty main"
+      state=present
+
+  - name: Install Docker
+    apt:
+      name={{ '{{' }} item {{ '}}' }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - docker-engine
+    - python-pip
+    - python-httplib2
+
+  - name: Install docker-py
+    pip:
+      name=docker-py
+      state=latest
+
+  - name: Start ONOS container
+    docker:
+      docker_api_version: "1.18"
+      name: {{ ONOS_container }}
+      # was: reloaded
+      state: running
+      image: onosproject/onos
+      ports:
+      - "6653:6653"
+      - "8101:8101"
+      - "8181:8181"
+      - "9876:9876"
+
+  - name: Get Docker IP
+    script: /opt/xos/observers/onos/scripts/dockerip.sh {{ ONOS_container }}
+    register: dockerip
+
+  - name: Wait for ONOS to come up
+    wait_for:
+      host={{ '{{' }} dockerip.stdout {{ '}}' }}
+      port={{ '{{' }} item {{ '}}' }}
+      state=present
+    with_items:
+    - 8101
+    - 8181
+    - 9876

@@ -69,7 +69,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
         if (controller_network.network.template.name!='Private'):
             logger.info("skipping network controller %s because it is not private" % controller_network)
             # We only sync private networks
-            return
+            return SyncStep.SYNC_WITHOUT_RUNNING
         
         if not controller_network.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_network.controller)
