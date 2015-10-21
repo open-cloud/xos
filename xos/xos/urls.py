@@ -5,9 +5,11 @@ from django.contrib import admin
 
 # This is the generated API
 from xosapi import *
+from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.services import ServiceGridView, ServiceGraphView
+from helloworld.view import *
 #from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics
@@ -27,6 +29,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^stats', 'core.views.stats.Stats', name='stats'),
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
+    url(r'^helloworld', HelloWorldView.as_view(), name='helloWorld'),
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),
     url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),
     url(r'^hpcConfig', 'core.views.hpc_config.HpcConfig', name='hpcConfig'),
@@ -54,5 +57,5 @@ urlpatterns = patterns('',
 
     # XOSLib rest methods
     url(r'^xoslib/', include('core.xoslib.methods', namespace='xoslib')),
-  ) + get_REST_patterns()
+  ) + get_REST_patterns() + get_hpc_REST_patterns()
 

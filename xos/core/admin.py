@@ -757,7 +757,7 @@ class DeploymentAdmin(XOSBaseAdmin):
 
 class ControllerAdmin(XOSBaseAdmin):
     model = Controller
-    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain']
+    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain', 'rabbit_host', 'rabbit_user', 'rabbit_password']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
@@ -786,6 +786,23 @@ class ControllerAdmin(XOSBaseAdmin):
             tabs.append( ('admin-only', 'Admin-Only') )
 
         return tabs
+
+class TenantAttributeAdmin(XOSBaseAdmin):
+    model = TenantAttribute
+    list_display = ('backend_status_icon', 'tenant', 'name', 'value')
+    list_display_links = ('backend_status_icon', 'name')
+    fieldList = ('backend_status_text', 'tenant', 'name', 'value', )
+    fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
+    readonly_fields = ('backend_status_text', )
+
+    suit_form_tabs =(('general', 'Tenant Root Details'),
+    )
+
+class TenantAttrAsTabInline(XOSTabularInline):
+    model = TenantAttribute
+    fields = ['name','value']
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-tenantattrs'
 
 class TenantRootRoleAdmin(XOSBaseAdmin):
     model = TenantRootRole
@@ -2006,4 +2023,5 @@ if True:
     admin.site.register(Flavor, FlavorAdmin)
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
+    admin.site.register(TenantAttribute, TenantAttributeAdmin)
 

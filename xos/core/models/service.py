@@ -67,6 +67,10 @@ class Service(PlCoreBase, AttributeMixin):
         return cls.objects.filter(kind = cls.KIND)
 
     @classmethod
+    def get_deleted_service_objects(cls):
+        return cls.deleted_objects.filter(kind = cls.KIND)
+
+    @classmethod
     def get_service_objects_by_user(cls, user):
         return cls.select_by_user(user).filter(kind = cls.KIND)
 
@@ -487,6 +491,11 @@ class Provider(TenantRoot):
         proxy = True
 
     KIND = "Provider"
+
+class TenantAttribute(PlCoreBase):
+    name = models.CharField(help_text="Attribute Name", max_length=128)
+    value = models.TextField(help_text="Attribute Value")
+    tenant = models.ForeignKey(Tenant, related_name='tenantattributes', help_text="The Tenant this attribute is associated with")
 
 class TenantRootRole(PlCoreBase):
     ROLE_CHOICES = (('admin','Admin'), ('access','Access'))

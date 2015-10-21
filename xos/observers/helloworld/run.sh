@@ -3,4 +3,4 @@
 #fi
 
 export XOS_DIR=/opt/xos
-python helloworld-observer.py  -C $XOS_DIR/observers/hello_world/helloworld_config
+python helloworld-observer.py  -C $XOS_DIR/observers/helloworld/helloworld_config

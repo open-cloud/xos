@@ -1,0 +1,26 @@
+FROM       ubuntu:14.04.2
+MAINTAINER Andy Bavier <acb@cs.princeton.edu>
+
+# XXX Workaround for docker bug:
+# https://github.com/docker/docker/issues/6345
+# Kernel 3.15 breaks docker, uss the line below as a workaround
+# until there is a fix
+RUN ln -s -f /bin/true /usr/bin/chfn
+# XXX End workaround
+
+# Install.
+RUN apt-get update && apt-get install -y \
+    python-pip \
+    python-dev
+
+RUN pip install web.py
+RUN pip install wsgilog
+RUN pip install python-ceilometerclient
+RUN mkdir -p /usr/local/share
+ADD ceilometer_proxy_server.py /usr/local/share/
+RUN chmod +x /usr/local/share/ceilometer_proxy_server.py
+ADD start_ceilometer_proxy /usr/local/sbin/
+RUN chmod +x /usr/local/sbin/start_ceilometer_proxy
+EXPOSE 8000
+WORKDIR /usr/local/share
+CMD /usr/local/sbin/start_ceilometer_proxy
