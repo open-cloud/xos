@@ -45,6 +45,7 @@ XOSAdminApp.navigate = function(what, modelName, modelId) {
 ICON_CLASSES = {home: "icon-home", deployments: "icon-deployment", sites: "icon-site", slices: "icon-slice", users: "icon-user"};
 
 XOSAdminApp.updateNavigationPanel = function() {
+    console.log('UPDATE NAV!!!');
     buttonTemplate=$("#xos-navbutton").html();
     assert(buttonTemplate != undefined, "buttonTemplate is undefined");
     html="<div class='left-nav'><ul>";

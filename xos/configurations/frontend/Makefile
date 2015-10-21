@@ -12,7 +12,8 @@ frontend:
 	echo $(XOS_FOLDER)
 	sudo docker run -v $(XOS_FOLDER)/../../core/xoslib:/opt/xos/core/xoslib -p 9000:8000 --add-host="0.0.0.0:127.0.0.1" xos
 	#sudo docker run -d --add-host="0.0.0.0:$(MYIP)" -p 9999:8000 xos
-	#bash ../common/wait_for_xos.sh
+	bash ../common/wait_for_xos.sh
+	echo $(RUNNING_CONTAINER)
 
 stop:
 	sudo docker stop $(RUNNING_CONTAINER)
