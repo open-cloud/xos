@@ -36,7 +36,9 @@ topology_template:
       type: tosca.nodes.VBNGService
       properties:
           view_url: /admin/cord/vbngservice/$id$/
-          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
+# if unspecified, vbng observer will look for an ONOSApp Tenant and
+# generate a URL from its IP address
+#          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
 
     service_ONOS:
       type: tosca.nodes.ONOSService
