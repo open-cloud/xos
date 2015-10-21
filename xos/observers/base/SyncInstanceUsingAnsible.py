@@ -88,6 +88,10 @@ class SyncInstanceUsingAnsible(SyncStep):
                 self.defer_sync(o, "waiting on instance")
                 return
 
+            if not instance.instance_name:
+                self.defer_sync(o, "waiting on instance.instance_name")
+                return
+
             cslice = ControllerSlice.objects.get(slice=instance.slice)
             if not cslice:
                 raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
