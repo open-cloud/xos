@@ -493,7 +493,7 @@ class Provider(TenantRoot):
     KIND = "Provider"
 
 class TenantAttribute(PlCoreBase):
-    name = models.SlugField(help_text="Attribute Name", max_length=128)
+    name = models.CharField(help_text="Attribute Name", max_length=128)
     value = models.TextField(help_text="Attribute Value")
     tenant = models.ForeignKey(Tenant, related_name='tenantattributes', help_text="The Tenant this attribute is associated with")
 

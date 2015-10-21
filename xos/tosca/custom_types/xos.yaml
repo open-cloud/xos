@@ -128,10 +128,10 @@ node_types:
             dependencies:
                 type: string
                 required: false
-            config_addresses_json:
+            config_addresses.json:
                 type: string
                 required: false
-            config_virtualbng_json:
+            config_virtualbng.json:
                 type: string
                 required: false
 

@@ -82,7 +82,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         for attr in o.tenantattributes.all():
             if attr.name.startswith("config_"):
-                fn = attr.name[7:].replace("_json",".json")
+                fn = attr.name[7:] # .replace("_json",".json")
                 o.config_fns.append(fn)
                 file(os.path.join(o.files_dir, fn),"w").write(attr.value)
 
