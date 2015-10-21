@@ -158,12 +158,16 @@ class Instance(PlCoreBase):
                 return ns.ip
         return None
 
-    # return an address that the synchronizer can use to SSH to the instance
-    def get_ssh_ip(self):
+    # return an address on nat-net
+    def get_network_ip(self, pattern):
         for ns in self.ports.all():
-            if "nat" in ns.network.name.lower():
+            if pattern in ns.network.name.lower():
                 return ns.ip
         return None
+
+    # return an address that the synchronizer can use to SSH to the instance
+    def get_ssh_ip(self):
+        return self.get_network_ip("nat")
 
     @staticmethod
     def select_by_user(user):
