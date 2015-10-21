@@ -56,7 +56,7 @@ topology_template:
               relationship: tosca.relationships.TenantOfService
       properties:
           dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
-          config_addresses_json: >
+          config_addresses.json: >
             {
                 "addresses" : [
                             {
@@ -74,7 +74,7 @@ topology_template:
                             }
                 ]
             }
-          config_virtualbng_json: >
+          config_virtualbng.json: >
             {
                 "localPublicIpPrefixes" : [
                     "10.254.0.128/25"
