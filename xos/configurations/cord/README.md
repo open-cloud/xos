@@ -38,8 +38,19 @@ created by XOS.  The numbers in the diagram correspond to networks set up by XOS
 
 ## How to run it
 
-The configuration is intended to be run on [CloudLab](http://cloudlab.us), on the *ctl* node set up by the OpenStack profile.
+The configuration is intended to be run on [CloudLab](http://cloudlab.us).
 It launches an XOS container on Cloudlab that runs the XOS develserver.  The container is left running in the background.
+
+To get started on CloudLab:
+* Create an experiment using the *OpenStack-CORD* profile.  (You can also use the *OpenStack* profile, but choose *Kilo*
+and disable security groups.)
+* Wait until you get an email from CloudLab with title "OpenStack Instance Finished Setting Up".
+* Login to the *ctl* node of your experiment and run:
+```
+$ git clone https://github.com/open-cloud/xos.git
+$ cd xos/xos/configurations/cord/
+$ make
+```
 
 Running `make` in this directory creates the XOS Docker container and runs the TOSCA engine with `cord.yaml` to
 configure XOS with the CORD services.  In addition, a number of VMs are created:
@@ -49,10 +60,6 @@ configure XOS with the CORD services.  In addition, a number of VMs are created:
 1. *Slice mysite_vbng*: for running OvS with the `virtualbng` app as controller
 1. *Slice mysite_volt*: for running OvS with the `olt` app as controller
 1. *Slice mysite_clients*: a subscriber client for end-to-end testing
-
-After the first VM is created (for running the `virtualbng` app) it is necessary to configure XOS's *service_vbng* with its URL.
-Log into XOS, click on *Services* tab at left, then *service_vbng* icon.  Change **Vbng url:** to point to the IP address on
-`flat-lan-1-net` of the VM (it will start with 10.11).
 
 Once all the VMs are up and the ONOS apps are configured, XOS should be able to get an address mapping from the `virtualbng`
 ONOS app when creating a vCPE.  To test this, enter the XOS Docker container and run:

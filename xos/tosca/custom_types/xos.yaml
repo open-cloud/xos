@@ -115,7 +115,7 @@ node_types:
     tosca.nodes.ONOSvBNGApp:
         derived_from: tosca.nodes.Root
         description: >
-            An ONOS Application.
+            An ONOS vBNG Application.
         properties:
             kind:
                 type: string
@@ -132,6 +132,23 @@ node_types:
                 type: string
                 required: false
             config_virtualbng.json:
+                type: string
+                required: false
+
+    tosca.nodes.ONOSvOLTApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS vOLT Application.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of tenant
+            service_specific_id:
+                type: string
+                required: false
+                description: Service specific ID opaque to XOS but meaningful to service
+            dependencies:
                 type: string
                 required: false
 
