@@ -4,7 +4,8 @@
 angular.module('contentProviderApp', [
   'ngResource',
   'ngRoute',
-  'ngCookies'
+  'ngCookies',
+  'ngLodash'
 ])
 .config(function($interpolateProvider, $routeProvider, $resourceProvider) {
   $interpolateProvider.startSymbol('{$');
@@ -54,6 +55,9 @@ angular.module('contentProviderApp', [
 .service('ServiceProvider', function($resource) {
   return $resource('/hpcapi/serviceproviders/:id/', {id: '@id'});
 })
+.service('CdnPrefixed', function($resource) {
+  return $resource('/hpcapi/cdnprefixs/:id/', {id: '@id'});
+})
 .directive('contentProviderList', function(ContentProvider) {
   return {
     restrict: 'E',
@@ -85,6 +89,11 @@ angular.module('contentProviderApp', [
         ContentProvider.get({id: $routeParams.id}).$promise
         .then(function(cp) {
           _this.cp = cp;
+        }).catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
         });
       }
 
@@ -129,14 +138,50 @@ angular.module('contentProviderApp', [
     }
   };
 })
-.directive('contentProviderCdn', function($routeParams) {
+.directive('contentProviderCdn', function($routeParams, CdnPrefixed, ContentProvider, lodash) {
   return{
     restrict: 'E',
     controllerAs: 'vm',
     templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
     controller: function() {
+      var _this = this;
+
       this.pageName = 'cdn';
-      this.cp = {id: $routeParams.id};
+
+      if($routeParams.id) {
+        ContentProvider.get({id: $routeParams.id}).$promise
+        .then(function(cp) {
+          _this.cp = cp;
+        }).catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      }
+
+      CdnPrefixed.query({contentProvider: $routeParams.id}).$promise
+      .then(function(cp_prf) {
+        _this.cp_prf = cp_prf;
+      }).catch(function(e) {
+        _this.result = {
+          status: 0,
+          msg: e.data.detail
+        };
+      });
+
+      this.removePrefix = function(item) {
+        item.$delete()
+        .then(function() {
+          lodash.remove(_this.cp_prf, item);
+        })
+        .catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      };
     }
   };
 })
