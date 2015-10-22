@@ -79,24 +79,31 @@
     copy: src=/opt/xos/observers/vcpe/files/vm-resolv.conf
       dest=/etc/resolv.conf
 
+  - name: Verify if vcpe_stats_notifier ([] is to avoid capturing the shell process) cron job is already running
+    shell: pgrep -f [v]cpe_stats_notifier | wc -l
+    register: cron_job_pids_count
+
+#  - name: DEBUG
+#    debug: var=cron_job_pids_count.stdout
+
   - name: make sure ~/bin exists
     file: path=~/bin state=directory owner=root group=root
+    when: cron_job_pids_count.stdout == "0"
 
   - name: Copy cron job to destination
     copy: src=/opt/xos/observers/vcpe/vcpe_stats_notifier.py
       dest=~/bin/vcpe_stats_notifier.py
+    when: cron_job_pids_count.stdout == "0"
 
   - name: install python-kombu
     apt: name=python-kombu state=present
-
-  - name: Clean any running vcpe_stats_notifier cron jobs
-    command: pkill vcpe_stats_notifier.py
-    ignore_errors: yes
+    when: cron_job_pids_count.stdout == "0"
 
   - name: Initiate vcpe_stats_notifier cron job
     command: python ~/bin/vcpe_stats_notifier.py --keystone_tenant_id={{ keystone_tenant_id }} --keystone_user_id={{ keystone_user_id }} --rabbit_user={{ rabbit_user }} --rabbit_password={{ rabbit_password }} --rabbit_host={{ rabbit_host }} --vcpeservice_rabbit_exchange='vcpeservice'
-    async: 999999999999999999
+    async: 9999999999999999
     poll: 0
+    when: cron_job_pids_count.stdout == "0"
 {% endif %}
 
   - name: vCPE upstart
