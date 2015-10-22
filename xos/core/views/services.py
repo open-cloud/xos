@@ -121,14 +121,14 @@ class ServiceGraphView(TemplateView):
         g.graph_attr.update(graphdir="TB")
 
         for service in Service.objects.all():
-            provided_tenants = CoarseTenant.get_tenant_objects().filter(provider_service=service)
-            subscribed_tenants = CoarseTenant.get_tenant_objects().filter(subscriber_service=service)
+            provided_tenants = Tenant.objects.filter(provider_service=service, subscriber_service__isnull=False)
+            subscribed_tenants = Tenant.objects.filter(subscriber_service=service, provider_service__isnull=False)
             if not (provided_tenants or subscribed_tenants):
                # nodes with no edges aren't interesting
                continue
             g.add_node(service.id, label=service.name)
 
-        for tenant in CoarseTenant.get_tenant_objects().all():
+        for tenant in Tenant.objects.all():
             if (not tenant.provider_service) or (not tenant.subscriber_service):
                 continue
             g.add_edge(tenant.subscriber_service.id, tenant.provider_service.id)
