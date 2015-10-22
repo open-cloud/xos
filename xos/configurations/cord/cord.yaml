@@ -339,3 +339,65 @@ topology_template:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
 
+    # A subscriber
+    My House:
+       type: tosca.nodes.CORDSubscriber
+       properties:
+           service_specific_id: 123
+           firewall_enable: false
+           cdn_enable: false
+           url_filter_enable: false
+           url_filter_level: R
+
+    Mom's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 010203040506
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Dad's PC:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 90E2Ba82F975
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jack's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 685B359D91D5
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    Jill's Laptop:
+       type: tosca.nodes.CORDUser
+       properties:
+           mac: 34363BC9B6A6
+           level: PG_13
+       requirements:
+           - household:
+               node: My House
+               relationship: tosca.relationships.SubscriberDevice
+
+    My Volt:
+        type: tosca.nodes.VOLTTenant
+        properties:
+            service_specific_id: 123
+            vlan_id: 432
+        requirements:
+            - provider_service:
+                node: service_volt
+                relationship: tosca.relationships.MemberOfService
+            - subscriber:
+                node: My House
+                relationship: tosca.relationships.BelongsToSubscriber
