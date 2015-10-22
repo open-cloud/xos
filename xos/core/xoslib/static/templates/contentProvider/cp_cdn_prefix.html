@@ -13,14 +13,39 @@
   </div>
   <div class="span10">
     <div ng-repeat="item in vm.cp_prf" class="well">
-      {{item.humanReadableName}}
-      <a ng-click="vm.removePrefix(item)" class="btn btn-danger pull-right">
-        <i class="icon icon-remove"></i>
-      </a>
+      <div class="row-fluid">
+        <div class="span4">
+          {{item.humanReadableName}}
+        </div>
+        <div class="span6">
+          {{item.defaultOriginServer}}
+        </div>
+        <div class="span2">
+          <a ng-click="vm.removePrefix(item)" class="btn btn-danger pull-right">
+            <i class="icon icon-remove"></i>
+          </a>
+        </div>
+      </div>
     </div>
     <hr>
-    <form ng-submit="addPrefix">
-      
+    <form ng-submit="vm.addPrefix(vm.new_prf)">
+      <div class="row-fluid">
+        <div class="span4">
+          <label>Prefix</label>
+          <input type="text" ng-model="vm.new_prf.humanReadableName" required style="max-width: 90%">
+        </div>
+        <div class="span6">
+          <label>Default Origin Server</label>
+          <select ng-model="vm.new_prf.boh" style="max-width: 100%">
+            <option ng-repeat="prf in vm.prf" ng-value="prf.id.name">{$ prf.humanReadableName $}</option>
+          </select>
+        </div>
+        <div class="span2">
+          <button class="btn btn-success pull-right">
+            <i class="icon icon-plus"></i>
+          </button>
+        </div>
+      </div>
     </form>
     <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
       {$ vm.result.msg $}

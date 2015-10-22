@@ -160,6 +160,7 @@ angular.module('contentProviderApp', [
         });
       }
 
+      // TODO filter on client
       CdnPrefixed.query({contentProvider: $routeParams.id}).$promise
       .then(function(cp_prf) {
         _this.cp_prf = cp_prf;
@@ -169,6 +170,20 @@ angular.module('contentProviderApp', [
           msg: e.data.detail
         };
       });
+
+      CdnPrefixed.query().$promise
+      .then(function(prf) {
+        _this.prf = prf;
+      }).catch(function(e) {
+        _this.result = {
+          status: 0,
+          msg: e.data.detail
+        };
+      });
+
+      this.addPrefix = function(item) {
+        console.log(item);
+      };
 
       this.removePrefix = function(item) {
         item.$delete()
