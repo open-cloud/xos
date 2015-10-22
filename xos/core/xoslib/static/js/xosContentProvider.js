@@ -17,7 +17,7 @@ angular.module('contentProviderApp', [
   .when('/', {
     template: '<content-provider-list></content-provider-list>',
   })
-  .when('/contentProvider/:id', {
+  .when('/contentProvider/:id?', {
     template: '<content-provider-detail></content-provider-detail>'
   })
   .when('/contentProvider/:id/cdn_prefix', {
@@ -81,10 +81,12 @@ angular.module('contentProviderApp', [
       this.pageName = 'detail';
       var _this = this;
 
-      ContentProvider.get({id: $routeParams.id}).$promise
-      .then(function(cp) {
-        _this.cp = cp;
-      });
+      if($routeParams.id) {
+        ContentProvider.get({id: $routeParams.id}).$promise
+        .then(function(cp) {
+          _this.cp = cp;
+        });
+      }
 
       ServiceProvider.query().$promise
       .then(function(sp) {
@@ -101,9 +103,17 @@ angular.module('contentProviderApp', [
       };
 
       this.saveContentProvider = function(cp) {
-        // NOTE remember the creation
-        cp.$update()
-        .then(function() {
+        var p;
+
+        if(cp.id) {
+          p = cp.$update();
+        }
+        else {
+          cp.name = cp.humanReadableName;
+          p = new ContentProvider(cp).$save();
+        }
+
+        p.then(function() {
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
