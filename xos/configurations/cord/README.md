@@ -60,17 +60,10 @@ configure XOS with the CORD services.  In addition, a number of VMs are created:
 1. *Slice mysite_vbng*: for running OvS with the `virtualbng` app as controller
 1. *Slice mysite_volt*: for running OvS with the `olt` app as controller
 1. *Slice mysite_clients*: a subscriber client for end-to-end testing
+1. *Slice mysite_vcpe*: runs the vCPE Docker container
 
 Once all the VMs are up and the ONOS apps are configured, XOS should be able to get an address mapping from the `virtualbng`
-ONOS app when creating a vCPE.  To test this, enter the XOS Docker container and run:
-
-```
-$ cd /opt/xos/configurations/cord/
-$ make -f Makefile.inside setup_subscriber
-```
-
-This will run the TOSCA engine with `subscriber.yaml`.  After a bit, a new VM should be created in slice *mysite_vcpe* running
-the vCPE Docker container.  To verify that it has received an IP address mapping, look at the **Routeable subnet:** field in 
+ONOS app for the vCPE. To verify that it has received an IP address mapping, look at the **Routeable subnet:** field in 
 the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
 
 ## How to log into ONOS
