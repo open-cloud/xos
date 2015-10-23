@@ -53,7 +53,7 @@ module.exports = function(config) {
     exclude: [
       // '**/xos-utils.test.js', //skip this test, useful in dev, comment before commit
       // '**/xos-backbone.test.js',
-      // '**/xoslib/**/*.js'
+      '**/xoslib/**/*.js'
     ],
 
 
