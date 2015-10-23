@@ -38,6 +38,8 @@ Tests are runned in a headless browser (_PhantomJs_) by _Karma_ and the assertio
 
 You can find the tests in the `spec/` folder, each source file has a corresponding `.test` file in it.
 
+After test have run you can find a Coverage report in `xos/core/xoslib/coverage` folder
+
 ## JS Styleguide
 
 This project is following [Google JavaScript Style Guide](https://google.github.io/styleguide/javascriptguide.xml). To contribute please install [Eslint](http://eslint.org/) in your editor and run `npm run eslint` before commit.
