@@ -8,7 +8,7 @@
 // - Add Es6 (Babel) and a build script
 // - Autogenerate ngResource from swagger definition json
 
-angular.module('contentProviderApp', [
+angular.module('xos.contentProviderApp', [
   'ngResource',
   'ngRoute',
   'ngCookies',
