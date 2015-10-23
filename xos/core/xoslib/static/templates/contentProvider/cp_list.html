@@ -6,6 +6,7 @@
       </th>
       <th>Description</th>
       <th>Status</th>
+      <th></th>
     </tr>
   </thead>
   <tr ng-repeat="item in vm.contentProviderList">
@@ -18,6 +19,8 @@
     <td>
       {$ item.enabled $}
     </td>
+    <td>
+      <a ng-click="vm.deleteCp(item.id)" class="btn btn-danger"><i class="icon icon-remove"></i></a></td>
   </tr>
 </table>
 <div class="alert alert-error" ng-show="vm.contentProviderList.length == 0">

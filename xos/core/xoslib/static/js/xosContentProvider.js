@@ -90,7 +90,7 @@ angular.module('contentProviderApp', [
     }
   };
 })
-.directive('contentProviderList', function(ContentProvider) {
+.directive('contentProviderList', function(ContentProvider, lodash) {
   return {
     restrict: 'E',
     controllerAs: 'vm',
@@ -105,6 +105,13 @@ angular.module('contentProviderApp', [
       .catch(function(e) {
         throw new Error(e);
       });
+
+      this.deleteCp = function(id) {
+        ContentProvider.delete({id: id}).$promise
+        .then(function() {
+          lodash.remove(_this.contentProviderList, {id: id});
+        });
+      };
     }
   };
 })
