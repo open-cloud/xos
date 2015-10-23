@@ -21,7 +21,9 @@
     "karma-babel-preprocessor": "~5.2.2",
     "karma-jasmine": "~0.3.6",
     "karma-mocha-reporter": "~1.1.1",
+    "karma-ng-html2js-preprocessor": "^0.2.0",
     "karma-phantomjs-launcher": "~0.2.1",
-    "phantomjs": "~1.9.18"
+    "phantomjs": "~1.9.18",
+    "wiredep": "^3.0.0-beta"
   }
 }

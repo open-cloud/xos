@@ -1,0 +1,24 @@
+{
+  "name": "xoslib",
+  "version": "0.0.0",
+  "homepage": "https://github.com/teone/xos",
+  "authors": [
+    "Matteo Scandolo <matteo.scandolo@link-me.it>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-cookies": "~1.4.7",
+    "angular-resource": "~1.4.7",
+    "angular-route": "~1.4.7",
+    "angular": "~1.4.7",
+    "ng-lodash": "~0.3.0"
+  }
+}
