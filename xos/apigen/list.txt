@@ -1,0 +1,3 @@
+{% for o in generator.all %}
+{{ o.camel }}
+{% endfor %}
