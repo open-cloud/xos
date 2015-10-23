@@ -7,6 +7,7 @@ import sys
 import json
 import re
 from django.template import Context, Template
+from optparse import OptionParser
 
 blacklist = ['SingletonModel','PlCoreBase']
 
@@ -15,6 +16,8 @@ blacklist = ['SingletonModel','PlCoreBase']
 sys.path.append('.')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+
+options = None
 
 def singular(foo, keys):
 	for k in keys:
@@ -40,7 +43,7 @@ def enum_classes(apps):
 
             for classname in dir(models_module):
                     c = getattr(models_module, classname, None)
-                    if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
+                    if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
 
     return model_classes
@@ -154,22 +157,30 @@ class Generator(dict):
 
 
 
-			
+
 def main():
-        if len(sys.argv)==3:
-            apps = [x.strip() for x in sys.argv[1].split(",")]
-            output = sys.argv[2]
-        elif len(sys.argv)==2:
-            apps = ["core"]
-            output = sys.argv[1]
-        else:
-	    print 'Usage: modelgen <output_template>'
-            print 'Alternative Usage: modelgen <app> <output_template>'
-	    exit(1)
+        global options
+        parser = OptionParser(usage="modelgen [options] <template_fn>", )
+
+        parser.add_option("-a", "--app", dest="apps",
+             help="list of applications to parse", metavar="APP", default=[], action="append")
+        parser.add_option("-b", "--blacklist", dest="blacklist",
+             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+
+        (options, args) = parser.parse_args(sys.argv[1:])
+
+        if not options.apps:
+            options.apps = ["core"]
+
+        if len(args)!=1:
+            print 'Usage: modelgen [options] <template_fn>'
+            exit(1)
+
+        output = args[0]
 
 	generator = Generator()
 
-	models = enum_classes(apps)
+	models = enum_classes(options.apps)
 
 	for m in models:
 		generator.add_object(m)
