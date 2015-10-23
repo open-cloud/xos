@@ -210,9 +210,35 @@ describe('The Xos Backbone', () => {
         });
       });
 
-      it('should have a xosValidate method', () => {
-        console.log(model.xosValidate);
+      it('should have the default xosValidate method', () => {
         expect(typeof model.xosValidate).toEqual('function');
+      });
+
+      describe('when xosValidate is defined', () => {
+
+        var extendXosValidate;
+        beforeEach(() => {
+          define_model(testLib, {
+            urlRoot: 'collUrl',
+            modelName: 'testModel',
+            xosValidate: {site: ['notBlank']}
+          });
+
+          /*eslint-disable new-cap*/
+          extendXosValidate = new testLib.testModel();
+          /*eslint-enable new-cap*/
+        });
+
+        // NOTE if I can override with an object a also can override with functions
+        // testing with the object is mush simpler
+
+        it('should be overwritten', () => {
+          expect(extendXosValidate.xosValidate).toEqual({site: ['notBlank']});
+        });
+
+        afterEach(() => {
+          extendXosValidate = null;
+        });
       });
 
       // TBT

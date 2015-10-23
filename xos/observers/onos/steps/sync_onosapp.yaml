@@ -1,0 +1,49 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  vars:
+    appname: {{ appname }}
+    dependencies: {{ dependencies }}
+
+  tasks:
+
+  - name: Config file directory
+    file:
+      path=/home/ubuntu/{{ appname }}/
+      state=directory
+
+  - name: Copy over configuration files
+    copy:
+      src={{ files_dir }}/{{ '{{' }} item {{ '}}' }}
+      dest=/home/ubuntu/{{ appname }}/{{ '{{' }} item {{ '}}' }}
+    with_items:
+        {% for config_fn in config_fns %}
+        - {{ config_fn }}
+        {% endfor %}
+
+  - name: Copy config files into container
+    shell: docker cp {{ appname }}/{{ '{{' }} item {{ '}}' }} {{ ONOS_container }}:/root/onos/config/
+    sudo: yes
+    with_items:
+        {% for config_fn in config_fns %}
+        - {{ config_fn }}
+        {% endfor %}
+
+  # Don't know how to check for this condition, just wait
+  - name: Wait for ONOS to install the apps
+    wait_for: timeout=15
+
+  - name: Add dependencies to ONOS
+    uri:
+      url: http://localhost:8181/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      method: POST
+      user: karaf
+      password: karaf
+    with_items:
+        {% for dependency in dependencies %}
+        - {{ dependency }}
+        {% endfor %}
+

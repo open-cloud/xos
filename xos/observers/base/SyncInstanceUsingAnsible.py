@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
-from core.models import Service, Slice
+from core.models import Service, Slice, ControllerSlice, ControllerUser
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -58,25 +58,59 @@ class SyncInstanceUsingAnsible(SyncStep):
     def sync_fields(self, o, fields):
         self.run_playbook(o, fields)
 
+    def prepare_record(self, o):
+        pass
+
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
-
-        instance = self.get_instance(o)
-        if not instance:
-            self.defer_sync(o, "waiting on instance")
-            return
 
         if not os.path.exists(self.service_key_name):
             raise Exception("Service key %s does not exist" % self.service_key_name)
 
         service_key = file(self.service_key_name).read()
 
-        fields = { "instance_name": instance.name,
-                   "hostname": instance.node.name,
-                   "instance_id": instance.instance_id,
-                   "private_key": service_key,
-                   "ansible_tag": "vcpe_tenant_" + str(o.id)
-                 }
+        self.prepare_record(o)
+
+        instance = self.get_instance(o)
+
+        if isinstance(instance, basestring):
+            # sync to some external host
+
+            # XXX - this probably needs more work...
+
+            fields = { "hostname": instance,
+                       "instance_id": "ubuntu",     # this is the username to log into
+                       "private_key": service.key,
+                     }
+        else:
+            # sync to an XOS instance
+            if not instance:
+                self.defer_sync(o, "waiting on instance")
+                return
+
+            if not instance.instance_name:
+                self.defer_sync(o, "waiting on instance.instance_name")
+                return
+
+            cslice = ControllerSlice.objects.get(slice=instance.slice)
+            if not cslice:
+                raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+
+            cuser = ControllerUser.objects.get(user=instance.creator)
+            if not cuser:
+                raise Exception("Controller user object for %s does not exist" % instance.creator)
+
+            fields = { "instance_name": instance.name,
+                       "hostname": instance.node.name,
+                       "instance_id": instance.instance_id,
+                       "private_key": service_key,
+                       "keystone_tenant_id": cslice.tenant_id,
+                       "keystone_user_id": cuser.kuser_id,
+                       "rabbit_user": instance.controller.rabbit_user,
+                       "rabbit_password": instance.controller.rabbit_password,
+                       "rabbit_host": instance.controller.rabbit_host,
+                       "ansible_tag": o.__class__.__name__ + "_" + str(o.id)
+                     }
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.

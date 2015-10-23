@@ -14,6 +14,20 @@ This configuration is intended for developing the XOS GUI.
 
 You'll be able to visit XOS at `0.0.0.0:9000` and the `xos/core/xoslib` folder is shared with the container. This means that any update to that folder is automatically reported in the container.
 
+### Docker Helpers
+
+Stop the container: `make stop`
+
+Restart (without rebuilding): `make start`
+
+Open a container shell: `make enter`
+
+View logs: `make showlogs`
+
+## Docs
+
+You can find a Swagger documentation for endpoint at: `http://0.0.0.0:9000/docs/`
+
 ## Test
 
 To run the FE tests, navigate to: `xos/core/xoslib`, and run 'npm test'.
@@ -26,7 +40,7 @@ You can find the tests in the `spec/` folder, each source file has a correspondi
 
 ## JS Styleguide
 
-This project is following (Google JavaScript Style Guide)[https://google.github.io/styleguide/javascriptguide.xml]. To contribute please install (Eslint)[http://eslint.org/] in your editor and run `npm run eslint` before commit.
+This project is following [Google JavaScript Style Guide](https://google.github.io/styleguide/javascriptguide.xml). To contribute please install [Eslint](http://eslint.org/) in your editor and run `npm run eslint` before commit.
 
 > _NOTE_
 > Many of the already present file were not Style compliant. Linting for them has been disabled as it was to time consuming fix all of them. If **you are going to work** on that files, please **start fixing style issues**, and then **remove the `/* eslint-disable */`** comment

@@ -50,9 +50,38 @@ class SyncVBNGTenant(SyncStep):
 
     def get_vbng_url(self, o):
         service = self.get_vbng_service(o)
-        if not service.vbng_url:
-            raise Exception("vBNG service does not have vbng_url set")
-        return service.vbng_url
+
+        # if the service object specifies a vbng_url, then use it
+        if service.vbng_url:
+            return service.vbng_url
+
+        # otherwise, see if the service has tenancy in ONOS
+        for tenant in service.subscribed_tenants.all():
+            if tenant.provider_service and tenant.provider_service.kind == "onos":
+                onos_service = tenant.provider_service
+                if not onos_service.slices.exists():
+                    raise Exception("vBNG service is linked to an ONOSApp, but the App's Service has no slices")
+                onos_slice = onos_service.slices.all()[0]
+                if not onos_slice.instances.exists():
+                    raise Exception("vBNG service is linked to an ONOSApp, but the App's Service's Slice has no instances")
+                instance = onos_slice.instances.all()[0]
+
+                #onos_app = ONOSApp.objects.filter(id = tenant.id)
+                #instance = onos_app.instance
+                #if not instance:
+                #    raise Exception("ONOSApp has no instance")
+
+                if not instance.instance_name:
+                    raise Exception("vBNG service is linked to an ONOSApp, but the App's Service's Slice's first instance is not instantiated")
+                ip = instance.get_network_ip("nat")
+                if not ip:
+                    raise Exception("vBNG service is linked to an ONOSApp, but the App's Service's Slice's first instance does not have an ip")
+
+                logger.info("Using ip %s from ONOS Instance %s" % (ip, instance))
+
+                return "http://%s:8181/onos/virtualbng/" % ip
+
+        raise Exception("vBNG service does not have vbng_url set, and is not linked to an ONOSApp")
 
     def get_private_interface(self, o):
         vcpes = VCPETenant.get_tenant_objects().all()

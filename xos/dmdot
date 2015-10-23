@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey
 
 # defaults
-apps = ["core", "hpc", "cord", "requestrouter"]
+apps = ["core", "hpc", "cord", "requestrouter", "services.onos"]
 output = "-json"
 
 # syntax: dmdot [-json | -dot] [app_name]
@@ -22,7 +22,7 @@ for arg in sys.argv[1:]:
     if arg.startswith("-"):
         output = arg
     else:
-        app = arg
+        apps+= [arg]
 
 model_classes = []
 class_names = []

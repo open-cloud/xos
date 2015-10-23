@@ -22,6 +22,8 @@ if [ "$CORD" -ne 0 ]
 then
     cp ~/.ssh/id_rsa.pub xos/observers/vcpe/vcpe_public_key
     cp ~/.ssh/id_rsa     xos/observers/vcpe/vcpe_private_key
+    cp ~/.ssh/id_rsa.pub xos/observers/monitoring_channel/monitoring_channel_public_key
+    cp ~/.ssh/id_rsa     xos/observers/monitoring_channel/monitoring_channel_private_key
 fi
 
 sudo docker build -t xos .
@@ -34,6 +36,8 @@ fi
 
 # OpenStack is using port 8000...
 MYIP=$( hostname -i )
+MYFLATLANIF=$( sudo bash -c "netstat -i" |grep flat|awk '{print $1}' )
+MYFLATLANIP=$( ifconfig $MYFLATLANIF | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}' )
 sudo docker run -d --add-host="ctl:$MYIP" -p 9999:8000 $IMAGE
 
 echo "Waiting for XOS to come up"
@@ -52,7 +56,17 @@ sudo cp /root/setup/admin-openrc.sh /tmp
 sudo chmod a+r /tmp/admin-openrc.sh
 #sudo sed -i 's/:5000/:35357/' /tmp/admin-openrc.sh
 source /tmp/admin-openrc.sh
-http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Juno auth_url=$OS_AUTH_URL admin_user=$OS_USERNAME admin_tenant=$OS_TENANT_NAME admin_password=$OS_PASSWORD domain=Default
+
+if [ "$CORD" -ne 1 ]
+then
+     http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Kilo auth_url=$OS_AUTH_URL admin_user=$OS_USERNAME admin_tenant=$OS_TENANT_NAME admin_password=$OS_PASSWORD domain=Default
+else
+     sudo cp /root/setup/settings /tmp
+     sudo chmod a+r /tmp/settings
+     source /tmp/settings
+     source /tmp/admin-openrc.sh
+     http --auth $AUTH POST $XOS/xos/controllers/ name=CloudLab deployment=$XOS/xos/deployments/1/ backend_type=OpenStack version=Kilo auth_url=$OS_AUTH_URL admin_user=$OS_USERNAME admin_tenant=$OS_TENANT_NAME admin_password=$OS_PASSWORD domain=Default rabbit_host=$MYFLATLANIP rabbit_user=$RABBIT_USER rabbit_password=$RABBIT_PASS
+fi
 
 # Add controller to site
 http --auth $AUTH PATCH $XOS/xos/sitedeployments/1/ controller=$XOS/xos/controllers/1/
@@ -78,5 +92,5 @@ http --auth $AUTH PATCH $XOS/xos/networktemplates/2/ shared_network_name=$FLATNE
 if [ "$CORD" -ne 0 ]
 then
     DOCKER=$( sudo docker ps|grep $IMAGE|awk '{print $NF}' )
-    sudo docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml"
+    sudo docker exec $DOCKER bash -c "cd /opt/xos/tosca; python run.py padmin@vicci.org samples/cord-cloudlab.yaml; python run.py padmin@vicci.org samples/ceilometer.yaml"
 fi
