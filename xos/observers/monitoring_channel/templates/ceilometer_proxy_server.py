@@ -209,7 +209,7 @@ class sample_list:
               query = make_query(tenant_id=k)
               final_query.extend(query)
               logger.debug('final query=%s',final_query)
-              results = client.samples.list(q=query)
+              results = client.samples.list(q=final_query)
               samples.extend(results)
         return json.dumps([ob._info for ob in samples])
 
@@ -235,7 +235,7 @@ class resource_list:
               query = make_query(tenant_id=k)
               final_query.extend(query)
               logger.debug('final query=%s',final_query)
-              results = client.resources.list(q=query)
+              results = client.resources.list(q=final_query, links=1)
               resources.extend(results)
         return json.dumps([ob._info for ob in resources])
 
