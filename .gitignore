@@ -6,4 +6,5 @@ profile
 xos/configurations/frontend/Dockerfile
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs
+xos/core/xoslib/coverage
 node_modules

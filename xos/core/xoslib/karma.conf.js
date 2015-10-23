@@ -53,7 +53,7 @@ module.exports = function(config) {
     exclude: [
       // '**/xos-utils.test.js', //skip this test, useful in dev, comment before commit
       // '**/xos-backbone.test.js',
-      '**/xoslib/**/*.js'
+      // '**/xoslib/**/*.js'
     ],
 
 
@@ -61,7 +61,9 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'spec/**/*.test.js': ['babel'],
-      'static/templates/**/*.html': 'ng-html2js'
+      'static/templates/**/*.html': 'ng-html2js',
+      'static/js/xoslib/*.js': ['coverage'],
+      'static/js/*.js': ['coverage']
     },
 
     ngHtml2JsPreprocessor: {
@@ -69,11 +71,15 @@ module.exports = function(config) {
       moduleName: 'templates' // define the template module name
     },
 
+    coverageReporter: {
+      type: 'html',
+      dir: 'coverage/'
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha'],
+    reporters: ['mocha', 'coverage'],
 
 
     // web server port
