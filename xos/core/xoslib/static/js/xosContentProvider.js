@@ -55,7 +55,7 @@ angular.module('contentProviderApp', [
 .service('ServiceProvider', function($resource) {
   return $resource('/hpcapi/serviceproviders/:id/', {id: '@id'});
 })
-.service('CdnPrefixed', function($resource) {
+.service('CdnPrefix', function($resource) {
   return $resource('/hpcapi/cdnprefixs/:id/', {id: '@id'});
 })
 .directive('contentProviderList', function(ContentProvider) {
@@ -138,7 +138,7 @@ angular.module('contentProviderApp', [
     }
   };
 })
-.directive('contentProviderCdn', function($routeParams, CdnPrefixed, ContentProvider, lodash) {
+.directive('contentProviderCdn', function($routeParams, CdnPrefix, ContentProvider, lodash) {
   return{
     restrict: 'E',
     controllerAs: 'vm',
@@ -161,7 +161,7 @@ angular.module('contentProviderApp', [
       }
 
       // TODO filter on client
-      CdnPrefixed.query({contentProvider: $routeParams.id}).$promise
+      CdnPrefix.query({contentProvider: $routeParams.id}).$promise
       .then(function(cp_prf) {
         _this.cp_prf = cp_prf;
       }).catch(function(e) {
@@ -171,7 +171,7 @@ angular.module('contentProviderApp', [
         };
       });
 
-      CdnPrefixed.query().$promise
+      CdnPrefix.query().$promise
       .then(function(prf) {
         _this.prf = prf;
       }).catch(function(e) {
@@ -181,8 +181,21 @@ angular.module('contentProviderApp', [
         };
       });
 
-      this.addPrefix = function(item) {
-        console.log(item);
+      this.addPrefix = function(prf) {
+        prf.contentProvider = '/hpcapi/contentproviders/' + $routeParams.id + '/';
+
+        var item = new CdnPrefix(prf);
+
+        item.$save()
+        .then(function(res) {
+          _this.cp_prf.push(res);
+        })
+        .catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
       };
 
       this.removePrefix = function(item) {
