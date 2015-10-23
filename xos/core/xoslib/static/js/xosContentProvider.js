@@ -71,6 +71,25 @@ angular.module('contentProviderApp', [
 .service('User', function($resource) {
   return $resource('/xos/users/:id/', {id: '@id'});
 })
+.directive('cpActions', function(ContentProvider, $location) {
+  return {
+    restrict: 'E',
+    scope: {
+      id: '=id',
+    },
+    bindToController: true,
+    controllerAs: 'vm',
+    templateUrl: '../../static/templates/contentProvider/cp_actions.html',
+    controller: function() {
+      this.deleteCp = function(id) {
+        ContentProvider.delete({id: id}).$promise
+        .then(function() {
+          $location.url('/');
+        });
+      };
+    }
+  };
+})
 .directive('contentProviderList', function(ContentProvider) {
   return {
     restrict: 'E',
@@ -89,7 +108,7 @@ angular.module('contentProviderApp', [
     }
   };
 })
-.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $routeParams) {
+.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $routeParams, $location) {
   return {
     restrict: 'E',
     controllerAs: 'vm',
@@ -125,21 +144,25 @@ angular.module('contentProviderApp', [
       };
 
       this.saveContentProvider = function(cp) {
-        var p;
+        var p, isNew = false;
 
         if(cp.id) {
           p = cp.$update();
         }
         else {
+          isNew = true;
           cp.name = cp.humanReadableName;
           p = new ContentProvider(cp).$save();
         }
 
-        p.then(function() {
+        p.then(function(res) {
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
           };
+          if(isNew) {
+            $location.url('contentProvider/' + res.id + '/');
+          }
         })
         .catch(function(e) {
           _this.result = {
