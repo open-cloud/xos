@@ -84,7 +84,6 @@ angular.module('xos.contentProviderApp', [
       this.deleteCp = function(id) {
         ContentProvider.delete({id: id}).$promise
         .then(function() {
-          console.log('deleted');
           $location.url('/');
         });
       };
@@ -121,6 +120,7 @@ angular.module('xos.contentProviderApp', [
   return {
     restrict: 'E',
     controllerAs: 'vm',
+    scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_detail.html',
     controller: function() {
       this.pageName = 'detail';
@@ -165,6 +165,7 @@ angular.module('xos.contentProviderApp', [
         }
 
         p.then(function(res) {
+          console.log('save done', res);
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
