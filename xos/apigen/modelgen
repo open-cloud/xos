@@ -9,8 +9,6 @@ import re
 from django.template import Context, Template
 from optparse import OptionParser
 
-blacklist = ['SingletonModel','PlCoreBase']
-
 # Django set up
 
 sys.path.append('.')
@@ -93,6 +91,10 @@ class GenObj(object):
 class Generator(dict):
 	def all(self):
 		return self.values()
+
+        def rest_models(self):
+                norest = [x.lower() for x in options.norest]
+                return [v for v in self.values() if not (str(v) in norest)]
 	
 	def regex(self, r):
 		filtered = filter(lambda o:re.match(r,str(o)), self.values())
@@ -147,9 +149,9 @@ class Generator(dict):
                                 if (related_name.endswith("+")):
                                     continue
 
-				if (related_name!='+' and related_name.lower()!=str(obj).lower()):
-                                        #print "XXX2", obj, f, related_name, related_model_name, refobj.plural_name
+				if (related_name!='+') and related_model_name in self: # and related_name.lower()!=str(obj).lower()):
                                         refobj = self[related_model_name]
+                                        #print "XXX2", obj, f, related_name, related_model_name, refobj.plural_name
 					cobj = copy.deepcopy(refobj)
 					cobj.multi = True
 
@@ -166,6 +168,8 @@ def main():
              help="list of applications to parse", metavar="APP", default=[], action="append")
         parser.add_option("-b", "--blacklist", dest="blacklist",
              help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+        parser.add_option("-n", "--no-rest", dest="norest",
+             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
 
         (options, args) = parser.parse_args(sys.argv[1:])
 
