@@ -84,6 +84,7 @@ angular.module('xos.contentProviderApp', [
       this.deleteCp = function(id) {
         ContentProvider.delete({id: id}).$promise
         .then(function() {
+          console.log('deleted');
           $location.url('/');
         });
       };
@@ -94,6 +95,7 @@ angular.module('xos.contentProviderApp', [
   return {
     restrict: 'E',
     controllerAs: 'vm',
+    scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_list.html',
     controller: function() {
       var _this = this;

@@ -38,6 +38,7 @@ module.exports = function(config) {
 
       'spec/helpers/jasmine-jquery.js',
       'spec/helpers/angular-mocks.js',
+      'spec/**/*.mock.js',
       'spec/**/*.test.js',
 
       'spec/**/*.html',
