@@ -1,6 +1,13 @@
 /* global angular */
 /* eslint-disable dot-location*/
 
+// TODO
+// - Add Cache
+// - Refactor routing with ui.router and child views (share the navigation and header)
+// - Add Eslint
+// - Add Es6 (Babel) and a build script
+// - Autogenerate ngResource from swagger definition json
+
 angular.module('contentProviderApp', [
   'ngResource',
   'ngRoute',
@@ -57,6 +64,12 @@ angular.module('contentProviderApp', [
 })
 .service('CdnPrefix', function($resource) {
   return $resource('/hpcapi/cdnprefixs/:id/', {id: '@id'});
+})
+.service('OriginServer', function($resource) {
+  return $resource('/hpcapi/originservers/:id/', {id: '@id'});
+})
+.service('User', function($resource) {
+  return $resource('/xos/users/:id/', {id: '@id'});
 })
 .directive('contentProviderList', function(ContentProvider) {
   return {
@@ -213,25 +226,114 @@ angular.module('contentProviderApp', [
     }
   };
 })
-.directive('contentProviderServer', function($routeParams) {
+.directive('contentProviderServer', function($routeParams, OriginServer, ContentProvider, lodash) {
   return{
     restrict: 'E',
     controllerAs: 'vm',
     templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
     controller: function() {
       this.pageName = 'server';
-      this.cp = {id: $routeParams.id};
+      this.protocols = ['HTTP', 'RTMP', 'RTP', 'SHOUTcast'];
+
+      var _this = this;
+
+      if($routeParams.id) {
+        ContentProvider.get({id: $routeParams.id}).$promise
+        .then(function(cp) {
+          _this.cp = cp;
+        }).catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      }
+
+      // TODO filter on client
+      OriginServer.query({contentProvider: $routeParams.id}).$promise
+      .then(function(cp_os) {
+        _this.cp_os = cp_os;
+      }).catch(function(e) {
+        _this.result = {
+          status: 0,
+          msg: e.data.detail
+        };
+      });
+
+      // TODO everytime protocall error, ask Scott
+      this.addOrigin = function(os) {
+        os.contentProvider = '/hpcapi/contentproviders/' + $routeParams.id + '/';
+
+        var item = new OriginServer(os);
+
+        item.$save()
+        .then(function(res) {
+          _this.cp_os.push(res);
+        })
+        .catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      };
+
+      this.removeOrigin = function(item) {
+        item.$delete()
+        .then(function() {
+          lodash.remove(_this.cp_os, item);
+        })
+        .catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      };
     }
   };
 })
-.directive('contentProviderUsers', function($routeParams) {
+.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash) {
   return{
     restrict: 'E',
     controllerAs: 'vm',
     templateUrl: '../../static/templates/contentProvider/cp_user.html',
     controller: function() {
+      var _this = this;
+
       this.pageName = 'user';
-      this.cp = {id: $routeParams.id};
+
+      this.cp_users = [];
+
+      if($routeParams.id) {
+        ContentProvider.get({id: $routeParams.id}).$promise
+        .then(function(cp) {
+          _this.cp = cp;
+        }).catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
+      }
+
+      User.query().$promise
+      .then(function(users) {
+        _this.users = users;
+      }).catch(function(e) {
+        _this.result = {
+          status: 0,
+          msg: e.data.detail
+        };
+      });
+
+      this.addUserToCp = function(user) {
+        _this.cp_users.push(user);
+      };
+
+      this.removeUserFromCp = function(user) {
+        lodash.remove(_this.cp_users, user);
+      };
     }
   };
 });
