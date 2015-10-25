@@ -43,8 +43,8 @@ angular.module('xos.contentProviderApp', ['ngResource', 'ngRoute', 'ngCookies', 
       return _request;
     }
   };
-}).constant('apiBaseUrl', 'http://localhost:9000').service('ContentProvider', function ($resource, apiBaseUrl) {
-  return $resource(apiBaseUrl, '/hpcapi/contentproviders/:id/', { id: '@id' }, {
+}).constant('apiBaseUrl', 'http://localhost:4000').service('ContentProvider', function ($resource, apiBaseUrl) {
+  return $resource(apiBaseUrl + '/hpcapi/contentproviders/:id/', { id: '@id' }, {
     'update': { method: 'PUT' }
   });
 }).service('ServiceProvider', function ($resource) {
