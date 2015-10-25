@@ -1,0 +1,23 @@
+{
+  "name": "xos-content-provider",
+  "version": "1.0.0",
+  "description": "Content Provider View",
+  "main": "index.html",
+  "scripts": {
+    "test": "karma start",
+    "start": "bower install; npm run wiredep; parallelshell \"npm run babel\" \"npm run browser\"",
+    "wiredep": "wiredep -s 'src/index.html'",
+    "babel": "babel 'src/js' -w -d 'src/.tmp'",
+    "browser": "browser-sync start --files 'src/.tmp/**/*.js,src/**/*.html,src/**/*.css' --server './src' --reload-delay 1000",
+    "watch": "npm-watch"
+  },
+  "author": "Matteo Scandolo",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^5.8.29",
+    "browser-sync": "^2.9.11",
+    "npm-watch": "0.0.1",
+    "parallelshell": "^2.0.0",
+    "wiredep": "^3.0.0-beta"
+  }
+}
