@@ -56,9 +56,9 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.constant('apiBaseUrl', 'http://localhost:9000')
+.constant('apiBaseUrl', 'http://localhost:4000')
 .service('ContentProvider', function($resource, apiBaseUrl) {
-  return $resource(apiBaseUrl, '/hpcapi/contentproviders/:id/', {id: '@id'}, {
+  return $resource(apiBaseUrl + '/hpcapi/contentproviders/:id/', {id: '@id'}, {
     'update': {method: 'PUT'}
   });
 })
