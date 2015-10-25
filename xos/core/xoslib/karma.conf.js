@@ -4,6 +4,14 @@
 /* eslint indent: [2,2], quotes: [2, "single"]*/
 
 /*eslint-disable*/
+var wiredep = require('wiredep');
+var path = require('path');
+
+// load bower components trough wiredep
+var bowerComponents = wiredep( {devDependencies: false} )[ 'js' ].map(function( file ){
+  return path.relative(process.cwd(), file);
+});
+
 module.exports = function(config) {
 /*eslint-enable*/
   config.set({
@@ -18,7 +26,7 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [
+    files: bowerComponents.concat([
       'static/js/vendor/jquery-1.11.3.js',
       'static/js/vendor/underscore-min.js',
       'static/js/vendor/backbone.js',
@@ -29,30 +37,49 @@ module.exports = function(config) {
       'static/js/xoslib/*.js',
 
       'spec/helpers/jasmine-jquery.js',
+      'spec/helpers/angular-mocks.js',
+      'spec/**/*.mock.js',
       'spec/**/*.test.js',
 
-      'spec/**/*.html'
-    ],
+      'spec/**/*.html',
+
+      //ng stuff
+      'static/templates/**/*.html',
+      'static/js/xosContentProvider.js'
+    ]),
 
 
     // list of files to exclude
     exclude: [
       // '**/xos-utils.test.js', //skip this test, useful in dev, comment before commit
-      // '**/xos-backbone.test.js'
+      // '**/xos-backbone.test.js',
+      '**/xoslib/**/*.js'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'spec/**/*.test.js': ['babel']
+      'spec/**/*.test.js': ['babel'],
+      'static/templates/**/*.html': 'ng-html2js',
+      'static/js/xoslib/*.js': ['coverage'],
+      'static/js/*.js': ['coverage']
     },
 
+    ngHtml2JsPreprocessor: {
+      prependPrefix: '../../', //strip the src path from template url (http://stackoverflow.com/questions/22869668/karma-unexpected-request-when-testing-angular-directive-even-with-ng-html2js)
+      moduleName: 'templates' // define the template module name
+    },
+
+    coverageReporter: {
+      type: 'html',
+      dir: 'coverage/'
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha'],
+    reporters: ['mocha', 'coverage'],
 
 
     // web server port

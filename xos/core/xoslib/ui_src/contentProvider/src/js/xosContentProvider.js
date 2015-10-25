@@ -8,6 +8,8 @@
 // - Add Es6 (Babel) and a build script
 // - Autogenerate ngResource from swagger definition json
 
+console.log(`test ${1 + 2}`);
+
 angular.module('xos.contentProviderApp', [
   'ngResource',
   'ngRoute',
@@ -54,8 +56,9 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.service('ContentProvider', function($resource) {
-  return $resource('/hpcapi/contentproviders/:id/', {id: '@id'}, {
+.constant('apiBaseUrl', 'http://localhost:4000')
+.service('ContentProvider', function($resource, apiBaseUrl) {
+  return $resource(apiBaseUrl + '/hpcapi/contentproviders/:id/', {id: '@id'}, {
     'update': {method: 'PUT'}
   });
 })
@@ -79,7 +82,7 @@ angular.module('xos.contentProviderApp', [
     },
     bindToController: true,
     controllerAs: 'vm',
-    templateUrl: '../../static/templates/contentProvider/cp_actions.html',
+    templateUrl: 'templates/cp_actions.html',
     controller: function() {
       this.deleteCp = function(id) {
         ContentProvider.delete({id: id}).$promise
@@ -95,7 +98,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_list.html',
+    templateUrl: 'templates/cp_list.html',
     controller: function() {
       var _this = this;
 
@@ -121,7 +124,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_detail.html',
+    templateUrl: 'templates/cp_detail.html',
     controller: function() {
       this.pageName = 'detail';
       var _this = this;
@@ -188,7 +191,7 @@ angular.module('xos.contentProviderApp', [
   return{
     restrict: 'E',
     controllerAs: 'vm',
-    templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
+    templateUrl: 'templates/cp_cdn_prefix.html',
     controller: function() {
       var _this = this;
 
@@ -263,7 +266,7 @@ angular.module('xos.contentProviderApp', [
   return{
     restrict: 'E',
     controllerAs: 'vm',
-    templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
+    templateUrl: 'templates/cp_origin_server.html',
     controller: function() {
       this.pageName = 'server';
       this.protocols = ['HTTP', 'RTMP', 'RTP', 'SHOUTcast'];
@@ -330,7 +333,7 @@ angular.module('xos.contentProviderApp', [
   return{
     restrict: 'E',
     controllerAs: 'vm',
-    templateUrl: '../../static/templates/contentProvider/cp_user.html',
+    templateUrl: 'templates/cp_user.html',
     controller: function() {
       var _this = this;
 
