@@ -33,14 +33,14 @@
       <div class="row-fluid">
         <div class="span4">
           <label>Protocol</label>
-          <select ng-model="vm.new_os.protocol" ng-options="p for p in vm.protocols" style="max-width: 100%;"></select>
+          <select ng-model="vm.new_os.protocol" ng-options="k as v for (k,v) in vm.protocols" style="max-width: 100%;"></select>
         </div>
         <div class="span6">
           <label>Url</label>
           <input type="text" ng-model="vm.new_os.url" required>
         </div>
-        <div class="span2">
-          <button class="btn btn-success pull-right">
+        <div class="span2 text-right">
+          <button class="btn btn-success margin-wells">
             <i class="icon icon-plus"></i>
           </button>
         </div>
