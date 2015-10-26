@@ -1,6 +1,0 @@
-{
-  "directory": "src/vendor/",
-  "scripts": {
-    "postinstall": "wiredep -s path/to/src.html"
-  }
-}
