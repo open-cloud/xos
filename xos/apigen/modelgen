@@ -7,14 +7,15 @@ import sys
 import json
 import re
 from django.template import Context, Template
-
-blacklist = ['SingletonModel','PlCoreBase']
+from optparse import OptionParser
 
 # Django set up
 
 sys.path.append('.')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+
+options = None
 
 def singular(foo, keys):
 	for k in keys:
@@ -40,7 +41,7 @@ def enum_classes(apps):
 
             for classname in dir(models_module):
                     c = getattr(models_module, classname, None)
-                    if type(c)==type(PlCoreBase) and c.__name__ not in blacklist:
+                    if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
 
     return model_classes
@@ -90,6 +91,10 @@ class GenObj(object):
 class Generator(dict):
 	def all(self):
 		return self.values()
+
+        def rest_models(self):
+                norest = [x.lower() for x in options.norest]
+                return [v for v in self.values() if not (str(v) in norest)]
 	
 	def regex(self, r):
 		filtered = filter(lambda o:re.match(r,str(o)), self.values())
@@ -144,9 +149,9 @@ class Generator(dict):
                                 if (related_name.endswith("+")):
                                     continue
 
-				if (related_name!='+' and related_name.lower()!=str(obj).lower()):
-                                        #print "XXX2", obj, f, related_name, related_model_name, refobj.plural_name
+				if (related_name!='+') and related_model_name in self: # and related_name.lower()!=str(obj).lower()):
                                         refobj = self[related_model_name]
+                                        #print "XXX2", obj, f, related_name, related_model_name, refobj.plural_name
 					cobj = copy.deepcopy(refobj)
 					cobj.multi = True
 
@@ -154,22 +159,32 @@ class Generator(dict):
 
 
 
-			
+
 def main():
-        if len(sys.argv)==3:
-            apps = [x.strip() for x in sys.argv[1].split(",")]
-            output = sys.argv[2]
-        elif len(sys.argv)==2:
-            apps = ["core"]
-            output = sys.argv[1]
-        else:
-	    print 'Usage: modelgen <output_template>'
-            print 'Alternative Usage: modelgen <app> <output_template>'
-	    exit(1)
+        global options
+        parser = OptionParser(usage="modelgen [options] <template_fn>", )
+
+        parser.add_option("-a", "--app", dest="apps",
+             help="list of applications to parse", metavar="APP", default=[], action="append")
+        parser.add_option("-b", "--blacklist", dest="blacklist",
+             help="add model name to blacklist", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+        parser.add_option("-n", "--no-rest", dest="norest",
+             help="do not generate rest api for model", metavar="MODEL", default=["SingletonModel", "PlCoreBase"], action="append")
+
+        (options, args) = parser.parse_args(sys.argv[1:])
+
+        if not options.apps:
+            options.apps = ["core"]
+
+        if len(args)!=1:
+            print 'Usage: modelgen [options] <template_fn>'
+            exit(1)
+
+        output = args[0]
 
 	generator = Generator()
 
-	models = enum_classes(apps)
+	models = enum_classes(options.apps)
 
 	for m in models:
 		generator.add_object(m)
