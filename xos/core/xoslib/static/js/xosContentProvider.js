@@ -54,7 +54,7 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.service('ContentProvider', function($resource) {
+.service('ContentProvider', function($resource, $q, User) {
   return $resource('/hpcapi/contentproviders/:id/', {id: '@id'}, {
     'update': {method: 'PUT'}
   });
@@ -326,7 +326,7 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash) {
+.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash, $q) {
   return{
     restrict: 'E',
     controllerAs: 'vm',
@@ -339,7 +339,20 @@ angular.module('xos.contentProviderApp', [
       this.cp_users = [];
 
       if($routeParams.id) {
-        ContentProvider.get({id: $routeParams.id}).$promise
+        User.query().$promise
+        .then(function(users) {
+          _this.users = users;
+          return ContentProvider.get({id: $routeParams.id}).$promise;
+        })
+        .then(function(res) {
+          for(var i = 0; i < res.users.length; i++) {
+            var url = res.users[i];
+            var id = parseInt(url.substr(url.length - 2).replace('/',''));
+
+            res.users[i] = lodash.find(_this.users, {id: id});
+          }
+          return res;
+        })
         .then(function(cp) {
           _this.cp = cp;
         }).catch(function(e) {
@@ -350,22 +363,30 @@ angular.module('xos.contentProviderApp', [
         });
       }
 
-      User.query().$promise
-      .then(function(users) {
-        _this.users = users;
-      }).catch(function(e) {
-        _this.result = {
-          status: 0,
-          msg: e.data.detail
-        };
-      });
-
       this.addUserToCp = function(user) {
-        _this.cp_users.push(user);
+        _this.cp.users.push(user);
       };
 
       this.removeUserFromCp = function(user) {
-        lodash.remove(_this.cp_users, user);
+        lodash.remove(_this.cp.users, user);
+      };
+
+      this.saveContentProvider = function(cp) {
+
+        cp.$update()
+        .then(function() {
+          _this.result = {
+            status: 1,
+            msg: 'Content Provider Saved'
+          };
+
+        })
+        .catch(function(e) {
+          _this.result = {
+            status: 0,
+            msg: e.data.detail
+          };
+        });
       };
     }
   };

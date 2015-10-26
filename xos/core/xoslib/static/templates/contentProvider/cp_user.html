@@ -14,7 +14,6 @@
   <div class="span10">
     <div ng-repeat="item in vm.cp.users" class="well">
       <div class="row-fluid">
-        {{item}}
         <div class="span3">
           {{item.firstname}}
         </div>
@@ -32,8 +31,17 @@
       </div>
     </div>
     <hr>
-    <form>
-      <select ng-model="vm.user" ng-options="u as u.username for u in vm.users" ng-change="vm.addUserToCp(vm.user)"></select>
+    <form ng-submit="vm.saveContentProvider(vm.cp)">
+      <div class="row-fluid">
+        <div class="span8">
+          <select ng-model="vm.user" ng-options="u as u.username for u in vm.users" ng-change="vm.addUserToCp(vm.user)"></select>
+        </div>  
+        <div class="span4 text-right">
+          <button class="btn btn-success" disabled="disabled">
+            Save
+          </button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
