@@ -12,6 +12,7 @@ describe('The Content Provider SPA', () => {
 
   beforeEach(function() {
     module(function($provide) {
+      // mocking routeParams to pass 1 as id
       $provide.provider('$routeParams', function() {
         this.$get = function() {
           return {id: 1};
@@ -71,22 +72,33 @@ describe('The Content Provider SPA', () => {
   });
 
   describe('the contentProviderDetail directive', () => {
+
+    beforeEach(inject(function($compile, $rootScope) {
+      scope = $rootScope.$new();
+      element = angular.element('<content-provider-detail></content-provider-detail>');
+      $compile(element)(scope);
+      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
+      scope.$digest();
+      httpBackend.flush();
+      isolatedScope = element.isolateScope().vm;
+    }));
+
+    it('should select the active service provider', () => {
+      var res = isolatedScope.activeServiceProvide(1, 'http://0.0.0.0:9000/hpcapi/serviceproviders/1/');
+      expect(res).toBe(true);
+    });
+
+    it('should not select a non active service provider', () => {
+      var res = isolatedScope.activeServiceProvide(1, 'http://0.0.0.0:9000/hpcapi/serviceproviders/3/');
+      expect(res).toBe(false);
+    });
+
     describe('when an id is set in the route', () => {
 
-      beforeEach(inject(function($compile, $rootScope, ContentProvider) {
-        scope = $rootScope.$new();
-
-        httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
-        httpBackend.whenPUT('/hpcapi/contentproviders/1/').respond({name: 'done'});
-
-        spyOn(ContentProvider, 'save').and.callThrough();
-
-        element = angular.element('<content-provider-detail></content-provider-detail>');
-        $compile(element)(scope);
-        scope.$digest();
-        httpBackend.flush();
-        isolatedScope = element.isolateScope().vm;
-      }));
+      beforeEach(() => {
+        // spy the instance update method
+        spyOn(isolatedScope.cp, '$update').and.callThrough();
+      });
 
       it('should request the correct contentProvider', () => {
         expect(isolatedScope.cp.name).toEqual(CPmock.CPlist[0].name);
@@ -95,9 +107,41 @@ describe('The Content Provider SPA', () => {
       it('should update a contentProvider', () => {
         isolatedScope.cp.name = 'new name';
         isolatedScope.saveContentProvider(isolatedScope.cp);
-        httpBackend.flush();
-        expect(isolatedScope.cp.name).toEqual('done');
+        expect(isolatedScope.cp.$update).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('the contentProviderCdn directive', () => {
+    beforeEach(inject(($compile, $rootScope) => {
+      scope = $rootScope.$new();
+      element = angular.element('<content-provider-cdn></content-provider-cdn>');
+      $compile(element)(scope);
+      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
+      httpBackend.expectGET('/hpcapi/cdnprefixs/?contentProvider=1').respond([CPmock.CDNlist[0]]);
+      httpBackend.expectGET('/hpcapi/cdnprefixs/').respond(CPmock.CDNlist);
+      httpBackend.whenPOST('/hpcapi/cdnprefixs/').respond(CPmock.CDNlist[0]);
+      httpBackend.whenDELETE('/hpcapi/cdnprefixs/5/').respond();
+      scope.$digest();
+      httpBackend.flush();
+      isolatedScope = element.isolateScope().vm;
+    }));
+
+    it('should load associated CDN prefix', () => {
+      expect(isolatedScope.cp_prf.length).toBe(1);
+      expect(isolatedScope.prf.length).toBe(2);
+    });
+
+    it('should add a CDN Prefix', () => {
+      isolatedScope.addPrefix({prefix: 'test.io', defaultOriginServer: '/hpcapi/originservers/2/'});
+      httpBackend.flush();
+      expect(isolatedScope.cp_prf.length).toBe(2);
+    });
+
+    it('should remove a CDN Prefix', () => {
+      isolatedScope.removePrefix(isolatedScope.cp_prf[0]);
+      httpBackend.flush();
+      expect(isolatedScope.cp_prf.length).toBe(0);
     });
   });
 });

@@ -137,6 +137,10 @@ angular.module('xos.contentProviderApp', [
           };
         });
       }
+      else {
+        console.log('new');
+        _this.cp = new ContentProvider();
+      }
 
       ServiceProvider.query().$promise
       .then(function(sp) {
@@ -161,11 +165,11 @@ angular.module('xos.contentProviderApp', [
         else {
           isNew = true;
           cp.name = cp.humanReadableName;
-          p = new ContentProvider(cp).$save();
+          console.log('save');
+          p = cp.$save();
         }
 
         p.then(function(res) {
-          console.log('save done', res);
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
@@ -188,6 +192,7 @@ angular.module('xos.contentProviderApp', [
   return{
     restrict: 'E',
     controllerAs: 'vm',
+    scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
     controller: function() {
       var _this = this;
