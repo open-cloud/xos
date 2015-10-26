@@ -37,9 +37,9 @@ angular.module('xos.contentProviderApp', ['ngResource', 'ngRoute', 'ngCookies', 
 }).factory('SetCSRFToken', function ($cookies) {
   return {
     request: function request(_request) {
-      if (_request.method !== 'GET') {
-        _request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
-      }
+      // if(request.method !== 'GET') {
+      _request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
+      // }
       return _request;
     }
   };
