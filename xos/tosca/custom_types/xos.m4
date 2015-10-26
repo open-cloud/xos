@@ -120,6 +120,9 @@ node_types:
             config_addresses.json:
                 type: string
                 required: false
+            config_network-cfg.json:
+                type: string
+                required: false
             config_virtualbng.json:
                 type: string
                 required: false
@@ -686,4 +689,3 @@ node_types:
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
-
