@@ -12,8 +12,9 @@
     <div ng-include="'../../static/templates/contentProvider/cp_side_nav.html'"></div>
   </div>
   <div class="span10">
-    <div ng-repeat="item in vm.cp_users" class="well">
+    <div ng-repeat="item in vm.cp.users" class="well">
       <div class="row-fluid">
+        {{item}}
         <div class="span3">
           {{item.firstname}}
         </div>
