@@ -24,6 +24,10 @@
         - {{ config_fn }}
         {% endfor %}
 
+  - name: Make sure config directory exists
+    shell: docker exec {{ ONOS_container }} mkdir -p /root/onos/config/
+    sudo: yes
+
   - name: Copy config files into container
     shell: docker cp {{ appname }}/{{ '{{' }} item {{ '}}' }} {{ ONOS_container }}:/root/onos/config/
     sudo: yes
@@ -46,4 +50,3 @@
         {% for dependency in dependencies %}
         - {{ dependency }}
         {% endfor %}
-
