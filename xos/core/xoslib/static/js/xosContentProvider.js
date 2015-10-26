@@ -268,6 +268,7 @@ angular.module('xos.contentProviderApp', [
   return{
     restrict: 'E',
     controllerAs: 'vm',
+    scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
     controller: function() {
       this.pageName = 'server';

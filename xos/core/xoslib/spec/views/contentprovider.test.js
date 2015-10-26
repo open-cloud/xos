@@ -144,4 +144,35 @@ describe('The Content Provider SPA', () => {
       expect(isolatedScope.cp_prf.length).toBe(0);
     });
   });
+
+  describe('the contentProviderServer directive', () => {
+    beforeEach(inject(($compile, $rootScope) => {
+      scope = $rootScope.$new();
+      element = angular.element('<content-provider-server></content-provider-server>');
+      $compile(element)(scope);
+      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
+      httpBackend.expectGET('/hpcapi/originservers/?contentProvider=1').respond(CPmock.OSlist);
+      httpBackend.whenPOST('/hpcapi/originservers/').respond(CPmock.OSlist[0]);
+      httpBackend.whenDELETE('/hpcapi/originservers/8/').respond();
+      scope.$digest();
+      httpBackend.flush();
+      isolatedScope = element.isolateScope().vm;
+    }));
+
+    it('should load associated OriginServer', () => {
+      expect(isolatedScope.cp_os.length).toBe(4);
+    });
+
+    it('should add a OriginServer', () => {
+      isolatedScope.addOrigin({protocol: 'http', url: 'test.io'});
+      httpBackend.flush();
+      expect(isolatedScope.cp_os.length).toBe(5);
+    });
+
+    it('should remove a OriginServer', () => {
+      isolatedScope.removeOrigin(isolatedScope.cp_os[0]);
+      httpBackend.flush();
+      expect(isolatedScope.cp_os.length).toBe(3);
+    });
+  });
 });
