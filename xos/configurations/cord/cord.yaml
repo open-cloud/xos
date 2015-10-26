@@ -61,23 +61,26 @@ topology_template:
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
-          config_addresses.json: >
+          config_network-cfg.json: >
             {
-                "addresses" : [
-                            {
-                                "dpid" : "00:00:00:00:00:00:00:a1",
-                                "port" : "1",
-                                "ips" : [10.0.1.253/24"],
-                                "mac" : "00:00:00:00:00:99"
-
-                            },
-                            {
-                                "dpid" : "00:00:00:00:00:00:00:a5",
-                                "port" : "2",
-                                "ips" : ["10.254.0.1/24"],
-                                "mac" : "00:00:00:00:00:98"
-                            }
-                ]
+              "ports" : {
+                "of:00000000000000a1/1" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.0.1.253/24" ],
+                      "mac"  : "00:00:00:00:00:99"
+                    }
+                  ]
+                },
+                "of:00000000000000a5/2" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.254.0.1/24" ],
+                      "mac"  : "00:00:00:00:00:98"
+                    }
+                  ]
+                }
+              }
             }
           config_virtualbng.json: >
             {
@@ -89,7 +92,6 @@ topology_template:
                 "xosIpAddress" : "10.11.10.1",
                 "xosRestPort" : "9999"
             }
-
 
     # Network templates
     Private:
@@ -217,7 +219,7 @@ topology_template:
               relationship: tosca.relationships.MemberOfSite
 
     mysite_clients:
-      description: slice for clients at the subscriber 
+      description: slice for clients at the subscriber
       type: tosca.nodes.Slice
       requirements:
           - site:
