@@ -135,7 +135,7 @@ RUN bash /opt/xos/tosca/install_tosca.sh
 RUN cp /opt/xos/nginx/xos.conf /etc/nginx/sites-enabled/
 
 # Supervisor configuration
-ADD /opt/xos/configurations/opencloud/supervisord.conf  /etc/supervisor/conf.d/xos-all.conf
+RUN cp /opt/xos/configurations/opencloud/supervisord.conf  /etc/supervisor/conf.d/xos-all.conf
 
 EXPOSE 8000
 
