@@ -40,7 +40,7 @@ topology_template:
 # generate a URL from its IP address
 #          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
 
-    service_ONOS:
+    service_ONOS_vBNG:
       type: tosca.nodes.ONOSService
       requirements:
       properties:
@@ -54,7 +54,7 @@ topology_template:
       type: tosca.nodes.ONOSvBNGApp
       requirements:
           - onos_tenant:
-              node: service_ONOS
+              node: service_ONOS_vBNG
               relationship: tosca.relationships.TenantOfService
           - vbng_service:
               node: service_vbng
@@ -93,11 +93,21 @@ topology_template:
                 "xosRestPort" : "9999"
             }
 
+    service_ONOS_vOLT:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/onos/onos_key.pub
+
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
           - onos_tenant:
-              node: service_ONOS
+              node: service_ONOS_vOLT
               relationship: tosca.relationships.TenantOfService
           - volt_service:
               node: service_volt
@@ -203,12 +213,23 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    mysite_onos:
-      description: ONOS Controller Slice
+    mysite_onos_vbng:
+      description: ONOS Controller Slice for vBNG
       type: tosca.nodes.Slice
       requirements:
           - ONOS:
-              node: service_ONOS
+              node: service_ONOS_vBNG
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_onos_volt:
+      description: ONOS Controller Slice for vOLT
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS_vOLT
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
@@ -259,7 +280,7 @@ topology_template:
             version: 14.10
       requirements:
           - slice:
-                node: mysite_onos
+                node: mysite_onos_vbng
                 relationship: tosca.relationships.MemberOfSlice
 
     onos_app_2:
@@ -281,7 +302,7 @@ topology_template:
             version: 14.10
       requirements:
           - slice:
-                node: mysite_onos
+                node: mysite_onos_volt
                 relationship: tosca.relationships.MemberOfSlice
 
     # VM for running the OVS controlled by vBNG
