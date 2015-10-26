@@ -93,6 +93,18 @@ topology_template:
                 "xosRestPort" : "9999"
             }
 
+    vOLT_ONOS_app:
+      type: tosca.nodes.ONOSvOLTApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS
+              relationship: tosca.relationships.TenantOfService
+          - volt_service:
+              node: service_volt
+              relationship: tosca.relationships.UsedByService
+      properties:
+          dependencies: org.onosproject.olt
+
     # Network templates
     Private:
       type: tosca.nodes.NetworkTemplate
