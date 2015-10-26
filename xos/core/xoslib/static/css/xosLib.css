@@ -1,0 +1,13 @@
+/* Style helpers for xoslib*/
+
+
+/* gives an element the same spacing as it is inside a well*/
+.margin-wells {
+  margin: 12px;
+}
+
+/* if inside a form set margin-top to align with inputs instead of labels*/
+/* TODO once scss use a form like form [class^=span] > label + &[class^=span] > .margin-wells to match only if label is set*/
+form button.margin-wells {
+  margin-top: 20px;
+}
