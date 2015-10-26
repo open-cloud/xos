@@ -211,5 +211,153 @@ var CPmock = {
       'description':null,
       'enabled':true
     }
+  ],
+  CDNlist: [
+    {
+      'humanReadableName':'onlab.vicci.org',
+      'validators':{
+        'updated':[
+
+        ],
+        'contentProvider':[
+          'notBlank'
+        ],
+        'policed':[
+
+        ],
+        'created':[
+
+        ],
+        'deleted':[
+
+        ],
+        'description':[
+
+        ],
+        'enabled':[
+
+        ],
+        'cdn_prefix_id':[
+
+        ],
+        'lazy_blocked':[
+
+        ],
+        'backend_register':[
+          'notBlank'
+        ],
+        'write_protect':[
+
+        ],
+        'prefix':[
+          'notBlank'
+        ],
+        'defaultOriginServer':[
+
+        ],
+        'backend_status':[
+          'notBlank'
+        ],
+        'id':[
+
+        ],
+        'no_sync':[
+
+        ],
+        'enacted':[
+
+        ]
+      },
+      'id':5,
+      'created':'2015-10-26T13:09:44.343Z',
+      'updated':'2015-10-26T13:09:44.343Z',
+      'enacted':null,
+      'policed':null,
+      'backend_register':'{}',
+      'backend_status':'0 - Provisioning in progress',
+      'deleted':false,
+      'write_protect':false,
+      'lazy_blocked':false,
+      'no_sync':false,
+      'cdn_prefix_id':null,
+      'prefix':'onlab.vicci.org',
+      'contentProvider':'http://0.0.0.0:9000/hpcapi/contentproviders/1/',
+      'description':null,
+      'defaultOriginServer':'http://0.0.0.0:9000/hpcapi/originservers/2/',
+      'enabled':true
+    },
+    {
+      'humanReadableName':'downloads.onosproject.org',
+      'validators':{
+        'updated':[
+
+        ],
+        'contentProvider':[
+          'notBlank'
+        ],
+        'policed':[
+
+        ],
+        'created':[
+
+        ],
+        'deleted':[
+
+        ],
+        'description':[
+
+        ],
+        'enabled':[
+
+        ],
+        'cdn_prefix_id':[
+
+        ],
+        'lazy_blocked':[
+
+        ],
+        'backend_register':[
+          'notBlank'
+        ],
+        'write_protect':[
+
+        ],
+        'prefix':[
+          'notBlank'
+        ],
+        'defaultOriginServer':[
+
+        ],
+        'backend_status':[
+          'notBlank'
+        ],
+        'id':[
+
+        ],
+        'no_sync':[
+
+        ],
+        'enacted':[
+
+        ]
+      },
+      'id':1,
+      'created':'2015-10-26T13:09:44.196Z',
+      'updated':'2015-10-26T13:09:44.196Z',
+      'enacted':null,
+      'policed':null,
+      'backend_register':'{}',
+      'backend_status':'0 - Provisioning in progress',
+      'deleted':false,
+      'write_protect':false,
+      'lazy_blocked':false,
+      'no_sync':false,
+      'cdn_prefix_id':null,
+      'prefix':'downloads.onosproject.org',
+      'contentProvider':'http://0.0.0.0:9000/hpcapi/contentproviders/2/',
+      'description':null,
+      'defaultOriginServer':'http://0.0.0.0:9000/hpcapi/originservers/1/',
+      'enabled':true
+    }
   ]
 };
