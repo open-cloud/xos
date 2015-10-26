@@ -266,7 +266,7 @@ angular.module('xos.contentProviderApp', [
     templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
     controller: function() {
       this.pageName = 'server';
-      this.protocols = ['HTTP', 'RTMP', 'RTP', 'SHOUTcast'];
+      this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP','shout': 'SHOUTcast'};
 
       var _this = this;
 
