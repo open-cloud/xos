@@ -99,7 +99,7 @@ RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /o
 
 # Supervisor
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
-ADD /tmp/xos/observer.conf /etc/supervisor/conf.d/
+RUN cp /tmp/xos/observer.conf /etc/supervisor/conf.d/
 
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
