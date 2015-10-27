@@ -3,7 +3,6 @@ MAINTAINER Andy Bavier <acb@cs.princeton.edu>
 
 # Set environment variables.
 ENV HOME /root
-ENV TOSCA_CONFIG_PATH=/opt/xos/configurations/opencloud/opencloud.tosca
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
@@ -14,23 +13,20 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 
 # Install.
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+    curl \
     git \
-    postgresql \
+    geoip-database \
     graphviz \
     graphviz-dev \
+    libgeoip1 \
     libxslt1.1 \
     libxslt1-dev \
-    tar \
-    gcc \
-    geoip-database \
-    libgeoip1 \
-    openssh-client \
-    wget \
-    curl \
-    python-dev \
     libyaml-dev \
+    nginx \
+    openssh-client \
+    python-dev \
     pkg-config \
-    supervisor \
+    postgresql \
     python-crypto \
     python-httplib2>=0.9.1 \
     python-jinja2 \
@@ -44,7 +40,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-novaclient \
     python-neutronclient \
     python-glanceclient \
-    python-ceilometerclient
+    python-ceilometerclient \
+    supervisor \
+    tar \
+    wget 
 
 RUN pip install \
     django==1.7 \
@@ -67,7 +66,8 @@ RUN pip install \
     django_rest_swagger \
     python-keyczar \
     pygraphviz \
-    dnslib
+    dnslib \
+    uwsgi
 
 RUN easy_install --upgrade httplib2
 
@@ -84,11 +84,15 @@ RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.gi
 RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/v2/ansible/modules/extras
 RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/lib/ansible/modules/core
 RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/v2/ansible/modules/core
+# git clone uses cached copy, doesn't pick up latest
+RUN git -C /opt/ansible pull
+RUN git -C /opt/ansible/lib/ansible/modules/core pull
+RUN git -C /opt/ansible/v2/ansible/modules/core pull
 ADD ansible-hosts /etc/ansible/hosts
 
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
 # For Observer
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum
 RUN cd /tmp/fofum; python setup.py install
 RUN rm -rf /tmp/fofum
@@ -100,16 +104,11 @@ RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
 RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
-# Supervisor
-ADD observer.conf /etc/supervisor/conf.d/
-
 # Get XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
 
-# Initscript is broken in Ubuntu
-#ADD observer-initscript /etc/init.d/xosobserver
-
 RUN chmod +x /opt/xos/scripts/opencloud
+
 RUN /opt/xos/scripts/opencloud genkeys
 
 # Workaround for AUFS issue
@@ -126,24 +125,19 @@ RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with
 # Cruft to workaround problems with migrations, should go away...
 RUN /opt/xos/scripts/opencloud remigrate
 
-# git clone uses cached copy, doesn't pick up latest
-RUN git -C /opt/ansible pull
-RUN git -C /opt/ansible/lib/ansible/modules/core pull
-RUN git -C /opt/ansible/v2/ansible/modules/core pull
 
 # install Tosca engine
 RUN apt-get install -y m4
 RUN pip install python-dateutil
 RUN bash /opt/xos/tosca/install_tosca.sh
 
+# configure nginx
+RUN cp /opt/xos/nginx/xos.conf /etc/nginx/sites-enabled/default
+
+# Supervisor configuration
+RUN cp /opt/xos/configurations/opencloud/supervisord.conf  /etc/supervisor/conf.d/xos-all.conf
+
 EXPOSE 8000
 
-# Set environment variables.
-ENV HOME /root
-
-# Define working directory.
-WORKDIR /root
-
 # Define default command.
-#CMD ["/bin/bash"]
-CMD /opt/xos/scripts/docker_start_xos
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/xos-all.conf

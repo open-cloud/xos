@@ -1,0 +1,48 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: {{ username }}
+  sudo: yes
+
+  tasks:
+
+#  - name: Fix /etc/hosts
+#    lineinfile:
+#      dest=/etc/hosts
+#      regexp="127.0.0.1 localhost"
+#      line="127.0.0.1 localhost {{ instance_hostname }}"
+
+  - name: Add repo key
+    apt_key:
+      keyserver=hkp://pgp.mit.edu:80
+      id=58118E89F3A912897C070ADBF76221572C52609D
+
+  - name: Install Docker repo
+    apt_repository:
+      repo="deb https://apt.dockerproject.org/repo ubuntu-trusty main"
+      state=present
+
+  - name: Install Docker
+    apt:
+      name={{ '{{' }} item {{ '}}' }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - docker-engine
+    - python-pip
+    - python-httplib2
+
+  - name: Install docker-py
+    pip:
+      name=docker-py
+      state=latest
+
+  - name: Start Container
+    docker:
+      docker_api_version: "1.18"
+      name: {{ container_name }}
+      # was: reloaded
+      state: running
+      image: {{ docker_image }}
+

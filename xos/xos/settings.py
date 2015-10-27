@@ -120,6 +120,12 @@ ROOT_URLCONF = 'xos.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'xos.wsgi.application'
+# Default: 'csrftoken'
+CSRF_COOKIE_NAME = 'xoscsrftoken'
+# Default: 'django_language'
+LANGUAGE_COOKIE_NAME = 'xos_django_language'
+# Default: 'sessionid'
+SESSION_COOKIE_NAME = 'xossessionid'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

@@ -40,7 +40,7 @@ topology_template:
 # generate a URL from its IP address
 #          vbng_url: http://10.11.10.24:8181/onos/virtualbng/
 
-    service_ONOS:
+    service_ONOS_vBNG:
       type: tosca.nodes.ONOSService
       requirements:
       properties:
@@ -54,30 +54,33 @@ topology_template:
       type: tosca.nodes.ONOSvBNGApp
       requirements:
           - onos_tenant:
-              node: service_ONOS
+              node: service_ONOS_vBNG
               relationship: tosca.relationships.TenantOfService
           - vbng_service:
               node: service_vbng
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
-          config_addresses.json: >
+          config_network-cfg.json: >
             {
-                "addresses" : [
-                            {
-                                "dpid" : "00:00:00:00:00:00:00:a1",
-                                "port" : "1",
-                                "ips" : [10.0.1.253/24"],
-                                "mac" : "00:00:00:00:00:99"
-
-                            },
-                            {
-                                "dpid" : "00:00:00:00:00:00:00:a5",
-                                "port" : "2",
-                                "ips" : ["10.254.0.1/24"],
-                                "mac" : "00:00:00:00:00:98"
-                            }
-                ]
+              "ports" : {
+                "of:00000000000000a1/1" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.0.1.253/24" ],
+                      "mac"  : "00:00:00:00:00:99"
+                    }
+                  ]
+                },
+                "of:00000000000000a5/2" : {
+                  "interfaces" : [
+                    {
+                      "ips"  : [ "10.254.0.1/24" ],
+                      "mac"  : "00:00:00:00:00:98"
+                    }
+                  ]
+                }
+              }
             }
           config_virtualbng.json: >
             {
@@ -90,6 +93,27 @@ topology_template:
                 "xosRestPort" : "9999"
             }
 
+    service_ONOS_vOLT:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/onos/onos_key.pub
+
+    vOLT_ONOS_app:
+      type: tosca.nodes.ONOSvOLTApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS_vOLT
+              relationship: tosca.relationships.TenantOfService
+          - volt_service:
+              node: service_volt
+              relationship: tosca.relationships.UsedByService
+      properties:
+          dependencies: org.onosproject.olt
 
     # Network templates
     Private:
@@ -189,12 +213,23 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    mysite_onos:
-      description: ONOS Controller Slice
+    mysite_onos_vbng:
+      description: ONOS Controller Slice for vBNG
       type: tosca.nodes.Slice
       requirements:
           - ONOS:
-              node: service_ONOS
+              node: service_ONOS_vBNG
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    mysite_onos_volt:
+      description: ONOS Controller Slice for vOLT
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS_vOLT
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
@@ -217,7 +252,7 @@ topology_template:
               relationship: tosca.relationships.MemberOfSite
 
     mysite_clients:
-      description: slice for clients at the subscriber 
+      description: slice for clients at the subscriber
       type: tosca.nodes.Slice
       requirements:
           - site:
@@ -245,7 +280,7 @@ topology_template:
             version: 14.10
       requirements:
           - slice:
-                node: mysite_onos
+                node: mysite_onos_vbng
                 relationship: tosca.relationships.MemberOfSlice
 
     onos_app_2:
@@ -267,7 +302,7 @@ topology_template:
             version: 14.10
       requirements:
           - slice:
-                node: mysite_onos
+                node: mysite_onos_volt
                 relationship: tosca.relationships.MemberOfSlice
 
     # VM for running the OVS controlled by vBNG
