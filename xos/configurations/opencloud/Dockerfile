@@ -141,4 +141,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-CMD /opt/xos/scripts/docker_start_xos
+CMD /opt/xos/configurations/opencloud/run_opencloud
