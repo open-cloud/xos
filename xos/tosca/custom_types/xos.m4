@@ -491,6 +491,18 @@ node_types:
                 type: string
                 required: false
                 description: OpenStack domain (or "Default")
+            rabbit_host:
+                type: string
+                required: false
+                description: Rabbit host
+            rabbit_user:
+                type: string
+                required: false
+                description: Rabbit user
+            rabbit_password:
+                type: string
+                required: false
+                description: Rabbit password
 
     tosca.nodes.Site:
         derived_from: tosca.nodes.Root
