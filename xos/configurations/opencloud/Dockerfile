@@ -118,8 +118,7 @@ RUN /opt/xos/scripts/opencloud genkeys
 RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private
 
 # Set postgres password to match default value in settings.py
-RUN service postgresql start
-RUN sudo -u postgres psql -c "alter user postgres with password 'password';"
+RUN service postgresql start && sudo -u postgres psql -c "alter user postgres with password 'password';"
 
 # Turn DEBUG on so that devel server will serve static files
 #    (not necessary if --insecure is passed to 'manage.py runserver')
