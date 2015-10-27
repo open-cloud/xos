@@ -2,9 +2,8 @@
 - hosts: switch_vbng
   sudo: yes
   vars:
-    controller:
-    - ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
-    - port: 6653
+    controller_ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
+    controller_port: 6653
   tasks:
   - name: Fix /etc/hosts
     lineinfile:
@@ -46,14 +45,13 @@
       state=present
 
   - name: Add controller to switch
-    debug: msg="Not implemented yet"
+    command: /usr/bin/ovs-vsctl set-controller br-vbng tcp:{{ controller_ip }}:{{ controller_port }}
 
 - hosts: switch_volt
   sudo: yes
   vars:
-    controller:
-    - ip: "{{ hostvars['onos_volt']['ansible_ssh_host'] }}"
-    - port: 6653
+    controller_ip: "{{ hostvars['onos_volt']['ansible_ssh_host'] }}"
+    controller_port: 6653
   tasks:
 
   - name: Fix /etc/hosts
@@ -73,7 +71,8 @@
       dest=/tmp/mininet
 
   - name: Install the CPqD switch using Mininet install script
-    shell: /tmp/mininet/util/install.sh -3x
+    shell: /tmp/mininet/util/install.sh -a
+      creates=/usr/local/bin/ofdatapath
     ignore_errors: true
 
   - name: Find subscriber_network interface
@@ -85,8 +84,9 @@
     register: lan_net
 
   - name: Run the datapath
-    shell: ofdatapath -i {{ subscriber_net.stdout }},{{ lan_net.stdout }} punix:/tmp/s1 -d 000000000001 --no-slicing
+    command: /usr/local/bin/ofdatapath -i {{ subscriber_net.stdout_lines[0] }},{{ lan_net.stdout_lines[0] }} punix:/tmp/s1 -d 000000000001 --no-slicing -D -P
+      creates=/usr/local/var/run/ofdatapath.pid
 
   - name: Run the control program
-    shell: sudo ofprotocol unix:/tmp/s1 tcp:{{ controller.ip }}:{{ controller.port }} --fail=closed --listen=punix:/tmp/s1.listen
-
+    command: /usr/local/bin/ofprotocol unix:/tmp/s1 tcp:{{ controller_ip }}:{{ controller_port }} --fail=closed --listen=punix:/tmp/s1.listen -D -P
+      creates=/usr/local/var/run/ofprotocol.pid
