@@ -14,7 +14,7 @@ angular.module('xos.contentProviderApp', [
   'ngCookies',
   'ngLodash'
 ])
-.config(function($interpolateProvider, $routeProvider, $resourceProvider) {
+.config(function($interpolateProvider, $routeProvider, $resourceProvider){
   $interpolateProvider.startSymbol('{$');
   $interpolateProvider.endSymbol('$}');
 
@@ -39,39 +39,45 @@ angular.module('xos.contentProviderApp', [
   })
   .otherwise('/');
 })
-.config(function($httpProvider) {
+.config(function($httpProvider){
 
   // add X-CSRFToken header for update, create, delete (!GET)
   $httpProvider.interceptors.push('SetCSRFToken');
 })
-.factory('SetCSRFToken', function($cookies) {
+.factory('SetCSRFToken', function($cookies){
   return {
-    request: function(request) {
-      if(request.method !== 'GET') {
+    request: function(request){
+
+      // if request is not HTML
+      if(request.url.indexOf('.html') === -1){
+        request.url += '?no_hyperlinks=1';
+      }
+
+      if(request.method !== 'GET'){
         request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
       }
       return request;
     }
   };
 })
-.service('ContentProvider', function($resource, $q, User) {
+.service('ContentProvider', function($resource){
   return $resource('/hpcapi/contentproviders/:id/', {id: '@id'}, {
     'update': {method: 'PUT'}
   });
 })
-.service('ServiceProvider', function($resource) {
+.service('ServiceProvider', function($resource){
   return $resource('/hpcapi/serviceproviders/:id/', {id: '@id'});
 })
-.service('CdnPrefix', function($resource) {
+.service('CdnPrefix', function($resource){
   return $resource('/hpcapi/cdnprefixs/:id/', {id: '@id'});
 })
-.service('OriginServer', function($resource) {
+.service('OriginServer', function($resource){
   return $resource('/hpcapi/originservers/:id/', {id: '@id'});
 })
-.service('User', function($resource) {
+.service('User', function($resource){
   return $resource('/xos/users/:id/', {id: '@id'});
 })
-.directive('cpActions', function(ContentProvider, $location) {
+.directive('cpActions', function(ContentProvider, $location){
   return {
     restrict: 'E',
     scope: {
@@ -80,105 +86,94 @@ angular.module('xos.contentProviderApp', [
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: '../../static/templates/contentProvider/cp_actions.html',
-    controller: function() {
-      this.deleteCp = function(id) {
+    controller: function(){
+      this.deleteCp = function(id){
         ContentProvider.delete({id: id}).$promise
-        .then(function() {
+        .then(function(){
           $location.url('/');
         });
       };
     }
   };
 })
-.directive('contentProviderList', function(ContentProvider, lodash) {
+.directive('contentProviderList', function(ContentProvider, lodash){
   return {
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_list.html',
-    controller: function() {
+    controller: function(){
       var _this = this;
 
       ContentProvider.query().$promise
-      .then(function(cp) {
+      .then(function(cp){
         _this.contentProviderList = cp;
       })
-      .catch(function(e) {
+      .catch(function(e){
         throw new Error(e);
       });
 
-      this.deleteCp = function(id) {
+      this.deleteCp = function(id){
         ContentProvider.delete({id: id}).$promise
-        .then(function() {
+        .then(function(){
           lodash.remove(_this.contentProviderList, {id: id});
         });
       };
     }
   };
 })
-.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $routeParams, $location) {
+.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $routeParams, $location){
   return {
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_detail.html',
-    controller: function() {
+    controller: function(){
       this.pageName = 'detail';
       var _this = this;
 
-      if($routeParams.id) {
+      if($routeParams.id){
         ContentProvider.get({id: $routeParams.id}).$promise
-        .then(function(cp) {
+        .then(function(cp){
           _this.cp = cp;
-        }).catch(function(e) {
+        }).catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
           };
         });
       }
-      else {
-        console.log('new');
+      else{
         _this.cp = new ContentProvider();
       }
 
       ServiceProvider.query().$promise
-      .then(function(sp) {
+      .then(function(sp){
         _this.sp = sp;
       });
 
-      // check if the list id match with item url
-      this.activeServiceProvide = function(id, SPurl) {
-        if(SPurl && SPurl.length > 0) {
-          // take the last 2 char and remove trailing /
-          return parseInt(SPurl.substr(SPurl.length - 2).replace('/','')) === id;
-        }
-        return false;
-      };
-
-      this.saveContentProvider = function(cp) {
+      this.saveContentProvider = function(cp){
         var p, isNew = false;
 
-        if(cp.id) {
+        if(cp.id){
           p = cp.$update();
         }
-        else {
+        else{
           isNew = true;
           cp.name = cp.humanReadableName;
-          console.log('save');
           p = cp.$save();
         }
 
-        p.then(function(res) {
+        p.then(function(res){
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
           };
-          if(isNew) {
+          if(isNew){
             $location.url('contentProvider/' + res.id + '/');
           }
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -188,22 +183,22 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.directive('contentProviderCdn', function($routeParams, CdnPrefix, ContentProvider, lodash) {
+.directive('contentProviderCdn', function($routeParams, CdnPrefix, ContentProvider, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
-    controller: function() {
+    controller: function(){
       var _this = this;
 
       this.pageName = 'cdn';
 
-      if($routeParams.id) {
+      if($routeParams.id){
         ContentProvider.get({id: $routeParams.id}).$promise
-        .then(function(cp) {
+        .then(function(cp){
           _this.cp = cp;
-        }).catch(function(e) {
+        }).catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -211,37 +206,28 @@ angular.module('xos.contentProviderApp', [
         });
       }
 
-      // TODO filter on client
-      CdnPrefix.query({contentProvider: $routeParams.id}).$promise
-      .then(function(cp_prf) {
-        _this.cp_prf = cp_prf;
-      }).catch(function(e) {
-        _this.result = {
-          status: 0,
-          msg: e.data.detail
-        };
-      });
-
       CdnPrefix.query().$promise
-      .then(function(prf) {
+      .then(function(prf){
         _this.prf = prf;
-      }).catch(function(e) {
+        // set the active CdnPrefix for this contentProvider
+        _this.cp_prf = lodash.where(prf, {contentProvider: parseInt($routeParams.id)});
+      }).catch(function(e){
         _this.result = {
           status: 0,
           msg: e.data.detail
         };
       });
 
-      this.addPrefix = function(prf) {
-        prf.contentProvider = '/hpcapi/contentproviders/' + $routeParams.id + '/';
+      this.addPrefix = function(prf){
+        prf.contentProvider = $routeParams.id;
 
         var item = new CdnPrefix(prf);
 
         item.$save()
-        .then(function(res) {
+        .then(function(res){
           _this.cp_prf.push(res);
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -249,12 +235,12 @@ angular.module('xos.contentProviderApp', [
         });
       };
 
-      this.removePrefix = function(item) {
+      this.removePrefix = function(item){
         item.$delete()
-        .then(function() {
+        .then(function(){
           lodash.remove(_this.cp_prf, item);
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -264,23 +250,23 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.directive('contentProviderServer', function($routeParams, OriginServer, ContentProvider, lodash) {
+.directive('contentProviderServer', function($routeParams, OriginServer, ContentProvider, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
-    controller: function() {
+    controller: function(){
       this.pageName = 'server';
       this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP','shout': 'SHOUTcast'};
 
       var _this = this;
 
-      if($routeParams.id) {
+      if($routeParams.id){
         ContentProvider.get({id: $routeParams.id}).$promise
-        .then(function(cp) {
+        .then(function(cp){
           _this.cp = cp;
-        }).catch(function(e) {
+        }).catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -288,28 +274,26 @@ angular.module('xos.contentProviderApp', [
         });
       }
 
-      // TODO filter on client
       OriginServer.query({contentProvider: $routeParams.id}).$promise
-      .then(function(cp_os) {
+      .then(function(cp_os){
         _this.cp_os = cp_os;
-      }).catch(function(e) {
+      }).catch(function(e){
         _this.result = {
           status: 0,
           msg: e.data.detail
         };
       });
 
-      // TODO everytime protocall error, ask Scott
-      this.addOrigin = function(os) {
-        os.contentProvider = '/hpcapi/contentproviders/' + $routeParams.id + '/';
+      this.addOrigin = function(os){
+        os.contentProvider = $routeParams.id;
 
         var item = new OriginServer(os);
 
         item.$save()
-        .then(function(res) {
+        .then(function(res){
           _this.cp_os.push(res);
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -317,12 +301,12 @@ angular.module('xos.contentProviderApp', [
         });
       };
 
-      this.removeOrigin = function(item) {
+      this.removeOrigin = function(item){
         item.$delete()
-        .then(function() {
+        .then(function(){
           lodash.remove(_this.cp_os, item);
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -332,36 +316,32 @@ angular.module('xos.contentProviderApp', [
     }
   };
 })
-.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash, $q) {
+.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
+    scope: {},
     templateUrl: '../../static/templates/contentProvider/cp_user.html',
-    controller: function() {
+    controller: function(){
       var _this = this;
 
       this.pageName = 'user';
 
       this.cp_users = [];
 
-      if($routeParams.id) {
+      if($routeParams.id){
         User.query().$promise
-        .then(function(users) {
+        .then(function(users){
           _this.users = users;
           return ContentProvider.get({id: $routeParams.id}).$promise;
         })
-        .then(function(res) {
-          for(var i = 0; i < res.users.length; i++) {
-            var url = res.users[i];
-            var id = parseInt(url.substr(url.length - 2).replace('/',''));
-
-            res.users[i] = lodash.find(_this.users, {id: id});
-          }
+        .then(function(res){
+          res.users = _this.populateUser(res.users, _this.users);
           return res;
         })
-        .then(function(cp) {
+        .then(function(cp){
           _this.cp = cp;
-        }).catch(function(e) {
+        }).catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail
@@ -369,25 +349,38 @@ angular.module('xos.contentProviderApp', [
         });
       }
 
-      this.addUserToCp = function(user) {
+      this.populateUser = function(ids, list){
+        for(var i = 0; i < ids.length; i++){
+          ids[i] = lodash.find(list, {id: ids[i]});
+        }
+        return ids;
+      };
+
+      this.addUserToCp = function(user){
         _this.cp.users.push(user);
       };
 
-      this.removeUserFromCp = function(user) {
+      this.removeUserFromCp = function(user){
         lodash.remove(_this.cp.users, user);
       };
 
-      this.saveContentProvider = function(cp) {
+      this.saveContentProvider = function(cp){
+
+        // flatten the user to id of array
+        cp.users = lodash.pluck(cp.users, 'id');
 
         cp.$update()
-        .then(function() {
+        .then(function(res){
+
+          _this.cp.users = _this.populateUser(res.users, _this.users);
+
           _this.result = {
             status: 1,
             msg: 'Content Provider Saved'
           };
 
         })
-        .catch(function(e) {
+        .catch(function(e){
           _this.result = {
             status: 0,
             msg: e.data.detail

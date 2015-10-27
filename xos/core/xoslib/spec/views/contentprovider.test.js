@@ -10,29 +10,31 @@ describe('The Content Provider SPA', () => {
   // preload Html Templates with ng-html2js
   beforeEach(module('templates'));
 
-  beforeEach(function() {
-    module(function($provide) {
+  beforeEach(function(){
+    module(function($provide){
       // mocking routeParams to pass 1 as id
-      $provide.provider('$routeParams', function() {
-        this.$get = function() {
+      $provide.provider('$routeParams', function(){
+        /* eslint-disable no-invalid-this*/
+        this.$get = function(){
           return {id: 1};
         };
+        /* eslint-enable no-invalid-this*/
       });
     });
   });
 
-  beforeEach(inject(function(_$location_, $httpBackend) {
+  beforeEach(inject(function(_$location_, $httpBackend){
     spyOn(_$location_, 'url');
     mockLocation = _$location_;
     httpBackend = $httpBackend;
     // Setting up mock request
-    $httpBackend.whenGET('/hpcapi/contentproviders/').respond(CPmock.CPlist);
-    $httpBackend.whenGET('/hpcapi/serviceproviders/').respond(CPmock.SPlist);
-    $httpBackend.whenDELETE('/hpcapi/contentproviders/1/').respond();
+    $httpBackend.whenGET('/hpcapi/contentproviders/?no_hyperlinks=1').respond(CPmock.CPlist);
+    $httpBackend.whenGET('/hpcapi/serviceproviders/?no_hyperlinks=1').respond(CPmock.SPlist);
+    $httpBackend.whenDELETE('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond();
   }));
 
   describe('the action directive', () => {
-    beforeEach(inject(function($compile, $rootScope) {
+    beforeEach(inject(function($compile, $rootScope){
       scope = $rootScope.$new();
 
       element = angular.element('<cp-actions id="\'1\'"></cp-actions>');
@@ -49,7 +51,7 @@ describe('The Content Provider SPA', () => {
   });
 
   describe('the contentProvider list', () => {
-    beforeEach(inject(function($compile, $rootScope) {
+    beforeEach(inject(function($compile, $rootScope){
       scope = $rootScope.$new();
 
       element = angular.element('<content-provider-list></content-provider-list>');
@@ -73,25 +75,15 @@ describe('The Content Provider SPA', () => {
 
   describe('the contentProviderDetail directive', () => {
 
-    beforeEach(inject(function($compile, $rootScope) {
+    beforeEach(inject(function($compile, $rootScope){
       scope = $rootScope.$new();
       element = angular.element('<content-provider-detail></content-provider-detail>');
       $compile(element)(scope);
-      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
+      httpBackend.expectGET('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond(CPmock.CPlist[0]);
       scope.$digest();
       httpBackend.flush();
       isolatedScope = element.isolateScope().vm;
     }));
-
-    it('should select the active service provider', () => {
-      var res = isolatedScope.activeServiceProvide(1, 'http://0.0.0.0:9000/hpcapi/serviceproviders/1/');
-      expect(res).toBe(true);
-    });
-
-    it('should not select a non active service provider', () => {
-      var res = isolatedScope.activeServiceProvide(1, 'http://0.0.0.0:9000/hpcapi/serviceproviders/3/');
-      expect(res).toBe(false);
-    });
 
     describe('when an id is set in the route', () => {
 
@@ -117,11 +109,11 @@ describe('The Content Provider SPA', () => {
       scope = $rootScope.$new();
       element = angular.element('<content-provider-cdn></content-provider-cdn>');
       $compile(element)(scope);
-      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
-      httpBackend.expectGET('/hpcapi/cdnprefixs/?contentProvider=1').respond([CPmock.CDNlist[0]]);
-      httpBackend.expectGET('/hpcapi/cdnprefixs/').respond(CPmock.CDNlist);
-      httpBackend.whenPOST('/hpcapi/cdnprefixs/').respond(CPmock.CDNlist[0]);
-      httpBackend.whenDELETE('/hpcapi/cdnprefixs/5/').respond();
+      httpBackend.expectGET('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond(CPmock.CPlist[0]);
+      // httpBackend.expectGET('/hpcapi/cdnprefixs/?no_hyperlinks=1&contentProvider=1').respond([CPmock.CDNlist[0]]);
+      httpBackend.expectGET('/hpcapi/cdnprefixs/?no_hyperlinks=1').respond(CPmock.CDNlist);
+      httpBackend.whenPOST('/hpcapi/cdnprefixs/?no_hyperlinks=1').respond(CPmock.CDNlist[0]);
+      httpBackend.whenDELETE('/hpcapi/cdnprefixs/5/?no_hyperlinks=1').respond();
       scope.$digest();
       httpBackend.flush();
       isolatedScope = element.isolateScope().vm;
@@ -150,10 +142,10 @@ describe('The Content Provider SPA', () => {
       scope = $rootScope.$new();
       element = angular.element('<content-provider-server></content-provider-server>');
       $compile(element)(scope);
-      httpBackend.expectGET('/hpcapi/contentproviders/1/').respond(CPmock.CPlist[0]);
-      httpBackend.expectGET('/hpcapi/originservers/?contentProvider=1').respond(CPmock.OSlist);
-      httpBackend.whenPOST('/hpcapi/originservers/').respond(CPmock.OSlist[0]);
-      httpBackend.whenDELETE('/hpcapi/originservers/8/').respond();
+      httpBackend.expectGET('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond(CPmock.CPlist[0]);
+      httpBackend.expectGET('/hpcapi/originservers/?no_hyperlinks=1&contentProvider=1').respond(CPmock.OSlist);
+      httpBackend.whenPOST('/hpcapi/originservers/?no_hyperlinks=1').respond(CPmock.OSlist[0]);
+      httpBackend.whenDELETE('/hpcapi/originservers/8/?no_hyperlinks=1').respond();
       scope.$digest();
       httpBackend.flush();
       isolatedScope = element.isolateScope().vm;
@@ -173,6 +165,51 @@ describe('The Content Provider SPA', () => {
       isolatedScope.removeOrigin(isolatedScope.cp_os[0]);
       httpBackend.flush();
       expect(isolatedScope.cp_os.length).toBe(3);
+    });
+  });
+
+  describe('the contentProviderUsers directive', () => {
+    beforeEach(inject(($compile, $rootScope) => {
+      scope = $rootScope.$new();
+      element = angular.element('<content-provider-users></content-provider-users>');
+      $compile(element)(scope);
+      httpBackend.expectGET('/xos/users/?no_hyperlinks=1').respond(CPmock.UserList);
+      httpBackend.expectGET('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond(CPmock.CPlist[0]);
+      httpBackend.whenPUT('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond(CPmock.CPlist[0]);
+      scope.$digest();
+      httpBackend.flush();
+      isolatedScope = element.isolateScope().vm;
+    }));
+
+    it('should render one user', () => {
+      expect(isolatedScope.cp.users.length).toBe(1);
+      expect(typeof isolatedScope.cp.users[0]).toEqual('object');
+    });
+
+    it('should add a user', () => {
+      isolatedScope.addUserToCp({name: 'teo'});
+      expect(isolatedScope.cp.users.length).toBe(2);
+    });
+
+    it('should remove a user', () => {
+      isolatedScope.addUserToCp({name: 'teo'});
+      expect(isolatedScope.cp.users.length).toBe(2);
+      isolatedScope.removeUserFromCp({name: 'teo'});
+      expect(isolatedScope.cp.users.length).toBe(1);
+    });
+
+    it('should save and reformat users', () => {
+      // add a user
+      isolatedScope.cp.users.push(1);
+
+      //trigger save
+      isolatedScope.saveContentProvider(isolatedScope.cp);
+
+      httpBackend.flush();
+
+      // I'll get one as the BE is mocked, the important is to check the conversion
+      expect(isolatedScope.cp.users.length).toBe(1);
+      expect(typeof isolatedScope.cp.users[0]).toEqual('object');
     });
   });
 });

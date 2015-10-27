@@ -1,3 +1,4 @@
+/* eslint-disable new-cap*/
 'use strict';
 
 describe('When XOS Lib is created', () => {

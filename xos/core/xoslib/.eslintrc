@@ -15,7 +15,8 @@
     }],
     "valid-jsdoc": 2,
     "max-len": [1, 120, 4, {"ignoreComments": true, "ignoreUrls": true}],
-    brace-style: [2, "stroustrup"]
+    brace-style: [2, "stroustrup"],
+    space-before-blocks: [1, 'never']
   },
   "globals": {
     "$": false,

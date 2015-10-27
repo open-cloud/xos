@@ -1,4 +1,4 @@
-/* eslint-disable guard-for-in, no-undef*/
+/* eslint-disable guard-for-in, no-undef, space-before-blocks*/
 /* This is an example that uses xoslib + marionette to display the developer
    view.
 
@@ -42,7 +42,7 @@ DeveloperApp.SliceListView = Marionette.CompositeView.extend({
   attachHtml: function(compositeView, childView, index) {
     // The REST API will let admin users see everything. For the developer
     // view we still want to hide slices we are not members of.
-    if(childView.model.get('sliceInfo').roles.length == 0) {
+    if(childView.model.get('sliceInfo').roles.length === 0) {
       return;
     }
     DeveloperApp.SliceListView.__super__.attachHtml(compositeView, childView, index);
