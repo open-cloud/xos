@@ -1,3 +1,5 @@
+/* eslint-disable space-before-blocks, no-unused-vars */
+
 function init_picker(selector, ordered) {
   //console.log("init_picker");
   //console.log($(selector));
@@ -31,7 +33,9 @@ function init_picker(selector, ordered) {
       var newPos = to.find('option').index(this) - 1;
 
       if (newPos > -1) {
-        to.find('option').eq(newPos).before('<option value="' + $(this).val() + '" selected="selected">' + $(this).text() + '</option>');
+        to.find('option').eq(newPos).before(
+          '<option value="' + $(this).val() + '" selected="selected">' + $(this).text() + '</option>'
+        );
         $(this).remove();
       }
     });
@@ -43,7 +47,9 @@ function init_picker(selector, ordered) {
       var newPos = to.find('option').index(this) + 1;
 
       if (newPos < countOptions) {
-        to.find('option').eq(newPos).after('<option value="' + $(this).val() + '" selected="selected">' + $(this).text() + '</option>');
+        to.find('option').eq(newPos).after(
+          '<option value="' + $(this).val() + '" selected="selected">' + $(this).text() + '</option>'
+        );
         $(this).remove();
       }
     });

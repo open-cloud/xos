@@ -1,6 +1,6 @@
 
 /* globals XOSModel, XOSCollection */
-/* eslint-disable no-undef, guard-for-in, new-cap */
+/* eslint-disable no-undef, guard-for-in, new-cap, space-before-blocks, no-unused-vars, no-alert, eqeqeq */
 
 XOSTenantSite = XOSModel.extend({
   listFields: ['name', 'allocated'],

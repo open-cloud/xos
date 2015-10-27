@@ -6,7 +6,7 @@
 
 /* eslint-disable quotes, no-undef, max-len, new-cap*/
 /* eslint indent: [2, 2]*/
-function xos_get_validators() {
+function xos_get_validators(){
   this.account = {"updated": [], "policed": [], "created": [], "deleted": [], "site": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "backend_status": ["notBlank"], "id": [], "no_sync": [], "enacted": []};
   this.charge = {"updated": [], "slice": [], "policed": [], "created": [], "deleted": [], "amount": ["notBlank"], "object": ["notBlank"], "account": ["notBlank"], "kind": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "state": ["notBlank"], "coreHours": ["notBlank"], "invoice": [], "date": ["notBlank"], "backend_status": ["notBlank"], "id": [], "no_sync": [], "enacted": []};
   this.coarseTenant = {"subscriber_service": [], "connect_method": ["notBlank"], "updated": [], "policed": [], "created": [], "deleted": [], "service_specific_attribute": [], "kind": ["notBlank"], "lazy_blocked": [], "backend_register": ["notBlank"], "write_protect": [], "subscriber_user": [], "provider_service": ["notBlank"], "service_specific_id": [], "subscriber_tenant": [], "subscriber_root": [], "backend_status": ["notBlank"], "id": [], "no_sync": [], "enacted": []};

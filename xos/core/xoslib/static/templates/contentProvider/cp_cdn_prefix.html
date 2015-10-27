@@ -18,7 +18,7 @@
           {{item.humanReadableName}}
         </div>
         <div class="span6">
-          <!-- TODO shoe the name instead that url -->
+          <!-- TODO show the name instead that id -->
           {{item.defaultOriginServer}}
         </div>
         <div class="span2">
@@ -38,7 +38,7 @@
         <div class="span6">
           <label>Default Origin Server</label>
           <select ng-model="vm.new_prf.defaultOriginServer" style="max-width: 100%">
-            <option ng-repeat="prf in vm.prf" ng-value="'/hpcapi/originservers/' + prf.id + '/'">{$ prf.humanReadableName $}</option>
+            <option ng-repeat="prf in vm.prf" ng-value="prf.id">{$ prf.humanReadableName $}</option>
           </select>
         </div>
         <div class="span2 text-right">
