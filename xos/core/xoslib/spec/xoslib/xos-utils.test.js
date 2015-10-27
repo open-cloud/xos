@@ -1,6 +1,6 @@
 'use strict';
 
-describe('The XOS Lib Utilities', function() {
+describe('The XOS Lib Utilities', function(){
 
   var f;
 
@@ -9,7 +9,7 @@ describe('The XOS Lib Utilities', function() {
     f.fixturesPath = 'base/spec/xoslib/fixtures/xos-utils';
   });
 
-  describe('The idInArray method', function() {
+  describe('The idInArray method', function(){
     it('should match a string ID', () => {
       let res = idInArray('1', [1, 2, 3]);
       expect(res).toBeTruthy();
@@ -169,7 +169,7 @@ describe('The XOS Lib Utilities', function() {
 
     it('should set elements to same width', () => {
       make_same_width('.container', 'div');
-      $('.container div').each(function(index, item) {
+      $('.container div').each(function(index, item){
         expect($(item)).toHaveCss({width: '400px'});
       });
     });

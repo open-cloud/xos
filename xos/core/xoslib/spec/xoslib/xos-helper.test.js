@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars*/
 'use strict';
 
 describe('The Xos Helper', () => {
@@ -16,7 +17,7 @@ describe('The Xos Helper', () => {
       const err = {name: 'must start with mysite_'};
       var view;
       beforeEach(() => {
-        try {
+        try{
           f.set(`
             <script type="text/template" id="fake-template">
               <div>
@@ -39,9 +40,7 @@ describe('The Xos Helper', () => {
 
         // view.onFormDataInvalid(err);
         // view().onFormDataInvalid(err)
-        
-        console.log(new view()); 
-        
+
         expect($('.alert').length).toBe(1);
       });
     });

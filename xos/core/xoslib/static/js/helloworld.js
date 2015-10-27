@@ -1,4 +1,4 @@
-/* eslint-disable guard-for-in */
+/* eslint-disable guard-for-in, space-before-blocks */
 
 // helloworld.js
 function updateHelloWorldData() {

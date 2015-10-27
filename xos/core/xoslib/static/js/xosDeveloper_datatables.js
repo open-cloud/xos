@@ -1,4 +1,4 @@
-/* eslint-disable guard-for-in, no-undef, indent*/
+/* eslint-disable guard-for-in, no-undef, indent, space-before-blocks*/
 
 // TODO write test and then fix lint errors
 
@@ -9,7 +9,9 @@
 */
 
 function updateSliceTable(data) {
-    $('#developerView').html('<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamicusersliceinfo"></table>');
+    $('#developerView').html(
+        '<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamicusersliceinfo"></table>'
+    );
     var actualEntries = [];
 
     for (rowkey in data.models) {

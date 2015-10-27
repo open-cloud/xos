@@ -38,11 +38,14 @@
           <select ng-model="vm.user" ng-options="u as u.username for u in vm.users" ng-change="vm.addUserToCp(vm.user)"></select>
         </div>  
         <div class="span4 text-right">
-          <button class="btn btn-success margin-wells" disabled="disabled">
+          <button class="btn btn-success margin-wells">
             Save
           </button>
         </div>
       </div>
     </form>
+    <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+      {$ vm.result.msg $}
+    </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-/* eslint-disable key-spacing */
+/* eslint-disable key-spacing, no-unused-vars */
 
 var CPmock = {
   CPlist: [
@@ -69,6 +69,7 @@ var CPmock = {
       'name':'on_lab_content',
       'enabled':true,
       'description':null,
+      users: [2],
       'serviceProvider':'http://0.0.0.0:9000/hpcapi/serviceproviders/1/'
     },
     {
@@ -281,7 +282,7 @@ var CPmock = {
       'no_sync':false,
       'cdn_prefix_id':null,
       'prefix':'onlab.vicci.org',
-      'contentProvider':'http://0.0.0.0:9000/hpcapi/contentproviders/1/',
+      'contentProvider':1,
       'description':null,
       'defaultOriginServer':'http://0.0.0.0:9000/hpcapi/originservers/2/',
       'enabled':true
@@ -354,7 +355,7 @@ var CPmock = {
       'no_sync':false,
       'cdn_prefix_id':null,
       'prefix':'downloads.onosproject.org',
-      'contentProvider':'http://0.0.0.0:9000/hpcapi/contentproviders/2/',
+      'contentProvider':2,
       'description':null,
       'defaultOriginServer':'http://0.0.0.0:9000/hpcapi/originservers/1/',
       'enabled':true
@@ -684,6 +685,226 @@ var CPmock = {
       'protocol':'HTTP',
       'redirects':true,
       'description':null
+    }
+  ],
+  UserList: [
+    {
+      'humanReadableName':'teo@onlab.us',
+      'validators':{
+        'policed':[
+          'notBlank'
+        ],
+        'site':[
+          'notBlank'
+        ],
+        'is_appuser':[
+
+        ],
+        'is_staff':[
+
+        ],
+        'timezone':[
+          'notBlank'
+        ],
+        'backend_status':[
+          'notBlank'
+        ],
+        'id':[
+
+        ],
+        'is_registering':[
+
+        ],
+        'last_login':[
+          'notBlank'
+        ],
+        'email':[
+          'notBlank'
+        ],
+        'username':[
+          'notBlank'
+        ],
+        'updated':[
+
+        ],
+        'login_page':[
+
+        ],
+        'firstname':[
+          'notBlank'
+        ],
+        'user_url':[
+          'url'
+        ],
+        'deleted':[
+
+        ],
+        'lastname':[
+          'notBlank'
+        ],
+        'is_active':[
+
+        ],
+        'phone':[
+
+        ],
+        'is_admin':[
+
+        ],
+        'password':[
+          'notBlank'
+        ],
+        'enacted':[
+          'notBlank'
+        ],
+        'public_key':[
+
+        ],
+        'is_readonly':[
+
+        ],
+        'created':[
+
+        ],
+        'write_protect':[
+
+        ]
+      },
+      'id':2,
+      'password':'pbkdf2_sha256$12000$2Uzp1YCyjEBO$uU2irK//ZpEZYOIgLzanuApFoPnwfG1jNol2jD273wQ=',
+      'last_login':'2015-10-26T14:11:27.625Z',
+      'email':'teo@onlab.us',
+      'username':'teo@onlab.us',
+      'firstname':'Matteo',
+      'lastname':'Scandolo',
+      'phone':'',
+      'user_url':null,
+      'site':1,
+      'public_key':'',
+      'is_active':true,
+      'is_admin':false,
+      'is_staff':true,
+      'is_readonly':false,
+      'is_registering':false,
+      'is_appuser':false,
+      'login_page':null,
+      'created':'2015-10-26T14:11:27.699Z',
+      'updated':'2015-10-26T14:11:27.699Z',
+      'enacted':null,
+      'policed':null,
+      'backend_status':'Provisioning in progress',
+      'deleted':false,
+      'write_protect':false,
+      'timezone':'America/New_York'
+    },
+    {
+      'humanReadableName':'padmin@vicci.org',
+      'validators':{
+        'policed':[
+          'notBlank'
+        ],
+        'site':[
+          'notBlank'
+        ],
+        'is_appuser':[
+
+        ],
+        'is_staff':[
+
+        ],
+        'timezone':[
+          'notBlank'
+        ],
+        'backend_status':[
+          'notBlank'
+        ],
+        'id':[
+
+        ],
+        'is_registering':[
+
+        ],
+        'last_login':[
+          'notBlank'
+        ],
+        'email':[
+          'notBlank'
+        ],
+        'username':[
+          'notBlank'
+        ],
+        'updated':[
+
+        ],
+        'login_page':[
+
+        ],
+        'firstname':[
+          'notBlank'
+        ],
+        'user_url':[
+          'url'
+        ],
+        'deleted':[
+
+        ],
+        'lastname':[
+          'notBlank'
+        ],
+        'is_active':[
+
+        ],
+        'phone':[
+
+        ],
+        'is_admin':[
+
+        ],
+        'password':[
+          'notBlank'
+        ],
+        'enacted':[
+          'notBlank'
+        ],
+        'public_key':[
+
+        ],
+        'is_readonly':[
+
+        ],
+        'created':[
+
+        ],
+        'write_protect':[
+
+        ]
+      },
+      'id':1,
+      'password':'pbkdf2_sha256$12000$Qufx9iqtaYma$xs0YurPOcj9qYQna/Qrb3K+im9Yr2XEVr0J4Kqek7AE=',
+      'last_login':'2015-10-27T10:07:09.065Z',
+      'email':'padmin@vicci.org',
+      'username':'padmin@vicci.org',
+      'firstname':'XOS',
+      'lastname':'admin',
+      'phone':null,
+      'user_url':null,
+      'site':1,
+      'public_key':null,
+      'is_active':true,
+      'is_admin':true,
+      'is_staff':true,
+      'is_readonly':false,
+      'is_registering':false,
+      'is_appuser':false,
+      'login_page':null,
+      'created':'2015-02-17T22:06:38.059Z',
+      'updated':'2015-10-27T09:00:44.672Z',
+      'enacted':null,
+      'policed':null,
+      'backend_status':'Provisioning in progress',
+      'deleted':false,
+      'write_protect':false,
+      'timezone':'America/New_York'
     }
   ]
 };

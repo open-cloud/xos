@@ -41,7 +41,7 @@ describe('The Xos Backbone', () => {
     var testLib;
 
     beforeEach(() => {
-      var TestLibDefinition = function() {
+      var TestLibDefinition = function(){
         /* eslint-disable no-invalid-this*/
         this.allCollectionNames = [];
         this.allCollections = [];
