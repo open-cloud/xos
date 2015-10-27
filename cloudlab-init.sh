@@ -26,6 +26,8 @@ then
     cp ~/.ssh/id_rsa     xos/observers/monitoring_channel/monitoring_channel_private_key
 fi
 
+cp ~/.ssh/id_rsa     xos/observers/helloworldservice/helloworldservice_private_key
+
 sudo docker build -t xos .
 
 if [ "$CORD" -ne 0 ]

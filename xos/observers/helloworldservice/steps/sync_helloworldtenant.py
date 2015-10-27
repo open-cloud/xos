@@ -13,21 +13,15 @@ sys.path.insert(0,parentdir)
 
 logger = Logger(level=logging.INFO)
 
-class SyncHelloWorldServiceTenant(SyncStep):
+class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     provides=[HelloWorldTenant]
     observes=HelloWorldTenant
-    requested_interval=1
-
-    def sync_record(self, record):
-        logger.info("Syncing helloworldtenant");
-        open('log','a').write(record.display_message + '\n');
-	service = HelloWorldService.get_service_objects().filter(id = record.provider_service.id)[0];
-	for slice in service.slices.all():
-		open('log','a').write("got a slice" + '\n');
-		for instance in slice.instances.all():
-            		open('log','a').write("got an instance" + '\n');
-            		instance.userData = "packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.display_message
-            		instance.save();
+    requested_interval=0
+    template_name = "test.yaml"
+    service_key_name = "/opt/xos/observers/helloworldservice/helloworldservice_private_key"
+    
+    def get_extra_attributes(self, o):
+	return {"display_message": o.display_message}
 
     def delete_record(self, m):
         return
