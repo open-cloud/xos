@@ -144,16 +144,21 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
     return ok_results
 
 def run_template_ssh(name, opts, path='', expected_num=None):
-    instance_id = opts["instance_id"]
     instance_name = opts["instance_name"]
     hostname = opts["hostname"]
     private_key = opts["private_key"]
-    nat_ip = opts["nat_ip"]
-
-    try:
-        proxy_ssh = Config().observer_proxy_ssh
-    except:
-        proxy_ssh = True
+    baremetal_ssh = opts.get("baremetal_ssh",False)
+    if baremetal_ssh:
+        # no instance_id or nat_ip for baremetal
+        # we never proxy to baremetal
+        proxy_ssh = False
+    else:
+        instance_id = opts["instance_id"]
+        nat_ip = opts["nat_ip"]
+        try:
+            proxy_ssh = Config().observer_proxy_ssh
+        except:
+            proxy_ssh = True
 
     (opts, fqp) = get_playbook_fn(opts, path)
     private_key_pathname = fqp + ".key"
@@ -177,7 +182,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
 
     f = open(hosts_pathname, "w")
     f.write("[%s]\n" % instance_name)
-    if proxy_ssh:
+    if proxy_ssh or baremetal_ssh:
         f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
     else:
         # acb: Login user is hardcoded, this is not great
