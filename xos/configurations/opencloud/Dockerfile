@@ -132,7 +132,7 @@ RUN pip install python-dateutil
 RUN bash /opt/xos/tosca/install_tosca.sh
 
 # configure nginx
-RUN cp /opt/xos/nginx/xos.conf /etc/nginx/sites-enabled/
+RUN cp /opt/xos/nginx/xos.conf /etc/nginx/sites-enabled/default
 
 # Supervisor configuration
 RUN cp /opt/xos/configurations/opencloud/supervisord.conf  /etc/supervisor/conf.d/xos-all.conf
