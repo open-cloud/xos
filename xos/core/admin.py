@@ -1372,6 +1372,39 @@ class InstanceAdmin(XOSBaseAdmin):
     #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
     #    obj.delete()
 
+class ContainerPortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
+    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
+    model = Port
+    selflink_fieldname = "network"
+    extra = 0
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
+
+class ContainerAdmin(XOSBaseAdmin):
+    fieldsets = [
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
+    ]
+    readonly_fields = ('backend_status_text', )
+    list_display = ['backend_status_icon', 'id']
+    list_display_links = ('backend_status_icon', 'id', )
+
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
+
+    inlines = [TagInline, ContainerPortInline]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'slice':
+            kwargs['queryset'] = Slice.select_by_user(request.user)
+
+        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def queryset(self, request):
+        # admins can see all instances. Users can only see instances of
+        # the slices they belong to.
+        return Container.select_by_user(request.user)
+
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
@@ -1727,7 +1760,7 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     readonly_fields = ('backend_status_icon', )
 
 class NetworkPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
+    fields = ['backend_status_icon', 'network', 'instance', 'container', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
     selflink_fieldname = "instance"
@@ -2024,4 +2057,5 @@ if True:
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
+    admin.site.register(Container, ContainerAdmin)
 
