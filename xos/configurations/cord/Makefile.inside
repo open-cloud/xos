@@ -5,6 +5,7 @@ setup_xos:
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab.yaml
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab-nodes.yaml
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/cord.yaml
+	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 
 run_develserver:
 	cd /opt/xos; python manage.py runserver 0.0.0.0:8000 --insecure
