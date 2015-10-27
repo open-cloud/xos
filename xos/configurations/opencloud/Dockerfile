@@ -1,8 +1,5 @@
-FROM       ubuntu:14.04.2
+FROM       ubuntu:14.04.3
 MAINTAINER Andy Bavier <acb@cs.princeton.edu>
-
-# Set environment variables.
-ENV HOME /root
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
@@ -12,89 +9,80 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 # XXX End workaround
 
 # Install.
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
-    curl \
+RUN apt-get update && apt-get install -y \
     git \
-    geoip-database \
+    postgresql \
+    python-psycopg2 \
     graphviz \
     graphviz-dev \
-    libgeoip1 \
     libxslt1.1 \
     libxslt1-dev \
-    libyaml-dev \
-    m4 \
-    nginx \
-    openssh-client \
-    python-dev \
-    pkg-config \
-    postgresql \
-    python-crypto \
-    python-httplib2>=0.9.1 \
-    python-jinja2 \
-    python-paramiko \
     python-pip \
-    python-psycopg2 \
-    python-pycurl \
-    python-setuptools \
-    python-yaml \
-    python-keystoneclient \
-    python-novaclient \
-    python-neutronclient \
-    python-glanceclient \
-    python-ceilometerclient \
-    supervisor \
     tar \
-    wget 
+    gcc \
+    python-httplib2 \
+    geoip-database \
+    libgeoip1 \
+    wget \
+    curl \
+    python-dev \
+    libyaml-dev \
+    pkg-config \
+    python-pycurl
 
-RUN pip install \
-    django==1.7 \
-    djangorestframework==2.4.4 \
-    markdown  \ 
-    pyyaml \ 
-    django-filter \
-    lxml \
-    netaddr \
-    pytz \
-    django-timezones \
-    requests \
-    django-crispy-forms \
-    django-geoposition \
-    django-extensions \
-    django-suit \
-    django-bitfield \
-    django-ipware \
-    django-encrypted-fields \
-    django_rest_swagger \
-    python-dateutil \
-    python-keyczar \
-    pygraphviz \
-    dnslib \
-    uwsgi
+RUN pip install django==1.7
+RUN pip install djangorestframework==2.4.4
+RUN pip install markdown  # Markdown support for the browseable API.
+RUN pip install pyyaml    # YAML content-type support.
+RUN pip install django-filter  # Filtering support
+RUN pip install lxml  # XML manipulation library
+RUN pip install netaddr # IP Addr library
+RUN pip install pytz
+RUN pip install django-timezones
+RUN pip install requests
+RUN pip install django-crispy-forms
+RUN pip install django-geoposition
+RUN pip install django-extensions
+RUN pip install django-suit
+RUN pip install django-bitfield
+RUN pip install django-ipware
+RUN pip install django-encrypted-fields
+RUN pip install python-keyczar
+RUN pip install pygraphviz
+RUN pip install dnslib
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-keystoneclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-novaclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-neutronclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-glanceclient
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-ceilometerclient
+
+RUN pip install django_rest_swagger
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-setuptools
+RUN easy_install django_evolution
+RUN easy_install python_gflags
 RUN easy_install --upgrade httplib2
-
-RUN easy_install \
-    django_evolution \
-    python_gflags \
-    google_api_python_client \
-    httplib2.ca_certs_locater
-
+RUN easy_install google_api_python_client
+RUN easy_install httplib2.ca_certs_locater
 
 # Install custom Ansible
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-crypto
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-yaml
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-client
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-paramiko
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-jinja2
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-httplib2
 RUN git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible
 RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/lib/ansible/modules/extras
 RUN git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/v2/ansible/modules/extras
 RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/lib/ansible/modules/core
 RUN git clone git://github.com/sb98052/ansible-modules-core.git /opt/ansible/v2/ansible/modules/core
-# git clone uses cached copy, doesn't pick up latest
-RUN git -C /opt/ansible pull
-RUN git -C /opt/ansible/lib/ansible/modules/core pull
-RUN git -C /opt/ansible/v2/ansible/modules/core pull
 ADD ansible-hosts /etc/ansible/hosts
 
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
 # For Observer
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum
 RUN cd /tmp/fofum; python setup.py install
 RUN rm -rf /tmp/fofum
@@ -106,11 +94,17 @@ RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
 RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
+# Supervisor
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
+ADD observer.conf /etc/supervisor/conf.d/
+
 # Get XOS
-RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
+ADD xos /opt/xos
+
+# Initscript is broken in Ubuntu
+#ADD observer-initscript /etc/init.d/xosobserver
 
 RUN chmod +x /opt/xos/scripts/opencloud
-
 RUN /opt/xos/scripts/opencloud genkeys
 
 # Workaround for AUFS issue
@@ -118,7 +112,7 @@ RUN /opt/xos/scripts/opencloud genkeys
 RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private
 
 # Set postgres password to match default value in settings.py
-RUN service postgresql start && sudo -u postgres psql -c "alter user postgres with password 'password';"
+RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with password 'password';"
 
 # Turn DEBUG on so that devel server will serve static files
 #    (not necessary if --insecure is passed to 'manage.py runserver')
@@ -127,17 +121,24 @@ RUN service postgresql start && sudo -u postgres psql -c "alter user postgres wi
 # Cruft to workaround problems with migrations, should go away...
 RUN /opt/xos/scripts/opencloud remigrate
 
+# git clone uses cached copy, doesn't pick up latest
+RUN git -C /opt/ansible pull
+RUN git -C /opt/ansible/lib/ansible/modules/core pull
+RUN git -C /opt/ansible/v2/ansible/modules/core pull
 
 # install Tosca engine
+RUN apt-get install -y m4
+RUN pip install python-dateutil
 RUN bash /opt/xos/tosca/install_tosca.sh
-
-# configure nginx
-RUN cp /opt/xos/nginx/xos.conf /etc/nginx/sites-enabled/default
-
-# Supervisor configuration
-RUN cp /opt/xos/configurations/opencloud/supervisord.conf  /etc/supervisor/conf.d/xos-all.conf
 
 EXPOSE 8000
 
+# Set environment variables.
+ENV HOME /root
+
+# Define working directory.
+WORKDIR /root
+
 # Define default command.
-CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/xos-all.conf
+#CMD ["/bin/bash"]
+CMD /opt/xos/scripts/docker_start_xos
