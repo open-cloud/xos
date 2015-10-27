@@ -21,7 +21,7 @@ ContactManager.ContactsView = Marionette.CollectionView.extend({
   childView: ContactManager.ContactItemView
 });
 
-ContactManager.on('start', function() {
+ContactManager.on('start', function(){
   var contacts = new ContactManager.ContactCollection([
     {
       firstName: 'Bob',
