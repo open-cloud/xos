@@ -1372,17 +1372,27 @@ class InstanceAdmin(XOSBaseAdmin):
     #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
     #    obj.delete()
 
+class ContainerPortInline(XOSTabularInline):
+    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
+    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
+    model = Port
+    selflink_fieldname = "network"
+    extra = 0
+    verbose_name_plural = "Ports"
+    verbose_name = "Port"
+    suit_classes = 'suit-tab suit-tab-ports'
+
 class ContainerAdmin(XOSBaseAdmin):
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'node'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
     list_display = ['backend_status_icon', 'id']
     list_display_links = ('backend_status_icon', 'id', )
 
-    suit_form_tabs =(('general', 'Instance Details'),) # ('ports', 'Ports'))
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
 
-    #inlines = [TagInline, InstancePortInline]
+    inlines = [TagInline, ContainerPortInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
