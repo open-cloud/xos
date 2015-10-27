@@ -105,6 +105,7 @@ RUN cp /tmp/xos/observer.conf /etc/supervisor/conf.d/
 #ADD observer-initscript /etc/init.d/xosobserver
 
 RUN chmod +x /opt/xos/scripts/opencloud
+RUN chmod +x /opt/xos/configurations/opencloud/run_opencloud
 RUN /opt/xos/scripts/opencloud genkeys
 
 # Workaround for AUFS issue
@@ -140,5 +141,4 @@ ENV HOME /root
 WORKDIR /root
 
 # Define default command.
-#CMD ["/bin/bash"]
 CMD /opt/xos/configurations/opencloud/run_opencloud
