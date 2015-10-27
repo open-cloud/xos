@@ -94,12 +94,12 @@ RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
 RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
-# Supervisor
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
-ADD observer.conf /etc/supervisor/conf.d/
-
 # Get XOS
 ADD xos /opt/xos
+
+# Supervisor
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
+ADD /opt/xos/observer.conf /etc/supervisor/conf.d/
 
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
