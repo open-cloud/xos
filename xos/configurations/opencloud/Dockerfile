@@ -95,7 +95,7 @@ RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantom
 RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
 # Get XOS
-ADD xos /opt/xos
+RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
 
 # Supervisor
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor
