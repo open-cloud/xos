@@ -5,6 +5,18 @@
   user: {{ username }}
   sudo: yes
 
+  vars:
+    container_name: {{ container_name }}
+    docker_image: {{ docker_image }}
+    ports:
+    {% for port in ports %}
+       - device: {{ port.device }}
+         mac: {{ port.mac }}
+         ip: {{ port.ip }}
+         snoop_instance_mac: {{ port.snoop_instance_mac }}
+         snoop_instance_id: {{ port.snoop_instance_id }}
+    {% endfor %}
+
   tasks:
 
 #  - name: Fix /etc/hosts
@@ -13,6 +25,7 @@
 #      regexp="127.0.0.1 localhost"
 #      line="127.0.0.1 localhost {{ instance_hostname }}"
 
+{% if false %}
   - name: Add repo key
     apt_key:
       keyserver=hkp://pgp.mit.edu:80
@@ -38,11 +51,23 @@
       name=docker-py
       state=latest
 
-  - name: Start Container
-    docker:
-      docker_api_version: "1.18"
-      name: {{ container_name }}
-      # was: reloaded
-      state: running
-      image: {{ docker_image }}
+  - name: install Pipework
+    get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
+       dest=/usr/local/bin/pipework
+       mode=0755
+{% endif %}
+
+#  - name: Start Container
+#    docker:
+#      docker_api_version: "1.18"
+#      name: {{ container_name }}
+#      # was: reloaded
+#      state: running
+#      image: {{ docker_image }}
+
+  - name: container upstart
+    template: src=/opt/xos/openstack_observer/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
+
+  - name: container startup script
+    template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
 
