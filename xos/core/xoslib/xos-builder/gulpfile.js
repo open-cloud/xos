@@ -16,6 +16,7 @@ var runSequence = require('run-sequence');
 var minifyHtml = require("gulp-minify-html");
 var concat = require("gulp-concat");
 var del = require('del');
+var wiredep = require('wiredep');
 
 gulp.task('clean', function(){
   return del(['dist/**/*']);
@@ -46,11 +47,26 @@ gulp.task('copyJs', function(){
     .pipe(gulp.dest('../static/js/'))
 });
 
+gulp.task('copyVendor', function(){
+  return gulp.src('dist/xosNgVendor.js')
+    .pipe(gulp.dest('../static/js/vendor/'));
+});
+
+gulp.task('wiredep', function(){
+  var bowerDeps = wiredep().js;
+  return gulp.src(bowerDeps)
+    .pipe(concat('xosNgVendor.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist'));
+});
+
 gulp.task('default', function() {
   runSequence(
     'clean',
     'templates',
     'scripts',
-    'copyJs'
+    'copyJs',
+    'wiredep',
+    'copyVendor'
   );
 });
