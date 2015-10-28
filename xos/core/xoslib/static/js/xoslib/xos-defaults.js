@@ -1,4 +1,7 @@
-function xos_get_defaults() {
+/* eslint-disable quotes, no-undef, max-len, new-cap*/
+/* eslint indent: [2, 2]*/
+console.warn('**** XOS DEFAULT ****');
+function xos_get_defaults(){
   this.account = {"updated": null, "policed": null, "created": null, "deleted": false, "site": null, "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "backend_status": "0 - Provisioning in progress", "no_sync": false, "enacted": null};
   this.charge = {"updated": null, "slice": null, "date": null, "policed": null, "created": null, "deleted": false, "object": null, "account": null, "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "amount": 0.0, "state": "pending", "invoice": null, "coreHours": 0.0, "backend_status": "0 - Provisioning in progress", "kind": "besteffort", "no_sync": false, "enacted": null};
   this.coarseTenant = {"subscriber_service": null, "connect_method": "na", "updated": null, "backend_status": "0 - Provisioning in progress", "policed": null, "created": null, "deleted": false, "service_specific_attribute": null, "kind": "coarse", "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "enacted": null, "service_specific_id": null, "subscriber_tenant": null, "subscriber_root": null, "subscriber_user": null, "no_sync": false, "provider_service": null};
@@ -64,3 +67,4 @@ function xos_get_defaults() {
   this.userDashboardView = {"updated": null, "policed": null, "created": null, "deleted": false, "dashboardView": null, "lazy_blocked": false, "backend_register": "{}", "write_protect": false, "user": null, "backend_status": "0 - Provisioning in progress", "order": 0, "no_sync": false, "enacted": null};
 };
 xosdefaults = new xos_get_defaults();
+/* eslint-enable quotes, no-undef, max-len, new-cap*/

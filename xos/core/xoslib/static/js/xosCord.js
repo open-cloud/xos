@@ -1,4 +1,5 @@
-OBJS = ['cordSubscriber', 'cordUser']
+/* eslint-disable */
+OBJS = ['cordSubscriber', 'cordUser'];
 
 CordAdminApp = new XOSApplication({
     logTableId: "#logTable",
@@ -193,4 +194,4 @@ CordAdminApp.on("start", function() {
 $(document).ready(function(){
     CordAdminApp.start();
 });
-
+/* eslint-enable */
