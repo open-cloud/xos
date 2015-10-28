@@ -1,4 +1,4 @@
-/*************************
+g/*************************
 colors:
     tab - active/focus color
     background-color: #105E9E !important;
@@ -316,7 +316,7 @@ color:#ffffff;
 text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
 letter-spacing: 1px;
 
-left: 10px;
+/*left: 10px;*/
 background-image: url("right_arrow.png");
     background-position: 97% center;
 }
@@ -390,9 +390,9 @@ line-height: 0;
 /*background-color: #D6E7F8;*/
 font-weight:normal;
 font-size: 1.2em;
-font-weight: bold;
+/*font-weight: bold;*/
 color:#ffffff;
-padding-top:10px;
+/*padding-top:10px;*/
 text-decoration:none;
 }
 
@@ -415,7 +415,7 @@ letter-spacing: 1px;
 /*background-color: #448CCA;*/
 background-color: #515151;
 font-weight:normal;
-font-size: 1.2em;
+/*font-size: 1.2em;*/
 /*color:#ffffff;*/
 padding-top:10px;
 text-decoration:none;
@@ -483,7 +483,8 @@ overflow: visible !important;
 
 .login #content-main h1 {
 /*background: #EBF0F2;*/
-background: url("open-cloud-login-themed-light.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
+/*background: url("open-cloud-login-themed-light.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);*/
+background: url("cord_logo_3.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
 /*background-position: 40%;*/
 height: 55px;
 background-repeat: no-repeat;
@@ -571,10 +572,14 @@ box-shadow: none;
 border: none;
 }
 
+.nav-tabs-suit li a{
+  font-weight: normal;
+}
+
 .nav-tabs-suit li a:hover{
 border: none;
 color: #ffffff;
-letter-spacing: 1px;
+/*letter-spacing: 1px;*/
 text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
 }
 
