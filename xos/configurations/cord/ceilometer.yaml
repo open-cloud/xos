@@ -51,3 +51,28 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
+    Ceilometer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: http:/xosmetering/
+
+    Tenant:
+      type: tosca.nodes.DashboardView
+      properties:
+          no-create: true
+          no-update: true
+          no-delete: true
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - tenant_dashboard:
+              node: Tenant
+              relationship: tosca.relationships.UsesDashboard
+          - ceilometer_dashboard:
+              node: Ceilometer
+              relationship: tosca.relationships.UsesDashboard
