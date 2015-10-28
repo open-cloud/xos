@@ -68,6 +68,15 @@
   - name: container upstart
     template: src=/opt/xos/openstack_observer/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
 
+  - name: container systemd
+    template: src=/opt/xos/openstack_observer/templates/container.service.j2 dest=/lib/systemd/system/container-{{ container_name }}.service
+
   - name: container startup script
     template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
+
+  - name: restart systemd
+    shell: systemctl daemon-reload
+
+  - name: Make sure container is running
+    service: name=container-{{ container_name }} state=started
 
