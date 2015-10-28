@@ -1,16 +1,17 @@
-RUNNING_CONTAINER:=$(shell sudo docker ps|grep "opencloud-server"|awk '{print $$NF}')
+CONTAINER_NAME:=opencloud-server
+TOSCA_CONFIG_PATH:=/opt/xos/configurations/opencloud/opencloud.yaml
 
 .PHONY: build
 build: ; docker build --rm -t opencloud .
 
 .PHONY: run
-run: ; docker run --rm  --name opencloud-server -p 80:8000 opencloud
+run: ; docker run --rm  --name ${CONTAINER_NAME} -p 80:8000 opencloud
 
 .PHONY: runtosca
-runtosca: ; docker exec -it $RUNNING_CONTAINER /usr/bin/python /opt/xos/tosca/run.py padmin@vicci.org $TOSCA_CONFIG_PATH
+runtosca: ; docker exec -it ${CONTAINER_NAME} /usr/bin/python /opt/xos/tosca/run.py padmin@vicci.org ${TOSCA_CONFIG_PATH}
 
 .PHONY: stop
-stop: ; docker stop opencloud-server
+stop: ; docker stop ${CONTAINER_NAME}
 
 .PHONY: rmcontainer
-rmcontainer: ; docker rm opencloud-server
+rmcontainer: ; docker rm ${CONTAINER_NAME}
