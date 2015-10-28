@@ -54,7 +54,8 @@ angular.module('xos.contentProviderApp', [
       }
 
       if(request.method !== 'GET'){
-        request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
+        // request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
+        request.headers['X-CSRFToken'] = $cookies.get('xoscsrftoken');
       }
       return request;
     }
