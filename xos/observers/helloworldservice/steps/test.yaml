@@ -1,0 +1,9 @@
+---
+- hosts: {{ instance_name }}
+  connection: ssh
+  user: ubuntu
+  vars: 
+      display_message: {{ display_message  }}
+  tasks:
+    - name: foobar
+      shell: echo {{ display_message }} > /tmp/foobar
