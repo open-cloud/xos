@@ -187,7 +187,7 @@ topology_template:
           admin_tenant: admin
           domain: Default
 
-   backbone-wdc:
+    backbone-wdc:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
@@ -435,7 +435,7 @@ topology_template:
                        node: backbone-sng
                        relationship: tosca.relationships.UsesController
 
-   i2-wdc:
+    i2-wdc:
       type: tosca.nodes.Site
       properties:
           display_name: I2-wdc
