@@ -202,11 +202,26 @@ topology_template:
           admin_tenant: admin
           domain: Default
 
+    campus-arizona:
+      type: tosca.nodes.Controller
+      requirements:
+          - deployment:
+              node: campus
+              relationship: tosca.relationships.ControllerDeployment
+      properties:
+          backend_type: OpenStack
+          version: Juno
+          auth_url: http://localhost:35357/v2.0/
+          admin_user: admin
+          admin_password: admin
+          admin_tenant: admin
+          domain: Default
+
     campus-princeton:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -221,7 +236,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -236,7 +251,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -251,7 +266,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -266,7 +281,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -281,7 +296,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -296,7 +311,7 @@ topology_template:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
-              node: backbone
+              node: campus
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
@@ -362,7 +377,7 @@ topology_template:
                relationship: tosca.relationships.SiteDeployment
                requirements:
                    - controller:
-                       node: backbone-kas
+                       node: backbone-kan
                        relationship: tosca.relationships.UsesController
 
     i2-lax:
@@ -566,7 +581,7 @@ topology_template:
       type: tosca.nodes.User
       requirements:
           - site:
-              node: campus_princeton
+              node: princeton
               relationship: tosca.relationships.MemberOfSite
       properties:
           is_admin: true
