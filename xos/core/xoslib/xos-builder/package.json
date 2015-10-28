@@ -1,0 +1,27 @@
+{
+  "name": "xos-builder",
+  "version": "1.0.0",
+  "description": "Angular Application Builder tailored to XOS needings",
+  "main": "xos-builder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "XOS",
+    "Angular",
+    "XOSlib"
+  ],
+  "author": "Matteo Scandolo",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^1.8.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-minify-html": "^1.0.4",
+    "gulp-ngmin": "^0.3.0",
+    "gulp-uglify": "^1.4.2",
+    "run-sequence": "^1.1.4"
+  }
+}
