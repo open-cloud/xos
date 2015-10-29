@@ -4,6 +4,7 @@
   vars:
     controller_ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
     controller_port: 6653
+    ovs_dpid: 0000000000000001
   tags:
   - vbng
   tasks:
@@ -45,6 +46,9 @@
       bridge=br-vbng
       port={{ public_net.stdout }}
       state=present
+
+  - name: Change datapath ID of bridge to match config file
+    command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}
 
   - name: Add controller to switch
     command: /usr/bin/ovs-vsctl set-controller br-vbng tcp:{{ controller_ip }}:{{ controller_port }}
