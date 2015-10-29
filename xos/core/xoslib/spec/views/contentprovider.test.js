@@ -7,9 +7,6 @@ describe('The Content Provider SPA', () => {
   // injecting main module
   beforeEach(module('xos.contentProviderApp'));
 
-  // preload Html Templates with ng-html2js
-  beforeEach(module('templates'));
-
   beforeEach(function(){
     module(function($provide){
       // mocking routeParams to pass 1 as id

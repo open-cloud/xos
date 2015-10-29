@@ -8,7 +8,10 @@ var wiredep = require('wiredep');
 var path = require('path');
 
 // load bower components trough wiredep
-var bowerComponents = wiredep( {devDependencies: false} )[ 'js' ].map(function( file ){
+var bowerComponents = wiredep( {
+  devDependencies: false,
+  cwd: './xos-builder/'
+} )[ 'js' ].map(function( file ){
   return path.relative(process.cwd(), file);
 });
 
@@ -44,7 +47,7 @@ module.exports = function(config) {
       'spec/**/*.html',
 
       //ng stuff
-      'static/templates/**/*.html',
+      // 'static/templates/**/*.html',
       'static/js/xosContentProvider.js'
     ]),
 
@@ -61,7 +64,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'spec/**/*.test.js': ['babel'],
-      'static/templates/**/*.html': 'ng-html2js',
+      // 'static/templates/**/*.html': 'ng-html2js',
       'static/js/xoslib/*.js': ['coverage'],
       'static/js/*.js': ['coverage']
     },
