@@ -46,6 +46,7 @@ class XOSUser(XOSResource):
                         sp.save()
                         self.info("Added site privilege on %s role %s for %s" % (str(dest), str(role), str(obj)))
 
+        dashboard_order = 10
         for reqs in self.nodetemplate.requirements:
             for (k,v) in reqs.items():
                 if (v["relationship"] == "tosca.relationships.UsesDashboard"):
@@ -56,7 +57,8 @@ class XOSUser(XOSResource):
                     if not udvs:
                         self.info("Adding UserDashboardView from %s to %s" % (obj, dashboard))
 
-                        udv = UserDashboardView(user=obj, dashboardView=dashboard)
+                        udv = UserDashboardView(user=obj, dashboardView=dashboard, order=dashboard_order)
+                        dashboard_order += 10
                         udv.save()
 
     def create(self):
