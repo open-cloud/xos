@@ -6,6 +6,7 @@ var inject = require('gulp-inject');
 var runSequence = require('run-sequence');
 var angularFilesort = require('gulp-angular-filesort');
 var babel = require('gulp-babel');
+var wiredep = require('wiredep').stream;
 
 module.exports = function(options){
   gulp.task('browser', function() {
@@ -33,11 +34,18 @@ module.exports = function(options){
           }
         )
       )
-      .pipe(gulp.dest('./src'));
+      .pipe(gulp.dest(options.src));
   });
+
+  gulp.task('bower', function () {
+    gulp.src(options.src + 'index.html')
+    .pipe(wiredep())
+    .pipe(gulp.dest(options.src));
+});
 
   gulp.task('serve', function() {
     runSequence(
+      'bower',
       'inject',
       'browser'
     );
