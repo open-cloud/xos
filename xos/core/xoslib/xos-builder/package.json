@@ -24,6 +24,7 @@
     "gulp-ngmin": "^0.3.0",
     "gulp-uglify": "^1.4.2",
     "run-sequence": "^1.1.4",
-    "wiredep": "^3.0.0-beta"
+    "wiredep": "^3.0.0-beta",
+    "wrench": "^1.5.8"
   }
 }
