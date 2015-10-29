@@ -8,6 +8,8 @@
 // - Add Es6 (Babel) and a build script
 // - Autogenerate ngResource from swagger definition json
 
+console.log('ciao aabb');
+
 angular.module('xos.contentProviderApp', [
   'ngResource',
   'ngRoute',
