@@ -4,7 +4,7 @@
   vars:
     controller_ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
     controller_port: 6653
-    ovs_dpid: 0000000000000001
+    ovs_dpid: "0000000000000001"
   tags:
   - vbng
   tasks:
