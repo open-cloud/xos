@@ -11,6 +11,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-
     postgresql-client-9.3 \
     postgresql-contrib-9.3
 
+# Workaround for AUFS issue
+# https://github.com/docker/docker/issues/783#issuecomment-56013588
+RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private
+
 USER postgres
 
 RUN /etc/init.d/postgresql start && \
