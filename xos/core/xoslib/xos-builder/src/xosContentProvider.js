@@ -14,7 +14,7 @@ angular.module('xos.contentProviderApp', [
   'ngCookies',
   'ngLodash'
 ])
-.config(function($interpolateProvider, $routeProvider, $resourceProvider){
+.config(($interpolateProvider, $routeProvider, $resourceProvider) => {
   $interpolateProvider.startSymbol('{$');
   $interpolateProvider.endSymbol('$}');
 
