@@ -4,13 +4,14 @@ var gulp = require('gulp');
 var wrench = require('wrench');
 
 var options = {
+  src: 'src/',
   scripts: 'src/js/',
+  tmp: 'src/.tmp',
   dist: 'dist/'
 };
 
 wrench.readdirSyncRecursive('./gulp')
 .map(function(file) {
-  console.log(file);
   require('./gulp/' + file)(options);
 });
 
