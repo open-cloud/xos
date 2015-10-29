@@ -31,6 +31,8 @@
       lan_mac: {{ lan_mac }}
       wan_ip: {{ wan_ip }}
       wan_mac: {{ wan_mac }}
+      wan_container_mac: {{ wan_container_mac }}
+      wan_next_hop: 10.0.1.253   # FIX ME
       private_ip: {{ private_ip }}
       private_mac: {{ private_mac }}
       hpc_client_ip: {{ hpc_client_ip }}
