@@ -9,32 +9,40 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 
 # Install.
 RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    geoip-database \
     git \
-    postgresql \
-    python-psycopg2 \
     graphviz \
     graphviz-dev \
+    libgeoip1 \
     libxslt1.1 \
     libxslt1-dev \
-    python-pip \
-    tar \
-    gcc \
-    python-httplib2 \
-    geoip-database \
-    libgeoip1 \
-    wget \
-    curl \
-    python-dev \
     libyaml-dev \
+    m4 \
     pkg-config \
-    python-pycurl
+    python-dev \
+    python-httplib2 \
+    python-pip \
+    python-psycopg2 \
+    python-pycurl \
+    python-setuptools \
+    tar \
+    wget \
+##### observer dependencies  
+    python-keystoneclient \
+    python-novaclient \
+    python-neutronclient \
+    python-glanceclient \
+    python-ceilometerclient
 
-RUN pip install \
+RUN pip install -U \
     django==1.7 \
     django-bitfield \
     django-crispy-forms \
     django-encrypted-fields \
-    django-extensions
+    django_evolution \
+    django-extensions \
     django-filter \
     django-geoposition \
     django-ipware \
@@ -42,35 +50,31 @@ RUN pip install \
     django-suit \
     django-timezones \
     djangorestframework==2.4.4 \
-    dnslib
+    dnslib \
+    google_api_python_client \
+    httplib2 \
+    httplib2.ca_certs_locater \
     lxml \  
     markdown \
     netaddr \
     python-dateutil \
+    python_gflags \
     python-keyczar \
-    pygraphviz
+    pygraphviz \
     pytz \
     pyyaml \
     requests
 
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-setuptools
-RUN easy_install django_evolution
-RUN easy_install python_gflags
-RUN easy_install --upgrade httplib2
-RUN easy_install google_api_python_client
-RUN easy_install httplib2.ca_certs_locater
-
-
-# Get XOS
+# Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
 
+# install Tosca engine
+RUN bash /opt/xos/tosca/install_tosca.sh
 
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
 
 RUN chmod +x /opt/xos/scripts/opencloud
-RUN chmod +x /opt/xos/configurations/opencloud/run_opencloud
 RUN /opt/xos/scripts/opencloud genkeys
 
 # Turn DEBUG on so that devel server will serve static files
@@ -78,11 +82,10 @@ RUN /opt/xos/scripts/opencloud genkeys
 # RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 
 # Cruft to workaround problems with migrations, should go away...
-RUN /opt/xos/scripts/opencloud remigrate
+#RUN /opt/xos/scripts/opencloud remigrate
 
-# install Tosca engine
-RUN apt-get install -y m4
-RUN bash /opt/xos/tosca/install_tosca.sh
+RUN python /opt/xos/manage.py syncdb
+
 
 EXPOSE 8000
 
@@ -93,4 +96,4 @@ ENV HOME /root
 WORKDIR /root
 
 # Define default command.
-CMD /opt/xos/configurations/opencloud/run_opencloud
+CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure
