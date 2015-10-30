@@ -100,11 +100,11 @@ class SyncVBNGTenant(SyncStep):
         if not vcpe.wan_ip:
             self.defer_sync(o, "does not have a WAN IP yet")
 
-        if not vcpe.wan_mac:
-            # this should never happen; WAN MAC is computed from WAN IP
-            self.defer_sync(o, "does not have a WAN MAC yet")
+        if not vcpe.wan_container_mac:
+            # this should never happen; container MAC is computed from WAN IP
+            self.defer_sync(o, "does not have a WAN container MAC yet")
 
-        return (vcpe.wan_ip, vcpe.wan_mac, vcpe.instance.node.name)
+        return (vcpe.wan_ip, vcpe.wan_container_mac, vcpe.instance.node.name)
 
     def sync_record(self, o):
         logger.info("sync'ing VBNGTenant %s" % str(o))

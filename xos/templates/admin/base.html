@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
+  <link rel="stylesheet" type="text/css" href="{% static 'cord.css' %}" media="all">
   {% if XOS_BRANDING_CSS %}
       <link rel="stylesheet" type="text/css" href="{{ XOS_BRANDING_CSS }}">
   {% endif %}
@@ -31,7 +32,6 @@
 {% load i18n %}
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-
 <div id="dialog-placeholder">
 <!-- This is a placeholder for dialog boxes, like the observer calendar -->
 </div>
@@ -44,7 +44,7 @@
     <div id="container">
 
       {% block logo %}
-      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
+      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'cord_logo_3.png' %}"/></h1></a>
       {% endblock %}
       {% block header %}
         {% if not is_popup %}

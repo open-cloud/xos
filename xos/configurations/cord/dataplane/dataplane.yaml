@@ -4,6 +4,9 @@
   vars:
     controller_ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
     controller_port: 6653
+    ovs_dpid: "0000000000000001"
+  tags:
+  - vbng
   tasks:
   - name: Fix /etc/hosts
     lineinfile:
@@ -37,12 +40,15 @@
       bridge=br-vbng
       port={{ wan_net.stdout }}
       state=present
-    
+
   - name: Hook up public-network to OvS
     openvswitch_port:
       bridge=br-vbng
       port={{ public_net.stdout }}
       state=present
+
+  - name: Change datapath ID of bridge to match config file
+    command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}
 
   - name: Add controller to switch
     command: /usr/bin/ovs-vsctl set-controller br-vbng tcp:{{ controller_ip }}:{{ controller_port }}
@@ -52,6 +58,8 @@
   vars:
     controller_ip: "{{ hostvars['onos_volt']['ansible_ssh_host'] }}"
     controller_port: 6653
+  tags:
+  - volt
   tasks:
 
   - name: Fix /etc/hosts
@@ -65,13 +73,13 @@
     with_items:
     - git
     - python-netifaces
-    
+
   - name: Checkout the Mininet repo
     git: repo=https://github.com/mininet/mininet.git
       dest=/tmp/mininet
 
   - name: Install the CPqD switch using Mininet install script
-    shell: /tmp/mininet/util/install.sh -a
+    shell: /tmp/mininet/util/install.sh -3f
       creates=/usr/local/bin/ofdatapath
     ignore_errors: true
 

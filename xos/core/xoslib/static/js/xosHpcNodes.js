@@ -1,3 +1,4 @@
+/* eslint-disable */
 SC_HPC_FETCH = 3600;
 
 var hpc_data = null;
@@ -104,5 +105,5 @@ $(document).ready(function(){
 
     xos.hpcview.startPolling();
 });
-
+/* eslint-enable */
 
