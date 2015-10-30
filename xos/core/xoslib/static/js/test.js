@@ -1,3 +1,4 @@
+/* eslint-disable */
 TestApp = new XOSApplication();
 
 TestApp.addRegions({
@@ -81,4 +82,4 @@ TestApp.on("start", function() {
 $(document).ready(function(){
     TestApp.start();
 });
-
+/* eslint-enable */

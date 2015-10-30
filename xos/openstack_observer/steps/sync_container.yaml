@@ -25,7 +25,6 @@
 #      regexp="127.0.0.1 localhost"
 #      line="127.0.0.1 localhost {{ instance_hostname }}"
 
-{% if false %}
   - name: Add repo key
     apt_key:
       keyserver=hkp://pgp.mit.edu:80
@@ -46,6 +45,17 @@
     - python-pip
     - python-httplib2
 
+  # Something is installing a requests library that is incompative with pip, and
+  # will cause this recipe to fail next time it tries to run pip. Only the one
+  # in /usr/local/lib is bad. There's still a good one in /usr/lib
+  - name: check if bad requests library installed
+    stat: path=/usr/local/lib/python2.7/dist-packages/requests
+    register: bad_requests
+
+  - name: remove bad request library
+    shell: mv /usr/local/lib/python2.7/dist-packages/requests /usr/local/lib/python2.7/dist-packages/requests-bad
+    when: bad_requests.stat.exists == True
+
   - name: Install docker-py
     pip:
       name=docker-py
@@ -55,7 +65,6 @@
     get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
        dest=/usr/local/bin/pipework
        mode=0755
-{% endif %}
 
 #  - name: Start Container
 #    docker:

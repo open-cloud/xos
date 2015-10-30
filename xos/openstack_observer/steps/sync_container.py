@@ -39,7 +39,8 @@ class SyncContainer(SyncStep):
         return o.node
 
     def get_node_key(self, node):
-        return "/opt/xos/node-key"
+        return "/root/setup/node_key"
+        #return "/opt/xos/node-key"
 
     def get_instance_port(self, container_port):
         print container_port
@@ -78,7 +79,7 @@ class SyncContainer(SyncStep):
         fields["instance_name"] = "rootcontext"
         fields["container_name"] = "%s-%s" % (o.slice.name, str(o.id))
         fields["docker_image"] = o.docker_image
-        fields["username"] = "xos"
+        fields["username"] = "root"
         fields["ports"] = self.get_ports(o)
         return fields
 

@@ -1,0 +1,21 @@
+<!-- 
+To setup hpc:
+- cd /opt/xos/tosca
+- python ./run.py padmin@vicci.org samples/cdn.yaml
+
+To generate hpcapi:
+- cd /opt/xos
+- python apigen/modelgen apigen/hpc-api.template.py -n User -n Service -a hpc > xos/hpcapi.py
+ -->
+
+<div ng-app="xos.contentProviderApp">
+  <ng-view></ng-view>
+</div>
+
+<link rel="stylesheet" href="{{ STATIC_URL }}/css/xosLib.css">
+<script src="{{ STATIC_URL }}/js/vendor/angular/angular.min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/angular-resource/angular-resource.min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/angular-route/angular-route.min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/angular-cookies/angular-cookies.min.js"></script>
+<script src="{{ STATIC_URL }}/js/vendor/ng-lodash/build/ng-lodash.min.js"></script>
+<script src="{{ STATIC_URL }}/js/xosContentProvider.js"></script>

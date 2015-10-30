@@ -5,6 +5,17 @@ description: Setup CORD-related services -- vOLT, vCPE, vBNG.
 imports:
    - custom_types/xos.yaml
 
+node_types:
+    tosca.nodes.CeilometerTenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A Tenant of the Ceilometer Service.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of tenant
+
 topology_template:
   node_templates:
     service_ceilometer:
@@ -51,3 +62,38 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
+    my_ceilometer_tenant:
+      description: Ceilometer Service default Tenant
+      type: tosca.nodes.CeilometerTenant
+      requirements:
+          - provider_service:
+              node: service_ceilometer
+              relationship: tosca.relationships.MemberOfService
+       
+    Ceilometer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: { get_artifact: [ SELF, ceilometer_url, LOCAL_FILE] }
+      artifacts:
+          ceilometer_url: /root/setup/ceilometer_url
+
+    Tenant:
+      type: tosca.nodes.DashboardView
+      properties:
+          no-create: true
+          no-update: true
+          no-delete: true
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - tenant_dashboard:
+              node: Tenant
+              relationship: tosca.relationships.UsesDashboard
+          - ceilometer_dashboard:
+              node: Ceilometer
+              relationship: tosca.relationships.UsesDashboard

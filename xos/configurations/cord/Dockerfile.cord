@@ -10,6 +10,9 @@ ADD xos/configurations/common/id_rsa.pub /opt/xos/observers/monitoring_channel/m
 ADD xos/configurations/common/id_rsa /opt/xos/observers/monitoring_channel/monitoring_channel_private_key
 ADD xos/configurations/common/id_rsa.pub /opt/xos/observers/onos/onos_key.pub
 ADD xos/configurations/common/id_rsa /opt/xos/observers/onos/onos_key
+ADD xos/configurations/common/node_key.pub /root/setup/node_key.pub
+ADD xos/configurations/common/node_key /root/setup/node_key
+ADD xos/configurations/common/ceilometer_url /root/setup/ceilometer_url
 ADD xos/observers/vcpe/supervisor/vcpe-observer.conf /etc/supervisor/conf.d/
 ADD xos/observers/vbng/supervisor/vbng-observer.conf /etc/supervisor/conf.d/
 ADD xos/observers/onos/supervisor/onos-observer.conf /etc/supervisor/conf.d/

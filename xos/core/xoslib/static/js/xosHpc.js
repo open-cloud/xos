@@ -1,3 +1,4 @@
+/* eslint-disable */
 SC_RR = 60;
 SC_HPC_PROBE = 600;
 SC_HPC_FETCH = 3600;
@@ -101,5 +102,4 @@ $(document).ready(function(){
 
     xos.hpcview.startPolling();
 });
-
-
+/* eslint-enable */
