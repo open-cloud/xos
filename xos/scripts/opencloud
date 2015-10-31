@@ -136,10 +136,7 @@ function genkeys {
     fi
 }
 
-function remigrate {
-    if db_exists; then
-        dropdb
-    fi
+function makemigrations {
     rm -rf /opt/xos/*/migrations
     python ./manage.py makemigrations core
     python ./manage.py makemigrations hpc
@@ -149,6 +146,13 @@ function remigrate {
     python ./manage.py makemigrations ceilometer
     python ./manage.py makemigrations onos
     #python ./manage.py makemigrations servcomp
+}
+
+function remigrate {
+    if db_exists; then
+        dropdb
+    fi
+    makemigrations
 }
 
 COMMAND=$1
@@ -224,5 +228,9 @@ if [ "$COMMAND" = "remigrate" ]; then
    ensure_postgres_running
    remigrate
    createdb
+   syncdb
+fi
+if [ "$COMMAND" = "makemigrations" ]; then
+   makemigrations
    syncdb
 fi
