@@ -77,16 +77,6 @@ RUN bash /opt/xos/tosca/install_tosca.sh
 RUN chmod +x /opt/xos/scripts/opencloud
 RUN /opt/xos/scripts/opencloud genkeys
 
-# Turn DEBUG on so that devel server will serve static files
-#    (not necessary if --insecure is passed to 'manage.py runserver')
-# RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
-
-# Cruft to workaround problems with migrations, should go away...
-#RUN /opt/xos/scripts/opencloud remigrate
-
-RUN python /opt/xos/manage.py syncdb
-
-
 EXPOSE 8000
 
 # Set environment variables.
