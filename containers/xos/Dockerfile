@@ -65,17 +65,16 @@ RUN pip install -U \
     pyyaml \
     requests
 
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+
 # Install XOS
-RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && mv /tmp/xos/xos /opt/
+RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
+    mv /tmp/xos/xos /opt/ && \
+    chmod +x /opt/xos/scripts/opencloud && \
+    /opt/xos/scripts/opencloud genkeys
 
 # install Tosca engine
 RUN bash /opt/xos/tosca/install_tosca.sh
-
-# Initscript is broken in Ubuntu
-#ADD observer-initscript /etc/init.d/xosobserver
-
-RUN chmod +x /opt/xos/scripts/opencloud
-RUN /opt/xos/scripts/opencloud genkeys
 
 EXPOSE 8000
 
