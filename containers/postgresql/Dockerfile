@@ -18,7 +18,8 @@ RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; r
 USER postgres
 
 RUN /etc/init.d/postgresql start && \
-    psql --command "ALTER USER postgres WITH SUPERUSER PASSWORD 'password';"
+    psql --command "ALTER USER postgres WITH SUPERUSER PASSWORD 'password' " && \
+    psql --command "CREATE DATABASE xos"
 
 # Allow remote connections. 
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
