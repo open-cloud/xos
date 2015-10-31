@@ -13,5 +13,5 @@ runtosca: ; docker exec -it ${CONTAINER_NAME} /usr/bin/python /opt/xos/tosca/run
 .PHONY: stop
 stop: ; docker stop ${CONTAINER_NAME}
 
-.PHONY: rmcontainer
-rmcontainer: ; docker rm ${CONTAINER_NAME}
+.PHONY: rm
+rm: ; docker rm ${CONTAINER_NAME}
