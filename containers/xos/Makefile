@@ -2,7 +2,7 @@ CONTAINER_NAME:=xos-server
 TOSCA_CONFIG_PATH:=/opt/xos/configurations/xos/opencloud.yaml
 
 .PHONY: build
-build: ; docker build --rm -t xos .
+build: ; docker build --rm -t xos . && ./initdb
 
 .PHONY: run
 run: ; docker run --rm  --name ${CONTAINER_NAME} -p 80:8000 xos
