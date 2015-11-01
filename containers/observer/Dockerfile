@@ -5,7 +5,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     openssh-client \
     python-crypto \
     python-jinja2 \
-    python-paramiko
+    python-paramiko \
     python-yaml \
     python-httplib2 \
     supervisor
@@ -21,10 +21,11 @@ RUN \
     git -C /opt/ansible/lib/ansible/modules/core pull && \
     git -C /opt/ansible/v2/ansible/modules/core pull
 
-RUN cp /tmp/xos/containers/observer/conf/ansible-hosts /etc/ansible/hosts
 
 # For Observer
-RUN mkdir -p /usr/local/share /bin
+RUN mkdir -p /usr/local/share /bin /etc/ansible
+
+RUN cp /tmp/xos/containers/observer/conf/ansible-hosts /etc/ansible/hosts
 
 ADD http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2 /usr/local/share/
 
