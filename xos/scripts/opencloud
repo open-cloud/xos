@@ -137,7 +137,7 @@ function genkeys {
 }
 
 function makemigrations {
-    rm -rf /opt/xos/*/migrations
+    rm -rf /opt/xos/*/migrations /opt/xos/services/*/migrations
     python ./manage.py makemigrations core
     python ./manage.py makemigrations hpc
     python ./manage.py makemigrations requestrouter
