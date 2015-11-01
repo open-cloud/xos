@@ -4,7 +4,7 @@ CONTAINER_NAME:=observer-server
 build: ; docker build --rm -t observer .
 
 .PHONY: run
-run: ; docker run --rm --name ${CONTAINER_NAME} observer
+run: ; docker run -d --name ${CONTAINER_NAME} observer
 
 .PHONY: stop
 stop: ; docker stop ${CONTAINER_NAME}
