@@ -2,7 +2,7 @@
 build: ; docker build --rm -t postgres .
 
 .PHONY: run
-run: ; docker run --rm -p 5432:5432 --name postgres-server postgres
+run: ; docker run -d -p 5432:5432 --name postgres-server postgres
 
 .PHONY: stop
 stop: ; docker stop postgres-server
