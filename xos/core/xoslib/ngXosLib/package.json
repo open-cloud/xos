@@ -1,0 +1,18 @@
+{
+  "name": "ng-xos-lib",
+  "version": "1.0.0",
+  "description": "Angular Version of XosLib, containing Helpers and ngResources",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "apigen": "node xos-resource-generator.js"
+  },
+  "author": "Matteo Scandolo",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "chalk": "^1.1.1",
+    "fetch-swagger-schema": "^0.1.2",
+    "swagger-js-codegen": "^1.1.5"
+  }
+}
