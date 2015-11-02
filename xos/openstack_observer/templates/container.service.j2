@@ -1,0 +1,9 @@
+[Unit]
+Description={{ container_name }}
+After=docker.service
+
+[Service]
+ExecStart=/bin/bash -c "/usr/local/sbin/start-container-{{ container_name }}.sh"
+
+[Install]
+WantedBy=multi-user.target

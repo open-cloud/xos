@@ -2,18 +2,32 @@
 
 describe('The Content Provider SPA', () => {
 
-  var scope, element, isolatedScope, httpBackend, mockLocation;
+  var scope, element, isolatedScope, httpBackend, mockLocation, httpProvider;
+
+  var token = 'fakeToken';
 
   // injecting main module
   beforeEach(module('xos.contentProviderApp'));
 
   beforeEach(function(){
-    module(function($provide){
+    module(function($provide, $httpProvider){
+
+      httpProvider = $httpProvider;
+
       // mocking routeParams to pass 1 as id
       $provide.provider('$routeParams', function(){
         /* eslint-disable no-invalid-this*/
         this.$get = function(){
           return {id: 1};
+        };
+        /* eslint-enable no-invalid-this*/
+      });
+
+      //mock $cookie to return a fake xoscsrftoken
+      $provide.service('$cookies', function(){
+        /* eslint-disable no-invalid-this*/
+        this.get = () => {
+          return token;
         };
         /* eslint-enable no-invalid-this*/
       });
@@ -28,6 +42,25 @@ describe('The Content Provider SPA', () => {
     $httpBackend.whenGET('/hpcapi/contentproviders/?no_hyperlinks=1').respond(CPmock.CPlist);
     $httpBackend.whenGET('/hpcapi/serviceproviders/?no_hyperlinks=1').respond(CPmock.SPlist);
     $httpBackend.whenDELETE('/hpcapi/contentproviders/1/?no_hyperlinks=1').respond();
+  }));
+
+  it('should set the $http interceptor', () => {
+    expect(httpProvider.interceptors).toContain('SetCSRFToken');
+  });
+
+  it('should add no_hyperlink param', inject(($http, $httpBackend) => {
+    $http.get('www.example.com');
+    $httpBackend.expectGET('www.example.com?no_hyperlinks=1').respond(200);
+    $httpBackend.flush();
+  }));
+
+  it('should set token in the headers', inject(($http, $httpBackend) => {
+    $http.post('http://example.com');
+    $httpBackend.expectPOST('http://example.com?no_hyperlinks=1', undefined, function(headers){
+      // if this condition is false the httpBackend expectation fail
+      return headers['X-CSRFToken'] === token;
+    }).respond(200, {name: 'example'});
+    httpBackend.flush();
   }));
 
   describe('the action directive', () => {

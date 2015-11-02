@@ -15,6 +15,7 @@
       path=/home/ubuntu/{{ appname }}/
       state=directory
 
+{% if config_fns %}
   - name: Copy over configuration files
     copy:
       src={{ files_dir }}/{{ '{{' }} item {{ '}}' }}
@@ -24,6 +25,10 @@
         - {{ config_fn }}
         {% endfor %}
 
+  - name: Make sure config directory exists
+    shell: docker exec {{ ONOS_container }} mkdir -p /root/onos/config/
+    sudo: yes
+
   - name: Copy config files into container
     shell: docker cp {{ appname }}/{{ '{{' }} item {{ '}}' }} {{ ONOS_container }}:/root/onos/config/
     sudo: yes
@@ -31,6 +36,7 @@
         {% for config_fn in config_fns %}
         - {{ config_fn }}
         {% endfor %}
+{% endif %}
 
   # Don't know how to check for this condition, just wait
   - name: Wait for ONOS to install the apps
@@ -46,4 +52,3 @@
         {% for dependency in dependencies %}
         - {{ dependency }}
         {% endfor %}
-
