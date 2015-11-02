@@ -136,6 +136,9 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            config_network-cfg.json:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
