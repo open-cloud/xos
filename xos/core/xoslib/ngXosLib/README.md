@@ -18,3 +18,4 @@ _NOTE: endpoints are listed as an array `apiList` in `xos-resource-generator.js`
 - Use ngDoc instead of jsDoc
 - Yeoman generator for new view
 - Define styleguide (both visual and js) and if needed define some UI components
+- Load api endpoints from `http://localhost:9999/docs/api-docs/`
