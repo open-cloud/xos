@@ -70,6 +70,9 @@ class SyncContainer(SyncStep):
             pd["snoop_instance_id"] = instance_port.instance.instance_id
 
             ports.append(pd)
+
+            i = i + 1
+
         return ports
 
     def get_extra_attributes(self, o):
@@ -81,6 +84,7 @@ class SyncContainer(SyncStep):
         fields["docker_image"] = o.docker_image
         fields["username"] = "root"
         fields["ports"] = self.get_ports(o)
+        fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
         return fields
 
     def sync_fields(self, o, fields):

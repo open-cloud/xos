@@ -28,6 +28,7 @@ class Container(PlCoreBase):
     node = models.ForeignKey(Node, related_name='containers')
     creator = models.ForeignKey(User, related_name='containers', blank=True, null=True)
     docker_image = StrippedCharField(null=True, blank=True, max_length=200, help_text="name of docker container to instantiate")
+    volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of volumes")
 
     def __unicode__(self):
         return u'container-%s' % str(self.id)

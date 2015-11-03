@@ -6,11 +6,17 @@ ip6tables -L > /dev/null
 CONTAINER={{ container_name }}
 IMAGE={{ docker_image }}
 
+{% for volume in volumes %}
+DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
+mkdir -p $DEST_DIR
+VOLUME_ARGS="$VOLUME_ARGS -v $DEST_DIR:{{ volume }}"
+{% endfor %}
+
 docker inspect $CONTAINER > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull $IMAGE
-    docker run -d --name=$CONTAINER --privileged=true --net=none $IMAGE
+    docker run -d --name=$CONTAINER --privileged=true --net=none $VOLUME_ARGS $IMAGE
 else
     docker start $CONTAINER
 fi
