@@ -1,5 +1,6 @@
 {
   "generator-xos": {
-    "name": "sampleView"
+    "name": "sampleView",
+    "folder": "ngXosViews"
   }
 }
