@@ -84,7 +84,7 @@ class SyncContainer(SyncStep):
         fields["docker_image"] = o.docker_image
         fields["username"] = "root"
         fields["ports"] = self.get_ports(o)
-        fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
+        #fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
         return fields
 
     def sync_fields(self, o, fields):
