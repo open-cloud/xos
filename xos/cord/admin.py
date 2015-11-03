@@ -161,7 +161,7 @@ class VCPETenantForm(forms.ModelForm):
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     container = forms.ModelChoiceField(queryset=Container.objects.all(),required=False)
-    use_cobm = forms.BooleanField()
+    use_cobm = forms.BooleanField(required=False)
     last_ansible_hash = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
