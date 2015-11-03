@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Angular Application for XOS, created with generator-xos",
   "scripts": {
-    "start": "gulp serve"
+    "prestart": "npm install && bower install",
+    "start": "gulp serve",
+    "prebuild": "npm install && bower install",
+    "build": "gulp"
   },
   "keywords": [
     "XOS",

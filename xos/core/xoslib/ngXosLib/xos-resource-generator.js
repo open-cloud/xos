@@ -5,6 +5,7 @@ var CodeGen = require('swagger-js-codegen').CodeGen;
 var fetchSchema = require('fetch-swagger-schema');
 var P = require('bluebird');
 var chalk = require('chalk');
+var concat = require('concat')
 
 /////////////
 // HELPERS //
@@ -30,6 +31,15 @@ var writeToFile = P.promisify(function(file, content, done) {
   }); 
 });
 
+var concatFiles = P.promisify(function(files, dest, done){
+  concat(files, dest, function (error) {
+    if(error){
+      return done(error);
+    }
+    done();
+  })
+});
+
 ////////////////////
 // generator loop //
 ////////////////////
@@ -38,6 +48,8 @@ var apiList = ['hpcapi', 'xos', 'xoslib'];
 
 P.coroutine(function*(){
   
+  var generatedFiles = [];
+
   console.log(chalk.green('Generating APIs '));
 
 
@@ -50,12 +62,28 @@ P.coroutine(function*(){
     }, 500);
 
     let def = yield fetchSwagger(`http://localhost:9999/docs/api-docs/${apiList[i]}`);
-    yield writeToFile(`api/ng-${apiList[i]}.js`, CodeGen.getAngularCode({ moduleName: `xos.${apiList[i]}`, className: `${apiList[i]}`, swagger: def, lint: false }));
+    yield writeToFile(`api/ng-${apiList[i]}.js`, CodeGen.getAngularCode({ 
+      moduleName: `xos.${apiList[i]}`, 
+      className: `${apiList[i]}`, 
+      swagger: def,
+      lint: false,
+      template: {
+        class: fs.readFileSync('apiTemplates/custom-angular-class.mustache', 'utf-8'),
+        method: fs.readFileSync('node_modules/swagger-js-codegen/templates/method.mustache', 'utf-8'),
+        request: fs.readFileSync('node_modules/swagger-js-codegen/templates/angular-request.mustache', 'utf-8')
+    }
+    }));
   
+    generatedFiles.push(`api/ng-${apiList[i]}.js`);
+
     clearInterval(loader);
     process.stdout.write('\n');
   }
 
+  // TODO rewrite concat to minify API
+  // evaluate to use gulp instead to manage this
+  // at least minify
+  yield concatFiles(generatedFiles, '../static/js/xosApi.js');
 
   console.log(chalk.green('APIs Ready!'));
 

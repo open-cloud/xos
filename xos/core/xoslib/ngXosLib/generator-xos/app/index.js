@@ -6,6 +6,9 @@ var user = require('../node_modules/yeoman-generator/lib/actions/user');
 var config = {};
 
 module.exports = generators.Base.extend({
+  _fistCharToUpper: function(string){
+    return string.replace(/^./, string[0].toUpperCase());
+  },
   prompting: function(){
     var done = this.async();
     this.prompt({
@@ -38,11 +41,18 @@ module.exports = generators.Base.extend({
         { name: config.name, author: {name:user.git.name(), email: user.git.email()} }
       );
     },
-    index: function(){
+    indexDev: function(){
       this.fs.copyTpl(
         this.templatePath('src/index.html'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/index.html`),
         { name: config.name }
+      );
+    },
+    indexProd: function(){
+      this.fs.copyTpl(
+        this.templatePath('src/prod.html'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/xos${this._fistCharToUpper(config.name)}.html`),
+        { name: config.name, fileName: this._fistCharToUpper(config.name) }
       );
     },
     mainJs: function(){
@@ -56,7 +66,11 @@ module.exports = generators.Base.extend({
       this.fs.copy(this.templatePath('src/templates/users-list.tpl.html'), this.destinationPath(`${this.config.get('folder')}/${config.name}/src/templates/users-list.tpl.html`));
     },
     gulp: function(){
-      this.fs.copy(this.templatePath('gulp/*.js'), this.destinationPath(`${this.config.get('folder')}/${config.name}/gulp`));
+      this.fs.copyTpl(
+        this.templatePath('gulp/*.js'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/gulp`),
+        {name:config.name, fileName: this._fistCharToUpper(config.name)}
+      );
       this.fs.copy(this.templatePath('gulpfile.js'), this.destinationPath(`${this.config.get('folder')}/${config.name}/gulpfile.js`));
     }
   },

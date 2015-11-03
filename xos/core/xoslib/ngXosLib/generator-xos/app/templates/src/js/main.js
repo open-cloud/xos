@@ -9,7 +9,8 @@ angular.module('xos.<%= name %>', [
   'ngResource',
   'ngRoute',
   'ngCookies',
-  'ngLodash'
+  'ngLodash',
+  'xos.xos'
 ])
 .config(($interpolateProvider, $routeProvider, $resourceProvider) => {
   $interpolateProvider.startSymbol('{$');
@@ -48,7 +49,7 @@ angular.module('xos.<%= name %>', [
   };
 })
 // ENDTODO
-.directive('usersList', function(){
+.directive('usersList', function(xos){
   return {
     restrict: 'E',
     scope: {},
@@ -56,12 +57,17 @@ angular.module('xos.<%= name %>', [
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
     controller: function(){
-      this.deleteCp = function(id){
-        ContentProvider.delete({id: id}).$promise
-        .then(function(){
-          $location.url('/');
-        });
-      };
+      // creating the API object
+      const api = new xos({domain: ''});
+
+      // retrieving user list
+      api.User_List_GET()
+      .then((users) => {
+        this.users = users;
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
     }
   };
 });
