@@ -2,8 +2,18 @@
 <link rel="stylesheet" href="vendor/bootstrap-css/css/bootstrap.css" />
 <!-- endbower -->
 
-<div ng-app="xos.contentProviderApp">
-  <ng-view></ng-view>
+<style>
+  .container{
+    position: absolute;
+    top: 100px;
+    left: 200px;
+  }
+</style>
+
+<div class="container">
+  <div ng-app="xos.contentProviderApp">
+    <ng-view></ng-view>
+  </div>
 </div>
 
 <!-- bower:js -->

@@ -10,7 +10,7 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 
 var proxy = httpProxy.createProxyServer({
-  target: 'http://0.0.0.0:9000'
+  target: 'http://0.0.0.0:9999'
 });
 
 
@@ -31,7 +31,6 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         middleware: function(req, res, next){
-          console.log(req.url);
           if(req.url.indexOf('no_hyperlinks') !== -1){
             proxy.web(req, res);
           }
