@@ -1,0 +1,16 @@
+#!/bin/bash
+
+IMAGE_NAME=xos
+DB_HOST=$(wget http://ipinfo.io/ip -qO -)
+
+# configure db host
+docker run -it $IMAGE_NAME sed -i '0,/host/{s/host=localhost/host='$DB_HOST'/}' /opt/xos/xos_config
+CONTAINER_ID=$(docker ps -a | grep $IMAGE_NAME | head -1 |  awk '{print $1}')
+echo $CONTAINER_ID $IMAGE_NAME
+docker commit $CONTAINER_ID $IMAGE_NAME
+
+# init db schema
+docker run -it $IMAGE_NAME /opt/xos/scripts/opencloud makemigrations
+CONTAINER_ID=$(docker ps -a | grep $IMAGE_NAME | head -1 | awk '{print $1}')
+# run overrides the CMD specifed in the Dockerfile, so we re-set the CMD in the final commit"
+docker commit --change "CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure" $CONTAINER_ID $IMAGE_NAME
