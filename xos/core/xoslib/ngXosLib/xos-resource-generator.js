@@ -50,7 +50,7 @@ P.coroutine(function*(){
     }, 500);
 
     let def = yield fetchSwagger(`http://localhost:9999/docs/api-docs/${apiList[i]}`);
-    yield writeToFile(`src/ng-${apiList[i]}.js`, CodeGen.getAngularCode({ moduleName: `xos.${apiList[i]}`, className: `${apiList[i]}`, swagger: def, lint: false }));
+    yield writeToFile(`api/ng-${apiList[i]}.js`, CodeGen.getAngularCode({ moduleName: `xos.${apiList[i]}`, className: `${apiList[i]}`, swagger: def, lint: false }));
   
     clearInterval(loader);
     process.stdout.write('\n');
@@ -63,5 +63,7 @@ P.coroutine(function*(){
 
 })()
 .catch(function(e){
+  process.stdout.write('\n');
   console.error(e);
+  process.exit(e.code);
 });
