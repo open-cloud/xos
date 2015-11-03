@@ -31,7 +31,11 @@ from observer.steps.sync_object import SyncObject
 
 # Load app models
 
-app_module_names = Config().observer_applist
+try:
+    app_module_names = Config().observer_applist
+except AttributeError:
+    app_module_names = []
+
 if (type(app_module_names)!=list):
     app_module_names=[app_module_names]
 
