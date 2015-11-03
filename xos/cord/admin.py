@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from cord.models import *
+from core.models import Container
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
@@ -159,6 +160,8 @@ class VCPETenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
+    container = forms.ModelChoiceField(queryset=Container.objects.all(),required=False)
+    use_cobm = forms.BooleanField()
     last_ansible_hash = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
@@ -170,6 +173,8 @@ class VCPETenantForm(forms.ModelForm):
             self.fields['bbs_account'].initial = self.instance.bbs_account
             self.fields['creator'].initial = self.instance.creator
             self.fields['instance'].initial = self.instance.instance
+            self.fields['container'].initial = self.instance.container
+            self.fields['use_cobm'].initial = self.instance.use_cobm
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
@@ -177,11 +182,14 @@ class VCPETenantForm(forms.ModelForm):
             self.fields['creator'].initial = get_request().user
             if VCPEService.get_service_objects().exists():
                self.fields["provider_service"].initial = VCPEService.get_service_objects().all()[0]
+            self.fields['use_cobm'].initial = False
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.instance = self.cleaned_data.get("instance")
         self.instance.last_ansible_hash = self.cleaned_data.get("last_ansible_hash")
+        self.instance.container = self.cleaned_data.get("container")
+        self.instance.use_cobm = self.cleaned_data.get("use_cobm")
         return super(VCPETenantForm, self).save(commit=commit)
 
     class Meta:
@@ -191,7 +199,7 @@ class VCPETenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
+                                     'bbs_account', 'creator', 'use_cobm', 'instance', 'container', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
     form = VCPETenantForm
