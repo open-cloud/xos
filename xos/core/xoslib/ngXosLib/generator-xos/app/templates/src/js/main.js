@@ -5,6 +5,8 @@
 // - Add Cache
 // - Refactor routing with ui.router and child views (share the navigation and header)
 
+'use strict';
+
 angular.module('xos.<%= name %>', [
   'ngResource',
   'ngRoute',

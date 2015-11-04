@@ -8,6 +8,7 @@ var angularFilesort = require('gulp-angular-filesort');
 var babel = require('gulp-babel');
 var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
+var del = require('del');
 
 var proxy = httpProxy.createProxyServer({
   target: 'http://0.0.0.0:9999'
@@ -27,7 +28,14 @@ module.exports = function(options){
   // open in browser with sync and proxy to 0.0.0.0
   gulp.task('browser', function() {
     browserSync.init({
-      reloadDelay: 500,
+      // reloadDelay: 500,
+      // logLevel: 'debug',
+      // logConnections: true,
+      snippetOptions: {
+        rule: {
+          match: /<!-- browserSync -->/i
+        }
+      },
       server: {
         baseDir: options.src,
         routes: {
@@ -55,7 +63,7 @@ module.exports = function(options){
   });
 
   // inject scripts
-  gulp.task('inject', ['babel'],function(){
+  gulp.task('inject', ['cleanTmp', 'babel'],function(){
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
@@ -79,7 +87,13 @@ module.exports = function(options){
     .pipe(gulp.dest(options.src));
   });
 
-  gulp.task('js-watch', ['babel'], browserSync.reload);
+  gulp.task('js-watch', ['inject'], function(){
+    browserSync.reload();
+  });
+
+  gulp.task('cleanTmp', function(){
+    return del([options.tmp + '**/*']);
+  });
 
   gulp.task('serve', function() {
     runSequence(
