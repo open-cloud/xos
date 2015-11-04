@@ -9,7 +9,7 @@
 // The template are parsed and added to js with angular $templateCache
 
 var gulp = require('gulp');
-var ngmin = require('gulp-ngmin');
+var ngAnnotate = require('gulp-ng-annotate');
 var uglify = require('gulp-uglify');
 var templateCache = require('gulp-angular-templatecache');
 var runSequence = require('run-sequence');
@@ -33,7 +33,7 @@ module.exports = function(options){
     return gulp.src([
         options.tmp + '**/*.js'
       ])
-      .pipe(ngmin())
+      .pipe(ngAnnotate())
       .pipe(angularFilesort())
       .pipe(concat('xos<%= fileName %>.js'))
       .pipe(uglify())
