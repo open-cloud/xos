@@ -30,9 +30,8 @@ module.exports = function(options){
   // compile and minify scripts
   gulp.task('scripts', function() {
     return gulp.src([
-        options.scripts + '**/*.js'
+        options.tmp + '**/*.js'
       ])
-      .pipe(babel())
       .pipe(ngmin())
       .pipe(angularFilesort())
       .pipe(concat('xos<%= fileName %>.js'))
@@ -47,7 +46,7 @@ module.exports = function(options){
         module: 'xos.<%= name %>',
         root: 'templates/'
       }))
-      .pipe(gulp.dest(options.scripts));
+      .pipe(gulp.dest(options.tmp));
   });
 
   // copy js output to Django Folder
@@ -87,11 +86,13 @@ module.exports = function(options){
     runSequence(
       'clean',
       'templates',
+      'babel',
       'scripts',
       'copyJs',
       'copyHtml',
       'wiredep',
-      'copyVendor'
+      'copyVendor',
+      'cleanTmp'
     );
   });
 }
