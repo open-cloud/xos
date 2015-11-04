@@ -72,6 +72,20 @@ module.exports = generators.Base.extend({
         {name:config.name, fileName: this._fistCharToUpper(config.name)}
       );
       this.fs.copy(this.templatePath('gulpfile.js'), this.destinationPath(`${this.config.get('folder')}/${config.name}/gulpfile.js`));
+    },
+    karma: function(){
+      this.fs.copy(
+        this.templatePath('karma.conf.js'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/karma.conf.js`)
+      );
+    },
+    spec: function(){
+      const userName = user.git.name().split(' ');
+      this.fs.copyTpl(
+        this.templatePath('spec/sample.test.js'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/spec/sample.test.js`),
+        { name: config.name, user: {email: user.git.email(), firstname: userName[0], lastname: userName[1] } }
+      );
     }
   },
   install: function(){

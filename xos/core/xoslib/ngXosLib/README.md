@@ -80,6 +80,11 @@ To install a local dependency use bower with `--save`. Common modules are saved 
 
 The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
 
+#### Test
+
+The generator set up a test environment with a default test.
+To run it execute: `npm test`
+
 ## TODO
 
 - Use Angular $resource instead of $http
