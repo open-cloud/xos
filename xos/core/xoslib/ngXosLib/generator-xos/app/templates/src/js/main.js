@@ -15,18 +15,12 @@ angular.module('xos.<%= name %>', [
   'xos.helpers',
   'xos.xos'
 ])
-.config(($interpolateProvider, $routeProvider, $resourceProvider) => {
-  $interpolateProvider.startSymbol('{$');
-  $interpolateProvider.endSymbol('$}');
-
-  // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
-  $resourceProvider.defaults.stripTrailingSlashes = false;
+.config(($routeProvider) => {
 
   $routeProvider
   .when('/', {
     template: '<users-list></users-list>',
   })
-
   .otherwise('/');
 })
 .config(function($httpProvider){
