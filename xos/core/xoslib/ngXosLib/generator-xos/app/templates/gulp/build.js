@@ -19,6 +19,7 @@ var del = require('del');
 var wiredep = require('wiredep');
 var babel = require('gulp-babel');
 var angularFilesort = require('gulp-angular-filesort');
+var _ = require('lodash');
 
 module.exports = function(options){
   
@@ -57,7 +58,7 @@ module.exports = function(options){
 
   // copy vendor js output to Django Folder
   gulp.task('copyVendor', function(){
-    return gulp.src('dist/xosNgVendor.js')
+    return gulp.src(options.dist + 'xos<%= fileName %>Vendor.js')
       .pipe(gulp.dest(options.static + 'js/vendor/'));
   });
 
@@ -70,8 +71,17 @@ module.exports = function(options){
   // minify vendor js files
   gulp.task('wiredep', function(){
     var bowerDeps = wiredep().js;
+    if(!bowerDeps){
+      return;
+    }
+
+    // remove angular (it's already loaded)
+    _.remove(bowerDeps, function(dep){
+      return dep.indexOf('angular/angular.js') !== -1;
+    });
+
     return gulp.src(bowerDeps)
-      .pipe(concat('xosNgVendor.js'))
+      .pipe(concat('xos<%= fileName %>Vendor.js'))
       .pipe(uglify())
       .pipe(gulp.dest(options.dist));
   });

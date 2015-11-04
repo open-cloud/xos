@@ -32,6 +32,7 @@
     "proxy-middleware": "^0.15.0",
     "run-sequence": "^1.1.4",
     "wiredep": "^3.0.0-beta",
-    "wrench": "^1.5.8"
+    "wrench": "^1.5.8",
+    "lodash": "^3.10.1"
   }
 }

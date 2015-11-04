@@ -15,13 +15,13 @@
     "tests"
   ],
   "dependencies": {
+  },
+  "devDependencies": {
     "angular": "~1.4.7",
     "angular-route": "~1.4.7",
     "angular-cookies": "~1.4.7",
     "angular-resource": "~1.4.7",
-    "ng-lodash": "~0.3.0"
-  },
-  "devDependencies": {
+    "ng-lodash": "~0.3.0",
     "bootstrap-css": "2.3.2"
   }
 }
