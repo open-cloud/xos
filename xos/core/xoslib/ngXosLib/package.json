@@ -18,7 +18,9 @@
   },
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-angular-filesort": "^1.1.1",
     "gulp-concat": "^2.6.0",
+    "gulp-ng-annotate": "^1.1.0",
     "gulp-uglify": "^1.4.2",
     "wiredep": "^3.0.0-beta",
     "wrench": "^1.5.8"

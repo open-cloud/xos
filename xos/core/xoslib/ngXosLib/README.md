@@ -30,6 +30,22 @@ This libraries are server through Django, so they will not be included in your m
 
 >_NOTE before adding libraries please discuss it to avoid this file to became huge_
 
+### Helpers
+
+XOS comes with an helper library that is automatically loaded in the Django template.
+
+To use it, add `xos.helpers` to your required modules:
+
+```
+angular.module('xos.myView', [
+  'xos.helpers'
+])
+```
+
+It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
+
+- **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
+
 ### Yo Xos
 
 We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.
