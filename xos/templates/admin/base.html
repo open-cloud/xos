@@ -20,6 +20,9 @@
   <script type="text/javascript" src="{% static 'uploadTextarea.js' %}"></script>
   <script type="text/javascript" src="{% static 'observer_status.js' %}"></script>
 
+  <!-- ngXosLib -->
+  <script src="{% static 'js/vendor/ngXosVendor.js' %}"></script>
+
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
   <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>

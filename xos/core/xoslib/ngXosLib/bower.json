@@ -1,0 +1,23 @@
+{
+  "name": "ngXosVendor",
+  "version": "1.0.0",
+  "authors": [
+    "Matteo Scandolo <matteo.scandolo@link-me.it>"
+  ],
+  "description": "List of common used library in XOS environment",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.7",
+    "angular-route": "~1.4.7",
+    "angular-resource": "~1.4.7",
+    "ng-lodash": "~0.3.0",
+    "angular-cookies": "~1.4.7"
+  }
+}
