@@ -85,7 +85,7 @@ module.exports = function(options){
 
   // inject bower dependencies with wiredep
   gulp.task('bower', function () {
-    gulp.src(options.src + 'index.html')
+    return gulp.src(options.src + 'index.html')
     .pipe(wiredep({devDependencies: true}))
     .pipe(gulp.dest(options.src));
   });

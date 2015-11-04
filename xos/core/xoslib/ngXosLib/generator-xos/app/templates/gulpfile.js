@@ -18,6 +18,6 @@ wrench.readdirSyncRecursive('./gulp')
   require('./gulp/' + file)(options);
 });
 
-gulp.task('default', ['clean'], function () {
+gulp.task('default', function () {
   gulp.start('build');
 });
