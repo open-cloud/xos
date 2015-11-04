@@ -52,7 +52,10 @@ module.exports = function(options){
       }
     });
 
-     gulp.watch(options.src + '**/*.js', ['js-watch']);
+    gulp.watch(options.src + '**/*.js', ['js-watch']);
+    gulp.watch(options.src + '**/*.html', function(){
+      browserSync.reload();
+    });
   });
 
   // transpile js with sourceMaps
