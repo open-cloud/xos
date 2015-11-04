@@ -17,6 +17,8 @@
   "dependencies": {
   },
   "devDependencies": {
+    "jquery": "~2.1.4",
+    "angular-mocks": "~1.4.7",
     "angular": "~1.4.7",
     "angular-route": "~1.4.7",
     "angular-cookies": "~1.4.7",
