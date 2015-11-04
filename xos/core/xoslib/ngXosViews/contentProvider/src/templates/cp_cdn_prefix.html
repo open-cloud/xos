@@ -9,35 +9,37 @@
 <hr>
 <div class="row-fluid">
   <div class="span2">
-    <div ng-include="'../../static/templates/contentProvider/cp_side_nav.html'"></div>
+    <div ng-include="'templates/cp_side_nav.html'"></div>
   </div>
   <div class="span10">
-    <div ng-repeat="item in vm.cp_os" class="well">
+    <div ng-repeat="item in vm.cp_prf" class="well">
       <div class="row-fluid">
         <div class="span4">
           {{item.humanReadableName}}
         </div>
         <div class="span6">
-          <!-- TODO shoe the name instead that url -->
+          <!-- TODO show the name instead that id -->
           {{item.defaultOriginServer}}
         </div>
         <div class="span2">
-          <a ng-click="vm.removeOrigin(item)" class="btn btn-danger pull-right">
+          <a ng-click="vm.removePrefix(item)" class="btn btn-danger pull-right">
             <i class="icon icon-remove"></i>
           </a>
         </div>
       </div>
     </div>
     <hr>
-    <form ng-submit="vm.addOrigin(vm.new_os)">
+    <form ng-submit="vm.addPrefix(vm.new_prf)">
       <div class="row-fluid">
         <div class="span4">
-          <label>Protocol</label>
-          <select ng-model="vm.new_os.protocol" ng-options="k as v for (k,v) in vm.protocols" style="max-width: 100%;"></select>
+          <label>Prefix</label>
+          <input type="text" ng-model="vm.new_prf.prefix" required style="max-width: 90%">
         </div>
         <div class="span6">
-          <label>Url</label>
-          <input type="text" ng-model="vm.new_os.url" required>
+          <label>Default Origin Server</label>
+          <select ng-model="vm.new_prf.defaultOriginServer" style="max-width: 100%">
+            <option ng-repeat="prf in vm.prf" ng-value="prf.id">{$ prf.humanReadableName $}</option>
+          </select>
         </div>
         <div class="span2 text-right">
           <button class="btn btn-success margin-wells">
