@@ -4,20 +4,18 @@
 // TODO
 // - Add Cache
 // - Refactor routing with ui.router and child views (share the navigation and header)
-// - Add Eslint
 
-angular.module('xos.contentProviderApp', [
+'use strict';
+
+angular.module('xos.contentProvider', [
   'ngResource',
   'ngRoute',
   'ngCookies',
-  'ngLodash'
+  'ngLodash',
+  'xos.helpers',
+  'xos.xos'
 ])
-.config(($interpolateProvider, $routeProvider, $resourceProvider) => {
-  $interpolateProvider.startSymbol('{$');
-  $interpolateProvider.endSymbol('$}');
-
-  // NOTE http://www.masnun.com/2013/09/18/django-rest-framework-angularjs-resource-trailing-slash-problem.html
-  $resourceProvider.defaults.stripTrailingSlashes = false;
+.config(($routeProvider) => {
 
   $routeProvider
   .when('/', {
@@ -38,26 +36,9 @@ angular.module('xos.contentProviderApp', [
   .otherwise('/');
 })
 .config(function($httpProvider){
-
   // add X-CSRFToken header for update, create, delete (!GET)
   $httpProvider.interceptors.push('SetCSRFToken');
-})
-.factory('SetCSRFToken', function($cookies){
-  return {
-    request: function(request){
-
-      // if request is not HTML
-      if(request.url.indexOf('.html') === -1){
-        request.url += '?no_hyperlinks=1';
-      }
-
-      if(request.method !== 'GET'){
-        // request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
-        request.headers['X-CSRFToken'] = $cookies.get('xoscsrftoken');
-      }
-      return request;
-    }
-  };
+  $httpProvider.interceptors.push('NoHyperlinks');
 })
 .service('ContentProvider', function($resource){
   return $resource('/hpcapi/contentproviders/:id/', {id: '@id'}, {
@@ -84,7 +65,7 @@ angular.module('xos.contentProviderApp', [
     },
     bindToController: true,
     controllerAs: 'vm',
-    templateUrl: '../../static/templates/contentProvider/cp_actions.html',
+    templateUrl: 'templates/cp_actions.html',
     controller: function(){
       this.deleteCp = function(id){
         ContentProvider.delete({id: id}).$promise
@@ -100,7 +81,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_list.html',
+    templateUrl: 'templates/cp_list.html',
     controller: function(){
       var _this = this;
 
@@ -126,7 +107,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_detail.html',
+    templateUrl: 'templates/cp_detail.html',
     controller: function(){
       this.pageName = 'detail';
       var _this = this;
@@ -187,7 +168,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_cdn_prefix.html',
+    templateUrl: 'templates/cp_cdn_prefix.html',
     controller: function(){
       var _this = this;
 
@@ -254,7 +235,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_origin_server.html',
+    templateUrl: 'templates/cp_origin_server.html',
     controller: function(){
       this.pageName = 'server';
       this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP','shout': 'SHOUTcast'};
@@ -320,7 +301,7 @@ angular.module('xos.contentProviderApp', [
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
-    templateUrl: '../../static/templates/contentProvider/cp_user.html',
+    templateUrl: 'templates/cp_user.html',
     controller: function(){
       var _this = this;
 

@@ -7,7 +7,11 @@ var options = {
   src: 'src/',
   scripts: 'src/js/',
   tmp: 'src/.tmp',
-  dist: 'dist/'
+  dist: 'dist/',
+  api: '../../ngXosLib/api/',
+  helpers: '../../ngXosLib/xosHelpers/',
+  static: '../../static/', // this is the django static folder
+  dashboards: '../../dashboards/' // this is the django html folder
 };
 
 wrench.readdirSyncRecursive('./gulp')
@@ -15,6 +19,6 @@ wrench.readdirSyncRecursive('./gulp')
   require('./gulp/' + file)(options);
 });
 
-gulp.task('default', ['clean'], function () {
+gulp.task('default', function () {
   gulp.start('build');
 });
