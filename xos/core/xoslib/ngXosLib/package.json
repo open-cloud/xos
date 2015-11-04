@@ -15,5 +15,12 @@
     "concat": "^1.0.0",
     "fetch-swagger-schema": "^0.1.2",
     "swagger-js-codegen": "^1.1.5"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-uglify": "^1.4.2",
+    "wiredep": "^3.0.0-beta",
+    "wrench": "^1.5.8"
   }
 }

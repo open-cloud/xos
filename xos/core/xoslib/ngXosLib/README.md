@@ -14,6 +14,22 @@ This tool will automatically generate an angular resource file for each endpoint
 
 _NOTE: endpoints are listed as an array `apiList` in `xos-resource-generator.js`. If a new endpoint is added, it should be added also to that list._
 
+### Vendors
+
+Xos comes with a preset of common libraries, as listed in `bower.json`:
+- angular
+- angular-route
+- angular-resource
+- angular-cookie
+- ng-lodash
+
+This libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+- enter `ngXosLib` folder
+- run `bower install [myPackage] --save`
+- rebuild the file with `gulp vendor`
+
+>_NOTE before adding libraries please discuss it to avoid this file to became huge_
+
 ### Yo Xos
 
 We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.
