@@ -7,7 +7,9 @@ describe('The Content Provider SPA', () => {
   var token = 'fakeToken';
 
   // injecting main module
-  beforeEach(module('xos.contentProviderApp'));
+  beforeEach(module('xos.contentProvider'));
+
+  beforeEach(module('templates'));
 
   beforeEach(function(){
     module(function($provide, $httpProvider){

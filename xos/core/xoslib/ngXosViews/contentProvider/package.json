@@ -6,7 +6,8 @@
     "prestart": "npm install && bower install",
     "start": "gulp serve",
     "prebuild": "npm install && bower install",
-    "build": "gulp"
+    "build": "gulp",
+    "test": "karma start"
   },
   "keywords": [
     "XOS",
