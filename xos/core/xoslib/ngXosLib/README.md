@@ -58,6 +58,12 @@ At this point you can enter: `http://localhost:9999/admin/core/dashboardview/add
 
 >_NOTE url field should be `template:xosSampleView`_
 
+#### Install dependencies in your app
+
+To install a local dependency use bower with `--save`. Common modules are saved in `devDependencies` as they already loaded in the Django template.
+
+The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
+
 ## TODO
 
 - Use Angular $resource instead of $http
