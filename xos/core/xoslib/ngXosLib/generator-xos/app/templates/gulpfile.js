@@ -9,6 +9,7 @@ var options = {
   tmp: 'src/.tmp',
   dist: 'dist/',
   api: '../../ngXosLib/api/',
+  helpers: '../../ngXosLib/xosHelpers/',
   static: '../../static/', // this is the django static folder
   dashboards: '../../dashboards/' // this is the django html folder
 };

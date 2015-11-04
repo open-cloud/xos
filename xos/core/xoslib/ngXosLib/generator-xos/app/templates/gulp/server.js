@@ -39,7 +39,8 @@ module.exports = function(options){
       server: {
         baseDir: options.src,
         routes: {
-          '/api': options.api
+          '/api': options.api,
+          '/xosHelpers': options.helpers
         },
         middleware: function(req, res, next){
           if(req.url.indexOf('no_hyperlinks') !== -1){
@@ -75,7 +76,8 @@ module.exports = function(options){
         inject(
           gulp.src([
             options.tmp + '**/*.js',
-            options.api + '*.js'
+            options.api + '*.js',
+            options.helpers + '**/*.js'
           ])
           .pipe(angularFilesort()),
           {

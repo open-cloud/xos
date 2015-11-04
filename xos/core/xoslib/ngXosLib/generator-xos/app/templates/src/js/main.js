@@ -12,6 +12,7 @@ angular.module('xos.<%= name %>', [
   'ngRoute',
   'ngCookies',
   'ngLodash',
+  'xos.helpers',
   'xos.xos'
 ])
 .config(($interpolateProvider, $routeProvider, $resourceProvider) => {
@@ -28,29 +29,11 @@ angular.module('xos.<%= name %>', [
 
   .otherwise('/');
 })
-// TODO move this in xos.service module
 .config(function($httpProvider){
   // add X-CSRFToken header for update, create, delete (!GET)
   $httpProvider.interceptors.push('SetCSRFToken');
+  $httpProvider.interceptors.push('NoHyperlinks');
 })
-.factory('SetCSRFToken', function($cookies){
-  return {
-    request: function(request){
-
-      // if request is not HTML
-      if(request.url.indexOf('.html') === -1){
-        request.url += '?no_hyperlinks=1';
-      }
-
-      if(request.method !== 'GET'){
-        // request.headers['X-CSRFToken'] = $cookies.get('csrftoken');
-        request.headers['X-CSRFToken'] = $cookies.get('xoscsrftoken');
-      }
-      return request;
-    }
-  };
-})
-// ENDTODO
 .directive('usersList', function(xos){
   return {
     restrict: 'E',
