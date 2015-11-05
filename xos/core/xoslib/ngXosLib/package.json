@@ -4,7 +4,7 @@
   "description": "Angular Version of XosLib, containing Helpers and ngResources",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "karma start",
     "apigen": "node xos-resource-generator.js"
   },
   "author": "Matteo Scandolo",

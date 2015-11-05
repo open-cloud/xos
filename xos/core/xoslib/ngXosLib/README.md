@@ -10,9 +10,7 @@ This tools are designed to help you developing UI for XOS. As they born for this
 
 Usage: `npm run apigen`
 
-This tool will automatically generate an angular resource file for each endpoint available in Swagger. 
-
-_NOTE: endpoints are listed as an array `apiList` in `xos-resource-generator.js`. If a new endpoint is added, it should be added also to that list._
+This tool will automatically generate an angular resource file for each endpoint available in Swagger.
 
 ### Vendors
 
@@ -90,4 +88,3 @@ To run it execute: `npm test`
 - Use Angular $resource instead of $http
 - Use ngDoc instead of jsDoc
 - Define styleguide (both visual and js) and if needed define some UI components
-- Load api endpoints from `http://localhost:9999/docs/api-docs/`
