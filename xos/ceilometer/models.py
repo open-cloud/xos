@@ -41,11 +41,17 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
-                # caller must be set when creating a vCPE since it creates a slice
+                # caller must be set when creating a monitoring channel since it creates a slice
                 raise XOSProgrammingError("MonitoringChannel's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
                 raise XOSProgrammingError("MonitoringChannel's self.creator was not set")
+
+        if self.pk is None:
+            #Allow only one monitoring channel per user
+            channel_count = sum ( [1 for channel in MonitoringChannel.objects.filter(kind=CEILOMETER_KIND) if (channel.creator == self.creator)] )
+            if channel_count > 0:
+                raise XOSValidationError("Already %s channels exist for user Can only create max 1 MonitoringChannel instance per user" % str(channel_count))
 
         super(MonitoringChannel, self).save(*args, **kwargs)
         model_policy_monitoring_channel(self.pk)

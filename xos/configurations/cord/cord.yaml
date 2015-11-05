@@ -50,6 +50,15 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/observers/onos/onos_key.pub
 
+#
+# To actually bring up the vBNG app
+# - Set up the dataplane using the ansible script
+# - Log into the vBNG ONOS and run 'devices' to get switch dpID
+# - Change the dpID values in vBNG ONOS app in XOS GUI
+# - (Synchronizer should copy the files to ONOS container immediately)
+# - Log into service_ONOS_vBNG VM and restart ONOS Docker container
+#   (Should roll this step into a Synchronizer)
+#f
     vBNG_ONOS_app:
       type: tosca.nodes.ONOSvBNGApp
       requirements:
@@ -64,7 +73,7 @@ topology_template:
           config_network-cfg.json: >
             {
               "ports" : {
-                "of:00000000000000a1/1" : {
+                "of:0000000000000001/1" : {
                   "interfaces" : [
                     {
                       "ips"  : [ "10.0.1.253/24" ],
@@ -72,10 +81,10 @@ topology_template:
                     }
                   ]
                 },
-                "of:00000000000000a5/2" : {
+                "of:0000000000000001/2" : {
                   "interfaces" : [
                     {
-                      "ips"  : [ "10.254.0.1/24" ],
+                      "ips"  : [ "10.254.0.2/24" ],
                       "mac"  : "00:00:00:00:00:98"
                     }
                   ]
@@ -90,7 +99,11 @@ topology_template:
                 "nextHopIpAddress" : "10.254.0.1",
                 "publicFacingMac" : "00:00:00:00:00:66",
                 "xosIpAddress" : "10.11.10.1",
-                "xosRestPort" : "9999"
+                "xosRestPort" : "9999",
+                "hosts" : {
+                    "cp-1.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1",
+                    "cp-2.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1"
+                }
             }
 
     service_ONOS_vOLT:
@@ -103,6 +116,7 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/observers/onos/onos_key.pub
 
+
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
@@ -114,6 +128,20 @@ topology_template:
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.olt
+          config_network-cfg.json: >
+            {
+              "devices" : {
+                "of:0000000000000001" : {
+                  "accessDevice" : {
+                    "uplink" : "2",
+                    "vlan"   : "400"
+                  },
+                  "basic" : {
+                    "driver" : "default"
+                  }
+                }
+              }
+            }
 
     # Network templates
     Private:

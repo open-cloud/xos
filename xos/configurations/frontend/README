@@ -1,6 +1,0 @@
-This configuration launches an XOS container on Cloudlab that runs the XOS develserver. The container is left running
-in the backgorund.
-
-The observer is not started, and there is no openstack backend connected for XOS. 
-
-This configuration is intended for developing the XOS GUI. 

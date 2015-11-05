@@ -17,11 +17,11 @@ used in CORD.  It abstracts away most of the complexity of the CORD hardware usi
 and Open vSwitch (OvS) switches.  At a high level the dataplane looks like this:
 
 ```
-             olt                virtualbng
-             ----                 ----
-             ONOS                 ONOS
-              |                    |
-client ----> OvS ----> vCPE ----> OvS ----> Internet
+             olt                 virtualbng
+             ----                  ----
+             ONOS                  ONOS
+              |                     |
+client ----> CPqD ----> vCPE ----> OvS ----> Internet
          1         2          3         4
 ```
 

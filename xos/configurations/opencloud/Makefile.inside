@@ -1,2 +1,0 @@
-run_tosca:
-	python /opt/xos/tosca/run.py padmin@vicci.org opencloud.yaml

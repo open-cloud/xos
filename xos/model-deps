@@ -1,8 +1,6 @@
 {
     "Slice": [
         "Site", 
-        "Service", 
-        "ServiceClass", 
         "User"
     ], 
     "ImageDeployments": [
@@ -65,9 +63,6 @@
     "Reservation": [
         "Slice"
     ], 
-    "ServiceResource": [
-        "ServiceClass"
-    ], 
     "Instance": [
         "Image", 
         "User", 
@@ -78,9 +73,6 @@
     ], 
     "Account": [
         "Site"
-    ], 
-    "ServiceAttribute": [
-        "Service"
     ], 
     "ControllerSlicePrivilege": [
         "Controller"
@@ -115,9 +107,6 @@
     "ControllerDashboardView": [
         "Controller", 
         "DashboardView"
-    ], 
-    "Tag": [
-        "Service"
     ], 
     "Invoice": [
         "Account"

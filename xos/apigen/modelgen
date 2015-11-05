@@ -127,6 +127,10 @@ class Generator(dict):
 						cobj.multi = True
 						cobj.plural_name = related_name
 						refobj.refs.append(cobj)
+                                elif f.name.endswith("_ptr"):
+                                        # django inherited model, for example HPCService
+                                        # cause swagger and REST to break
+                                        pass
 				else:
 					obj.props.append(f.name)
 

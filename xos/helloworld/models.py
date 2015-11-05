@@ -11,7 +11,7 @@ from django.db.models import Q
 
 class Hello(PlCoreBase):
     name = models.CharField(max_length=254,help_text="Salutation e.g. Hello or Bonjour")
-    instance_backref = models.ForeignKey(Instance)
+    instance_backref = models.ForeignKey(Instance,related_name="hellos")
     
 class World(PlCoreBase):
     name = models.CharField(max_length=254,help_text="Name of planet")
