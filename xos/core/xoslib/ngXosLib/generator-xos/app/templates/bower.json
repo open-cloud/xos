@@ -24,7 +24,6 @@
     "angular-cookies": "~1.4.7",
     "angular-resource": "~1.4.7",
     "ng-lodash": "~0.3.0",
-    "swagger-angular-client": "~0.1.12",
     "bootstrap-css": "2.3.2"
   }
 }
