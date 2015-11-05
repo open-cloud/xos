@@ -1,3 +1,4 @@
+/* eslint-disable */
 HTMLView = Marionette.ItemView.extend({
   render: function() {
       this.$el.append(this.options.html);
@@ -564,7 +565,7 @@ XOSDetailView = Marionette.ItemView.extend({
                 var that = this;
                 var isNew = !this.model.id;
 
-                console.log(data);
+                console.log('data', data);
 
                 this.$el.find(".help-inline").remove();
 
@@ -572,7 +573,9 @@ XOSDetailView = Marionette.ItemView.extend({
                    model.save, we call it ourselves, so we can throw up our
                    validation error before creating the infoMsg in the log
                 */
+               
                 errors =  this.model.xosValidate(data);
+
                 if (errors) {
                     this.onFormDataInvalid(errors);
                     return;
@@ -670,12 +673,17 @@ XOSDetailView = Marionette.ItemView.extend({
               },
 
             onFormDataInvalid: function(errors) {
+
+
                 var self=this;
+
                 var markErrors = function(value, key) {
                     var $inputElement = self.$el.find("[name='" + key + "']");
                     var $inputContainer = $inputElement.parent();
                     //$inputContainer.find(".help-inline").remove();
-                    var $errorEl = $("<span>", {class: "help-inline error", text: value});
+                    // var $errorEl = $("<span>", {class: "help-inline error", text: value});
+                    $inputContainer.find(".alert.alert-danger").remove();
+                    var $errorEl = $("<span>", {class: "alert alert-danger", text: value});
                     $inputContainer.append($errorEl).addClass("error");
                 }
                 _.each(errors, markErrors);
@@ -1172,3 +1180,4 @@ escapeForFormField = function(s) {
         return String(s).replace(/"/g,'&quot;')
     }
 }
+/* eslint-enable */

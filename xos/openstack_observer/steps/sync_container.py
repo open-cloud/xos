@@ -39,16 +39,52 @@ class SyncContainer(SyncStep):
         return o.node
 
     def get_node_key(self, node):
-        return "/opt/xos/node-key"
+        return "/root/setup/node_key"
+        #return "/opt/xos/node-key"
+
+    def get_instance_port(self, container_port):
+        print container_port
+        print container_port.network
+        for p in container_port.network.links.all():
+            if (p.instance) and (p.instance.node == container_port.container.node) and (p.mac):
+                return p
+        return None
+
+    def get_ports(self, o):
+        i=0
+        ports = []
+        for port in o.ports.all():
+            if not port.mac:
+                raise Exception("Port on network %s is not yet ready" % port.network.name)
+
+            pd={}
+            pd["device"] = "eth%d" % i
+            pd["mac"] = port.mac
+            pd["ip"] = port.ip
+
+            instance_port = self.get_instance_port(port)
+            if not instance_port:
+                raise Exception("No instance on slice for port on network %s" % port.network.name)
+
+            pd["snoop_instance_mac"] = instance_port.mac
+            pd["snoop_instance_id"] = instance_port.instance.instance_id
+
+            ports.append(pd)
+
+            i = i + 1
+
+        return ports
 
     def get_extra_attributes(self, o):
         fields={}
         fields["ansible_tag"] = "container-%s" % str(o.id)
         fields["baremetal_ssh"] = True
         fields["instance_name"] = "rootcontext"
-        fields["container_name"] = o.name
+        fields["container_name"] = "%s-%s" % (o.slice.name, str(o.id))
         fields["docker_image"] = o.docker_image
-        fields["username"] = "xos"
+        fields["username"] = "root"
+        fields["ports"] = self.get_ports(o)
+        fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
         return fields
 
     def sync_fields(self, o, fields):

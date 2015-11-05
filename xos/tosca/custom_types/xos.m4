@@ -136,6 +136,9 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            config_network-cfg.json:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
@@ -574,6 +577,23 @@ node_types:
             node:
                 type: tosca.capabilities.xos.Node
 
+    tosca.nodes.DashboardView:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS Dashboard View
+        capabilities:
+            dashboardview:
+                type: tosca.capabilities.xos.DashboardView
+        properties:
+            xos_base_props
+            enabled:
+                type: boolean
+                default: true
+            url:
+                type: string
+                required: false
+                description: URL to the dashboard
+
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Slice ]
@@ -654,6 +674,10 @@ node_types:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Subscriber ]
 
+    tosca.relationships.UsesDashboard:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.DashboardView ]
+
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
         description: An XOS Service
@@ -701,3 +725,7 @@ node_types:
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
         description: An XOS Image
+
+    tosca.capabilities.xos.DashboardView:
+        derived_from: tosca.capabilities.Root
+        description: An XOS DashboardView

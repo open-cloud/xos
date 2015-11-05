@@ -333,6 +333,7 @@ class VOLTTenant(Tenant):
             vcpe = VCPETenant(provider_service = vcpeServices[0],
                               subscriber_tenant = self)
             vcpe.caller = self.creator
+            # vcpe.use_cobm = True # XXX XXX XXX remove before checking XXX XXX XXX
             vcpe.save()
 
     def manage_subscriber(self):
@@ -465,11 +466,12 @@ class VCPETenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",
                        "lan_ip", "lan_mac",
-                       "wan_ip", "wan_mac",
+                       "wan_ip", "wan_mac", "wan_container_mac",
                        "private_ip", "private_mac",
                        "hpc_client_ip", "hpc_client_mac")
 
     default_attributes = {"instance_id": None,
+                          "container_id": None,
                           "users": [],
                           "bbs_account": None,
                           "last_ansible_hash": None}
@@ -534,11 +536,15 @@ class VCPETenant(TenantWithContainer):
 
     @property
     def addresses(self):
-        if not self.instance:
+        if self.instance:
+            ports = self.instance.ports.all()
+        elif self.container:
+            ports = self.container.ports.all()
+        else:
             return {}
 
         addresses = {}
-        for ns in self.instance.ports.all():
+        for ns in ports:
             if "lan" in ns.network.name.lower():
                 addresses["lan"] = (ns.ip, ns.mac)
             elif "wan" in ns.network.name.lower():
@@ -574,6 +580,12 @@ class VCPETenant(TenantWithContainer):
     @property
     def wan_mac(self):
         return self.addresses.get("wan", (None, None) )[1]
+
+    # Generate the MAC for the container interface connected to WAN
+    @property
+    def wan_container_mac(self):
+        (a, b, c, d) = self.wan_ip.split('.')
+        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
 
     @property
     def private_ip(self):

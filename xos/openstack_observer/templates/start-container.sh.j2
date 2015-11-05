@@ -1,0 +1,50 @@
+#!/bin/bash
+
+iptables -L > /dev/null
+ip6tables -L > /dev/null
+
+CONTAINER={{ container_name }}
+IMAGE={{ docker_image }}
+
+{% for volume in volumes %}
+DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
+mkdir -p $DEST_DIR
+VOLUME_ARGS="$VOLUME_ARGS -v $DEST_DIR:{{ volume }}"
+{% endfor %}
+
+docker inspect $CONTAINER > /dev/null 2>&1
+if [ "$?" == 1 ]
+then
+    docker pull $IMAGE
+    docker run -d --name=$CONTAINER --privileged=true --net=none $VOLUME_ARGS $IMAGE
+else
+    docker start $CONTAINER
+fi
+
+{% if ports %}
+{% for port in ports %}
+IP="{{ port.ip }}"
+MAC="{{ port.mac }}"
+DEVICE="{{ port.device }}"
+INSTANCE_MAC="{{ port.snoop_instance_mac }}"
+INSTANCE_ID="{{ port.snoop_instance_id }}"
+INSTANCE_TAP=`virsh domiflist $INSTANCE_ID | grep -i $INSTANCE_MAC | awk '{print $1}'`
+INSTANCE_TAP=${INSTANCE_TAP:3}
+VLAN_ID=`ovs-vsctl show | grep -i -A 1 port.*$INSTANCE_TAP | grep -i tag | awk '{print $2}'`
+TAP="con`echo $CONTAINER_$DEVICE|md5sum|awk '{print $1}'`"
+TAP=${TAP:0:12}
+echo im=$INSTANCE_MAC ii=$INSTANCE_ID it=$INSTANCE_TAP vlan=$VLAN_ID tap=$TAP con=$CONTAINER dev=$DEVICE mac=$MAC
+ovs-vsctl show | grep -i $TAP
+if [[ $? == 1 ]]; then
+    echo creating tap
+    ovs-vsctl add-port br-int $TAP tag=$VLAN_ID -- set interface $TAP type=internal
+else
+    echo tap exists
+fi
+
+docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $TAP -i $DEVICE $CONTAINER $IP/24 $MAC
+{% endfor %}
+{% endif %}
+
+# Attach to container
+# docker start -a $CONTAINER

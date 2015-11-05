@@ -1,0 +1,28 @@
+{
+  "extends": "defaults/configurations/google",
+  "env" : {
+    "browser": true
+  },
+  "rules" : {
+    "camelcase": [0],
+    "no-underscore-dangle": [0],
+    "eqeqeq": [1],
+    "no-alert": [1],
+    "no-unused-vars": [1],
+    "key-spacing": [2, {
+        "beforeColon": false,
+        "afterColon": true
+    }],
+    "valid-jsdoc": 2,
+    "max-len": [1, 120, 4, {"ignoreComments": true, "ignoreUrls": true}],
+    brace-style: [2, "stroustrup"],
+    space-before-blocks: [1, 'never']
+  },
+  "globals": {
+    "$": false,
+    "_": false,
+    "Backbone": false,
+    "Marionette": false,
+    "xos": false
+  }
+}

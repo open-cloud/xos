@@ -1,0 +1,14 @@
+<ul class="nav nav-list">
+  <li>
+    <a class="btn" ng-class="{'btn-primary': vm.pageName == 'detail'}" href="#/contentProvider/{$ vm.cp.id $}">Details</a>
+  </li>
+  <li>
+    <a class="btn" ng-class="{'btn-primary': vm.pageName == 'cdn'}" href="#/contentProvider/{$ vm.cp.id $}/cdn_prefix">Cdn Prexix</a>
+  </li>
+  <li>
+    <a class="btn" ng-class="{'btn-primary': vm.pageName == 'server'}" href="#/contentProvider/{$ vm.cp.id $}/origin_server">Origin Server</a>
+  </li>
+  <li>
+    <a class="btn" ng-class="{'btn-primary': vm.pageName == 'user'}" href="#/contentProvider/{$ vm.cp.id $}/users">Users</a>
+  </li>
+</ul>

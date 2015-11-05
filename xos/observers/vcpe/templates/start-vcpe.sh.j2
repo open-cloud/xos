@@ -5,11 +5,6 @@ function mac_to_iface {
     ifconfig|grep $MAC| awk '{print $1}'|grep -v '\.'
 }
 
-function generate_mac_from_ip {
-    IP=$1
-    printf "02:42:%02x:%02x:%02x:%02x\n" `echo $IP|awk -F '.' '{print $1, $2, $3, $4}'`
-}
-
 iptables -L > /dev/null
 ip6tables -L > /dev/null
 
@@ -25,9 +20,8 @@ else
 fi
 
 # Set up networking via pipework
-WAN_CONTAINER_MAC=$( generate_mac_from_ip {{ wan_ip }} )
 WAN_IFACE=$( mac_to_iface {{ wan_mac }} )
-docker exec $VCPE ifconfig eth0 >> /dev/null || pipework $WAN_IFACE -i eth0 $VCPE {{ wan_ip }}/17@192.168.128.1 $WAN_CONTAINER_MAC
+docker exec $VCPE ifconfig eth0 >> /dev/null || pipework $WAN_IFACE -i eth0 $VCPE {{ wan_ip }}/24@{{ wan_next_hop }} {{ wan_container_mac }}
 
 LAN_IFACE=$( mac_to_iface {{ lan_mac }} )
 docker exec $VCPE ifconfig eth1 >> /dev/null || pipework $LAN_IFACE -i eth1 $VCPE 192.168.0.1/24 @{{ vlan_ids[0] }}

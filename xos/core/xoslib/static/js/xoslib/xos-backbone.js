@@ -1,4 +1,6 @@
-if (! window.XOSLIB_LOADED ) {
+
+/* eslint-disable*/
+if (! window.XOSLIB_LOADED) {
     window.XOSLIB_LOADED=true;
 
     XOS_BASE = "/xos";
@@ -53,113 +55,127 @@ if (! window.XOSLIB_LOADED ) {
 
         /* from backbone-tastypie.js */
         url: function() {
-                    var url = this.attributes.resource_uri;
+            // TODO handle error if no property
+            var url = this.attributes.resource_uri;
 
-                    if (!url) {
-                        if (this.id) {
-                            url = this.urlRoot + this.id;
-                        } else {
-                            // this happens when creating a new model.
-                            url = this.urlRoot;
+            if (!url) {
+                if (this.id) {
+                    url = this.urlRoot + this.id;
+                }
+                else {
+                    // this happens when creating a new model.
+                    url = this.urlRoot;
+                }
+            }
+
+            if (!url) {
+                // XXX I'm not sure this does anything useful
+                url = _.isFunction(this.collection.url) ? this.collection.url() : this.collection.url;
+                url = url || this.urlRoot;
+            }
+
+            // remove any existing query parameters
+            url && url.indexOf("?") > -1  && (url = url.split("?")[0]);
+
+            url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
+
+            url && ( url += "?no_hyperlinks=1" );
+
+            return url;
+        },
+
+        listMethods: function() {
+            var res = [];
+            for(var m in this) {
+                if(typeof this[m] == "function") {
+                    res.push(m)
+                }
+            }
+            return res;
+        },
+
+        save: function(attributes, options) {
+            if (this.preSave) {
+                this.preSave();
+            }
+            return Backbone.Model.prototype.save.call(this, attributes, options);
+        },
+
+        getChoices: function(fieldName, excludeChosen) {
+            choices=[];
+
+            if (fieldName in this.m2mFields) {
+                for (index in xos[this.m2mFields[fieldName]].models) {
+                    candidate = xos[this.m2mFields[fieldName]].models[index];
+                    if (excludeChosen && idInArray(candidate.id, this.attributes[fieldName])) {
+                        continue;
+                    }
+                    choices.push(candidate.id);
+                }
+            }
+            return choices;
+        },
+
+        /* If a 'validate' method is supplied, then it will be called
+           automatically on save. Unfortunately, save calls neither the
+           'error' nor the 'success' callback if the validator fails.
+
+           For now, we're calling our validator 'xosValidate' so this
+           autoamtic validation doesn't occur.
+        */
+
+        /**
+        * This should call custom validators defined in the model
+        *
+        * @param {object} attrs an object containin the model attributes
+        * @param {object} options (unused)
+        * @returns {Array} Errors list
+        */
+        xosValidate: function(attrs, options) {
+            errors = {};
+            foundErrors = false;
+
+            _.each(this.validators, function(validatorList, fieldName) {
+                _.each(validatorList, function(validator) {
+                    if (fieldName in attrs) {
+                        // call validateField method in xos-utils.js
+                        validatorResult = validateField(validator, attrs[fieldName], this);
+                        if (validatorResult != true) {
+                            errors[fieldName] = validatorResult;
+                            foundErrors = true;
                         }
                     }
-
-                    if (!url) {
-                        // XXX I'm not sure this does anything useful
-                        url = ( _.isFunction( this.collection.url ) ? this.collection.url() : this.collection.url );
-                        url = url || this.urlRoot;
-                    }
-
-                    // remove any existing query parameters
-                    url && ( url.indexOf("?") > -1 ) && ( url = url.split("?")[0] );
-
-                    url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
-
-                    url && ( url += "?no_hyperlinks=1" );
-
-                    return url;
-            },
-
-            listMethods: function() {
-                var res = [];
-                for(var m in this) {
-                    if(typeof this[m] == "function") {
-                        res.push(m)
-                    }
-                }
-                return res;
-            },
-
-            save: function(attributes, options) {
-                if (this.preSave) {
-                    this.preSave();
-                }
-                return Backbone.Model.prototype.save.call(this, attributes, options);
-            },
-
-            getChoices: function(fieldName, excludeChosen) {
-                choices=[];
-                if (fieldName in this.m2mFields) {
-                    for (index in xos[this.m2mFields[fieldName]].models) {
-                        candidate = xos[this.m2mFields[fieldName]].models[index];
-                        if (excludeChosen && idInArray(candidate.id, this.attributes[fieldName])) {
-                            continue;
-                        }
-                        choices.push(candidate.id);
-                    }
-                }
-                return choices;
-            },
-
-            /* If a 'validate' method is supplied, then it will be called
-               automatically on save. Unfortunately, save calls neither the
-               'error' nor the 'success' callback if the validator fails.
-
-               For now, we're calling our validator 'xosValidate' so this
-               autoamtic validation doesn't occur.
-            */
-
-            xosValidate: function(attrs, options) {
-                errors = {};
-                foundErrors = false;
-                _.each(this.validators, function(validatorList, fieldName) {
-                    _.each(validatorList, function(validator) {
-                        if (fieldName in attrs) {
-                            validatorResult = validateField(validator, attrs[fieldName], this)
-                            if (validatorResult != true) {
-                                errors[fieldName] = validatorResult;
-                                foundErrors = true;
-                            }
-                        }
-                    });
                 });
-                if (foundErrors) {
-                    return errors;
-                }
-                // backbone.js semantics -- on successful validate, return nothing
-            },
+            });
+            if (foundErrors) {
+                return errors;
+            }
+            // backbone.js semantics -- on successful validate, return nothing
+        },
 
-            /* uncommenting this would make validate() call xosValidate()
-            validate: function(attrs, options) {
-                r = this.xosValidate(attrs, options);
-                console.log("validate");
-                console.log(r);
-                return r;
-            }, */
+        /* uncommenting this would make validate() call xosValidate()
+        validate: function(attrs, options) {
+            r = this.xosValidate(attrs, options);
+            console.log("validate");
+            console.log(r);
+            return r;
+        }, */
     });
 
     XOSCollection = Backbone.Collection.extend({
         objects: function() {
-                    return this.models.map(function(element) { return element.attributes; });
-                 },
+            return this.models.map(function(element) {
+                return element.attributes;
+            });
+        },
 
-        initialize: function(){
-          this.isLoaded = false;
-          this.failedLoad = false;
-          this.startedLoad = false;
-          this.sortVar = 'name';
-          this.sortOrder = 'asc';
-          this.on( "sort", this.sorted );
+        initialize: function() {
+            this.isLoaded = false;
+            this.failedLoad = false;
+            this.startedLoad = false;
+            this.sortVar = 'name';
+            this.sortOrder = 'asc';
+            this.on('sort', this.sorted);
         },
 
         relatedCollections: [],
@@ -173,25 +189,30 @@ if (! window.XOSLIB_LOADED ) {
             //console.log("sorted " + this.modelName);
         },
 
-        simpleComparator: function( model ){
-          parts=this.sortVar.split(".");
-          result = model.get(parts[0]);
-          for (index=1; index<parts.length; ++index) {
-              result=result[parts[index]];
-          }
-          return result;
+        simpleComparator: function(model) {
+            parts=this.sortVar.split(".");
+            result = model.get(parts[0]);
+            for (index=1; index<parts.length; ++index) {
+                result=result[parts[index]];
+            }
+            return result;
         },
 
-        comparator: function (left, right) {
+        comparator: function(left, right) {
             var l = this.simpleComparator(left);
             var r = this.simpleComparator(right);
 
-            if (l === void 0) return -1;
-            if (r === void 0) return 1;
+            if (l === void 0) {
+                return -1;
+            }
+            if (r === void 0) {
+                return 1;
+            }
 
-            if (this.sortOrder=="desc") {
+            if (this.sortOrder == "desc") {
                 return l < r ? 1 : l > r ? -1 : 0;
-            } else {
+            }
+            else {
                 return l < r ? -1 : l > r ? 1 : 0;
             }
         },
@@ -213,7 +234,7 @@ if (! window.XOSLIB_LOADED ) {
         fetchFailure: function(collection, response, options) {
             //console.log("fetch failed " + collection.modelName);
             this.fetching = false;
-            if ((!this.isLoaded) && (!this.failedLoad)) {
+            if (!this.isLoaded && !this.failedLoad) {
                 this.failedLoad=true;
                 Backbone.trigger("xoslib:collectionLoadChange", this);
             }
@@ -225,6 +246,7 @@ if (! window.XOSLIB_LOADED ) {
 
         fetch: function(options) {
             var self=this;
+
             this.fetching=true;
             //console.log("fetch " + this.modelName);
             if (!this.startedLoad) {
@@ -237,7 +259,9 @@ if (! window.XOSLIB_LOADED ) {
             }
             options["orig_success"] = options["success"];
             options["orig_failure"] = options["failure"];
-            options["success"] = function(collection, response, options) { self.fetchSuccess.call(self, collection, response, options); };
+            options["success"] = function(collection, response, options) {
+                self.fetchSuccess.call(self, collection, response, options);
+            };
             options["failure"] = this.fetchFailure;
             Backbone.Collection.prototype.fetch.call(this, options);
         },
@@ -245,7 +269,10 @@ if (! window.XOSLIB_LOADED ) {
         startPolling: function() {
             if (!this._polling) {
                 var collection=this;
-                setInterval(function() { collection.fetch(); }, 10000);
+
+                setInterval(function() {
+                    collection.fetch();
+                }, 10000);
                 this._polling=true;
                 this.fetch();
             }
@@ -275,8 +302,8 @@ if (! window.XOSLIB_LOADED ) {
             }
 
                 // when the original success function completes mark this collection as fetched
-            var self = this,
-            successWrapper = function(success){
+            var self = this;
+            var successWrapper = function(success){
                 return function(){
                     self._fetched = true;
                     success && success.apply(this, arguments);
@@ -312,35 +339,35 @@ if (! window.XOSLIB_LOADED ) {
         */
 
         filterBy: function(fieldName, value) {
-             filtered = this.filter(function(obj) {
-                 return obj.get(fieldName) == value;
-                 });
-             return new this.constructor(filtered);
+            filtered = this.filter(function(obj) {
+                return obj.get(fieldName) == value;
+                });
+            return new this.constructor(filtered);
         },
 
         /* from backbone-tastypie.js */
         url: function( models ) {
-                    var url = this.urlRoot || ( models && models.length && models[0].urlRoot );
-                    url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
+            var url = this.urlRoot || ( models && models.length && models[0].urlRoot );
+            url && ( url += ( url.length > 0 && url.charAt( url.length - 1 ) === '/' ) ? '' : '/' );
 
-                    url && ( url += "?no_hyperlinks=1" );
+            url && ( url += "?no_hyperlinks=1" );
 
-                    if (this.currentUserCanSee) {
-                        url && ( url += "&current_user_can_see=1" );
-                    }
+            if (this.currentUserCanSee) {
+                url && ( url += "&current_user_can_see=1" );
+            }
 
-                    return url;
-            },
+            return url;
+        },
 
         listMethods: function() {
-                var res = [];
-                for(var m in this) {
-                    if(typeof this[m] == "function") {
-                        res.push(m)
-                    }
+            var res = [];
+            for(var m in this) {
+                if(typeof this[m] == "function") {
+                    res.push(m)
                 }
-                return res;
-            },
+            }
+            return res;
+        },
     });
 
     function get_defaults(modelName) {
@@ -359,7 +386,50 @@ if (! window.XOSLIB_LOADED ) {
         }
     }
 
+    /**
+    * This is an helper function to define XOS model.
+    *
+    * @param {object} lib A backbone collection library (eg: xos)
+    * @param {object} attrs The model attributes
+    * @param {string} attrs.modelName The name of the model
+    * @param {string} attrs.urlRoot The base url for the collection
+    * @param {object} [attrs.relatedCollections] collections which should be drawn as an inline 
+                                                 list when the detail view is displayed. 
+                                                 Format: **collection:collectionFieldName** 
+                                                 where **collectionFieldName** is the name of the field 
+                                                 in the collection that points back to the collection 
+                                                 in the detail view.
+    * @param {array} [attrs.foreignCollections] collections which are used in idToName() calls
+                                when presenting the data to the user. Used to
+                                create a listento event. Somewhat
+                                redundant with foreignFields.
+    * @param {object} [attrs.foreignFields] **localFieldName:collection**. Used to
+                                automatically map ids into humanReadableNames
+                                when presenting data to the user.
+    * @param {object} [attrs.m2mFields] **localFieldName:collection**. Used to
+                                populate choices in picker lists. Similar to
+                                foreignFields.
+    * @param {Array} [attrs.listFields] Fields to display in lists
+    * @param {Array} {attrs.detailFields} Fields to display in detail views
+    * @param {Array} [attrs.addFields] Fields to display in popup add windows
+    * @param {Object} [attrs.inputType] by default, "detailFields" will be displayed
+                                as text input controls. This will let you display
+                                a checkbox or a picker instead.
+    * @param {Object} [attrs.defaults] Override the model defaults, `extend_defaults` can be used.
+    * @param {Object} [attrs.validators] Add validators to this model. Use `validateField` method in xos-util.js
+    * @param {function} [attrs.preSave] A pre-save method
+    * @param {function} [attrs.xosValidate] Override the default xosValidate.
+    *                                       If you want to call it either start the function with
+    *                                       `errors = XOSModel.prototype.xosValidate.call(this, attrs, options);`
+    * @returns void
+    */
+
     function define_model(lib, attrs) {
+
+        // NOTE shouldn't we trhow an error if no:
+        // - attrs.urlRoot
+        // - attrs.modelName
+
         modelName = attrs.modelName;
         modelClassName = modelName;
         collectionClass = attrs.collectionClass || XOSCollection;
@@ -371,6 +441,8 @@ if (! window.XOSLIB_LOADED ) {
 
         attrs.inputType = attrs.inputType || {};
         attrs.foreignFields = attrs.foreignFields || {};
+        // NOTE m2mFields are not set in modelAttr,
+        // see list in for loop
         attrs.m2mFields = attrs.m2mFields || {};
         attrs.readOnlyFields = attrs.readOnlyFields || [];
         attrs.detailLinkFields = attrs.detailLinkFields || ["id","name"];
@@ -389,7 +461,9 @@ if (! window.XOSLIB_LOADED ) {
                 modelAttrs[key] = value;
                 collectionAttrs[key] = value;
             }
-            if ($.inArray(key, ["validate", "preSave", "readOnlyFields"]) >= 0) {
+            // NOTE xosValidate added by Matteo Scandolo
+            // check with Scott
+            if ($.inArray(key, ["validate", "preSave", "readOnlyFields", "xosValidate", "m2mFields"]) >= 0) {
                 modelAttrs[key] = value;
             }
         }
@@ -398,17 +472,18 @@ if (! window.XOSLIB_LOADED ) {
             modelAttrs.defaults = get_defaults(modelName);
         }
 
-//        if ((typeof xosdefaults !== "undefined") && xosdefaults[modelName]) {
-//            modelAttrs["defaults"] = xosdefaults[modelName];
-//        }
-
+        // if there are default validators for this model
+        // extend with customs
         if ((typeof xosvalidators !== "undefined") && xosvalidators[modelName]) {
             modelAttrs["validators"] = $.extend({}, xosvalidators[modelName], attrs["validators"] || {});
-        } else if (attrs["validators"]) {
-            modelAttrs["validators"] = attrs["validators"];
-            console.log(attrs);
-            console.log(modelAttrs);
         }
+        // else use custom
+        else if (attrs["validators"]) {
+            modelAttrs["validators"] = attrs["validators"];
+            // console.log(attrs);
+            // console.log(modelAttrs);
+        }
+        // NOTE Why define validators in multiple places?
 
         lib[modelName] = XOSModel.extend(modelAttrs);
 
@@ -485,27 +560,33 @@ if (! window.XOSLIB_LOADED ) {
                             });
 
         define_model(this, {urlRoot: SLICE_API,
-                           relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner", "controller_slices": "slice"},
-                           foreignCollections: ["services", "sites"],
-                           foreignFields: {"service": "services", "site": "sites"},
-                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
-                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
-                           inputType: {"enabled": "checkbox"},
-                           modelName: "slice",
-                           xosValidate: function(attrs, options) {
-                               errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
-                               // validate that slice.name starts with site.login_base
-                               site = attrs.site || this.site;
-                               if ((site!=undefined) && (attrs.name!=undefined)) {
-                                   site = xos.sites.get(site);
-                                   if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
+                            relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner", "controller_slices": "slice"},
+                            foreignCollections: ["services", "sites"],
+                            foreignFields: {"service": "services", "site": "sites"},
+                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
+                            detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
+                            inputType: {"enabled": "checkbox"},
+                            modelName: "slice",
+                            xosValidate: function(attrs, options) {
+                                errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
+                                // validate that slice.name starts with site.login_base
+                                site = attrs.site || this.site;
+                                console.log('Slice Validate!!!', site);
+                                if ((site!=undefined) && (attrs.name!=undefined)) {
+                                    site = xos.sites.get(site);
+                                    if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
                                         errors = errors || {};
                                         errors["name"] = "must start with " + site.attributes.login_base + "_";
-                                   }
-                               }
-                               return errors;
-                             },
-                           });
+                                    }
+
+                                    if(attrs.name.indexOf(' ') >= 0){
+                                        errors = errors || {};
+                                        errors["name"] = "must not contain spaces";   
+                                    }
+                                }
+                                return errors;
+                            },
+                        });
 
         define_model(this, {urlRoot: SLICEPRIVILEGE_API,
                             foreignCollections: ["slices", "users", "sliceRoles"],
@@ -698,30 +779,36 @@ if (! window.XOSLIB_LOADED ) {
         // enhanced REST
         // XXX this really needs to somehow be combined with Slice, to avoid duplication
         define_model(this, {urlRoot: SLICEPLUS_API,
-                           relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner"},
-                           foreignCollections: ["services", "sites"],
-                           foreignFields: {"service": "services", "site": "sites"},
-                           listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
-                           detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
-                           inputType: {"enabled": "checkbox"},
-                           modelName: "slicePlus",
-                           collectionName: "slicesPlus",
-                           defaults: extend_defaults("slice", {"network_ports": "", "site_allocation": []}),
-                           validators: {"network_ports": ["portspec"]},
-                           xosValidate: function(attrs, options) {
-                               errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
-                               // validate that slice.name starts with site.login_base
-                               site = attrs.site || this.site;
-                               if ((site!=undefined) && (attrs.name!=undefined)) {
-                                   site = xos.sites.get(site);
-                                   if (attrs.name.indexOf(site.attributes.login_base+"_") != 0) {
+                            relatedCollections: {"instances": "slice", "slicePrivileges": "slice", "networks": "owner"},
+                            foreignCollections: ["services", "sites"],
+                            foreignFields: {"service": "services", "site": "sites"},
+                            listFields: ["backend_status", "id", "name", "enabled", "description", "slice_url", "site", "max_instances", "service"],
+                            detailFields: ["backend_status", "backend_register", "name", "site", "enabled", "description", "slice_url", "max_instances"],
+                            inputType: {"enabled": "checkbox"},
+                            modelName: "slicePlus",
+                            collectionName: "slicesPlus",
+                            defaults: extend_defaults("slice", {"network_ports": "", "site_allocation": []}),
+                            validators: {"network_ports": ["portspec"]},
+                            xosValidate: function(attrs, options) {
+                                errors = XOSModel.prototype.xosValidate.call(this, attrs, options);
+                                // validate that slice.name starts with site.login_base
+
+                                var site = xos.tenant().current_user_login_base;
+                                if ((site!=undefined) && (attrs.name!=undefined)) {
+                                    if (attrs.name.indexOf(site + "_") < 0) {
                                         errors = errors || {};
-                                        errors["name"] = "must start with " + site.attributes.login_base + "_";
-                                   }
-                               }
-                               return errors;
-                             },
-                           });
+                                        errors["name"] = "must start with " + site + "_";
+                                    }
+
+                                    if(attrs.name.indexOf(' ') >= 0){
+                                        errors = errors || {};
+                                        errors["name"] = "must not contain spaces";   
+                                    }
+                                }
+
+                                return errors;
+                            },
+                        });
 
         define_model(this, {urlRoot: TENANTVIEW_API,
                             modelName: "tenantview",
@@ -803,13 +890,16 @@ if (! window.XOSLIB_LOADED ) {
     }
 
     (function() {
-      var _sync = Backbone.sync;
-      Backbone.sync = function(method, model, options){
-        options.beforeSend = function(xhr){
-          var token = getCookie("csrftoken");
-          xhr.setRequestHeader('X-CSRFToken', token);
+        var _sync = Backbone.sync;
+        Backbone.sync = function(method, model, options){
+            options.beforeSend = function(xhr){
+                // var token = getCookie("csrftoken");
+                // xhr.setRequestHeader('X-CSRFToken', token);
+                var xosToken = getCookie('xoscsrftoken');
+                xhr.setRequestHeader('X-CSRFToken', xosToken);
+            };
+            return _sync(method, model, options);
         };
-        return _sync(method, model, options);
-      };
     })();
 }
+/* eslint-enable */

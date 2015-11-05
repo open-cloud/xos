@@ -1384,13 +1384,13 @@ class ContainerPortInline(XOSTabularInline):
 
 class ContainerAdmin(XOSBaseAdmin):
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'volumes', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', )
     list_display = ['backend_status_icon', 'id']
     list_display_links = ('backend_status_icon', 'id', )
 
-    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
+    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
 
     inlines = [TagInline, ContainerPortInline]
 

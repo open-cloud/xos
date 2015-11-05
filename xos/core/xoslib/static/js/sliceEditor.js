@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* This is a demo of using xoslib with Marionette
 
    The main window is split into two halves. The left half has a CollectionView
@@ -107,4 +108,4 @@ SliceEditorApp.on("start", function() {
 $(document).ready(function(){
   SliceEditorApp.start();
 });
-
+/* eslint-enable */
