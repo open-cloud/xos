@@ -12,6 +12,8 @@ Usage: `npm run apigen`
 
 This tool will automatically generate an angular resource file for each endpoint available in Swagger.
 
+>You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can have a list of available method also trough Swagger at `http://localhost:9999/docs/`
+
 ### Vendors
 
 Xos comes with a preset of common libraries, as listed in `bower.json`:

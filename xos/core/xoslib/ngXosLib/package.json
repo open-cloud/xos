@@ -6,7 +6,8 @@
   "scripts": {
     "test": "karma start",
     "apigen": "node xos-resource-generator.js",
-    "swagger": "node xos-swagger-def.js"
+    "swagger": "node xos-swagger-def.js",
+    "apidoc": "jsdoc api/ng-xos.js api/ng-xoslib.js api/ng-hpcapi.js -d api/docs"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "chalk": "^1.1.1",
     "concat": "^1.0.0",
     "fetch-swagger-schema": "^0.1.2",
+    "jsdoc": "^3.3.3",
     "swagger-js-codegen": "^1.1.5"
   },
   "devDependencies": {
