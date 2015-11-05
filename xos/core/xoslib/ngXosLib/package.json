@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
-    "apigen": "node xos-resource-generator.js"
+    "apigen": "node xos-resource-generator.js",
+    "swagger": "node xos-swagger-def.js"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",

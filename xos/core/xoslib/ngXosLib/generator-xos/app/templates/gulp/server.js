@@ -40,7 +40,7 @@ module.exports = function(options){
         baseDir: options.src,
         routes: {
           '/api': options.api,
-          '/xosHelpers': options.helpers
+          '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
           if(req.url.indexOf('no_hyperlinks') !== -1){

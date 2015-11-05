@@ -12,8 +12,7 @@ angular.module('xos.<%= name %>', [
   'ngRoute',
   'ngCookies',
   'ngLodash',
-  'xos.helpers',
-  'xos.xos'
+  'xos.helpers'
 ])
 .config(($routeProvider) => {
 
@@ -28,19 +27,16 @@ angular.module('xos.<%= name %>', [
   $httpProvider.interceptors.push('SetCSRFToken');
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.directive('usersList', function(xos){
+.directive('usersList', function(){
   return {
     restrict: 'E',
     scope: {},
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/users-list.tpl.html',
-    controller: function(){
-      // creating the API object
-      const api = new xos({domain: ''});
-
+    controller: function(XosApi){
       // retrieving user list
-      api.User_List_GET()
+      XosApi.User_List_GET()
       .then((users) => {
         this.users = users;
       })
