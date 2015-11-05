@@ -1,10 +1,3 @@
-/* global angular */
-/* eslint-disable dot-location*/
-
-// TODO
-// - Add Cache
-// - Refactor routing with ui.router and child views (share the navigation and header)
-
 'use strict';
 
 angular.module('xos.<%= name %>', [
@@ -18,7 +11,7 @@ angular.module('xos.<%= name %>', [
 
   $routeProvider
   .when('/', {
-    template: '<users-list></users-list>',
+    template: '<users-list></users-list>'
   })
   .otherwise('/');
 })

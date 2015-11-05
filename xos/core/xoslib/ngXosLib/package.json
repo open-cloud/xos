@@ -15,6 +15,8 @@
     "bluebird": "^3.0.5",
     "chalk": "^1.1.1",
     "concat": "^1.0.0",
+    "eslint": "^1.8.0",
+    "eslint-plugin-angular": "linkmesrl/eslint-plugin-angular",
     "fetch-swagger-schema": "^0.1.2",
     "jsdoc": "^3.3.3",
     "swagger-js-codegen": "^1.1.5"

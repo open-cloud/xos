@@ -86,6 +86,12 @@ module.exports = generators.Base.extend({
         this.destinationPath(`${this.config.get('folder')}/${config.name}/spec/sample.test.js`),
         { name: config.name, user: {email: user.git.email(), firstname: userName[0], lastname: userName[1] } }
       );
+    },
+    lint: function(){
+      this.fs.copy(
+        this.templatePath('.eslintrc'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/.eslintrc`)
+      );
     }
   },
   install: function(){

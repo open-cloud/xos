@@ -85,6 +85,10 @@ To install a local dependency use bower with `--save`. Common modules are saved 
 
 The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
 
+#### Linting
+
+A styleguide is enforced trough [EsLint](http://eslint.org/) and is checked during the build process. We **highly** suggest to install the linter in your editor to have realtime hint.
+
 #### Test
 
 The generator set up a test environment with a default test.

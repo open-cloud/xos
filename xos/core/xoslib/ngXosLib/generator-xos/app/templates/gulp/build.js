@@ -1,11 +1,11 @@
 'use strict';
 
 // BUILD
-// 
+//
 // The only purpose of this gulpfile is to build a XOS view and copy the correct files into
 // .html => dashboards
 // .js (minified and concat) => static/js
-// 
+//
 // The template are parsed and added to js with angular $templateCache
 
 var gulp = require('gulp');
@@ -13,13 +13,12 @@ var ngAnnotate = require('gulp-ng-annotate');
 var uglify = require('gulp-uglify');
 var templateCache = require('gulp-angular-templatecache');
 var runSequence = require('run-sequence');
-var minifyHtml = require("gulp-minify-html");
-var concat = require("gulp-concat");
+var concat = require('gulp-concat');
 var del = require('del');
 var wiredep = require('wiredep');
-var babel = require('gulp-babel');
 var angularFilesort = require('gulp-angular-filesort');
 var _ = require('lodash');
+var eslint = require('gulp-eslint');
 
 module.exports = function(options){
   
@@ -42,7 +41,7 @@ module.exports = function(options){
 
   // set templates in cache
   gulp.task('templates', function(){
-    return gulp.src("./src/templates/*.html")
+    return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
         module: 'xos.<%= name %>',
         root: 'templates/'
@@ -53,7 +52,7 @@ module.exports = function(options){
   // copy js output to Django Folder
   gulp.task('copyJs', function(){
     return gulp.src('dist/xos<%= fileName %>.js')
-      .pipe(gulp.dest(options.static + 'js/'))
+      .pipe(gulp.dest(options.static + 'js/'));
   });
 
   // copy vendor js output to Django Folder
@@ -65,7 +64,7 @@ module.exports = function(options){
   // copy html index to Django Folder
   gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'xos<%= fileName %>.html')
-      .pipe(gulp.dest(options.dashboards))
+      .pipe(gulp.dest(options.dashboards));
   });
 
   // minify vendor js files
@@ -86,11 +85,12 @@ module.exports = function(options){
       .pipe(gulp.dest(options.dist));
   });
 
-  // TODO vendor
-  // - define a list of common components (eg: angular, angular-route, ...)
-  // - find the difference between local components e common components
-  // - minify only the local
-  // - unify wiredep, filter and copyVendor task
+  gulp.task('lint', function () {
+    return gulp.src(['src/js/**/*.js'])
+      .pipe(eslint())
+      .pipe(eslint.format())
+      .pipe(eslint.failAfterError());
+  });
 
   gulp.task('build', function() {
     runSequence(
@@ -105,4 +105,4 @@ module.exports = function(options){
       'cleanTmp'
     );
   });
-}
+};
