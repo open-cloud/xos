@@ -44,7 +44,9 @@ class HelloWorldTenant(TenantWithContainer):
             if not self.creator:
                 raise XOSProgrammingError("HelloWorldTennant's self.creator was not set")
 
+        
         super(HelloWorldTenant, self).save(*args, **kwargs)
+
 
     def delete(self, *args, **kwargs):
         self.cleanup_container()
