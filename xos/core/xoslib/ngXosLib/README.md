@@ -45,6 +45,11 @@ angular.module('xos.myView', [
 It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
 
 - **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
+- **XosApi** wrapper for `/xos` endpoints.
+- **XoslibApi** wrapper for `/xoslib` endpoints.
+- **HpcApi** wrapper for `/hpcapi` endpoints.
+
+>_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
 
 ### Yo Xos
 
