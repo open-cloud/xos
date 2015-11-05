@@ -44,27 +44,29 @@ var concatFiles = P.promisify(function(files, dest, done){
 // generator loop //
 ////////////////////
 
-var apiList = ['hpcapi', 'xos', 'xoslib'];
-
 P.coroutine(function*(){
   
   var generatedFiles = [];
 
   console.log(chalk.green('Generating APIs '));
 
+  let mainDef = yield fetchSwagger('http://localhost:9999/docs/api-docs/');
 
-  for(let i = 0; i < apiList.length; i++){
+  for(let i = 0; i < mainDef.apis.length; i++){
     
-    process.stdout.write(chalk.green(`Starting ${apiList[i]} generation `));
+    const path = mainDef.apis[i].path.replace('/', '');
+  
+    process.stdout.write(chalk.green(`Starting ${path} generation `));
     
     let loader = setInterval(function(){
       process.stdout.write(chalk.green('.'));
     }, 500);
 
-    let def = yield fetchSwagger(`http://localhost:9999/docs/api-docs/${apiList[i]}`);
-    yield writeToFile(`api/ng-${apiList[i]}.js`, CodeGen.getAngularCode({ 
-      moduleName: `xos.${apiList[i]}`, 
-      className: `${apiList[i]}`, 
+
+    let def = yield fetchSwagger(`http://localhost:9999/docs/api-docs/${path}`);
+    yield writeToFile(`api/ng-${path}.js`, CodeGen.getAngularCode({ 
+      moduleName: `xos.${path}`, 
+      className: `${path}`, 
       swagger: def,
       lint: false,
       template: {
@@ -74,7 +76,7 @@ P.coroutine(function*(){
     }
     }));
   
-    generatedFiles.push(`api/ng-${apiList[i]}.js`);
+    generatedFiles.push(`api/ng-${path}.js`);
 
     clearInterval(loader);
     process.stdout.write('\n');
