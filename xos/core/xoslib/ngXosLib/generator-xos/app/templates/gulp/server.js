@@ -70,7 +70,7 @@ module.exports = function(options){
   });
 
   // inject scripts
-  gulp.task('inject', ['cleanTmp', 'babel'],function(){
+  gulp.task('inject', ['cleanTmp', 'babel'], function(){
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
@@ -110,4 +110,4 @@ module.exports = function(options){
       ['browser']
     );
   });
-}
+};
