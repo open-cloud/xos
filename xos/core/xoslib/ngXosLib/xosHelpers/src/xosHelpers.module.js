@@ -3,7 +3,10 @@
 
     angular
         .module('xos.helpers',[
-          'ngCookies'
+          'ngCookies',
+          'xos.xos',
+          'xos.hpcapi',
+          'xos.xoslib'
         ])
         .config(config);
 
