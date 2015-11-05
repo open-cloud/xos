@@ -17,7 +17,7 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     provides=[HelloWorldTenant]
     observes=HelloWorldTenant
     requested_interval=0
-    template_name = "test.yaml"
+    template_name = "sync_helloworldtenant.yaml"
     service_key_name = "/opt/xos/observers/helloworldservice/helloworldservice_private_key"
     
     def get_extra_attributes(self, o):
