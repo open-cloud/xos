@@ -45,20 +45,21 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath('src/index.html'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/index.html`),
-        { name: config.name }
+        { name: config.name, fileName: this._fistCharToUpper(config.name) }
       );
     },
     css: function(){
-      this.fs.copy(
+      this.fs.copyTpl(
         this.templatePath('src/css/dev.css'),
-        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/css/dev.css`)
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/css/dev.css`),
+        {fileName: this._fistCharToUpper(config.name)}
       );
     },
     mainJs: function(){
       this.fs.copyTpl(
         this.templatePath('src/js/main.js'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/js/main.js`),
-        { name: config.name }
+        { name: config.name, fileName: this._fistCharToUpper(config.name) }
       );
     },
     template: function(){

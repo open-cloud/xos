@@ -23,6 +23,7 @@ var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 
+var TEMPLATE_FOOTER = '}]);angular.bootstrap(angular.element(\'#xos<%= fileName %>\'), [\'xos.<%= name %>\']);';
 module.exports = function(options){
   
   // delete previous builded file
@@ -50,7 +51,8 @@ module.exports = function(options){
     return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
         module: 'xos.<%= name %>',
-        root: 'templates/'
+        root: 'templates/',
+        templateFooter: TEMPLATE_FOOTER
       }))
       .pipe(gulp.dest(options.tmp));
   });
@@ -61,6 +63,7 @@ module.exports = function(options){
       // remove dev dependencies from html
       .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
       .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
+      .pipe(replace(/ng-app=".*"\s/, ''))
       // injecting minified files
       .pipe(
         inject(
