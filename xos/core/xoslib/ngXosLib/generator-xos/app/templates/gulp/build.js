@@ -30,13 +30,13 @@ module.exports = function(options){
   // compile and minify scripts
   gulp.task('scripts', function() {
     return gulp.src([
-        options.tmp + '**/*.js'
-      ])
-      .pipe(ngAnnotate())
-      .pipe(angularFilesort())
-      .pipe(concat('xos<%= fileName %>.js'))
-      .pipe(uglify())
-      .pipe(gulp.dest(options.dist));
+      options.tmp + '**/*.js'
+    ])
+    .pipe(ngAnnotate())
+    .pipe(angularFilesort())
+    .pipe(concat('xos<%= fileName %>.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(options.static + 'js/'));
   });
 
   // set templates in cache
@@ -47,18 +47,6 @@ module.exports = function(options){
         root: 'templates/'
       }))
       .pipe(gulp.dest(options.tmp));
-  });
-
-  // copy js output to Django Folder
-  gulp.task('copyJs', function(){
-    return gulp.src('dist/xos<%= fileName %>.js')
-      .pipe(gulp.dest(options.static + 'js/'));
-  });
-
-  // copy vendor js output to Django Folder
-  gulp.task('copyVendor', function(){
-    return gulp.src(options.dist + 'xos<%= fileName %>Vendor.js')
-      .pipe(gulp.dest(options.static + 'js/vendor/'));
   });
 
   // copy html index to Django Folder
@@ -82,7 +70,7 @@ module.exports = function(options){
     return gulp.src(bowerDeps)
       .pipe(concat('xos<%= fileName %>Vendor.js'))
       .pipe(uglify())
-      .pipe(gulp.dest(options.dist));
+      .pipe(gulp.dest(options.static + 'js/vendor/'));
   });
 
   gulp.task('lint', function () {
@@ -98,10 +86,8 @@ module.exports = function(options){
       'templates',
       'babel',
       'scripts',
-      'copyJs',
-      'copyHtml',
       'wiredep',
-      'copyVendor',
+      'copyHtml',
       'cleanTmp'
     );
   });
