@@ -40,10 +40,14 @@ module.exports = function(options){
         baseDir: options.src,
         routes: {
           '/api': options.api,
-          '/xosHelpers': options.helpers
+          '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
-          if(req.url.indexOf('no_hyperlinks') !== -1){
+          if(
+            req.url.indexOf('/xos/') !== -1 ||
+            req.url.indexOf('/xoslib/') !== -1 ||
+            req.url.indexOf('/hpcapi/') !== -1
+          ){
             proxy.web(req, res);
           }
           else{
@@ -70,7 +74,7 @@ module.exports = function(options){
   });
 
   // inject scripts
-  gulp.task('inject', ['cleanTmp', 'babel'],function(){
+  gulp.task('injectScript', ['cleanTmp', 'babel'], function(){
     return gulp.src(options.src + 'index.html')
       .pipe(
         inject(
@@ -85,6 +89,20 @@ module.exports = function(options){
           }
         )
       )
+      .pipe(gulp.dest(options.src));
+  });
+
+  // inject CSS
+  gulp.task('injectCss', function(){
+    return gulp.src(options.src + 'index.html')
+      .pipe(
+        inject(
+          gulp.src(options.src + 'css/*.css'),
+          {
+            ignorePath: [options.src]
+          }
+          )
+        )
       .pipe(gulp.dest(options.src));
   });
 
@@ -106,8 +124,9 @@ module.exports = function(options){
   gulp.task('serve', function() {
     runSequence(
       'bower',
-      'inject',
+      'injectScript',
+      'injectCss',
       ['browser']
     );
   });
-}
+};
