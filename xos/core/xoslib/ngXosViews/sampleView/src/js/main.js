@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('xos.<%= name %>', [
+angular.module('xos.sampleView', [
   'ngResource',
   'ngCookies',
   'ngLodash',
@@ -8,6 +8,7 @@ angular.module('xos.<%= name %>', [
   'xos.helpers'
 ])
 .config(($stateProvider) => {
+
   $stateProvider
   .state('user-list', {
     url: '/',

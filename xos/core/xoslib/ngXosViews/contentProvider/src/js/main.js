@@ -1,10 +1,3 @@
-/* global angular */
-/* eslint-disable dot-location*/
-
-// TODO
-// - Add Cache
-// - Refactor routing with ui.router and child views (share the navigation and header)
-
 'use strict';
 
 angular.module('xos.contentProvider', [
@@ -16,14 +9,14 @@ angular.module('xos.contentProvider', [
   'xos.xos'
 ])
 .config(($stateProvider, $urlRouterProvider) => {
-  $urlRouterProvider.otherwise('/');
+
   $stateProvider
   .state('list', {
     url: '/',
     template: '<content-provider-list></content-provider-list>',
   })
   .state('details', {
-    url: '/contentProvider/:id?',
+    url: '/contentProvider/:id',
     template: '<content-provider-detail></content-provider-detail>'
   })
   .state('cdn', {
@@ -87,11 +80,11 @@ angular.module('xos.contentProvider', [
     scope: {},
     templateUrl: 'templates/cp_list.html',
     controller: function(){
-      var _this = this;
+      var self = this;
 
       ContentProvider.query().$promise
       .then(function(cp){
-        _this.contentProviderList = cp;
+        self.contentProviderList = cp;
       })
       .catch(function(e){
         throw new Error(e);
@@ -100,13 +93,13 @@ angular.module('xos.contentProvider', [
       this.deleteCp = function(id){
         ContentProvider.delete({id: id}).$promise
         .then(function(){
-          lodash.remove(_this.contentProviderList, {id: id});
+          lodash.remove(self.contentProviderList, {id: id});
         });
       };
     }
   };
 })
-.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $routeParams, $location){
+.directive('contentProviderDetail', function(ContentProvider, ServiceProvider, $stateParams, $location){
   return {
     restrict: 'E',
     controllerAs: 'vm',
@@ -114,26 +107,26 @@ angular.module('xos.contentProvider', [
     templateUrl: 'templates/cp_detail.html',
     controller: function(){
       this.pageName = 'detail';
-      var _this = this;
+      var self = this;
 
-      if($routeParams.id){
-        ContentProvider.get({id: $routeParams.id}).$promise
+      if($stateParams.id){
+        ContentProvider.get({id: $stateParams.id}).$promise
         .then(function(cp){
-          _this.cp = cp;
+          self.cp = cp;
         }).catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
         });
       }
       else{
-        _this.cp = new ContentProvider();
+        self.cp = new ContentProvider();
       }
 
       ServiceProvider.query().$promise
       .then(function(sp){
-        _this.sp = sp;
+        self.sp = sp;
       });
 
       this.saveContentProvider = function(cp){
@@ -149,7 +142,7 @@ angular.module('xos.contentProvider', [
         }
 
         p.then(function(res){
-          _this.result = {
+          self.result = {
             status: 1,
             msg: 'Content Provider Saved'
           };
@@ -158,7 +151,7 @@ angular.module('xos.contentProvider', [
           }
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -167,23 +160,23 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderCdn', function($routeParams, CdnPrefix, ContentProvider, lodash){
+.directive('contentProviderCdn', function($stateParams, CdnPrefix, ContentProvider, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: 'templates/cp_cdn_prefix.html',
     controller: function(){
-      var _this = this;
+      var self = this;
 
       this.pageName = 'cdn';
 
-      if($routeParams.id){
-        ContentProvider.get({id: $routeParams.id}).$promise
+      if($stateParams.id){
+        ContentProvider.get({id: $stateParams.id}).$promise
         .then(function(cp){
-          _this.cp = cp;
+          self.cp = cp;
         }).catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -192,27 +185,27 @@ angular.module('xos.contentProvider', [
 
       CdnPrefix.query().$promise
       .then(function(prf){
-        _this.prf = prf;
+        self.prf = prf;
         // set the active CdnPrefix for this contentProvider
-        _this.cp_prf = lodash.where(prf, {contentProvider: parseInt($routeParams.id)});
+        self.cp_prf = lodash.where(prf, {contentProvider: parseInt($stateParams.id)});
       }).catch(function(e){
-        _this.result = {
+        self.result = {
           status: 0,
           msg: e.data.detail
         };
       });
 
       this.addPrefix = function(prf){
-        prf.contentProvider = $routeParams.id;
+        prf.contentProvider = $stateParams.id;
 
         var item = new CdnPrefix(prf);
 
         item.$save()
         .then(function(res){
-          _this.cp_prf.push(res);
+          self.cp_prf.push(res);
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -222,10 +215,10 @@ angular.module('xos.contentProvider', [
       this.removePrefix = function(item){
         item.$delete()
         .then(function(){
-          lodash.remove(_this.cp_prf, item);
+          lodash.remove(self.cp_prf, item);
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -234,7 +227,7 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderServer', function($routeParams, OriginServer, ContentProvider, lodash){
+.directive('contentProviderServer', function($stateParams, OriginServer, ContentProvider, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
@@ -242,43 +235,43 @@ angular.module('xos.contentProvider', [
     templateUrl: 'templates/cp_origin_server.html',
     controller: function(){
       this.pageName = 'server';
-      this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP','shout': 'SHOUTcast'};
+      this.protocols = {'http': 'HTTP', 'rtmp': 'RTMP', 'rtp': 'RTP', 'shout': 'SHOUTcast'};
 
-      var _this = this;
+      var self = this;
 
-      if($routeParams.id){
-        ContentProvider.get({id: $routeParams.id}).$promise
+      if($stateParams.id){
+        ContentProvider.get({id: $stateParams.id}).$promise
         .then(function(cp){
-          _this.cp = cp;
+          self.cp = cp;
         }).catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
         });
       }
 
-      OriginServer.query({contentProvider: $routeParams.id}).$promise
+      OriginServer.query({contentProvider: $stateParams.id}).$promise
       .then(function(cp_os){
-        _this.cp_os = cp_os;
+        self.cp_os = cp_os;
       }).catch(function(e){
-        _this.result = {
+        self.result = {
           status: 0,
           msg: e.data.detail
         };
       });
 
       this.addOrigin = function(os){
-        os.contentProvider = $routeParams.id;
+        os.contentProvider = $stateParams.id;
 
         var item = new OriginServer(os);
 
         item.$save()
         .then(function(res){
-          _this.cp_os.push(res);
+          self.cp_os.push(res);
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -288,10 +281,10 @@ angular.module('xos.contentProvider', [
       this.removeOrigin = function(item){
         item.$delete()
         .then(function(){
-          lodash.remove(_this.cp_os, item);
+          lodash.remove(self.cp_os, item);
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -300,33 +293,33 @@ angular.module('xos.contentProvider', [
     }
   };
 })
-.directive('contentProviderUsers', function($routeParams, ContentProvider, User, lodash){
+.directive('contentProviderUsers', function($stateParams, ContentProvider, User, lodash){
   return{
     restrict: 'E',
     controllerAs: 'vm',
     scope: {},
     templateUrl: 'templates/cp_user.html',
     controller: function(){
-      var _this = this;
+      var self = this;
 
       this.pageName = 'user';
 
       this.cp_users = [];
 
-      if($routeParams.id){
+      if($stateParams.id){
         User.query().$promise
         .then(function(users){
-          _this.users = users;
-          return ContentProvider.get({id: $routeParams.id}).$promise;
+          self.users = users;
+          return ContentProvider.get({id: $stateParams.id}).$promise;
         })
         .then(function(res){
-          res.users = _this.populateUser(res.users, _this.users);
+          res.users = self.populateUser(res.users, self.users);
           return res;
         })
         .then(function(cp){
-          _this.cp = cp;
+          self.cp = cp;
         }).catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };
@@ -341,11 +334,11 @@ angular.module('xos.contentProvider', [
       };
 
       this.addUserToCp = function(user){
-        _this.cp.users.push(user);
+        self.cp.users.push(user);
       };
 
       this.removeUserFromCp = function(user){
-        lodash.remove(_this.cp.users, user);
+        lodash.remove(self.cp.users, user);
       };
 
       this.saveContentProvider = function(cp){
@@ -356,16 +349,16 @@ angular.module('xos.contentProvider', [
         cp.$update()
         .then(function(res){
 
-          _this.cp.users = _this.populateUser(res.users, _this.users);
+          self.cp.users = self.populateUser(res.users, self.users);
 
-          _this.result = {
+          self.result = {
             status: 1,
             msg: 'Content Provider Saved'
           };
 
         })
         .catch(function(e){
-          _this.result = {
+          self.result = {
             status: 0,
             msg: e.data.detail
           };

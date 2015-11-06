@@ -11,7 +11,7 @@
   </thead>
   <tr ng-repeat="item in vm.contentProviderList">
     <td>
-      <a href="#/contentProvider/{$ item.id $}">{$ item.humanReadableName $}</a>
+      <a ui-sref="details({ id: item.id })">{$ item.humanReadableName $}</a>
     </td>
     <td>
       {$ item.description $}

@@ -23,13 +23,13 @@ var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 
-var TEMPLATE_FOOTER = '}]);angular.bootstrap(angular.element(\'#xosContentProvider\'), [\'xos.contentProvider\']);';
+var TEMPLATE_FOOTER = '}]);angular.bootstrap(angular.element(\'#xosSampleView\'), [\'xos.sampleView\']);';
 module.exports = function(options){
   
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
-      [options.dashboards + 'xosContentProvider.html'],
+      [options.dashboards + 'xosSampleView.html'],
       {force: true}
     );
   });
@@ -41,7 +41,7 @@ module.exports = function(options){
     ])
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
-    .pipe(concat('xosContentProvider.js'))
+    .pipe(concat('xosSampleView.js'))
     .pipe(uglify())
     .pipe(gulp.dest(options.static + 'js/'));
   });
@@ -50,7 +50,7 @@ module.exports = function(options){
   gulp.task('templates', function(){
     return gulp.src('./src/templates/*.html')
       .pipe(templateCache({
-        module: 'xos.contentProvider',
+        module: 'xos.sampleView',
         root: 'templates/',
         templateFooter: TEMPLATE_FOOTER
       }))
@@ -68,12 +68,12 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosContentProviderVendor.js',
-            options.static + 'js/xosContentProvider.js'
+            options.static + 'js/vendor/xosSampleViewVendor.js',
+            options.static + 'js/xosSampleView.js'
           ])
         )
       )
-      .pipe(rename('xosContentProvider.html'))
+      .pipe(rename('xosSampleView.html'))
       .pipe(gulp.dest(options.dashboards));
   });
 
@@ -90,7 +90,7 @@ module.exports = function(options){
     });
 
     return gulp.src(bowerDeps)
-      .pipe(concat('xosContentProviderVendor.js'))
+      .pipe(concat('xosSampleViewVendor.js'))
       .pipe(uglify())
       .pipe(gulp.dest(options.static + 'js/vendor/'));
   });
