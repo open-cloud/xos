@@ -41,18 +41,17 @@ module.exports = generators.Base.extend({
         { name: config.name, author: {name:user.git.name(), email: user.git.email()} }
       );
     },
-    indexDev: function(){
+    index: function(){
       this.fs.copyTpl(
         this.templatePath('src/index.html'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/src/index.html`),
         { name: config.name }
       );
     },
-    indexProd: function(){
-      this.fs.copyTpl(
-        this.templatePath('src/prod.html'),
-        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/xos${this._fistCharToUpper(config.name)}.html`),
-        { name: config.name, fileName: this._fistCharToUpper(config.name) }
+    css: function(){
+      this.fs.copy(
+        this.templatePath('src/css/dev.css'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/src/css/dev.css`)
       );
     },
     mainJs: function(){
