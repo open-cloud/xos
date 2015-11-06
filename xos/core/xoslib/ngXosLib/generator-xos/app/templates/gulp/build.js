@@ -19,12 +19,17 @@ var wiredep = require('wiredep');
 var angularFilesort = require('gulp-angular-filesort');
 var _ = require('lodash');
 var eslint = require('gulp-eslint');
+var inject = require('gulp-inject');
+var rename = require('gulp-rename');
 
 module.exports = function(options){
   
-  // empty the dist folder
+  // delete previous builded file
   gulp.task('clean', function(){
-    return del([options.dist + '**/*']);
+    return del(
+      [options.dashboards + 'xos<%= fileName %>.html'],
+      {force: true}
+    );
   });
 
   // compile and minify scripts
@@ -52,6 +57,20 @@ module.exports = function(options){
   // copy html index to Django Folder
   gulp.task('copyHtml', function(){
     return gulp.src(options.src + 'xos<%= fileName %>.html')
+      .pipe(gulp.dest(options.dashboards));
+  });
+  // copy html index to Django Folder
+  gulp.task('copyHtml', ['clean'], function(){
+    return gulp.src(options.src + 'index.html')
+      .pipe(
+        inject(
+          gulp.src([
+            options.static + 'js/vendor/xos<%= fileName %>Vendor.js',
+            options.static + 'js/xos<%= fileName %>.js'
+          ])
+        )
+      )
+      .pipe(rename('xos<%= fileName %>.html'))
       .pipe(gulp.dest(options.dashboards));
   });
 
@@ -82,7 +101,6 @@ module.exports = function(options){
 
   gulp.task('build', function() {
     runSequence(
-      'clean',
       'templates',
       'babel',
       'scripts',
