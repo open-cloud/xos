@@ -2,22 +2,20 @@
 
 angular.module('xos.<%= name %>', [
   'ngResource',
-  'ngRoute',
   'ngCookies',
   'ngLodash',
+  'ui.router',
   'xos.helpers'
 ])
-.config(($routeProvider) => {
-
-  $routeProvider
-  .when('/', {
+.config(($stateProvider, $urlRouterProvider) => {
+  $urlRouterProvider.otherwise('/');
+  $stateProvider
+  .state('user-list', {
+    url: '/',
     template: '<users-list></users-list>'
-  })
-  .otherwise('/');
+  });
 })
 .config(function($httpProvider){
-  // add X-CSRFToken header for update, create, delete (!GET)
-  $httpProvider.interceptors.push('SetCSRFToken');
   $httpProvider.interceptors.push('NoHyperlinks');
 })
 .directive('usersList', function(){
