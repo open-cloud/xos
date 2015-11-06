@@ -43,7 +43,11 @@ module.exports = function(options){
           '/xosHelpers/src': options.helpers
         },
         middleware: function(req, res, next){
-          if(req.url.indexOf('no_hyperlinks') !== -1){
+          if(
+            req.url.indexOf('/xos/') !== -1 ||
+            req.url.indexOf('/xoslib/') !== -1 ||
+            req.url.indexOf('/hpcapi/') !== -1
+          ){
             proxy.web(req, res);
           }
           else{
