@@ -16,8 +16,8 @@ describe('The Content Provider SPA', () => {
 
       httpProvider = $httpProvider;
 
-      // mocking routeParams to pass 1 as id
-      $provide.provider('$routeParams', function(){
+      // mocking stateParams to pass 1 as id
+      $provide.provider('$stateParams', function(){
         /* eslint-disable no-invalid-this*/
         this.$get = function(){
           return {id: 1};
