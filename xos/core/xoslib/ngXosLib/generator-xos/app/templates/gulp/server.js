@@ -113,7 +113,7 @@ module.exports = function(options){
     .pipe(gulp.dest(options.src));
   });
 
-  gulp.task('js-watch', ['inject'], function(){
+  gulp.task('js-watch', ['injectScript'], function(){
     browserSync.reload();
   });
 
