@@ -21,6 +21,7 @@ var _ = require('lodash');
 var eslint = require('gulp-eslint');
 var inject = require('gulp-inject');
 var rename = require('gulp-rename');
+var replace = require('gulp-replace');
 
 module.exports = function(options){
   
@@ -55,13 +56,12 @@ module.exports = function(options){
   });
 
   // copy html index to Django Folder
-  gulp.task('copyHtml', function(){
-    return gulp.src(options.src + 'xos<%= fileName %>.html')
-      .pipe(gulp.dest(options.dashboards));
-  });
-  // copy html index to Django Folder
   gulp.task('copyHtml', ['clean'], function(){
     return gulp.src(options.src + 'index.html')
+      // remove dev dependencies from html
+      .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
+      .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
+      // injecting minified files
       .pipe(
         inject(
           gulp.src([
