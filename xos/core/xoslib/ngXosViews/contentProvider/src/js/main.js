@@ -9,31 +9,35 @@
 
 angular.module('xos.contentProvider', [
   'ngResource',
-  'ngRoute',
   'ngCookies',
   'ngLodash',
   'xos.helpers',
+  'ui.router',
   'xos.xos'
 ])
-.config(($routeProvider) => {
-
-  $routeProvider
-  .when('/', {
+.config(($stateProvider, $urlRouterProvider) => {
+  $urlRouterProvider.otherwise('/');
+  $stateProvider
+  .state('list', {
+    url: '/',
     template: '<content-provider-list></content-provider-list>',
   })
-  .when('/contentProvider/:id?', {
+  .state('details', {
+    url: '/contentProvider/:id?',
     template: '<content-provider-detail></content-provider-detail>'
   })
-  .when('/contentProvider/:id/cdn_prefix', {
+  .state('cdn', {
+    url: '/contentProvider/:id/cdn_prefix',
     template: '<content-provider-cdn></content-provider-cdn>'
   })
-  .when('/contentProvider/:id/origin_server', {
+  .state('server', {
+    url: '/contentProvider/:id/origin_server',
     template: '<content-provider-server></content-provider-server>'
   })
-  .when('/contentProvider/:id/users', {
+  .state('users', {
+    url: '/contentProvider/:id/users',
     template: '<content-provider-users></content-provider-users>'
-  })
-  .otherwise('/');
+  });
 })
 .config(function($httpProvider){
   // add X-CSRFToken header for update, create, delete (!GET)

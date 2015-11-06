@@ -1,7 +1,14 @@
+<!-- browserSync -->
+
+<!-- inject:css -->
+<link rel="stylesheet" href="/css/dev.css">
+<!-- endinject -->
+
 <div ng-app="xos.contentProvider">
-  <ng-view></ng-view>
+    <div ui-view></div>
 </div>
 
-<link rel="stylesheet" href="{{ STATIC_URL }}/css/xosLib.css">
-<script src="{{ STATIC_URL }}js/vendor/xosContentProviderVendor.js"></script>
-<script src="{{ STATIC_URL }}js/xosContentProvider.js"></script>
+
+<!-- inject:js -->
+<script src="/../../static/js/xosContentProvider.js"></script>
+<!-- endinject -->
