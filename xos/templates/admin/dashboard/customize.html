@@ -1,34 +1,48 @@
+<div class="row-fluid">
+    <div class="span12 text-right">
+        <a href="core/dashboardview/" class="btn btn-default">
+            <i class="icon icon-pencil"></i> Manage
+        </a>
+        <a href="core/dashboardview/add/" class="btn btn-success">
+            <i class="icon icon-plus"></i> Add
+        </a>
+    </div>
+</div>
 <form>
     <div class="customize_row">
-    <div class="customize_column">
-    <div>Available Dashboard Views</div>
-    <select name="selectfrom" id="select-from" multiple size="5">
-        {% for cp in unusedDashboards %}
-           <option value="{{ cp }}">{{ cp }}</option>
-        {% endfor %}
-    </select>
-    </div>
-    <div class="customize_column">
-    <br>
-    <div class="btn btn-success" id="customize-btn-add">Add &raquo;</div><br><br>
-    <div class="btn btn-success" id="customize-btn-remove">&laquo; Remove</div>
-    </div>
-    <div class="customize_column">
-    <div>Selected Dashboard Views</div>
-    <select name="selectto" id="select-to" multiple size="5">
-        {% for cp in dashboards %}
-           <option value="{{ cp }}">{{ cp }}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <div class="btn btn-high btn-info" id="customize-btn-save">Save</div>
-    <div style="display: none" id="customize-msg-saving">Saving...</div>
-    </div>
-    <div class="customize_column">
-    <br>
-    <div class="btn btn-success" id="customize-btn-up">Up</div><br><br>
-    <div class="btn btn-success" id="customize-btn-down">Down</div>
-    </div>
+        <div class="customize_column">
+            <div>Available Dashboard Views</div>
+            <select name="selectfrom" id="select-from" multiple size="5">
+                {% for cp in unusedDashboards %}
+                <option value="{{ cp }}">{{ cp }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="customize_column">
+            <br>
+            <div class="btn btn-success" id="customize-btn-add">Add &raquo;</div>
+            <br>
+            <br>
+            <div class="btn btn-success" id="customize-btn-remove">&laquo; Remove</div>
+        </div>
+        <div class="customize_column">
+            <div>Selected Dashboard Views</div>
+            <select name="selectto" id="select-to" multiple size="5">
+                {% for cp in dashboards %}
+                <option value="{{ cp }}">{{ cp }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <div class="btn btn-high btn-info" id="customize-btn-save">Save</div>
+            <div style="display: none" id="customize-msg-saving">Saving...</div>
+        </div>
+        <div class="customize_column">
+            <br>
+            <div class="btn btn-success" id="customize-btn-up">Up</div>
+            <br>
+            <br>
+            <div class="btn btn-success" id="customize-btn-down">Down</div>
+        </div>
     </div>
 </form>
 
@@ -75,7 +89,7 @@ $(document).ready(function() {
                 dataType: 'json',
                 data: {
                         dashboards: items.join(","),
-  		        csrfmiddlewaretoken: "{{ csrf_token }}" // < here
+                csrfmiddlewaretoken: "{{ csrf_token }}" // < here
                 },
                 type: 'POST',
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -90,4 +104,3 @@ $(document).ready(function() {
     });
 });
 </script>
-

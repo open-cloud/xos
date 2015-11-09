@@ -2,7 +2,7 @@ import os
 import socket
 import sys
 from django.db import models
-from core.models import PlCoreBase, Site, Slice, Instance, Controller
+from core.models import PlCoreBase, Site, Slice, Instance, Controller, Container
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -158,7 +158,7 @@ class ControllerNetwork(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
-     
+
     class Meta:
         unique_together = ('network', 'controller')
         
@@ -211,9 +211,12 @@ class NetworkSlice(PlCoreBase):
 class Port(PlCoreBase):
     network = models.ForeignKey(Network,related_name='links')
     instance = models.ForeignKey(Instance, null=True, blank=True, related_name='ports')
+    container = models.ForeignKey(Container, null=True, blank=True, related_name='ports')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
+    #unattached = models.BooleanField(default=False, help_text="create this port even if no Instance is attached")
+    segmentation_id = models.CharField(null=True, blank=True, max_length=256, help_text="GRE segmentation id for port")
 
     class Meta:
         unique_together = ('network', 'instance')

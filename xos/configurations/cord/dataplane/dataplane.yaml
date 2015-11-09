@@ -1,0 +1,100 @@
+---
+- hosts: switch_vbng
+  sudo: yes
+  vars:
+    controller_ip: "{{ hostvars['onos_vbng']['ansible_ssh_host'] }}"
+    controller_port: 6653
+    ovs_dpid: "0000000000000001"
+  tags:
+  - vbng
+  tasks:
+  - name: Fix /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="127.0.0.1 localhost"
+      line="127.0.0.1 localhost {{ ansible_hostname }}"
+
+  - name: Install packages
+    apt: name={{ item }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - openvswitch-switch
+    - python-netifaces
+
+  - name: Create br-vbng
+    openvswitch_bridge:
+      bridge=br-vbng
+      state=present
+
+  - name: Find wan_network interface
+    script: scripts/if_from_ip.py {{ wan_ip }}
+    register: wan_net
+
+  - name: Find public_network interface
+    script: scripts/if_from_ip.py {{ public_ip }}
+    register: public_net
+
+  - name: Hook up wan-network to br-vbng
+    openvswitch_port:
+      bridge=br-vbng
+      port={{ wan_net.stdout }}
+      state=present
+
+  - name: Hook up public-network to OvS
+    openvswitch_port:
+      bridge=br-vbng
+      port={{ public_net.stdout }}
+      state=present
+
+  - name: Change datapath ID of bridge to match config file
+    command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}
+
+  - name: Add controller to switch
+    command: /usr/bin/ovs-vsctl set-controller br-vbng tcp:{{ controller_ip }}:{{ controller_port }}
+
+- hosts: switch_volt
+  sudo: yes
+  vars:
+    controller_ip: "{{ hostvars['onos_volt']['ansible_ssh_host'] }}"
+    controller_port: 6653
+  tags:
+  - volt
+  tasks:
+
+  - name: Fix /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="127.0.0.1 localhost"
+      line="127.0.0.1 localhost {{ ansible_hostname }}"
+
+  - name: Install packages
+    apt: name={{ item }} state=present update_cache=yes
+    with_items:
+    - git
+    - python-netifaces
+
+  - name: Checkout the Mininet repo
+    git: repo=https://github.com/mininet/mininet.git
+      dest=/tmp/mininet
+
+  - name: Install the CPqD switch using Mininet install script
+    shell: /tmp/mininet/util/install.sh -3f
+      creates=/usr/local/bin/ofdatapath
+    ignore_errors: true
+
+  - name: Find subscriber_network interface
+    script: scripts/if_from_ip.py {{ subscriber_ip }}
+    register: subscriber_net
+
+  - name: Find lan_network interface
+    script: scripts/if_from_ip.py {{ lan_ip }}
+    register: lan_net
+
+  - name: Run the datapath
+    command: /usr/local/bin/ofdatapath -i {{ subscriber_net.stdout_lines[0] }},{{ lan_net.stdout_lines[0] }} punix:/tmp/s1 -d 000000000001 --no-slicing -D -P
+      creates=/usr/local/var/run/ofdatapath.pid
+
+  - name: Run the control program
+    command: /usr/local/bin/ofprotocol unix:/tmp/s1 tcp:{{ controller_ip }}:{{ controller_port }} --fail=closed --listen=punix:/tmp/s1.listen -D -P
+      creates=/usr/local/var/run/ofprotocol.pid

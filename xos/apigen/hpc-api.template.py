@@ -37,7 +37,7 @@ else:
 def get_hpc_REST_patterns():
     return patterns('',
         url(r'^hpcapi/$', hpc_api_root),
-    {% for object in generator.all %}
+    {% for object in generator.rest_models %}
         url(r'hpcapi/{{ object.rest_name }}/$', {{ object.camel }}List.as_view(), name='{{ object.singular }}-list'),
         url(r'hpcapi/{{ object.rest_name }}/(?P<pk>[a-zA-Z0-9\-]+)/$', {{ object.camel }}Detail.as_view(), name ='{{ object.singular }}-detail'),
     {% endfor %}
@@ -46,7 +46,7 @@ def get_hpc_REST_patterns():
 @api_view(['GET'])
 def hpc_api_root(request, format=None):
     return Response({
-        {% for object in generator.all %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
+        {% for object in generator.rest_models %}'{{ object.plural }}': reverse('{{ object }}-list', request=request, format=format),
         {% endfor %}
     })
 
@@ -104,7 +104,7 @@ class XOSModelSerializer(serializers.ModelSerializer):
                    newModel = through(**{local_fieldName: obj, remote_fieldName: item})
                    newModel.save()
 
-{% for object in generator.all %}
+{% for object in generator.rest_models %}
 
 class {{ object.camel }}Serializer(serializers.HyperlinkedModelSerializer):
     id = IdField()
@@ -154,14 +154,14 @@ class {{ object.camel }}IdSerializer(XOSModelSerializer):
 {% endfor %}
 
 serializerLookUp = {
-{% for object in generator.all %}
+{% for object in generator.rest_models %}
                  {{ object.camel }}: {{ object.camel }}Serializer,
 {% endfor %}
                  None: None,
                 }
 
 # Based on core/views/*.py
-{% for object in generator.all %}
+{% for object in generator.rest_models %}
 
 class {{ object.camel }}List(XOSListCreateAPIView):
     queryset = {{ object.camel }}.objects.select_related().all()
