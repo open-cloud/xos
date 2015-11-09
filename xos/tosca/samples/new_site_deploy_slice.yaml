@@ -27,6 +27,9 @@ topology_template:
            admin_password: letmeout
            admin_tenant: 12345678
            domain: mydomain
+           rabbit_host: rabhost
+           rabbit_user: rabuser
+           rabbit_password: rabpw
 
     newsite:
       type: tosca.nodes.Site

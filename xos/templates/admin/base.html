@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
+  <link rel="stylesheet" type="text/css" href="{% static 'cord.css' %}" media="all">
   {% if XOS_BRANDING_CSS %}
       <link rel="stylesheet" type="text/css" href="{{ XOS_BRANDING_CSS }}">
   {% endif %}
@@ -18,6 +19,11 @@
   <script type="text/javascript" src="{% static 'log4javascript-1.4.6/log4javascript.js' %}"></script>
   <script type="text/javascript" src="{% static 'uploadTextarea.js' %}"></script>
   <script type="text/javascript" src="{% static 'observer_status.js' %}"></script>
+
+  <!-- ngXosLib -->
+  <script src="{% static 'js/vendor/ngXosVendor.js' %}"></script>
+  <script src="{% static 'js/vendor/ngXosHelpers.js' %}"></script>
+  <script src="{% static 'js/xosApi.js' %}"></script>
 
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
@@ -43,7 +49,7 @@
     <div id="container">
 
       {% block logo %}
-      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'open-cloud-login-themed-light.png' %}"/></h1></a>
+      <a href="{% url 'admin:index' %}"><h1 id="site-name"><img class="logo" height="70" width="259" src="{% static 'cord_logo_3.png' %}"/></h1></a>
       {% endblock %}
       {% block header %}
         {% if not is_popup %}

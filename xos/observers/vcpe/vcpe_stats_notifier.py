@@ -14,7 +14,11 @@ logfile = "vcpe_stats_notifier.log"
 level=logging.INFO
 logger=logging.getLogger('vcpe_stats_notifier')
 logger.setLevel(level)
+# create formatter
+formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(message)s")
 handler=logging.handlers.RotatingFileHandler(logfile,maxBytes=1000000, backupCount=1)
+# add formatter to handler
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def extract_dns_stats_from_all_vcpes():
@@ -105,6 +109,9 @@ def setup_rabbit_mq_channel():
 def publish_cpe_stats():
      global producer
      global keystone_tenant_id, keystone_user_id, cpe_publisher_id
+
+     logger.debug('publish_cpe_stats invoked')
+
      cpe_container_stats = extract_dns_stats_from_all_vcpes()
 
      for k,v in cpe_container_stats.iteritems():
@@ -119,6 +126,8 @@ def publish_cpe_stats():
                             }
                 }
           producer.publish(msg)
+          logger.debug('Publishing vcpe event: %s', msg)
+
           if 'cache_size' in v:
                msg = {'event_type': 'vcpe.dns.cache.size', 
                       'message_id':six.text_type(uuid.uuid4()),
@@ -132,6 +141,8 @@ def publish_cpe_stats():
                                  }
                      }
                producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.cache.size event: %s', msg)
+
           if 'total_inserted_entries' in v:
                msg = {'event_type': 'vcpe.dns.total_inserted_entries', 
                       'message_id':six.text_type(uuid.uuid4()),
@@ -145,6 +156,8 @@ def publish_cpe_stats():
                                  }
                      }
                producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.total_inserted_entries event: %s', msg)
+
           if 'replaced_unexpired_entries' in v:
                msg = {'event_type': 'vcpe.dns.replaced_unexpired_entries', 
                       'message_id':six.text_type(uuid.uuid4()),
@@ -158,6 +171,7 @@ def publish_cpe_stats():
                                  }
                      }
                producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.replaced_unexpired_entries event: %s', msg)
 
           if 'queries_forwarded' in v:
                msg = {'event_type': 'vcpe.dns.queries_forwarded', 
@@ -172,6 +186,7 @@ def publish_cpe_stats():
                                  }
                      }
                producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.queries_forwarded event: %s', msg)
 
           if 'queries_answered_locally' in v:
                msg = {'event_type': 'vcpe.dns.queries_answered_locally', 
@@ -186,6 +201,7 @@ def publish_cpe_stats():
                                  }
                      }
                producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.queries_answered_locally event: %s', msg)
 
           if 'server_stats' in v:
                for server in v['server_stats']:
@@ -202,6 +218,7 @@ def publish_cpe_stats():
                                      }
                          }
                    producer.publish(msg)
+                   logger.debug('Publishing vcpe.dns.server.queries_sent event: %s', msg)
 
                    msg = {'event_type': 'vcpe.dns.server.queries_failed', 
                           'message_id':six.text_type(uuid.uuid4()),
@@ -216,6 +233,7 @@ def publish_cpe_stats():
                                      }
                          }
                    producer.publish(msg)
+                   logger.debug('Publishing vcpe.dns.server.queries_failed event: %s', msg)
 
 def periodic_publish():
      publish_cpe_stats()

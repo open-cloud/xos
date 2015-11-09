@@ -893,8 +893,10 @@ if (! window.XOSLIB_LOADED) {
         var _sync = Backbone.sync;
         Backbone.sync = function(method, model, options){
             options.beforeSend = function(xhr){
-                var token = getCookie("csrftoken");
-                xhr.setRequestHeader('X-CSRFToken', token);
+                // var token = getCookie("csrftoken");
+                // xhr.setRequestHeader('X-CSRFToken', token);
+                var xosToken = getCookie('xoscsrftoken');
+                xhr.setRequestHeader('X-CSRFToken', xosToken);
             };
             return _sync(method, model, options);
         };

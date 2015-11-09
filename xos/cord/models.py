@@ -465,7 +465,7 @@ class VCPETenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",
                        "lan_ip", "lan_mac",
-                       "wan_ip", "wan_mac",
+                       "wan_ip", "wan_mac", "wan_container_mac",
                        "private_ip", "private_mac",
                        "hpc_client_ip", "hpc_client_mac")
 
@@ -574,6 +574,12 @@ class VCPETenant(TenantWithContainer):
     @property
     def wan_mac(self):
         return self.addresses.get("wan", (None, None) )[1]
+
+    # Generate the MAC for the container interface connected to WAN
+    @property
+    def wan_container_mac(self):
+        (a, b, c, d) = self.wan_ip.split('.')
+        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
 
     @property
     def private_ip(self):
