@@ -183,7 +183,7 @@ class HpcServiceSerializer(serializers.HyperlinkedModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','service_ptr','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 class HpcServiceIdSerializer(XOSModelSerializer):
     id = IdField()
@@ -199,7 +199,7 @@ class HpcServiceIdSerializer(XOSModelSerializer):
             return None
     class Meta:
         model = HpcService
-        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','service_ptr','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+        fields = ('humanReadableName', 'validators', 'id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
 
 
@@ -498,7 +498,7 @@ class HpcServiceList(XOSListCreateAPIView):
     serializer_class = HpcServiceSerializer
     id_serializer_class = HpcServiceIdSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','service_ptr','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
+    filter_fields = ('id','created','updated','enacted','policed','backend_register','backend_status','deleted','write_protect','lazy_blocked','no_sync','description','enabled','kind','name','versionNumber','published','view_url','icon_url','public_key','service_specific_id','service_specific_attribute','cmi_hostname','hpc_port80','watcher_hpc_network','watcher_dnsdemux_network','watcher_dnsredir_network',)
 
     def get_serializer_class(self):
         no_hyperlinks=False

@@ -1,0 +1,45 @@
+{
+  "name": "xos-sampleView",
+  "version": "1.0.0",
+  "description": "Angular Application for XOS, created with generator-xos",
+  "scripts": {
+    "prestart": "npm install && bower install",
+    "start": "gulp serve",
+    "prebuild": "npm install && bower install",
+    "build": "gulp",
+    "test": "karma start",
+    "lint": "eslint src/js/"
+  },
+  "keywords": [
+    "XOS",
+    "Angular",
+    "XOSlib"
+  ],
+  "author": "Matteo Scandolo",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.9.11",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-angular-templatecache": "^1.8.0",
+    "gulp-babel": "^5.3.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-inject": "^3.0.0",
+    "gulp-minify-html": "^1.0.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-uglify": "^1.4.2",
+    "http-proxy": "^1.12.0",
+    "proxy-middleware": "^0.15.0",
+    "run-sequence": "^1.1.4",
+    "wiredep": "^3.0.0-beta",
+    "wrench": "^1.5.8",
+    "gulp-ng-annotate": "^1.1.0",
+    "lodash": "^3.10.1",
+    "eslint": "^1.8.0",
+    "eslint-plugin-angular": "linkmesrl/eslint-plugin-angular",
+    "gulp-eslint": "^1.0.0"
+  }
+}
