@@ -1,0 +1,55 @@
+<div class="row-fluid">
+  <div class="span6">
+    <h1>{$ vm.cp.humanReadableName $}</h1>
+  </div>
+  <div class="span6 text-right">
+    <cp-actions id="vm.cp.id"></cp-actions>
+  </div>
+</div>
+<hr>
+<div class="row-fluid">
+  <div class="span2">
+    <div ng-include="'templates/cp_side_nav.html'"></div>
+  </div>
+  <div class="span10">
+    <div ng-repeat="item in vm.cp_prf" class="well">
+      <div class="row-fluid">
+        <div class="span4">
+          {{item.humanReadableName}}
+        </div>
+        <div class="span6">
+          <!-- TODO show the name instead that id -->
+          {{item.defaultOriginServer}}
+        </div>
+        <div class="span2">
+          <a ng-click="vm.removePrefix(item)" class="btn btn-danger pull-right">
+            <i class="icon icon-remove"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <form ng-submit="vm.addPrefix(vm.new_prf)">
+      <div class="row-fluid">
+        <div class="span4">
+          <label>Prefix</label>
+          <input type="text" ng-model="vm.new_prf.prefix" required style="max-width: 90%">
+        </div>
+        <div class="span6">
+          <label>Default Origin Server</label>
+          <select ng-model="vm.new_prf.defaultOriginServer" style="max-width: 100%">
+            <option ng-repeat="prf in vm.prf" ng-value="prf.id">{$ prf.humanReadableName $}</option>
+          </select>
+        </div>
+        <div class="span2 text-right">
+          <button class="btn btn-success margin-wells">
+            <i class="icon icon-plus"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+      {$ vm.result.msg $}
+    </div>
+  </div>
+</div>

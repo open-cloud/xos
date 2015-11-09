@@ -15,7 +15,7 @@ from xosresource import XOSResource
 class XOSController(XOSResource):
     provides = "tosca.nodes.Controller"
     xos_model = Controller
-    copyin_props = ["backend_type", "version", "auth_url", "admin_user", "admin_password", "admin_tenant", "domain"]
+    copyin_props = ["backend_type", "version", "auth_url", "admin_user", "admin_password", "admin_tenant", "domain", "rabbit_host", "rabbit_user", "rabbit_password"]
 
     def get_xos_args(self):
         args = super(XOSController, self).get_xos_args()

@@ -1,0 +1,53 @@
+<div class="row-fluid">
+  <div class="span6">
+    <h1>{$ vm.cp.humanReadableName $}</h1>
+  </div>
+  <div class="span6 text-right">
+    <cp-actions id="vm.cp.id"></cp-actions>
+  </div>
+</div>
+<hr>
+<div class="row-fluid">
+  <div class="span2">
+    <div ng-include="'templates/cp_side_nav.html'"></div>
+  </div>
+  <div class="span10">
+    <div ng-repeat="item in vm.cp_os" class="well">
+      <div class="row-fluid">
+        <div class="span4">
+          {{item.humanReadableName}}
+        </div>
+        <div class="span6">
+          <!-- TODO shoe the name instead that url -->
+          {{item.defaultOriginServer}}
+        </div>
+        <div class="span2">
+          <a ng-click="vm.removeOrigin(item)" class="btn btn-danger pull-right">
+            <i class="icon icon-remove"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <form ng-submit="vm.addOrigin(vm.new_os)">
+      <div class="row-fluid">
+        <div class="span4">
+          <label>Protocol</label>
+          <select ng-model="vm.new_os.protocol" ng-options="k as v for (k,v) in vm.protocols" style="max-width: 100%;"></select>
+        </div>
+        <div class="span6">
+          <label>Url</label>
+          <input type="text" ng-model="vm.new_os.url" required>
+        </div>
+        <div class="span2 text-right">
+          <button class="btn btn-success margin-wells">
+            <i class="icon icon-plus"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+      {$ vm.result.msg $}
+    </div>
+  </div>
+</div>
