@@ -16,6 +16,10 @@
          snoop_instance_mac: {{ port.snoop_instance_mac }}
          snoop_instance_id: {{ port.snoop_instance_id }}
     {% endfor %}
+    volumes:
+    {% for volume in volumes %}
+       - {{ volume }}
+    {% endfor %}
 
   tasks:
 

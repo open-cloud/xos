@@ -27,6 +27,24 @@ from syncstep import SyncStep
 from toposort import toposort
 from observer.error_mapper import *
 from openstack_observer.openstacksyncstep import OpenStackSyncStep
+from observer.steps.sync_object import SyncObject
+
+# Load app models
+
+try:
+    app_module_names = Config().observer_applist
+except AttributeError:
+    app_module_names = []
+
+if (type(app_module_names)!=list):
+    app_module_names=[app_module_names]
+
+app_modules = []
+
+for m in app_module_names:
+    model_path = m+'.models'
+    module = __import__(model_path,fromlist=[m])
+    app_modules.append(module)
 
 
 debug_mode = False
@@ -166,6 +184,7 @@ class XOSObserver:
 					provides_dict[m.__name__]=[s.__name__]
 
 		step_graph = {}
+                phantom_steps = []
 		for k,v in self.model_dependency_graph.items():
 			try:
 				for source in provides_dict[k]:
@@ -183,7 +202,12 @@ class XOSObserver:
 									step_graph[source]=[dest]
 						except KeyError:
 							if (not provides_dict.has_key(m)):
-								step_graph[source]='#%s'%m	
+                                                                try:
+								    step_graph[source]+=['#%s'%m]
+                                                                except:
+                                                                    step_graph[source]=['#%s'%m]
+
+                                                                phantom_steps+=['#%s'%m]
 							pass
 					
 			except KeyError:
@@ -196,7 +220,8 @@ class XOSObserver:
 
 		pp = pprint.PrettyPrinter(indent=4)
                 logger.info(pp.pformat(step_graph))
-		self.ordered_steps = toposort(self.dependency_graph, map(lambda s:s.__name__,self.sync_steps))
+		self.ordered_steps = toposort(self.dependency_graph, phantom_steps+map(lambda s:s.__name__,self.sync_steps))
+		self.ordered_steps = [i for i in self.ordered_steps if i!='SyncObject']
 
 		logger.info("Order of steps=%s" % self.ordered_steps)
 
@@ -245,15 +270,31 @@ class XOSObserver:
 			for e in self.ordered_steps:
 				self.last_deletion_run_times[e]=0
 
+        def lookup_step_class(self,s):
+		if ('#' in s):
+			return SyncObject
+		else:
+			step = self.step_lookup[s]
+		return step
+
 	def lookup_step(self,s):
 		if ('#' in s):
 			objname = s[1:]
 			so = SyncObject()
-			so.provides=[globals()[objname]]
-			so.observes=globals()[objname]
+			
+                        try:
+			    obj = globals()[objname]
+                        except:
+                            for m in app_modules:
+                                if (hasattr(m,objname)):
+                                    obj = getattr(m,objname)
+
+			so.provides=[obj]
+			so.observes=[obj]
 			step = so
 		else:
-			step = self.step_lookup[s]
+			step_class = self.step_lookup[s]
+                        step = step_class(driver=self.driver,error_map=self.error_mapper)
 		return step
 			
 	def save_run_times(self):
@@ -275,7 +316,7 @@ class XOSObserver:
 
 	def sync(self, S, deletion):
             try:
-		step = self.lookup_step(S)
+		step = self.lookup_step_class(S)
 		start_time=time.time()
 
                 logger.info("Starting to work on step %s, deletion=%s" % (step.__name__, str(deletion)))
@@ -324,16 +365,20 @@ class XOSObserver:
 			self.failed_steps.append(step)
 			my_status = STEP_STATUS_KO
 		else:
-			sync_step = step(driver=self.driver,error_map=self.error_mapper)
+			sync_step = self.lookup_step(S)
 			sync_step. __name__= step.__name__
 			sync_step.dependencies = []
 			try:
 				mlist = sync_step.provides
 
-				for m in mlist:
-				        lst =  self.model_dependency_graph[m.__name__]
-			                nlst = map(lambda(a,b):b,lst)
-					sync_step.dependencies.extend(nlst)
+                                try:
+                                    for m in mlist:
+                                            lst =  self.model_dependency_graph[m.__name__]
+                                            nlst = map(lambda(a,b):b,lst)
+                                            sync_step.dependencies.extend(nlst)
+                                except Exception,e:
+                                    raise e
+
 			except KeyError:
 				pass
 			sync_step.debug_mode = debug_mode
