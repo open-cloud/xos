@@ -353,6 +353,9 @@ class TenantWithContainer(Tenant):
         super(TenantWithContainer, self).__init__(*args, **kwargs)
         self.cached_instance=None
         self.orig_instance_id = self.get_initial_attribute("instance_id")
+        self.cached_container=None
+        self.orig_container_id = self.get_initial_attribute("container_id")
+
 
     @property
     def instance(self):
@@ -377,6 +380,30 @@ class TenantWithContainer(Tenant):
         if (value != self.get_attribute("instance_id", None)):
             self.cached_instance=None
         self.set_attribute("instance_id", value)
+
+    @property
+    def container(self):
+        from core.models import Container
+        if getattr(self, "cached_container", None):
+            return self.cached_container
+        container_id=self.get_attribute("container_id")
+        if not container_id:
+            return None
+        containers=Container.objects.filter(id=container_id)
+        if not containers:
+            return None
+        container=containers[0]
+        container.caller = self.creator
+        self.cached_container = container
+        return container
+
+    @container.setter
+    def container(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("container_id", None)):
+            self.cached_container=None
+        self.set_attribute("container_id", value)
 
     @property
     def creator(self):
@@ -413,7 +440,23 @@ class TenantWithContainer(Tenant):
 
         raise XOSProgrammingError("No VPCE image (looked for %s)" % str(self.LOOK_FOR_IMAGES))
 
-    def pick_node(self):
+    @property
+    def use_cobm(self):
+        return self.get_attribute("use_cobm", False)
+
+    @use_cobm.setter
+    def use_cobm(self, v):
+        self.set_attribute("use_cobm", v)
+
+    @creator.setter
+    def creator(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("creator_id", None)):
+            self.cached_creator=None
+        self.set_attribute("creator_id", value)
+
+    def pick_node_for_instance(self):
         from core.models import Node
         nodes = list(Node.objects.all())
         # TODO: logic to filter nodes by which nodes are up, and which
@@ -421,7 +464,15 @@ class TenantWithContainer(Tenant):
         nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return nodes[0]
 
-    def manage_container(self):
+    def pick_node_for_container_on_metal(self):
+        from core.models import Node
+        nodes = list(Node.objects.all())
+        # TODO: logic to filter nodes by which nodes are up, and which
+        #   nodes the slice can instantiate on.
+        nodes = sorted(nodes, key=lambda node: node.containers.all().count())
+        return nodes[0]
+
+    def manage_container_in_instance(self):
         from core.models import Instance, Flavor
 
         if self.deleted:
@@ -439,7 +490,7 @@ class TenantWithContainer(Tenant):
             if not flavors:
                 raise XOSConfigurationError("No m1.small flavor")
 
-            node =self.pick_node()
+            node =self.pick_node_for_instance()
             instance = Instance(slice = self.provider_service.slices.all()[0],
                             node = node,
                             image = self.image,
@@ -455,11 +506,83 @@ class TenantWithContainer(Tenant):
                 instance.delete()
                 raise
 
+    def manage_container_on_metal(self):
+        from core.models import Container, Instance, Flavor, Port
+
+        if self.deleted:
+            return
+
+        if (self.container is not None):
+            self.container.delete()
+            self.container = None
+
+        if self.container is None:
+            if not self.provider_service.slices.count():
+                raise XOSConfigurationError("The VCPE service has no slices")
+
+            slice = self.provider_service.slices.all()[0]
+            node = self.pick_node_for_container_on_metal()
+
+            # Our current docker network strategy requires that there be some
+            # instance on the server that connects to the networks, so that
+            # the containers can piggyback off of that configuration.
+            instances = Instance.objects.filter(slice=slice, node=node)
+            if not instances:
+                flavors = Flavor.objects.filter(name="m1.small")
+                if not flavors:
+                    raise XOSConfigurationError("No m1.small flavor")
+
+                node =self.pick_node_for_instance()
+                instance = Instance(slice = self.provider_service.slices.all()[0],
+                                node = node,
+                                image = self.image,
+                                creator = self.creator,
+                                deployment = node.site_deployment.deployment,
+                                flavor = flavors[0])
+                instance.save()
+
+            # Now make the container...
+            container = Container(slice = slice,
+                            node = node,
+                            docker_image = "andybavier/docker-vcpe",
+                            creator = self.creator,
+                            no_sync=True)
+            container.save()
+
+            # ... and add the ports for the container
+            # XXX probably should be done in model_policy
+            for network in slice.networks.all():
+                if (network.name.endswith("-nat")):
+                    continue
+                port = Port(network = network,
+                            container = container)
+                port.save()
+
+            container.no_sync = False
+            container.save()
+
+            try:
+                self.container = container
+                super(TenantWithContainer, self).save()
+            except:
+                container.delete()
+                raise
+
+    def manage_container(self):
+        if self.use_cobm:
+            self.manage_container_on_metal()
+        else:
+            self.manage_container_in_instance()
+
     def cleanup_container(self):
         if self.instance:
             # print "XXX cleanup instance", self.instance
             self.instance.delete()
             self.instance = None
+        if self.container:
+            # print "XXX cleanup container", self.container
+            self.container.delete()
+            self.container = None
 
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """

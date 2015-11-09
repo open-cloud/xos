@@ -8,6 +8,7 @@ from django.db.models import F, Q
 from core.models import *
 from django.db import reset_queries
 from observer.ansible import *
+from dependency_walker import *
 
 import json
 import time
@@ -101,12 +102,26 @@ class SyncStep(object):
         for dep in self.dependencies:
             peer_name = dep[0].lower() + dep[1:]    # django names are camelCased with the first letter lower
 
+            peer_objects=[]
             try:
-                peer_object = deepgetattr(obj, peer_name)
+                peer_names = plural(peer_name)
+                peer_object_list=[]
+
                 try:
-                    peer_objects = peer_object.all()
-                except AttributeError:
-                    peer_objects = [peer_object]
+                    peer_object_list.append(deepgetattr(obj, peer_name))
+                except:
+                    pass
+
+                try:
+                    peer_object_list.append(deepgetattr(obj, peer_names))
+                except:
+                    pass
+
+                for peer_object in peer_object_list:
+                    try:
+                        peer_objects.extend(peer_object.all())
+                    except AttributeError:
+                        peer_objects.append(peer_object)
             except:
                 peer_objects = []
 
@@ -174,6 +189,9 @@ class SyncStep(object):
                 pass
 
     def call(self, failed=[], deletion=False):
+        #if ('Instance' in self.__class__.__name__):
+        #    pdb.set_trace()
+
         pending = self.fetch_pending(deletion)
 
         for o in pending:
