@@ -40,7 +40,7 @@ class SyncContainer(SyncStep):
 
     def get_instance_port(self, container_port):
         for p in container_port.network.links.all():
-            if (p.instance) and (p.instance.kind=="vm") and (p.instance.node == container_port.container.node) and (p.mac):
+            if (p.instance) and (p.instance.isolation=="vm") and (p.instance.node == container_port.instance.node) and (p.mac):
                 return p
         return None
 
