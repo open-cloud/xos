@@ -1,4 +1,4 @@
-g/*************************
+/*************************
 colors:
     tab - active/focus color
     background-color: #105E9E !important;
@@ -11,6 +11,17 @@ ONLab darker blue select :: background-color: #004775;
 91BFE4
 
 *************************/
+
+html, body {
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
+#wrap {
+  height: 100%;
+  overflow: scroll;
+}
 
 /*   CSS for jquery Tabs */
 #hometabs {
@@ -248,7 +259,7 @@ color: #105E9E ;
 #suit-center {
 padding: 20px;
 width: 100%;
-min-width:650px;
+/*min-width:650px;*/
 }
 .inner-two-columns .inner-center-column .tab-content {
 overflow-x: auto;
@@ -622,7 +633,7 @@ background-repeat: no-repeat;
     browser resizes **/
 #content-main {
     overflow-x:auto;
-    min-width: 1000px;
+    /*min-width: 1000px;*/
 }
 
 .tab-content tab-content-main {
@@ -671,9 +682,7 @@ height: 84.5%;
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
 }
 #wrap {
-    height: auto !important;
-    margin: 0 auto -60px;
-    min-height: 100%;
+    padding-bottom: 60px;
 }
 
 .forgotLink {
