@@ -51,7 +51,8 @@ class VOLTServiceAdmin(ReadOnlyAwareAdmin):
         return VOLTService.get_service_objects_by_user(request.user)
 
 class VOLTTenantForm(forms.ModelForm):
-    vlan_id = forms.CharField()
+    s_tag = forms.CharField()
+    c_tag = forms.CharField()
     creator = forms.ModelChoiceField(queryset=User.objects.all())
 
     def __init__(self,*args,**kwargs):
@@ -60,7 +61,8 @@ class VOLTTenantForm(forms.ModelForm):
         self.fields['provider_service'].queryset = VOLTService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
-            self.fields['vlan_id'].initial = self.instance.vlan_id
+            self.fields['c_tag'].initial = self.instance.c_tag
+            self.fields['s_tag'].initial = self.instance.s_tag
             self.fields['creator'].initial = self.instance.creator
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
@@ -70,7 +72,8 @@ class VOLTTenantForm(forms.ModelForm):
                self.fields["provider_service"].initial = VOLTService.get_service_objects().all()[0]
 
     def save(self, commit=True):
-        self.instance.vlan_id = self.cleaned_data.get("vlan_id")
+        self.instance.s_tag = self.cleaned_data.get("s_tag")
+        self.instance.c_tag = self.cleaned_data.get("c_tag")
         self.instance.creator = self.cleaned_data.get("creator")
         return super(VOLTTenantForm, self).save(commit=commit)
 
@@ -78,10 +81,10 @@ class VOLTTenantForm(forms.ModelForm):
         model = VOLTTenant
 
 class VOLTTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'service_specific_id', 'vlan_id', 'subscriber_root' )
+    list_display = ('backend_status_icon', 'id', 'service_specific_id', 's_tag', 'c_tag', 'subscriber_root' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_root', 'service_specific_id', # 'service_specific_attribute',
-                                     'vlan_id', 'creator'],
+                                     's_tag', 'c_tag', 'creator'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute')
     form = VOLTTenantForm

@@ -254,7 +254,7 @@ class VOLTTenant(Tenant):
 
     KIND = VOLT_KIND
 
-    default_attributes = {"vlan_id": None, }
+    default_attributes = {"vlan_id": None, "s_tag": None, "c_tag": None}
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
@@ -263,12 +263,30 @@ class VOLTTenant(Tenant):
         self.cached_vcpe = None
 
     @property
+    def s_tag(self):
+        return self.get_attribute("s_tag", self.default_attributes["s_tag"])
+
+    @s_tag.setter
+    def s_tag(self, value):
+        self.set_attribute("s_tag", value)
+
+    @property
+    def c_tag(self):
+        return self.get_attribute("c_tag", self.default_attributes["c_tag"])
+
+    @c_tag.setter
+    def c_tag(self, value):
+        self.set_attribute("c_tag", value)
+
+    # for now, vlan_id is a synonym for c_tag
+
+    @property
     def vlan_id(self):
-        return self.get_attribute("vlan_id", self.default_attributes["vlan_id"])
+        return self.c_tag
 
     @vlan_id.setter
     def vlan_id(self, value):
-        self.set_attribute("vlan_id", value)
+        self.c_tag = value
 
     @property
     def vcpe(self):
