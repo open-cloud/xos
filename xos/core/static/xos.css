@@ -677,6 +677,8 @@ height: 84.5%;
 
 .login #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    overflow: hidden;
+    padding: 0;
 }
 #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);

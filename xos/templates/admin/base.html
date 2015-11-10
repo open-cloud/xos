@@ -123,82 +123,76 @@
         <!-- END Header -->
       {% endblock %}
 
-      {% include 'suit/menu.html' %}
-      <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
+      <div class="container-fluid">
+        <div class="col-xs-4">
+          
+          {% include 'suit/menu.html' %}
+        </div>
+        <div class="col-xs-8">
+          <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
 
-        {% block content-center %}
-          <!-- <div id="suit-center" class="suit-column"> -->
+            {% block content-center %}
+              <!-- <div id="suit-center" class="suit-column"> -->
 
-            {% if not is_popup %}
-            {% block minidash %}
-            <div id=openCloudTopPage>
-            {% include "admin/newminidashboard.html" %}
-            </div>
-            {% endblock %} 
-
-              {% block breadcrumbs %}
-                <ul class="breadcrumb"> 
-                  <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-                    {% if title %}
-                      <span class="divider">&raquo;</span>
-                      </li>
-                      <li class="active">
-                      {{ title }}
-                    {% endif %}
-                    </li>
-                </ul>
-              {% endblock %}
-            {% endif %}
-
-            {% block messages %}
-              {% if messages %}
-
-                {% for message in messages %}
-                  <div class="alert alert-{% firstof message.tags 'info' %}">
-                    <button class="close" data-dismiss="alert">×</button>
-                    <strong>
-                      {% if message.tags %}{{ message.tags|capfirst }}{% else %}
-                        Message{% endif %}!</strong>
-                    {{ message }}
-                  </div>
-                {% endfor %}
-              {% endif %}
-            {% endblock messages %}
-
-            <!-- Content -->
-            <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
-              {% block pretitle %}{% endblock %}
-              {% block content_title %}{% if title %}
-                <h2 class="content-title">{{ title }}</h2>
-              {% endif %}{% endblock %}
-              {% block content %}
-                {% block object-tools %}{% endblock %}
-                {{ content }}
-              {% endblock %}
-              {% block sidebar_content %}
-                {% block sidebar %}{% endblock %}
-              {% endblock %}
-            </div>
-            <!-- END Content -->
-          <span class="clearfix"></span>
-          <!-- </div> -->
-        {% endblock %}
-
-
-        {% block content-left %}
-          {% if not user.is_appuser %}
-              {% if not is_popup %}
-                <div id="suit-left" class="suit-column">
-
-
-                  
-
+                {% if not is_popup %}
+                {% block minidash %}
+                <div id=openCloudTopPage>
+                {% include "admin/newminidashboard.html" %}
                 </div>
-              {% endif %}
-          {% endif %}
-        {% endblock %}
+                {% endblock %} 
 
+                  {% block breadcrumbs %}
+                    <ul class="breadcrumb"> 
+                      <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                        {% if title %}
+                          <span class="divider">&raquo;</span>
+                          </li>
+                          <li class="active">
+                          {{ title }}
+                        {% endif %}
+                        </li>
+                    </ul>
+                  {% endblock %}
+                {% endif %}
+
+                {% block messages %}
+                  {% if messages %}
+
+                    {% for message in messages %}
+                      <div class="alert alert-{% firstof message.tags 'info' %}">
+                        <button class="close" data-dismiss="alert">×</button>
+                        <strong>
+                          {% if message.tags %}{{ message.tags|capfirst }}{% else %}
+                            Message{% endif %}!</strong>
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endblock messages %}
+
+                <!-- Content -->
+                <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
+                  {% block pretitle %}{% endblock %}
+                  {% block content_title %}{% if title %}
+                    <h2 class="content-title">{{ title }}</h2>
+                  {% endif %}{% endblock %}
+                  {% block content %}
+                    {% block object-tools %}{% endblock %}
+                    {{ content }}
+                  {% endblock %}
+                  {% block sidebar_content %}
+                    {% block sidebar %}{% endblock %}
+                  {% endblock %}
+                </div>
+                <!-- END Content -->
+              <span class="clearfix"></span>
+              <!-- </div> -->
+            {% endblock %}
+
+          </div>
+        </div>
       </div>
+
     </div>
   {% endblock %}
 
