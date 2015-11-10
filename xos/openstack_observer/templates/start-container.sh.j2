@@ -6,11 +6,13 @@ ip6tables -L > /dev/null
 CONTAINER={{ container_name }}
 IMAGE={{ docker_image }}
 
+{% if volumes %}
 {% for volume in volumes %}
 DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
 mkdir -p $DEST_DIR
 VOLUME_ARGS="$VOLUME_ARGS -v $DEST_DIR:{{ volume }}"
 {% endfor %}
+{% endif %}
 
 docker inspect $CONTAINER > /dev/null 2>&1
 if [ "$?" == 1 ]

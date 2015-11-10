@@ -80,6 +80,8 @@ class InstanceManager(PlCoreBaseManager):
 
 # Create your models here.
 class Instance(PlCoreBase):
+    ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), )
+
     objects = InstanceManager()
     deleted_objects = InstanceDeletionManager()
     instance_id = StrippedCharField(null=True, blank=True, max_length=200, help_text="Nova instance id")
@@ -97,6 +99,7 @@ class Instance(PlCoreBase):
     flavor = models.ForeignKey(Flavor, help_text="Flavor of this instance", default=get_default_flavor)
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
+    isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
 
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):

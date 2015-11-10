@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
-from core.models import Service, Slice, Container
+from core.models import Service, Slice, Instance
 from services.onos.models import ONOSService, ONOSApp
 from util.logger import Logger, logging
 
@@ -19,34 +19,28 @@ sys.path.insert(0,parentdir)
 logger = Logger(level=logging.INFO)
 
 class SyncContainer(SyncStep):
-    provides=[Container]
-    observes=Container
+    provides=[Instance]
+    observes=Instance
     requested_interval=0
     template_name = "sync_container.yaml"
 
     def __init__(self, *args, **kwargs):
         super(SyncContainer, self).__init__(*args, **kwargs)
 
-#    def fetch_pending(self, deleted):
-#        if (not deleted):
-#            objs = ONOSService.get_service_objects().filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
-#        else:
-#            objs = ONOSService.get_deleted_service_objects()
-#
-#        return objs
+    def fetch_pending(self, deletion=False):
+        objs = super(SyncContainer, self).fetch_pending(deletion)
+        objs = [x for x in objs if x.isolation=="container"]
+        return objs
 
     def get_node(self,o):
         return o.node
 
     def get_node_key(self, node):
         return "/root/setup/node_key"
-        #return "/opt/xos/node-key"
 
     def get_instance_port(self, container_port):
-        print container_port
-        print container_port.network
         for p in container_port.network.links.all():
-            if (p.instance) and (p.instance.node == container_port.container.node) and (p.mac):
+            if (p.instance) and (p.instance.kind=="vm") and (p.instance.node == container_port.container.node) and (p.mac):
                 return p
         return None
 
@@ -81,10 +75,10 @@ class SyncContainer(SyncStep):
         fields["baremetal_ssh"] = True
         fields["instance_name"] = "rootcontext"
         fields["container_name"] = "%s-%s" % (o.slice.name, str(o.id))
-        fields["docker_image"] = o.docker_image
+        fields["docker_image"] = o.image.name
         fields["username"] = "root"
         fields["ports"] = self.get_ports(o)
-        fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
+        fields["volumes"] = [] # XXX [x.strip() for x in o.volumes.split(",")]
         return fields
 
     def sync_fields(self, o, fields):
