@@ -277,60 +277,12 @@ font-weight: bold;
 margin-bottom: 5px;
 }
 
-
-/*For changing the background color of the left side navigation list items*/
-/*For changing the color of the left side navigation list items*/
-/*For changing the font of the left side navigation list items*/
-.left-nav>ul>li>a {
-/*background-color: #CDE7FF;*/
-/* Light color nav choices */
-/*background-color: #DFECF8;*/
-/*background-color: #91BFE4;*/
-/*background-color: #DAECFC;*/
-background-color: #448CCA;
-/*ONlab.us reg color blue*/
-/*background-color: #ccffff;*/
-font-weight: normal;
-/*color: #105E9E;*/
-color: #ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
-font-size: 12px;
-border-bottom: none;
-}
-
-/*For giving the padding for the left side navigation*/
-.left-nav>ul {
-padding-left: 5px;
-}
-
-/*For increasing the height of left side navigation list items*/
-.left-nav>ul>li {
-padding-top:4px;
-line-height: 35px;
-width: 200px;
-}
-
 /*For changing background color of suit center*/
 #suit-center {
 background-color: #ffffff;
 }
 
-.left-nav>ul>li.active>a {
-/*background-color: #448CCA;*/
-/* Last Active
-background-color: #0061B7; */
-background-color: #515151;
-/*background-color: #448CCA;*/
-font-weight:normal;
-color:#ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
 
-/*left: 10px;*/
-background-image: url("right_arrow.png");
-    background-position: 97% center;
-}
 
 
 .nav-tabs-suit li{
@@ -391,37 +343,6 @@ font-size: 0;
 line-height: 0;
 }
 
-
-/* create an arrow that points down */
-
-
-.left-nav>ul>li.active>a:hover{
-/*background-color: #448CCA;*/
-/*background-color: #91BFE4;*/
-/*background-color: #D6E7F8;*/
-font-weight:normal;
-font-size: 1.2em;
-/*font-weight: bold;*/
-color:#ffffff;
-/*padding-top:10px;*/
-text-decoration:none;
-}
-
-/* Adjust font weight to normal on hover, else white blurs */
-.left-nav>ul>li>a:hover{
-/*background-color: #448CCA;*/
-/*background-color: #004775;*/
-background-color: #515151;
-color:#ffffff;
-font-weight:normal;
-font-size: 1.2em;
-/*padding-top:10px;*/
-text-decoration:none;
-/*border-left: 15px solid #105E9E ;*/
-border-left: 10px solid #ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
-}
 .nav-tabs-suit li.active a:hover,.nav-tabs-suit li a:hover{
 /*background-color: #448CCA;*/
 background-color: #515151;
@@ -678,7 +599,7 @@ height: 84.5%;
 .login #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
     overflow: hidden;
-    padding: 0;
+    padding: 0f;
 }
 #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
@@ -777,9 +698,13 @@ opacity:1;
 }
 
 .icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
-background-position: left center;
-width:22px;
-height:22px;	
+  background-position: left center;
+  width:22px;
+  height:22px;
+  display: inline-block;
+  margin-right: 10px;
+  position: relative;
+  top: 5px;
 }
 
 .icon-app {
@@ -787,42 +712,128 @@ background-image: url("opencloudApp.png");
 }
 .icon-home {
 /*  Going with darker standard color nav -- so using over png's background-image: url("Home.png"); */
-background-image: url("Home_over.png");
+background-image: url("Home.png");
 }
 .icon-deployment{
-background-image: url("Deployments_over.png");
+background-image: url("Deployments.png");
 }
 .icon-site{
-background-image: url("Sites_over.png");
+background-image: url("Sites.png");
 }
 .icon-slice{
-background-image: url("Slices_over.png");
+background-image: url("Slices.png");
 }
 .icon-user{
-background-image: url("Users_over.png");
+background-image: url("Users.png");
 }
 .icon-reservation{
-background-image: url("Reservations_over.png");
+background-image: url("Reservations.png");
 }
 
-.left-nav>ul>li.active>a>.icon-home , .left-nav>ul>li:hover>a>.icon-home , .left-nav>ul>li.focus>a>.icon-home{
-background-image: url("Home_over.png");
+
+/*For giving the padding for the left side navigation*/
+.left-nav>ul {
+  padding-left: 5px;
 }
 
-.left-nav>ul>li.active>a>.icon-deployment,.left-nav>ul>li:hover>a>.icon-deployment,.left-nav>ul>li.focus>a>.icon-deployment{
-background-image: url("Deployments_over.png");
+/*For increasing the height of left side navigation list items*/
+.left-nav>ul>li {
+  padding-top:4px;
+  line-height: 35px;
 }
-.left-nav>ul>li.active>a>.icon-site , .left-nav>ul>li:hover>a>.icon-site , .left-nav>ul>li.focus>a>.icon-site{
-background-image: url("Sites_over.png");
+
+/*For changing the background color of the left side navigation list items*/
+/*For changing the color of the left side navigation list items*/
+/*For changing the font of the left side navigation list items*/
+.left-nav>ul>li>a {
+  /*background-color: #448CCA;*/
+  /*ONlab.us reg color blue*/
+  /*background-color: #ccffff;*/
+  /*font-weight: normal;*/
+  /*color: #105E9E;*/
+  /*color: #ffffff;*/
+  /*text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;*/
+  /*letter-spacing: 1px;*/
+  /*font-size: 12px;*/
+  /*border-bottom: none;*/
 }
-.left-nav>ul>li.active>a>.icon-slice , .left-nav>ul>li:hover>a>.icon-slice , .left-nav>ul>li.focus>a>.icon-slice {
-background-image: url("Slices_over.png");
+
+.left-nav>ul>li.active>a {
+  /*background-color: #448CCA;*/
+  /* Last Active
+  background-color: #0061B7; */
+  /*background-color: #515151;*/
+  /*background-color: #448CCA;*/
+  /*font-weight:normal;*/
+  /*color:#ffffff;*/
+  /*text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;*/
+  /*letter-spacing: 1px;*/
+
+  /*left: 10px;*/
+  /*background-image: url("right_arrow.png");*/
+  /*background-position: 97% center;*/
 }
-.left-nav>ul>li.active>a>.icon-user , .left-nav>ul>li:hover>a>.icon-user , .left-nav>ul>li.focus>a>.icon-user{
-background-image: url("Users_over.png");
+
+/* create an arrow that points down */
+
+
+.left-nav>ul>li.active>a:hover{
+  /*background-color: #448CCA;*/
+  /*background-color: #91BFE4;*/
+  /*background-color: #D6E7F8;*/
+  /*font-weight:normal;*/
+  /*font-size: 1.2em;*/
+  /*font-weight: bold;*/
+  /*color:#ffffff;*/
+  /*padding-top:10px;*/
+  /*text-decoration:none;*/
 }
-.left-nav>ul>li.active>a>.icon-reservation , .left-nav>ul>li:hover>a>.icon-reservation , .left-nav>ul>li.focus>a>.icon-reservation{
-background-image: url("Reservations_over.png");
+
+/* Adjust font weight to normal on hover, else white blurs */
+.left-nav>ul>li>a:hover{
+  /*background-color: #448CCA;*/
+  /*background-color: #004775;*/
+  /*background-color: #515151;*/
+  /*color:#ffffff;*/
+  /*font-weight:normal;*/
+  /*font-size: 1.2em;*/
+  /*padding-top:10px;*/
+  /*text-decoration:none;*/
+  /*border-left: 10px solid #ffffff;*/
+  /*text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;*/
+  /*letter-spacing: 1px;*/
+}
+
+.left-nav>ul>li.active>a>.icon-home ,
+/*.left-nav>ul>li:hover>a>.icon-home ,*/
+.left-nav>ul>li.focus>a>.icon-home{
+  background-image: url("Home_over.png");
+}
+
+.left-nav>ul>li.active>a>.icon-deployment,
+/*.left-nav>ul>li:hover>a>.icon-deployment,*/
+.left-nav>ul>li.focus>a>.icon-deployment{
+  background-image: url("Deployments_over.png");
+}
+.left-nav>ul>li.active>a>.icon-site,
+/*.left-nav>ul>li:hover>a>.icon-site,*/
+.left-nav>ul>li.focus>a>.icon-site{
+  background-image: url("Sites_over.png");
+}
+.left-nav>ul>li.active>a>.icon-slice,
+/*.left-nav>ul>li:hover>a>.icon-slice,*/
+.left-nav>ul>li.focus>a>.icon-slice{
+  background-image: url("Slices_over.png");
+}
+.left-nav>ul>li.active>a>.icon-user,
+/*.left-nav>ul>li:hover>a>.icon-user,*/
+.left-nav>ul>li.focus>a>.icon-user{
+  background-image: url("Users_over.png");
+}
+.left-nav>ul>li.active>a>.icon-reservation,
+/*.left-nav>ul>li:hover>a>.icon-reservation,*/
+.left-nav>ul>li.focus>a>.icon-reservation{
+  background-image: url("Reservations_over.png");
 }
 
 #dashboardHPC {
