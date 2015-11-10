@@ -113,7 +113,9 @@ class CordSubscriber(CordSubscriberRoot):
                      # ("services", "vcpe.services"),
                      # ("cdn_enable", "vcpe.cdn_enable"),
 
-                     ("vlan_id", "volt.vlan_id"),
+                     ("vlan_id", "volt.vlan_id"),      # XXX remove this
+                     ("c_tag", "volt.c_tag"),
+                     ("s_tag", "volt.s_tag"),
 
                      ("bbs_account", "volt.vcpe.bbs_account"),
                      ("ssh_command", "volt.vcpe.ssh_command"),

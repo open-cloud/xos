@@ -7,7 +7,10 @@ from core.models import Deployment, DeploymentPrivilege, Controller,ControllerLi
 # Create your models here.
 
 class Image(PlCoreBase):
+    KIND_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), )
+
     name = StrippedCharField(max_length=256, unique=True)
+    kind = models.CharField(null=False, blank=False, max_length=30, choices=KIND_CHOICES, default="vm")
     disk_format = StrippedCharField(max_length=256)
     container_format = StrippedCharField(max_length=256)
     path = StrippedCharField(max_length=256, null=True, blank=True, help_text="Path to image on local disk")
