@@ -3,7 +3,7 @@
 <head>
   <title>{% block title %}  {%if title %} {{ title }} | {% endif %} {{ 'ADMIN_NAME'|suit_conf }}{% endblock %}</title>
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/dist/css/bootstrap.min.css' %}" media="all"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'xos.css' %}" media="all">
   <link rel="stylesheet" type="text/css" href="{% static 'cord.css' %}" media="all">
@@ -123,11 +123,11 @@
         <!-- END Header -->
       {% endblock %}
 
-
+      {% include 'suit/menu.html' %}
       <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
 
         {% block content-center %}
-          <div id="suit-center" class="suit-column">
+          <!-- <div id="suit-center" class="suit-column"> -->
 
             {% if not is_popup %}
             {% block minidash %}
@@ -181,7 +181,7 @@
             </div>
             <!-- END Content -->
           <span class="clearfix"></span>
-          </div>
+          <!-- </div> -->
         {% endblock %}
 
 
@@ -191,7 +191,7 @@
                 <div id="suit-left" class="suit-column">
 
 
-                  {% include 'suit/menu.html' %}
+                  
 
                 </div>
               {% endif %}
@@ -244,7 +244,7 @@
   {% endif %}
 {% endblock %}
 
-  <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'suit/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'suit/js/suit.js' %}"></script>
   <script type="text/javascript" src="//www.google.com/jsapi"></script>
   <!-- src="{% static 'xos_graphs.js' %}" -->
