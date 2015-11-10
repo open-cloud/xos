@@ -13,6 +13,14 @@
         {% for vlan_id in vlan_ids %}
         - {{ vlan_id }}
         {% endfor %}
+      c_tags:
+        {% for c_tag in c_tags %}
+        - {{ c_tag }}
+        {% endfor %}
+      s_tags:
+        {% for s_tag in s_tags %}
+        - {{ s_tag }}
+        {% endfor %}
       firewall_rules:
         {% for firewall_rule in firewall_rules.split("\n") %}
         - {{ firewall_rule }}

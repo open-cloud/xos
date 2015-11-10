@@ -1203,7 +1203,7 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
 class ImageAdmin(XOSBaseAdmin):
 
     fieldsets = [('Image Details',
-                   {'fields': ['backend_status_text', 'name', 'disk_format', 'container_format'],
+                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
@@ -1214,7 +1214,7 @@ class ImageAdmin(XOSBaseAdmin):
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
-    list_display = ['backend_status_icon', 'name']
+    list_display = ['backend_status_icon', 'name', 'kind']
     list_display_links = ('backend_status_icon', 'name', )
 
 class NodeForm(forms.ModelForm):
@@ -1282,10 +1282,10 @@ class InstancePortInline(XOSTabularInline):
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'flavor', 'image', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'isolation', 'flavor', 'image', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
-    list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
+    list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'isolation', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
     suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
@@ -1372,38 +1372,38 @@ class InstanceAdmin(XOSBaseAdmin):
     #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
     #    obj.delete()
 
-class ContainerPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
-    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
-    model = Port
-    selflink_fieldname = "network"
-    extra = 0
-    verbose_name_plural = "Ports"
-    verbose_name = "Port"
-    suit_classes = 'suit-tab suit-tab-ports'
+#class ContainerPortInline(XOSTabularInline):
+#    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
+#    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
+#    model = Port
+#    selflink_fieldname = "network"
+#    extra = 0
+#    verbose_name_plural = "Ports"
+#    verbose_name = "Port"
+#    suit_classes = 'suit-tab suit-tab-ports'
 
-class ContainerAdmin(XOSBaseAdmin):
-    fieldsets = [
-        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'volumes', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
-    ]
-    readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'id']
-    list_display_links = ('backend_status_icon', 'id', )
-
-    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
-
-    inlines = [TagInline, ContainerPortInline]
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'slice':
-            kwargs['queryset'] = Slice.select_by_user(request.user)
-
-        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def queryset(self, request):
-        # admins can see all instances. Users can only see instances of
-        # the slices they belong to.
-        return Container.select_by_user(request.user)
+#class ContainerAdmin(XOSBaseAdmin):
+#    fieldsets = [
+#        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'volumes', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
+#    ]
+#    readonly_fields = ('backend_status_text', )
+#    list_display = ['backend_status_icon', 'id']
+#    list_display_links = ('backend_status_icon', 'id', )
+#
+#    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
+#
+#    inlines = [TagInline, ContainerPortInline]
+#
+#    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#        if db_field.name == 'slice':
+#            kwargs['queryset'] = Slice.select_by_user(request.user)
+#
+#        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+#
+#    def queryset(self, request):
+#        # admins can see all instances. Users can only see instances of
+#        # the slices they belong to.
+#        return Container.select_by_user(request.user)
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -1760,7 +1760,7 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     readonly_fields = ('backend_status_icon', )
 
 class NetworkPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'instance', 'container', 'ip', 'mac']
+    fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
     selflink_fieldname = "instance"
@@ -2057,5 +2057,5 @@ if True:
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
-    admin.site.register(Container, ContainerAdmin)
+#    admin.site.register(Container, ContainerAdmin)
 
