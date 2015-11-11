@@ -124,6 +124,13 @@ class Instance(PlCoreBase):
         if not self.creator:
             raise ValidationError('instance has no creator')
 
+        if (self.isolation == "container"):
+            if (self.image.kind != "container"):
+                raise ValidationError("Container instance must use container image")
+        elif (self.isolation == "vm"):
+            if (self.image.kind != "vm"):
+                raise ValidationError("VM instance must use VM image")
+
         if (self.slice.creator != self.creator):
             # Check to make sure there's a slice_privilege for the user. If there
             # isn't, then keystone will throw an exception inside the observer.
