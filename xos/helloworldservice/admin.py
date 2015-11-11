@@ -12,7 +12,7 @@ from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
 from core.middleware import get_request
-
+from core.models import User
 from functools import update_wrapper
 from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse
