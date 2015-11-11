@@ -144,14 +144,11 @@ class SyncPorts(OpenStackSyncStep):
 
         # For ports that were created by the user, find that ones
         # that don't have neutron ports, and create them.
-        for port in Port.objects.filter(Q(port_id__isnull=True), Q(instance__isnull=False) | Q(container__isnull=False)):
+        for port in Port.objects.filter(Q(port_id__isnull=True), Q(instance__isnull=False) ):
             logger.info("XXX working on port %s" % port)
-            if port.instance:
-                controller = port.instance.node.site_deployment.controller
-                slice = port.instance.slice
-            else:
-                controller = port.container.node.site_deployment.controller
-                slice = port.container.slice
+            controller = port.instance.node.site_deployment.controller
+            slice = port.instance.slice
+
             if controller:
                 cn=port.network.controllernetworks.filter(controller=controller)
                 if not cn:

@@ -26,7 +26,9 @@ def get_default_volt_service():
 class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         service_specific_id = serializers.CharField()
-        vlan_id = serializers.CharField()
+        #vlan_id = serializers.CharField()
+        s_tag = serializers.CharField()
+        c_tag = serializers.CharField()
         provider_service = serializers.PrimaryKeyRelatedField(queryset=VOLTService.get_service_objects().all(), default=get_default_volt_service)
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -35,7 +37,7 @@ class VOLTTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = VOLTTenant
-            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 'vlan_id', 'computeNodeName' )
+            fields = ('humanReadableName', 'id', 'provider_service', 'service_specific_id', 's_tag', 'c_tag', 'computeNodeName' )
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
@@ -62,9 +64,19 @@ class VOLTTenantList(XOSListCreateAPIView):
         if service_specific_id is not None:
             queryset = queryset.filter(service_specific_id=service_specific_id)
 
-        vlan_id = self.request.QUERY_PARAMS.get('vlan_id', None)
-        if vlan_id is not None:
-            ids = [x.id for x in queryset if x.get_attribute("vlan_id", None)==vlan_id]
+#        vlan_id = self.request.QUERY_PARAMS.get('vlan_id', None)
+#        if vlan_id is not None:
+#            ids = [x.id for x in queryset if x.get_attribute("vlan_id", None)==vlan_id]
+#            queryset = queryset.filter(id__in=ids)
+
+        c_tag = self.request.QUERY_PARAMS.get('c_tag', None)
+        if c_tag is not None:
+            ids = [x.id for x in queryset if x.get_attribute("c_tag", None)==c_tag]
+            queryset = queryset.filter(id__in=ids)
+
+        s_tag = self.request.QUERY_PARAMS.get('s_tag', None)
+        if s_tag is not None:
+            ids = [x.id for x in queryset if x.get_attribute("s_tag", None)==s_tag]
             queryset = queryset.filter(id__in=ids)
 
         return queryset
@@ -74,7 +86,7 @@ class VOLTTenantList(XOSListCreateAPIView):
 
         existing_obj = None
         for obj in VOLTTenant.get_tenant_objects().all():
-            if (obj.vlan_id == data.get("vlan_id", None)) and (obj.service_specific_id == data.get("service_specific_id",None)):
+            if (obj.c_tag == data.get("c_tag", None)) and (obj.s_tag == data.get("s_tag", None)) and  (obj.service_specific_id == data.get("service_specific_id",None)):
                existing_obj = obj
 
         if existing_obj:
