@@ -1,0 +1,19 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  vars:
+      display_message: {{ display_message }}
+  tasks:
+  - name: install apache
+    apt: name=apache2 state=present
+
+  - name: write message
+    shell: cat "{{ display_message }}" > "/var/www/html/{{ instance_name }}.html"
+
+  - name: start apache
+    shell: service apache2 restart
+     
+ 
