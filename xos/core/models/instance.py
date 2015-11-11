@@ -100,6 +100,7 @@ class Instance(PlCoreBase):
     tags = generic.GenericRelation(Tag)
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
     isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
+    volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of directories to expose to parent context")
 
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
