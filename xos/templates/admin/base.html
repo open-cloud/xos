@@ -153,62 +153,64 @@
           <div class="row">
             <div class="col-lg-12">
               <div class="suit-columns {{ is_popup|yesno:'one-column,two-columns' }}">
-                  {% block content-center %}
-                  <!-- <div id="suit-center" class="suit-column">
-                  -->
+                {% block content-center %}
+                  {% if not is_popup %}
+                    {% block minidash %}
+                      <div id="openCloudTopPage">
+                        {% include "admin/newminidashboard.html" %}
+                      </div>
+                    {% endblock %} 
 
-                          {% if not is_popup %}
-                          {% block minidash %}
-                  <div id=openCloudTopPage>{% include "admin/newminidashboard.html" %}</div>
-                  {% endblock %} 
-
-                            {% block breadcrumbs %}
-                  <ul class="breadcrumb">
-                    <li>
-                      <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-                      {% if title %}
-                      <span class="divider">&raquo;</span>
-                    </li>
-                    <li class="active">
-                      {{ title }}
-                                  {% endif %}
-                    </li>
-                  </ul>
-                  {% endblock %}
+                    {% block breadcrumbs %}
+                      <ul class="breadcrumb">
+                        <li>
+                          <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                          {% if title %}
+                            <span class="divider">&raquo;</span>
+                        </li>
+                        <li class="active">
+                          {{ title }}
                           {% endif %}
+                        </li>
+                      </ul>
+                    {% endblock %}
+                  {% endif %}
 
-                          {% block messages %}
-                            {% if messages %}
+                  {% block messages %}
+                    {% if messages %}
+                      {% for message in messages %}
+                        <div class="alert alert-{% firstof message.tags 'info' %}">
+                          <button class="close" data-dismiss="alert">×</button>
+                          <strong>{% if message.tags %}{{ message.tags|capfirst }}{% else %}Message{% endif %}!</strong> 
+                          {{ message }}
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                  {% endblock messages %}
 
-                              {% for message in messages %}
-                  <div class="alert alert-{% firstof message.tags 'info' %}">
-                    <button class="close" data-dismiss="alert">×</button> <strong>{% if message.tags %}{{ message.tags|capfirst }}{% else %}
-                                      Message{% endif %}!</strong> 
-                    {{ message }}
-                  </div>
-                  {% endfor %}
-                            {% endif %}
-                          {% endblock messages %}
                   <!-- Content -->
                   <div id="content" class="{% block coltype %}colM{% endblock %} row-fluid">
-                    {% block pretitle %}{% endblock %}
-                            {% block content_title %}{% if title %}
-                    <h2 class="content-title">{{ title }}</h2>
-                    {% endif %}{% endblock %}
-                            {% block content %}
-                              {% block object-tools %}{% endblock %}
-                              {{ content }}
-                            {% endblock %}
-                            {% block sidebar_content %}
-                              {% block sidebar %}{% endblock %}
-                            {% endblock %}
+                    {% block pretitle %}
+                    {% endblock %}
+                    {% block content_title %}
+                      {% if title %}
+                        <h2 class="content-title">{{ title }}</h2>
+                      {% endif %}
+                    {% endblock %}
+                    {% block content %}
+                      {% block object-tools %}
+                      {% endblock %}
+                      {{ content }}
+                    {% endblock %}
+                    {% block sidebar_content %}
+                      {% block sidebar %}{% endblock %}
+                    {% endblock %}
                   </div>
                   <!-- END Content -->
                   <span class="clearfix"></span>
                   <!-- </div>
                   -->
-                      {% endblock %}
-                </div>
+                {% endblock %}
               </div>
             </div>
           </div>
@@ -218,52 +220,51 @@
     <!-- /#wrapper -->
     {% endblock %}
     </div>
-  </div>
-
-  {% if not is_popup %}
-    <!-- Sticky footer push -->
-    <div id="push"></div>
-  {% endif %}
-
-  {% block footer %}
     {% if not is_popup %}
-      <div id="footer" class="footer">
-        <div class="content">
-          <div class="tools">
-            {% block footer_links %}
-              <a href="http://djangosuit.com/support/" target="_blank" class="icon">
-                <i class="icon-question-sign"></i>
-                Support
-              </a>
-              <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
-                <i class="icon-bookmark"></i>
-                Licence
-              </a>
-              <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
-                <i class="icon-comment"></i>
-                Report a bug
-              </a>
-            {% endblock %}
-          </div>
+      <!-- Sticky footer push -->
+      <div id="push"></div>
+    {% endif %}
 
-          <div class="statusMsg" id="statusMsg">
-            <!-- this is a placeholder for xoslib views to display status messages -->
-          </div>
+    {% block footer %}
+      {% if not is_popup %}
+        <div id="footer" class="footer">
+          <div class="content">
+            <div class="tools">
+              {% block footer_links %}
+                <a href="http://djangosuit.com/support/" target="_blank" class="icon">
+                  <i class="icon-question-sign"></i>
+                  Support
+                </a>
+                <a href="http://djangosuit.com/pricing/" target="_blank" class="icon">
+                  <i class="icon-bookmark"></i>
+                  Licence
+                </a>
+                <a href="http://github.com/darklow/django-suit/issues" target="_blank" class="icon">
+                  <i class="icon-comment"></i>
+                  Report a bug
+                </a>
+              {% endblock %}
+            </div>
 
-          <div class="branding">
-            {% block footer_branding %}
-              {% with 'ADMIN_NAME'|suit_conf as admin_name %}
-                {{ admin_name }}
-                {% if admin_name == 'Django Suit' %}
-                  v{{ 'VERSION'|suit_conf }}
-                {% endif %}
-              {% endwith %}
-            {% endblock %}
+            <div class="statusMsg" id="statusMsg">
+              <!-- this is a placeholder for xoslib views to display status messages -->
+            </div>
+
+            <div class="branding">
+              {% block footer_branding %}
+                {% with 'ADMIN_NAME'|suit_conf as admin_name %}
+                  {{ admin_name }}
+                  {% if admin_name == 'Django Suit' %}
+                    v{{ 'VERSION'|suit_conf }}
+                  {% endif %}
+                {% endwith %}
+              {% endblock %}
+            </div>
           </div>
         </div>
-      </div>
-    {% endif %}
-  {% endblock %}
+      {% endif %}
+    {% endblock %}
+  </div>
 
   <script src="{% static 'suit/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'suit/js/suit.js' %}"></script>
