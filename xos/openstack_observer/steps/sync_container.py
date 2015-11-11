@@ -109,6 +109,9 @@ class SyncContainer(SyncStep):
 
         self.sync_fields(o, fields)
 
+        o.instance_id = fields["container_name"]
+        o.instance_name = fields["container_name"]
+
         o.save()
 
     def run_playbook(self, o, fields):
