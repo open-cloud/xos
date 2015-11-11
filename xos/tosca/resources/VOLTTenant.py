@@ -14,7 +14,7 @@ from xosresource import XOSResource
 class XOSVOLTTenant(XOSResource):
     provides = "tosca.nodes.VOLTTenant"
     xos_model = VOLTTenant
-    copyin_props = ["service_specific_id", "vlan_id"]
+    copyin_props = ["service_specific_id", "s_tag", "c_tag"]
     name_field = None
 
     def get_xos_args(self, throw_exception=True):

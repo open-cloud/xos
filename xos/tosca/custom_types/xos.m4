@@ -236,10 +236,14 @@ node_types:
             specific vlan_id.
         properties:
             xos_base_tenant_props
-            vlan_id:
+            s_tag:
                 type: string
                 required: false
-                description: vlan_id for connection to subscriber household.
+                description: s_tag, identifies which volt port
+            c_tag:
+                type: string
+                required: false
+                description: c_tag, identifies which subscriber within s_tag
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
