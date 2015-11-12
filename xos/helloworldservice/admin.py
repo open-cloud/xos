@@ -1,22 +1,9 @@
 from django.contrib import admin
 
-from helloworldservice.models import *
+from helloworldservice.models import HelloWorldService, HelloWorldTenant
 from django import forms
-from django.utils.safestring import mark_safe
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.contrib.auth.signals import user_logged_in
-from django.utils import timezone
-from django.contrib.contenttypes import generic
-from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline
-from core.middleware import get_request
 from core.models import User
-from functools import update_wrapper
-from django.contrib.admin.views.main import ChangeList
-from django.core.urlresolvers import reverse
-from django.contrib.admin.utils import quote
+from core.admin import SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, ServicePrivilegeInline
 
 class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     model = HelloWorldService
@@ -26,7 +13,7 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    inlines = [SliceInline, ServiceAttrAsTabInline, ServicePrivilegeInline]
 
     extracontext_registered_admins = True
 
