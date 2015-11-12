@@ -13,7 +13,7 @@ from flavorselect import XOSFlavorSelector
 from xosresource import XOSResource
 
 class XOSCompute(XOSResource):
-    provides = "tosca.nodes.Compute"
+    provides = ["tosca.nodes.Compute", "tosca.nodes.Compute.Container"]
     xos_model = Instance
 
     def select_compute_node(self, user, v, hostname=None):
@@ -60,11 +60,14 @@ class XOSCompute(XOSResource):
             colocate_host = colocate_instances[0].node.name
             self.info("colocating on %s" % colocate_host)
 
+        imageName = self.get_requirement("tosca.relationships.UsesImage", throw_exception=False)
+        image = self.get_xos_object(Image, name=imageName)
+
         capabilities = nodetemplate.get_capabilities()
         for (k,v) in capabilities.items():
-            if (k=="host"):
+            if (k=="host") and (not host):
                 (compute_node, flavor) = self.select_compute_node(self.user, v, hostname=colocate_host)
-            elif (k=="os"):
+            elif (k=="os") and (not image):
                 image = self.select_image(self.user, v)
 
         if not compute_node:
@@ -79,6 +82,9 @@ class XOSCompute(XOSResource):
         args["flavor"] = flavor
         args["node"] = compute_node
         args["deployment"] = compute_node.site_deployment.deployment
+
+        if nodetemplate.type == "tosca.nodes.Compute.Container":
+            args["isolation"] = "container"
 
         return args
 
@@ -119,4 +125,5 @@ class XOSCompute(XOSResource):
             return existing_instances
         else:
             return super(XOSCompute,self).get_existing_objs()
+
 

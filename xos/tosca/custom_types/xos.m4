@@ -447,6 +447,10 @@ node_types:
             image:
                 type: tosca.capabilities.xos.Image
         properties:
+            kind:
+                type: string
+                required: false
+                description: Type of image (container | VM)
             disk_format:
                 type: string
                 required: false
@@ -598,6 +602,31 @@ node_types:
                 required: false
                 description: URL to the dashboard
 
+    tosca.nodes.Compute.Container:
+      derived_from: tosca.nodes.Compute
+      description: >
+        The TOSCA Compute node represents a container on bare metal.
+      attributes:
+        private_address:
+          type: string
+        public_address:
+          type: string
+      capabilities:
+          host:
+             type: tosca.capabilities.Container
+          binding:
+             type: tosca.capabilities.network.Bindable
+          os:
+             type: tosca.capabilities.OperatingSystem
+          scalable:
+             type: tosca.capabilities.Scalable
+      requirements:
+        - local_storage:
+            capability: tosca.capabilities.Attachment
+            node: tosca.nodes.BlockStorage
+            relationship: tosca.relationships.AttachesTo
+            occurrences: [0, UNBOUNDED]
+
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Slice ]
@@ -637,6 +666,10 @@ node_types:
     tosca.relationships.ConnectsToNetwork:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Network ]
+
+    tosca.relationships.UsesImage:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Image ]
 
     tosca.relationships.SupportsImage:
         derived_from: tosca.relationships.Root
