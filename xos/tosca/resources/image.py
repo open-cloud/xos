@@ -15,7 +15,7 @@ from xosresource import XOSResource
 class XOSImage(XOSResource):
     provides = "tosca.nodes.Image"
     xos_model = Image
-    copyin_props = ["disk_format", "container_format", "path"]
+    copyin_props = ["disk_format", "container_format", "path", "kind"]
 
     def get_xos_args(self):
         args = super(XOSImage, self).get_xos_args()
