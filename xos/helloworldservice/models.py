@@ -18,15 +18,12 @@ class HelloWorldTenant(TenantWithContainer):
     default_attributes = {'display_message': 'Hello World!'}
     def __init__(self, *args, **kwargs):
         helloworld_services = HelloWorldService.get_service_objects().all();
-	if helloworld_services:
-            self._meta.get_field("provider_service").default = helloworld_services[0].id
-	
-	self.instance = (helloworld_services[0].slices.all()[0].instances.all()[0])
-	super(HelloWorldTenant, self).__init__(*args, **kwargs)
+    	if helloworld_services:
+                self._meta.get_field("provider_service").default = helloworld_services[0].id
+    	super(HelloWorldTenant, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         super(HelloWorldTenant, self).save(*args, **kwargs)
-
 
     def delete(self, *args, **kwargs):
         self.cleanup_container()
