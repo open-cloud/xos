@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from helloworldservice.models import HelloWorldService, HelloWorldTenant
+from helloworldservice.models import HelloWorldService, HelloWorldTenant, HELLO_WORLD_KIND
 from django import forms
 from core.models import User
 from core.admin import SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, ServicePrivilegeInline
