@@ -29,7 +29,7 @@ class SyncContainer(SyncStep):
 
     def fetch_pending(self, deletion=False):
         objs = super(SyncContainer, self).fetch_pending(deletion)
-        objs = [x for x in objs if x.isolation=="container"]
+        objs = [x for x in objs if x.isolation in ["container", "container_vm"]]
         return objs
 
     def get_node(self,o):
@@ -56,12 +56,20 @@ class SyncContainer(SyncStep):
             pd["mac"] = port.mac
             pd["ip"] = port.ip
 
-            instance_port = self.get_instance_port(port)
-            if not instance_port:
-                raise Exception("No instance on slice for port on network %s" % port.network.name)
+            if o.isolation == "container":
+                # container on bare metal
+                instance_port = self.get_instance_port(port)
+                if not instance_port:
+                    raise Exception("No instance on slice for port on network %s" % port.network.name)
 
-            pd["snoop_instance_mac"] = instance_port.mac
-            pd["snoop_instance_id"] = instance_port.instance.instance_id
+                pd["snoop_instance_mac"] = instance_port.mac
+                pd["snoop_instance_id"] = instance_port.instance.instance_id
+                pd["src_device"] = ""
+            else:
+                # container in VM
+                pd["snoop_instance_mac"] = ""
+                pd["snoop_instance_id"] = ""
+                pd["src_device"] = "eth%d" % i
 
             ports.append(pd)
 
@@ -72,13 +80,13 @@ class SyncContainer(SyncStep):
     def get_extra_attributes(self, o):
         fields={}
         fields["ansible_tag"] = "container-%s" % str(o.id)
-        fields["baremetal_ssh"] = True
-        fields["instance_name"] = "rootcontext"
         fields["container_name"] = "%s-%s" % (o.slice.name, str(o.id))
         fields["docker_image"] = o.image.name
-        fields["username"] = "root"
         fields["ports"] = self.get_ports(o)
-        fields["volumes"] = [] # XXX [x.strip() for x in o.volumes.split(",")]
+        if o.volumes:
+            fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
+        else:
+            fields["volumes"] = ""
         return fields
 
     def sync_fields(self, o, fields):
@@ -87,17 +95,39 @@ class SyncContainer(SyncStep):
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
 
-        node = self.get_node(o)
-        node_key_name = self.get_node_key(node)
+        if o.isolation=="container":
+            # container on bare metal
+            node = self.get_node(o)
+            key_name = self.get_node_key(node)
+            hostname = node.name
+            fields = { "hostname": hostname,
+                       "baremetal_ssh": True,
+                       "instance_name": "rootcontext",
+                       "username": "root",
+                     }
+        else:
+            # container in a VM
+            if not o.parent:
+                raise Exception("Container-in-VM has no parent")
+            if not o.parent.instance_id:
+                raise Exception("Container-in-VM parent is not yet instantiated")
+            if not o.parent.slice.service:
+                raise Exception("Container-in-VM parent has no service")
+            if not o.parent.slice.service.private_key_fn:
+                raise Exception("Container-in-VM parent service has no private_key_fn")
+            key_name = o.parent.slice.service.private_key_fn
+            fields = { "hostname": o.parent.node.name,
+                       "instance_name": o.parent.name,
+                       "instance_id": o.parent.instance_id,
+                       "username": "ubuntu",
+                       "nat_ip": o.parent.get_ssh_ip() }
 
-        if not os.path.exists(node_key_name):
+        if not os.path.exists(key_name):
             raise Exception("Node key %s does not exist" % node_key_name)
 
-        node_key = file(node_key_name).read()
+        key = file(key_name).read()
 
-        fields = { "hostname": node.name,
-                   "private_key": node_key,
-                 }
+        fields["private_key"] = key
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.
@@ -108,6 +138,9 @@ class SyncContainer(SyncStep):
         fields.update(self.get_extra_attributes(o))
 
         self.sync_fields(o, fields)
+
+        o.instance_id = fields["container_name"]
+        o.instance_name = fields["container_name"]
 
         o.save()
 

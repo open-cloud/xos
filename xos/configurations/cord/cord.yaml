@@ -29,6 +29,7 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
       artifacts:
           pubkey: /opt/xos/observers/vcpe/vcpe_public_key
 
@@ -456,7 +457,8 @@ topology_template:
         type: tosca.nodes.VOLTTenant
         properties:
             service_specific_id: 123
-            vlan_id: 432
+            s_tag: 222
+            c_tag: 432
         requirements:
             - provider_service:
                 node: service_volt

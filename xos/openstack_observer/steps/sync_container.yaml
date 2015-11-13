@@ -15,6 +15,7 @@
          ip: {{ port.ip }}
          snoop_instance_mac: {{ port.snoop_instance_mac }}
          snoop_instance_id: {{ port.snoop_instance_id }}
+         src_device: {{ port.src_device }}
     {% endfor %}
     volumes:
     {% for volume in volumes %}
@@ -78,6 +79,10 @@
 #      state: running
 #      image: {{ docker_image }}
 
+  - name: check if systemd is installed
+    stat: path=/usr/bin/systemctl
+    register: systemctl
+
   - name: container upstart
     template: src=/opt/xos/openstack_observer/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
 
@@ -89,6 +94,7 @@
 
   - name: restart systemd
     shell: systemctl daemon-reload
+    when: systemctl.stat.exists == True
 
   - name: Make sure container is running
     service: name=container-{{ container_name }} state=started

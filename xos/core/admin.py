@@ -880,7 +880,7 @@ class ServiceAttrAsTabInline(XOSTabularInline):
 class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon","name","kind","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key","service_specific_attribute","service_specific_id"]
+    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key","private_key_fn","service_specific_attribute","service_specific_id"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline,ServicePrivilegeInline]
     readonly_fields = ('backend_status_text', )
@@ -1282,13 +1282,14 @@ class InstancePortInline(XOSTabularInline):
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'isolation', 'flavor', 'image', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'isolation', 'flavor', 'image', 'node', 'parent', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command', ], 'classes': ['suit-tab suit-tab-general'], }),
+        ('Container Settings', {'fields': ['volumes'], 'classes': ['suit-tab suit-tab-container'], }),
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'isolation', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'), ('container', 'Container Settings'))
 
     inlines = [TagInline, InstancePortInline]
 

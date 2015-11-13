@@ -47,6 +47,10 @@ define(xos_base_service_props,
                 type: string
                 required: false
                 description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
             versionNumber:
                 type: string
                 required: false
@@ -236,10 +240,14 @@ node_types:
             specific vlan_id.
         properties:
             xos_base_tenant_props
-            vlan_id:
+            s_tag:
                 type: string
                 required: false
-                description: vlan_id for connection to subscriber household.
+                description: s_tag, identifies which volt port
+            c_tag:
+                type: string
+                required: false
+                description: c_tag, identifies which subscriber within s_tag
 
     tosca.nodes.User:
         derived_from: tosca.nodes.Root
@@ -443,6 +451,10 @@ node_types:
             image:
                 type: tosca.capabilities.xos.Image
         properties:
+            kind:
+                type: string
+                required: false
+                description: Type of image (container | VM)
             disk_format:
                 type: string
                 required: false
@@ -594,6 +606,31 @@ node_types:
                 required: false
                 description: URL to the dashboard
 
+    tosca.nodes.Compute.Container:
+      derived_from: tosca.nodes.Compute
+      description: >
+        The TOSCA Compute node represents a container on bare metal.
+      attributes:
+        private_address:
+          type: string
+        public_address:
+          type: string
+      capabilities:
+          host:
+             type: tosca.capabilities.Container
+          binding:
+             type: tosca.capabilities.network.Bindable
+          os:
+             type: tosca.capabilities.OperatingSystem
+          scalable:
+             type: tosca.capabilities.Scalable
+      requirements:
+        - local_storage:
+            capability: tosca.capabilities.Attachment
+            node: tosca.nodes.BlockStorage
+            relationship: tosca.relationships.AttachesTo
+            occurrences: [0, UNBOUNDED]
+
     tosca.relationships.MemberOfSlice:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Slice ]
@@ -633,6 +670,10 @@ node_types:
     tosca.relationships.ConnectsToNetwork:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Network ]
+
+    tosca.relationships.UsesImage:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Image ]
 
     tosca.relationships.SupportsImage:
         derived_from: tosca.relationships.Root
