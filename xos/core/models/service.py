@@ -52,6 +52,7 @@ class Service(PlCoreBase, AttributeMixin):
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
     icon_url = StrippedCharField(blank=True, null=True, max_length=1024)
     public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
+    private_key_fn = StrippedCharField(blank=True, null=True, max_length=1024)
 
     # Service_specific_attribute and service_specific_id are opaque to XOS
     service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
