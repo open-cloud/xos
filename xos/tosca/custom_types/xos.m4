@@ -47,6 +47,10 @@ define(xos_base_service_props,
                 type: string
                 required: false
                 description: Public key to install into Instances to allows Services to SSH into them.
+            private_key_fn:
+                type: string
+                required: false
+                description: Location of private key file
             versionNumber:
                 type: string
                 required: false

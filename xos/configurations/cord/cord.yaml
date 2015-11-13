@@ -29,6 +29,7 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
       artifacts:
           pubkey: /opt/xos/observers/vcpe/vcpe_public_key
 
