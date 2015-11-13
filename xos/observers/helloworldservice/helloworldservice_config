@@ -35,13 +35,10 @@ ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
 pretend=False
 backoff_disabled=False
 images_directory=/opt/xos/images
-dependency_graph=/opt/xos/model-deps
+dependency_graph=/opt/xos/observers/helloworldservice/model-deps
 logfile=/var/log/xos_backend.log
 steps_dir=/opt/xos/observers/helloworldservice/steps
 save_ansible_output=True
 
 [gui]
 disable_minidashboard=True
-#branding_name=CORD
-#branding_css=/static/cord.css
-#branding_icon=/static/onos-logo.png
