@@ -61,7 +61,8 @@ class XOSCompute(XOSResource):
             self.info("colocating on %s" % colocate_host)
 
         imageName = self.get_requirement("tosca.relationships.UsesImage", throw_exception=False)
-        image = self.get_xos_object(Image, name=imageName)
+        if imageName:
+            image = self.get_xos_object(Image, name=imageName)
 
         capabilities = nodetemplate.get_capabilities()
         for (k,v) in capabilities.items():
