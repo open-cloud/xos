@@ -5,6 +5,8 @@ from django import forms
 from core.models import User
 from core.admin import SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, ServicePrivilegeInline
 
+from core.middleware import get_request
+
 class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     model = HelloWorldService
     verbose_name = "Hello World Service"
