@@ -29,7 +29,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     sync_attributes = ("private_ip", "private_mac",
                        "ceilometer_ip", "ceilometer_mac",
-                       "nat_ip", "nat_mac",)
+                       "nat_ip", "nat_mac", "ceilometer_port",)
 
     default_attributes = {}
     def __init__(self, *args, **kwargs):
@@ -37,6 +37,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         if ceilometer_services:
             self._meta.get_field("provider_service").default = ceilometer_services[0].id
         super(MonitoringChannel, self).__init__(*args, **kwargs)
+        self.set_attribute("use_same_instance_for_multiple_tenants", True)
 
     def save(self, *args, **kwargs):
         if not self.creator:
@@ -62,7 +63,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     @property
     def addresses(self):
-        if not self.instance:
+        if (not self.id) or (not self.instance):
             return {}
 
         addresses = {}
@@ -132,10 +133,17 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         return ", ".join(self.tenant_list)
 
     @property
+    def ceilometer_port(self):
+        # TODO: Find a better logic to choose unique ceilometer port number for each instance 
+        if not self.id:
+            return None
+        return 8888+self.id
+
+    @property
     def ceilometer_url(self):
         if not self.ceilometer_ip:
             return None
-        return "http://" + self.private_ip + ":8888/"
+        return "http://" + self.private_ip + ":" + str(self.ceilometer_port) + "/"
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
