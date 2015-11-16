@@ -1764,7 +1764,7 @@ class NetworkPortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
-    selflink_fieldname = "instance"
+    #selflink_fieldname = "instance"
     extra = 0
     verbose_name_plural = "Ports"
     verbose_name = "Port"
@@ -1847,6 +1847,20 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
         (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), )
+
+class PortAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name", "id", "ip")
+    list_display_links = ('backend_status_icon', 'id')
+    readonly_fields = ("subnet", )
+    inlines = [NetworkParameterInline]
+
+    fieldsets = [
+        (None, {'fields': ['backend_status_text', 'network', 'instance', 'ip', 'port_id', 'mac'],
+                'classes':['suit-tab suit-tab-general']}),
+                ]
+
+    readonly_fields = ('backend_status_text', )
+    suit_form_tabs = (('general', 'Port Details'), ('netparams', 'Parameters'))
 
 class FlavorAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "flavor", "order", "default")
@@ -2035,6 +2049,7 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
 #admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
+admin.site.register(Port, PortAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 admin.site.register(Program, ProgramAdmin)
