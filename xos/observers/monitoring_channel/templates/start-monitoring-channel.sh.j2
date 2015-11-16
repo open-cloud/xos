@@ -15,13 +15,14 @@ ip6tables -L > /dev/null
 
 MONITORING_CHANNEL=monitoring-channel-{{ unique_id }}
 HEADNODEFLATLANIP={{ headnode_flat_lan_ip }}
+HOST_FORWARDING_PORT_FOR_CEILOMETER={{ ceilometer_host_port }}
 
 docker inspect $MONITORING_CHANNEL > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     #sudo docker build -t monitoring-channel -f Dockerfile.monitoring_channel .
     sudo docker pull srikanthvavila/monitoring-channel
-    docker run -d --name=$MONITORING_CHANNEL --add-host="ctl:$HEADNODEFLATLANIP" --privileged=true -p 8888:8000 srikanthvavila/monitoring-channel
+    docker run -d --name=$MONITORING_CHANNEL --add-host="ctl:$HEADNODEFLATLANIP" --privileged=true -p $HOST_FORWARDING_PORT_FOR_CEILOMETER:8000 srikanthvavila/monitoring-channel
 else
     docker start $MONITORING_CHANNEL
 fi
