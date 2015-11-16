@@ -11,6 +11,6 @@ fi
 echo "Copying the ceilometer vcpe notification agent files /usr/lib/python2.7/dist-packages/ceilometer"
 tar -xzf ceilometer_vcpe_notification_agent.tar.gz
 sudo mv ceilometer/network/ext_services /usr/lib/python2.7/dist-packages/ceilometer/network/
-sudo mv ceilometer-2015.1.1.egg-info/entry_points.txt /usr/lib/python2.7/dist-packages/ceilometer-2015.1.1.egg-info/
+sudo mv ceilometer-2015.1.1.egg-info/entry_points.txt /usr/lib/python2.7/dist-packages/ceilometer-*egg-info/
 echo "Restarting ceilometer-agent-notification"
 sudo service ceilometer-agent-notification restart

@@ -364,15 +364,30 @@ class TenantWithContainer(Tenant):
         if getattr(self, "cached_instance", None):
             return self.cached_instance
         instance_id=self.get_attribute("instance_id")
-        if not instance_id:
-            return None
-        instances=Instance.objects.filter(id=instance_id)
-        if not instances:
-            return None
-        instance=instances[0]
+        instance = None
+        if instance_id:
+            instances=Instance.objects.filter(id=instance_id)
+            instance=instances[0]
+        if not instance:
+            if not self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
+                return None
+            if not self.provider_service.slices.count():
+                raise XOSConfigurationError("The service has no associated slices")
+            slices = self.provider_service.slices.all()
+            instance = self.pick_least_loaded_instance_in_slice(slices)
+            if not instance:
+                return None
         instance.caller = self.creator
         self.cached_instance = instance
         return instance
+
+    def pick_least_loaded_instance_in_slice(self, slices):
+        for slice in slices:
+            if slice.instances.all().count() > 0:
+                #TODO: Temporarily returning the first instance in the slice
+                #TODO: Change logic to pick instance based on number of monitoring channels ruuning in each instance
+                return slice.instances.all()[0]
+        return None
 
     @instance.setter
     def instance(self, value):
