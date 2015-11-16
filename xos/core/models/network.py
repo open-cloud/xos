@@ -64,7 +64,38 @@ def ValidateNatList(ports):
     except Exception,e:
         raise ValidationError(str(e))
 
-class NetworkTemplate(PlCoreBase):
+class ParameterMixin(object):
+    # helper classes for dealing with NetworkParameter
+
+    def get_parameters(self):
+        parameter_dict = {}
+
+        instance_type = ContentType.objects.get_for_model(self)
+        for param in NetworkParameter.objects.filter(content_type__pk=instance_type.id, object_id=self.id):
+            parameter_dict[param.parameter.name] = param.value
+
+        return parameter_dict
+
+    def set_parameter(self, name, value):
+        instance_type = ContentType.objects.get_for_model(self)
+        existing_params = NetworkParameter.objects.filter(parameter__name=name, content_type__pk=instance_type.id, object_id=self.id)
+        if existing_params:
+            p=existing_params[0]
+            p.value = value
+            p.save()
+        else:
+            pt = NetworkParameterType.objects.get(name=name)
+            p = NetworkParameter(parameter=pt, content_type=instance_type, object_id=self.id, value=value)
+            p.save()
+
+    def unset_parameter(self, name):
+        instance_type = ContentType.objects.get_for_model(self)
+        existing_params = NetworkParameter.objects.filter(parameter__name=name, content_type__pk=instance_type.id, object_id=self.id)
+        for p in existing_params:
+            p.delete()
+
+
+class NetworkTemplate(PlCoreBase, ParameterMixin):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
     TRANSLATION_CHOICES = (('none', 'none'), ('NAT', 'NAT'))
     TOPOLOGY_CHOICES = (('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))
@@ -97,7 +128,7 @@ class NetworkTemplate(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class Network(PlCoreBase):
+class Network(PlCoreBase, ParameterMixin):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
     subnet = models.CharField(max_length=32, blank=True)
@@ -147,6 +178,14 @@ class Network(PlCoreBase):
             qs = Network.objects.filter(owner__in=slices)
         return qs
 
+    def get_parameters(self):
+        # returns parameters from the template, updated by self.
+        p={}
+        if self.template:
+            p = self.template.get_parameters()
+        p.update(ParameterMixin.get_parameters(self))
+        return p
+
 class ControllerNetwork(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
@@ -161,7 +200,7 @@ class ControllerNetwork(PlCoreBase):
 
     class Meta:
         unique_together = ('network', 'controller')
-        
+
     @staticmethod
     def select_by_user(user):
         if user.is_admin:
@@ -208,13 +247,12 @@ class NetworkSlice(PlCoreBase):
             qs = NetworkSlice.objects.filter(Q(slice__in=slice_ids) | Q(network__in=network_ids))
         return qs
 
-class Port(PlCoreBase):
+class Port(PlCoreBase, ParameterMixin):
     network = models.ForeignKey(Network,related_name='links')
     instance = models.ForeignKey(Instance, null=True, blank=True, related_name='ports')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
-    #unattached = models.BooleanField(default=False, help_text="create this port even if no Instance is attached")
     segmentation_id = models.CharField(null=True, blank=True, max_length=256, help_text="GRE segmentation id for port")
 
     class Meta:
@@ -256,6 +294,14 @@ class Port(PlCoreBase):
             network_ids = [network.id for network in networks]
             qs = Port.objects.filter(Q(instance__in=instance_ids) | Q(network__in=network_ids))
         return qs
+
+    def get_parameters(self):
+        # returns parameters from the network, updated by self.
+        p={}
+        if self.network:
+            p = self.network.get_parameters()
+        p.update(ParameterMixin.get_parameters(self))
+        return p
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
