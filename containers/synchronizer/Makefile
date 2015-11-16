@@ -1,10 +1,10 @@
-CONTAINER_NAME:=observer-server
+CONTAINER_NAME:=synchronizer-server
 
 .PHONY: build
-build: ; docker build --rm -t observer .
+build: ; docker build --rm -t synchronizer .
 
 .PHONY: run
-run: ; docker run -d --name ${CONTAINER_NAME} observer
+run: ; docker run -d --name ${CONTAINER_NAME} synchronizer
 
 .PHONY: stop
 stop: ; docker stop ${CONTAINER_NAME}
