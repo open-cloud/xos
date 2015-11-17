@@ -6,6 +6,7 @@ import base64
 import time
 from django.db.models import F, Q
 from xos.config import Config
+from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
 from core.models import Service, Slice, Instance
@@ -18,7 +19,7 @@ sys.path.insert(0,parentdir)
 
 logger = Logger(level=logging.INFO)
 
-class SyncContainer(SyncStep):
+class SyncContainer(SyncInstanceUsingAnsible):
     provides=[Instance]
     observes=Instance
     requested_interval=0
@@ -31,12 +32,6 @@ class SyncContainer(SyncStep):
         objs = super(SyncContainer, self).fetch_pending(deletion)
         objs = [x for x in objs if x.isolation in ["container", "container_vm"]]
         return objs
-
-    def get_node(self,o):
-        return o.node
-
-    def get_node_key(self, node):
-        return "/root/setup/node_key"
 
     def get_instance_port(self, container_port):
         for p in container_port.network.links.all():
@@ -98,39 +93,7 @@ class SyncContainer(SyncStep):
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
 
-        if o.isolation=="container":
-            # container on bare metal
-            node = self.get_node(o)
-            key_name = self.get_node_key(node)
-            hostname = node.name
-            fields = { "hostname": hostname,
-                       "baremetal_ssh": True,
-                       "instance_name": "rootcontext",
-                       "username": "root",
-                     }
-        else:
-            # container in a VM
-            if not o.parent:
-                raise Exception("Container-in-VM has no parent")
-            if not o.parent.instance_id:
-                raise Exception("Container-in-VM parent is not yet instantiated")
-            if not o.parent.slice.service:
-                raise Exception("Container-in-VM parent has no service")
-            if not o.parent.slice.service.private_key_fn:
-                raise Exception("Container-in-VM parent service has no private_key_fn")
-            key_name = o.parent.slice.service.private_key_fn
-            fields = { "hostname": o.parent.node.name,
-                       "instance_name": o.parent.name,
-                       "instance_id": o.parent.instance_id,
-                       "username": "ubuntu",
-                       "nat_ip": o.parent.get_ssh_ip() }
-
-        if not os.path.exists(key_name):
-            raise Exception("Node key %s does not exist" % node_key_name)
-
-        key = file(key_name).read()
-
-        fields["private_key"] = key
+        fields = self.get_ansible_fields(o)
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.

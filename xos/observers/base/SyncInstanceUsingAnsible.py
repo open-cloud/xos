@@ -44,9 +44,11 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         return o.instance
 
-    def run_playbook(self, o, fields):
+    def run_playbook(self, o, fields, template_name=None):
+        if not template_name:
+            template_name = self.template_name
         tStart = time.time()
-        run_template_ssh(self.template_name, fields)
+        run_template_ssh(template_name, fields)
         logger.info("playbook execution time %d" % int(time.time()-tStart))
 
     def pre_sync_hook(self, o, fields):
@@ -61,13 +63,80 @@ class SyncInstanceUsingAnsible(SyncStep):
     def prepare_record(self, o):
         pass
 
+    def get_node(self,o):
+        return o.node
+
+    def get_node_key(self, node):
+        return "/root/setup/node_key"
+
+    def get_ansible_fields(self, instance):
+        # return all of the fields that tell Ansible how to talk to the context
+        # that's setting up the container.
+
+        if (instance.isolation == "vm"):
+            # legacy where container was configured by sync_vcpetenant.py
+
+            fields = { "instance_name": instance.name,
+                       "hostname": instance.node.name,
+                       "instance_id": instance.instance_id,
+                       "username": "ubuntu",
+                     }
+            key_name = self.service_key_name
+        elif (instance.isolation == "container"):
+            # container on bare metal
+            node = self.get_node(instance)
+            hostname = node.name
+            fields = { "hostname": hostname,
+                       "baremetal_ssh": True,
+                       "instance_name": "rootcontext",
+                       "username": "root",
+                     }
+            key_name = self.get_node_key(node)
+        else:
+            # container in a VM
+            if not instance.parent:
+                raise Exception("Container-in-VM has no parent")
+            if not instance.parent.instance_id:
+                raise Exception("Container-in-VM parent is not yet instantiated")
+            if not instance.parent.slice.service:
+                raise Exception("Container-in-VM parent has no service")
+            if not instance.parent.slice.service.private_key_fn:
+                raise Exception("Container-in-VM parent service has no private_key_fn")
+            fields = { "hostname": instance.parent.node.name,
+                       "instance_name": instance.parent.name,
+                       "instance_id": instance.parent.instance_id,
+                       "username": "ubuntu",
+                       "nat_ip": instance.parent.get_ssh_ip(),
+                         }
+            key_name = instance.parent.slice.service.private_key_fn
+
+        if not os.path.exists(key_name):
+            raise Exception("Node key %s does not exist" % node_key_name)
+
+        key = file(key_name).read()
+
+        fields["private_key"] = key
+
+        # now the ceilometer stuff
+
+        cslice = ControllerSlice.objects.get(slice=instance.slice)
+        if not cslice:
+            raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+
+        cuser = ControllerUser.objects.get(user=instance.creator)
+        if not cuser:
+            raise Exception("Controller user object for %s does not exist" % instance.creator)
+
+        fields.update({"keystone_tenant_id": cslice.tenant_id,
+                       "keystone_user_id": cuser.kuser_id,
+                       "rabbit_user": instance.controller.rabbit_user,
+                       "rabbit_password": instance.controller.rabbit_password,
+                       "rabbit_host": instance.controller.rabbit_host})
+
+        return fields
+
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
-
-        if not os.path.exists(self.service_key_name):
-            raise Exception("Service key %s does not exist" % self.service_key_name)
-
-        service_key = file(self.service_key_name).read()
 
         self.prepare_record(o)
 
@@ -92,25 +161,9 @@ class SyncInstanceUsingAnsible(SyncStep):
                 self.defer_sync(o, "waiting on instance.instance_name")
                 return
 
-            cslice = ControllerSlice.objects.get(slice=instance.slice)
-            if not cslice:
-                raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+            fields = self.get_ansible_fields(o)
 
-            cuser = ControllerUser.objects.get(user=instance.creator)
-            if not cuser:
-                raise Exception("Controller user object for %s does not exist" % instance.creator)
-
-            fields = { "instance_name": instance.name,
-                       "hostname": instance.node.name,
-                       "instance_id": instance.instance_id,
-                       "private_key": service_key,
-                       "keystone_tenant_id": cslice.tenant_id,
-                       "keystone_user_id": cuser.kuser_id,
-                       "rabbit_user": instance.controller.rabbit_user,
-                       "rabbit_password": instance.controller.rabbit_password,
-                       "rabbit_host": instance.controller.rabbit_host,
-                       "ansible_tag": o.__class__.__name__ + "_" + str(o.id)
-                     }
+            fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.

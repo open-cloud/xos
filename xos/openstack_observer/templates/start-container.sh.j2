@@ -25,9 +25,27 @@ fi
 
 {% if ports %}
 {% for port in ports %}
+
+{% if port.next_hop %}
+NEXTHOP_ARG="@{{ port.next_hop }}"
+{% else %}
+NEXTHOP_ARG=""
+{% endif %}
+
+{% if port.c_tag %}
+CTAG_ARG="@{{ port.c_tax }}"
+{% else %}
+CTAG_ARG=""
+{% endif %}
+
 {% if port.src_device %}
 # container-in-VM
-docker exec $CONTAINER ifconfig {{ port.src_device }} >> /dev/null || pipework {{ port.src_device }} -i {{ port.device }} $CONTAINER {{ port.ip }}/24 {{ port.mac }}
+VLAN_ARG=""
+NEXTHOP_ARG=""
+CMD="docker exec $CONTAINER ifconfig {{ port.src_device }} >> /dev/null || pipework {{ port.src_device }} -i {{ port.device }} $CONTAINER {{ port.ip }}/24$NEXTHOP_ARG {{ port.mac }} $CTAG_ARG"
+echo $CMD
+eval $CMD
+
 {% else %}
 # container-on-metal
 IP="{{ port.ip }}"
@@ -49,7 +67,9 @@ else
     echo tap exists
 fi
 
-docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $TAP -i $DEVICE $CONTAINER $IP/24 $MAC
+CMD="docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $TAP -i $DEVICE $CONTAINER $IP/24$NEXTHOP_ARG $MAC $CTAG_ARG"
+echo $CMD
+eval $CMD
 {% endif %}
 {% endfor %}
 {% endif %}
