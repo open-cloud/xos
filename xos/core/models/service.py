@@ -366,30 +366,15 @@ class TenantWithContainer(Tenant):
         if getattr(self, "cached_instance", None):
             return self.cached_instance
         instance_id=self.get_attribute("instance_id")
-        instance = None
-        if instance_id:
-            instances=Instance.objects.filter(id=instance_id)
-            instance=instances[0]
-        if not instance:
-            if not self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
-                return None
-            if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The service has no associated slices")
-            slices = self.provider_service.slices.all()
-            instance = self.pick_least_loaded_instance_in_slice(slices)
-            if not instance:
-                return None
+        if not instance_id:
+            return None
+        instances=Instance.objects.filter(id=instance_id)
+        if not instances:
+            return None
+        instance=instances[0]
         instance.caller = self.creator
         self.cached_instance = instance
         return instance
-
-    def pick_least_loaded_instance_in_slice(self, slices):
-        for slice in slices:
-            if slice.instances.all().count() > 0:
-                #TODO: Temporarily returning the first instance in the slice
-                #TODO: Change logic to pick instance based on number of monitoring channels ruuning in each instance
-                return slice.instances.all()[0]
-        return None
 
     @instance.setter
     def instance(self, value):
@@ -494,6 +479,25 @@ class TenantWithContainer(Tenant):
         # for container-in-VM, pick a VM
         raise "Not Implemented"
 
+    def pick_least_loaded_instance_in_slice(self, slices):
+        for slice in slices:
+            if slice.instances.all().count() > 0:
+                for instance in slice.instances.all():
+                     #Pick the first instance that has lesser than 5 tenants 
+                     if self.count_of_tenants_of_an_instance(instance) < 5:
+                         return instance
+        return None
+
+    #TODO: Ideally the tenant count for an instance should be maintained using a 
+    #many-to-one relationship attribute, however this model being proxy, it does 
+    #not permit any new attributes to be defined. Find if any better solutions 
+    def count_of_tenants_of_an_instance(self, instance):
+        tenant_count = 0
+        for tenant in self.get_tenant_objects().all():
+            if tenant.get_attribute("instance_id", None) == instance.id:
+                tenant_count += 1
+        return tenant_count
+
     def manage_container(self):
         from core.models import Instance, Flavor
 
@@ -506,42 +510,56 @@ class TenantWithContainer(Tenant):
 
         if self.instance is None:
             if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The VCPE service has no slices")
+                raise XOSConfigurationError("The service has no slices")
 
-            flavors = Flavor.objects.filter(name="m1.small")
-            if not flavors:
-                raise XOSConfigurationError("No m1.small flavor")
+            new_instance_created = False
+            instance = None
+            if self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
+                #Find if any existing instances can be used for this tenant
+                slices = self.provider_service.slices.all()
+                instance = self.pick_least_loaded_instance_in_slice(slices)
 
-            node = self.pick_node_for_instance()
-            slice = self.provider_service.slices.all()[0]
+            if not instance:
+                flavors = Flavor.objects.filter(name="m1.small")
+                if not flavors:
+                    raise XOSConfigurationError("No m1.small flavor")
 
-            if slice.default_isolation == "container_vm":
-                parent = self.pick_vm()
-            else:
-                parent = None
+                node =self.pick_node_for_instance()
+                slice = self.provider_service.slices.all()[0]
 
-            instance = Instance(slice = slice,
-                            node = node,
-                            image = self.image,
-                            creator = self.creator,
-                            deployment = node.site_deployment.deployment,
-                            flavor = flavors[0],
-                            isolation = slice.default_isolation,
-                            parent = parent)
+                if slice.default_isolation == "container_vm":
+                    parent = self.pick_vm()
+                else:
+                    parent = None
 
-            self.save_instance(instance)
+                instance = Instance(slice = slice,
+                                node = node,
+                                image = self.image,
+                                creator = self.creator,
+                                deployment = node.site_deployment.deployment,
+                                flavor = flavors[0],
+                                isolation = slice.default_isolation,
+                                parent = parent)
+                self.save_instance(instance)
+                new_instance_created = True
 
             try:
                 self.instance = instance
                 super(TenantWithContainer, self).save()
             except:
-                instance.delete()
+                if new_instance_created:
+                    instance.delete()
                 raise
 
     def cleanup_container(self):
         if self.instance:
-            # print "XXX cleanup instance", self.instance
-            self.instance.delete()
+            if self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
+                #Delete the instance only if this is last tenant in that instance
+                tenant_count = self.count_of_tenants_of_an_instance(self.instance)
+                if tenant_count == 0:
+                    self.instance.delete()
+            else:
+                self.instance.delete()
             self.instance = None
 
 class CoarseTenant(Tenant):
