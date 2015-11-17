@@ -93,9 +93,6 @@ class SyncContainer(SyncInstanceUsingAnsible):
             fields["volumes"] = ""
         return fields
 
-    def sync_fields(self, o, fields):
-        self.run_playbook(o, fields)
-
     def sync_record(self, o):
         logger.info("sync'ing object %s" % str(o))
 
@@ -109,17 +106,33 @@ class SyncContainer(SyncInstanceUsingAnsible):
 
         fields.update(self.get_extra_attributes(o))
 
-        self.sync_fields(o, fields)
+        self.run_playbook(o, fields)
 
         o.instance_id = fields["container_name"]
         o.instance_name = fields["container_name"]
 
         o.save()
 
-    def run_playbook(self, o, fields):
+    def delete_record(self, o):
+        logger.info("delete'ing object %s" % str(o))
+
+        fields = self.get_ansible_fields(o)
+
+        # If 'o' defines a 'sync_attributes' list, then we'll copy those
+        # attributes into the Ansible recipe's field list automatically.
+        if hasattr(o, "sync_attributes"):
+            for attribute_name in o.sync_attributes:
+                fields[attribute_name] = getattr(o, attribute_name)
+
+        fields.update(self.get_extra_attributes(o))
+
+        self.run_playbook(o, fields, "teardown_container.yaml")
+
+    def run_playbook(self, o, fields, template_name=None):
+        if not template_name:
+            template_name = self.template_name
         tStart = time.time()
-        run_template_ssh(self.template_name, fields, path="container")
+        run_template_ssh(template_name, fields, path="container")
         logger.info("playbook execution time %d" % int(time.time()-tStart))
 
-    def delete_record(self, m):
-        pass
+
