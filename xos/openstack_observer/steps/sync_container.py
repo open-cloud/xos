@@ -71,6 +71,9 @@ class SyncContainer(SyncStep):
                 pd["snoop_instance_id"] = ""
                 pd["src_device"] = "eth%d" % i
 
+            for (k,v) in port.get_parameters().items():
+                pd[k] = v
+
             ports.append(pd)
 
             i = i + 1
