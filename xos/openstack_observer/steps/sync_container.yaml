@@ -16,6 +16,9 @@
          snoop_instance_mac: {{ port.snoop_instance_mac }}
          snoop_instance_id: {{ port.snoop_instance_id }}
          src_device: {{ port.src_device }}
+         s_tag: {{ port.s_tag|default("")  }}
+         c_tag: {{ port.c_tag|default("") }}
+         next_hop: {{ port.next_hop|default("") }}
     {% endfor %}
     volumes:
     {% for volume in volumes %}
