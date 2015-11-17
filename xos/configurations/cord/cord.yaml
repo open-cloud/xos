@@ -7,15 +7,6 @@ imports:
 
 topology_template:
   node_templates:
-    s_tag:
-      type: tosca.nodes.NetworkParameterType
-
-    c_tag:
-      type: tosca.nodes.NetworkParameterType
-
-    next_hop:
-      type: tosca.nodes.NetworkParameterType
-
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
