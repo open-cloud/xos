@@ -402,6 +402,15 @@ topology_template:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
 
+    # docker image for vcpe containers
+    andybavier/docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
+
     # A subscriber
     My House:
        type: tosca.nodes.CORDSubscriber
