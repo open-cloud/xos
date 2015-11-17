@@ -7,7 +7,6 @@ imports:
 
 topology_template:
   node_templates:
-
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -402,6 +401,15 @@ topology_template:
           - slice:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
+
+    # docker image for vcpe containers
+    andybavier/docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
 
     # A subscriber
     My House:
