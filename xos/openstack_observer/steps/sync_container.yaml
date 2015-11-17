@@ -96,6 +96,9 @@
   - name: container startup script
     template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
 
+  - name: container teardown script
+    template: src=/opt/xos/openstack_observer/templates/stop-container.sh.j2 dest=/usr/local/sbin/stop-container-{{ container_name }}.sh mode=0755
+
   - name: restart systemd
     shell: systemctl daemon-reload
     when: systemctl.stat.exists == True
