@@ -1273,7 +1273,7 @@ class InstancePortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
-    selflink_fieldname = "network"
+    #selflink_fieldname = "network"
     extra = 0
     verbose_name_plural = "Ports"
     verbose_name = "Port"
@@ -1843,10 +1843,11 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
     user_readonly_inlines = []
+    inlines = [NetworkParameterInline,]
     fieldsets = [
         (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
-    suit_form_tabs = (('general','Network Template Details'), )
+    suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 
 class PortAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "id", "ip")
