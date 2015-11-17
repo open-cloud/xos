@@ -84,4 +84,9 @@ eval $CMD
 {% endif %}
 
 # Attach to container
-# docker start -a $CONTAINER
+# (this is only done when using upstart, since upstart expects to be attached
+#  to a running service)
+if [[ "$1" == "ATTACH" ]]; then
+    docker start -a $CONTAINER
+fi
+
