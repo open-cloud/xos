@@ -43,13 +43,14 @@ class SyncContainer(SyncInstanceUsingAnsible):
         i=0
         ports = []
         for port in o.ports.all():
-            if not port.mac:
+            if (not port.ip):
+                # 'unmanaged' ports may have an ip, but no mac
+                # XXX: are there any ports that have a mac but no ip?
                 raise Exception("Port on network %s is not yet ready" % port.network.name)
 
             pd={}
-            pd["device"] = "eth%d" % i
-            pd["mac"] = port.mac
-            pd["ip"] = port.ip
+            pd["mac"] = port.mac or ""
+            pd["ip"] = port.ip or ""
 
             if o.isolation == "container":
                 # container on bare metal
@@ -71,7 +72,12 @@ class SyncContainer(SyncInstanceUsingAnsible):
 
             ports.append(pd)
 
-            i = i + 1
+        # for any ports that don't have a device, assign one
+        used_ports = [x["device"] for x in ports if ("device" in x)]
+        avail_ports = ["eth%d"%i for i in range(0,64) if ("eth%d"%i not in used_ports)]
+        for port in ports:
+            if not port.get("device",None):
+                port["device"] = avail_ports.pop(0)
 
         return ports
 

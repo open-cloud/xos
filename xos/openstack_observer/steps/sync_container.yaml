@@ -11,7 +11,7 @@
     ports:
     {% for port in ports %}
        - device: {{ port.device }}
-         mac: {{ port.mac }}
+         mac: {{ port.mac|default("") }}
          ip: {{ port.ip }}
          snoop_instance_mac: {{ port.snoop_instance_mac }}
          snoop_instance_id: {{ port.snoop_instance_id }}
