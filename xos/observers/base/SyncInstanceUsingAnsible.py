@@ -161,7 +161,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                 self.defer_sync(o, "waiting on instance.instance_name")
                 return
 
-            fields = self.get_ansible_fields(o)
+            fields = self.get_ansible_fields(instance)
 
             fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
 
