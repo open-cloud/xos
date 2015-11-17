@@ -253,7 +253,6 @@ class Port(PlCoreBase, ParameterMixin):
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
-    segmentation_id = models.CharField(null=True, blank=True, max_length=256, help_text="GRE segmentation id for port")
 
     class Meta:
         unique_together = ('network', 'instance')

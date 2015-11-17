@@ -185,10 +185,6 @@ class SyncPorts(OpenStackSyncStep):
                     if neutron_port["fixed_ips"]:
                         port.ip = neutron_port["fixed_ips"][0]["ip_address"]
                     port.mac = neutron_port["mac_address"]
-
-                    neutron_network = driver.shell.quantum.list_networks(cn.net_id)["networks"][0]
-                    if "provider:segmentation_id" in neutron_network:
-                        port.segmentation_id = neutron_network["provider:segmentation_id"]
                 except:
                     logger.log_exc("failed to create neutron port for %s" % port)
                     continue
