@@ -51,6 +51,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
             pd={}
             pd["mac"] = port.mac or ""
             pd["ip"] = port.ip or ""
+            pd["xos_network_id"] = port.network.id
 
             if o.isolation == "container":
                 # container on bare metal
@@ -84,7 +85,6 @@ class SyncContainer(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
         fields={}
         fields["ansible_tag"] = "container-%s" % str(o.id)
-        fields["container_name"] = "%s-%s" % (o.slice.name, str(o.id))
         fields["docker_image"] = o.image.name
         fields["ports"] = self.get_ports(o)
         if o.volumes:
