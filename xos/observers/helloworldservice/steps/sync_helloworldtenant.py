@@ -1,6 +1,6 @@
 import os
 import sys
-from django.db.models import Q
+from django.db.models import Q, F
 from helloworldservice.models import HelloWorldService, HelloWorldTenant
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 
@@ -10,10 +10,9 @@ sys.path.insert(0,parentdir)
 class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     provides=[HelloWorldTenant]
     observes=HelloWorldTenant
-    requested_interval=0
+    requested_interval= 0
     template_name = "sync_helloworldtenant.yaml"
-    service_key_name =
-            "/opt/xos/observers/helloworldservice/helloworldservice_private_key"
+    service_key_name = "/opt/xos/observers/helloworldservice/helloworldservice_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncHelloWorldServiceTenant, self).__init__(*args, **kwargs)
