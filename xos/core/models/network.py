@@ -251,7 +251,7 @@ class Port(PlCoreBase, ParameterMixin):
     network = models.ForeignKey(Network,related_name='links')
     instance = models.ForeignKey(Instance, null=True, blank=True, related_name='ports')
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
-    port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum port id")
+    port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
 
     class Meta:
