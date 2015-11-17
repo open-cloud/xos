@@ -236,4 +236,4 @@
     shell: ovs-vsctl set Interface gre0 type=gre options:remote_ip={{ volt_lan_ip }}
 
   - name: Restart vCPEs
-    debug: msg="Need to write a script that restarts all vCPEs"
+    script: scripts/restart-vcpes.sh
