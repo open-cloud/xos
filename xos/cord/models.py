@@ -351,7 +351,6 @@ class VOLTTenant(Tenant):
             vcpe = VCPETenant(provider_service = vcpeServices[0],
                               subscriber_tenant = self)
             vcpe.caller = self.creator
-            # vcpe.use_cobm = True # XXX XXX XXX remove before checking XXX XXX XXX
             vcpe.save()
 
     def manage_subscriber(self):
