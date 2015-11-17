@@ -90,6 +90,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "baremetal_ssh": True,
                        "instance_name": "rootcontext",
                        "username": "root",
+                       "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                      }
             key_name = self.get_node_key(node)
         else:
@@ -107,6 +108,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "instance_id": instance.parent.instance_id,
                        "username": "ubuntu",
                        "nat_ip": instance.parent.get_ssh_ip(),
+                       "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                          }
             key_name = instance.parent.slice.service.private_key_fn
 
