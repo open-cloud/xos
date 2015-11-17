@@ -11,6 +11,7 @@
     ports:
     {% for port in ports %}
        - device: {{ port.device }}
+         xos_network_id: {{ port.xos_network_id }}
          mac: {{ port.mac|default("") }}
          ip: {{ port.ip }}
          snoop_instance_mac: {{ port.snoop_instance_mac }}
