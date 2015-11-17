@@ -1,4 +1,5 @@
 from core.models import Service, TenantWithContainer
+from django.db import transaction
 
 HELLO_WORLD_KIND = "helloworldservice"
 
@@ -24,6 +25,7 @@ class HelloWorldTenant(TenantWithContainer):
 
     def save(self, *args, **kwargs):
         super(HelloWorldTenant, self).save(*args, **kwargs)
+        model_policy_helloworld_tenant(self.pk)
 
     def delete(self, *args, **kwargs):
         self.cleanup_container()
@@ -38,3 +40,11 @@ class HelloWorldTenant(TenantWithContainer):
     @display_message.setter
     def display_message(self, value):
         self.set_attribute("display_message", value)
+
+def model_policy_helloworld_tenant(pk):
+    with transaction.atomic():
+        tenant = HelloWorldTenant.objects.select_for_update().filter(pk=pk)
+        if not tenant:
+            return
+        tenant = tenant[0]
+        tenant.manage_container()
