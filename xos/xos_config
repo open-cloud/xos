@@ -37,7 +37,6 @@ backoff_disabled=False
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
-applist=helloworld
 
 [gui]
 disable_minidashboard=True

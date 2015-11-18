@@ -127,14 +127,15 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.olt
+          dependencies: org.onosproject.openflow, org.onosproject.olt
           config_network-cfg.json: >
             {
               "devices" : {
                 "of:0000000000000001" : {
                   "accessDevice" : {
                     "uplink" : "2",
-                    "vlan"   : "400"
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
                   },
                   "basic" : {
                     "driver" : "default"
