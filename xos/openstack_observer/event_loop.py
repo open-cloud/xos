@@ -32,7 +32,7 @@ from observer.steps.sync_object import SyncObject
 # Load app models
 
 try:
-    app_module_names = Config().observer_applist
+    app_module_names = Config().observer_applist.split(',')
 except AttributeError:
     app_module_names = []
 
