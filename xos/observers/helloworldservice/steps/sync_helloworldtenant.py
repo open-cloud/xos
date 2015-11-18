@@ -32,4 +32,4 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
         super(SyncHelloWorldServiceTenant, self).run_playbook(o, fields)
 
     def delete_record(self, m):
-        pass
+        return
