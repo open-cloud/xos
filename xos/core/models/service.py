@@ -356,8 +356,6 @@ class TenantWithContainer(Tenant):
         super(TenantWithContainer, self).__init__(*args, **kwargs)
         self.cached_instance=None
         self.orig_instance_id = self.get_initial_attribute("instance_id")
-#        self.cached_container=None
-#        self.orig_container_id = self.get_initial_attribute("container_id")
 
 
     @property
@@ -383,30 +381,6 @@ class TenantWithContainer(Tenant):
         if (value != self.get_attribute("instance_id", None)):
             self.cached_instance=None
         self.set_attribute("instance_id", value)
-
-#    @property
-#    def container(self):
-#        from core.models import Container
-#        if getattr(self, "cached_container", None):
-#            return self.cached_container
-#        container_id=self.get_attribute("container_id")
-#        if not container_id:
-#            return None
-#        containers=Container.objects.filter(id=container_id)
-#        if not containers:
-#            return None
-#        container=containers[0]
-#        container.caller = self.creator
-#        self.cached_container = container
-#        return container
-#
-#    @container.setter
-#    def container(self, value):
-#        if value:
-#            value = value.id
-#        if (value != self.get_attribute("container_id", None)):
-#            self.cached_container=None
-#        self.set_attribute("container_id", value)
 
     @property
     def creator(self):
