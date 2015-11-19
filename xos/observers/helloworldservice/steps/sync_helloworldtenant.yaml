@@ -11,7 +11,7 @@
     apt: name=apache2 state=present
 
   - name: write message
-    shell: cat "{{ display_message }}" > "/var/www/html/{{ instance_name }}.html"
+    shell: cat "{{ display_message }}" > /var/www/html/index.html
 
   - name: stop apache
     service: name=apache2 state=stopped
