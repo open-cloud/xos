@@ -4,23 +4,24 @@ def handle_container_on_metal(instance):
         if instance.deleted:
             return
 
-        # Our current docker network strategy requires that there be some
-        # VM on the server that connects to the networks, so that
-        # the containers can piggyback off of that configuration.
-        if not Instance.objects.filter(slice=instance.slice, node=instance.node, isolation="vm").exists():
-            flavors = Flavor.objects.filter(name="m1.small")
-            if not flavors:
-                raise XOSConfigurationError("No m1.small flavor")
+        if (instance.isolation in ["container"]):
+            # Our current docker-on-metal network strategy requires that there be some
+            # VM on the server that connects to the networks, so that
+            # the containers can piggyback off of that configuration.
+            if not Instance.objects.filter(slice=instance.slice, node=instance.node, isolation="vm").exists():
+                flavors = Flavor.objects.filter(name="m1.small")
+                if not flavors:
+                    raise XOSConfigurationError("No m1.small flavor")
 
-            images = Image.objects.filter(kind="vm")
+                images = Image.objects.filter(kind="vm")
 
-            companion_instance = Instance(slice = instance.slice,
-                            node = instance.node,
-                            image = images[0],
-                            creator = instance.creator,
-                            deployment = instance.node.site_deployment.deployment,
-                            flavor = flavors[0])
-            companion_instance.save()
+                companion_instance = Instance(slice = instance.slice,
+                                node = instance.node,
+                                image = images[0],
+                                creator = instance.creator,
+                                deployment = instance.node.site_deployment.deployment,
+                                flavor = flavors[0])
+                companion_instance.save()
 
         # Add the ports for the container
         for network in instance.slice.networks.all():
