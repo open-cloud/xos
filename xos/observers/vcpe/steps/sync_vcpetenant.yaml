@@ -117,27 +117,27 @@
 {% endif %}
 
   - name: vCPE upstart
-    template: src=/opt/xos/observers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/vcpe-{{ vlan_ids[0] }}.conf
+    template: src=/opt/xos/observers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.conf
 
   - name: vCPE startup script
-    template: src=/opt/xos/observers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ vlan_ids[0] }}.sh mode=0755
+    template: src=/opt/xos/observers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.sh mode=0755
     notify:
 #    - restart vcpe
      - stop vcpe
      - remove container
      - start vcpe
 
-  - name: create /etc/vcpe-{{ vlan_ids[0] }}/dnsmasq.d
-    file: path=/etc/vcpe-{{ vlan_ids[0] }}/dnsmasq.d state=directory owner=root group=root
+  - name: create /etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d
+    file: path=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d state=directory owner=root group=root
 
   - name: vCPE basic dnsmasq config
-    copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/etc/vcpe-{{ vlan_ids[0] }}/dnsmasq.d/vcpe.conf owner=root group=root
+    copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
     - stop dnsmasq
     - start dnsmasq
 
   - name: dnsmasq config
-    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ vlan_ids[0] }}/dnsmasq.d/servers.conf owner=root group=root
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - stop dnsmasq
     - start dnsmasq
@@ -151,23 +151,23 @@
 #    template: src=/opt/xos/observers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
 
   - name: Make sure vCPE service is running
-    service: name=vcpe-{{ vlan_ids[0] }} state=started
+    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
 
   handlers:
   - name: stop dnsmasq
-    shell: docker exec vcpe-{{ vlan_ids[0] }} /usr/bin/killall dnsmasq
+    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} /usr/bin/killall dnsmasq
 
   - name: start dnsmasq
-    shell: docker exec vcpe-{{ vlan_ids[0] }} /usr/sbin/service dnsmasq start
+    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} /usr/sbin/service dnsmasq start
 
   - name: restart vcpe
-    shell: service vcpe-{{ vlan_ids[0] }} stop; sleep 1; service vcpe-{{ vlan_ids[0] }} start
+    shell: service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} stop; sleep 1; service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} start
 
   - name: stop vcpe
-    service: name=vcpe-{{ vlan_ids[0] }} state=stopped
+    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=stopped
 
   - name: remove container
-    docker: name=vcpe-{{ vlan_ids[0] }} state=absent image=docker-vcpe
+    docker: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=absent image=docker-vcpe
 
   - name: start vcpe
-    service: name=vcpe-{{ vlan_ids[0] }} state=started
+    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started

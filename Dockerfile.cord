@@ -1,7 +1,0 @@
-FROM       xos:latest
-MAINTAINER Andy Bavier <acb@cs.princeton.edu>
-
-ADD xos/observers/vcpe/supervisor/vcpe-observer.conf /etc/supervisor/conf.d/
-RUN sed -i 's/proxy_ssh=True/proxy_ssh=False/' /opt/xos/observers/vcpe/vcpe_observer_config
-ADD xos/observers/monitoring_channel/supervisor/monitoring_channel_observer.conf /etc/supervisor/conf.d/
-RUN sed -i 's/proxy_ssh=True/proxy_ssh=False/' /opt/xos/observers/monitoring_channel/monitoring_channel_observer_config

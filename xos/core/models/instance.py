@@ -80,7 +80,7 @@ class InstanceManager(PlCoreBaseManager):
 
 # Create your models here.
 class Instance(PlCoreBase):
-    ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), )
+    ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))
 
     objects = InstanceManager()
     deleted_objects = InstanceDeletionManager()
@@ -90,7 +90,6 @@ class Instance(PlCoreBase):
     instance_name = StrippedCharField(blank=True, null=True, max_length=200, help_text="OpenStack generated name")
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     image = models.ForeignKey(Image, related_name='instances')
-    #key = models.ForeignKey(Key, related_name='instances')
     creator = models.ForeignKey(User, related_name='instances', blank=True, null=True)
     slice = models.ForeignKey(Slice, related_name='instances')
     deployment = models.ForeignKey(Deployment, verbose_name='deployment', related_name='instance_deployment')
@@ -101,6 +100,7 @@ class Instance(PlCoreBase):
     userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
     isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
     volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of directories to expose to parent context")
+    parent = models.ForeignKey("Instance", null=True, blank=True, help_text="Parent Instance for containers nested inside of VMs")
 
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
@@ -123,6 +123,19 @@ class Instance(PlCoreBase):
             self.creator = self.caller
         if not self.creator:
             raise ValidationError('instance has no creator')
+
+        if (self.isolation == "container") or (self.isolation == "container_vm"):
+            if (self.image.kind != "container"):
+                raise ValidationError("Container instance must use container image")
+        elif (self.isolation == "vm"):
+            if (self.image.kind != "vm"):
+                raise ValidationError("VM instance must use VM image")
+
+        if (self.isolation == "container_vm") and (not self.parent):
+            raise ValidationError("Container-vm instance must have a parent")
+
+        if (self.parent) and (self.isolation != "container_vm"):
+            raise ValidationError("Parent field can only be set on Container-vm instances")
 
         if (self.slice.creator != self.creator):
             # Check to make sure there's a slice_privilege for the user. If there
