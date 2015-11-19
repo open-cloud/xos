@@ -16,8 +16,7 @@ class HelloWorldTenant(TenantWithContainer):
         proxy = True
 
     KIND = HELLO_WORLD_KIND
-    sync_attributes = ("private_ip", "private_mac",
-                       "nat_ip", "nat_mac",)
+    sync_attributes = ("nat_ip", "nat_mac",)
 
     default_attributes = {'display_message': 'Hello World!'}
     def __init__(self, *args, **kwargs):
