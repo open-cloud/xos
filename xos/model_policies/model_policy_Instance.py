@@ -44,5 +44,5 @@ def handle(instance):
 		cn.backend_register = '{}'
 		cn.save()
 
-    if (instance.isolation=="container"):
+    if (instance.isolation in ["container", "container_vm"]):
         handle_container_on_metal(instance)

@@ -7,7 +7,6 @@ imports:
 
 topology_template:
   node_templates:
-
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -29,6 +28,7 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
       artifacts:
           pubkey: /opt/xos/observers/vcpe/vcpe_public_key
 
@@ -127,14 +127,15 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.olt
+          dependencies: org.onosproject.openflow, org.onosproject.olt
           config_network-cfg.json: >
             {
               "devices" : {
                 "of:0000000000000001" : {
                   "accessDevice" : {
                     "uplink" : "2",
-                    "vlan"   : "400"
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
                   },
                   "basic" : {
                     "driver" : "default"
@@ -401,6 +402,15 @@ topology_template:
           - slice:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
+
+    # docker image for vcpe containers
+    andybavier/docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
 
     # A subscriber
     My House:

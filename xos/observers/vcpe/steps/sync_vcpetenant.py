@@ -131,7 +131,8 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
                 "bbs_addrs": bbs_addrs,
-                "full_setup": full_setup}
+                "full_setup": full_setup,
+                "isolation": o.instance.isolation}
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -209,7 +210,10 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
         if quick_update:
             logger.info("quick_update triggered; skipping ansible recipe")
         else:
-            super(SyncVCPETenant, self).run_playbook(o, fields)
+            if o.instance.isolation in ["container", "container_vm"]:
+                super(SyncVCPETenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
+            else:
+                super(SyncVCPETenant, self).run_playbook(o, fields)
 
         o.last_ansible_hash = ansible_hash
 

@@ -15,6 +15,7 @@
       headnode_flat_lan_ip: {{ rabbit_host }}
       ceilometer_client_acess_ip: {{ ceilometer_ip }}
       ceilometer_client_acess_mac: {{ ceilometer_mac }}
+      ceilometer_host_port: {{ ceilometer_port }}
       allowed_tenant_ids:
         {% for allowed_tenant_id in allowed_tenant_ids %}
         - {{ allowed_tenant_id }}

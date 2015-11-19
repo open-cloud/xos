@@ -7,7 +7,7 @@ from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
 from core.models import User
-from cord.models import VOLTTenant, VOLTService, CordSubscriberRoot
+from cord.models import VOLTTenant, VOLTService, CordSubscriberRoot, VOLT_KIND
 
 from xosresource import XOSResource
 
@@ -32,10 +32,12 @@ class XOSVOLTTenant(XOSResource):
 
     def get_existing_objs(self):
         args = self.get_xos_args(throw_exception=False)
-        provider_service = args.get("provider", None)
+        provider_service = args.get("provider_service", None)
         service_specific_id = args.get("service_specific_id", None)
         if (provider_service) and (service_specific_id):
-            return [ self.get_xos_object(provider_service=provider_service, service_specific_id=service_specific_id) ]
+            existing_obj = self.get_xos_object(VOLTTenant, kind=VOLT_KIND, provider_service=provider_service, service_specific_id=service_specific_id, throw_exception=False)
+            if existing_obj:
+                return [ existing_obj ]
         return []
 
     def postprocess(self, obj):

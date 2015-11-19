@@ -77,9 +77,6 @@ class XOSResource(object):
     def get_existing_objs(self):
         return self.xos_model.objects.filter(**{self.name_field: self.nodetemplate.name})
 
-    def get_xos_args(self):
-        return {}
-
     def get_model_class_name(self):
         return self.xos_model.__name__
 
