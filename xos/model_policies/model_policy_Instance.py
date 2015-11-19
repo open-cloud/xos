@@ -25,6 +25,8 @@ def handle_container_on_metal(instance):
 
         # Add the ports for the container
         for network in instance.slice.networks.all():
+            # hmmm... The NAT ports never become ready, because sync_ports never
+            # instantiates them. Need to think about this.
             if (network.name.endswith("-nat")):
                 continue
 
