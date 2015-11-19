@@ -337,6 +337,106 @@ class Tenant(PlCoreBase, AttributeMixin):
             return None
         return sorted(st, key=attrgetter('id'))[0]
 
+class Scheduler(object):
+    # XOS Scheduler Abstract Base Class
+    # Used to implement schedulers that pick which node to put instances on
+
+    def __init__(self, slice):
+        self.slice = slice
+
+    def pick(self):
+        # this method should return a tuple (node, parent)
+        #    node is the node to instantiate on
+        #    parent is for container_vm instances only, and is the VM that will
+        #      hold the container
+
+        raise Exception("Abstract Base")
+
+class LeastLoadedNodeScheduler(Scheduler):
+    # This scheduler always return the node with the fewest number of instances.
+
+    def __init__(self, slice):
+        super(LeastLoadedNodeScheduler, self).__init__(slice)
+
+    def pick(self):
+        from core.models import Node
+        nodes = list(Node.objects.all())
+        # TODO: logic to filter nodes by which nodes are up, and which
+        #   nodes the slice can instantiate on.
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        return [nodes[0], None]
+
+class ContainerVmScheduler(Scheduler):
+    # This scheduler picks a VM in the slice with the fewest containers inside
+    # of it. If no VMs are suitable, then it creates a VM.
+
+    # this is a hack and should be replaced by something smarter...
+    LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
+                     "Ubuntu 14.04 LTS",    # portal
+                     "Ubuntu-14.04-LTS",    # ONOS demo machine
+                     "trusty-server-multi-nic", # CloudLab
+                    ]
+
+    MAX_VM_PER_CONTAINER = 10
+
+    def __init__(self, slice):
+        super(ContainerVmScheduler, self).__init__(slice)
+
+    @property
+    def image(self):
+        from core.models import Image
+
+        look_for_images = self.LOOK_FOR_IMAGES
+        for image_name in look_for_images:
+            images = Image.objects.filter(name = image_name)
+            if images:
+                return images[0]
+
+        raise XOSProgrammingError("No ContainerVM image (looked for %s)" % str(look_for_images))
+
+    def make_new_instance(self):
+        from core.models import Instance, Flavor
+
+        flavors = Flavor.objects.filter(name="m1.small")
+        if not flavors:
+            raise XOSConfigurationError("No m1.small flavor")
+
+        (node,parent) = LeastLoadedNodeScheduler(self.slice).pick()
+
+        instance = Instance(slice = self.slice,
+                        node = node,
+                        image = self.image,
+                        creator = self.slice.creator,
+                        deployment = node.site_deployment.deployment,
+                        flavor = flavors[0],
+                        isolation = "vm",
+                        parent = parent)
+        instance.save()
+        # We rely on a special naming convention to identify the VMs that will
+        # hole containers.
+        instance.name = "%s-outer-%s" % (instance.slice.name, instance.id)
+        instance.save()
+        return instance
+
+    def pick(self):
+        from core.models import Instance, Flavor
+
+        for vm in self.slice.instances.filter(isolation="vm"):
+            avail_vms = []
+            if (vm.name.startswith("%s-outer-" % self.slice.name)):
+                container_count = Instance.objects.filter(parent=vm).count()
+                if (container_count < self.MAX_VM_PER_CONTAINER):
+                    avail_vms.append( (vm, container_count) )
+            # sort by least containers-per-vm
+            avail_vms = sorted(avail_vms, key = lambda x: x[1])
+            print "XXX", avail_vms
+            if avail_vms:
+                instance = avail_vms[0][0]
+                return (instance.node, instance)
+
+        instance = self.make_new_instance()
+        return (instance.node, instance)
+
 class TenantWithContainer(Tenant):
     """ A tenant that manages a container """
 
@@ -356,7 +456,6 @@ class TenantWithContainer(Tenant):
         super(TenantWithContainer, self).__init__(*args, **kwargs)
         self.cached_instance=None
         self.orig_instance_id = self.get_initial_attribute("instance_id")
-
 
     @property
     def instance(self):
@@ -426,7 +525,7 @@ class TenantWithContainer(Tenant):
             if images:
                 return images[0]
 
-        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(self.look_for_images))
+        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(look_for_images))
 
     @creator.setter
     def creator(self, value):
@@ -436,22 +535,10 @@ class TenantWithContainer(Tenant):
             self.cached_creator=None
         self.set_attribute("creator_id", value)
 
-    def pick_node_for_instance(self):
-        from core.models import Node
-        nodes = list(Node.objects.all())
-        # TODO: logic to filter nodes by which nodes are up, and which
-        #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
-        return nodes[0]
-
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
         # such as creating ports for containers.
         instance.save()
-
-    def pick_vm(self):
-        # for container-in-VM, pick a VM
-        raise "Not Implemented"
 
     def pick_least_loaded_instance_in_slice(self, slices):
         for slice in slices:
@@ -498,13 +585,12 @@ class TenantWithContainer(Tenant):
                 if not flavors:
                     raise XOSConfigurationError("No m1.small flavor")
 
-                node =self.pick_node_for_instance()
                 slice = self.provider_service.slices.all()[0]
 
                 if slice.default_isolation == "container_vm":
-                    parent = self.pick_vm()
+                    (node, parent) = ContainerVmScheduler(slice).pick()
                 else:
-                    parent = None
+                    (node, parent) = LeastLoadedNodeScheduler(slice).pick()
 
                 instance = Instance(slice = slice,
                                 node = node,
