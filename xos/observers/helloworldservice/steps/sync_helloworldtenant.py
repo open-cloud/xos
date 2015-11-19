@@ -28,8 +28,5 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
     	return {"display_message": o.display_message}
 
-    def run_playbook(self, o, fields):
-        super(SyncHelloWorldServiceTenant, self).run_playbook(o, fields)
-
     def delete_record(self, m):
         return
