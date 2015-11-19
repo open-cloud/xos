@@ -1,3 +1,4 @@
+
 [plc]
 name=plc
 deployment=plc
@@ -10,7 +11,7 @@ host=localhost
 port=5432
 
 [api]
-host=localhost
+host=128.112.171.237
 port=8000
 ssl_key=None
 ssl_cert=None
@@ -21,24 +22,16 @@ mail_support_address=support@localhost
 nova_enabled=True
 logfile=/var/log/xos.log
 
-[nova]
-admin_user=admin@domain.com
-admin_password=admin
-admin_tenant=admin
-url=http://localhost:5000/v2.0/
-default_image=None
-default_flavor=m1.small
-default_security_group=default
-ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
-
 [observer]
+name=helloworldservice
+dependency_graph=/opt/xos/observers/helloworldservice/model-deps
+steps_dir=/opt/xos/observers/helloworldservice/steps
+sys_dir=/opt/xos/observers/helloworldservice/sys
+deleters_dir=/opt/xos/observers/helloworldservice/deleters
+logfile=/var/log/xos_backend.log
+driver=None
 pretend=False
 backoff_disabled=True
-images_directory=/opt/xos/images
-dependency_graph=/opt/xos/observers/helloworldservice/model-deps
-logfile=/var/log/xos_backend.log
-steps_dir=/opt/xos/observers/helloworldservice/steps
 save_ansible_output=True
-
-[gui]
-disable_minidashboard=True
+proxy_ssh=True
+full_setup=True
