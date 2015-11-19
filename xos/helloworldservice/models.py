@@ -43,6 +43,25 @@ class HelloWorldTenant(TenantWithContainer):
     def display_message(self, value):
         self.set_attribute("display_message", value)
 
+    @property
+    def addresses(self):
+        if (not self.id) or (not self.instance):
+            return {}
+
+        addresses = {}
+        for ns in self.instance.ports.all():
+            if "nat" in ns.network.name.lower():
+                addresses["nat"] = (ns.ip, ns.mac)
+        return addresses
+
+    @property
+    def nat_ip(self):
+        return self.addresses.get("nat", (None, None))[0]
+
+    @property
+    def nat_mac(self):
+        return self.addresses.get("nat", (None, None))[1]
+
 def model_policy_helloworld_tenant(pk):
     with transaction.atomic():
         tenant = HelloWorldTenant.objects.select_for_update().filter(pk=pk)
