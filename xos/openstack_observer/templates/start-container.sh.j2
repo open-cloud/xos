@@ -6,6 +6,11 @@ ip6tables -L > /dev/null
 CONTAINER={{ container_name }}
 IMAGE={{ docker_image }}
 
+function mac_to_iface {
+    PARENT_MAC=$1
+    ifconfig|grep $PARENT_MAC| awk '{print $1}'|grep -v '\.'
+}
+
 {% if volumes %}
 {% for volume in volumes %}
 DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
@@ -38,11 +43,10 @@ CTAG_ARG="@{{ port.c_tag }}"
 CTAG_ARG=""
 {% endif %}
 
-{% if port.src_device %}
+{% if port.parent_mac %}
 # container-in-VM
-VLAN_ARG=""
-NEXTHOP_ARG=""
-CMD="docker exec $CONTAINER ifconfig {{ port.src_device }} >> /dev/null || pipework {{ port.src_device }} -i {{ port.device }} $CONTAINER {{ port.ip }}/24$NEXTHOP_ARG {{ port.mac }} $CTAG_ARG"
+SRC_DEV=$( mac_to_iface "{{ port.parent_mac }}" )
+CMD="docker exec $CONTAINER ifconfig $SRC_DEV >> /dev/null || pipework $SRC_DEV -i {{ port.device }} $CONTAINER {{ port.ip }}/24$NEXTHOP_ARG {{ port.mac }} $CTAG_ARG"
 echo $CMD
 eval $CMD
 
