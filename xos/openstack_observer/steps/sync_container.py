@@ -72,11 +72,13 @@ class SyncContainer(SyncInstanceUsingAnsible):
                 pd["snoop_instance_mac"] = instance_port.mac
                 pd["snoop_instance_id"] = instance_port.instance.instance_id
                 pd["src_device"] = ""
+                pd["bridge"] = "br-int"
             else:
                 # container in VM
                 pd["snoop_instance_mac"] = ""
                 pd["snoop_instance_id"] = ""
                 pd["parent_mac"] = self.get_parent_port_mac(o, port)
+                pd["bridge"] = ""
 
             for (k,v) in port.get_parameters().items():
                 pd[k] = v
