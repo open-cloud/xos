@@ -20,6 +20,7 @@
          s_tag: {{ port.s_tag|default("")  }}
          c_tag: {{ port.c_tag|default("") }}
          next_hop: {{ port.next_hop|default("") }}
+         bridge: {{ port.bridge }}
     {% endfor %}
     volumes:
     {% for volume in volumes %}
