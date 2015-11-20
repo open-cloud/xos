@@ -16,7 +16,8 @@ class HelloWorldTenant(TenantWithContainer):
         proxy = True
 
     KIND = HELLO_WORLD_KIND
-    sync_attributes = ("nat_ip", "nat_mac",)
+    sync_attributes = ("private_ip", "private_mac",
+                       "nat_ip", "nat_mac",)
 
     default_attributes = {'display_message': 'Hello World!'}
     def __init__(self, *args, **kwargs):
@@ -52,6 +53,8 @@ class HelloWorldTenant(TenantWithContainer):
         for ns in self.instance.ports.all():
             if "nat" in ns.network.name.lower():
                 addresses["nat"] = (ns.ip, ns.mac)
+            elif "private" in ns.network.name.lower():
+                addresses["private"] = (ns.ip, ns.mac)
         return addresses
 
     @property
@@ -61,6 +64,14 @@ class HelloWorldTenant(TenantWithContainer):
     @property
     def nat_mac(self):
         return self.addresses.get("nat", (None, None))[1]
+
+    @property
+    def private_ip(self):
+        return self.addresses.get("private", (None, None))[0]
+
+    @property
+    def private_mac(self):
+        return self.addresses.get("private", (None, None))[1]
 
 def model_policy_helloworld_tenant(pk):
     with transaction.atomic():
