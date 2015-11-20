@@ -11,6 +11,27 @@ function mac_to_iface {
     ifconfig|grep $PARENT_MAC| awk '{print $1}'|grep -v '\.'
 }
 
+function encapsulate_stag {
+    LAN_IFACE=$1
+    STAG=$2
+    ifconfig $LAN_IFACE >> /dev/null
+    if [ "$?" == 0 ]; then
+        STAG_IFACE=$LAN_IFACE.$STAG
+        ifconfig $LAN_IFACE up
+        ifconfig $STAG_IFACE
+        if [ "$?" == 0 ]; then
+            echo $STAG_IFACE is already created
+        else
+            ifconfig $STAG_IFACE >> /dev/null || ip link add link $LAN_IFACE name $STAG_IFACE type vlan id $STAG
+        fi
+            ifconfig $STAG_IFACE up
+    else
+        echo There is no $LAN_IFACE. Aborting.
+        exit -1
+    fi
+}
+
+
 {% if volumes %}
 {% for volume in volumes %}
 DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
@@ -60,6 +81,17 @@ MAC=""
 {% endif %}
 
 DEVICE="{{ port.device }}"
+BRIDGE="{{ port.bridge }}"
+{% if port.s_tag %}
+# This is intended for lan_network. Assume that BRIDGE is set to br_lan. We
+# create a device that strips off the S-TAG.
+STAG="{{ port.s_tag }}"
+encapsulate_stag $BRIDGE $STAG
+SRC_DEV=$STAG_IFACE
+{% else %}
+# This is for a standard neutron private network. We use a donor VM to setup
+# openvswitch for us, and we snoop at its devices and create a tap using the
+# same settings.
 XOS_NETWORK_ID="{{ port.xos_network_id }}"
 INSTANCE_MAC="{{ port.snoop_instance_mac }}"
 INSTANCE_ID="{{ port.snoop_instance_id }}"
@@ -75,12 +107,14 @@ echo im=$INSTANCE_MAC ii=$INSTANCE_ID it=$INSTANCE_TAP vlan=$VLAN_ID tap=$TAP co
 ovs-vsctl show | grep -i $TAP
 if [[ $? == 1 ]]; then
     echo creating tap
-    ovs-vsctl add-port br-int $TAP tag=$VLAN_ID -- set interface $TAP type=internal
+    ovs-vsctl add-port $BRIDGE $TAP tag=$VLAN_ID -- set interface $TAP type=internal
 else
     echo tap exists
 fi
+SRC_DEV=$TAP
+{% endif %}
 
-CMD="docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $TAP -i $DEVICE $CONTAINER $IP/24$NEXTHOP_ARG $MAC $CTAG_ARG"
+CMD="docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $SRC_DEV -i $DEVICE $CONTAINER $IP/24$NEXTHOP_ARG $MAC $CTAG_ARG"
 echo $CMD
 eval $CMD
 {% endif %}
