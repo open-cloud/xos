@@ -67,6 +67,8 @@ class HelloWorldTenantForm(forms.ModelForm):
 
 
 class HelloWorldTenantAdmin(ReadOnlyAwareAdmin):
+    verbose_name = "Hello World Tenant"
+    verbose_name_plural = "Hello World Tenants"
     list_display = ('backend_status_icon', 'id', )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
