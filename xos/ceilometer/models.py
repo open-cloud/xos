@@ -39,6 +39,10 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         super(MonitoringChannel, self).__init__(*args, **kwargs)
         self.set_attribute("use_same_instance_for_multiple_tenants", True)
 
+    def can_update(self, user):
+        #Allow creation of this model instances for non-admin users also
+        return True
+
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
