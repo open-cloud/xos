@@ -33,5 +33,5 @@ driver=None
 pretend=False
 backoff_disabled=True
 save_ansible_output=True
-proxy_ssh=True
+proxy_ssh=False
 full_setup=True
