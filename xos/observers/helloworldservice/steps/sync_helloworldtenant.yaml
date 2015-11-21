@@ -8,10 +8,10 @@
       display_message: {{ display_message }}
   tasks:
   - name: install apache
-    apt: name=apache2 state=present
+    apt: name=apache2 state=present update_cache=yes
 
   - name: write message
-    shell: cat "{{ display_message }}" > /var/www/html/index.html
+    shell: echo "{{ display_message }}" > /var/www/html/index.html
 
   - name: stop apache
     service: name=apache2 state=stopped
