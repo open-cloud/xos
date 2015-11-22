@@ -7,6 +7,7 @@ from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
+
 class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     provides = [HelloWorldTenant]
     observes = HelloWorldTenant
@@ -19,14 +20,15 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
 
     def fetch_pending(self, deleted):
         if (not deleted):
-            objs = HelloWorldTenant.get_tenant_objects().filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
+            objs = HelloWorldTenant.get_tenant_objects().filter(
+                Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
         else:
             objs = HelloWorldTenant.get_deleted_tenant_objects()
 
         return objs
 
     def get_extra_attributes(self, o):
-    	return {"display_message": o.display_message}
+        return {"display_message": o.display_message}
 
     def delete_record(self, m):
         return
