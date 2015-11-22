@@ -81,6 +81,8 @@ class HelloWorldTenantForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(HelloWorldTenantForm, self).__init__(*args, **kwargs)
+        # Set the kind field to readonly
+        self.fields['kind'].widget.attrs['readonly'] = True
         # Define the logic for obtaining the objects for the provider_service
         # dropdown of the tenant form.
         self.fields[
@@ -124,7 +126,7 @@ class HelloWorldTenantAdmin(ReadOnlyAwareAdmin):
                                     'provider_service', 'instance', 'creator',
                                     'display_message'],
                          'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance', 'kind', )
+    readonly_fields = ('backend_status_text', 'instance',)
     form = HelloWorldTenantForm
 
     suit_form_tabs = (('general', 'Details'),)
