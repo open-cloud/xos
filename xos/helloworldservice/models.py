@@ -15,7 +15,7 @@ class HelloWorldService(Service):
         # behavior. In this case HelloWorldService is a Service in the database.
         proxy = True
         # The name used to find this service, all directories are named this
-        app_label = "Hello World Service"
+        app_label = "helloworldservice"
         verbose_name = "Hello World Service"
 
 # This is the class to represent the tenant. Most of the logic is given to use
