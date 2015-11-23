@@ -6,13 +6,16 @@ HELLO_WORLD_KIND = "helloworldservice"
 # The class to represent the service. Most of the service logic is given for us
 # in the Service class but, we have some configuration that is specific for
 # this example.
+
+
 class HelloWorldService(Service):
     KIND = HELLO_WORLD_KIND
 
     class Meta:
         # When the proxy field is set to True the model is represented as
         # it's superclass in the database, but we can still change the pyhton
-        # behavior. In this case HelloWorldService is a Service in the database.
+        # behavior. In this case HelloWorldService is a Service in the
+        # database.
         proxy = True
         # The name used to find this service, all directories are named this
         app_label = "helloworldservice"
@@ -21,6 +24,8 @@ class HelloWorldService(Service):
 # This is the class to represent the tenant. Most of the logic is given to use
 # in TenantWithContainer, however there is some configuration and logic that
 # we need to define for this example.
+
+
 class HelloWorldTenant(TenantWithContainer):
 
     class Meta:
@@ -97,6 +102,7 @@ class HelloWorldTenant(TenantWithContainer):
     @property
     def nat_mac(self):
         return self.addresses.get("nat", (None, None))[1]
+
 
 def model_policy_helloworld_tenant(pk):
     # This section of code is atomic to prevent race conditions
