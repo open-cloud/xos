@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # This imports and runs ../../xos-observer.py
+# Runs te standard XOS observer
 
 import importlib
 import os
