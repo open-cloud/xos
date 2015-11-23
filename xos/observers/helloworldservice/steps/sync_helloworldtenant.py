@@ -48,8 +48,3 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     # part of the set of default attributes.
     def get_extra_attributes(self, o):
         return {"display_message": o.display_message}
-
-    # Defines how to delete a HelloWorldTenant, since we don't have anyhting
-    # special to cleanup or dependencies we do nothing.
-    # def delete_record(self, m):
-        # return
