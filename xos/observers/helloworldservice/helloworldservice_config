@@ -44,7 +44,7 @@ backoff_disabled=True
 # We want to output from ansible to be logged
 save_ansible_output=True
 # This determines how we SSH to a client, if this is set to True then we try
-# to ssh using the instance name as a proxy, if this is disabled we ssh using 
+# to ssh using the instance name as a proxy, if this is disabled we ssh using
 # the NAT IP of the instance. On CloudLab the first option will fail so we must
 # set this to False
 proxy_ssh=False
