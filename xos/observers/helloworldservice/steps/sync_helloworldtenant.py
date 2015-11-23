@@ -51,5 +51,5 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
 
     # Defines how to delete a HelloWorldTenant, since we don't have anyhting
     # special to cleanup or dependencies we do nothing.
-    def delete_record(self, m):
-        return
+    # def delete_record(self, m):
+        # return
