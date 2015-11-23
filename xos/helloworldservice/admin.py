@@ -9,6 +9,8 @@ from helloworldservice.models import HelloWorldService, HelloWorldTenant, HELLO_
 # The class to provide an admin interface on the web for the service.
 # We do only configuration here and don't change any logic because the logic
 # is taken care of for us by ReadOnlyAwareAdmin
+
+
 class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     # We must set the model so that the admin knows what fields to use
     model = HelloWorldService
@@ -72,6 +74,8 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
 # service because tenants vary more than services and there isn't a common form.
 # This allows us to change the python behavior for the admin form to save extra
 # fields and control defaults.
+
+
 class HelloWorldTenantForm(forms.ModelForm):
     # Defines a field for the careator of this service. It is a dropbown which
     # is populated with all of the users.
@@ -108,7 +112,8 @@ class HelloWorldTenantForm(forms.ModelForm):
     # entered.
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
-        self.instance.display_message = self.cleaned_data.get("display_message")
+        self.instance.display_message = self.cleaned_data.get(
+            "display_message")
         return super(HelloWorldTenantForm, self).save(commit=commit)
 
     class Meta:
@@ -116,6 +121,8 @@ class HelloWorldTenantForm(forms.ModelForm):
 
 # Define the admin form for the tenant. This uses a similar structure as the
 # service but uses HelloWorldTenantForm to change the python behavior.
+
+
 class HelloWorldTenantAdmin(ReadOnlyAwareAdmin):
     verbose_name = "Hello World Tenant"
     verbose_name_plural = "Hello World Tenants"

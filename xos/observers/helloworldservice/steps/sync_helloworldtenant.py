@@ -11,6 +11,8 @@ sys.path.insert(0, parentdir)
 # indicate where the find the YAML for ansible, where to find the SSH key,
 # and the logic for determining what tenant needs updating, what additional
 # attributes are needed, and how to delete an instance.
+
+
 class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     # Indicates the position in the data model, this will run when XOS needs to
     # enact a HelloWorldTenant
