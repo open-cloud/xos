@@ -4,7 +4,7 @@ from core.models import Instance, Site
 
 # Note that as a side effect, these tests will also create a Site
 
-class ObserverComputeTest(BaseObserverToscaTest):
+class ObserverVMTest(BaseObserverToscaTest):
     tests = ["create_instance"]
     # hide_observer_output = False # uncomment to display lots of stuff to screen
 
@@ -64,5 +64,5 @@ class ObserverComputeTest(BaseObserverToscaTest):
         assert(instance.instance_name is not None)
 
 if __name__ == "__main__":
-    ObserverComputeTest()
+    ObserverVMTest()
 
