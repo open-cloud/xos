@@ -47,9 +47,9 @@ and disable security groups.)
 * Wait until you get an email from CloudLab with title "OpenStack Instance Finished Setting Up".
 * Login to the *ctl* node of your experiment and run:
 ```
-$ git clone https://github.com/open-cloud/xos.git
-$ cd xos/xos/configurations/cord/
-$ make
+ctl:~$ git clone https://github.com/open-cloud/xos.git
+ctl:~$ cd xos/xos/configurations/cord/
+ctl:~/xos/xos/configurations/cord$ make
 ```
 
 Running `make` in this directory creates the XOS Docker container and runs the TOSCA engine with `cord.yaml` to
@@ -65,6 +65,31 @@ configure XOS with the CORD services.  In addition, a number of VMs are created:
 Once all the VMs are up and the ONOS apps are configured, XOS should be able to get an address mapping from the `virtualbng`
 ONOS app for the vCPE. To verify that it has received an IP address mapping, look at the **Routeable subnet:** field in 
 the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
+
+After launching the ONOS apps, it is necessary to configure software switches along the dataplane so that ONOS can control
+them.  To do this, from the `cord` configuration directory:
+```
+ctl:~/xos/xos/configurations/cord$ cd dataplane/
+ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-inventory.sh > hosts
+ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts dataplane.yaml
+```
+
+Currently the vOLT switch is not forwarding ARP and so it is necessary to set up ARP mappings between the client
+and vCPE.  Log into the client and add an ARP entry for the vCPE: 
+```
+client:$ sudo arp -s 192.168.0.1 <mac-of-eth1-in-vCPE-container>
+```
+Inside the vCPE container add a similar entry for the client:
+```
+vcpe:$ arp -s 192.168.0.2 <mac-of-br-sub-on-client>
+```
+At this point you should be able to ping 192.168.0.1 from the client.  The final step is to set the 
+vCPE as the gateway on the client:
+```
+client:$ sudo route del default gw 10.11.10.5
+client:$ sudo route add default gw 192.168.0.1
+```
+The client should now be able to surf the Internet through the dataplane.
 
 ## How to log into ONOS
 
