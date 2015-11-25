@@ -5,7 +5,7 @@
         .module('xos.helpers')
         .factory('SetCSRFToken', setCSRFToken);
 
-    function setCSRFToken($cookies) { 
+    function setCSRFToken($cookies) {
       return {
         request: function(request){
           if(request.method !== 'GET'){
