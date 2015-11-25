@@ -1,6 +1,8 @@
 def handle_container_on_metal(instance):
         from core.models import Instance, Flavor, Port, Image
 
+        print "MODEL POLICY: instance", instance, "handle container_on_metal"
+
         if instance.deleted:
             return
 
@@ -23,16 +25,20 @@ def handle_container_on_metal(instance):
                                 flavor = flavors[0])
                 companion_instance.save()
 
+                print "MODEL POLICY: instance", instance, "created companion", companion_instance
+
         # Add the ports for the container
         for network in instance.slice.networks.all():
             # hmmm... The NAT ports never become ready, because sync_ports never
             # instantiates them. Need to think about this.
+            print "MODEL POLICY: instance", instance, "handling network", network
             if (network.name.endswith("-nat")):
                 continue
 
             if not Port.objects.filter(network=network, instance=instance).exists():
                 port = Port(network = network, instance=instance)
                 port.save()
+                print "MODEL POLICY: instance", instance, "created port", port
 
 def handle(instance):
     from core.models import Controller, ControllerSlice, ControllerNetwork, NetworkSlice
@@ -43,6 +49,7 @@ def handle(instance):
 
     for cn in controller_networks:
         if (cn.lazy_blocked):
+                print "MODEL POLICY: instance", instance, "unblocking network", cn.network
 		cn.lazy_blocked=False
 		cn.backend_register = '{}'
 		cn.save()

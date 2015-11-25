@@ -66,7 +66,7 @@ class SyncInstances(OpenStackSyncStep):
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
-                        raise DeferredException("Private Network %s has no id; Try again later" % controller_network.network.name)
+                        raise DeferredException("Instance %s Private Network %s has no id; Try again later" % (instance, controller_network.network.name))
                    nics.append(controller_network.net_id)
 
         # now include network template
