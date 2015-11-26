@@ -83,6 +83,12 @@ Inside the vCPE container add a similar entry for the client:
 ```
 vcpe:$ arp -s 192.168.0.2 <mac-of-br-sub-on-client>
 ```
+
+Now SSH into ONOS running the OLT app (see below) and activate the subscriber:
+```
+onos> add-subscriber-access of:0000000000000001 1 432
+```
+
 At this point you should be able to ping 192.168.0.1 from the client.  The final step is to set the 
 vCPE as the gateway on the client:
 ```
