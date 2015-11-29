@@ -39,6 +39,16 @@ class SyncContainer(SyncInstanceUsingAnsible):
                 return p
         return None
 
+    def get_parent_port_mac(self, instance, port):
+        if not instance.parent:
+            raise Exception("instance has no parent")
+        for parent_port in instance.parent.ports.all():
+            if parent_port.network == port.network:
+                if not parent_port.mac:
+                     raise Exception("parent port on network %s does not have mac yet" % parent_port.network.name)
+                return parent_port.mac
+        raise Exception("failed to find corresponding parent port for network %s" % port.network.name)
+
     def get_ports(self, o):
         i=0
         ports = []
@@ -62,11 +72,13 @@ class SyncContainer(SyncInstanceUsingAnsible):
                 pd["snoop_instance_mac"] = instance_port.mac
                 pd["snoop_instance_id"] = instance_port.instance.instance_id
                 pd["src_device"] = ""
+                pd["bridge"] = "br-int"
             else:
                 # container in VM
                 pd["snoop_instance_mac"] = ""
                 pd["snoop_instance_id"] = ""
-                pd["src_device"] = "eth%d" % i
+                pd["parent_mac"] = self.get_parent_port_mac(o, port)
+                pd["bridge"] = ""
 
             for (k,v) in port.get_parameters().items():
                 pd[k] = v
