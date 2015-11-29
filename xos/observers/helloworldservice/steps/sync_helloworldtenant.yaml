@@ -4,8 +4,6 @@
   connection: ssh
   user: ubuntu
   sudo: yes
-  vars:
-      display_message: {{ display_message }}
   tasks:
   - name: install apache
     apt: name=apache2 state=present update_cache=yes

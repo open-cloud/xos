@@ -9,15 +9,13 @@ from helloworldservice.models import HelloWorldService, HelloWorldTenant, HELLO_
 # The class to provide an admin interface on the web for the service.
 # We do only configuration here and don't change any logic because the logic
 # is taken care of for us by ReadOnlyAwareAdmin
-
-
 class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     # We must set the model so that the admin knows what fields to use
     model = HelloWorldService
     verbose_name = "Hello World Service"
     verbose_name_plural = "Hello World Services"
 
-    # Setting list_display creats columns on the admin page, each value here
+    # Setting list_display creates columns on the admin page, each value here
     # is a column, the column is populated for every instance of the model.
     list_display = ("backend_status_icon", "name", "enabled")
 
@@ -41,7 +39,7 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     readonly_fields = ('backend_status_text', )
 
     # Inlines are used to denote other models that can be edited on the same
-    # form as this one. In this case the service form also alows changes
+    # form as this one. In this case the service form also allows changes
     # to slices.
     inlines = [SliceInline]
 
@@ -52,7 +50,7 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
 
     # Associates fieldsets from this form and from the inlines.
     # The format here are tuples, of (<name>, tab title). <name> comes from the
-    # <name> in the fielsets.
+    # <name> in the fieldsets.
     suit_form_tabs = (('general', 'Hello World Service Details'),
                       ('administration', 'Tenants'),
                       ('slices', 'Slices'),)
@@ -69,15 +67,13 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return HelloWorldService.get_service_objects_by_user(request.user)
 
-# Class to repsent the form to add and edit tenants.
+# Class to represent the form to add and edit tenants.
 # We need to define this instead of just using an admin like we did for the
 # service because tenants vary more than services and there isn't a common form.
 # This allows us to change the python behavior for the admin form to save extra
 # fields and control defaults.
-
-
 class HelloWorldTenantForm(forms.ModelForm):
-    # Defines a field for the careator of this service. It is a dropbown which
+    # Defines a field for the creator of this service. It is a dropdown which
     # is populated with all of the users.
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     # Defines a text field for the display message, it is not required.
@@ -100,12 +96,11 @@ class HelloWorldTenantForm(forms.ModelForm):
             self.fields[
                 'display_message'].initial = self.instance.display_message
 
-        # If there is not an instnace then we need to set initial values.
+        # If there is not an instance then we need to set initial values.
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
             if HelloWorldService.get_service_objects().exists():
-                self.fields["provider_service"].initial = HelloWorldService.get_service_objects().all()[
-                    0]
+                self.fields["provider_service"].initial = HelloWorldService.get_service_objects().all()[0]
 
     # This function describes what happens when the save button is pressed on
     # the tenant form. In this case we set the values for the instance that were

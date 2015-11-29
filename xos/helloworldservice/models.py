@@ -6,8 +6,6 @@ HELLO_WORLD_KIND = "helloworldservice"
 # The class to represent the service. Most of the service logic is given for us
 # in the Service class but, we have some configuration that is specific for
 # this example.
-
-
 class HelloWorldService(Service):
     KIND = HELLO_WORLD_KIND
 
@@ -24,8 +22,6 @@ class HelloWorldService(Service):
 # This is the class to represent the tenant. Most of the logic is given to use
 # in TenantWithContainer, however there is some configuration and logic that
 # we need to define for this example.
-
-
 class HelloWorldTenant(TenantWithContainer):
 
     class Meta:
@@ -85,9 +81,9 @@ class HelloWorldTenant(TenantWithContainer):
             return {}
 
         addresses = {}
-        # The ports field refers to networks for the instnace.
+        # The ports field refers to networks for the instance.
         # This loop stores the details for the NAT network that will be
-        # necessary for ansible..
+        # necessary for ansible.
         for ns in self.instance.ports.all():
             if "nat" in ns.network.name.lower():
                 addresses["nat"] = (ns.ip, ns.mac)
