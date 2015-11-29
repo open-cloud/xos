@@ -700,6 +700,7 @@ class VCPETenant(TenantWithContainer):
                 port.set_parameter("c_tag", self.volt.c_tag)
                 port.set_parameter("s_tag", self.volt.s_tag)
                 port.set_parameter("device", "eth1")
+                port.set_parameter("bridge", "br-lan")
 
                 wan_networks = [x for x in instance.slice.networks.all() if "wan" in x.name]
                 if not wan_networks:
