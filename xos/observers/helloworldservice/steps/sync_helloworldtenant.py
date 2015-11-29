@@ -11,15 +11,13 @@ sys.path.insert(0, parentdir)
 # indicate where the find the YAML for ansible, where to find the SSH key,
 # and the logic for determining what tenant needs updating, what additional
 # attributes are needed, and how to delete an instance.
-
-
 class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     # Indicates the position in the data model, this will run when XOS needs to
     # enact a HelloWorldTenant
     provides = [HelloWorldTenant]
     # The actual model being enacted, usually the same as provides.
     observes = HelloWorldTenant
-    # Number of miliseconds between interruptions of the observer
+    # Number of milliseconds between interruptions of the observer
     requested_interval = 0
     # The ansible template to run
     template_name = "sync_helloworldtenant.yaml"
