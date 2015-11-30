@@ -47,6 +47,9 @@
       port={{ public_net.stdout }}
       state=present
 
+  - name: Remove IP address on public_network
+    command: /sbin/ifconfig {{ public_net.stdout }} 0.0.0.0
+
   - name: Change datapath ID of bridge to match config file
     command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}
 
@@ -198,13 +201,18 @@
       port={{ client_net.stdout }}
       state=present
 
+  - name: Run some commands on br-sub
+    shell: "{{ item }}"
+    with_items:
+    - ifconfig br-sub 192.168.0.2 mtu 1400 up
+    - ethtool -K br-sub tso off
+    - ethtool -K br-sub tx off
+
   # Run dhclient on br-sub internal interface to issue DHCP request to vCPE
 
 #
-# This play is just for testing.  The vCPE configuration below will be
-# integrated with the vCPE Synchronizer.
-#
-# Need to change the data model to store both s-tag and c-tag
+# Need to set up a tunnel between vCPE and vOLT to keep VLAN-tagged
+# packets from being swallowed by the network.
 #
 - hosts: vcpe
   sudo: yes
