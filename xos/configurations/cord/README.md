@@ -97,12 +97,26 @@ client:$ sudo route add default gw 192.168.0.1
 ```
 The client should now be able to surf the Internet through the dataplane.
 
+## Setting up /etc/hosts
+
+To make it easy to log into the various VMs that make up the dataplane, add entries for them into `/etc/hosts` on the 
+*ctl* node.  As root, run:
+```
+ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-etc-hosts.sh >> /etc/hosts
+```
+For example, to log into the client:
+```
+ctl:~$ ssh ubuntu@client
+```
+
 ## How to log into ONOS
 
-The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice.  All ports exposed by the ONOS container are forwarded to the outside, and can be accessed from the *ctl* node using the `flat-lan-1-net` address of the hosting VM.  For example, if the IP addresss of the VM is 10.11.10.30, then it is possible to SSH to ONOS as follows (password is *karaf*):
+ONOS apps are run inside Docker containers hosted in VMs.  All ports exposed by the ONOS container are forwarded to the 
+outside, and can be accessed from the *ctl* node over the `flat-lan-1-net` network.  Assuming that `/etc/hosts`
+has been configured as described above, it is possible to SSH to the ONOS running the `virtualbng` app as follows (password is *karaf*):
 
 ```
-$ ssh -p 8101 karaf@10.11.10.30
+$ ssh -p 8101 karaf@onos_vbng
 Password authentication
 Password:
 Welcome to Open Network Operating System (ONOS)!
