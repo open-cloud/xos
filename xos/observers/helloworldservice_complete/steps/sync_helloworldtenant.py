@@ -26,7 +26,7 @@ class SyncHelloWorldTenantComplete(SyncInstanceUsingAnsible):
     service_key_name = "/opt/xos/observers/helloworldservice_complete/helloworldservice_private_key"
 
     def __init__(self, *args, **kwargs):
-        super(HelloWorldTenantComplete self).__init__(*args, **kwargs)
+        super(SyncHelloWorldTenantComplete, self).__init__(*args, **kwargs)
 
     # Defines the logic for determining what HelloWorldTenantCompletes need to be
     # enacted.
