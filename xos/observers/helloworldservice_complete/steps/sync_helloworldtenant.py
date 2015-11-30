@@ -1,7 +1,7 @@
 import os
 import sys
 from django.db.models import Q, F
-from helloworldservice.models import HelloWorldService, HelloWorldTenant
+from helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 
 parentdir = os.path.join(os.path.dirname(__file__), "..")
@@ -11,12 +11,12 @@ sys.path.insert(0, parentdir)
 # indicate where the find the YAML for ansible, where to find the SSH key,
 # and the logic for determining what tenant needs updating, what additional
 # attributes are needed, and how to delete an instance.
-class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
+class SyncHelloWorldTenantComplete(SyncInstanceUsingAnsible):
     # Indicates the position in the data model, this will run when XOS needs to
-    # enact a HelloWorldTenant
-    provides = [HelloWorldTenant]
+    # enact a HelloWorldTenantComplete
+    provides = [HelloWorldTenantComplete]
     # The actual model being enacted, usually the same as provides.
-    observes = HelloWorldTenant
+    observes = HelloWorldTenantComplete
     # Number of milliseconds between interruptions of the observer
     requested_interval = 0
     # The ansible template to run
@@ -26,19 +26,19 @@ class SyncHelloWorldServiceTenant(SyncInstanceUsingAnsible):
     service_key_name = "/opt/xos/observers/helloworldservice_complete/helloworldservice_private_key"
 
     def __init__(self, *args, **kwargs):
-        super(SyncHelloWorldServiceTenant, self).__init__(*args, **kwargs)
+        super(HelloWorldTenantComplete self).__init__(*args, **kwargs)
 
-    # Defines the logic for determining what HelloWorldTenants need to be
+    # Defines the logic for determining what HelloWorldTenantCompletes need to be
     # enacted.
     def fetch_pending(self, deleted):
         # If the update is not a deletion, then we get all of the instnaces that
         # have been updated or have not been enacted.
         if (not deleted):
-            objs = HelloWorldTenant.get_tenant_objects().filter(
+            objs = HelloWorldTenantComplete.get_tenant_objects().filter(
                 Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
         else:
             # If this is a deletion we get all of the deleted tenants..
-            objs = HelloWorldTenant.get_deleted_tenant_objects()
+            objs = HelloWorldTenantComplete.get_deleted_tenant_objects()
 
         return objs
 

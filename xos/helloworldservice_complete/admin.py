@@ -4,14 +4,14 @@ from core.middleware import get_request
 from core.models import User
 from django import forms
 from django.contrib import admin
-from helloworldservice.models import HelloWorldService, HelloWorldTenant, HELLO_WORLD_KIND
+from helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete, HELLO_WORLD_KIND
 
 # The class to provide an admin interface on the web for the service.
 # We do only configuration here and don't change any logic because the logic
 # is taken care of for us by ReadOnlyAwareAdmin
-class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
+class HelloWorldServiceCompleteAdmin(ReadOnlyAwareAdmin):
     # We must set the model so that the admin knows what fields to use
-    model = HelloWorldService
+    model = HelloWorldServiceComplete
     verbose_name = "Hello World Service"
     verbose_name_plural = "Hello World Services"
 
@@ -65,14 +65,14 @@ class HelloWorldServiceAdmin(ReadOnlyAwareAdmin):
     # Used to get the objects for this model that are associated with the
     # requesting user.
     def queryset(self, request):
-        return HelloWorldService.get_service_objects_by_user(request.user)
+        return HelloWorldServiceComplete.get_service_objects_by_user(request.user)
 
 # Class to represent the form to add and edit tenants.
 # We need to define this instead of just using an admin like we did for the
 # service because tenants vary more than services and there isn't a common form.
 # This allows us to change the python behavior for the admin form to save extra
 # fields and control defaults.
-class HelloWorldTenantForm(forms.ModelForm):
+class HelloWorldTenantCompleteForm(forms.ModelForm):
     # Defines a field for the creator of this service. It is a dropdown which
     # is populated with all of the users.
     creator = forms.ModelChoiceField(queryset=User.objects.all())
@@ -80,13 +80,13 @@ class HelloWorldTenantForm(forms.ModelForm):
     display_message = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
-        super(HelloWorldTenantForm, self).__init__(*args, **kwargs)
+        super(HelloWorldTenantCompleteForm, self).__init__(*args, **kwargs)
         # Set the kind field to readonly
         self.fields['kind'].widget.attrs['readonly'] = True
         # Define the logic for obtaining the objects for the provider_service
         # dropdown of the tenant form.
         self.fields[
-            'provider_service'].queryset = HelloWorldService.get_service_objects().all()
+            'provider_service'].queryset = HelloWorldServiceComplete.get_service_objects().all()
         # Set the initial kind to HELLO_WORLD_KIND for this tenant.
         self.fields['kind'].initial = HELLO_WORLD_KIND
         # If there is an instance of this model then we can set the initial
@@ -99,8 +99,8 @@ class HelloWorldTenantForm(forms.ModelForm):
         # If there is not an instance then we need to set initial values.
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
-            if HelloWorldService.get_service_objects().exists():
-                self.fields["provider_service"].initial = HelloWorldService.get_service_objects().all()[0]
+            if HelloWorldServiceComplete.get_service_objects().exists():
+                self.fields["provider_service"].initial = HelloWorldServiceComplete.get_service_objects().all()[0]
 
     # This function describes what happens when the save button is pressed on
     # the tenant form. In this case we set the values for the instance that were
@@ -109,16 +109,16 @@ class HelloWorldTenantForm(forms.ModelForm):
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.display_message = self.cleaned_data.get(
             "display_message")
-        return super(HelloWorldTenantForm, self).save(commit=commit)
+        return super(HelloWorldTenantCompleteForm, self).save(commit=commit)
 
     class Meta:
-        model = HelloWorldTenant
+        model = HelloWorldTenantComplete
 
 # Define the admin form for the tenant. This uses a similar structure as the
-# service but uses HelloWorldTenantForm to change the python behavior.
+# service but uses HelloWorldTenantCompleteForm to change the python behavior.
 
 
-class HelloWorldTenantAdmin(ReadOnlyAwareAdmin):
+class HelloWorldTenantCompleteAdmin(ReadOnlyAwareAdmin):
     verbose_name = "Hello World Tenant"
     verbose_name_plural = "Hello World Tenants"
     list_display = ('id', 'backend_status_icon', 'instance', 'display_message')
@@ -129,13 +129,13 @@ class HelloWorldTenantAdmin(ReadOnlyAwareAdmin):
                                     'display_message'],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance',)
-    form = HelloWorldTenantForm
+    form = HelloWorldTenantCompleteForm
 
     suit_form_tabs = (('general', 'Details'),)
 
     def queryset(self, request):
-        return HelloWorldTenant.get_tenant_objects_by_user(request.user)
+        return HelloWorldTenantComplete.get_tenant_objects_by_user(request.user)
 
 # Associate the admin forms with the models.
-admin.site.register(HelloWorldService, HelloWorldServiceAdmin)
-admin.site.register(HelloWorldTenant, HelloWorldTenantAdmin)
+admin.site.register(HelloWorldServiceComplete, HelloWorldServiceCompleteAdmin)
+admin.site.register(HelloWorldTenantComplete, HelloWorldTenantCompleteAdmin)
