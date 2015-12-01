@@ -7,7 +7,7 @@ import time
 from django.db.models import F, Q
 from xos.config import Config
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from observer.syncstep import SyncStep
+from observer.syncstep import SyncStep, DeferredException
 from observer.ansible import run_template_ssh
 from core.models import Service, Slice, Instance
 from services.onos.models import ONOSService, ONOSApp
@@ -45,7 +45,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
         for parent_port in instance.parent.ports.all():
             if parent_port.network == port.network:
                 if not parent_port.mac:
-                     raise Exception("parent port on network %s does not have mac yet" % parent_port.network.name)
+                     raise DeferredException("parent port on network %s does not have mac yet" % parent_port.network.name)
                 return parent_port.mac
         raise Exception("failed to find corresponding parent port for network %s" % port.network.name)
 
@@ -56,7 +56,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
             if (not port.ip):
                 # 'unmanaged' ports may have an ip, but no mac
                 # XXX: are there any ports that have a mac but no ip?
-                raise Exception("Port on network %s is not yet ready" % port.network.name)
+                raise DeferredException("Port on network %s is not yet ready" % port.network.name)
 
             pd={}
             pd["mac"] = port.mac or ""
