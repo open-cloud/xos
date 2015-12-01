@@ -67,7 +67,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
                 # container on bare metal
                 instance_port = self.get_instance_port(port)
                 if not instance_port:
-                    raise Exception("No instance on slice for port on network %s" % port.network.name)
+                    raise DeferredException("No instance on slice for port on network %s" % port.network.name)
 
                 pd["snoop_instance_mac"] = instance_port.mac
                 pd["snoop_instance_id"] = instance_port.instance.instance_id
