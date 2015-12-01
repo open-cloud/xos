@@ -1,4 +1,4 @@
-source ~/admin-openrc.sh
+source ../../common/admin-openrc.sh
 
 get_ip () {
     LABEL=$1
@@ -14,7 +14,7 @@ I=1
 for NODE in $NODES; do
     BM_SSH_IP=`getent hosts $NODE | awk '{ print $1 }'`
     IFS=. read BM_NAME BM_REMAINDER <<< $NODE
-    BM_IP=`grep -i $BM_NAME /root/setup/data-hosts.flat-lan-1 | awk '{print $1}'`
+    BM_IP=`sudo grep -i $BM_NAME /root/setup/data-hosts.flat-lan-1 | awk '{print $1}'`
 
     GRE_NAMES+=("gre-bm-$I")
     BM_IPS+=("$BM_IP")
