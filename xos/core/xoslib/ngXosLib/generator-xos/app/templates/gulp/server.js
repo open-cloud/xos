@@ -10,8 +10,13 @@ var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
 
-if (process.env.NODE_ENV === 'cloudlab'){
-  var conf = require('../env/cloudlab.js');
+const environment = process.env.NODE_ENV;
+
+if (environment){
+  var conf = require(`../env/${environment}.js`);
+}
+else{
+  var conf = require('../env/default.js')
 }
 
 var proxy = httpProxy.createProxyServer({
