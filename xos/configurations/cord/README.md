@@ -74,6 +74,12 @@ ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-inventory.sh > hosts
 ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts dataplane.yaml
 ```
 
+To setup the dataplane for containers on bare metal, perform these steps in addition to the above:
+```
+ctl:~/xos/xos/configurations/cord/dataplane$ ./generate-bm.sh > hosts-bm   
+ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts-bm dataplane-bm.yaml
+```
+
 Currently the vOLT switch is not forwarding ARP and so it is necessary to set up ARP mappings between the client
 and vCPE.  Log into the client and add an ARP entry for the vCPE: 
 ```
