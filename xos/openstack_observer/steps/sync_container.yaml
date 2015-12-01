@@ -104,6 +104,12 @@
     shell: systemctl daemon-reload
     when: systemctl.stat.exists == True
 
+{% if ports %}
+  - name: make sure bridges are setup
+    shell: ifconfig {{ '{{' }} item.bridge {{ '}}' }}
+    with_items: "ports"
+{% endif %}
+
   - name: Make sure container is running
     service: name=container-{{ container_name }} state=started
 
