@@ -8,16 +8,7 @@ port=5432
 
 # Required by XOS
 [api]
-host=localhost
-port=8000
-ssl_key=None
-ssl_cert=None
-ca_ssl_cert=None
-ratelimit_enabled=0
-omf_enabled=0
-mail_support_address=support@localhost
 nova_enabled=True
-logfile=/var/log/xos.log
 
 # Sets options for the observer
 [observer]
