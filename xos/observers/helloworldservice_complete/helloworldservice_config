@@ -1,9 +1,4 @@
 # Required by XOS
-[plc]
-name=plc
-deployment=plc
-
-# Required by XOS
 [db]
 name=xos
 user=postgres
