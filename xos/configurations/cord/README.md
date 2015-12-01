@@ -49,6 +49,10 @@ and disable security groups.)
 ```
 ctl:~$ git clone https://github.com/open-cloud/xos.git
 ctl:~$ cd xos/xos/configurations/cord/
+```
+Edit `cord.yaml` in this directory.  Change the hostnames `cp-1.devel.xos-pg0.clemson.cloudlab.us` and
+`cp-2.devel.xos-pg0.clemson.cloudlab.us` to the names of the compute nodes in your experiment.  Now run:
+```
 ctl:~/xos/xos/configurations/cord$ make
 ```
 
