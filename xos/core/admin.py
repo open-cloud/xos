@@ -106,6 +106,10 @@ class XOSAdminMixin(object):
             # this 'if' might be redundant if save_by_user is implemented right
             raise PermissionDenied
 
+        # reset exponential backoff
+        if hasattr(obj, "backend_register"):
+            obj.backend_register = "{}"
+
         obj.caller = request.user
         # update openstack connection to use this site/tenant
         obj.save_by_user(request.user)
