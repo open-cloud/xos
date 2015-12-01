@@ -24,10 +24,10 @@ sys_dir=/opt/xos/observers/helloworldservice_complete/sys
 logfile=/var/log/xos_backend.log
 # If this option is true, then nothing will change, we simply pretend to run
 pretend=False
-# If this is False then XOS will use an exponential backoff with the observer
+# If this is False then XOS will use an exponential backoff when the observer
 # fails, since we will be waiting for an instance, we don't want this.
 backoff_disabled=True
-# We want to output from ansible to be logged
+# We want the output from ansible to be logged
 save_ansible_output=True
 # This determines how we SSH to a client, if this is set to True then we try
 # to ssh using the instance name as a proxy, if this is disabled we ssh using
