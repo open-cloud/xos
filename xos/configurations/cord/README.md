@@ -80,13 +80,9 @@ ctl:~/xos/xos/configurations/cord/dataplane$ ./generate-bm.sh > hosts-bm
 ctl:~/xos/xos/configurations/cord/dataplane$ sudo ansible-playbook -i hosts-bm dataplane-bm.yaml
 ```
 
-The vCPE container that's created by the configuration will be broken because it was started before the dataplane
-was setup, and therefore there was no br-lan for it to use with its interfaces. 
+Check that the vCPE container has started, by going into the XOS UI, selecting 'Services', 'service_vcpe', 'Administration', 'Vcpe Tenants', and make sure there's a green icon next to the vCPE. 
 
-To fix this for containers on bare metal, SSH to the compute node that is hosting the vCPE container and run:
-```
-cp-2:$ service container-mysite_vcpe-1 start
-```
+If the vCPE Tenant is still red, then the Instance could be exponentially backed-off due to errors while trying to sync before dataplane.yaml was run. You can reset the exponential backoff by tracking down the vCPE Instance (Slices->mysite_vcpe->Instances, and find the Instance associated with the vCPE Tenant) and hitting the save button.
 
 Currently the vOLT switch is not forwarding ARP and so it is necessary to set up ARP mappings between the client
 and vCPE.  Log into the client and add an ARP entry for the vCPE: 
