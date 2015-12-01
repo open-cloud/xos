@@ -80,6 +80,14 @@ ctl:~/xos/xos/configurations/cord/dataplane$ ./generate-bm.sh > hosts-bm
 ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts-bm dataplane-bm.yaml
 ```
 
+The vCPE container that's created by the configuration will be broken because it was started before the dataplane
+was setup, and therefore there was no br-lan for it to use with its interfaces. 
+
+To fix this for containers on bare metal, SSH to the compute node that is hosting the vCPE container and run:
+```
+cp-2:$ service container-mysite_vcpe-1 start
+```
+
 Currently the vOLT switch is not forwarding ARP and so it is necessary to set up ARP mappings between the client
 and vCPE.  Log into the client and add an ARP entry for the vCPE: 
 ```
