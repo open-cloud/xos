@@ -11,7 +11,7 @@ class HelloWorldServiceComplete(Service):
 
     class Meta:
         # When the proxy field is set to True the model is represented as
-        # it's superclass in the database, but we can still change the pyhton
+        # it's superclass in the database, but we can still change the python
         # behavior. In this case HelloWorldServiceComplete is a Service in the
         # database.
         proxy = True
