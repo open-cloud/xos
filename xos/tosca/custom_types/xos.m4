@@ -588,6 +588,10 @@ node_types:
                 type: integer
                 default: 10
                 description: Quota of instances that this slice may create.
+            default_isolation:
+                type: string
+                required: false
+                description: default isolation to use when bringing up instances (default to 'vm')
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
