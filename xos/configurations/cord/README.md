@@ -154,3 +154,9 @@ onos> vbngs
    Private IP - Public IP
    10.0.1.3 - 10.254.0.129
 ```
+
+## Troubleshooting
+
+#### Problem: No external connectivity from vCPE container
+1. Make sure the hosts listed in `virtualbng.json` are the actual compute nodes used in your experiment.
+2. Try rebooting the ONOS container running the `virtualbng` app: `$ ssh ubuntu@onos-vbng "sudo docker restart ONOS"`
