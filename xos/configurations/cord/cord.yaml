@@ -14,6 +14,12 @@ topology_template:
           - vcpe_tenant:
               node: service_vcpe
               relationship: tosca.relationships.TenantOfService
+          - lan_network:
+              node: lan_network
+              relationship: tosca.relationships.UsesNetwork
+          - wan_network:
+              node: wan_network
+              relationship: tosca.relationships.UsesNetwork
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
@@ -241,6 +247,11 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - vcpe_docker_image:
+              node: andybavier/docker-vcpe
+              relationship: tosca.relationships.UsesImage
+      properties:
+          default_isolation: container
 
     mysite_onos_vbng:
       description: ONOS Controller Slice for vBNG
