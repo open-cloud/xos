@@ -74,10 +74,10 @@ ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-inventory.sh > hosts
 ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts dataplane.yaml
 ```
 
-To setup the dataplane for containers on bare metal, perform these steps in addition to the above:
+To setup the dataplane for containers on bare metal, perform these steps in addition to the above (note: make sure to sudo when running the playbook):
 ```
 ctl:~/xos/xos/configurations/cord/dataplane$ ./generate-bm.sh > hosts-bm   
-ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts-bm dataplane-bm.yaml
+ctl:~/xos/xos/configurations/cord/dataplane$ sudo ansible-playbook -i hosts-bm dataplane-bm.yaml
 ```
 
 The vCPE container that's created by the configuration will be broken because it was started before the dataplane
