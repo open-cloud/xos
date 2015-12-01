@@ -43,7 +43,7 @@ It launches an XOS container on Cloudlab that runs the XOS develserver.  The con
 
 To get started on CloudLab:
 * Create an experiment using the *OpenStack-CORD* profile.  (You can also use the *OpenStack* profile, but choose *Kilo*
-and disable security groups.)
+with two compute nodes and disable security groups.)
 * Wait until you get an email from CloudLab with title "OpenStack Instance Finished Setting Up".
 * Login to the *ctl* node of your experiment and run:
 ```
