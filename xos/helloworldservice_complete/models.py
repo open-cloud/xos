@@ -28,6 +28,7 @@ class HelloWorldTenantComplete(TenantWithContainer):
         # Same as a above, HelloWorldTenantComplete is represented as a
         # TenantWithContainer, but we change the python behavior.
         proxy = True
+        verbose_name = "Hello World Tenant"
 
     # The kind of the service is used on forms to differentiate this service
     # from the other services.
