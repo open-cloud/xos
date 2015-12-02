@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -351,7 +351,6 @@ class VOLTTenant(Tenant):
             vcpe = VCPETenant(provider_service = vcpeServices[0],
                               subscriber_tenant = self)
             vcpe.caller = self.creator
-            # vcpe.use_cobm = True # XXX XXX XXX remove before checking XXX XXX XXX
             vcpe.save()
 
     def manage_subscriber(self):
@@ -678,6 +677,37 @@ class VCPETenant(TenantWithContainer):
             if self.bbs_account:
                 self.bbs_account = None
                 super(VCPETenant, self).save()
+
+    def find_or_make_port(self, instance, network, **kwargs):
+        port = Port.objects.filter(instance=instance, network=network)
+        if port:
+            port = port[0]
+        else:
+            port = Port(instance=instance, network=network, **kwargs)
+            port.save()
+        return port
+
+    def save_instance(self, instance):
+        with transaction.atomic():
+            instance.volumes = "/etc/dnsmasq.d"
+            super(VCPETenant, self).save_instance(instance)
+
+            if instance.isolation in ["container", "container_vm"]:
+                lan_networks = [x for x in instance.slice.networks.all() if "lan" in x.name]
+                if not lan_networks:
+                    raise XOSProgrammingError("No lan_network")
+                port = self.find_or_make_port(instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
+                port.set_parameter("c_tag", self.volt.c_tag)
+                port.set_parameter("s_tag", self.volt.s_tag)
+                port.set_parameter("device", "eth1")
+                port.set_parameter("bridge", "br-lan")
+
+                wan_networks = [x for x in instance.slice.networks.all() if "wan" in x.name]
+                if not wan_networks:
+                    raise XOSProgrammingError("No wan_network")
+                port = self.find_or_make_port(instance, wan_networks[0])
+                port.set_parameter("next_hop", value="10.0.1.253")   # FIX ME
+                port.set_parameter("device", "eth0")
 
     def save(self, *args, **kwargs):
         if not self.creator:

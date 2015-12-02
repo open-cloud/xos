@@ -12,7 +12,7 @@ from xosresource import XOSResource
 class XOSSlice(XOSResource):
     provides = "tosca.nodes.Slice"
     xos_model = Slice
-    copyin_props = ["enabled", "description", "slice_url", "max_instances"]
+    copyin_props = ["enabled", "description", "slice_url", "max_instances", "default_isolation"]
 
     def get_xos_args(self):
         args = super(XOSSlice, self).get_xos_args()

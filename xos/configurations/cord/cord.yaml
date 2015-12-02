@@ -7,7 +7,6 @@ imports:
 
 topology_template:
   node_templates:
-
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -15,6 +14,12 @@ topology_template:
           - vcpe_tenant:
               node: service_vcpe
               relationship: tosca.relationships.TenantOfService
+          - lan_network:
+              node: lan_network
+              relationship: tosca.relationships.UsesNetwork
+          - wan_network:
+              node: wan_network
+              relationship: tosca.relationships.UsesNetwork
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
@@ -128,14 +133,15 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.olt
+          dependencies: org.onosproject.openflow, org.onosproject.olt
           config_network-cfg.json: >
             {
               "devices" : {
                 "of:0000000000000001" : {
                   "accessDevice" : {
                     "uplink" : "2",
-                    "vlan"   : "400"
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
                   },
                   "basic" : {
                     "driver" : "default"
@@ -241,6 +247,11 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - vcpe_docker_image:
+              node: andybavier/docker-vcpe
+              relationship: tosca.relationships.UsesImage
+      properties:
+          default_isolation: container
 
     mysite_onos_vbng:
       description: ONOS Controller Slice for vBNG
@@ -402,6 +413,15 @@ topology_template:
           - slice:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
+
+    # docker image for vcpe containers
+    andybavier/docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
 
     # A subscriber
     My House:

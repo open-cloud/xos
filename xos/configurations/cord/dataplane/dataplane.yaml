@@ -47,6 +47,9 @@
       port={{ public_net.stdout }}
       state=present
 
+  - name: Remove IP address on public_network
+    command: /sbin/ifconfig {{ public_net.stdout }} 0.0.0.0
+
   - name: Change datapath ID of bridge to match config file
     command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}
 
@@ -58,6 +61,7 @@
   vars:
     controller_ip: "{{ hostvars['onos_volt']['ansible_ssh_host'] }}"
     controller_port: 6653
+    vcpe_lan_ip: "{{ hostvars['vcpe']['lan_ip'] }}"
   tags:
   - volt
   tasks:
@@ -73,6 +77,7 @@
     with_items:
     - git
     - python-netifaces
+    - openvswitch-switch
 
   - name: Checkout the Mininet repo
     git: repo=https://github.com/mininet/mininet.git
@@ -87,14 +92,156 @@
     script: scripts/if_from_ip.py {{ subscriber_ip }}
     register: subscriber_net
 
-  - name: Find lan_network interface
-    script: scripts/if_from_ip.py {{ lan_ip }}
-    register: lan_net
+  - name: Create bridge br-sub
+    openvswitch_bridge:
+      bridge=br-sub
+      state=present
+
+  - name: Add subscriber_net to br-sub
+    openvswitch_port:
+      bridge=br-sub
+      port={{ subscriber_net.stdout }}
+      state=present
+
+  # The CPqD switch is expecting that packets coming from the client have
+  # VLAN tag 1.  However Neutron's OvS configuration eats VLAN-tagged packets.
+  # So tag them with VLAN 1 here before sending to CPqD.
+  #
+  # Note that the VLAN tag is 0 in the real-world setup, but the CPqD switch
+  # seems to have a problem with these packets.
+
+  # Using OvS to tag packets with VLAN ID 1 is not quite working for some reason.
+  # The packets from the client get tagged OK, but only the first packet from the
+  # VCPE gets its tag stripped off.  Very weird.  That's why we are using veth
+  # devices instead.
+  #- name: Add tag 1 to br-sub port
+  #  shell: ovs-vsctl set port {{ subscriber_net.stdout }} tag=1
+
+  - name: Create a pair of veth devices
+    shell: ifconfig veth0 >> /dev/null || ip link add veth0 type veth peer name veth1
+
+  - name: Create veth0.1
+    shell: ifconfig veth0.1 >> /dev/null || ip link add link veth0 name veth0.1 type vlan id 1
+
+  - name: Bring the interfaces up
+    shell: ip link set {{ item }} up
+    with_items:
+    - veth0
+    - veth1
+    - veth0.1
+
+  - name: Add veth0.1 to br-sub
+    openvswitch_port:
+      bridge=br-sub
+      port=veth0.1
+      state=present
+
+  - name: Create bridge br-lan
+    openvswitch_bridge:
+      bridge=br-lan
+      state=present
+
+  - name: Create tunnel port on br-lan
+    openvswitch_port:
+      bridge=br-lan
+      port=gre0
+      state=present
+
+  - name: Set up GRE tunnel to vCPE
+    shell: ovs-vsctl set Interface gre0 type=gre options:remote_ip={{ vcpe_lan_ip }}
+
+  - name: Check if br-lan has an IPv6 address
+    shell: ip addr show br-lan|grep inet6|awk '{print $2}'
+    register: ipv6
+
+  - name: Remove br-lan IPv6 address if present
+    shell: ifconfig br-lan inet6 del {{ ipv6.stdout }}
+    when: ipv6.stdout != ""
 
   - name: Run the datapath
-    command: /usr/local/bin/ofdatapath -i {{ subscriber_net.stdout_lines[0] }},{{ lan_net.stdout_lines[0] }} punix:/tmp/s1 -d 000000000001 --no-slicing -D -P
+    command: /usr/local/bin/ofdatapath -i veth1,br-lan punix:/tmp/s1 -d 000000000001 --no-slicing -D -P
       creates=/usr/local/var/run/ofdatapath.pid
 
   - name: Run the control program
     command: /usr/local/bin/ofprotocol unix:/tmp/s1 tcp:{{ controller_ip }}:{{ controller_port }} --fail=closed --listen=punix:/tmp/s1.listen -D -P
       creates=/usr/local/var/run/ofprotocol.pid
+
+- hosts: client
+  sudo: yes
+  tags:
+  - client
+  tasks:
+
+  - name: Fix /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="127.0.0.1 localhost"
+      line="127.0.0.1 localhost {{ ansible_hostname }}"
+
+  - name: Install packages
+    apt: name={{ item }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - openvswitch-switch
+    - python-netifaces
+
+  - name: Create br-sub
+    openvswitch_bridge:
+      bridge=br-sub
+      state=present
+
+  - name: Find subscriber_network interface
+    script: scripts/if_from_ip.py {{ subscriber_ip }}
+    register: client_net
+
+  - name: Hook up subscriber-network to OvS
+    openvswitch_port:
+      bridge=br-sub
+      port={{ client_net.stdout }}
+      state=present
+
+  - name: Run some commands on br-sub
+    shell: "{{ item }}"
+    with_items:
+    - ifconfig br-sub 192.168.0.2 mtu 1400 up
+    - ethtool -K br-sub tso off
+    - ethtool -K br-sub tx off
+
+  # Run dhclient on br-sub internal interface to issue DHCP request to vCPE
+
+#
+# Need to set up a tunnel between vCPE and vOLT to keep VLAN-tagged
+# packets from being swallowed by the network.
+#
+- hosts: vcpe
+  sudo: yes
+  vars:
+    volt_lan_ip: "{{ hostvars['switch_volt']['lan_ip'] }}"
+  tags:
+  - vcpe
+  tasks:
+
+  - name: Install packages
+    apt: name={{ item }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - openvswitch-switch
+
+  - name: Create br-lan
+    openvswitch_bridge:
+      bridge=br-lan
+      state=present
+
+  - name: Create tunnel port
+    openvswitch_port:
+      bridge=br-lan
+      port=gre0
+      state=present
+
+  - name: Configure GRE tunnel to vOLT switch
+    shell: ovs-vsctl set Interface gre0 type=gre options:remote_ip={{ volt_lan_ip }}
+
+  - name: Restart vCPEs
+    script: scripts/restart-vcpes.sh

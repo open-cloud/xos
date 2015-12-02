@@ -25,7 +25,7 @@ RUN \
 # For Observer
 RUN mkdir -p /usr/local/share /bin /etc/ansible
 
-RUN cp /tmp/xos/containers/observer/conf/ansible-hosts /etc/ansible/hosts
+RUN cp /tmp/xos/containers/synchronizer/conf/ansible-hosts /etc/ansible/hosts
 
 ADD http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2 /usr/local/share/
 
@@ -39,6 +39,6 @@ RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum && \
 
 
 # Supervisor
-RUN cp /tmp/xos/containers/observer/conf/observer.conf /etc/supervisor/conf.d/
+RUN cp /tmp/xos/containers/synchronizer/conf/synchronizer.conf /etc/supervisor/conf.d/
 
-CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/observer.conf
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf

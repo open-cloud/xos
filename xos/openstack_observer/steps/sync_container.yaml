@@ -11,11 +11,16 @@
     ports:
     {% for port in ports %}
        - device: {{ port.device }}
-         mac: {{ port.mac }}
+         xos_network_id: {{ port.xos_network_id }}
+         mac: {{ port.mac|default("") }}
          ip: {{ port.ip }}
          snoop_instance_mac: {{ port.snoop_instance_mac }}
          snoop_instance_id: {{ port.snoop_instance_id }}
-         src_device: {{ port.src_device }}
+         parent_mac: {{ port.parent_mac|default("") }}
+         s_tag: {{ port.s_tag|default("")  }}
+         c_tag: {{ port.c_tag|default("") }}
+         next_hop: {{ port.next_hop|default("") }}
+         bridge: {{ port.bridge }}
     {% endfor %}
     volumes:
     {% for volume in volumes %}
@@ -92,9 +97,18 @@
   - name: container startup script
     template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
 
+  - name: container teardown script
+    template: src=/opt/xos/openstack_observer/templates/stop-container.sh.j2 dest=/usr/local/sbin/stop-container-{{ container_name }}.sh mode=0755
+
   - name: restart systemd
     shell: systemctl daemon-reload
     when: systemctl.stat.exists == True
+
+{% if ports %}
+  - name: make sure bridges are setup
+    shell: ifconfig {{ '{{' }} item.bridge {{ '}}' }}
+    with_items: "ports"
+{% endif %}
 
   - name: Make sure container is running
     service: name=container-{{ container_name }} state=started

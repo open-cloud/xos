@@ -1,0 +1,24 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: >
+    * Create a new deployment, controller, and site.
+    * Add a SiteDeployment from the site to the deployment using the controller.
+    * Create a Slice in the Site, with one Instance
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_containers:
+      type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: mysite
+                relationship: tosca.relationships.MemberOfSite
+      properties:
+          default_isolation: container
+

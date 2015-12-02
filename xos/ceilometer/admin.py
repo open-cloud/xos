@@ -81,6 +81,18 @@ class MonitoringChannelAdmin(ReadOnlyAwareAdmin):
     form = MonitoringChannelForm
 
     suit_form_tabs = (('general','Details'),)
+    actions=['delete_selected_objects']
+
+    def get_actions(self, request):
+        actions = super(MonitoringChannelAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def delete_selected_objects(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+    delete_selected_objects.short_description = "Delete Selected MonitoringChannel Objects"
 
     def queryset(self, request):
         return MonitoringChannel.get_tenant_objects_by_user(request.user)

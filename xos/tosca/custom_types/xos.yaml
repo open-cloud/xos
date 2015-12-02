@@ -440,6 +440,17 @@ node_types:
                 required: false
                 description: Indicates what page the user should go to on login.
 
+    tosca.nodes.NetworkParameterType:
+        derived_from: tosca.nodes.Root
+
+        description: >
+            An XOS network parameter type. May be applied to Networks and/or
+            Ports.
+
+        capabilities:
+            network_parameter_type:
+                type: tosca.capabilities.xos.NetworkParameterType
+
     tosca.nodes.NetworkTemplate:
         derived_from: tosca.nodes.Root
 
@@ -765,6 +776,10 @@ node_types:
                 type: integer
                 default: 10
                 description: Quota of instances that this slice may create.
+            default_isolation:
+                type: string
+                required: false
+                description: default isolation to use when bringing up instances (default to 'vm')
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
@@ -980,3 +995,7 @@ node_types:
     tosca.capabilities.xos.DashboardView:
         derived_from: tosca.capabilities.Root
         description: An XOS DashboardView
+
+    tosca.capabilities.xos.NetworkParameterType:
+        derived_from: tosca.capabilities.Root
+        description: An XOS NetworkParameterType

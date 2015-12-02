@@ -19,6 +19,8 @@ from django.core.exceptions import PermissionDenied, ValidationError
 # Create your models here.
 
 class Slice(PlCoreBase):
+    ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))
+
     name = StrippedCharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
     omf_friendly = models.BooleanField(default=False)
@@ -36,6 +38,8 @@ class Slice(PlCoreBase):
     default_flavor = models.ForeignKey(Flavor, related_name = "slices", null=True, blank=True)
     default_image = models.ForeignKey(Image, related_name = "slices", null=True, blank=True);
     mount_data_sets = StrippedCharField(default="GenBank",null=True, blank=True, max_length=256)
+
+    default_isolation = models.CharField(null=False, blank=False, max_length=30, choices=ISOLATION_CHOICES, default="vm")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
