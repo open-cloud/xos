@@ -43,9 +43,9 @@ class XOSONOSApp(XOSResource):
             if attrs:
                 attr = attrs[0]
                 if attr.value != value:
-                    self.info("updating attribute %s" % k)
-                    attrs.value = value
-                    attrs.save()
+                    self.info("updating attribute %s" % prop_name)
+                    attr.value = value
+                    attr.save()
             else:
                 self.info("adding attribute %s" % prop_name)
                 ta = TenantAttribute(tenant=obj, name=prop_name, value=value)
