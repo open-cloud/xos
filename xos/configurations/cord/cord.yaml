@@ -7,7 +7,6 @@ imports:
 
 topology_template:
   node_templates:
-
     # CORD Services
     service_volt:
       type: tosca.nodes.Service
@@ -15,6 +14,12 @@ topology_template:
           - vcpe_tenant:
               node: service_vcpe
               relationship: tosca.relationships.TenantOfService
+          - lan_network:
+              node: lan_network
+              relationship: tosca.relationships.UsesNetwork
+          - wan_network:
+              node: wan_network
+              relationship: tosca.relationships.UsesNetwork
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
@@ -29,6 +34,7 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
       artifacts:
           pubkey: /opt/xos/observers/vcpe/vcpe_public_key
 
@@ -58,7 +64,7 @@ topology_template:
 # - (Synchronizer should copy the files to ONOS container immediately)
 # - Log into service_ONOS_vBNG VM and restart ONOS Docker container
 #   (Should roll this step into a Synchronizer)
-#
+#f
     vBNG_ONOS_app:
       type: tosca.nodes.ONOSvBNGApp
       requirements:
@@ -116,6 +122,7 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/observers/onos/onos_key.pub
 
+
     vOLT_ONOS_app:
       type: tosca.nodes.ONOSvOLTApp
       requirements:
@@ -126,7 +133,22 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.olt
+          dependencies: org.onosproject.openflow, org.onosproject.olt
+          config_network-cfg.json: >
+            {
+              "devices" : {
+                "of:0000000000000001" : {
+                  "accessDevice" : {
+                    "uplink" : "2",
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
+                  },
+                  "basic" : {
+                    "driver" : "default"
+                  }
+                }
+              }
+            }
 
     # Network templates
     Private:
@@ -225,6 +247,11 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - vcpe_docker_image:
+              node: andybavier/docker-vcpe
+              relationship: tosca.relationships.UsesImage
+      properties:
+          default_isolation: container
 
     mysite_onos_vbng:
       description: ONOS Controller Slice for vBNG
@@ -387,6 +414,15 @@ topology_template:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
 
+    # docker image for vcpe containers
+    andybavier/docker-vcpe:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
+
     # A subscriber
     My House:
        type: tosca.nodes.CORDSubscriber
@@ -441,7 +477,8 @@ topology_template:
         type: tosca.nodes.VOLTTenant
         properties:
             service_specific_id: 123
-            vlan_id: 432
+            s_tag: 222
+            c_tag: 432
         requirements:
             - provider_service:
                 node: service_volt

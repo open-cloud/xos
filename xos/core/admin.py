@@ -23,7 +23,6 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from cgi import escape as html_escape
 from django.contrib import messages
 
-import django_evolution
 import threading
 
 # thread locals necessary to work around a django-suit issue
@@ -105,6 +104,10 @@ class XOSAdminMixin(object):
         if self.__user_is_readonly(request):
             # this 'if' might be redundant if save_by_user is implemented right
             raise PermissionDenied
+
+        # reset exponential backoff
+        if hasattr(obj, "backend_register"):
+            obj.backend_register = "{}"
 
         obj.caller = request.user
         # update openstack connection to use this site/tenant
@@ -880,7 +883,7 @@ class ServiceAttrAsTabInline(XOSTabularInline):
 class ServiceAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon","name","kind","versionNumber","enabled","published")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key","service_specific_attribute","service_specific_id"]
+    fieldList = ["backend_status_text","name","kind","description","versionNumber","enabled","published","view_url","icon_url","public_key","private_key_fn","service_specific_attribute","service_specific_id"]
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ServiceAttrAsTabInline,SliceInline,ProviderTenantInline,SubscriberTenantInline,ServicePrivilegeInline]
     readonly_fields = ('backend_status_text', )
@@ -1051,7 +1054,7 @@ class ControllerSliceInline(XOSTabularInline):
 
 class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances']
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances', "default_isolation"]
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_instances')
@@ -1203,7 +1206,7 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
 class ImageAdmin(XOSBaseAdmin):
 
     fieldsets = [('Image Details',
-                   {'fields': ['backend_status_text', 'name', 'disk_format', 'container_format'],
+                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
@@ -1214,7 +1217,7 @@ class ImageAdmin(XOSBaseAdmin):
 
     user_readonly_fields = ['name', 'disk_format', 'container_format']
 
-    list_display = ['backend_status_icon', 'name']
+    list_display = ['backend_status_icon', 'name', 'kind']
     list_display_links = ('backend_status_icon', 'name', )
 
 class NodeForm(forms.ModelForm):
@@ -1273,7 +1276,7 @@ class InstancePortInline(XOSTabularInline):
     fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
-    selflink_fieldname = "network"
+    #selflink_fieldname = "network"
     extra = 0
     verbose_name_plural = "Ports"
     verbose_name = "Port"
@@ -1282,13 +1285,14 @@ class InstancePortInline(XOSTabularInline):
 class InstanceAdmin(XOSBaseAdmin):
     form = InstanceForm
     fieldsets = [
-        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'flavor', 'image', 'node', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command'], 'classes': ['suit-tab suit-tab-general'], })
+        ('Instance Details', {'fields': ['backend_status_text', 'slice', 'deployment', 'isolation', 'flavor', 'image', 'node', 'parent', 'all_ips_string', 'instance_id', 'instance_name', 'ssh_command', ], 'classes': ['suit-tab suit-tab-general'], }),
+        ('Container Settings', {'fields': ['volumes'], 'classes': ['suit-tab suit-tab-container'], }),
     ]
     readonly_fields = ('backend_status_text', 'ssh_command', 'all_ips_string')
-    list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'slice', 'flavor', 'image', 'node', 'deployment']
+    list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'isolation', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'))
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'), ('container', 'Container Settings'))
 
     inlines = [TagInline, InstancePortInline]
 
@@ -1372,38 +1376,38 @@ class InstanceAdmin(XOSBaseAdmin):
     #    obj.os_manager = OpenStackManager(auth=auth, caller=request.user)
     #    obj.delete()
 
-class ContainerPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
-    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
-    model = Port
-    selflink_fieldname = "network"
-    extra = 0
-    verbose_name_plural = "Ports"
-    verbose_name = "Port"
-    suit_classes = 'suit-tab suit-tab-ports'
+#class ContainerPortInline(XOSTabularInline):
+#    fields = ['backend_status_icon', 'network', 'container', 'ip', 'mac', 'segmentation_id']
+#    readonly_fields = ("backend_status_icon", "ip", "mac", "segmentation_id")
+#    model = Port
+#    selflink_fieldname = "network"
+#    extra = 0
+#    verbose_name_plural = "Ports"
+#    verbose_name = "Port"
+#    suit_classes = 'suit-tab suit-tab-ports'
 
-class ContainerAdmin(XOSBaseAdmin):
-    fieldsets = [
-        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
-    ]
-    readonly_fields = ('backend_status_text', )
-    list_display = ['backend_status_icon', 'id']
-    list_display_links = ('backend_status_icon', 'id', )
-
-    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
-
-    inlines = [TagInline, ContainerPortInline]
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'slice':
-            kwargs['queryset'] = Slice.select_by_user(request.user)
-
-        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def queryset(self, request):
-        # admins can see all instances. Users can only see instances of
-        # the slices they belong to.
-        return Container.select_by_user(request.user)
+#class ContainerAdmin(XOSBaseAdmin):
+#    fieldsets = [
+#        ('Container Details', {'fields': ['backend_status_text', 'slice', 'node', 'docker_image', 'volumes', 'no_sync'], 'classes': ['suit-tab suit-tab-general'], })
+#    ]
+#    readonly_fields = ('backend_status_text', )
+#    list_display = ['backend_status_icon', 'id']
+#    list_display_links = ('backend_status_icon', 'id', )
+#
+#    suit_form_tabs =(('general', 'Container Details'), ('ports', 'Ports'))
+#
+#    inlines = [TagInline, ContainerPortInline]
+#
+#    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+#        if db_field.name == 'slice':
+#            kwargs['queryset'] = Slice.select_by_user(request.user)
+#
+#        return super(ContainerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+#
+#    def queryset(self, request):
+#        # admins can see all instances. Users can only see instances of
+#        # the slices they belong to.
+#        return Container.select_by_user(request.user)
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -1760,10 +1764,10 @@ class NetworkParameterInline(PlStackGenericTabularInline):
     readonly_fields = ('backend_status_icon', )
 
 class NetworkPortInline(XOSTabularInline):
-    fields = ['backend_status_icon', 'network', 'instance', 'container', 'ip', 'mac']
+    fields = ['backend_status_icon', 'network', 'instance', 'ip', 'mac']
     readonly_fields = ("backend_status_icon", "ip", "mac")
     model = Port
-    selflink_fieldname = "instance"
+    #selflink_fieldname = "instance"
     extra = 0
     verbose_name_plural = "Ports"
     verbose_name = "Port"
@@ -1842,10 +1846,25 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     user_readonly_fields = ["name", "guaranteed_bandwidth", "visibility"]
     user_readonly_inlines = []
+    inlines = [NetworkParameterInline,]
     fieldsets = [
         (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
-    suit_form_tabs = (('general','Network Template Details'), )
+    suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
+
+class PortAdmin(XOSBaseAdmin):
+    list_display = ("backend_status_icon", "name", "id", "ip")
+    list_display_links = ('backend_status_icon', 'id')
+    readonly_fields = ("subnet", )
+    inlines = [NetworkParameterInline]
+
+    fieldsets = [
+        (None, {'fields': ['backend_status_text', 'network', 'instance', 'ip', 'port_id', 'mac'],
+                'classes':['suit-tab suit-tab-general']}),
+                ]
+
+    readonly_fields = ('backend_status_text', )
+    suit_form_tabs = (('general', 'Port Details'), ('netparams', 'Parameters'))
 
 class FlavorAdmin(XOSBaseAdmin):
     list_display = ("backend_status_icon", "name", "flavor", "order", "default")
@@ -2017,12 +2036,6 @@ admin.site.register(User, UserAdmin)
 # unregister the Group model from admin.
 #admin.site.unregister(Group)
 
-#Do not show django evolution in the admin interface
-from django_evolution.models import Version, Evolution
-#admin.site.unregister(Version)
-#admin.site.unregister(Evolution)
-
-
 # When debugging it is often easier to see all the classes, but for regular use 
 # only the top-levels should be displayed
 showAll = False
@@ -2034,6 +2047,7 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Service, ServiceAdmin)
 #admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(Network, NetworkAdmin)
+admin.site.register(Port, PortAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 admin.site.register(Program, ProgramAdmin)
@@ -2057,5 +2071,5 @@ if True:
     admin.site.register(TenantRoot, TenantRootAdmin)
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
-    admin.site.register(Container, ContainerAdmin)
+#    admin.site.register(Container, ContainerAdmin)
 

@@ -1,0 +1,23 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Some basic fixtures
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    s_tag:
+      type: tosca.nodes.NetworkParameterType
+
+    c_tag:
+      type: tosca.nodes.NetworkParameterType
+
+    next_hop:
+      type: tosca.nodes.NetworkParameterType
+
+    device:
+      type: tosca.nodes.NetworkParameterType
+
+    bridge:
+      type: tosca.nodes.NetworkParameterType

@@ -17,4 +17,4 @@ class SyncObject(OpenStackSyncStep):
     observes=[] # Caller fills this in
 
     def sync_record(self, r):
-        raise Exception('Waiting for Service dependency')
+        raise DeferredException('Waiting for Service dependency: %r'%r)
