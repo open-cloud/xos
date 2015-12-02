@@ -24,7 +24,6 @@ from .site import SitePrivilege
 from .node import Node
 from .slicetag import SliceTag
 from .instance import Instance
-from .container import Container
 from .reservation import ReservedResource
 from .reservation import Reservation
 from .network import Network, NetworkParameterType, NetworkParameter, Port, NetworkTemplate, Router, NetworkSlice, ControllerNetwork

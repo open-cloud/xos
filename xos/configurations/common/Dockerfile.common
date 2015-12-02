@@ -43,7 +43,7 @@ RUN pip install requests
 RUN pip install django-crispy-forms
 RUN pip install django-geoposition
 RUN pip install django-extensions
-RUN pip install django-suit
+RUN pip install django-suit==0.3a1
 RUN pip install django-bitfield
 RUN pip install django-ipware
 RUN pip install django-encrypted-fields
@@ -60,7 +60,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-ceilometerclient
 RUN pip install django_rest_swagger
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-setuptools
-RUN easy_install django_evolution
 RUN easy_install python_gflags
 RUN easy_install --upgrade httplib2
 RUN easy_install google_api_python_client

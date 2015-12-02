@@ -7,17 +7,6 @@ RUN mkdir -p /root/setup
 
 RUN echo "autostart=false" >> /etc/supervisor/conf.d/observer.conf
 
-# Install Node.js
-RUN sudo apt-get install -y \
-      nodejs \
-      npm
-
-# Link nodejs to node
-RUN sudo ln -s "$(which nodejs)" /usr/bin/node
-
-RUN echo "Node Version: "
-RUN node -v
-
 # TODO
 # - Enter /opt/xos/core/xoslib and run npm install
 

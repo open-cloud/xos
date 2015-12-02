@@ -18,7 +18,7 @@ class SyncHello(SyncStep):
     requested_interval=0
     
     def sync_record(self, record):
-        instance = record.sliver_backref        
+        instance = record.instance_backref        
         instance.userData="packages:\n  - apache2\nruncmd:\n  - update-rc.d apache2 enable\n  - service apache2 start\nwrite_files:\n-   content: Hello %s\n    path: /var/www/html/hello.txt"%record.name
         instance.save()
         
