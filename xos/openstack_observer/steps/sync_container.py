@@ -63,6 +63,12 @@ class SyncContainer(SyncInstanceUsingAnsible):
             pd["ip"] = port.ip or ""
             pd["xos_network_id"] = port.network.id
 
+            if port.network.name == "wan_network":
+                if port.ip:
+                    (a, b, c, d) = port.ip.split('.')
+                    pd["mac"] = "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+
+
             if o.isolation == "container":
                 # container on bare metal
                 instance_port = self.get_instance_port(port)
