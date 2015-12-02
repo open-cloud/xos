@@ -16,7 +16,7 @@ ceilometer_dashboard:
 	#NOTE: The below dashboard install scripts assume 
 	#clouldlab openstack environment created using "OpenStack" profile
 	bash install_xos_ceilometer_dashboard.sh
-	bash install_ceilometer_vcpe_notification_listener.sh
+	bash install_ceilometer_patch.sh
 
 stop:
 	sudo docker stop $(RUNNING_CONTAINER)
