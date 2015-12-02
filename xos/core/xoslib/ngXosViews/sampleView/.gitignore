@@ -1,6 +1,0 @@
-dist/
-src/vendor
-.tmp
-node_modules
-npm-debug.log
-dist/

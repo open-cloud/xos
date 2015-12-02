@@ -18,7 +18,6 @@ module.exports = generators.Base.extend({
         message : 'Your project name',
         default : this.config.get('name') // value set in .yo-rc.json
       }, function (answers) {
-        console.log(answers);
         // TODO check if this view already exist
         config.name = answers.name;
         done();
