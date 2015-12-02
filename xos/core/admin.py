@@ -2036,12 +2036,6 @@ admin.site.register(User, UserAdmin)
 # unregister the Group model from admin.
 #admin.site.unregister(Group)
 
-#Do not show django evolution in the admin interface
-from django_evolution.models import Version, Evolution
-#admin.site.unregister(Version)
-#admin.site.unregister(Evolution)
-
-
 # When debugging it is often easier to see all the classes, but for regular use 
 # only the top-levels should be displayed
 showAll = False
