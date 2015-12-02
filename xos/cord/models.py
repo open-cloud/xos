@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -254,7 +254,7 @@ class VOLTTenant(Tenant):
 
     KIND = VOLT_KIND
 
-    default_attributes = {"vlan_id": None, }
+    default_attributes = {"vlan_id": None, "s_tag": None, "c_tag": None}
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
@@ -263,12 +263,30 @@ class VOLTTenant(Tenant):
         self.cached_vcpe = None
 
     @property
+    def s_tag(self):
+        return self.get_attribute("s_tag", self.default_attributes["s_tag"])
+
+    @s_tag.setter
+    def s_tag(self, value):
+        self.set_attribute("s_tag", value)
+
+    @property
+    def c_tag(self):
+        return self.get_attribute("c_tag", self.default_attributes["c_tag"])
+
+    @c_tag.setter
+    def c_tag(self, value):
+        self.set_attribute("c_tag", value)
+
+    # for now, vlan_id is a synonym for c_tag
+
+    @property
     def vlan_id(self):
-        return self.get_attribute("vlan_id", self.default_attributes["vlan_id"])
+        return self.c_tag
 
     @vlan_id.setter
     def vlan_id(self, value):
-        self.set_attribute("vlan_id", value)
+        self.c_tag = value
 
     @property
     def vcpe(self):
@@ -470,6 +488,7 @@ class VCPETenant(TenantWithContainer):
                        "hpc_client_ip", "hpc_client_mac")
 
     default_attributes = {"instance_id": None,
+                          "container_id": None,
                           "users": [],
                           "bbs_account": None,
                           "last_ansible_hash": None}
@@ -534,11 +553,15 @@ class VCPETenant(TenantWithContainer):
 
     @property
     def addresses(self):
-        if not self.instance:
+        if self.instance:
+            ports = self.instance.ports.all()
+        elif self.container:
+            ports = self.container.ports.all()
+        else:
             return {}
 
         addresses = {}
-        for ns in self.instance.ports.all():
+        for ns in ports:
             if "lan" in ns.network.name.lower():
                 addresses["lan"] = (ns.ip, ns.mac)
             elif "wan" in ns.network.name.lower():
@@ -654,6 +677,37 @@ class VCPETenant(TenantWithContainer):
             if self.bbs_account:
                 self.bbs_account = None
                 super(VCPETenant, self).save()
+
+    def find_or_make_port(self, instance, network, **kwargs):
+        port = Port.objects.filter(instance=instance, network=network)
+        if port:
+            port = port[0]
+        else:
+            port = Port(instance=instance, network=network, **kwargs)
+            port.save()
+        return port
+
+    def save_instance(self, instance):
+        with transaction.atomic():
+            instance.volumes = "/etc/dnsmasq.d"
+            super(VCPETenant, self).save_instance(instance)
+
+            if instance.isolation in ["container", "container_vm"]:
+                lan_networks = [x for x in instance.slice.networks.all() if "lan" in x.name]
+                if not lan_networks:
+                    raise XOSProgrammingError("No lan_network")
+                port = self.find_or_make_port(instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
+                port.set_parameter("c_tag", self.volt.c_tag)
+                port.set_parameter("s_tag", self.volt.s_tag)
+                port.set_parameter("device", "eth1")
+                port.set_parameter("bridge", "br-lan")
+
+                wan_networks = [x for x in instance.slice.networks.all() if "wan" in x.name]
+                if not wan_networks:
+                    raise XOSProgrammingError("No wan_network")
+                port = self.find_or_make_port(instance, wan_networks[0])
+                port.set_parameter("next_hop", value="10.0.1.253")   # FIX ME
+                port.set_parameter("device", "eth0")
 
     def save(self, *args, **kwargs):
         if not self.creator:

@@ -67,15 +67,23 @@ topology_template:
 
         return yml
 
-    def make_compute(self, slice, name, caps={}, props={}, reqs=[], num_cpus="1", disk_size="10 GB", mem_size="4 MB"):
+    def make_compute(self, slice, name, caps={}, props={}, reqs=[], num_cpus="1", disk_size="10 GB", mem_size="4 MB", isolation="vm"):
         reqs = reqs[:]
+        props = props.copy()
         caps = caps.copy()
+
+        if isolation=="container":
+            type = "tosca.nodes.Compute.Container"
+        elif isolation=="container_vm":
+            type = "tosca.nodes.Compute.ContainerVM"
+        else:
+            type = "tosca.nodes.Compute"
 
         caps.update( {"host": {"num_cpus": num_cpus, "disk_size": disk_size, "mem_size": mem_size},
                       "os": {"architecture": "x86_64", "type": "linux", "distribution": "rhel", "version": "6.5"}} )
         reqs.append( (slice, "tosca.relationships.MemberOfSlice") )
 
-        return self.make_nodetemplate(name, "tosca.nodes.Compute",
+        return self.make_nodetemplate(name, type,
                                       caps= caps,
                                       props = props,
                                       reqs= reqs)

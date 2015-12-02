@@ -52,6 +52,7 @@ class Service(PlCoreBase, AttributeMixin):
     view_url = StrippedCharField(blank=True, null=True, max_length=1024)
     icon_url = StrippedCharField(blank=True, null=True, max_length=1024)
     public_key = models.TextField(null=True, blank=True, max_length=1024, help_text="Public key string")
+    private_key_fn = StrippedCharField(blank=True, null=True, max_length=1024)
 
     # Service_specific_attribute and service_specific_id are opaque to XOS
     service_specific_id = StrippedCharField(max_length=30, blank=True, null=True)
@@ -336,6 +337,106 @@ class Tenant(PlCoreBase, AttributeMixin):
             return None
         return sorted(st, key=attrgetter('id'))[0]
 
+class Scheduler(object):
+    # XOS Scheduler Abstract Base Class
+    # Used to implement schedulers that pick which node to put instances on
+
+    def __init__(self, slice):
+        self.slice = slice
+
+    def pick(self):
+        # this method should return a tuple (node, parent)
+        #    node is the node to instantiate on
+        #    parent is for container_vm instances only, and is the VM that will
+        #      hold the container
+
+        raise Exception("Abstract Base")
+
+class LeastLoadedNodeScheduler(Scheduler):
+    # This scheduler always return the node with the fewest number of instances.
+
+    def __init__(self, slice):
+        super(LeastLoadedNodeScheduler, self).__init__(slice)
+
+    def pick(self):
+        from core.models import Node
+        nodes = list(Node.objects.all())
+        # TODO: logic to filter nodes by which nodes are up, and which
+        #   nodes the slice can instantiate on.
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        return [nodes[0], None]
+
+class ContainerVmScheduler(Scheduler):
+    # This scheduler picks a VM in the slice with the fewest containers inside
+    # of it. If no VMs are suitable, then it creates a VM.
+
+    # this is a hack and should be replaced by something smarter...
+    LOOK_FOR_IMAGES=["ubuntu-vcpe4",        # ONOS demo machine -- preferred vcpe image
+                     "Ubuntu 14.04 LTS",    # portal
+                     "Ubuntu-14.04-LTS",    # ONOS demo machine
+                     "trusty-server-multi-nic", # CloudLab
+                    ]
+
+    MAX_VM_PER_CONTAINER = 10
+
+    def __init__(self, slice):
+        super(ContainerVmScheduler, self).__init__(slice)
+
+    @property
+    def image(self):
+        from core.models import Image
+
+        look_for_images = self.LOOK_FOR_IMAGES
+        for image_name in look_for_images:
+            images = Image.objects.filter(name = image_name)
+            if images:
+                return images[0]
+
+        raise XOSProgrammingError("No ContainerVM image (looked for %s)" % str(look_for_images))
+
+    def make_new_instance(self):
+        from core.models import Instance, Flavor
+
+        flavors = Flavor.objects.filter(name="m1.small")
+        if not flavors:
+            raise XOSConfigurationError("No m1.small flavor")
+
+        (node,parent) = LeastLoadedNodeScheduler(self.slice).pick()
+
+        instance = Instance(slice = self.slice,
+                        node = node,
+                        image = self.image,
+                        creator = self.slice.creator,
+                        deployment = node.site_deployment.deployment,
+                        flavor = flavors[0],
+                        isolation = "vm",
+                        parent = parent)
+        instance.save()
+        # We rely on a special naming convention to identify the VMs that will
+        # hole containers.
+        instance.name = "%s-outer-%s" % (instance.slice.name, instance.id)
+        instance.save()
+        return instance
+
+    def pick(self):
+        from core.models import Instance, Flavor
+
+        for vm in self.slice.instances.filter(isolation="vm"):
+            avail_vms = []
+            if (vm.name.startswith("%s-outer-" % self.slice.name)):
+                container_count = Instance.objects.filter(parent=vm).count()
+                if (container_count < self.MAX_VM_PER_CONTAINER):
+                    avail_vms.append( (vm, container_count) )
+            # sort by least containers-per-vm
+            avail_vms = sorted(avail_vms, key = lambda x: x[1])
+            print "XXX", avail_vms
+            if avail_vms:
+                instance = avail_vms[0][0]
+                return (instance.node, instance)
+
+        instance = self.make_new_instance()
+        return (instance.node, instance)
+
 class TenantWithContainer(Tenant):
     """ A tenant that manages a container """
 
@@ -345,6 +446,8 @@ class TenantWithContainer(Tenant):
                      "Ubuntu-14.04-LTS",    # ONOS demo machine
                      "trusty-server-multi-nic", # CloudLab
                     ]
+
+    LOOK_FOR_CONTAINER_IMAGES=["andybavier/docker-vcpe"]
 
     class Meta:
         proxy = True
@@ -406,20 +509,55 @@ class TenantWithContainer(Tenant):
         from core.models import Image
         # Implement the logic here to pick the image that should be used when
         # instantiating the VM that will hold the container.
-        for image_name in self.LOOK_FOR_IMAGES:
+
+        slice = self.provider_service.slices.all()
+        if not slice:
+            raise XOSProgrammingError("provider service has no slice")
+        slice = slice[0]
+
+        if slice.default_isolation in ["container", "container_vm"]:
+            look_for_images = self.LOOK_FOR_CONTAINER_IMAGES
+        else:
+            look_for_images = self.LOOK_FOR_IMAGES
+
+        for image_name in look_for_images:
             images = Image.objects.filter(name = image_name)
             if images:
                 return images[0]
 
-        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(self.LOOK_FOR_IMAGES))
+        raise XOSProgrammingError("No VPCE image (looked for %s)" % str(look_for_images))
 
-    def pick_node(self):
-        from core.models import Node
-        nodes = list(Node.objects.all())
-        # TODO: logic to filter nodes by which nodes are up, and which
-        #   nodes the slice can instantiate on.
-        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
-        return nodes[0]
+    @creator.setter
+    def creator(self, value):
+        if value:
+            value = value.id
+        if (value != self.get_attribute("creator_id", None)):
+            self.cached_creator=None
+        self.set_attribute("creator_id", value)
+
+    def save_instance(self, instance):
+        # Override this function to do custom pre-save or post-save processing,
+        # such as creating ports for containers.
+        instance.save()
+
+    def pick_least_loaded_instance_in_slice(self, slices):
+        for slice in slices:
+            if slice.instances.all().count() > 0:
+                for instance in slice.instances.all():
+                     #Pick the first instance that has lesser than 5 tenants 
+                     if self.count_of_tenants_of_an_instance(instance) < 5:
+                         return instance
+        return None
+
+    #TODO: Ideally the tenant count for an instance should be maintained using a 
+    #many-to-one relationship attribute, however this model being proxy, it does 
+    #not permit any new attributes to be defined. Find if any better solutions 
+    def count_of_tenants_of_an_instance(self, instance):
+        tenant_count = 0
+        for tenant in self.get_tenant_objects().all():
+            if tenant.get_attribute("instance_id", None) == instance.id:
+                tenant_count += 1
+        return tenant_count
 
     def manage_container(self):
         from core.models import Instance, Flavor
@@ -433,32 +571,55 @@ class TenantWithContainer(Tenant):
 
         if self.instance is None:
             if not self.provider_service.slices.count():
-                raise XOSConfigurationError("The VCPE service has no slices")
+                raise XOSConfigurationError("The service has no slices")
 
-            flavors = Flavor.objects.filter(name="m1.small")
-            if not flavors:
-                raise XOSConfigurationError("No m1.small flavor")
+            new_instance_created = False
+            instance = None
+            if self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
+                #Find if any existing instances can be used for this tenant
+                slices = self.provider_service.slices.all()
+                instance = self.pick_least_loaded_instance_in_slice(slices)
 
-            node =self.pick_node()
-            instance = Instance(slice = self.provider_service.slices.all()[0],
-                            node = node,
-                            image = self.image,
-                            creator = self.creator,
-                            deployment = node.site_deployment.deployment,
-                            flavor = flavors[0])
-            instance.save()
+            if not instance:
+                flavors = Flavor.objects.filter(name="m1.small")
+                if not flavors:
+                    raise XOSConfigurationError("No m1.small flavor")
+
+                slice = self.provider_service.slices.all()[0]
+
+                if slice.default_isolation == "container_vm":
+                    (node, parent) = ContainerVmScheduler(slice).pick()
+                else:
+                    (node, parent) = LeastLoadedNodeScheduler(slice).pick()
+
+                instance = Instance(slice = slice,
+                                node = node,
+                                image = self.image,
+                                creator = self.creator,
+                                deployment = node.site_deployment.deployment,
+                                flavor = flavors[0],
+                                isolation = slice.default_isolation,
+                                parent = parent)
+                self.save_instance(instance)
+                new_instance_created = True
 
             try:
                 self.instance = instance
                 super(TenantWithContainer, self).save()
             except:
-                instance.delete()
+                if new_instance_created:
+                    instance.delete()
                 raise
 
     def cleanup_container(self):
         if self.instance:
-            # print "XXX cleanup instance", self.instance
-            self.instance.delete()
+            if self.get_attribute("use_same_instance_for_multiple_tenants", default=False):
+                #Delete the instance only if this is last tenant in that instance
+                tenant_count = self.count_of_tenants_of_an_instance(self.instance)
+                if tenant_count == 0:
+                    self.instance.delete()
+            else:
+                self.instance.delete()
             self.instance = None
 
 class CoarseTenant(Tenant):

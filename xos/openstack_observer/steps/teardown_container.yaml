@@ -1,0 +1,33 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: {{ username }}
+  sudo: yes
+
+  vars:
+    container_name: {{ container_name }}
+    docker_image: {{ docker_image }}
+    ports:
+    {% for port in ports %}
+       - device: {{ port.device }}
+         xos_network_id: {{ port.xos_network_id }}
+         mac: {{ port.mac|default("") }}
+         ip: {{ port.ip }}
+         snoop_instance_mac: {{ port.snoop_instance_mac }}
+         snoop_instance_id: {{ port.snoop_instance_id }}
+         parent_mac: {{ port.parent_mac|default("") }}
+         s_tag: {{ port.s_tag|default("")  }}
+         c_tag: {{ port.c_tag|default("") }}
+         next_hop: {{ port.next_hop|default("") }}
+         bridge: {{ port.bridge }}
+    {% endfor %}
+    volumes:
+    {% for volume in volumes %}
+       - {{ volume }}
+    {% endfor %}
+
+  tasks:
+  - name: Make sure container is stopped
+    service: name=container-{{ container_name }} state=stopped
+

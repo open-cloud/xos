@@ -34,9 +34,9 @@ class HelloWorldView(TemplateView):
             i.instance_name=None
             i.enacted=None
             i.save()
-            h = Hello(name=hello_name,sliver_backref=i)
-            w = World(hello=h,name=world_name)
+            h = Hello(name=hello_name,instance_backref=i)
             h.save()
+            w = World(hello=h,name=world_name)
             w.save()
 
             t = template.Template(head_template + 'Done. New instance id: %r'%i.pk + self.tail_template)

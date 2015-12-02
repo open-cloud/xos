@@ -113,19 +113,26 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
             logger.info("neither bbs_slice nor bbs_server is configured in the vCPE")
 
         vlan_ids = []
+        s_tags = []
+        c_tags = []
         if o.volt:
-            vlan_ids.append(o.volt.vlan_id)
+            vlan_ids.append(o.volt.vlan_id)  # XXX remove this
+            s_tags.append(o.volt.s_tag)
+            c_tags.append(o.volt.c_tag)
 
         try:
             full_setup = Config().observer_full_setup
         except:
             full_setup = True
 
-        fields = {"vlan_ids": vlan_ids,
+        fields = {"vlan_ids": vlan_ids,   # XXX remove this
+                "s_tags": s_tags,
+                "c_tags": c_tags,
                 "dnsdemux_ip": dnsdemux_ip,
                 "cdn_prefixes": cdn_prefixes,
                 "bbs_addrs": bbs_addrs,
-                "full_setup": full_setup}
+                "full_setup": full_setup,
+                "isolation": o.instance.isolation}
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -203,7 +210,10 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
         if quick_update:
             logger.info("quick_update triggered; skipping ansible recipe")
         else:
-            super(SyncVCPETenant, self).run_playbook(o, fields)
+            if o.instance.isolation in ["container", "container_vm"]:
+                super(SyncVCPETenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
+            else:
+                super(SyncVCPETenant, self).run_playbook(o, fields)
 
         o.last_ansible_hash = ansible_hash
 
