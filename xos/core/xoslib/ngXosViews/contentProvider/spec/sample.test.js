@@ -4,7 +4,7 @@ describe('The User List', () => {
   
   var scope, element, isolatedScope, httpBackend;
 
-  beforeEach(module('xos.sampleView'));
+  beforeEach(module('xos.contentProvider'));
   beforeEach(module('templates'));
 
   beforeEach(inject(function($httpBackend, $compile, $rootScope){

@@ -9,18 +9,53 @@ module.exports = generators.Base.extend({
   _fistCharToUpper: function(string){
     return string.replace(/^./, string[0].toUpperCase());
   },
-  prompting: function(){
-    var done = this.async();
-    this.prompt({
-      type    : 'input',
-      name    : 'name',
-      message : 'Your project name',
-      default : this.config.get('name') // value set in .yo-rc.json
-    }, function (answers) {
-      // TODO check if this view already exist
-      config.name = answers.name;
-      done();
-    }.bind(this));
+  prompting: {
+    name:function(){
+      var done = this.async();
+      this.prompt({
+        type    : 'input',
+        name    : 'name',
+        message : 'Your project name',
+        default : this.config.get('name') // value set in .yo-rc.json
+      }, function (answers) {
+        // TODO check if this view already exist
+        config.name = answers.name;
+        done();
+      }.bind(this));
+    },
+    host:function(){
+      var done = this.async();
+      this.prompt({
+        type    : 'input',
+        name    : 'host',
+        message : 'Your project remote host (with port)'
+      }, function (answers) {
+        config.host = answers.host;
+        done();
+      }.bind(this));
+    },
+    token:function(){
+      var done = this.async();
+      this.prompt({
+        type    : 'input',
+        name    : 'token',
+        message : 'Insert your active session token'
+      }, function (answers) {
+        config.token = answers.token;
+        done();
+      }.bind(this));
+    },
+    session:function(){
+      var done = this.async();
+      this.prompt({
+        type    : 'input',
+        name    : 'session',
+        message : 'Insert your active session id'
+      }, function (answers) {
+        config.session = answers.session;
+        done();
+      }.bind(this));
+    }
   },
   writing: {
     rcFiles: function(){
@@ -32,6 +67,13 @@ module.exports = generators.Base.extend({
         this.templatePath('package.json'),
         this.destinationPath(`${this.config.get('folder')}/${config.name}/package.json`),
         { name: config.name, author: {name:user.git.name()} }
+      );
+    },
+    envConfig: function(){
+      this.fs.copyTpl(
+        this.templatePath('env/default.js'),
+        this.destinationPath(`${this.config.get('folder')}/${config.name}/env/default.js`),
+        { host: config.host, token: config.token, session: config.session }
       );
     },
     bowerJson: function(){

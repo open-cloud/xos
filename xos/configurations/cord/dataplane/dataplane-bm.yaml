@@ -1,0 +1,36 @@
+---
+- hosts: switch_volt
+  sudo: yes
+  tasks:
+  - name: Create tunnel port on br-lan
+    openvswitch_port:
+      bridge=br-lan
+      port={{ item }}
+      state=present
+    with_items: "grenames.split(' ')"
+
+  - name: Set up GRE tunnel to vCPE
+    shell: ovs-vsctl set Interface {{ item.0 }} type=gre options:remote_ip={{ item.1 }}
+    with_together:
+      - "grenames.split(' ')"
+      - "bm_ips.split(' ')"
+
+- hosts: baremetal
+
+  user: root
+  sudo: no
+  tasks:
+  - name: Create br-lan
+    openvswitch_bridge:
+      bridge=br-lan
+      state=present
+
+  - name: Create tunnel port
+    openvswitch_port:
+      bridge=br-lan
+      port={{ grename }}
+      state=present
+
+  - name: Configure GRE tunnel to vOLT switch
+    shell: ovs-vsctl set Interface {{ grename }} type=gre options:remote_ip={{ volt_addr }}
+

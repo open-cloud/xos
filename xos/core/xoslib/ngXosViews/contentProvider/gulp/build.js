@@ -23,7 +23,10 @@ var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 
-var TEMPLATE_FOOTER = '}]);angular.bootstrap(angular.element(\'#xosContentProvider\'), [\'xos.contentProvider\']);';
+var TEMPLATE_FOOTER = `}]);
+angular.module('xos.contentProvider').run(function($location){$location.path('/')});
+angular.bootstrap(angular.element('#xosContentProvider'), ['xos.contentProvider']);`;
+
 module.exports = function(options){
   
   // delete previous builded file

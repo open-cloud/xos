@@ -13,6 +13,7 @@ admin-openrc:
 
 flat_name:
 	sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{printf "%s",$$4}' > flat_net_name
+	[ -s flat_net_name ] # throw error if flat_net_name is empty
 
 nodes_yaml:
 	bash ./make-cloudlab-nodes-yaml.sh

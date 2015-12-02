@@ -31,6 +31,7 @@ module.exports = function(options){
       // reloadDelay: 500,
       // logLevel: 'debug',
       // logConnections: true,
+      startPath: '#/',
       snippetOptions: {
         rule: {
           match: /<!-- browserSync -->/i
