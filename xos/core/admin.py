@@ -23,7 +23,6 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from cgi import escape as html_escape
 from django.contrib import messages
 
-import django_evolution
 import threading
 
 # thread locals necessary to work around a django-suit issue

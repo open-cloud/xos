@@ -150,7 +150,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'rest_framework',
     'django_extensions',
-    'django_evolution',
     'core',
     'hpc',
     'cord',
