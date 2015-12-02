@@ -22,6 +22,11 @@ class SyncInstances(OpenStackSyncStep):
     observes=Instance
     playbook='sync_instances.yaml'
 
+    def fetch_pending(self, deletion=False):
+        objs = super(SyncInstances, self).fetch_pending(deletion)
+        objs = [x for x in objs if x.isolation=="vm"]
+        return objs
+
     def get_userdata(self, instance, pubkeys):
         userdata = '#cloud-config\n\nopencloud:\n   slicename: "%s"\n   hostname: "%s"\n   restapi_hostname: "%s"\n   restapi_port: "%s"\n' % (instance.slice.name, instance.node.name, RESTAPI_HOSTNAME, str(RESTAPI_PORT))
         userdata += 'ssh_authorized_keys:\n'
@@ -61,7 +66,7 @@ class SyncInstances(OpenStackSyncStep):
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
-                        raise DeferredException("Private Network %s has no id; Try again later" % controller_network.network.name)
+                        raise DeferredException("Instance %s Private Network %s has no id; Try again later" % (instance, controller_network.network.name))
                    nics.append(controller_network.net_id)
 
         # now include network template

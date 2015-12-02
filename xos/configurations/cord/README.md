@@ -43,13 +43,17 @@ It launches an XOS container on Cloudlab that runs the XOS develserver.  The con
 
 To get started on CloudLab:
 * Create an experiment using the *OpenStack-CORD* profile.  (You can also use the *OpenStack* profile, but choose *Kilo*
-and disable security groups.)
+with two compute nodes and disable security groups.)
 * Wait until you get an email from CloudLab with title "OpenStack Instance Finished Setting Up".
 * Login to the *ctl* node of your experiment and run:
 ```
-$ git clone https://github.com/open-cloud/xos.git
-$ cd xos/xos/configurations/cord/
-$ make
+ctl:~$ git clone https://github.com/open-cloud/xos.git
+ctl:~$ cd xos/xos/configurations/cord/
+```
+Edit `cord.yaml` in this directory.  Change the hostnames `cp-1.devel.xos-pg0.clemson.cloudlab.us` and
+`cp-2.devel.xos-pg0.clemson.cloudlab.us` to the names of the compute nodes in your experiment.  Now run:
+```
+ctl:~/xos/xos/configurations/cord$ make
 ```
 
 Running `make` in this directory creates the XOS Docker container and runs the TOSCA engine with `cord.yaml` to
@@ -66,12 +70,67 @@ Once all the VMs are up and the ONOS apps are configured, XOS should be able to 
 ONOS app for the vCPE. To verify that it has received an IP address mapping, look at the **Routeable subnet:** field in 
 the appropriate *Vbng tenant* object in XOS.  It should contain an IP address in the 10.254.0.0/24 subnet.
 
+After launching the ONOS apps, it is necessary to configure software switches along the dataplane so that ONOS can control
+them.  To do this, from the `cord` configuration directory:
+```
+ctl:~/xos/xos/configurations/cord$ cd dataplane/
+ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-inventory.sh > hosts
+ctl:~/xos/xos/configurations/cord/dataplane$ ansible-playbook -i hosts dataplane.yaml
+```
+
+To setup the dataplane for containers on bare metal, perform these steps in addition to the above (note: make sure to sudo when running the playbook):
+```
+ctl:~/xos/xos/configurations/cord/dataplane$ ./generate-bm.sh > hosts-bm   
+ctl:~/xos/xos/configurations/cord/dataplane$ sudo ansible-playbook -i hosts-bm dataplane-bm.yaml
+```
+
+Check that the vCPE container has started, by going into the XOS UI, selecting 'Services', 'service_vcpe', 'Administration', 'Vcpe Tenants', and make sure there's a green icon next to the vCPE. 
+
+If the vCPE Tenant is still red, then the Instance could be exponentially backed-off due to errors while trying to sync before dataplane.yaml was run. You can reset the exponential backoff by tracking down the vCPE Instance (Slices->mysite_vcpe->Instances, and find the Instance associated with the vCPE Tenant) and hitting the save button.
+
+Currently the vOLT switch is not forwarding ARP and so it is necessary to set up ARP mappings between the client
+and vCPE.  Log into the client and add an ARP entry for the vCPE: 
+```
+client:$ sudo arp -s 192.168.0.1 <mac-of-eth1-in-vCPE-container>
+```
+Inside the vCPE container add a similar entry for the client:
+```
+vcpe:$ arp -s 192.168.0.2 <mac-of-br-sub-on-client>
+```
+
+Now SSH into ONOS running the OLT app (see below) and activate the subscriber:
+```
+onos> add-subscriber-access of:0000000000000001 1 432
+```
+
+At this point you should be able to ping 192.168.0.1 from the client.  The final step is to set the 
+vCPE as the gateway on the client:
+```
+client:$ sudo route del default gw 10.11.10.5
+client:$ sudo route add default gw 192.168.0.1
+```
+The client should now be able to surf the Internet through the dataplane.
+
+## Setting up /etc/hosts
+
+To make it easy to log into the various VMs that make up the dataplane, add entries for them into `/etc/hosts` on the 
+*ctl* node.  As root, run:
+```
+ctl:~/xos/xos/configurations/cord/dataplane$ ./gen-etc-hosts.sh >> /etc/hosts
+```
+For example, to log into the client:
+```
+ctl:~$ ssh ubuntu@client
+```
+
 ## How to log into ONOS
 
-The ONOS Docker container runs in the VMs belonging to the *mysite_onos* slice.  All ports exposed by the ONOS container are forwarded to the outside, and can be accessed from the *ctl* node using the `flat-lan-1-net` address of the hosting VM.  For example, if the IP addresss of the VM is 10.11.10.30, then it is possible to SSH to ONOS as follows (password is *karaf*):
+ONOS apps are run inside Docker containers hosted in VMs.  All ports exposed by the ONOS container are forwarded to the 
+outside, and can be accessed from the *ctl* node over the `flat-lan-1-net` network.  Assuming that `/etc/hosts`
+has been configured as described above, it is possible to SSH to the ONOS running the `virtualbng` app as follows (password is *karaf*):
 
 ```
-$ ssh -p 8101 karaf@10.11.10.30
+$ ssh -p 8101 karaf@onos_vbng
 Password authentication
 Password:
 Welcome to Open Network Operating System (ONOS)!
@@ -95,3 +154,9 @@ onos> vbngs
    Private IP - Public IP
    10.0.1.3 - 10.254.0.129
 ```
+
+## Troubleshooting
+
+#### Problem: No external connectivity from vCPE container
+1. Make sure the hosts listed in `virtualbng.json` are the actual compute nodes used in your experiment.
+2. Try rebooting the ONOS container running the `virtualbng` app: `$ ssh ubuntu@onos-vbng "sudo docker restart ONOS"`

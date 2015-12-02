@@ -151,7 +151,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'rest_framework',
     'django_extensions',
-    'django_evolution',
     'core',
     'hpc',
     'cord',
@@ -169,8 +168,6 @@ if DJANGO_VERSION[1]>=7:
     # if django >= 1.7, then remove evolution and change the admin module
     INSTALLED_APPS = list(INSTALLED_APPS)
     INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
-    INSTALLED_APPS.remove('django_evolution')
-    INSTALLED_APPS = tuple(INSTALLED_APPS)
 
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
