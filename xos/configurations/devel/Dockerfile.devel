@@ -4,6 +4,7 @@ ADD xos/configurations/common/controller_settings /root/setup/
 ADD xos/configurations/common/flat_net_name /root/setup/
 ADD xos/configurations/common/cloudlab-nodes.yaml /opt/xos/configurations/commmon/
 ADD xos/configurations/common/id_rsa.pub /root/setup/padmin_public_key
+ADD xos/configurations/common/id_rsa /opt/xos/observers/helloworldservice_complete/helloworldservice_private_key
 ADD xos/configurations/common/node_key.pub /root/setup/node_key.pub
 ADD xos/configurations/common/node_key /root/setup/node_key
 ADD xos/configurations/common/ceilometer_url /root/setup/ceilometer_url
