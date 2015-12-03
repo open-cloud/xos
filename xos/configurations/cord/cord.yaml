@@ -122,7 +122,7 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.openflow, org.onosproject.olt
+          dependencies: org.onosproject.openflow-base, org.onosproject.olt
           config_network-cfg.json: >
             {
               "devices" : {
