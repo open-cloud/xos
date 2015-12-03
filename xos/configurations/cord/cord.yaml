@@ -97,20 +97,9 @@ topology_template:
                 }
               }
             }
-          config_virtualbng.json: >
-            {
-                "localPublicIpPrefixes" : [
-                    "10.254.0.128/25"
-                ],
-                "nextHopIpAddress" : "10.254.0.1",
-                "publicFacingMac" : "00:00:00:00:00:66",
-                "xosIpAddress" : "10.11.10.1",
-                "xosRestPort" : "9999",
-                "hosts" : {
-                    "cp-1.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1",
-                    "cp-2.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1"
-                }
-            }
+          config_virtualbng.json: { get_artifact: [ SELF, virtualbng_json, LOCAL_FILE] }
+      artifacts:
+          virtualbng_json: /root/setup/virtualbng.json
 
     service_ONOS_vOLT:
       type: tosca.nodes.ONOSService
