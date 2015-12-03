@@ -1,21 +1,24 @@
+IMAGE_NAME:=xosproject/xos-postgress
+CONTAINER_NAME:=xos-db-postgress
+
 .PHONY: build
-build: ; docker build --rm -t postgres .
+build: ; docker build --rm -t ${IMAGE_NAME} .
 
 .PHONY: run
-run: ; docker run -d -p 5432:5432 --name postgres-server postgres
+run: ; docker run -d -p 5432:5432 --name ${CONTAINER_NAME} ${IMAGE_NAME}
 
 .PHONY: stop
-stop: ; docker stop postgres-server
+stop: ; docker stop ${CONTAINER_NAME}
 
 .PHONY: rm
-rm: ; docker rm postgres-server
+rm: ; docker rm ${CONTAINER_NAME}
 
 .PHONE: rmi
-rmi: ; docker rmi postgres
+rmi: ; docker rmi ${IMAGE_NAME}
 
 .PHONY: backup
-backupvol: ; docker run --volumes-from postgres-server -v /backup:/backup postgres tar cvf /backup/backup-postgres.tar /var/lib/postgresql
+backupvol: ; docker run --volumes-from ${CONTAINER_NAME} -v /backup:/backup postgres tar cvf /backup/backup-postgres.tar /var/lib/postgresql
 
 .PHONY: restore
-restorevol: ; docker run --volumes-from postgres-server -v /backup:/backup postgres cd /var/lib/postgresql && tar xvf /backup/backup-postgres.tar
+restorevol: ; docker run --volumes-from ${CONTAINER_NAME} -v /backup:/backup postgres cd /var/lib/postgresql && tar xvf /backup/backup-postgres.tar
 
