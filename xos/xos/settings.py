@@ -16,8 +16,8 @@ config = Config()
 # that the set of overrides will be expanded with need
 def overrideDbSettings(v):
     parsed = urlparse(v)
-    set_override('db_host', parsed.hostname)
-    set_override('db_port', parsed.port)
+    config.db_host = parsed.hostname
+    config.db_port = parsed.port
 
 env_to_config_dict = {
     "XOS_DB_PORT" : overrideDbSettings
@@ -50,7 +50,7 @@ DATABASES = {
         'USER': config.db_user,
         'PASSWORD': config.db_password,
         'HOST': config.db_host,                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'PORT': config.db_port,                      # Set to empty string for default.
     }
 }
 
