@@ -57,6 +57,8 @@ class XOSONOSApp(XOSResource):
             v = d.value
             if k.startswith("config_"):
                 self.set_tenant_attr(obj, k, v)
+            elif k.startswith("rest_"):
+                self.set_tenant_attr(obj, k, v)
 
     def can_delete(self, obj):
         return super(XOSONOSApp, self).can_delete(obj)
