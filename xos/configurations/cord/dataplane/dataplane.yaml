@@ -212,7 +212,7 @@
   - name: Run some commands on br-sub
     shell: "{{ item }}"
     with_items:
-    - ifconfig br-sub 192.168.0.2 mtu 1400 up
+    - ifconfig br-sub 0.0.0.0 mtu 1400 up
     - ethtool -K br-sub tso off
     - ethtool -K br-sub tx off
 
