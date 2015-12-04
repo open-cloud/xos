@@ -165,6 +165,9 @@ node_types:
             config_network-cfg.json:
                 type: string
                 required: false
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
