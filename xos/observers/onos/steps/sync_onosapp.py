@@ -75,6 +75,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
     def write_configs(self, o):
         o.config_fns = []
+        o.rest_configs = []
         o.files_dir = self.get_files_dir(o)
 
         if not os.path.exists(o.files_dir):
@@ -85,6 +86,16 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 fn = attr.name[7:] # .replace("_json",".json")
                 o.config_fns.append(fn)
                 file(os.path.join(o.files_dir, fn),"w").write(attr.value)
+            if attr.name.startswith("rest_"):
+                fn = attr.name[5:].replace("/","_")
+                endpoint = attr.name[5:]
+                # Ansible goes out of it's way to make our life difficult. If
+                # 'lookup' sees a file that it thinks contains json, then it'll
+                # insist on parsing and return a json object. We just want
+                # a string, so prepend a space and then strip the space off
+                # later.
+                file(os.path.join(o.files_dir, fn),"w").write(" " +attr.value)
+                o.rest_configs.append( {"endpoint": endpoint, "fn": fn} )
 
     def prepare_record(self, o):
         self.write_configs(o)
@@ -95,6 +106,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["appname"] = o.name
         fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
         fields["config_fns"] = o.config_fns
+        fields["rest_configs"] = o.rest_configs
         fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
         fields["ONOS_container"] = "ONOS"
         return fields

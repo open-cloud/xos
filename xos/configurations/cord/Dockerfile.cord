@@ -19,6 +19,7 @@ ADD xos/observers/onos/supervisor/onos-observer.conf /etc/supervisor/conf.d/
 ADD xos/observers/monitoring_channel/supervisor/monitoring_channel_observer.conf /etc/supervisor/conf.d/
 RUN sed -i 's/proxy_ssh=True/proxy_ssh=False/' /opt/xos/observers/vcpe/vcpe_observer_config
 RUN sed -i 's/proxy_ssh=True/proxy_ssh=False/' /opt/xos/observers/monitoring_channel/monitoring_channel_observer_config
+ADD xos/configurations/cord/virtualbng.json /root/setup/
 
 CMD /usr/bin/make -C /opt/xos/configurations/cord -f Makefile.inside; /bin/bash
 

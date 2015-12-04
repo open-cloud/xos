@@ -1,15 +1,36 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 from django import VERSION as DJANGO_VERSION
 import socket
+import os
+from urlparse import urlparse
 
 # Django settings for XOS.
 from config import Config
+from config import set_override
 config = Config()
+
+# Override the config from the environment. This is used leverage the LINK
+# capability of docker. It would be far better to use DNS and that can be
+# done in environments like kubernetes. Look for environment variables that
+# match the link pattern and set the appropriate overeides. It is expected
+# that the set of overrides will be expanded with need
+def overrideDbSettings(v):
+    parsed = urlparse(v)
+    config.db_host = parsed.hostname
+    config.db_port = parsed.port
+
+env_to_config_dict = {
+    "XOS_DB_PORT" : overrideDbSettings
+}
+
+for key, ofunc in env_to_config_dict.items():
+    if key in os.environ:
+        ofunc(os.environ[key])
 
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
- 
-DEBUG = False 
+
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -29,7 +50,7 @@ DATABASES = {
         'USER': config.db_user,
         'PASSWORD': config.db_password,
         'HOST': config.db_host,                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'PORT': config.db_port,                      # Set to empty string for default.
     }
 }
 
@@ -132,7 +153,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     XOS_DIR + "/templates",
-    XOS_DIR + "/core/xoslib/templates",    
+    XOS_DIR + "/core/xoslib/templates",
 )
 
 INSTALLED_APPS = (
@@ -154,6 +175,7 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'cord',
+    'helloworldservice_complete',
     'services.onos',
     'ceilometer',
     'requestrouter',
@@ -169,7 +191,7 @@ if DJANGO_VERSION[1]>=7:
     INSTALLED_APPS = list(INSTALLED_APPS)
     INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
 
-# Added for django-suit form 
+# Added for django-suit form
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
     'core.context_processors.xos',
@@ -221,4 +243,3 @@ STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
 
 # prevents warnings on django 1.7
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
