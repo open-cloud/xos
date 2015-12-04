@@ -28,7 +28,8 @@ RUN apt-get update && apt-get install -y \
     python-dev \
     libyaml-dev \
     pkg-config \
-    python-pycurl
+    python-pycurl \
+    openvpn
 
 RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
