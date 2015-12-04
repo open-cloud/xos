@@ -60,7 +60,7 @@ executing the following will build and run the synchronizer container:
 $ cd synchronizer; make build && make run
 ```
 
-#### Solution Compose File ![](https://img.shields.io/badge/compose-not--working-red.svg)
+#### Solution Compose File ![](https://img.shields.io/badge/compose-beta-red.svg)
 
 [Docker Compose](https://docs.docker.com/compose/) is a tool for defining and
 running multi-container Docker applications. With Compose, you use a Compose
