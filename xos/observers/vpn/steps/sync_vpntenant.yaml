@@ -1,0 +1,18 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  tasks:
+  - name: install apache
+    apt: name=apache2 state=present update_cache=yes
+
+  - name: write message
+    shell: echo "{{ server_key }}" > /var/www/html/index.html
+
+  - name: stop apache
+    service: name=apache2 state=stopped
+
+  - name: start apache
+    service: name=apache2 state=started
