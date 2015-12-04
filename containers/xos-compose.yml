@@ -18,6 +18,7 @@ xos_synchronizer_openstack:
 
 xos:
     image: xosproject/xos
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
     ports:
         - "8000:8000"
     links:
