@@ -8,8 +8,8 @@ config = Config()
 
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
- 
-DEBUG = False 
+
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -132,7 +132,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     XOS_DIR + "/templates",
-    XOS_DIR + "/core/xoslib/templates",    
+    XOS_DIR + "/core/xoslib/templates",
 )
 
 INSTALLED_APPS = (
@@ -155,6 +155,7 @@ INSTALLED_APPS = (
     'hpc',
     'cord',
     'helloworldservice_complete',
+    'vpn',
     'services.onos',
     'ceilometer',
     'requestrouter',
@@ -172,7 +173,7 @@ if DJANGO_VERSION[1]>=7:
     INSTALLED_APPS.remove('django_evolution')
     INSTALLED_APPS = tuple(INSTALLED_APPS)
 
-# Added for django-suit form 
+# Added for django-suit form
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
     'core.context_processors.xos',
@@ -198,7 +199,7 @@ SUIT_CONFIG = {
     # 'MENU_OPEN_FIRST_CHILD': True, # Default True
     'MENU_EXCLUDE': (
          'auth.group',
-         'auth', 
+         'auth',
          'core.network',
          'core.instance',
          'core.node',
@@ -286,4 +287,3 @@ STATISTICS_DRIVER = getattr(config, "statistics_driver", "ceilometer")
 
 # prevents warnings on django 1.7
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
