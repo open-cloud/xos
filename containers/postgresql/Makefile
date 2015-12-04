@@ -1,8 +1,9 @@
 IMAGE_NAME:=xosproject/xos-postgress
 CONTAINER_NAME:=xos-db-postgress
+NO_DOCKER_CACHE?=false
 
 .PHONY: build
-build: ; docker build --rm -t ${IMAGE_NAME} .
+build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
 
 .PHONY: run
 run: ; docker run -d -p 5432:5432 --name ${CONTAINER_NAME} ${IMAGE_NAME}

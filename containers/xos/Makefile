@@ -1,9 +1,10 @@
 CONTAINER_NAME:=xos-server
 IMAGE_NAME:=xosproject/xos
 TOSCA_CONFIG_PATH:=/opt/xos/configurations/opencloud/opencloud.yaml
+NO_DOCKER_CACHE?=false
 
 .PHONY: build
-build: ; docker build --rm -t ${IMAGE_NAME} . && ./initdb
+build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} . && ./initdb
 
 .PHONY: run
 run: ; docker run -d --name ${CONTAINER_NAME} -p 80:8000 ${IMAGE_NAME}
