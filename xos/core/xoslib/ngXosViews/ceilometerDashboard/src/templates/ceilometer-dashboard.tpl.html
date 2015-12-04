@@ -10,23 +10,83 @@
   </div>
 </div>
 
-<div class="row" ng-hide="vm.loader">
-  <div class="col-xs-12">
-    <table class="table table-responsive">
-      <tr>
-        <th>Name</th>
-        <th>Unit</th>
-      </tr>
-      <tr ng-repeat="meter in vm.meters track by $index">
-        <td>{{meter.name}}</td>
-        <td>{{meter.unit}}</td>
-      </tr>
-    </table>
-  </div>
-</div>
+<section ng-hide="vm.loader">
 
-<!-- <div class="row">
-  <div class="col-xs-12">
-    <div ac-chart="'line'" ac-data="vm.sampleChartData" ac-config="vm.sampleChartConfig" class="chart"></div>
+  <div class="well" ng-repeat="(project, resources) in vm.projects">
+    <div class="row">
+      <div class="col-xs-11">
+        {{project}}
+      </div>
+      <div class="col-xs-1">
+        <a ng-click="expandProject = !expandProject" class="btn btn-primary">
+          <i class="glyphicon glyphicon-plus"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="panel panel-default" ng-show="expandProject">
+<!--       <div class="panel-body">
+        <div class="col-xs-3"><b>
+          Resource
+        </b></div>
+        <div class="col-xs-3"><b>
+          Name
+        </b></div>
+        <div class="col-xs-3"><b>
+          Unit
+        </b></div>
+        <div class="col-xs-3"><b>
+          Actions
+        </b></div>
+      </div>
+      <div class="panel-body">
+        <div class="col-xs-3">
+          <input class="form-control" ng-model="vm.query.resource_id" type="text"/>
+        </div>
+        <div class="col-xs-3">
+          <input class="form-control" ng-model="vm.query.name" type="text"/>
+        </div>
+        <div class="col-xs-3">
+          <input class="form-control" ng-model="vm.query.unit" type="text"/>
+        </div>
+      </div> -->
+      <div class="panel-body" ng-repeat="(resource, meters) in resources">
+        <div class="row">
+          <div class="col-xs-11">
+            <b>{{resource}}</b>
+          </div>
+          <div class="col-xs-1">
+            <a ng-click="expandResource = !expandResource" class="btn btn-primary">
+              <i class="glyphicon glyphicon-plus"></i>
+            </a>
+          </div>
+        </div>
+        <div class="row" ng-repeat="meter in meters" ng-show="expandResource">
+          <div class="col-xs-3">
+            {{meter.resource_id}}
+          </div>
+          <div class="col-xs-3">
+            {{meter.name}}
+          </div>
+          <div class="col-xs-3">
+            {{meter.unit}}
+          </div>
+          <div class="col-xs-3">
+            <a ng-click="showMeter = !showMeter" class="btn btn-primary">
+              <i class="glyphicon glyphicon-search"></i> Details
+            </a>
+            <a ng-click="showChart = !showChart" class="btn btn-primary">
+              <i class="glyphicon glyphicon-search"></i> Samples
+            </a>
+          </div>
+          <div class="col-xs-12" ng-show="showMeter">
+            <pre>{{ meter | json }}</pre>
+          </div>
+          <div class="col-xs-12" ng-show="showChart">
+            <ceilometer-samples name="meter.name" tenant="meter.project_id" ng-if="showChart"></ceilometer-samples>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div> -->
+</section>
