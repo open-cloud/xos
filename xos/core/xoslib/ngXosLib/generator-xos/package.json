@@ -1,0 +1,17 @@
+{
+  "name": "generator-xos",
+  "version": "1.0.0",
+  "description": "View generator for XOS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matteo Scandolo",
+  "license": "ISC",
+  "dependencies": {
+    "yeoman-generator": "^0.21.1"
+  },
+  "files": [
+    "app"
+  ]
+}

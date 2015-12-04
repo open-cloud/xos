@@ -7,11 +7,6 @@
 var wiredep = require('wiredep');
 var path = require('path');
 
-// load bower components trough wiredep
-var bowerComponents = wiredep( {devDependencies: false} )[ 'js' ].map(function( file ){
-  return path.relative(process.cwd(), file);
-});
-
 module.exports = function(config) {
 /*eslint-enable*/
   config.set({
@@ -26,7 +21,7 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: bowerComponents.concat([
+    files: [
       'static/js/vendor/jquery-1.11.3.js',
       'static/js/vendor/underscore-min.js',
       'static/js/vendor/backbone.js',
@@ -37,16 +32,14 @@ module.exports = function(config) {
       'static/js/xoslib/*.js',
 
       'spec/helpers/jasmine-jquery.js',
-      'spec/helpers/angular-mocks.js',
       'spec/**/*.mock.js',
       'spec/**/*.test.js',
 
       'spec/**/*.html',
 
       //ng stuff
-      'static/templates/**/*.html',
-      'static/js/xosContentProvider.js'
-    ]),
+      // 'static/js/xosContentProvider.js'
+    ],
 
 
     // list of files to exclude
@@ -61,7 +54,6 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'spec/**/*.test.js': ['babel'],
-      'static/templates/**/*.html': 'ng-html2js',
       'static/js/xoslib/*.js': ['coverage'],
       'static/js/*.js': ['coverage']
     },
