@@ -11,7 +11,9 @@ fi
 echo "Copying the ceilometer patch files to /usr/lib/python2.7/dist-packages/ceilometer"
 tar -xzf openstack_ceilometer_patch.tar.gz
 sudo mv ceilometer/network/ext_services /usr/lib/python2.7/dist-packages/ceilometer/network/
-sudo mv ceilometer/network/statistics /usr/lib/python2.7/dist-packages/ceilometer/network/
+sudo mv ceilometer/network/statistics/onos /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/
+sudo mv /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/__init__.py /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/orig_init.orig_py
+sudo mv ceilometer/network/statistics/__init__.py /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/
 sudo mv ceilometer-2015.1.1.egg-info/entry_points.txt /usr/lib/python2.7/dist-packages/ceilometer-*egg-info/
 sudo mv pipeline.yaml /etc/ceilometer/
 echo "Restarting ceilometer-agent-notification"
