@@ -1,16 +1,17 @@
 #!/bin/bash
 
-IMAGE_NAME=xos
+IMAGE_NAME=xosproject/xos
+CONTAINER_NAME=xos_build_helper_$$
 DB_HOST=$(wget http://ipinfo.io/ip -qO -)
 
 # configure db host
-docker run -it $IMAGE_NAME sed -i '0,/host/{s/host=localhost/host='$DB_HOST'/}' /opt/xos/xos_config
-CONTAINER_ID=$(docker ps -a | grep $IMAGE_NAME | head -1 |  awk '{print $1}')
-echo $CONTAINER_ID $IMAGE_NAME
-docker commit $CONTAINER_ID $IMAGE_NAME
+docker run -it --name=$CONTAINER_NAME $IMAGE_NAME sed -i '0,/host/{s/host=localhost/host='$DB_HOST'/}' /opt/xos/xos_config
+docker commit $CONTAINER_NAME $IMAGE_NAME
+docker rm $CONTAINER_NAME
 
 # init db schema
-docker run -it $IMAGE_NAME /opt/xos/scripts/opencloud makemigrations
-CONTAINER_ID=$(docker ps -a | grep $IMAGE_NAME | head -1 | awk '{print $1}')
+docker run -it --name=$CONTAINER_NAME $IMAGE_NAME /opt/xos/scripts/opencloud makemigrations
 # run overrides the CMD specifed in the Dockerfile, so we re-set the CMD in the final commit"
-docker commit --change "CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure" $CONTAINER_ID $IMAGE_NAME
+echo docker commit --change="CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure" $CONTAINER_NAME $IMAGE_NAME
+docker commit --change="CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure" $CONTAINER_NAME $IMAGE_NAME
+docker rm $CONTAINER_NAME

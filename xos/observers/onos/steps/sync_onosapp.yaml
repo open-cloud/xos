@@ -7,6 +7,13 @@
   vars:
     appname: {{ appname }}
     dependencies: {{ dependencies }}
+{% if rest_configs %}
+    rest_configs:
+{% for rest_config in rest_configs %}
+       - endpoint: {{ rest_config.endpoint }}
+         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
+{% endfor %}
+{% endif %}
 
   tasks:
 
@@ -36,6 +43,18 @@
         {% for config_fn in config_fns %}
         - {{ config_fn }}
         {% endfor %}
+{% endif %}
+
+{% if rest_configs %}
+  - name: Add ONOS configuration values
+    uri:
+      url: http://localhost:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      body: "{{ '{{' }} item.body {{ '}}' }}"
+      body_format: raw
+      method: POST
+      user: karaf
+      password: karaf
+    with_items: "rest_configs"
 {% endif %}
 
   # Don't know how to check for this condition, just wait
