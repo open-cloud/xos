@@ -1,0 +1,51 @@
+<div class="row-fluid">
+  <div class="span6">
+    <h1>{$ vm.cp.humanReadableName $}</h1>
+  </div>
+  <div class="span6 text-right">
+    <cp-actions id="vm.cp.id"></cp-actions>
+  </div>
+</div>
+<hr>
+<div class="row-fluid">
+  <div class="span2">
+    <div ng-include="'templates/cp_side_nav.html'"></div>
+  </div>
+  <div class="span10">
+    <div ng-repeat="item in vm.cp.users" class="well">
+      <div class="row-fluid">
+        <div class="span3">
+          {{item.firstname}}
+        </div>
+        <div class="span3">
+          {{item.lastname}}
+        </div>
+        <div class="span4">
+          {{item.email}}
+        </div>
+        <div class="span2">
+          <a ng-click="vm.removeUserFromCp(item)" class="btn btn-danger pull-right">
+            <i class="icon icon-remove"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <form ng-submit="vm.saveContentProvider(vm.cp)">
+      <div class="row-fluid">
+        <div class="span8">
+          <label>Select user:</label>
+          <select ng-model="vm.user" ng-options="u as u.username for u in vm.users" ng-change="vm.addUserToCp(vm.user)"></select>
+        </div>  
+        <div class="span4 text-right">
+          <button class="btn btn-success margin-wells">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="alert" ng-show="vm.result" ng-class="{'alert-success': vm.result.status === 1,'alert-error': vm.result.status === 0}">
+      {$ vm.result.msg $}
+    </div>
+  </div>
+</div>
