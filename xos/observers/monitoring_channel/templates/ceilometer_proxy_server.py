@@ -121,7 +121,7 @@ def filter_query_params(query_params):
     i=0
     user_specified_tenants=[]
     for field in query_params['q.field']:
-        if field != 'project_id':
+        if (field != 'project_id') and (field != 'project'):
             query = {}
             query['field']=field
             if query_params['q.op'][i] != '':
@@ -195,11 +195,13 @@ class sample_list:
              "q.op": [],
              "q.type": [],
              "q.value": [],
+             "limit": None,
         }
         query_params = web.input(**keyword_args)
         new_query, user_specified_tenants = filter_query_params(query_params)
 
         client = ceilometerclient()
+        limit=query_params.limit
         samples=[]
         for (k,v) in config.items('allowed_tenants'):
               if user_specified_tenants and (k not in user_specified_tenants):
@@ -209,7 +211,7 @@ class sample_list:
               query = make_query(tenant_id=k)
               final_query.extend(query)
               logger.debug('final query=%s',final_query)
-              results = client.samples.list(q=final_query)
+              results = client.new_samples.list(q=final_query,limit=limit)
               samples.extend(results)
         return json.dumps([ob._info for ob in samples])
 

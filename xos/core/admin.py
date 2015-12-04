@@ -23,7 +23,6 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from cgi import escape as html_escape
 from django.contrib import messages
 
-import django_evolution
 import threading
 
 # thread locals necessary to work around a django-suit issue
@@ -105,6 +104,10 @@ class XOSAdminMixin(object):
         if self.__user_is_readonly(request):
             # this 'if' might be redundant if save_by_user is implemented right
             raise PermissionDenied
+
+        # reset exponential backoff
+        if hasattr(obj, "backend_register"):
+            obj.backend_register = "{}"
 
         obj.caller = request.user
         # update openstack connection to use this site/tenant
@@ -2032,12 +2035,6 @@ admin.site.register(User, UserAdmin)
 # ... and, since we're not using Django's builtin permissions,
 # unregister the Group model from admin.
 #admin.site.unregister(Group)
-
-#Do not show django evolution in the admin interface
-from django_evolution.models import Version, Evolution
-#admin.site.unregister(Version)
-#admin.site.unregister(Evolution)
-
 
 # When debugging it is often easier to see all the classes, but for regular use 
 # only the top-levels should be displayed

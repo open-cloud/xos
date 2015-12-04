@@ -126,6 +126,12 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
             for cs in slice.controllerslices.all():
                 if cs.tenant_id:
                     tenant_ids.add(cs.tenant_id)
+        if self.creator.is_admin:
+            #TODO: Ceilometer publishes the SDN meters without associating to any tenant IDs.
+            #For now, ceilometer code is changed to pusblish all such meters with tenant
+            #id as "default_admin_tenant". Here add that default tenant as authroized tenant_id
+            #for all admin users. 
+            tenant_ids.add("default_admin_tenant")
         return tenant_ids
 
     @property

@@ -14,6 +14,12 @@ topology_template:
           - vcpe_tenant:
               node: service_vcpe
               relationship: tosca.relationships.TenantOfService
+          - lan_network:
+              node: lan_network
+              relationship: tosca.relationships.UsesNetwork
+          - wan_network:
+              node: wan_network
+              relationship: tosca.relationships.UsesNetwork
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
@@ -91,20 +97,9 @@ topology_template:
                 }
               }
             }
-          config_virtualbng.json: >
-            {
-                "localPublicIpPrefixes" : [
-                    "10.254.0.128/25"
-                ],
-                "nextHopIpAddress" : "10.254.0.1",
-                "publicFacingMac" : "00:00:00:00:00:66",
-                "xosIpAddress" : "10.11.10.1",
-                "xosRestPort" : "9999",
-                "hosts" : {
-                    "cp-1.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1",
-                    "cp-2.devel.xos-pg0.clemson.cloudlab.us" : "of:0000000000000001/1"
-                }
-            }
+          config_virtualbng.json: { get_artifact: [ SELF, virtualbng_json, LOCAL_FILE] }
+      artifacts:
+          virtualbng_json: /root/setup/virtualbng.json
 
     service_ONOS_vOLT:
       type: tosca.nodes.ONOSService
@@ -127,7 +122,7 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.openflow, org.onosproject.olt
+          dependencies: org.onosproject.openflow-base, org.onosproject.olt
           config_network-cfg.json: >
             {
               "devices" : {
@@ -241,6 +236,11 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - vcpe_docker_image:
+              node: andybavier/docker-vcpe
+              relationship: tosca.relationships.UsesImage
+      properties:
+          default_isolation: container
 
     mysite_onos_vbng:
       description: ONOS Controller Slice for vBNG

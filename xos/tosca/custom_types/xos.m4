@@ -143,6 +143,9 @@ node_types:
             config_network-cfg.json:
                 type: string
                 required: false
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
 
     tosca.nodes.VCPEService:
         description: >
@@ -588,6 +591,10 @@ node_types:
                 type: integer
                 default: 10
                 description: Quota of instances that this slice may create.
+            default_isolation:
+                type: string
+                required: false
+                description: default isolation to use when bringing up instances (default to 'vm')
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root

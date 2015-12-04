@@ -158,6 +158,14 @@
     shell: ifconfig br-lan inet6 del {{ ipv6.stdout }}
     when: ipv6.stdout != ""
 
+  - name: Check if veth1 has an IPv6 address
+    shell: ip addr show veth1|grep inet6|awk '{print $2}'
+    register: ipv6
+
+  - name: Remove veth1 IPv6 address if present
+    shell: ifconfig veth1 inet6 del {{ ipv6.stdout }}
+    when: ipv6.stdout != ""
+
   - name: Run the datapath
     command: /usr/local/bin/ofdatapath -i veth1,br-lan punix:/tmp/s1 -d 000000000001 --no-slicing -D -P
       creates=/usr/local/var/run/ofdatapath.pid
@@ -204,7 +212,7 @@
   - name: Run some commands on br-sub
     shell: "{{ item }}"
     with_items:
-    - ifconfig br-sub 192.168.0.2 mtu 1400 up
+    - ifconfig br-sub 0.0.0.0 mtu 1400 up
     - ethtool -K br-sub tso off
     - ethtool -K br-sub tx off
 
