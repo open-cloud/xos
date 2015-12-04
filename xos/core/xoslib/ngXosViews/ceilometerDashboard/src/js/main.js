@@ -13,20 +13,36 @@ angular.module('xos.ceilometerDashboard', [
   .state('ceilometerDashboard', {
     url: '/',
     template: '<ceilometer-dashboard></ceilometer-dashboard>'
+  })
+  .state('samples', {
+    url: '/:name/:tenant/samples',
+    template: '<ceilometer-samples></ceilometer-samples>'
   });
 })
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.service('Ceilometer', function($http, $q, $timeout){
+.service('Ceilometer', function($http, $q){
   this.getMeters = () => {
     let deferred = $q.defer();
 
-    $http.get('../mocks/meters.json')
+    $http.get('xoslib/meters/', {cache: true})
     .then((res) => {
-      $timeout(() => {
-        deferred.resolve(res.data)
-      }, 1000);
+      deferred.resolve(res.data)
+    })
+    .catch((e) => {
+      deferred.reject(e);
+    });
+
+    return deferred.promise;
+  }
+
+  this.getSamples = (name, tenant) => {
+    let deferred = $q.defer();
+
+    $http.get(`xoslib/metersamples/`, {params: {meter: name, tenant: tenant}})
+    .then((res) => {
+      deferred.resolve(res.data)
     })
     .catch((e) => {
       deferred.reject(e);
@@ -35,7 +51,7 @@ angular.module('xos.ceilometerDashboard', [
     return deferred.promise;
   }
 })
-.directive('ceilometerDashboard', function(){
+.directive('ceilometerDashboard', function(lodash){
   return {
     restrict: 'E',
     scope: {},
@@ -49,8 +65,10 @@ angular.module('xos.ceilometerDashboard', [
 
         Ceilometer.getMeters()
         .then(meters => {
-          this.meters = meters;
-          console.log(meters.length);
+          this.projects = lodash.groupBy(meters, 'project_name');
+          lodash.forEach(Object.keys(this.projects), (project) => {
+            this.projects[project] = lodash.groupBy(this.projects[project], 'resource_id');
+          });
         })
         .catch(err => {
           this.err = err;
@@ -62,56 +80,78 @@ angular.module('xos.ceilometerDashboard', [
 
       this.loadMeters();
 
-      // //sample chart
-      // this.sampleChartData = {
-      //   series: [
-      //     'VM',
-      //     'Containers',
-      //     'Instances'
-      //   ],
-      //   data: [
-      //     {
-      //       x: 0,
-      //       y: [
-      //         479,
-      //         54,
-      //         213,
-      //       ],
-      //       tooltip: 'This is a tooltip'
-      //     },
-      //     {
-      //       x: 1,
-      //       y: [
-      //         64,
-      //         279,
-      //         10,
-      //       ],
-      //       tooltip: 'This is another tooltip'
-      //     },
-      //     {
-      //       x: 2,
-      //       y: [
-      //         136,
-      //         19,
-      //         259,
-      //       ],
-      //       tooltip: 'Third tooltip'
-      //     }
-      //   ]
-      // };
-
-      // this.sampleChartConfig = {
-      //   title: false,
-      //   tooltips: true,
-      //   labels: false,
-      //   legend: {
-      //     display: true,
-      //     //could be 'left, right'
-      //     position: 'left'
-      //   },
-      //   lineLegend: 'lineEnd',
-      //   waitForHeightAndWidth: true
-      // }
     }
   };
+})
+.directive('ceilometerSamples', function(lodash, $stateParams){
+  return {
+    restrict: 'E',
+    scope: {
+      name: '=name',
+      tenant: '=tenant'
+    },
+    bindToController: true,
+    controllerAs: 'vm',
+    templateUrl: 'templates/ceilometer-samples.tpl.html',
+    controller: function(Ceilometer) {
+
+      if($stateParams.name && $stateParams.tenant){
+        this.name = $stateParams.name;
+        this.tenant = $stateParams.tenant;
+      }
+
+      this.formatDateLabels = (date) => {
+        // date = new Date(date);
+        // return `${date.getMonth()}/${date.getYear()}`
+        return date;
+      };
+
+      this.formatSamplesData = (data) => {
+
+        let formatted = [];
+
+        lodash.forEach(data, (item) => {
+          formatted.push({
+            x: this.formatDateLabels(item.timestamp),
+            y: [item.volume]
+          });
+        });
+
+        return lodash.sortBy(formatted, 'timestamp');
+      }
+
+      this.showSamples = () => {
+        this.loader = true;
+        Ceilometer.getSamples(this.name, this.tenant)
+        .then(res => {
+          console.log(res.length, lodash.groupBy(res, 'timestamp'));
+          this.sampleChartData = {
+            series: [$stateParams.name],
+            data: this.formatSamplesData(res)
+          }
+        })
+        .catch(err => {
+          console.warn(err);
+        })
+        .finally(() => {
+          this.loader = false;
+        });
+      };
+
+      this.showSamples();
+
+      this.sampleChartConfig = {
+        title: false,
+        tooltips: true,
+        labels: false,
+        legend: {
+          display: false,
+          //could be 'left, right'
+          position: 'right'
+        },
+        lineLegend: 'traditional',
+        waitForHeightAndWidth: true
+      }
+    }
+  }
 });
