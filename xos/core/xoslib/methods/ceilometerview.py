@@ -1,0 +1,940 @@
+import logging
+import requests
+from six.moves import urllib
+import urllib2
+import pytz
+import datetime
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework import serializers
+from rest_framework import generics
+from rest_framework.views import APIView
+from core.models import *
+from ceilometer.models import *
+from django.forms import widgets
+from django.utils import datastructures
+from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+from syndicate_storage.models import Volume
+from django.core.exceptions import PermissionDenied
+
+# This REST API endpoint provides information that the ceilometer view needs to display
+LOG = logging.getLogger(__name__)
+
+def getTenantCeilometerProxyURL(user):
+    monitoring_channel = None
+    for obj in MonitoringChannel.get_tenant_objects().all():
+        if (obj.creator.username == user.username):
+            monitoring_channel = obj
+            break
+    if not monitoring_channel:
+        raise XOSMissingField("Monitoring channel is missing for this tenant...Create one and invoke this REST API")
+    #TODO: Wait until URL is completely UP
+    while True:
+        try:
+            response = urllib2.urlopen(monitoring_channel.ceilometer_url,timeout=1)
+            break
+        except urllib2.HTTPError, e:
+            LOG.info('SRIKANTH: HTTP error %(reason)s' % {'reason':e.reason})
+            break
+        except urllib2.URLError, e:
+            LOG.info('SRIKANTH: URL error %(reason)s' % {'reason':e.reason})
+            pass
+    return monitoring_channel.ceilometer_url
+
+def getTenantControllerTenantMap(user):
+    tenantmap={}
+    for slice in Slice.objects.filter(creator=user):
+        for cs in slice.controllerslices.all():
+            if cs.tenant_id:
+                tenantmap[cs.tenant_id] = cs.slice.name
+    return tenantmap
+
+def build_url(path, q, params=None):
+    """Convert list of dicts and a list of params to query url format.
+
+    This will convert the following:
+        "[{field=this,op=le,value=34},
+          {field=that,op=eq,value=foo,type=string}],
+         ['foo=bar','sna=fu']"
+    to:
+        "?q.field=this&q.field=that&
+          q.op=le&q.op=eq&
+          q.type=&q.type=string&
+          q.value=34&q.value=foo&
+          foo=bar&sna=fu"
+    """
+    if q:
+        query_params = {'q.field': [],
+                        'q.value': [],
+                        'q.op': [],
+                        'q.type': []}
+
+        for query in q:
+            for name in ['field', 'op', 'value', 'type']:
+                query_params['q.%s' % name].append(query.get(name, ''))
+
+        # Transform the dict to a sequence of two-element tuples in fixed
+        # order, then the encoded string will be consistent in Python 2&3.
+        new_qparams = sorted(query_params.items(), key=lambda x: x[0])
+        path += "?" + urllib.parse.urlencode(new_qparams, doseq=True)
+
+        if params:
+            for p in params:
+                path += '&%s' % p
+    elif params:
+        path += '?%s' % params[0]
+        for p in params[1:]:
+            path += '&%s' % p
+    return path
+
+def concat_url(endpoint, url):
+    """Concatenate endpoint and final URL.
+
+    E.g., "http://keystone/v2.0/" and "/tokens" are concatenated to
+    "http://keystone/v2.0/tokens".
+
+    :param endpoint: the base URL
+    :param url: the final URL
+    """
+    return "%s/%s" % (endpoint.rstrip("/"), url.strip("/"))
+
+def resource_list(request, query=None, ceilometer_url=None, ceilometer_usage_object=None):
+    """List the resources."""
+    url = concat_url(ceilometer_url, build_url('/v2/resources', query))
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        raise e
+    return response.json()
+
+def sample_list(request, meter_name, ceilometer_url=None, query=None, limit=None):
+    """List the samples for this meters."""
+    params = ['limit=%s' % limit] if limit else []
+    url = concat_url(ceilometer_url, build_url('/v2/samples', query, params))
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        raise e
+    return response.json()
+
+def meter_list(request, ceilometer_url=None, query=None):
+    """List the user's meters."""
+    url = concat_url(ceilometer_url, build_url('/v2/meters', query))
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        raise e
+    return response.json()
+
+
+def statistic_list(request, meter_name, ceilometer_url=None, query=None, period=None):
+    """List of statistics."""
+    p = ['period=%s' % period] if period else []
+    url = concat_url(ceilometer_url, build_url('/v2/meters/' + meter_name + '/statistics', query, p))
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        raise e
+    return response.json()
+
+def diff_lists(a, b):
+    if not a:
+        return []
+    elif not b:
+        return a
+    else:
+        return list(set(a) - set(b))
+
+class Meters(object):
+    """Class for listing of available meters.
+
+    It is listing meters defined in this class that are available
+    in Ceilometer meter_list.
+
+    It is storing information that is not available in Ceilometer, i.e.
+    label, description.
+
+    """
+
+    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None):
+        # Storing the request.
+        self._request = request
+        self.ceilometer_url = ceilometer_url
+        self.tenant_map = tenant_map
+
+        # Storing the Ceilometer meter list
+        if ceilometer_meter_list:
+            self._ceilometer_meter_list = ceilometer_meter_list
+        else:
+            try:
+                query=[]
+                self._ceilometer_meter_list = meter_list(request, self.ceilometer_url, query)
+                #LOG.info('SRIKANTH: meters=%(meters)s'%{'meters':[m.project_id for m in self._ceilometer_meter_list]})
+            except requests.exceptions.RequestException as e:
+                self._ceilometer_meter_list = []
+                raise e
+
+        # Storing the meters info categorized by their services.
+        self._nova_meters_info = self._get_nova_meters_info()
+        self._neutron_meters_info = self._get_neutron_meters_info()
+        self._glance_meters_info = self._get_glance_meters_info()
+        self._cinder_meters_info = self._get_cinder_meters_info()
+        self._swift_meters_info = self._get_swift_meters_info()
+        self._kwapi_meters_info = self._get_kwapi_meters_info()
+        self._ipmi_meters_info = self._get_ipmi_meters_info()
+        self._vcpe_meters_info = self._get_vcpe_meters_info()
+        self._sdn_meters_info = self._get_sdn_meters_info()
+
+        # Storing the meters info of all services together.
+        all_services_meters = (self._nova_meters_info,
+                               self._neutron_meters_info,
+                               self._glance_meters_info,
+                               self._cinder_meters_info,
+                               self._swift_meters_info,
+                               self._kwapi_meters_info,
+                               self._ipmi_meters_info,
+                               self._vcpe_meters_info,
+                               self._sdn_meters_info)
+        self._all_meters_info = {}
+        for service_meters in all_services_meters:
+            self._all_meters_info.update(dict([(meter_name, meter_info)
+                                               for meter_name, meter_info
+                                               in service_meters.items()]))
+
+        # Here will be the cached Meter objects, that will be reused for
+        # repeated listing.
+        self._cached_meters = {}
+
+    def list_all(self, only_meters=None, except_meters=None):
+        """Returns a list of meters based on the meters names.
+
+        :Parameters:
+          - `only_meters`: The list of meter names we want to show.
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=only_meters,
+                          except_meters=except_meters)
+
+    def list_nova(self, except_meters=None):
+        """Returns a list of meters tied to nova.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._nova_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_neutron(self, except_meters=None):
+        """Returns a list of meters tied to neutron.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._neutron_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_glance(self, except_meters=None):
+        """Returns a list of meters tied to glance.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._glance_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_cinder(self, except_meters=None):
+        """Returns a list of meters tied to cinder.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._cinder_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_swift(self, except_meters=None):
+        """Returns a list of meters tied to swift.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._swift_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_kwapi(self, except_meters=None):
+        """Returns a list of meters tied to kwapi.
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        return self._list(only_meters=self._kwapi_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_ipmi(self, except_meters=None):
+        """Returns a list of meters tied to ipmi
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+
+        return self._list(only_meters=self._ipmi_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_vcpe(self, except_meters=None):
+        """Returns a list of meters tied to vcpe service
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+
+        return self._list(only_meters=self._vcpe_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_sdn(self, except_meters=None):
+        """Returns a list of meters tied to sdn service
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+
+        return self._list(only_meters=self._sdn_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_other_services(self, except_meters=None):
+        """Returns a list of meters tied to ipmi
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+        other_service_meters = [m for m in self._ceilometer_meter_list
+                                if m.name not in self._all_meters_info.keys()]
+        other_service_meters = diff_lists(other_service_meters, except_meters)
+
+        meters = []
+        for meter in other_service_meters:
+            self._cached_meters[meter.name] = meter
+            meters.append(meter)
+        return meters
+
+    def _list(self, only_meters=None, except_meters=None):
+        """Returns a list of meters based on the meters names.
+
+        :Parameters:
+          - `only_meters`: The list of meter names we want to show.
+          - `except_meters`: The list of meter names we don't want to show.
+        """
+
+        # Get all wanted meter names.
+        if only_meters:
+            meter_names = only_meters
+        else:
+            meter_names = [meter_name for meter_name
+                           in self._all_meters_info.keys()]
+
+        meter_names = diff_lists(meter_names, except_meters)
+        # Collect meters for wanted meter names.
+        return self._get_meters(meter_names)
+
+    def _get_meters(self, meter_names):
+        """Obtain meters based on meter_names.
+
+        The meters that do not exist in Ceilometer meter list are left out.
+
+        :Parameters:
+          - `meter_names`: A list of meter names we want to fetch.
+        """
+
+        meters = []
+        for meter_name in meter_names:
+            meter = self._get_meter(meter_name)
+            if meter:
+                meters.append(meter)
+        return meters
+
+    def _get_meter(self, meter_name):
+        """Obtains a meter.
+
+        Obtains meter either from cache or from Ceilometer meter list
+        joined with statically defined meter info like label and description.
+
+        :Parameters:
+          - `meter_name`: A meter name we want to fetch.
+        """
+        meter = self._cached_meters.get(meter_name, None)
+        if not meter:
+            meter_candidates = [m for m in self._ceilometer_meter_list
+                                if m["name"] == meter_name]
+
+            if meter_candidates:
+                meter_info = self._all_meters_info.get(meter_name, None)
+                if meter_info:
+                    label = meter_info["label"]
+                    description = meter_info["description"]
+                else:
+                    label = ""
+                    description = ""
+                meter = meter_candidates[0]
+                meter["label"] = label
+                meter["description"] = description
+                if meter["project_id"] in self.tenant_map.keys():
+                    meter["project_name"] = self.tenant_map[meter["project_id"]]
+                else:
+                    meter["project_name"] = meter["project_id"]
+
+                self._cached_meters[meter_name] = meter
+
+        return meter
+
+    def _get_nova_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        meters_info = datastructures.SortedDict([
+            ("instance", {
+                'label': '',
+                'description': _("Existence of instance"),
+            }),
+            ("instance:<type>", {
+                'label': '',
+                'description': _("Existence of instance <type> "
+                                 "(openstack types)"),
+            }),
+            ("memory", {
+                'label': '',
+                'description': _("Volume of RAM"),
+            }),
+            ("memory.usage", {
+                'label': '',
+                'description': _("Volume of RAM used"),
+            }),
+            ("cpu", {
+                'label': '',
+                'description': _("CPU time used"),
+            }),
+            ("cpu_util", {
+                'label': '',
+                'description': _("Average CPU utilization"),
+            }),
+            ("vcpus", {
+                'label': '',
+                'description': _("Number of VCPUs"),
+            }),
+            ("network.incoming.bytes.rate", {
+                'label': '',
+                'description': _("Average rate per sec of incoming "
+                                 "bytes on a VM network interface"),
+            }),
+            ("network.outgoing.bytes.rate", {
+                'label': '',
+                'description': _("Average rate per sec of outgoing "
+                                 "bytes on a VM network interface"),
+            }),
+        ])
+        # Adding flavor based meters into meters_info dict
+        # TODO(lsmola) this kind of meter will be probably deprecated
+        # https://bugs.launchpad.net/ceilometer/+bug/1208365 . Delete it then.
+        #for flavor in get_flavor_names(self._request):
+        #    name = 'instance:%s' % flavor
+        #    meters_info[name] = dict(meters_info["instance:<type>"])
+
+        #    meters_info[name]['description'] = (
+        #        _('Duration of instance type %s (openstack flavor)') %
+        #        flavor)
+
+        # TODO(lsmola) allow to set specific in local_settings. For all meters
+        # because users can have their own agents and meters.
+        return meters_info
+
+    def _get_neutron_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('network', {
+                'label': '',
+                'description': _("Existence of network"),
+            }),
+            ('subnet', {
+                'label': '',
+                'description': _("Existence of subnet"),
+            }),
+            ('port', {
+                'label': '',
+                'description': _("Existence of port"),
+            }),
+            ('ip.floating', {
+                'label': '',
+                'description': _("Existence of floating ip"),
+            }),
+        ])
+
+    def _get_glance_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('image', {
+                'label': '',
+                'description': _("Image existence check"),
+            }),
+            ('image.size', {
+                'label': '',
+                'description': _("Uploaded image size"),
+            }),
+            ('image.update', {
+                'label': '',
+                'description': _("Number of image updates"),
+            }),
+            ('image.upload', {
+                'label': '',
+                'description': _("Number of image uploads"),
+            }),
+            ('image.delete', {
+                'label': '',
+                'description': _("Number of image deletions"),
+            }),
+            ('image.download', {
+                'label': '',
+                'description': _("Image is downloaded"),
+            }),
+            ('image.serve', {
+                'label': '',
+                'description': _("Image is served out"),
+            }),
+        ])
+
+    def _get_cinder_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('volume', {
+                'label': '',
+                'description': _("Existence of volume"),
+            }),
+            ('volume.size', {
+                'label': '',
+                'description': _("Size of volume"),
+            }),
+        ])
+
+    def _get_swift_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('storage.objects', {
+                'label': '',
+                'description': _("Number of objects"),
+            }),
+            ('storage.objects.size', {
+                'label': '',
+                'description': _("Total size of stored objects"),
+            }),
+            ('storage.objects.containers', {
+                'label': '',
+                'description': _("Number of containers"),
+            }),
+            ('storage.objects.incoming.bytes', {
+                'label': '',
+                'description': _("Number of incoming bytes"),
+            }),
+            ('storage.objects.outgoing.bytes', {
+                'label': '',
+                'description': _("Number of outgoing bytes"),
+            }),
+            ('storage.api.request', {
+                'label': '',
+                'description': _("Number of API requests against swift"),
+            }),
+        ])
+
+    def _get_kwapi_meters_info(self):
+        """Returns additional info for each meter.
+
+        That will be used for augmenting the Ceilometer meter.
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('energy', {
+                'label': '',
+                'description': _("Amount of energy"),
+            }),
+            ('power', {
+                'label': '',
+                'description': _("Power consumption"),
+            }),
+        ])
+
+    def _get_ipmi_meters_info(self):
+        """Returns additional info for each meter
+
+        That will be used for augmenting the Ceilometer meter
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('hardware.ipmi.node.power', {
+                'label': '',
+                'description': _("System Current Power"),
+            }),
+            ('hardware.ipmi.fan', {
+                'label': '',
+                'description': _("Fan RPM"),
+            }),
+            ('hardware.ipmi.temperature', {
+                'label': '',
+                'description': _("Sensor Temperature Reading"),
+            }),
+            ('hardware.ipmi.current', {
+                'label': '',
+                'description': _("Sensor Current Reading"),
+            }),
+            ('hardware.ipmi.voltage', {
+                'label': '',
+                'description': _("Sensor Voltage Reading"),
+            }),
+            ('hardware.ipmi.node.inlet_temperature', {
+                'label': '',
+                'description': _("System Inlet Temperature Reading"),
+            }),
+            ('hardware.ipmi.node.outlet_temperature', {
+                'label': '',
+                'description': _("System Outlet Temperature Reading"),
+            }),
+            ('hardware.ipmi.node.airflow', {
+                'label': '',
+                'description': _("System Airflow Reading"),
+            }),
+            ('hardware.ipmi.node.cups', {
+                'label': '',
+                'description': _("System CUPS Reading"),
+            }),
+            ('hardware.ipmi.node.cpu_util', {
+                'label': '',
+                'description': _("System CPU Utility Reading"),
+            }),
+            ('hardware.ipmi.node.mem_util', {
+                'label': '',
+                'description': _("System Memory Utility Reading"),
+            }),
+            ('hardware.ipmi.node.io_util', {
+                'label': '',
+                'description': _("System IO Utility Reading"),
+            }),
+        ])
+
+    def _get_vcpe_meters_info(self):
+        """Returns additional info for each meter
+
+        That will be used for augmenting the Ceilometer meter
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('vcpe', {
+                'label': '',
+                'description': _("Existence of vcpe instance"),
+            }),
+            ('vcpe.dns.cache.size', {
+                'label': '',
+                'description': _("Number of entries in DNS cache"),
+            }),
+            ('vcpe.dns.total_instered_entries', {
+                'label': '',
+                'description': _("Total number of inserted entries into the cache"),
+            }),
+            ('vcpe.dns.replaced_unexpired_entries', {
+                'label': '',
+                'description': _("Unexpired entries that were thrown out of cache"),
+            }),
+            ('vcpe.dns.queries_answered_locally', {
+                'label': '',
+                'description': _("Number of cache hits"),
+            }),
+            ('vcpe.dns.queries_forwarded', {
+                'label': '',
+                'description': _("Number of cache misses"),
+            }),
+            ('vcpe.dns.server.queries_sent', {
+                'label': '',
+                'description': _("For each upstream server, the number of queries sent"),
+            }),
+            ('vcpe.dns.server.queries_failed', {
+                'label': '',
+                'description': _("For each upstream server, the number of queries failed"),
+            }),
+        ])
+
+    def _get_sdn_meters_info(self):
+        """Returns additional info for each meter
+
+        That will be used for augmenting the Ceilometer meter
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('switch', {
+                'label': '',
+                'description': _("Existence of switch"),
+            }),
+            ('switch.port', {
+                'label': '',
+                'description': _("Existence of port"),
+            }),
+            ('switch.port.receive.packets', {
+                'label': '',
+                'description': _("Packets received on port"),
+            }),
+            ('switch.port.transmit.packets', {
+                'label': '',
+                'description': _("Packets transmitted on port"),
+            }),
+            ('switch.port.receive.drops', {
+                'label': '',
+                'description': _("Drops received on port"),
+            }),
+            ('switch.port.transmit.drops', {
+                'label': '',
+                'description': _("Drops transmitted on port"),
+            }),
+            ('switch.port.receive.errors', {
+                'label': '',
+                'description': _("Errors received on port"),
+            }),
+            ('switch.port.transmit.errors', {
+                'label': '',
+                'description': _("Errors transmitted on port"),
+            }),
+            ('switch.flow', {
+                'label': '',
+                'description': _("Duration of flow"),
+            }),
+            ('switch.flow.packets', {
+                'label': '',
+                'description': _("Packets received"),
+            }),
+            ('switch.table', {
+                'label': '',
+                'description': _("Existence of table"),
+            }),
+            ('switch.table.active.entries', {
+                'label': '',
+                'description': _("Active entries in table"),
+            }),
+        ])
+
+def make_query(user_id=None, tenant_id=None, resource_id=None,
+               user_ids=None, tenant_ids=None, resource_ids=None):
+    """Returns query built from given parameters.
+
+    This query can be then used for querying resources, meters and
+    statistics.
+
+    :Parameters:
+      - `user_id`: user_id, has a priority over list of ids
+      - `tenant_id`: tenant_id, has a priority over list of ids
+      - `resource_id`: resource_id, has a priority over list of ids
+      - `user_ids`: list of user_ids
+      - `tenant_ids`: list of tenant_ids
+      - `resource_ids`: list of resource_ids
+    """
+    user_ids = user_ids or []
+    tenant_ids = tenant_ids or []
+    resource_ids = resource_ids or []
+
+    query = []
+    if user_id:
+        user_ids = [user_id]
+    for u_id in user_ids:
+        query.append({"field": "user_id", "op": "eq", "value": u_id})
+
+    if tenant_id:
+        tenant_ids = [tenant_id]
+    for t_id in tenant_ids:
+        query.append({"field": "project_id", "op": "eq", "value": t_id})
+
+    if resource_id:
+        resource_ids = [resource_id]
+    for r_id in resource_ids:
+        query.append({"field": "resource_id", "op": "eq", "value": r_id})
+
+    return query
+
+def calc_date_args(date_from, date_to, date_options):
+    # TODO(lsmola) all timestamps should probably work with
+    # current timezone. And also show the current timezone in chart.
+    if date_options == "other":
+        try:
+            if date_from:
+                date_from = pytz.utc.localize(
+                    datetime.datetime.strptime(str(date_from), "%Y-%m-%d"))
+            else:
+                # TODO(lsmola) there should be probably the date
+                # of the first sample as default, so it correctly
+                # counts the time window. Though I need ordering
+                # and limit of samples to obtain that.
+                pass
+            if date_to:
+                date_to = pytz.utc.localize(
+                    datetime.datetime.strptime(str(date_to), "%Y-%m-%d"))
+                # It returns the beginning of the day, I want the end of
+                # the day, so I add one day without a second.
+                date_to = (date_to + datetime.timedelta(days=1) -
+                           datetime.timedelta(seconds=1))
+            else:
+                date_to = timezone.now()
+        except Exception:
+            raise ValueError(_("The dates haven't been recognized"))
+    else:
+        try:
+            date_to = timezone.now()
+            date_from = date_to - datetime.timedelta(days=float(date_options))
+        except Exception as e:
+            raise e
+            #raise ValueError(_("The time delta must be a number representing "
+            #                   "the time span in days"))
+    return date_from, date_to
+
+class MetersList(APIView):
+    method_kind = "list"
+    method_name = "meters"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+        tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
+        if (not tenant_ceilometer_url):
+            raise XOSMissingField("Tenant ceilometer URL is missing")
+        tenant_map = getTenantControllerTenantMap(request.user)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        services = {
+            _('Nova'): meters.list_nova(),
+            _('Neutron'): meters.list_neutron(),
+            _('VCPE'): meters.list_vcpe(),
+            _('SDN'): meters.list_sdn(),
+        }
+        return Response(meters._cached_meters.values())
+
+class MeterStatisticsList(APIView):
+    method_kind = "list"
+    method_name = "meterstatistics"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+        tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
+        if (not tenant_ceilometer_url):
+            raise XOSMissingField("Tenant ceilometer URL is missing")
+        tenant_map = getTenantControllerTenantMap(request.user)
+        
+        date_options = request.QUERY_PARAMS.get('period', 1)
+        date_from = request.QUERY_PARAMS.get('date_from', '')
+        date_to = request.QUERY_PARAMS.get('date_to', '')
+
+        try:
+            date_from, date_to = calc_date_args(date_from,
+                                                date_to,
+                                                date_options)
+        except Exception as e:
+           raise e 
+
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        services = {
+            _('Nova'): meters.list_nova(),
+            _('Neutron'): meters.list_neutron(),
+            _('VCPE'): meters.list_vcpe(),
+            _('SDN'): meters.list_sdn(),
+        }
+        report_rows = []
+        for service,meters in services.items():
+            for meter in meters:
+                query = make_query(tenant_id=meter["project_id"])
+                statistics = statistic_list(request, meter["name"],
+                                        ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                statistic = statistics[0]
+                row = {"name": 'none',
+                       "project": meter["project_name"],
+                       "meter": meter["name"],
+                       "description": meter["description"],
+                       "service": service,
+                       "time": statistic["period_end"],
+                       "value": statistic["avg"],
+                       "unit": meter["unit"]}
+                report_rows.append(row)
+
+        return Response(report_rows)
+
+
+class MeterSamplesList(APIView):
+    method_kind = "list"
+    method_name = "metersamples"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+        tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
+        if (not tenant_ceilometer_url):
+            raise XOSMissingField("Tenant ceilometer URL is missing")
+        meter_name = request.QUERY_PARAMS.get('meter', None)
+        tenant_id = request.QUERY_PARAMS.get('tenant', None)
+        if not meter_name:
+            raise XOSMissingField("Meter name in query params is missing")
+        query = []
+        if tenant_id:
+            query.extend(make_query(tenant_id="default_admin_tenant"))
+        query.append({"field": "meter", "op": "eq", "value": meter_name})
+        samples = sample_list(request, meter_name,
+                           ceilometer_url=tenant_ceilometer_url, query=query, limit=10) 
+        return Response(samples)
