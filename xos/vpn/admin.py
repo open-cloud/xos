@@ -66,7 +66,6 @@ class VPNTenantForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
-        self.instance.server_key = self.cleaned_data.get("server_key")
         return super(VPNTenantForm, self).save(commit=commit)
 
     class Meta:
