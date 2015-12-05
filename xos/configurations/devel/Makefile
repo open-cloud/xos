@@ -20,3 +20,9 @@ showlogs:
 
 enter:
 	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
+
+clean:
+	/proj/xos-PG0/acb/cleanup.sh
+	sudo docker stop $(docker ps -a -q)
+	sudo docker rm $(docker ps -a -q)
+	sudo docker rmi $(docker images -f "dangling=true" -q)
