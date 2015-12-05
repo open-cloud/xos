@@ -12,7 +12,7 @@ class VPNService(Service):
         app_label = "vpn"
         verbose_name = "VPN Service"
 
-class VPNTenantComplete(TenantWithContainer):
+class VPNTenant(TenantWithContainer):
 
     class Meta:
         proxy = True
