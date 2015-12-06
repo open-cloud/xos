@@ -15,7 +15,6 @@
     "tests"
   ],
   "dependencies": {
-    "Split.js": "~1.0.4",
     "angular-chart.js": "~0.8.7"
   },
   "devDependencies": {
