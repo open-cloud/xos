@@ -192,6 +192,7 @@ padding: 7px 0 0 0px;
 
 .footer{
   z-index: 1001;
+  position: fixed;
 }
 
 /* FIXME */
