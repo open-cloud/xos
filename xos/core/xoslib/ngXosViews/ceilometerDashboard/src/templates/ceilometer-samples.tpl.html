@@ -1,14 +1,13 @@
 <div class="row">
-  <div class="col-xs-12">
-    <a ui-sref="ceilometerDashboard" class="btn btn-primary">Back</a>
-    <h1>{{vm.stateParams.name}} Samples</h1>
-  </div>
-
   <div class="col-xs-12" ng-show="vm.loader">
     <div class="loader">Loading</div>
   </div>
 
   <div class="col-xs-12" ng-if="!vm.loader">
-    <div ac-chart="'line'" ac-data="vm.sampleChartData" ac-config="vm.sampleChartConfig" class="chart"></div>
+    <!-- <div ac-chart="'line'" ac-data="vm.sampleChartData" ac-config="vm.sampleChartConfig" class="chart"></div> -->
+    <canvas id="line" class="chart chart-line" chart-data="vm.chart.data"
+      chart-labels="vm.chart.labels" chart-legend="true" chart-series="vm.chart.series">
+    </canvas> 
+    <!-- <pre> {{ vm.chart | json }} </pre> -->
   </div>
 </div>
