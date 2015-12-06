@@ -903,6 +903,8 @@ class MeterStatisticsList(APIView):
                 query = make_query(tenant_id=meter["project_id"])
                 statistics = statistic_list(request, meter["name"],
                                         ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                if not statistics:
+                    continue
                 statistic = statistics[0]
                 row = {"name": 'none',
                        "project": meter["project_name"],
@@ -928,13 +930,17 @@ class MeterSamplesList(APIView):
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
         meter_name = request.QUERY_PARAMS.get('meter', None)
-        tenant_id = request.QUERY_PARAMS.get('tenant', None)
         if not meter_name:
             raise XOSMissingField("Meter name in query params is missing")
+        limit = request.QUERY_PARAMS.get('limit', 10)
+        tenant_id = request.QUERY_PARAMS.get('tenant', None)
+        resource_id = request.QUERY_PARAMS.get('resource', None)
         query = []
         if tenant_id:
-            query.extend(make_query(tenant_id="default_admin_tenant"))
+            query.extend(make_query(tenant_id=tenant_id))
+        if resource_id:
+            query.extend(make_query(resource_id=resource_id))
         query.append({"field": "meter", "op": "eq", "value": meter_name})
         samples = sample_list(request, meter_name,
-                           ceilometer_url=tenant_ceilometer_url, query=query, limit=10) 
+                           ceilometer_url=tenant_ceilometer_url, query=query, limit=limit) 
         return Response(samples)
