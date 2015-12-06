@@ -6,7 +6,8 @@ angular.module('xos.ceilometerDashboard', [
   'ngLodash',
   'ui.router',
   'xos.helpers',
-  'angularCharts'
+  // 'angularCharts',
+  'chart.js'
 ])
 .config(($stateProvider) => {
   $stateProvider
@@ -17,6 +18,16 @@ angular.module('xos.ceilometerDashboard', [
   .state('samples', {
     url: '/:name/:tenant/samples',
     template: '<ceilometer-samples></ceilometer-samples>'
+  })
+  .state('split', {
+    url: '/split',
+    controller: () => {
+      console.log('split', Split);
+      Split(['#one', '#two', '#three'], {
+        
+      });
+    },
+    templateUrl: 'templates/split.html'
   });
 })
 .config(function($httpProvider){
@@ -120,14 +131,30 @@ angular.module('xos.ceilometerDashboard', [
         return lodash.sortBy(formatted, 'timestamp');
       }
 
+      this.getLabels = (data) => {
+        return data.reduce((list, item) => {
+          let date = new Date(item.timestamp);
+          list.push(`${date.getHours()}:${(date.getMinutes()<10?'0':'') + date.getMinutes()}:${date.getSeconds()}`);
+          return list;
+        }, []);
+      };
+
+      this.getData = (data) => {
+        return data.reduce((list, item) => {
+          list.push(item.volume);
+          return list;
+        }, []);
+      }
+
       this.showSamples = () => {
         this.loader = true;
         Ceilometer.getSamples(this.name, this.tenant)
         .then(res => {
-          console.log(res.length, lodash.groupBy(res, 'timestamp'));
-          this.sampleChartData = {
-            series: [$stateParams.name],
-            data: this.formatSamplesData(res)
+          res = lodash.sortBy(res, 'timestamp');
+          this.chart = {
+            series: [this.name],
+            labels: this.getLabels(res),
+            data: [this.getData(res)]
           }
         })
         .catch(err => {
@@ -139,19 +166,6 @@ angular.module('xos.ceilometerDashboard', [
       };
 
       this.showSamples();
-
-      this.sampleChartConfig = {
-        title: false,
-        tooltips: true,
-        labels: false,
-        legend: {
-          display: false,
-          //could be 'left, right'
-          position: 'right'
-        },
-        lineLegend: 'traditional',
-        waitForHeightAndWidth: true
-      }
     }
   }
 });

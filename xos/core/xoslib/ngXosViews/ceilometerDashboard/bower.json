@@ -15,8 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular-charts": "teone/angular-charts#~0.2.7",
-    "n3-line-chart": "~1.1.12"
+    "Split.js": "~1.0.4",
+    "angular-chart.js": "~0.8.7"
   },
   "devDependencies": {
     "jquery": "~2.1.4",
