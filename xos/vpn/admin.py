@@ -46,8 +46,6 @@ class VPNTenantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        # Make the server_key disabled
-        self.fields['server_key'].widget.attrs['disabled'] = True
 
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
@@ -86,7 +84,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                                     'provider_service', 'instance', 'creator',
                                     'server_key'],
                          'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance',)
+    readonly_fields = ('backend_status_text', 'instance', 'server_key')
     form = VPNTenantForm
 
     suit_form_tabs = (('general', 'Details'),)
