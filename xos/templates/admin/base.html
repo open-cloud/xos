@@ -52,9 +52,16 @@
       
     <!-- </div> -->
     <!-- END Header -->
+    {% if not is_popup %}
     <div id="wrapper">
+    {% endif %}
+
+    {% if is_popup %}
+    <div id="wrapper-popup">
+    {% endif %}
 
       <!-- Sidebar -->
+      {% if not is_popup %}
       <div id="sidebar-wrapper">
         <a href="{% url 'admin:index' %}" class="hidden-xs">
           <img class="logo" src="{% static 'cord_logo_3.png' %}"/>
@@ -64,6 +71,7 @@
           <i class="glyphicon glyphicon-arrow-left"></i>
         </button>
       </div>
+      {% endif %}
       <!-- /#sidebar-wrapper -->
 
       <!-- Page Content -->
