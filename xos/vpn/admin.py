@@ -40,8 +40,6 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
 
 class VPNTenantForm(forms.ModelForm):
     creator = forms.ModelChoiceField(queryset=User.objects.all())
-    # They key used to connect to this server
-    server_key = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -56,7 +54,6 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['creator'].initial = self.instance.creator
             self.fields['server_key'].initial = self.instance.server_key
 
-        # If there is not an instance then we need to set initial values.
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
             self.fields['server_key'].initial = self.generate_VPN_key()
