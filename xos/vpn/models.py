@@ -46,7 +46,7 @@ class VPNTenant(TenantWithContainer):
             self.default_attributes['server_key'])
 
     @server_key.setter
-    def display_message(self, value):
+    def server_key(self, value):
         self.set_attribute("server_key", value)
 
     @property
