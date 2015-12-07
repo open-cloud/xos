@@ -4,6 +4,7 @@ from core.middleware import get_request
 from core.models import User
 from django import forms
 from django.contrib import admin
+from subprocess import Popen, PIPE
 from vpn.models import VPNService, VPNTenant, VPN_KIND
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
@@ -45,8 +46,8 @@ class VPNTenantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        # Make the server_key read only
-        self.fields['server_key'].widget.attrs['readonly'] = True
+        # Make the server_key disabled
+        self.fields['server_key'].widget.attrs['disabled'] = True
 
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
@@ -60,13 +61,19 @@ class VPNTenantForm(forms.ModelForm):
         # If there is not an instance then we need to set initial values.
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
-            self.fields['server_key'].initial = "hello world!"
+            self.fields['server_key'].initial = generate_VPN_Key()
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
+        self.instance.servery_key = self.cleaned_data.get("sever_key")
         return super(VPNTenantForm, self).save(commit=commit)
+
+    def generate_VPN_Key():
+        proc = Popen("openvpn --genkey --secret /dev/stdout", shell=True, stdout=PIPE)
+        (stdout, stderr) = proc.communicate()
+        return stdout
 
     class Meta:
         model = VPNTenant
