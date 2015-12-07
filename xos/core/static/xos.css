@@ -225,6 +225,16 @@ padding: 7px 0 0 0px;
   max-width: 100%;
 }
 
+.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app, .icon-cog {
+  background-position: left center;
+  width:22px;
+  height:22px;
+  display: inline-block;
+  margin-right: 10px;
+  position: relative;
+  top: 5px;
+}
+
 .icon-app {
 background-image: url("opencloudApp.png");
 }
@@ -246,6 +256,9 @@ background-image: url("Users.png");
 }
 .icon-reservation{
 background-image: url("Reservations.png");
+}
+.icon-cog{
+background-image: url("Services.png");
 }
 
 #sidebar-wrapper>ul>li.active>a>.icon-home ,
@@ -278,6 +291,12 @@ background-image: url("Reservations.png");
 /*#sidebar-wrapper>ul>li:hover>a>.icon-reservation,*/
 #sidebar-wrapper>ul>li.focus>a>.icon-reservation{
   background-image: url("Reservations_over.png");
+}
+
+#sidebar-wrapper>ul>li.active>a>.icon-cog,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-cog,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-cog{
+  background-image: url("Services_over.png");
 }
 /************************* END NAV *************************/
 
@@ -865,16 +884,6 @@ opacity:1;
     background-position: 0;*/
 }
 
-.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
-  background-position: left center;
-  width:22px;
-  height:22px;
-  display: inline-block;
-  margin-right: 10px;
-  position: relative;
-  top: 5px;
-}
-
 #dashboardHPC {
     padding-bottom: 10px;
 }
@@ -1287,3 +1296,14 @@ font-size: medium;
 #request-site-name{
 	width: 98%;
 }
+
+
+/* VCPe ADMIN FIX */
+/*form#vcpeservice_form ul li {
+    display: inline-block;
+    background: red;
+    margin-top: 10px;
+    width: auto;
+    padding: 10px;
+    border-radius: 5px;
+}*/
