@@ -61,7 +61,7 @@ class VPNTenantForm(forms.ModelForm):
         # If there is not an instance then we need to set initial values.
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
-            self.fields['server_key'].initial = generate_VPN_Key()
+            self.fields['server_key'].initial = self.generate_VPN_key()
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[0]
 
@@ -70,7 +70,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_key = self.cleaned_data.get("sever_key")
         return super(VPNTenantForm, self).save(commit=commit)
 
-    def generate_VPN_Key():
+    def generate_VPN_key(self):
         proc = Popen("openvpn --genkey --secret /dev/stdout", shell=True, stdout=PIPE)
         (stdout, stderr) = proc.communicate()
         return stdout
