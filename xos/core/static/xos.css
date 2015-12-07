@@ -530,14 +530,41 @@ font-size: 0;
 line-height: 0;
 }
 
-.nav-tabs-suit li.active a:hover,.nav-tabs-suit li a:hover{
-/*background-color: #448CCA;*/
-background-color: #515151;
-font-weight:normal;
-/*font-size: 1.2em;*/
-/*color:#ffffff;*/
-padding-top:10px;
-text-decoration:none;
+.nav-tabs-suit li.active a:hover,
+.nav-tabs-suit li a:hover{
+  background-color: #105E9E;
+  /*background-color: #515151;*/
+  font-weight:normal;
+  /*font-size: 1.2em;*/
+  color:#ffffff;
+  /*padding-top:10px;
+  text-decoration:none;*/
+}
+
+.nav-tabs>.active>a{
+  border: none;
+}
+
+.nav-tabs-suit li a{
+  font-weight: normal;
+}
+
+.nav-tabs-suit li a:hover{
+  border: none;
+  color: #ffffff;
+  padding-top:10px;
+  border: 1px solid;
+  /*letter-spacing: 1px;*/
+  text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
+}
+
+.nav-tabs-suit li.active a:hover{
+  /*border: none;*/
+}
+
+.nav-tabs-suit > li.active > a:focus {
+  background-color: #105E9E;
+  font-weight: normal;
 }
 
 .breadcrumb li a {
@@ -685,25 +712,6 @@ text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
 -moz-box-shadow: none;
 box-shadow: none;
 */
-}
-
-.nav-tabs>.active>a{
-border: none;
-}
-
-.nav-tabs-suit li a{
-  font-weight: normal;
-}
-
-.nav-tabs-suit li a:hover{
-border: none;
-color: #ffffff;
-/*letter-spacing: 1px;*/
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-}
-
-.nav-tabs-suit li.active a:hover{
-border: none;
 }
 
 /*.nav-tabs-suit li.active {*/
