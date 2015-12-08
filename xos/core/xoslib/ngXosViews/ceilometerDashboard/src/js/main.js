@@ -42,13 +42,19 @@ angular.module('xos.ceilometerDashboard', [
   })
 })
 .service('Ceilometer', function($http, $q){
+
+  this.sliceDetails = {};
+
+  this.formatSliceDetails = (meters) => {
+    
+  };
+
   this.getMeters = () => {
     let deferred = $q.defer();
 
     // $http.get('/xoslib/meters/', {cache: true})
     $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
-      console.log(res.data);
       deferred.resolve(res.data)
     })
     .catch((e) => {
@@ -145,6 +151,16 @@ angular.module('xos.ceilometerDashboard', [
     templateUrl: 'templates/ceilometer-samples.tpl.html',
     controller: function(Ceilometer) {
 
+      Chart.defaults.global.colours = [
+        '#286090',
+        '#F7464A',
+        '#46BFBD',
+        '#FDB45C',
+        '#97BBCD',
+        '#4D5360',
+        '#8c4f9f'
+      ];
+      
       this.chartType = 'line';
 
       if($stateParams.name && $stateParams.tenant){
@@ -197,7 +213,9 @@ angular.module('xos.ceilometerDashboard', [
         // Ceilometer.getSamples(this.name, this.tenant) //fetch one
         Ceilometer.getSamples(this.name) //fetch all
         .then(res => {
-          this.samplesList = lodash.groupBy(res, 'project_id');
+          console.log(res);
+          this.samplesList = lodash.groupBy(res, 'resource_id');
+          console.log(this.samplesList);
           res = lodash.sortBy(this.samplesList[this.tenant], 'timestamp');
           this.chart = {
             series: [this.tenant],

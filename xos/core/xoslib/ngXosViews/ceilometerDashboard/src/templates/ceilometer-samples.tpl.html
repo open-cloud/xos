@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row" ng-if="!vm.loader">
   <form class="form-inline col-xs-8" ng-submit="vm.addMeterToChart(vm.addMeterValue)">
     <select ng-model="vm.addMeterValue" class="form-control" ng-options="project as project for (project, meter) in vm.samplesList"></select>
     <button class="btn btn-success"> 
@@ -30,7 +30,7 @@
   </div>
 
   <div class="col-xs-12" ng-if="!vm.loader">
-    <canvas ng-if="vm.chartType === 'line'" id="line" class="chart chart-line" chart-data="vm.chart.data"
+    <canvas ng-if="vm.chartType === 'line'" id="line" class="chart chart-line" chart-data="vm.chart.data" chart-options="{datasetFill: false}"
       chart-labels="vm.chart.labels" chart-legend="true" chart-series="vm.chart.series">
     </canvas>
     <canvas ng-if="vm.chartType === 'bar'" id="bar" class="chart chart-bar" chart-data="vm.chart.data"
