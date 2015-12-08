@@ -1,0 +1,30 @@
+# This shouldn't be hardcoded
+DEVSTACK_ROOT:=~/devstack
+
+all: prereqs admin-openrc nodes_yaml public_key private_key ceilometer_url node_key
+
+prereqs:
+	make -f Makefile.prereqs
+
+admin-openrc:
+	bash ./devstack-creds.sh $(DEVSTACK_ROOT) > admin-openrc.sh
+	touch controller_settings
+
+nodes_yaml:
+	bash ./make-cloudlab-nodes-yaml.sh
+
+ceilometer_url:
+	echo http://`hostname -i`/xosmetering/ > ceilometer_url
+
+public_key: ~/.ssh/id_rsa.pub
+	cp ~/.ssh/id_rsa.pub .
+
+private_key: ~/.ssh/id_rsa
+	cp ~/.ssh/id_rsa .
+
+~/.ssh/id_rsa.pub:
+	cat /dev/zero | ssh-keygen -q -N ""
+
+node_key:
+	sudo cat ~/.ssh/id_rsa > node_key
+	sudo cat ~/.ssh/id_rsa.pub > node_key.pub
