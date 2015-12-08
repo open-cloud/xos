@@ -40,11 +40,12 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
 
 class VPNTenantForm(forms.ModelForm):
     creator = forms.ModelChoiceField(queryset=User.objects.all())
+    server_key = forms.CharField(required=False, widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-
+        self.fields['server_key'].widget.attrs['readonly'] = True
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
 
@@ -81,7 +82,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
                                     'provider_service', 'instance', 'creator',
                                     'server_key'],
                          'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance', 'server_key')
+    readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
 
     suit_form_tabs = (('general', 'Details'),)
