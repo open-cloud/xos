@@ -307,6 +307,10 @@ font-size: 12px;
 border: 0px;
 }
 
+.ui-tabs .ui-tabs-nav {
+  padding: 0 !important;
+}
+
 .ui-tabs-active {
     color: #ffffff;
     background-color: #105E9E;
@@ -553,9 +557,9 @@ line-height: 0;
   border: none;
   color: #ffffff;
   padding-top:10px;
-  border: 1px solid;
+  /*border: 1px solid;*/
   /*letter-spacing: 1px;*/
-  text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
+  /*text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;*/
 }
 
 .nav-tabs-suit li.active a:hover{
@@ -1336,6 +1340,19 @@ font-size: medium;
   user-select: none;
 }
 
+/* MODAL */
+.ui-dialog{
+  z-index: 4000 !important;
+}
+
+button.ui-dialog-titlebar-close{
+  font-family: 'Glyphicons Halflings' !important;
+  display: inline-block;
+}
+
+button.ui-dialog-titlebar-close:after {
+    content: "\e014";
+}
 /* VCPe ADMIN FIX */
 /*form#vcpeservice_form ul li {
     display: inline-block;
