@@ -9,9 +9,9 @@
     apt: name=openvpn state=present update_cache=yes
 
   - name: write key
-    shell:
-       |
-       printf "{{ server_key }}"  > "/opt/xos/observers/vpn/static.key"
+    shell: printf "" > "static.key"
+    shell: printf "{{ item }}" >> "static.key"
+    with_items: "{{ server_key }}"
 
   - name: write config
     shell: printf "dev tun\nifconfig 10.8.0.1 10.8.0.2\nsecret /opt/xos/observers/vpn/static.key\nkeepalive 10 60\nping-timer-rem\npersist-tun\npersist-key" > "/opt/xos/observers/vpn/server.conf"
