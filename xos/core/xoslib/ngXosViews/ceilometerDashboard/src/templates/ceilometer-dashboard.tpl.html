@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <h1>Ceilometer Dashboard</h1>
+    <h1>XOS Monitoring Statistics</h1>
   </div>
 </div>
 
@@ -10,52 +10,44 @@
   </div>
 </div>
 
-<section ng-hide="vm.loader">
+<section ng-hide="vm.loader" ng-class="{animate: !vm.loader}">
   <div class="row">
-    <div class="col-xs-12">
-      <h2>Projects</h2>
-    </div>
-  </div>
-  <div class="well" ng-repeat="(project, resources) in vm.projects">
-    <div class="row">
-      <div class="col-xs-11">
-        <h3>{{project}}</h3>
-      </div>
-      <div class="col-xs-1">
-        <a ng-click="expandProject = !expandProject" class="btn btn-primary">
-          <i class="glyphicon glyphicon-plus"></i>
+    <div class="col-sm-4">
+      <div class="list-group">
+        <div class="list-group-item">
+          <h2>Service Name</h2>
+        </div>
+        <a href="#" ng-click="vm.selectResources(resources, slice)" class="list-group-item" ng-repeat="(slice, resources) in vm.projects" ng-class="{active: slice === vm.selectedSlice}">
+          {{slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
         </a>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="panel panel-default" ng-show="expandProject">
-        <div class="panel-heading">
-          <h4>Resources</h4>
+    <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedResources">
+      <div class="list-group">
+        <div class="list-group-item">
+          <h2>Resources</h2>
         </div>
-        <div class="panel-body" ng-repeat="(resource, meters) in resources">
+        <a href="#" ng-click="vm.selectMeters(meters, resource)" class="list-group-item" ng-repeat="(resource, meters) in vm.selectedResources" ng-class="{active: resource === vm.selectedResource}">
+          {{resource}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedMeters">
+      <div class="list-group">
+        <div class="list-group-item">
+          <h2>Meters</h2>
+        </div>
+        <div class="list-group-item">
           <div class="row">
-            <div class="col-xs-11">
-              <b>{{resource}}</b>
+            <div class="col-xs-4">
+              <label>Name:</label>
             </div>
-            <div class="col-xs-1">
-              <a ng-click="expandResource = !expandResource" class="btn btn-primary">
-                <i class="glyphicon glyphicon-plus"></i>
-              </a>
+            <div class="col-xs-4">
+              <label>Unit:</label>
             </div>
+            <div class="col-xs-4"></div>
           </div>
-          <div class="row" ng-show="expandResource">
-            <div class="col-xs-4">
-              <b>Meter:</b>
-            </div>
-            <div class="col-xs-4">
-              <b>Unit:</b>
-            </div>
-            <div class="col-xs-4">
-              <b>Actions:</b>
-            </div>
-          </div>
-          <div class="row" ng-repeat="meter in meters" ng-show="expandResource">
+          <div class="row" ng-click="vm.selectMeters(meters)" ng-repeat="meter in vm.selectedMeters" style="margin-bottom: 10px;">
             <div class="col-xs-4">
               {{meter.name}}
             </div>
@@ -63,21 +55,13 @@
               {{meter.unit}}
             </div>
             <div class="col-xs-4">
-              <!-- <a ng-click="showMeter = !showMeter" class="btn btn-primary">
-                <i class="glyphicon glyphicon-search"></i> Details
-              </a> -->
-              <a ng-click="showChart = !showChart" class="btn btn-primary">
-                <i class="glyphicon glyphicon-search"></i> View chart
+              <a ui-sref="samples({name: meter.name, tenant: meter.project_id})" class="btn btn-primary">
+                <i class="glyphicon glyphicon-search"></i>
               </a>
-            </div>
-            <!--   -->
-            <div class="col-xs-12" ng-show="showChart">
-              <ceilometer-samples name="meter.name" tenant="meter.project_id" ng-if="showChart"></ceilometer-samples>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </section>

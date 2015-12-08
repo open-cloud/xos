@@ -84,40 +84,129 @@
     }
   }
 
-  /* Split.js */
+  /* VIEW ANIMATION */
 
-  html, body {
-    height: 100%;
-  }
-
-  body {
-    box-sizing: border-box;
-  }
-
-  .split {
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-  .gutter {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: 50%;
-  }
-  .gutter.gutter-horizontal {
-    cursor: col-resize;
-    background-image: url('grips/vertical.png');
-  }
-  .gutter.gutter-vertical {
-    cursor: row-resize;
-    background-image: url('grips/horizontal.png');
-  }
-  .split.split-horizontal, .gutter.gutter-horizontal {
-    height: 100%;
-    float: left;
+  [ui-view] {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
   }
 
+  /* FROM DASHBOARD TO DETAIL */
+
+  /* dash out */
+  [ui-view].ceilometerDashboard.ng-leave {
+    animation:1s bounceOutLeft ease; 
+  }
+  /* samples in */
+  [ui-view].samples.ng-enter {
+    animation:1s bounceInRight ease;
+  }
+
+  /* FROM DETAIL TO DASHBOARD */
+
+  /* samples out */
+  [ui-view].samples.ng-leave {
+    animation:1s bounceOutRight ease; 
+  }
+  /* dash in */
+  [ui-view].ceilometerDashboard.ng-enter {
+    animation:1s bounceInLeft ease;
+  }
+
+  /* COLUMS ANIMATION */
+
+  /* when showing the thing */
+  .animate .animate-slide-left.ng-hide-remove { 
+    animation:0.5s bounceInRight ease; 
+  }
+
+  /* when hiding the picture */
+  .animate .animate-slide-left.ng-hide-add {
+    animation:0.5s bounceOutRight ease;
+  }
+  
+  /* ANIMATIONS */
+
+  @keyframes bounceInRight {
+    from, 60%, 75%, 90%, to {
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    from {
+      opacity: 0;
+      transform: translate3d(3000px, 0, 0);
+    }
+
+    60% {
+      opacity: 1;
+      transform: translate3d(-25px, 0, 0);
+    }
+
+    75% {
+      transform: translate3d(10px, 0, 0);
+    }
+
+    90% {
+      transform: translate3d(-5px, 0, 0);
+    }
+
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes bounceInLeft {
+    from, 60%, 75%, 90%, to {
+      animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    0% {
+      opacity: 0;
+      transform: translate3d(-3000px, 0, 0);
+    }
+
+    60% {
+      opacity: 1;
+      transform: translate3d(25px, 0, 0);
+    }
+
+    75% {
+      transform: translate3d(-10px, 0, 0);
+    }
+
+    90% {
+      transform: translate3d(5px, 0, 0);
+    }
+
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes bounceOutRight {
+    20% {
+      opacity: 1;
+      transform: translate3d(-20px, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(2000px, 0, 0);
+    }
+  }
+
+  @keyframes bounceOutLeft {
+    20% {
+      opacity: 1;
+      transform: translate3d(20px, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(-2000px, 0, 0);
+    }
+  }
 
 /*}
