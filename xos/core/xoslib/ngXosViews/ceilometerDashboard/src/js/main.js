@@ -37,7 +37,7 @@ angular.module('xos.ceilometerDashboard', [
   this.getMeters = () => {
     let deferred = $q.defer();
 
-    $http.get('xoslib/meters/', {cache: true})
+    $http.get('/xoslib/meters/', {cache: true})
     .then((res) => {
       deferred.resolve(res.data)
     })
@@ -51,7 +51,7 @@ angular.module('xos.ceilometerDashboard', [
   this.getSamples = (name, tenant) => {
     let deferred = $q.defer();
 
-    $http.get(`xoslib/metersamples/`, {params: {meter: name, tenant: tenant}})
+    $http.get(`/xoslib/metersamples/`, {params: {meter: name, tenant: tenant}})
     .then((res) => {
       deferred.resolve(res.data)
     })
