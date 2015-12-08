@@ -11,7 +11,7 @@
   - name: write key
     shell:
        |
-       printf "{{ servery_key }}"  > "/opt/xos/observers/vpn/static.key"
+       printf "{{ server_key }}"  > "/opt/xos/observers/vpn/static.key"
 
   - name: write config
     shell: printf "dev tun\nifconfig 10.8.0.1 10.8.0.2\nsecret /opt/xos/observers/vpn/static.key\nkeepalive 10 60\nping-timer-rem\npersist-tun\npersist-key" > "/opt/xos/observers/vpn/server.conf"
