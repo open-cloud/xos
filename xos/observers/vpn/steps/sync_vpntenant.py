@@ -27,4 +27,4 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         return objs
 
     def get_extra_attributes(self, o):
-        return {"server_key": o.server_key}
+        return {"server_key": o.server_key.splitlines()}
