@@ -83,6 +83,13 @@ class Service(PlCoreBase, AttributeMixin):
             service_ids = [sp.slice.id for sp in ServicePrivilege.objects.filter(user=user)]
             return cls.objects.filter(id__in=service_ids)
 
+    @property
+    def serviceattribute_dict(self):
+        attrs = {}
+        for attr in self.serviceattributes.all():
+            attrs[attr.name] = attr.value
+        return attrs
+
     def __unicode__(self): return u'%s' % (self.name)
 
     def can_update(self, user):
@@ -162,7 +169,7 @@ class Service(PlCoreBase, AttributeMixin):
                 # print "add instance", s
 
 class ServiceAttribute(PlCoreBase):
-    name = models.SlugField(help_text="Attribute Name", max_length=128)
+    name = models.CharField(help_text="Attribute Name", max_length=128)
     value = StrippedCharField(help_text="Attribute Value", max_length=1024)
     service = models.ForeignKey(Service, related_name='serviceattributes', help_text="The Service this attribute is associated with")
 
@@ -310,6 +317,13 @@ class Tenant(PlCoreBase, AttributeMixin):
     def get_deleted_tenant_objects(cls):
         return cls.deleted_objects.filter(kind = cls.KIND)
 
+    @property
+    def tenantattribute_dict(self):
+        attrs = {}
+        for attr in self.tenantattributes.all():
+            attrs[attr.name] = attr.value
+        return attrs
+
     # helper function to be used in subclasses that want to ensure service_specific_id is unique
     def validate_unique_service_specific_id(self):
         if self.pk is None:
@@ -361,6 +375,7 @@ class LeastLoadedNodeScheduler(Scheduler):
     def pick(self):
         from core.models import Node
         nodes = list(Node.objects.all())
+
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
         nodes = sorted(nodes, key=lambda node: node.instances.all().count())
