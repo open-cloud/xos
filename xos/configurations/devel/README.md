@@ -20,7 +20,7 @@ disable security groups.
 ```
 ctl:~$ git clone https://github.com/open-cloud/xos.git
 ctl:~$ cd xos/xos/configurations/devel/
-ctl:~/xos/xos/configurations/cord$ make cloudlab
+ctl:~/xos/xos/configurations/devel$ make cloudlab
 ```
 
 ### DevStack
@@ -35,7 +35,7 @@ with 2 CPUs and 4096 GB RAM.
 ~/devstack$ cp ../xos/xos/configurations/devstack/local.conf .
 ~/devstack$ ./stack.sh
 ~/devstack$ cd ../xos/xos/configurations/devel/
-~/xos/xos/configurations/cord$ make devstack
+~/xos/xos/configurations/devel$ make devstack
 ```
 
 Note that there are some issues with the networking setup in this configuration;
