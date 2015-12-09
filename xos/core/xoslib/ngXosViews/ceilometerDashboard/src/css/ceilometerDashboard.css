@@ -19,7 +19,11 @@
     height: 300px;
   }
 
-  /* Loader */
+  .btn-chart, .btn-chart:hover {
+    color: #fff;
+  }
+
+  /* LOADER */
   .loader {
     font-size: 10px;
     margin: 50px auto;

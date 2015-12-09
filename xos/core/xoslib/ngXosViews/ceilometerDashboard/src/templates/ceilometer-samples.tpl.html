@@ -10,10 +10,9 @@
     </a>
   </div>
 </div>
-
 <div class="row" ng-if="!vm.loader">
   <form class="form-inline col-xs-8" ng-submit="vm.addMeterToChart(vm.addMeterValue)">
-    <select ng-model="vm.addMeterValue" class="form-control" ng-options="project as project for (project, meter) in vm.samplesList"></select>
+    <select ng-model="vm.addMeterValue" class="form-control" ng-options="resource.id as resource.id for resource in vm.sampleLabels"></select>
     <button class="btn btn-success"> 
       <i class="glyphicon glyphicon-plus"></i> Add
     </button>
@@ -31,10 +30,12 @@
 
   <div class="col-xs-12" ng-if="!vm.loader">
     <canvas ng-if="vm.chartType === 'line'" id="line" class="chart chart-line" chart-data="vm.chart.data" chart-options="{datasetFill: false}"
-      chart-labels="vm.chart.labels" chart-legend="true" chart-series="vm.chart.series">
+      chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
     </canvas>
     <canvas ng-if="vm.chartType === 'bar'" id="bar" class="chart chart-bar" chart-data="vm.chart.data"
-      chart-labels="vm.chart.labels" chart-legend="true" chart-series="vm.chart.series">
-    </canvas> 
+      chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
+    </canvas>
+    <!-- <pre>{{vm.chartMeters | json}}</pre> -->
+    <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">{{meter}}</a>
   </div>
 </div>
