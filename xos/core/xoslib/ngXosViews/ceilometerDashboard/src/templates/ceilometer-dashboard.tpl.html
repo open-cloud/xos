@@ -14,12 +14,18 @@
   <div class="row">
     <div class="col-sm-4">
       <div class="list-group">
-        <div class="list-group-item">
-          <h2>Service Name</h2>
+        <div ng-repeat="(service, slices) in vm.projects">
+          <div class="list-group-item">
+            <h2 ng-click="vm.selectService(service)">{{service}}</h2>
+          </div>
+          <a ng-hide="vm.selectedService !== service" 
+            ng-repeat="(slice, resources) in slices" 
+            ng-class="{active: slice === vm.selectedSlice}"
+            ng-click="vm.selectResources(resources, slice)"
+            href="#" class="list-group-item" >
+            {{slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
+          </a>
         </div>
-        <a href="#" ng-click="vm.selectResources(resources, slice)" class="list-group-item" ng-repeat="(slice, resources) in vm.projects" ng-class="{active: slice === vm.selectedSlice}">
-          {{slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
-        </a>
       </div>
     </div>
     <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedResources">
@@ -27,7 +33,11 @@
         <div class="list-group-item">
           <h2>Resources</h2>
         </div>
-        <a href="#" ng-click="vm.selectMeters(meters, resource)" class="list-group-item" ng-repeat="(resource, meters) in vm.selectedResources" ng-class="{active: resource === vm.selectedResource}">
+        <a href="#" 
+          ng-click="vm.selectMeters(meters, resource)" 
+          class="list-group-item" 
+          ng-repeat="(resource, meters) in vm.selectedResources" 
+          ng-class="{active: resource === vm.selectedResource}">
           {{resource}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
         </a>
       </div>
