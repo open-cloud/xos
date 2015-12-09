@@ -11,7 +11,8 @@ admin-openrc:
 	touch controller_settings
 
 flat_name:
-	echo private > flat_net_name
+	echo private|tr -d '\n' > flat_net_name
+	bash -c "source admin-openrc.sh; openstack network set --share private"
 
 nodes_yaml:
 	bash ./make-cloudlab-nodes-yaml.sh
