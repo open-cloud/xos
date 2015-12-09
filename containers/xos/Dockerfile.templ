@@ -47,7 +47,7 @@ RUN pip install -U \
     django-geoposition \
     django-ipware \
     django_rest_swagger \
-    django-suit \
+    django-suit==0.3a1 \
     django-timezones \
     djangorestframework==2.4.4 \
     dnslib \
