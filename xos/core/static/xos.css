@@ -1,4 +1,4 @@
-************************
+/************************
 colors:
     tab - active/focus color
     background-color: #105E9E !important;
@@ -12,8 +12,8 @@ ONLab darker blue select :: background-color: #004775;
 
 *************************/
 
-html, body {
-  /*height: 100%;*/
+html, body, body.login {
+  height: 100%;
   min-height: 100%;
   margin: 0;
 }
