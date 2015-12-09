@@ -13,7 +13,7 @@ default_config = \
 """
 
 XOS_DIR = "/opt/xos"
-DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_configuration")
+DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_configuration/")
 
 # warning for now, remove once we're sure everyone has made the change
 if (os.path.exists("/opt/planetstack/plstackapi_config") and (not os.path.exists(DEFAULT_CONFIG_FN))):
@@ -40,7 +40,7 @@ class Config:
 		self.config_path = os.path.dirname(config_file)
 		self.config = ConfigParser.ConfigParser()
 		self.filename = config_file
-		if not os.path.isfile(self.filename):
+		if not os.path.isfile(self.filename) and not os.path.isdir(self.filename):
 			self.create(self.filename)
 		self.load(self.filename)
 
@@ -72,6 +72,9 @@ DO NOT EDIT. This file was automatically generated at
 	def create(self, filename):
 		if not os.path.exists(os.path.dirname(filename)):
 			os.makedirs(os.path.dirname(filename))
+		print('default_config')
+		print(default_config)
+		print(' end default_config')
 		configfile = open(filename, 'w')
 		configfile.write(default_config)
 		configfile.close()
@@ -81,9 +84,12 @@ DO NOT EDIT. This file was automatically generated at
 		if filename:
 			try:
 				if os.path.isdir(filename):
+					print('isDir!!!!!!!!!!!')
 					self.config.read(os.listdir(filename))
 				else:
+					print('isFile!!!!!!!!!!!')
 					self.config.read(filename)
+				print(self.config.sections())
 			except ConfigParser.MissingSectionHeaderError:
 				if filename.endswith('.xml'):
 					self.load_xml(filename)
