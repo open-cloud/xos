@@ -28,6 +28,16 @@ ctl:~/xos/xos/configurations/devel$ make cloudlab
 The following instructions can be used to install DevStack and XOS together
 on a single node.  This setup has been run successfully in a VirtualBox VM
 with 2 CPUs and 4096 GB RAM.
+
+First, if you happen to be installing DevStack on a CloudLab node, you can
+configure about 1TB of unallocated disk space for DevStack as follows:
+```
+~$ sudo mkdir -p /opt/stack
+~$ sudo /usr/testbed/bin/mkextrafs /opt/stack
+```
+
+To install DevStack and XOS:
+
 ```
 ~$ git clone https://github.com/open-cloud/xos.git
 ~$ git clone https://git.openstack.org/openstack-dev/devstack
