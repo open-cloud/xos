@@ -27,6 +27,15 @@ body{
   min-height: 100%;
 }*/
 
+/* ************************* LOGIN PAGE ************************* */
+
+body.login img.logo{
+   width: 250px;
+   display: block;
+   margin: 20px auto;
+   padding-top: 20px;
+}
+
 /* ************************* SIDENAV TOGGLE ************************* */
 
 #wrapper {
