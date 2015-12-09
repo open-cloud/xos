@@ -1,4 +1,4 @@
 [gui]
 branding_name=CORD
-branding_css=/static/cord.css
+#branding_css=/static/cord.css
 branding_icon=/static/onos-logo.png
