@@ -168,16 +168,38 @@ class Service(PlCoreBase, AttributeMixin):
 
                 # print "add instance", s
 
-    def get_vtn_dependencies(self):
-        provider_net_ids = []
+    def get_vtn_nets(self):
+        nets=[]
+        for slice in self.slices.all():
+            for ns in slice.networkslices.all():
+                if not ns.network:
+                    continue
+                for cn in ns.network.controllernetworks.all():
+                    if cn.net_id:
+                        net = {"name": ns.network.name, "net_id": cn.net_id}
+                        nets.append(net)
+        return nets
+
+    def get_vtn_dependencies_nets(self):
+        provider_nets = []
         for tenant in self.subscribed_tenants.all():
             if tenant.provider_service:
-                for slice in tenant.provider_service.slices.all():
-                    for ns in slice.networkslices.all():
-                        if ns.network:
-                            if not (ns.network.id) in provider_net_ids:
-                                provider_net_ids.append(ns.network_id)
-        return provider_net_ids
+                for net in tenant.provider_service.get_vtn_nets():
+                    if not net in provider_nets:
+                        provider_nets.append(net)
+        return provider_nets
+
+    def get_vtn_dependencies_ids(self):
+        return [x["net_id"] for x in self.get_vtn_dependencies_nets()]
+
+    def get_vtn_dependencies_names(self):
+        return [x["name"]+"_"+x["net_id"] for x in self.get_vtn_dependencies_nets()]
+
+    def get_vtn_ids(self):
+        return [x["net_id"] for x in self.get_vtn_nets()]
+
+    def get_vtn_names(self):
+        return [x["name"]+"_"+x["net_id"] for x in self.get_vtn_nets()]
 
 
 class ServiceAttribute(PlCoreBase):
