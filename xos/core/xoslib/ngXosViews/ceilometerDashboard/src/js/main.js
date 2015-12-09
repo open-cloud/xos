@@ -92,9 +92,15 @@ angular.module('xos.ceilometerDashboard', [
 
         Ceilometer.getMeters()
         .then(meters => {
-          this.projects = lodash.groupBy(meters, 'project_name');
+          //group project by service
+          this.projects = lodash.groupBy(meters, 'service');
           lodash.forEach(Object.keys(this.projects), (project) => {
-            this.projects[project] = lodash.groupBy(this.projects[project], 'resource_id');
+            // inside each service group by slice
+            this.projects[project] = lodash.groupBy(this.projects[project], 'slice');
+            lodash.forEach(Object.keys(this.projects[project]), (slice) => {
+              // inside each service => slice group by resource
+              this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_id');
+            });
           });
         })
         .catch(err => {
@@ -106,6 +112,19 @@ angular.module('xos.ceilometerDashboard', [
       }
 
       this.loadMeters();
+
+      /**
+      * Select the current service
+      */
+     
+      this.selectService = (service) => {
+        //cleaning
+        this.selectedResources = null;
+        this.selectedResource = null;
+        this.selectedMeters = null;
+        
+        this.selectedService = service;
+      };
 
       /**
       * Select Resources for a slice
@@ -266,6 +285,7 @@ angular.module('xos.ceilometerDashboard', [
 
         })
         .catch(err => {
+          this.error = err.data.detail;
           console.warn(err);
         })
         .finally(() => {
