@@ -1,5 +1,5 @@
 xos_db:
-    image: xosproject/xos-postgress
+    image: xosproject/xos-postgres
     expose:
         - "5432"
 

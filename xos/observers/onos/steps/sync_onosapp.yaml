@@ -45,18 +45,6 @@
         {% endfor %}
 {% endif %}
 
-{% if rest_configs %}
-  - name: Add ONOS configuration values
-    uri:
-      url: http://localhost:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
-      body: "{{ '{{' }} item.body {{ '}}' }}"
-      body_format: raw
-      method: POST
-      user: karaf
-      password: karaf
-    with_items: "rest_configs"
-{% endif %}
-
   # Don't know how to check for this condition, just wait
   - name: Wait for ONOS to install the apps
     wait_for: timeout=15
@@ -71,3 +59,17 @@
         {% for dependency in dependencies %}
         - {{ dependency }}
         {% endfor %}
+
+{% if rest_configs %}
+# Do this after services have been activated, or it will cause an exception.
+# vOLT will re-read its net config; vbng may not.
+  - name: Add ONOS configuration values
+    uri:
+      url: http://localhost:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      body: "{{ '{{' }} item.body {{ '}}' }}"
+      body_format: raw
+      method: POST
+      user: karaf
+      password: karaf
+    with_items: "rest_configs"
+{% endif %}

@@ -102,6 +102,10 @@ node_types:
                 type: string
                 required: false
                 description: Version number of Service.
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+
 
     tosca.nodes.ONOSApp:
         derived_from: tosca.nodes.Root
