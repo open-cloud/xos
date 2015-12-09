@@ -11,7 +11,7 @@ from django.forms import widgets
 from django.conf.urls import patterns, url
 from cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
 from core.xoslib.objects.cordsubscriber import CordSubscriber
-from plus import PlusSerializerMixin
+from plus import PlusSerializerMixin, XOSViewSet
 from django.shortcuts import get_object_or_404
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 from xos.exceptions import *
@@ -157,30 +157,6 @@ class CordUserDetail(APIView):
         user = subscriber.update_user(parts[1], **kwargs)
         subscriber.save()
         return Response(serialize_user(subscriber,user))
-
-# this may be moved into plus.py...
-
-class XOSViewSet(viewsets.ModelViewSet):
-    @classmethod
-    def detail_url(self, pattern, viewdict, name):
-        return url(r'^' + self.method_name + r'/(?P<pk>[a-zA-Z0-9\-]+)/' + pattern,
-                   self.as_view(viewdict),
-                   name=self.base_name+"_"+name)
-
-    @classmethod
-    def list_url(self, pattern, viewdict, name):
-        return url(r'^' + self.method_name + r'/' + pattern,
-                   self.as_view(viewdict),
-                   name=self.base_name+"_"+name)
-
-    @classmethod
-    def get_urlpatterns(self):
-        patterns = []
-
-        patterns.append(url(r'^' + self.method_name + '/$', self.as_view({'get': 'list'}), name=self.base_name+'_list'))
-        patterns.append(url(r'^' + self.method_name + '/(?P<pk>[a-zA-Z0-9\-]+)/$', self.as_view({'get': 'retrieve', 'put': 'update', 'post': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name=self.base_name+'_detail'))
-
-        return patterns
 
 #------------------------------------------------------------------------------
 # The "new" API with many more REST endpoints.

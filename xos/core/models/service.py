@@ -168,6 +168,18 @@ class Service(PlCoreBase, AttributeMixin):
 
                 # print "add instance", s
 
+    def get_vtn_dependencies(self):
+        provider_net_ids = []
+        for tenant in self.subscribed_tenants.all():
+            if tenant.provider_service:
+                for slice in tenant.provider_service.slices.all():
+                    for ns in slice.networkslices.all():
+                        if ns.network:
+                            if not (ns.network.id) in provider_net_ids:
+                                provider_net_ids.append(ns.network_id)
+        return provider_net_ids
+
+
 class ServiceAttribute(PlCoreBase):
     name = models.CharField(help_text="Attribute Name", max_length=128)
     value = StrippedCharField(help_text="Attribute Value", max_length=1024)
