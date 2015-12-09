@@ -1,7 +1,7 @@
 # This shouldn't be hardcoded
 DEVSTACK_ROOT:=~/devstack
 
-all: prereqs admin-openrc nodes_yaml public_key private_key ceilometer_url node_key
+all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key
 
 prereqs:
 	make -f Makefile.prereqs
@@ -9,6 +9,10 @@ prereqs:
 admin-openrc:
 	bash ./devstack-creds.sh $(DEVSTACK_ROOT) > admin-openrc.sh
 	touch controller_settings
+
+flat_name:
+	echo private|tr -d '\n' > flat_net_name
+	bash -c "source admin-openrc.sh; openstack network set --share private"
 
 nodes_yaml:
 	bash ./make-cloudlab-nodes-yaml.sh
