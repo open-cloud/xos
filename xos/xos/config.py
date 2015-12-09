@@ -13,7 +13,7 @@ default_config = \
 """
 
 XOS_DIR = "/opt/xos"
-DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_configuration/")
+DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos/xos_configuration/")
 
 # warning for now, remove once we're sure everyone has made the change
 if (os.path.exists("/opt/planetstack/plstackapi_config") and (not os.path.exists(DEFAULT_CONFIG_FN))):
@@ -72,9 +72,6 @@ DO NOT EDIT. This file was automatically generated at
 	def create(self, filename):
 		if not os.path.exists(os.path.dirname(filename)):
 			os.makedirs(os.path.dirname(filename))
-		print('default_config')
-		print(default_config)
-		print(' end default_config')
 		configfile = open(filename, 'w')
 		configfile.write(default_config)
 		configfile.close()
@@ -84,12 +81,11 @@ DO NOT EDIT. This file was automatically generated at
 		if filename:
 			try:
 				if os.path.isdir(filename):
-					print('isDir!!!!!!!!!!!')
-					self.config.read(os.listdir(filename))
+					config_list = list(reversed(os.listdir(filename)))
+					config_list = [DEFAULT_CONFIG_FN + s for s in config_list]
+					self.config.read(config_list)
 				else:
-					print('isFile!!!!!!!!!!!')
 					self.config.read(filename)
-				print(self.config.sections())
 			except ConfigParser.MissingSectionHeaderError:
 				if filename.endswith('.xml'):
 					self.load_xml(filename)
