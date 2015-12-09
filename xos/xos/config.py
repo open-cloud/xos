@@ -80,10 +80,10 @@ DO NOT EDIT. This file was automatically generated at
 	def load(self, filename):
 		if filename:
 			try:
-        if os.path.isdir(filename):
-          self.config.read(os.listdir(filename))
-        else:
-          self.config.read(filename)
+				if os.path.isdir(filename):
+					self.config.read(os.listdir(filename))
+				else:
+					self.config.read(filename)
 			except ConfigParser.MissingSectionHeaderError:
 				if filename.endswith('.xml'):
 					self.load_xml(filename)
