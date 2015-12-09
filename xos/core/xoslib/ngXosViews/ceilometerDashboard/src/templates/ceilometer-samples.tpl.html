@@ -23,12 +23,13 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-xs-12" ng-show="vm.loader">
+<div class="row" ng-show="vm.loader">
+  <div class="col-xs-12">
     <div class="loader">Loading</div>
   </div>
-
-  <div class="col-xs-12" ng-if="!vm.loader">
+</div>
+<div class="row" ng-if="!vm.loader">
+  <div class="col-xs-12">
     <canvas ng-if="vm.chartType === 'line'" id="line" class="chart chart-line" chart-data="vm.chart.data" chart-options="{datasetFill: false}"
       chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
     </canvas>
@@ -36,6 +37,10 @@
       chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
     </canvas>
     <!-- <pre>{{vm.chartMeters | json}}</pre> -->
+  </div>
+</div>
+<div class="row" ng-if="!vm.loader">
+  <div class="col-xs-12">
     <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">{{meter}}</a>
   </div>
 </div>
