@@ -46,7 +46,7 @@ angular.module('xos.ceilometerDashboard', [
   this.sliceDetails = {};
 
   this.formatSliceDetails = (meters) => {
-    
+
   };
 
   this.getMeters = () => {
@@ -151,7 +151,7 @@ angular.module('xos.ceilometerDashboard', [
     templateUrl: 'templates/ceilometer-samples.tpl.html',
     controller: function(Ceilometer) {
 
-      Chart.defaults.global.colours = [
+      this.chartColors = [
         '#286090',
         '#F7464A',
         '#46BFBD',
@@ -160,6 +160,14 @@ angular.module('xos.ceilometerDashboard', [
         '#4D5360',
         '#8c4f9f'
       ];
+
+      this.chart = {
+        series: [],
+        labels: [],
+        data: []
+      }
+
+      Chart.defaults.global.colours = this.chartColors;
       
       this.chartType = 'line';
 
@@ -171,7 +179,7 @@ angular.module('xos.ceilometerDashboard', [
       // Mock
 
       /**
-      * Goe trough the array and format date to be used as labels
+      * Goes trough the array and format date to be used as labels
       *
       * @param Array data
       * @returns Array a list of labels
@@ -186,7 +194,7 @@ angular.module('xos.ceilometerDashboard', [
       };
 
       /**
-      * Goe trough the array and return a flat array of values
+      * Goes trough the array and return a flat array of values
       *
       * @param Array data
       * @returns Array a list of values
@@ -199,10 +207,45 @@ angular.module('xos.ceilometerDashboard', [
         }, []);
       }
 
-      this.addMeterToChart = (project_id) => {
-        this.chart['series'].push(project_id);
-        this.chart['data'].push(this.getData(this.samplesList[project_id]))
+      /**
+      * Add a samples to the chart
+      *
+      * @param string resource_id
+      */
+      this.chartMeters = [];
+      this.addMeterToChart = (resource_id) => {
+        this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
+        this.chart['series'].push(resource_id);
+        this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
+        this.chartMeters.push(resource_id);
+        lodash.remove(this.sampleLabels, {id: resource_id});
       }
+
+      this.removeFromChart = (resource_id) => {
+        this.chart.data.splice(this.chart.series.indexOf(resource_id), 1);
+        this.chart.series.splice(this.chart.series.indexOf(resource_id), 1);
+        this.chartMeters.splice(this.chartMeters.indexOf(resource_id), 1);
+        this.sampleLabels.push({
+          id: resource_id,
+          // TODO add resource name
+        })
+      };
+
+      /**
+      * Format samples to create a list of labels and ids
+      */
+     
+      this.formatSamplesLabels = (samples) => {
+
+        return lodash.uniq(samples.reduce((labels, item) => {
+          labels.push({
+            id: item.resource_id,
+            // TODO add resource name
+          });
+          return labels;
+        }, []), item => item.id);
+      }
+
 
       /**
       * Load the samples and format data
@@ -213,15 +256,14 @@ angular.module('xos.ceilometerDashboard', [
         // Ceilometer.getSamples(this.name, this.tenant) //fetch one
         Ceilometer.getSamples(this.name) //fetch all
         .then(res => {
-          console.log(res);
+
+          // setup data for visualization
           this.samplesList = lodash.groupBy(res, 'resource_id');
-          console.log(this.samplesList);
-          res = lodash.sortBy(this.samplesList[this.tenant], 'timestamp');
-          this.chart = {
-            series: [this.tenant],
-            labels: this.getLabels(res),
-            data: [this.getData(res)]
-          }
+          this.sampleLabels = this.formatSamplesLabels(res);
+          
+          // add current meter to chart
+          this.addMeterToChart(this.tenant);
+
         })
         .catch(err => {
           console.warn(err);
