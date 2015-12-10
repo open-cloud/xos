@@ -13,7 +13,7 @@ default_config = \
 """
 
 XOS_DIR = "/opt/xos"
-DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos/xos_configuration/")
+DEFAULT_CONFIG_FN = os.path.join(XOS_DIR, "xos_configuration/")
 
 # warning for now, remove once we're sure everyone has made the change
 if (os.path.exists("/opt/planetstack/plstackapi_config") and (not os.path.exists(DEFAULT_CONFIG_FN))):
@@ -82,7 +82,7 @@ DO NOT EDIT. This file was automatically generated at
 			try:
 				if os.path.isdir(filename):
 					config_list = list(reversed(os.listdir(filename)))
-					config_list = [DEFAULT_CONFIG_FN + s for s in config_list]
+					config_list = [os.path.join(filename, s) for s in config_list]
 					self.config.read(config_list)
 				else:
 					self.config.read(filename)
