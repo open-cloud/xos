@@ -10,16 +10,15 @@
 <link rel="stylesheet" href="/css/dev.css">
 <!-- endinject -->
 <link rel="stylesheet" href="css/ceilometerDashboard.css">
-
 <div ng-app="xos.ceilometerDashboard" id="xosCeilometerDashboard">
-    <div ui-view></div>
+  <div ui-view ng-class="stateName"></div>
 </div>
 
 <!-- bower:js -->
-<script src="vendor/Split.js/split.js"></script>
 <script src="vendor/angular/angular.js"></script>
 <script src="vendor/Chart.js/Chart.js"></script>
 <script src="vendor/angular-chart.js/dist/angular-chart.js"></script>
+<script src="vendor/angular-animate/angular-animate.js"></script>
 <script src="vendor/jquery/dist/jquery.js"></script>
 <script src="vendor/angular-mocks/angular-mocks.js"></script>
 <script src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
