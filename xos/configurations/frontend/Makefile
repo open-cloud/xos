@@ -6,20 +6,20 @@ XOS_FOLDER=$(shell pwd)
 all: frontend
 
 frontend:
-	rm ../../xos/xos_configuration/*
+	rm ../../xos_configuration/*
 	sudo apt-get -y install httpie
 	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
-	cp ../common/xos_common_config ../../xos/xos_configuration/
+	cp ../common/xos_common_config ../../xos_configuration/
 	cd ../../..; sudo docker build -t xos -f xos/configurations/frontend/Dockerfile .
 	sudo docker run -v $(XOS_FOLDER)/../../core/xoslib:/opt/xos/core/xoslib -p 9999:8000 --add-host="0.0.0.0:127.0.0.1" xos
 	bash ../common/wait_for_xos.sh
 	echo $(RUNNING_CONTAINER)
 
 interactive:
-	rm ../../xos/xos_configuration/*
+	rm ../../xos_configuration/*
 	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
-	cp ../common/xos_common_config ../../xos/xos_configuration/
-	#cp ../cord/xos_cord_config ../../xos/xos_configuration/
+	cp ../common/xos_common_config ../../xos_configuration/
+	#cp ../cord/xos_cord_config ../../xos_configuration/
 	cd ../../..; sudo docker build -t xos -f xos/configurations/frontend/Dockerfile .
 	echo "Inside the container run: /usr/bin/make -C /opt/xos/configurations/frontend -f Makefile.inside"
 	sudo docker run -it -v $(shell pwd)/../..:/opt/xos -p 9999:8000 --add-host="0.0.0.0:127.0.0.1" xos
