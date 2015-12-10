@@ -15,7 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular-chart.js": "~0.8.7"
+    "angular-chart.js": "~0.8.7",
+    "angular-animate": "~1.4.8"
   },
   "devDependencies": {
     "jquery": "~2.1.4",
