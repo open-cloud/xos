@@ -132,6 +132,13 @@ class PlModelMixIn(object):
             else:
                 return ("error", html_escape(self.backend_status, quote=True))
 
+    def enforce_choices(self, field, choices):
+        choices = [x[0] for x in choices]
+        for choice in choices:
+            if field==choice:
+                return
+        raise Exception("Field value %s is not in %s" % (field, str(choices)))
+
 class PlCoreBase(models.Model, PlModelMixIn):
     objects = PlCoreBaseManager()
     deleted_objects = PlCoreBaseDeletionManager()

@@ -110,7 +110,7 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
     access = models.CharField(max_length=30, null=True, blank=True, choices=ACCESS_CHOICES, help_text="Advertise this network as a means for other slices to contact this slice")
     shared_network_name = models.CharField(max_length=30, blank=True, null=True)
     shared_network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
-    topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
+    topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="bigswitch")
     controller_kind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
 
     def __init__(self, *args, **kwargs):
@@ -127,6 +127,10 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
         elif (self.topology_kind=="Custom"):
             print >> sys.stderr, "XXX warning: topology_kind invalid case"
             self.toplogy_kind="custom"
+
+    def save(self, *args, **kwargs):
+        self.enforce_choices(self.access, self.ACCESS_CHOICES)
+        super(NetworkTemplate, self).save(*args, **kwargs)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
