@@ -34,7 +34,7 @@
         <h3>XOS Service: </h3>
         <uib-accordion close-others="true" template-url="templates/accordion.html">
           <uib-accordion-group
-            ng-repeat="(service, slices) in vm.projects"
+            ng-repeat="(service, slices) in vm.projects | orderObjectByKey:true"
             template-url="templates/accordion-group.html"
             heading="{{service}}">
             <h4>Slices:</h4>

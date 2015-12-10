@@ -100,6 +100,7 @@ angular.module('xos.ceilometerDashboard', [
         .then(meters => {
           //group project by service
           this.projects = lodash.groupBy(meters, 'service');
+          console.log(this.project);
           lodash.forEach(Object.keys(this.projects), (project) => {
             // inside each service group by slice
             this.projects[project] = lodash.groupBy(this.projects[project], 'slice');
@@ -332,4 +333,19 @@ angular.module('xos.ceilometerDashboard', [
       $scope.$watch(() => this.name, () => {this.getStats();});
     }
   }
+})
+.filter('orderObjectByKey', function(lodash) {
+  return function(items, reverse) {
+
+    if(!items){
+      return;
+    }
+
+    return lodash.reduce(Object.keys(items).reverse(), (list, key) => {
+      list[key] = items[key];
+      return list;
+    }, {});
+
+  };
 });
+;
