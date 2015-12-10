@@ -25,6 +25,9 @@ topology_template:
 
     service_helloworld:
       type: tosca.nodes.Service
+      properties:
+          kind: helloworldservice_complete
+          view_url: /admin/helloworldservice_complete/helloworldservicecomplete/$id$/
 
     mysite_helloworld:
       type: tosca.nodes.Slice
