@@ -19,10 +19,6 @@ angular.module('xos.ceilometerDashboard', [
   .state('samples', {
     url: '/:name/:tenant/samples',
     template: '<ceilometer-samples></ceilometer-samples>'
-  })
-  .state('split', {
-    url: '/split',
-    templateUrl: 'templates/split.html'
   });
   $urlRouterProvider.otherwise('/');
 })
@@ -36,7 +32,7 @@ angular.module('xos.ceilometerDashboard', [
     $rootScope.stateName = toState.name;
   })
 })
-.service('Ceilometer', function($http, $q){
+.service('Ceilometer', function($http, $q, lodash){
 
   this.sliceDetails = {};
 
@@ -47,8 +43,8 @@ angular.module('xos.ceilometerDashboard', [
   this.getMeters = () => {
     let deferred = $q.defer();
 
-    // $http.get('/xoslib/meters/', {cache: true})
-    $http.get('../meters_mock.json', {cache: true})
+    $http.get('/xoslib/meters/', {cache: true})
+    // $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
       deferred.resolve(res.data)
     })
@@ -72,6 +68,21 @@ angular.module('xos.ceilometerDashboard', [
 
     return deferred.promise;
   }
+
+  this.getStats = (sliceName) => {
+    let deferred = $q.defer();
+
+    $http.get('/xoslib/meterstatistics/', {cache: true})
+    // $http.get('../stats_mock.son', {cache: true})
+    .then((res) => {
+      deferred.resolve(lodash.filter(res.data, {slice: sliceName}))
+    })
+    .catch((e) => {
+      deferred.reject(e);
+    });
+
+    return deferred.promise;
+  };
 })
 .directive('ceilometerDashboard', function(lodash){
   return {
@@ -289,6 +300,36 @@ angular.module('xos.ceilometerDashboard', [
       };
 
       this.showSamples();
+    }
+  }
+})
+.directive('ceilometerStats', function(){
+  return {
+    restrict: 'E',
+    scope: {
+      name: '=name',
+    },
+    bindToController: true,
+    controllerAs: 'vm',
+    templateUrl: 'templates/ceilometer-stats.tpl.html',
+    controller: function($scope, Ceilometer) {
+      this.getStats = () => {
+        this.loader = true;
+        Ceilometer.getStats(this.name)
+        .then(res => {
+          this.stats = res;
+        })
+        .catch(err => {
+          this.error = err.data;
+        })
+        .finally(() => {
+          this.loader = false;
+        });
+      };
+
+      this.getStats();
+
+      $scope.$watch(() => this.name, () => {this.getStats();});
     }
   }
 });
