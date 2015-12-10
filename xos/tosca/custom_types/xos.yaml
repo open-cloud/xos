@@ -494,6 +494,10 @@ node_types:
                 type: string
                 required: false
                 description: Indicates the type of controller that the network is connected to.
+            access:
+                type: string
+                required: false
+                description: The type of access semantics for this network
 
     tosca.nodes.network.Network.XOS:
           # Due to bug? in implementation, we have to copy everything from
