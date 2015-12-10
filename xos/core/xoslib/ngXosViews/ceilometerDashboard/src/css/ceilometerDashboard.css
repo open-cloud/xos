@@ -23,6 +23,10 @@
     color: #fff;
   }
 
+  .side-container {
+    position: relative;
+  }
+
   .service-list {
     margin-top: -10px;
   }
@@ -37,8 +41,12 @@
     color: #333;
   }
 
-  .animate-slide-left {
+  .meters, .stats {
     margin-top: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 
   /* LOADER */
