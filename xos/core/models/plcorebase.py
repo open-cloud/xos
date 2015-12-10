@@ -137,6 +137,9 @@ class PlModelMixIn(object):
         for choice in choices:
             if field==choice:
                 return
+            if (choice==None) and (field==""):
+                # allow "" and None to be equivalent
+                return
         raise Exception("Field value %s is not in %s" % (field, str(choices)))
 
 class PlCoreBase(models.Model, PlModelMixIn):
