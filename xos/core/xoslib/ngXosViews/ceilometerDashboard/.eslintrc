@@ -29,6 +29,7 @@
         "no-trailing-spaces": [1, { skipBlankLines: true }],
         "no-unused-vars": [1, {"vars": "all", "args": "after-used"}],
         "new-cap": 0,
+        "no-undef": 2,
 
         //"angular/ng_module_name": [2, '/^xos\.*[a-z]*$/'],
         //"angular/ng_controller_name": [2, '/^[a-z].*Ctrl$/'],

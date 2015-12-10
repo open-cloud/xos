@@ -7,7 +7,8 @@ angular.module('xos.ceilometerDashboard', [
   'ui.router',
   'xos.helpers',
   'ngAnimate',
-  'chart.js'
+  'chart.js',
+  'ui.bootstrap.accordion'
 ])
 .config(($stateProvider, $urlRouterProvider) => {
   $stateProvider
@@ -21,12 +22,6 @@ angular.module('xos.ceilometerDashboard', [
   })
   .state('split', {
     url: '/split',
-    controller: () => {
-      console.log('split', Split);
-      Split(['#one', '#two', '#three'], {
-        
-      });
-    },
     templateUrl: 'templates/split.html'
   });
   $urlRouterProvider.otherwise('/');
@@ -122,7 +117,7 @@ angular.module('xos.ceilometerDashboard', [
         this.selectedResources = null;
         this.selectedResource = null;
         this.selectedMeters = null;
-        
+
         this.selectedService = service;
       };
 
