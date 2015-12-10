@@ -203,6 +203,16 @@ topology_template:
               node: mysite_vbng
               relationship: tosca.relationships.ConnectsToSlice
 
+    Private-Direct:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: direct
+
+    Private-Indirect:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: indirect
+
     subscriber_network:
       type: tosca.nodes.network.Network
       properties:

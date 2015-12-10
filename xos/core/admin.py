@@ -1848,7 +1848,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
     inlines = [NetworkParameterInline,]
     fieldsets = [
-        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
+        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 

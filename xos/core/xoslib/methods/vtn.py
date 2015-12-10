@@ -38,7 +38,7 @@ class VTNViewSet(XOSViewSet):
     def get_services_names(self, request, pk=None):
         result = {}
         for service in Service.objects.all():
-           for id in service.get_vtn_names():
+           for id in service.get_vtn_src_names():
                dependencies = service.get_vtn_dependencies_names()
                if dependencies:
                    result[id] = dependencies
@@ -47,7 +47,7 @@ class VTNViewSet(XOSViewSet):
     def get_services(self, request, pk=None):
         result = {}
         for service in Service.objects.all():
-           for id in service.get_vtn_ids():
+           for id in service.get_vtn_src_ids():
                dependencies = service.get_vtn_dependencies_ids()
                if dependencies:
                    result[id] = dependencies
