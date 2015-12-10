@@ -23,6 +23,24 @@
     color: #fff;
   }
 
+  .service-list {
+    margin-top: -10px;
+  }
+
+  .service-list h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  .service-list a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .animate-slide-left {
+    margin-top: 25px;
+  }
+
   /* LOADER */
   .loader {
     font-size: 10px;
@@ -120,7 +138,6 @@
   }
 
   /* COLUMS ANIMATION */
-
   /* when showing the thing */
   .animate .animate-slide-left.ng-hide-remove { 
     animation:0.5s bounceInRight ease; 
@@ -189,6 +206,17 @@
     }
   }
 
+  @keyframes slideInUp {
+    from {
+      transform: translate3d(0, 100%, 0);
+      visibility: visible;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   @keyframes bounceOutRight {
     20% {
       opacity: 1;
@@ -210,6 +238,17 @@
     to {
       opacity: 0;
       transform: translate3d(-2000px, 0, 0);
+    }
+  }
+
+  @keyframes slideOutDown {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      visibility: hidden;
+      transform: translate3d(0, 100%, 0);
     }
   }
 
