@@ -61,6 +61,24 @@ node_types:
                 required: false
                 description: Version number of Service.
 
+    tosca.nodes.Tenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Tenant.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of tenant
+            service_specific_id:
+                type: string
+                required: false
+                description: Service specific ID opaque to XOS but meaningful to service
+            service_specific_attribute:
+                type: string
+                required: false
+                description: Service-specific attribute, usually a string containing a json structure
+
     tosca.nodes.ONOSService:
         derived_from: tosca.nodes.Root
         description: >
