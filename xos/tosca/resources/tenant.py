@@ -1,3 +1,4 @@
+import importlib
 import os
 import pdb
 import sys
@@ -31,6 +32,26 @@ class XOSTenant(XOSResource):
         if provider_service:
             return [ self.get_xos_object(provider_service=provider_service) ]
         return []
+
+    def create(self):
+        model_class = self.get_property("model")
+        if model_class:
+            model_name = ".".join(model_class.split(".")[:-1])
+            class_name = model_class.split(".")[-1]
+            print "XXX", model_name, class_name
+            module = importlib.import_module(model_name)
+            xos_model = getattr(module, class_name)
+        else:
+            xos_model = self.xos_model
+
+        xos_args = self.get_xos_args()
+        xos_obj = xos_model(**xos_args)
+        xos_obj.caller = self.user
+        xos_obj.save()
+
+        self.info("Created %s '%s'" % (self.xos_model.__name__,str(xos_obj)))
+
+        self.postprocess(xos_obj)
 
     def postprocess(self, obj):
         pass

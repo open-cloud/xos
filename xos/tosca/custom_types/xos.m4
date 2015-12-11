@@ -102,7 +102,11 @@ node_types:
             service_specific_attribute:
                 type: string
                 required: false
-                description: Service-specific attribute, usually a string containing a json structure
+                description: Service-specific attribute, usually a string containing a json dictionary
+            model:
+                type: string
+                required: false
+                description: Name of model to use when instantiating tenant
 
     tosca.nodes.ONOSService:
         derived_from: tosca.nodes.Root
