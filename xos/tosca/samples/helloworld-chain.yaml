@@ -29,6 +29,17 @@ topology_template:
           kind: helloworldservice_complete
           view_url: /admin/helloworldservice_complete/helloworldservicecomplete/$id$/
 
+    tenant_helloworld:
+       type: tosca.nodes.Tenant
+       properties:
+           kind: helloworldservice_complete
+           service_specific_attribute: "{\"display_message\": \"Hello World from Tosca\"}"
+       requirements:
+           - provider_service:
+               node: service_helloworld
+               relationship: tosca.relationships.MemberOfService
+
+
     mysite_helloworld:
       type: tosca.nodes.Slice
       requirements:

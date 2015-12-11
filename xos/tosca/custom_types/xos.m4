@@ -93,6 +93,17 @@ node_types:
         properties:
             xos_base_service_props
 
+    tosca.nodes.Tenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Tenant.
+        properties:
+            xos_base_tenant_props
+            service_specific_attribute:
+                type: string
+                required: false
+                description: Service-specific attribute, usually a string containing a json structure
+
     tosca.nodes.ONOSService:
         derived_from: tosca.nodes.Root
         description: >
