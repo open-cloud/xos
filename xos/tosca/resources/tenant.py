@@ -38,7 +38,6 @@ class XOSTenant(XOSResource):
         if model_class:
             model_name = ".".join(model_class.split(".")[:-1])
             class_name = model_class.split(".")[-1]
-            print "XXX", model_name, class_name
             module = importlib.import_module(model_name)
             xos_model = getattr(module, class_name)
         else:
