@@ -817,6 +817,13 @@ node_types:
                 type: string
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
+            default_flavor:
+                # Note: we should probably formally introduce flavors to Tosca
+                # at some point, and use a requirement/relationship instead of
+                # a text string.
+                type: string
+                required: false
+                description: default flavor to use for slice
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
@@ -934,6 +941,10 @@ node_types:
         valid_target_types: [ tosca.capabilities.xos.Network ]
 
     tosca.relationships.UsesImage:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Image ]
+
+    tosca.relationships.DefaultImage:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Image ]
 
