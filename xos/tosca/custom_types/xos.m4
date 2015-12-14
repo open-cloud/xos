@@ -503,7 +503,11 @@ node_types:
             path:
                 type: string
                 required: false
-                description: Path to Image file inside XOS docker container.
+                description: Path to Image file
+            tag:
+                type: string
+                required: false
+                description: For Docker images, tag of image
 
     tosca.nodes.Controller:
         derived_from: tosca.nodes.Root
