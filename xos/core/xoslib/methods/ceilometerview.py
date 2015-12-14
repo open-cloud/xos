@@ -152,6 +152,23 @@ def diff_lists(a, b):
     else:
         return list(set(a) - set(b))
 
+def get_resource_map(request, ceilometer_url):
+    resource_map = {}
+    try:
+        resources = resource_list(request, ceilometer_url=ceilometer_url)
+        for r in resources:
+            if 'display_name' in r['metadata']:
+                name = r['metadata']['display_name']
+            elif 'name' in r['metadata']:
+                name = r['metadata']['name']
+            else:
+                name = r['resource_id']
+            resource_map[r['resource_id']] = name
+    except requests.exceptions.RequestException as e:
+        raise e
+
+    return resource_map
+
 class Meters(object):
     """Class for listing of available meters.
 
@@ -163,11 +180,12 @@ class Meters(object):
 
     """
 
-    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None):
+    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None, resource_map=None):
         # Storing the request.
         self._request = request
         self.ceilometer_url = ceilometer_url
         self.tenant_map = tenant_map
+        self.resource_map = resource_map
 
         # Storing the Ceilometer meter list
         if ceilometer_meter_list:
@@ -382,21 +400,23 @@ class Meters(object):
                 if meter_info:
                     label = meter_info["label"]
                     description = meter_info["description"]
-                    meter_type = meter_info["type"]
+                    meter_category = meter_info["type"]
                 else:
                     label = ""
                     description = ""
-                    meter_type = "Other"
+                    meter_category = "Other"
                 for meter in meter_candidates:
                     meter["label"] = label
                     meter["description"] = description
-                    meter["type"] = meter_type
+                    meter["category"] = meter_category
                     if meter["project_id"] in self.tenant_map.keys():
                         meter["slice"] = self.tenant_map[meter["project_id"]]["slice"]
                         meter["service"] = self.tenant_map[meter["project_id"]]["service"]
                     else:
                         meter["slice"] = meter["project_id"]
                         meter["service"] = "Other"
+                    if meter["resource_id"] in self.resource_map.keys():
+                        meter["resource_name"] = self.resource_map[meter["resource_id"]]
 
                 self._cached_meters[meter_name] = meter_candidates
 
@@ -929,7 +949,8 @@ class MetersList(APIView):
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
         tenant_map = getTenantControllerTenantMap(request.user)
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
@@ -997,7 +1018,8 @@ class MeterStatisticsList(APIView):
             return Response(row)
 
         #Statistics query for all meter
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
@@ -1017,11 +1039,13 @@ class MeterStatisticsList(APIView):
                 statistic = statistics[-1]
                 row = {"name": 'none',
                        "slice": meter["slice"],
+                       "project_id": meter["project_id"],
                        "service": meter["service"],
                        "resource_id": meter["resource_id"],
+                       "resource_name": meter["resource_name"],
                        "meter": meter["name"],
                        "description": meter["description"],
-                       "type": service,
+                       "category": service,
                        "time": statistic["period_end"],
                        "value": statistic["avg"],
                        "unit": meter["unit"]}
@@ -1055,3 +1079,23 @@ class MeterSamplesList(APIView):
         samples = sample_list(request, meter_name,
                            ceilometer_url=tenant_ceilometer_url, query=query, limit=limit) 
         return Response(samples)
+
+class ServiceAdjustScale(APIView):
+    method_kind = "list"
+    method_name = "serviceadjustscale"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()) or (not request.user.is_admin()):
+            raise PermissionDenied("You must be authenticated admin user in order to use this API")
+        service = request.QUERY_PARAMS.get('service', None)
+        slice_hint = request.QUERY_PARAMS.get('slice_hint', None)
+        scale = request.QUERY_PARAMS.get('scale', None)
+        if not service or not slice_hint or not scale:
+            raise XOSMissingField("Mandatory fields missing")
+        services = Service.select_by_user(request.user)
+        logger.info('SRIKANTH: Services for this user %(services)s' % {'services':services})
+        if not services or (not services.get(name=service)):
+            raise XOSMissingField("Service not found")
+        service = services.get(name=service)
+        service.adjust_scale(slice_hint, scale)
+        return Response("Success")
