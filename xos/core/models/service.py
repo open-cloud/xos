@@ -519,7 +519,7 @@ class TenantWithContainer(Tenant):
                      "trusty-server-multi-nic", # CloudLab
                     ]
 
-    LOOK_FOR_CONTAINER_IMAGES=["andybavier/docker-vcpe"]
+    LOOK_FOR_CONTAINER_IMAGES=["docker-vcpe"]
 
     class Meta:
         proxy = True
@@ -598,14 +598,6 @@ class TenantWithContainer(Tenant):
                 return images[0]
 
         raise XOSProgrammingError("No VPCE image (looked for %s)" % str(look_for_images))
-
-    @creator.setter
-    def creator(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator=None
-        self.set_attribute("creator_id", value)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
@@ -693,6 +685,11 @@ class TenantWithContainer(Tenant):
             else:
                 self.instance.delete()
             self.instance = None
+
+    def save(self, *args, **kwargs):
+        if (not self.creator) and (hasattr(self, "caller")) and (self.caller):
+            self.creator = self.caller
+        super(TenantWithContainer, self).save(*args, **kwargs)
 
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """
