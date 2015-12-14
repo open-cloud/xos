@@ -244,21 +244,21 @@ angular.module('xos.ceilometerDashboard', [
       */
       this.chartMeters = [];
       this.addMeterToChart = (resource_id) => {
-        console.log(resource_id, this.samplesList);
         this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
         this.chart['series'].push(resource_id);
         this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
-        this.chartMeters.push(resource_id);
+        console.log(this.samplesList[resource_id]);
+        this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
         lodash.remove(this.sampleLabels, {id: resource_id});
       }
 
-      this.removeFromChart = (resource_id) => {
-        this.chart.data.splice(this.chart.series.indexOf(resource_id), 1);
-        this.chart.series.splice(this.chart.series.indexOf(resource_id), 1);
-        this.chartMeters.splice(this.chartMeters.indexOf(resource_id), 1);
+      this.removeFromChart = (meter) => {
+        this.chart.data.splice(this.chart.series.indexOf(meter.resource_id), 1);
+        this.chart.series.splice(this.chart.series.indexOf(meter.resource_id), 1);
+        this.chartMeters.splice(this.chartMeters.indexOf(meter.resource_id), 1);
         this.sampleLabels.push({
-          id: resource_id,
-          // TODO add resource name
+          id: meter.resource_id,
+          name: meter.resource_name
         })
       };
 
@@ -271,7 +271,7 @@ angular.module('xos.ceilometerDashboard', [
         return lodash.uniq(samples.reduce((labels, item) => {
           labels.push({
             id: item.resource_id,
-            name: Ceilometer.resourceMap[item.resource_id]
+            name: item.resource_name
           });
           return labels;
         }, []), item => item.id);
