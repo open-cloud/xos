@@ -519,7 +519,7 @@ class TenantWithContainer(Tenant):
                      "trusty-server-multi-nic", # CloudLab
                     ]
 
-    LOOK_FOR_CONTAINER_IMAGES=["andybavier/docker-vcpe"]
+    LOOK_FOR_CONTAINER_IMAGES=["docker-vcpe"]
 
     class Meta:
         proxy = True
