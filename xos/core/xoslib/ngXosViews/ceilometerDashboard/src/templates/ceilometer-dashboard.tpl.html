@@ -22,19 +22,13 @@
   </div>
 </div>
 
-<!-- <div class="row">
-  <div class="col-xs-12">
-    <ceilometer-stats name="'mysite_ceilometer'"></ceilometer-stats>
-  </div>
-</div> -->
-
 <section ng-hide="vm.loader" ng-class="{animate: !vm.loader}">
   <div class="row">
     <div class="col-sm-3 service-list">
         <h3>XOS Service: </h3>
         <uib-accordion close-others="true" template-url="templates/accordion.html">
           <uib-accordion-group
-            ng-repeat="(service, slices) in vm.projects | orderObjectByKey:true"
+            ng-repeat="(service, slices) in vm.projects | orderObjectByKey"
             template-url="templates/accordion-group.html"
             heading="{{service}}">
             <h4>Slices:</h4>
@@ -110,5 +104,10 @@
         </article>
       </div>
     </section>
+  </div>
+</section>
+<section ng-if="!vm.loader && vm.error">
+  <div class="alert alert-danger">
+    {{vm.error}}
   </div>
 </section>

@@ -1,5 +1,9 @@
 /*ceilometer-dashboard{*/
 
+  #xosCeilometerDashboard{
+    position: relative;
+  }
+
   /* Panel Layout */
   .panel {
     margin-top: 10px;
