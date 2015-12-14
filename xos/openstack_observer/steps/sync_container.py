@@ -103,7 +103,10 @@ class SyncContainer(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
         fields={}
         fields["ansible_tag"] = "container-%s" % str(o.id)
-        fields["docker_image"] = o.image.name
+        if o.image.tag:
+            fields["docker_image"] = o.image.path + ":" + o.image.tag
+        else:
+            fields["docker_image"] = o.image.path
         fields["ports"] = self.get_ports(o)
         if o.volumes:
             fields["volumes"] = [x.strip() for x in o.volumes.split(",")]

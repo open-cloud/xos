@@ -262,7 +262,7 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
           - vcpe_docker_image:
-              node: andybavier/docker-vcpe
+              node: docker-vcpe
               relationship: tosca.relationships.UsesImage
       properties:
           default_isolation: container
@@ -429,13 +429,14 @@ topology_template:
                 relationship: tosca.relationships.MemberOfSlice
 
     # docker image for vcpe containers
-    andybavier/docker-vcpe:
+    docker-vcpe:
       # TODO: need to attach this to mydeployment
       type: tosca.nodes.Image
       properties:
         kind: container
         container_format: na
         disk_format: na
+        path: andybavier/docker-vcpe
 
     # A subscriber
     My House:

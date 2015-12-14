@@ -25,6 +25,21 @@ topology_template:
 
     service_helloworld:
       type: tosca.nodes.Service
+      properties:
+          kind: helloworldservice_complete
+          view_url: /admin/helloworldservice_complete/helloworldservicecomplete/$id$/
+
+    tenant_helloworld:
+       type: tosca.nodes.Tenant
+       properties:
+           kind: helloworldservice_complete
+           service_specific_attribute: "{\"display_message\": \"Hello World from Tosca\"}"
+           model: helloworldservice_complete.models.HelloWorldTenantComplete
+       requirements:
+           - provider_service:
+               node: service_helloworld
+               relationship: tosca.relationships.MemberOfService
+
 
     mysite_helloworld:
       type: tosca.nodes.Slice
@@ -50,27 +65,4 @@ topology_template:
           - connection:
               node: mysite_helloworld
               relationship: tosca.relationships.ConnectsToSlice
-
-    # we need at least one instance to make the Networks instantiate
-    helloworld_instance:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: rhel
-            version: 6.5
-      requirements:
-          - slice:
-                node: mysite_helloworld
-                relationship: tosca.relationships.MemberOfSlice
 

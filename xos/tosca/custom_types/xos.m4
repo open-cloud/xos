@@ -93,6 +93,21 @@ node_types:
         properties:
             xos_base_service_props
 
+    tosca.nodes.Tenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Tenant.
+        properties:
+            xos_base_tenant_props
+            service_specific_attribute:
+                type: string
+                required: false
+                description: Service-specific attribute, usually a string containing a json dictionary
+            model:
+                type: string
+                required: false
+                description: Name of model to use when instantiating tenant
+
     tosca.nodes.ONOSService:
         derived_from: tosca.nodes.Root
         description: >
@@ -488,7 +503,11 @@ node_types:
             path:
                 type: string
                 required: false
-                description: Path to Image file inside XOS docker container.
+                description: Path to Image file
+            tag:
+                type: string
+                required: false
+                description: For Docker images, tag of image
 
     tosca.nodes.Controller:
         derived_from: tosca.nodes.Root
