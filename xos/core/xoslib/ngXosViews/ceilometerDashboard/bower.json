@@ -28,5 +28,10 @@
     "angular-resource": "~1.4.7",
     "ng-lodash": "~0.3.0",
     "bootstrap-css": "3.3.4"
+  },
+  "overrides": {
+    "ui.bootstrap": {
+      "main": ["src/accordion/accordion.js", "src/collapse/collapse.js"]
+    }
   }
 }

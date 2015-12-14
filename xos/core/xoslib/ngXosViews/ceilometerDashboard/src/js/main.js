@@ -28,17 +28,12 @@ angular.module('xos.ceilometerDashboard', [
 .run(function($rootScope){
   $rootScope.stateName = 'ceilometerDashboard';
   $rootScope.$on('$stateChangeStart', (event, toState) => {
-    console.log(toState.name);
     $rootScope.stateName = toState.name;
   })
 })
 .service('Ceilometer', function($http, $q, lodash){
 
-  this.sliceDetails = {};
-
-  this.formatSliceDetails = (meters) => {
-
-  };
+  this.resourceMap = {};
 
   this.getMeters = () => {
     let deferred = $q.defer();
@@ -46,6 +41,16 @@ angular.module('xos.ceilometerDashboard', [
     $http.get('/xoslib/meters/', {cache: true})
     // $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
+
+      // saving resources name and ids for later user,
+      // {resource_id: resource_name}
+      // NOTE REMOVE IF NOT ANYMORE NEEDED
+      const resourceObj = lodash.groupBy(res.data, 'resource_id');
+      this.resourceMap = lodash.reduce(Object.keys(resourceObj), (map, item) => {
+        map[item] = resourceObj[item][0].resource_name;
+        return map;
+      }, {});
+
       deferred.resolve(res.data)
     })
     .catch((e) => {
@@ -100,18 +105,17 @@ angular.module('xos.ceilometerDashboard', [
         .then(meters => {
           //group project by service
           this.projects = lodash.groupBy(meters, 'service');
-          console.log(this.project);
           lodash.forEach(Object.keys(this.projects), (project) => {
             // inside each service group by slice
             this.projects[project] = lodash.groupBy(this.projects[project], 'slice');
             lodash.forEach(Object.keys(this.projects[project]), (slice) => {
               // inside each service => slice group by resource
-              this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_id');
+              this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_name');
             });
           });
         })
         .catch(err => {
-          this.err = err;
+          this.error = err.data.detail;
         })
         .finally(() => {
           this.loader = false;
@@ -240,6 +244,7 @@ angular.module('xos.ceilometerDashboard', [
       */
       this.chartMeters = [];
       this.addMeterToChart = (resource_id) => {
+        console.log(resource_id, this.samplesList);
         this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
         this.chart['series'].push(resource_id);
         this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
@@ -266,7 +271,7 @@ angular.module('xos.ceilometerDashboard', [
         return lodash.uniq(samples.reduce((labels, item) => {
           labels.push({
             id: item.resource_id,
-            // TODO add resource name
+            name: Ceilometer.resourceMap[item.resource_id]
           });
           return labels;
         }, []), item => item.id);
@@ -293,7 +298,6 @@ angular.module('xos.ceilometerDashboard', [
         })
         .catch(err => {
           this.error = err.data.detail;
-          console.warn(err);
         })
         .finally(() => {
           this.loader = false;
@@ -335,7 +339,7 @@ angular.module('xos.ceilometerDashboard', [
   }
 })
 .filter('orderObjectByKey', function(lodash) {
-  return function(items, reverse) {
+  return function(items) {
 
     if(!items){
       return;
