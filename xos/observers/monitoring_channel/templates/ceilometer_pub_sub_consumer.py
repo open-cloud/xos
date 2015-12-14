@@ -7,6 +7,8 @@ import collections
 import time, thread, threading
 
 projects_map = {}
+xos_tenant_info_map = {}
+xos_instances_info_map = {}
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 12346
@@ -43,10 +45,10 @@ def print_samples():
    print ""
    print ""
    for project in projects_map.keys():
-        print "project=%s, alarm_state=%s" % (project, projects_map[project]['alarm'])
+        print "service=%s slice=%s, alarm_state=%s" % (projects_map[project]['xos_tenant_info']['service'] if projects_map[project]['xos_tenant_info'] else None, projects_map[project]['xos_tenant_info']['slice'] if projects_map[project]['xos_tenant_info'] else project, projects_map[project]['alarm'])
         for resource in projects_map[project]['resources'].keys():
-             print "resource=%s" % resource
-             for i in projects_map[project]['resources'][resource]:
+             print "resource=%s" % (projects_map[project]['resources'][resource]['xos_instance_info']['instance_name'] if projects_map[project]['resources'][resource]['xos_instance_info'] else resource)
+             for i in projects_map[project]['resources'][resource]['queue']:
                   print "    time=%s val=%s" % ( i['timestamp'],i['counter_volume'])
 
 def periodic_print():
@@ -64,23 +66,51 @@ SCALE_DOWN_EVALUATION = 'scale_down_eval'
 SCALE_UP_ALARM = 'scale_up'
 SCALE_DOWN_ALARM = 'scale_down'
 
-def getXosTenantInfo(project):
-    print "SRIKANTH: Getting XOS info for openstack Project %s" % project
+def loadAllXosTenantInfo():
+    print "SRIKANTH: Loading all XOS tenant info"
     url = "http://ctl:9999/xos/controllerslices/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     controller_slices = requests.get(url, auth=admin_auth).json()
     for cslice in controller_slices:
-         if cslice['tenant_id'] == project:
-             print "SRIKANTH: Matching controller_slice=%s" % cslice['humanReadableName']
-             slice = requests.get(cslice['slice'], auth=admin_auth).json()
-             slice_name = slice['humanReadableName']
-             print "SRIKANTH: Matching slice=%s" % slice_name
+         slice = requests.get(cslice['slice'], auth=admin_auth).json()
+         slice_name = slice['humanReadableName']
+         if slice['service']:
              service = requests.get(slice['service'], auth=admin_auth).json()
              service_name = service['humanReadableName']
-             print "SRIKANTH: Matching service=%s" % service_name
-             return {'service':service_name, 'slice':slice_name}
-    logger.warn("SRIKANTH: Project %(project)s has no associated XOS slice" % {'project':project})
-    return None
+         else:
+             service_name = None
+         xos_tenant_info_map[cslice['tenant_id']] = {'service':service_name, 'slice':slice_name}
+         print "SRIKANTH: Project: %s Service:%s Slice:%s" % (cslice['tenant_id'],service_name,slice_name)
+
+def loadAllXosInstanceInfo():
+    print "SRIKANTH: Loading all XOS instance info"
+    url = "http://130.127.133.87:9999/xos/instances/"
+    admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
+    xos_instances = requests.get(url, auth=admin_auth).json()
+    for instance in xos_instances:
+         xos_instances_info_map[instance['instance_uuid']] = {'instance_name':instance['instance_name']}
+
+def getXosTenantInfo(project):
+    xos_tenant_info = xos_tenant_info_map.get(project, None)
+    if xos_tenant_info:
+        return xos_tenant_info
+    else:
+        loadAllXosTenantInfo()
+        xos_tenant_info = xos_tenant_info_map.get(project, None)
+        if not xos_tenant_info:
+            print "SRIKANTH: Project %s has no associated XOS slice" % project
+        return xos_tenant_info
+
+def getXosInstanceInfo(resource):
+    xos_instance_info = xos_instances_info_map.get(resource, None)
+    if xos_instance_info:
+        return xos_instance_info
+    else:
+        loadAllXosInstanceInfo()
+        xos_instance_info = xos_instances_info_map.get(resource, None)
+        if not xos_instance_info:
+            print "SRIKANTH: Resource %s has no associated XOS instance" % project
+        return xos_instance_info
 
 def handle_adjust_scale(project, adjust):
     if (adjust != 'up') and (adjust != 'down'):
@@ -93,7 +123,8 @@ def handle_adjust_scale(project, adjust):
     if (current_instances >=2 and adjust == 'up'):
         print "SRIKANTH: %s is running with already maximum instances and can not scale up further " % project
         return
-    xos_tenant = getXosTenantInfo(project)
+    #xos_tenant = getXosTenantInfo(project)
+    xos_tenant = projects_map[project]['xos_tenant_info']
     if not xos_tenant:
         print "SRIKANTH: Can not handle adjust_scale for Project %s because not associated with any slice" % project
         return
@@ -111,8 +142,8 @@ def handle_adjust_scale(project, adjust):
 
 def periodic_cpu_threshold_evaluator():
      for project in projects_map.keys():
-          aggregate_cpu_util = sum([resource_queue[-1]['counter_volume'] \
-                                     for resource_queue in projects_map[project]['resources'].values()]) \
+          aggregate_cpu_util = sum([resource['queue'][-1]['counter_volume'] \
+                                     for resource in projects_map[project]['resources'].values()]) \
                                      /len(projects_map[project]['resources'].keys())
 
           if (projects_map[project]['alarm'] == INITIAL_STATE or
@@ -172,14 +203,17 @@ def read_notification_from_ceilometer(host,port):
               continue
          if sample['project_id'] not in projects_map.keys():
               projects_map[sample['project_id']] = {}
+              projects_map[sample['project_id']]['xos_tenant_info'] = getXosTenantInfo(sample['project_id'])
               projects_map[sample['project_id']]['resources'] = {}
               projects_map[sample['project_id']]['uthreadshold_count'] = 0
               projects_map[sample['project_id']]['lthreadshold_count'] = 0
               projects_map[sample['project_id']]['alarm'] = INITIAL_STATE
          resource_map = projects_map[sample['project_id']]['resources']
          if sample['resource_id'] not in resource_map.keys():
-              resource_map[sample['resource_id']] = collections.deque(maxlen=10)
-         samples_map = resource_map[sample['resource_id']]
+              resource_map[sample['resource_id']] = {}
+              resource_map[sample['resource_id']]['xos_instance_info'] = getXosInstanceInfo(sample['resource_id'])
+              resource_map[sample['resource_id']]['queue'] = collections.deque(maxlen=10)
+         samples_map = resource_map[sample['resource_id']]['queue']
          sample = {'counter_name':sample['counter_name'],
                    'project_id':sample['project_id'],
                    'resource_id':sample['resource_id'],
@@ -195,6 +229,8 @@ def main():
    if not monitoring_channel:
         print 'SRIKANTH: XOS monitoring_channel is not created... Create it before using this app'
         return
+   loadAllXosTenantInfo()
+   loadAllXosInstanceInfo()
    thread.start_new(read_notification_from_ceilometer,(UDP_IP,UDP_PORT,))
    ceilometer_url = monitoring_channel['ceilometer_url']
    subscribe_data = {"sub_info":"cpu_util","app_id":"xos_auto_scale","target":"udp://10.11.10.1:12346"}
