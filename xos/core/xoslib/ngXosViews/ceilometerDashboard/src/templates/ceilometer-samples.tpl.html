@@ -17,9 +17,8 @@
 </div>
 <section ng-if="!vm.loader && !vm.error">
   <div class="row">
-<!--     <pre>{{vm.sampleLabels | json}}</pre> -->
     <form class="form-inline col-xs-8" ng-submit="vm.addMeterToChart(vm.addMeterValue)">
-      <select ng-model="vm.addMeterValue" class="form-control" ng-options="resource.id as resource.id for resource in vm.sampleLabels"></select>
+      <select ng-model="vm.addMeterValue" class="form-control" ng-options="resource.id as resource.name for resource in vm.sampleLabels"></select>
       <button class="btn btn-success"> 
         <i class="glyphicon glyphicon-plus"></i> Add
       </button>
@@ -42,7 +41,9 @@
   </div>
   <div class="row" ng-if="!vm.loader">
     <div class="col-xs-12">
-      <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">{{meter}}</a>
+      <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">
+        {{meter.resource_name}}
+      </a>
     </div>
   </div>
 </section>
