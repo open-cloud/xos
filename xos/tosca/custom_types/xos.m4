@@ -629,6 +629,10 @@ node_types:
                 type: string
                 required: false
                 description: default flavor to use for slice
+            network:
+                type: string
+                required: false
+                description: type of networking to use for this slice
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
