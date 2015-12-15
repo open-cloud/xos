@@ -51,6 +51,9 @@ topology_template:
     mysite:
       type: tosca.nodes.Site
 
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
     mysite_ceilometer:
       description: Ceilometer Proxy Slice
       type: tosca.nodes.Slice
@@ -61,6 +64,11 @@ topology_template:
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: trusty-server-multi-nic
+                relationship: tosca.relationships.DefaultImage
+      properties:
+          default_flavor: m1.small
 
     my_ceilometer_tenant:
       description: Ceilometer Service default Tenant
@@ -72,9 +80,8 @@ topology_template:
        
     Ceilometer:
       type: tosca.nodes.DashboardView
-      artifacts:
-          ceilometer_url: template:xosCeilometerDashboard
-
+      properties:
+          url: template:xosCeilometerDashboard
     Tenant:
       type: tosca.nodes.DashboardView
       properties:

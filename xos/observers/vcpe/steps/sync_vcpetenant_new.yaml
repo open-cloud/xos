@@ -51,6 +51,10 @@
       rabbit_user: {{ rabbit_user }}
       rabbit_password: {{ rabbit_password }}
       rabbit_host: {{ rabbit_host }}
+      safe_browsing:
+        {% for mac in safe_browsing_macs %}
+        - {{ mac }}
+        {% endfor %}
 
   tasks:
   - name: vCPE basic dnsmasq config
@@ -67,3 +71,4 @@
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
     shell: docker exec {{ container_name }} /usr/bin/killall dnsmasq
+

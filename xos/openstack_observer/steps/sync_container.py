@@ -52,51 +52,54 @@ class SyncContainer(SyncInstanceUsingAnsible):
     def get_ports(self, o):
         i=0
         ports = []
-        for port in o.ports.all():
-            if (not port.ip):
-                # 'unmanaged' ports may have an ip, but no mac
-                # XXX: are there any ports that have a mac but no ip?
-                raise DeferredException("Port on network %s is not yet ready" % port.network.name)
+        if (o.slice.network in ["host", "bridged"]):
+            pass # no ports in host or bridged mode
+        else:
+            for port in o.ports.all():
+                if (not port.ip):
+                    # 'unmanaged' ports may have an ip, but no mac
+                    # XXX: are there any ports that have a mac but no ip?
+                    raise DeferredException("Port on network %s is not yet ready" % port.network.name)
 
-            pd={}
-            pd["mac"] = port.mac or ""
-            pd["ip"] = port.ip or ""
-            pd["xos_network_id"] = port.network.id
+                pd={}
+                pd["mac"] = port.mac or ""
+                pd["ip"] = port.ip or ""
+                pd["xos_network_id"] = port.network.id
 
-            if port.network.name == "wan_network":
-                if port.ip:
-                    (a, b, c, d) = port.ip.split('.')
-                    pd["mac"] = "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+                if port.network.name == "wan_network":
+                    if port.ip:
+                        (a, b, c, d) = port.ip.split('.')
+                        pd["mac"] = "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
 
 
-            if o.isolation == "container":
-                # container on bare metal
-                instance_port = self.get_instance_port(port)
-                if not instance_port:
-                    raise DeferredException("No instance on slice for port on network %s" % port.network.name)
+                if o.isolation == "container":
+                    # container on bare metal
+                    instance_port = self.get_instance_port(port)
+                    if not instance_port:
+                        raise DeferredException("No instance on slice for port on network %s" % port.network.name)
 
-                pd["snoop_instance_mac"] = instance_port.mac
-                pd["snoop_instance_id"] = instance_port.instance.instance_id
-                pd["src_device"] = ""
-                pd["bridge"] = "br-int"
-            else:
-                # container in VM
-                pd["snoop_instance_mac"] = ""
-                pd["snoop_instance_id"] = ""
-                pd["parent_mac"] = self.get_parent_port_mac(o, port)
-                pd["bridge"] = ""
+                    pd["snoop_instance_mac"] = instance_port.mac
+                    pd["snoop_instance_id"] = instance_port.instance.instance_id
+                    pd["src_device"] = ""
+                    pd["bridge"] = "br-int"
+                else:
+                    # container in VM
+                    pd["snoop_instance_mac"] = ""
+                    pd["snoop_instance_id"] = ""
+                    pd["parent_mac"] = self.get_parent_port_mac(o, port)
+                    pd["bridge"] = ""
 
-            for (k,v) in port.get_parameters().items():
-                pd[k] = v
+                for (k,v) in port.get_parameters().items():
+                    pd[k] = v
 
-            ports.append(pd)
+                ports.append(pd)
 
-        # for any ports that don't have a device, assign one
-        used_ports = [x["device"] for x in ports if ("device" in x)]
-        avail_ports = ["eth%d"%i for i in range(0,64) if ("eth%d"%i not in used_ports)]
-        for port in ports:
-            if not port.get("device",None):
-                port["device"] = avail_ports.pop(0)
+            # for any ports that don't have a device, assign one
+            used_ports = [x["device"] for x in ports if ("device" in x)]
+            avail_ports = ["eth%d"%i for i in range(0,64) if ("eth%d"%i not in used_ports)]
+            for port in ports:
+                if not port.get("device",None):
+                    port["device"] = avail_ports.pop(0)
 
         return ports
 
@@ -112,6 +115,7 @@ class SyncContainer(SyncInstanceUsingAnsible):
             fields["volumes"] = [x.strip() for x in o.volumes.split(",")]
         else:
             fields["volumes"] = ""
+        fields["network_method"] = o.slice.network or "default"
         return fields
 
     def sync_record(self, o):

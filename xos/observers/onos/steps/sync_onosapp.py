@@ -106,14 +106,23 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         self.write_configs(o)
 
     def get_extra_attributes(self, o):
+        instance = self.get_instance(o)
+
         fields={}
         fields["files_dir"] = o.files_dir
         fields["appname"] = o.name
-        fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
+        fields["nat_ip"] = instance.get_ssh_ip()
         fields["config_fns"] = o.config_fns
         fields["rest_configs"] = o.rest_configs
-        fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
-        fields["ONOS_container"] = "ONOS"
+        if o.dependencies:
+            fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
+        else:
+            fields["dependencies"] = []
+
+        if (instance.isolation=="container"):
+            fields["ONOS_container"] = "%s-%s" % (instance.slice.name, str(instance.id))
+        else:
+            fields["ONOS_container"] = "ONOS"
         return fields
 
     def sync_fields(self, o, fields):
