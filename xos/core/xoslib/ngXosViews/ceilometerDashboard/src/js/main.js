@@ -33,24 +33,12 @@ angular.module('xos.ceilometerDashboard', [
 })
 .service('Ceilometer', function($http, $q, lodash){
 
-  this.resourceMap = {};
-
   this.getMeters = () => {
     let deferred = $q.defer();
 
     $http.get('/xoslib/meters/', {cache: true})
     // $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
-
-      // saving resources name and ids for later user,
-      // {resource_id: resource_name}
-      // NOTE REMOVE IF NOT ANYMORE NEEDED
-      const resourceObj = lodash.groupBy(res.data, 'resource_id');
-      this.resourceMap = lodash.reduce(Object.keys(resourceObj), (map, item) => {
-        map[item] = resourceObj[item][0].resource_name;
-        return map;
-      }, {});
-
       deferred.resolve(res.data)
     })
     .catch((e) => {
@@ -88,6 +76,11 @@ angular.module('xos.ceilometerDashboard', [
 
     return deferred.promise;
   };
+
+  // hold dashboard status (opened service, slice, resource)
+  this.selectedService = null;
+  this.selectedSlice = null;
+  this.selectedResource = null;
 })
 .directive('ceilometerDashboard', function(lodash){
   return {
@@ -97,6 +90,30 @@ angular.module('xos.ceilometerDashboard', [
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-dashboard.tpl.html',
     controller: function(Ceilometer){
+
+      console.log(Ceilometer.selectedService, Ceilometer.selectedSlice, Ceilometer.selectedResource);
+
+      // this open the accordion
+      this.accordion = {
+        open: {}
+      }
+
+      /**
+      * Open the active panel base on the service stored values
+      */
+      this.openPanels = () => {
+        if(Ceilometer.selectedService){
+          this.accordion.open[Ceilometer.selectedService] = true;
+          if(Ceilometer.selectedSlice){
+            this.selectedSlice = Ceilometer.selectedSlice;
+            this.selectedResources = this.projects[Ceilometer.selectedService][Ceilometer.selectedSlice]
+            if(Ceilometer.selectedResource){
+              this.selectedResource = Ceilometer.selectedResource;
+              this.selectedMeters = this.selectedResources[Ceilometer.selectedResource];
+            }
+          }
+        }
+      }
 
       this.loadMeters = () => {
         this.loader = true;
@@ -114,6 +131,9 @@ angular.module('xos.ceilometerDashboard', [
               this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_name');
             });
           });
+
+          // open selected panels
+          this.openPanels();
         })
         .catch(err => {
           this.error = err.data.detail;
@@ -126,33 +146,26 @@ angular.module('xos.ceilometerDashboard', [
       this.loadMeters();
 
       /**
-      * Select the current service
-      */
-     
-      this.selectService = (service) => {
-        //cleaning
-        this.selectedResources = null;
-        this.selectedResource = null;
-        this.selectedMeters = null;
-
-        this.selectedService = service;
-      };
-
-      /**
       * Select Resources for a slice
       *
       * @param Array resources The list of selected resources
       * @returns void
       */
       this.selectedResources = null;
-      this.selectResources = (resources, slice) => {
+      this.selectResources = (resources, slice, service) => {
         //cleaning
         this.selectedResources = null;
         this.selectedResource = null;
         this.selectedMeters = null;
 
+        // hold the resource list for the current slice
         this.selectedResources = resources;
         this.selectedSlice = slice;
+        this.selectedService = service;
+
+        // store the status
+        Ceilometer.selectedSlice = slice;
+        Ceilometer.selectedService = service;
       }
 
       /**
@@ -164,6 +177,8 @@ angular.module('xos.ceilometerDashboard', [
       this.selectedMeters = null;
       this.selectMeters = (meters, resource) => {
         this.selectedMeters = meters;
+
+        Ceilometer.selectedResource = resource;
         this.selectedResource = resource;
       }
 
@@ -181,6 +196,8 @@ angular.module('xos.ceilometerDashboard', [
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-samples.tpl.html',
     controller: function(Ceilometer) {
+
+      // console.log(Ceilometer.selectResource);
 
       this.chartColors = [
         '#286090',
@@ -205,8 +222,7 @@ angular.module('xos.ceilometerDashboard', [
       if($stateParams.name && $stateParams.tenant){
         this.name = $stateParams.name;
         this.tenant = $stateParams.tenant;
-        // console.log('++++++++++', this.name, this.tenant);
-        // TODO rename tenant in resource_id
+        // TODO rename tenant in project_id
       }
       else{
         throw new Error('Missing Name and Tenant Params!');
@@ -247,21 +263,21 @@ angular.module('xos.ceilometerDashboard', [
       * @param string resource_id
       */
       this.chartMeters = [];
-      this.addMeterToChart = (resource_id) => {
-        this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
-        this.chart['series'].push(resource_id);
-        this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
-        this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
-        lodash.remove(this.sampleLabels, {id: resource_id});
+      this.addMeterToChart = (project_id) => {
+        this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[project_id], 'timestamp'));
+        this.chart['series'].push(project_id);
+        this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[project_id], 'timestamp')));
+        this.chartMeters.push(this.samplesList[project_id][0]); //use the 0 as are all samples for the same resource and I need the name
+        lodash.remove(this.sampleLabels, {id: project_id});
       }
 
       this.removeFromChart = (meter) => {
-        this.chart.data.splice(this.chart.series.indexOf(meter.resource_id), 1);
-        this.chart.series.splice(this.chart.series.indexOf(meter.resource_id), 1);
-        this.chartMeters.splice(lodash.findIndex(this.chartMeters, {resource_id: meter.resource_id}), 1);
+        this.chart.data.splice(this.chart.series.indexOf(meter.project_id), 1);
+        this.chart.series.splice(this.chart.series.indexOf(meter.project_id), 1);
+        this.chartMeters.splice(lodash.findIndex(this.chartMeters, {project_id: meter.project_id}), 1);
         this.sampleLabels.push({
-          id: meter.resource_id,
-          name: meter.resource_name
+          id: meter.project_id,
+          name: meter.resource_name || meter.project_id
         })
       };
 
@@ -271,11 +287,11 @@ angular.module('xos.ceilometerDashboard', [
      
       this.formatSamplesLabels = (samples) => {
 
-        return lodash.uniq(samples, 'resource_id')
+        return lodash.uniq(samples, 'project_id')
         .reduce((labels, item) => {
           labels.push({
-            id: item.resource_id,
-            name: item.resource_name
+            id: item.project_id,
+            name: item.resource_name || item.project_id
           });
           return labels;
         }, []);
@@ -293,7 +309,7 @@ angular.module('xos.ceilometerDashboard', [
         .then(res => {
 
           // setup data for visualization
-          this.samplesList = lodash.groupBy(res, 'resource_id');
+          this.samplesList = lodash.groupBy(res, 'project_id');
           this.sampleLabels = this.formatSamplesLabels(res);
           
           // add current meter to chart

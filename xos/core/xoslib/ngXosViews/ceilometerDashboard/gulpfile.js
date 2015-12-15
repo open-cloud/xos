@@ -5,6 +5,7 @@ var wrench = require('wrench');
 
 var options = {
   src: 'src/',
+  css: 'src/css/',
   scripts: 'src/js/',
   tmp: 'src/.tmp',
   dist: 'dist/',
