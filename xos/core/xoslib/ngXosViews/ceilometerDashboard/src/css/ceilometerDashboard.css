@@ -1,5 +1,9 @@
 /*ceilometer-dashboard{*/
 
+  #xosCeilometerDashboard{
+    position: relative;
+  }
+
   /* Panel Layout */
   .panel {
     margin-top: 10px;
@@ -21,6 +25,32 @@
 
   .btn-chart, .btn-chart:hover {
     color: #fff;
+  }
+
+  .side-container {
+    position: relative;
+  }
+
+  .service-list {
+    margin-top: -10px;
+  }
+
+  .service-list h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  .service-list a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .meters, .stats {
+    margin-top: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 
   /* LOADER */
@@ -120,7 +150,6 @@
   }
 
   /* COLUMS ANIMATION */
-
   /* when showing the thing */
   .animate .animate-slide-left.ng-hide-remove { 
     animation:0.5s bounceInRight ease; 
@@ -189,6 +218,17 @@
     }
   }
 
+  @keyframes slideInUp {
+    from {
+      transform: translate3d(0, 100%, 0);
+      visibility: visible;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   @keyframes bounceOutRight {
     20% {
       opacity: 1;
@@ -210,6 +250,17 @@
     to {
       opacity: 0;
       transform: translate3d(-2000px, 0, 0);
+    }
+  }
+
+  @keyframes slideOutDown {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      visibility: hidden;
+      transform: translate3d(0, 100%, 0);
     }
   }
 

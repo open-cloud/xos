@@ -7,7 +7,8 @@ angular.module('xos.ceilometerDashboard', [
   'ui.router',
   'xos.helpers',
   'ngAnimate',
-  'chart.js'
+  'chart.js',
+  'ui.bootstrap.accordion'
 ])
 .config(($stateProvider, $urlRouterProvider) => {
   $stateProvider
@@ -18,16 +19,6 @@ angular.module('xos.ceilometerDashboard', [
   .state('samples', {
     url: '/:name/:tenant/samples',
     template: '<ceilometer-samples></ceilometer-samples>'
-  })
-  .state('split', {
-    url: '/split',
-    controller: () => {
-      console.log('split', Split);
-      Split(['#one', '#two', '#three'], {
-        
-      });
-    },
-    templateUrl: 'templates/split.html'
   });
   $urlRouterProvider.otherwise('/');
 })
@@ -37,24 +28,29 @@ angular.module('xos.ceilometerDashboard', [
 .run(function($rootScope){
   $rootScope.stateName = 'ceilometerDashboard';
   $rootScope.$on('$stateChangeStart', (event, toState) => {
-    console.log(toState.name);
     $rootScope.stateName = toState.name;
   })
 })
-.service('Ceilometer', function($http, $q){
+.service('Ceilometer', function($http, $q, lodash){
 
-  this.sliceDetails = {};
-
-  this.formatSliceDetails = (meters) => {
-
-  };
+  this.resourceMap = {};
 
   this.getMeters = () => {
     let deferred = $q.defer();
 
-    // $http.get('/xoslib/meters/', {cache: true})
-    $http.get('../meters_mock.json', {cache: true})
+    $http.get('/xoslib/meters/', {cache: true})
+    // $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
+
+      // saving resources name and ids for later user,
+      // {resource_id: resource_name}
+      // NOTE REMOVE IF NOT ANYMORE NEEDED
+      const resourceObj = lodash.groupBy(res.data, 'resource_id');
+      this.resourceMap = lodash.reduce(Object.keys(resourceObj), (map, item) => {
+        map[item] = resourceObj[item][0].resource_name;
+        return map;
+      }, {});
+
       deferred.resolve(res.data)
     })
     .catch((e) => {
@@ -77,6 +73,21 @@ angular.module('xos.ceilometerDashboard', [
 
     return deferred.promise;
   }
+
+  this.getStats = (sliceName) => {
+    let deferred = $q.defer();
+
+    $http.get('/xoslib/meterstatistics/', {cache: true})
+    // $http.get('../stats_mock.son', {cache: true})
+    .then((res) => {
+      deferred.resolve(lodash.filter(res.data, {slice: sliceName}))
+    })
+    .catch((e) => {
+      deferred.reject(e);
+    });
+
+    return deferred.promise;
+  };
 })
 .directive('ceilometerDashboard', function(lodash){
   return {
@@ -92,13 +103,19 @@ angular.module('xos.ceilometerDashboard', [
 
         Ceilometer.getMeters()
         .then(meters => {
-          this.projects = lodash.groupBy(meters, 'project_name');
+          //group project by service
+          this.projects = lodash.groupBy(meters, 'service');
           lodash.forEach(Object.keys(this.projects), (project) => {
-            this.projects[project] = lodash.groupBy(this.projects[project], 'resource_id');
+            // inside each service group by slice
+            this.projects[project] = lodash.groupBy(this.projects[project], 'slice');
+            lodash.forEach(Object.keys(this.projects[project]), (slice) => {
+              // inside each service => slice group by resource
+              this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_name');
+            });
           });
         })
         .catch(err => {
-          this.err = err;
+          this.error = err.data.detail;
         })
         .finally(() => {
           this.loader = false;
@@ -106,6 +123,19 @@ angular.module('xos.ceilometerDashboard', [
       }
 
       this.loadMeters();
+
+      /**
+      * Select the current service
+      */
+     
+      this.selectService = (service) => {
+        //cleaning
+        this.selectedResources = null;
+        this.selectedResource = null;
+        this.selectedMeters = null;
+
+        this.selectedService = service;
+      };
 
       /**
       * Select Resources for a slice
@@ -217,17 +247,18 @@ angular.module('xos.ceilometerDashboard', [
         this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
         this.chart['series'].push(resource_id);
         this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
-        this.chartMeters.push(resource_id);
+        console.log(this.samplesList[resource_id]);
+        this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
         lodash.remove(this.sampleLabels, {id: resource_id});
       }
 
-      this.removeFromChart = (resource_id) => {
-        this.chart.data.splice(this.chart.series.indexOf(resource_id), 1);
-        this.chart.series.splice(this.chart.series.indexOf(resource_id), 1);
-        this.chartMeters.splice(this.chartMeters.indexOf(resource_id), 1);
+      this.removeFromChart = (meter) => {
+        this.chart.data.splice(this.chart.series.indexOf(meter.resource_id), 1);
+        this.chart.series.splice(this.chart.series.indexOf(meter.resource_id), 1);
+        this.chartMeters.splice(this.chartMeters.indexOf(meter.resource_id), 1);
         this.sampleLabels.push({
-          id: resource_id,
-          // TODO add resource name
+          id: meter.resource_id,
+          name: meter.resource_name
         })
       };
 
@@ -240,7 +271,7 @@ angular.module('xos.ceilometerDashboard', [
         return lodash.uniq(samples.reduce((labels, item) => {
           labels.push({
             id: item.resource_id,
-            // TODO add resource name
+            name: item.resource_name
           });
           return labels;
         }, []), item => item.id);
@@ -266,7 +297,7 @@ angular.module('xos.ceilometerDashboard', [
 
         })
         .catch(err => {
-          console.warn(err);
+          this.error = err.data.detail;
         })
         .finally(() => {
           this.loader = false;
@@ -276,4 +307,49 @@ angular.module('xos.ceilometerDashboard', [
       this.showSamples();
     }
   }
+})
+.directive('ceilometerStats', function(){
+  return {
+    restrict: 'E',
+    scope: {
+      name: '=name',
+    },
+    bindToController: true,
+    controllerAs: 'vm',
+    templateUrl: 'templates/ceilometer-stats.tpl.html',
+    controller: function($scope, Ceilometer) {
+      this.getStats = () => {
+        this.loader = true;
+        Ceilometer.getStats(this.name)
+        .then(res => {
+          this.stats = res;
+        })
+        .catch(err => {
+          this.error = err.data;
+        })
+        .finally(() => {
+          this.loader = false;
+        });
+      };
+
+      this.getStats();
+
+      $scope.$watch(() => this.name, () => {this.getStats();});
+    }
+  }
+})
+.filter('orderObjectByKey', function(lodash) {
+  return function(items) {
+
+    if(!items){
+      return;
+    }
+
+    return lodash.reduce(Object.keys(items).reverse(), (list, key) => {
+      list[key] = items[key];
+      return list;
+    }, {});
+
+  };
 });
+;

@@ -9,6 +9,7 @@ var babel = require('gulp-babel');
 var wiredep = require('wiredep').stream;
 var httpProxy = require('http-proxy');
 var del = require('del');
+var debug = require('gulp-debug');
 
 const environment = process.env.NODE_ENV;
 
@@ -86,28 +87,36 @@ module.exports = function(options){
 
   // transpile js with sourceMaps
   gulp.task('babel', function(){
-    return gulp.src(options.scripts + '**/*.js')
+    return gulp.src([options.scripts + '**/*.js'])
       .pipe(babel({sourceMaps: true}))
       .pipe(gulp.dest(options.tmp));
   });
 
   // inject scripts
-  gulp.task('injectScript', ['cleanTmp', 'babel'], function(){
-    return gulp.src(options.src + 'index.html')
-      .pipe(
-        inject(
-          gulp.src([
-            options.tmp + '**/*.js',
-            options.api + '*.js',
-            options.helpers + '**/*.js'
-          ])
-          .pipe(angularFilesort()),
-          {
-            ignorePath: [options.src, '/../../ngXosLib']
-          }
-        )
-      )
-      .pipe(gulp.dest(options.src));
+  gulp.task('injectScript', function(){
+    console.log(options.tmp);
+    runSequence(
+       'cleanTmp',
+       'babel',
+        function() {
+          return gulp.src(options.src + 'index.html')
+          .pipe(
+            inject(
+              gulp.src([
+                options.tmp + '**/*.js',
+                options.api + '*.js',
+                options.helpers + '**/*.js'
+              ])
+              .pipe(debug({title: 'unicorn:'}))
+              .pipe(angularFilesort()),
+              {
+                ignorePath: [options.src, '/../../ngXosLib']
+              }
+            )
+          )
+          .pipe(gulp.dest(options.src));
+        }
+      );
   });
 
   // inject CSS

@@ -16,7 +16,8 @@
   ],
   "dependencies": {
     "angular-chart.js": "~0.8.7",
-    "angular-animate": "~1.4.8"
+    "angular-animate": "~1.4.8",
+    "ui.bootstrap": "~0.14.3"
   },
   "devDependencies": {
     "jquery": "~2.1.4",
@@ -27,5 +28,10 @@
     "angular-resource": "~1.4.7",
     "ng-lodash": "~0.3.0",
     "bootstrap-css": "3.3.4"
+  },
+  "overrides": {
+    "ui.bootstrap": {
+      "main": ["src/accordion/accordion.js", "src/collapse/collapse.js"]
+    }
   }
 }
