@@ -1,0 +1,20 @@
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, max-scale=1">
+<!-- browserSync -->
+
+<!-- inject:css -->
+<link rel="stylesheet" href="/css/ceilometerDashboard.css">
+<link rel="stylesheet" href="/css/dev.css">
+<!-- endinject -->
+<link rel="stylesheet" href="css/ceilometerDashboard.css">
+<div id="xosCeilometerDashboard">
+  <div ui-view ng-class="stateName"></div>
+</div>
+
+
+<script src="vendor/ui.bootstrap/src/collapse/collapse.js"></script>
+<script src="vendor/ui.bootstrap/src/accordion/accordion.js"></script>
+<!-- inject:js -->
+<script src="/../../static/js/vendor/xosCeilometerDashboardVendor.js"></script>
+<script src="/../../static/js/xosCeilometerDashboard.js"></script>
+<!-- endinject -->

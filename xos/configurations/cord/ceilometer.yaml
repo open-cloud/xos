@@ -72,10 +72,8 @@ topology_template:
        
     Ceilometer:
       type: tosca.nodes.DashboardView
-      properties:
-          url: { get_artifact: [ SELF, ceilometer_url, LOCAL_FILE] }
       artifacts:
-          ceilometer_url: /root/setup/ceilometer_url
+          ceilometer_url: template:xosCeilometerDashboard
 
     Tenant:
       type: tosca.nodes.DashboardView

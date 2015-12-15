@@ -16,6 +16,8 @@ class Image(PlCoreBase):
     path = StrippedCharField(max_length=256, null=True, blank=True, help_text="Path to image on local disk")
     deployments = models.ManyToManyField('Deployment', through='ImageDeployments', blank=True, help_text="Select which images should be instantiated on this deployment", related_name='images')
 
+    tag = StrippedCharField(max_length=256, null=True, blank=True, help_text="For Docker Images, tag of image")
+
     def __unicode__(self):  return u'%s' % (self.name)
 
 class ImageDeployments(PlCoreBase):
