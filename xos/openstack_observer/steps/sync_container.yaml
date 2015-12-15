@@ -8,6 +8,7 @@
   vars:
     container_name: {{ container_name }}
     docker_image: {{ docker_image }}
+    network_method: {{ network_method }}
     ports:
     {% for port in ports %}
        - device: {{ port.device }}
