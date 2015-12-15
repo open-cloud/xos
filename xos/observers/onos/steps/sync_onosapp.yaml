@@ -2,7 +2,7 @@
 - hosts: {{ instance_name }}
   gather_facts: False
   connection: ssh
-  user: ubuntu
+  user: {{ username }}
   sudo: yes
   vars:
     appname: {{ appname }}
@@ -16,6 +16,20 @@
 {% endif %}
 
   tasks:
+
+  - name: Get Docker IP
+    script: /opt/xos/observers/onos/scripts/dockerip.sh {{ ONOS_container }}
+    register: onosaddr
+
+  - name: Wait for ONOS to come up
+    wait_for:
+      host={{ '{{' }} onosaddr.stdout {{ '}}' }}
+      port={{ '{{' }} item {{ '}}' }}
+      state=present
+    with_items:
+    - 8101
+    - 8181
+    - 9876
 
   - name: Config file directory
     file:
@@ -49,9 +63,10 @@
   - name: Wait for ONOS to install the apps
     wait_for: timeout=15
 
+{% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
-      url: http://localhost:8181/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      url: http://{{ '{{' }} onosaddr.stdout {{ '}}' }}:8181/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
       method: POST
       user: karaf
       password: karaf
@@ -59,13 +74,14 @@
         {% for dependency in dependencies %}
         - {{ dependency }}
         {% endfor %}
+{% endif %}
 
 {% if rest_configs %}
 # Do this after services have been activated, or it will cause an exception.
 # vOLT will re-read its net config; vbng may not.
   - name: Add ONOS configuration values
     uri:
-      url: http://localhost:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      url: http://{{ '{{' }} onosaddr.stdout {{ '}}' }}:8181/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} item.body {{ '}}' }}"
       body_format: raw
       method: POST
