@@ -107,7 +107,7 @@ module.exports = function(options){
                 options.api + '*.js',
                 options.helpers + '**/*.js'
               ])
-              .pipe(debug({title: 'unicorn:'}))
+              // .pipe(debug({title: 'unicorn:'}))
               .pipe(angularFilesort()),
               {
                 ignorePath: [options.src, '/../../ngXosLib']
