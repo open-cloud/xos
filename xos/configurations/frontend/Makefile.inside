@@ -3,7 +3,7 @@ all: setup_xos run_develserver
 setup_xos:
 	chmod +x /opt/xos/scripts/opencloud;
 	/opt/xos/scripts/opencloud genkeys;
-	/opt/xos/scripts/opencloud remigrate;
+#	/opt/xos/scripts/opencloud remigrate;
 	bash /opt/xos/tosca/install_tosca.sh;
 	bash /opt/xos/scripts/docker_setup_xos
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml

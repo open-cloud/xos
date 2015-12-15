@@ -101,6 +101,10 @@ node_types:
             xos_base_service_caps
         properties:
             xos_base_service_props
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+
 
     tosca.nodes.ONOSApp:
         derived_from: tosca.nodes.Root

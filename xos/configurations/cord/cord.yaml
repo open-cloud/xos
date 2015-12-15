@@ -108,6 +108,21 @@ topology_template:
           kind: onos
           view_url: /admin/onos/onosservice/$id$/
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+          rest_onos/v1/network/configuration/: >
+            {
+              "devices" : {
+                "of:0000000000000001" : {
+                  "accessDevice" : {
+                    "uplink" : "2",
+                    "vlan"   : "222",
+                    "defaultVlan" : "1"
+                  },
+                  "basic" : {
+                    "driver" : "default"
+                  }
+                }
+              }
+            }
       artifacts:
           pubkey: /opt/xos/observers/onos/onos_key.pub
 
@@ -123,21 +138,21 @@ topology_template:
               relationship: tosca.relationships.UsedByService
       properties:
           dependencies: org.onosproject.openflow-base, org.onosproject.olt
-          config_network-cfg.json: >
-            {
-              "devices" : {
-                "of:0000000000000001" : {
-                  "accessDevice" : {
-                    "uplink" : "2",
-                    "vlan"   : "222",
-                    "defaultVlan" : "1"
-                  },
-                  "basic" : {
-                    "driver" : "default"
-                  }
-                }
-              }
-            }
+#          config_network-cfg.json: >
+#            {
+#              "devices" : {
+#                "of:0000000000000001" : {
+#                  "accessDevice" : {
+#                    "uplink" : "2",
+#                    "vlan"   : "222",
+#                    "defaultVlan" : "1"
+#                  },
+#                  "basic" : {
+#                    "driver" : "default"
+#                  }
+#                }
+#              }
+#            }
 
     # Network templates
     Private:
