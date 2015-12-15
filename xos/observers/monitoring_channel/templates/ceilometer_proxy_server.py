@@ -223,11 +223,15 @@ class resource_list:
              "q.op": [],
              "q.type": [],
              "q.value": [],
+             "limit": None,
+             "links": None,
         }
         query_params = web.input(**keyword_args)
         new_query, user_specified_tenants = filter_query_params(query_params)
 
         client = ceilometerclient()
+        limit=query_params.limit
+        links=query_params.links
         resources=[]
         for (k,v) in config.items('allowed_tenants'):
               if user_specified_tenants and (k not in user_specified_tenants):
@@ -237,7 +241,7 @@ class resource_list:
               query = make_query(tenant_id=k)
               final_query.extend(query)
               logger.debug('final query=%s',final_query)
-              results = client.resources.list(q=final_query, links=1)
+              results = client.resources.list(q=final_query, limit=limit, links=links)
               resources.extend(results)
         return json.dumps([ob._info for ob in resources])
 
