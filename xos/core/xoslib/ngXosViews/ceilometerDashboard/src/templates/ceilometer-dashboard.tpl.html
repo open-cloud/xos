@@ -30,11 +30,12 @@
           <uib-accordion-group
             ng-repeat="(service, slices) in vm.projects | orderObjectByKey"
             template-url="templates/accordion-group.html"
+            is-open="vm.accordion.open[service]"
             heading="{{service}}">
             <h4>Slices:</h4>
             <a ng-repeat="(slice, resources) in slices" 
               ng-class="{active: slice === vm.selectedSlice}"
-              ng-click="vm.selectResources(resources, slice)"
+              ng-click="vm.selectResources(resources, slice, service)"
               href="#" class="list-group-item" >
               {{slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
             </a>
@@ -85,7 +86,7 @@
                   </div>
                   <div class="col-xs-3"></div>
                 </div>
-                <div class="row" ng-click="vm.selectMeters(meters)" ng-repeat="meter in vm.selectedMeters" style="margin-bottom: 10px;">
+                <div class="row" ng-repeat="meter in vm.selectedMeters" style="margin-bottom: 10px;">
                   <div class="col-xs-6">
                     {{meter.name}}
                   </div>
@@ -93,7 +94,7 @@
                     {{meter.unit}}
                   </div>
                   <div class="col-xs-3">
-                    <a ui-sref="samples({name: meter.name, tenant: meter.resource_id})" class="btn btn-primary">
+                    <a ui-sref="samples({name: meter.name, tenant: meter.project_id})" class="btn btn-primary">
                       <i class="glyphicon glyphicon-search"></i>
                     </a>
                   </div>

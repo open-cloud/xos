@@ -49,42 +49,42 @@
     {
       meter: 'cpu',
       resource_name: 'fakeName',
-      resource_id: 'fakeTenant',
+      project_id: 'fakeTenant',
       timestamp: '2015-12-15T00:34:08',
       volume: 110
     },
     {
       meter: 'cpu',
       resource_name: 'fakeName',
-      resource_id: 'fakeTenant',
+      project_id: 'fakeTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 120
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      resource_id: 'anotherTenant',
+      project_id: 'anotherTenant',
       timestamp: '2015-12-15T00:24:08',
       volume: 210
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      resource_id: 'anotherTenant',
+      project_id: 'anotherTenant',
       timestamp: '2015-12-15T00:34:08',
       volume: 220
     },
     {
       meter: 'cpu',
       resource_name: 'anotherName',
-      resource_id: 'anotherTenant',
+      project_id: 'anotherTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 230
     },
     {
       meter: 'cpu',
       resource_name: 'thirdName',
-      resource_id: 'thirdTenant',
+      project_id: 'thirdTenant',
       timestamp: '2015-12-15T00:44:08',
       volume: 310
     }
