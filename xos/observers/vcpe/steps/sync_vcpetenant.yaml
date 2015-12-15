@@ -50,6 +50,10 @@
       rabbit_user: {{ rabbit_user }}
       rabbit_password: {{ rabbit_password }}
       rabbit_host: {{ rabbit_host }}
+      safe_browsing:
+        {% for mac in safe_browsing_macs %}
+        - {{ mac }}
+        {% endfor %}
 
   tasks:
 {% if full_setup %}
@@ -167,3 +171,4 @@
 
   - name: start vcpe
     service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+

@@ -1078,6 +1078,18 @@ class MeterSamplesList(APIView):
         query.append({"field": "meter", "op": "eq", "value": meter_name})
         samples = sample_list(request, meter_name,
                            ceilometer_url=tenant_ceilometer_url, query=query, limit=limit) 
+        if samples:
+            tenant_map = getTenantControllerTenantMap(request.user)
+            resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+            for sample in samples:
+                 if sample["project_id"] in tenant_map.keys():
+                     sample["slice"] = tenant_map[sample["project_id"]]["slice"]
+                 else:
+                     sample["slice"] = sample["project_id"]
+                 if sample["resource_id"] in resource_map.keys():
+                     sample["resource_name"] = resource_map[sample["resource_id"]]
+                 else:
+                     sample["resource_name"] = sample["resource_id"]
         return Response(samples)
 
 class ServiceAdjustScale(APIView):
@@ -1085,7 +1097,7 @@ class ServiceAdjustScale(APIView):
     method_name = "serviceadjustscale"
 
     def get(self, request, format=None):
-        if (not request.user.is_authenticated()) or (not request.user.is_admin()):
+        if (not request.user.is_authenticated()) or (not request.user.is_admin):
             raise PermissionDenied("You must be authenticated admin user in order to use this API")
         service = request.QUERY_PARAMS.get('service', None)
         slice_hint = request.QUERY_PARAMS.get('slice_hint', None)
@@ -1097,5 +1109,5 @@ class ServiceAdjustScale(APIView):
         if not services or (not services.get(name=service)):
             raise XOSMissingField("Service not found")
         service = services.get(name=service)
-        service.adjust_scale(slice_hint, scale)
+        service.adjust_scale(slice_hint, int(scale))
         return Response("Success")

@@ -1054,7 +1054,7 @@ class ControllerSliceInline(XOSTabularInline):
 
 class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances', "default_isolation"]
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances', "default_isolation", "network"]
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_instances')

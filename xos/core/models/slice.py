@@ -20,6 +20,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 
 class Slice(PlCoreBase):
     ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))
+    NETWORK_CHOICES = ((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'))
 
     name = StrippedCharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")
@@ -29,7 +30,7 @@ class Slice(PlCoreBase):
     site = models.ForeignKey(Site, related_name='slices', help_text="The Site this Slice belongs to")
     max_instances = models.IntegerField(default=10)
     service = models.ForeignKey(Service, related_name='slices', null=True, blank=True)
-    network = StrippedCharField(default="Private Only",null=True, blank=True, max_length=256)
+    network = models.CharField(null=True, blank=True, max_length=256, choices=NETWORK_CHOICES)
     tags = generic.GenericRelation(Tag)
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
@@ -82,6 +83,11 @@ class Slice(PlCoreBase):
         
         if not self.creator:
             raise ValidationError('slice has no creator')
+
+        if self.network=="Private Only":
+            # "Private Only" was the default from the old Tenant View
+            self.network=None
+        self.enforce_choices(self.network, self.NETWORK_CHOICES)
 
         super(Slice, self).save(*args, **kwds)
 
