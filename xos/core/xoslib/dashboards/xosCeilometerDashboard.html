@@ -3,18 +3,16 @@
 <!-- browserSync -->
 
 <!-- inject:css -->
-<link rel="stylesheet" href="/css/ceilometerDashboard.css">
-<link rel="stylesheet" href="/css/dev.css">
+<link rel="stylesheet" href="/../../static/css/xosCeilometerDashboard.css">
 <!-- endinject -->
 <link rel="stylesheet" href="css/ceilometerDashboard.css">
-
 <div id="xosCeilometerDashboard">
-    <div ui-view></div>
+  <div ui-view ng-class="stateName"></div>
 </div>
 
 
+
 <!-- inject:js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
-<script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+<script src="/../../static/js/vendor/xosCeilometerDashboardVendor.js"></script>
 <script src="/../../static/js/xosCeilometerDashboard.js"></script>
 <!-- endinject -->

@@ -1206,7 +1206,7 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
 class ImageAdmin(XOSBaseAdmin):
 
     fieldsets = [('Image Details',
-                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format'],
+                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format', 'tag', 'path'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
@@ -1215,7 +1215,7 @@ class ImageAdmin(XOSBaseAdmin):
 
     inlines = [InstanceInline, ControllerImagesInline]
 
-    user_readonly_fields = ['name', 'disk_format', 'container_format']
+    user_readonly_fields = ['name', 'disk_format', 'container_format', 'tag', 'path']
 
     list_display = ['backend_status_icon', 'name', 'kind']
     list_display_links = ('backend_status_icon', 'name', )
@@ -1848,7 +1848,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
     inlines = [NetworkParameterInline,]
     fieldsets = [
-        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
+        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 

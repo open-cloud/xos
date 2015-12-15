@@ -1,0 +1,29 @@
+<div ng-show="vm.loader" class="loader">Loading</div>
+
+<section ng-if="!vm.loader && !vm.error">
+
+  <div class="alert alert-danger" ng-if="vm.stats.length == 0">
+    No result
+  </div>  
+
+  <table class="table" ng-if="vm.stats.length > 0">
+    <tr>
+      <th>Type:</th>
+      <th>Meter:</th>
+      <th>Unit:</th>
+      <th>Value:</th>
+    </tr>
+    <tr ng-repeat="item in vm.stats">
+      <td>{{item.category}}</td>
+      <td>{{item.meter}}</td>
+      <td>{{item.unit}}</td>
+      <td>{{item.value}}</td>
+    </tr>
+  </table>
+</section>
+
+<section ng-if="!vm.loader && vm.error">
+  <div class="alert alert-danger">
+    {{vm.error}}
+  </div>
+</section>

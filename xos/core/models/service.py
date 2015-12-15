@@ -168,11 +168,34 @@ class Service(PlCoreBase, AttributeMixin):
 
                 # print "add instance", s
 
+    def get_vtn_src_nets(self):
+        nets=[]
+        for slice in self.slices.all():
+            for ns in slice.networkslices.all():
+                if not ns.network:
+                    continue
+                if ns.network.template.access in ["direct", "indirect"]:
+                    # skip access networks; we want to use the private network
+                    continue
+                if ns.network.name in ["wan_network", "lan_network"]:
+                    # we don't want to attach to the vCPE's lan or wan network
+                    # we only want to attach to its private network
+                    # TODO: fix hard-coding of network name
+                    continue
+                for cn in ns.network.controllernetworks.all():
+                    if cn.net_id:
+                        net = {"name": ns.network.name, "net_id": cn.net_id}
+                        nets.append(net)
+        return nets
+
     def get_vtn_nets(self):
         nets=[]
         for slice in self.slices.all():
             for ns in slice.networkslices.all():
                 if not ns.network:
+                    continue
+                if ns.network.template.access not in ["direct", "indirect"]:
+                    # skip anything that's not an access network
                     continue
                 for cn in ns.network.controllernetworks.all():
                     if cn.net_id:
@@ -195,11 +218,11 @@ class Service(PlCoreBase, AttributeMixin):
     def get_vtn_dependencies_names(self):
         return [x["name"]+"_"+x["net_id"] for x in self.get_vtn_dependencies_nets()]
 
-    def get_vtn_ids(self):
-        return [x["net_id"] for x in self.get_vtn_nets()]
+    def get_vtn_src_ids(self):
+        return [x["net_id"] for x in self.get_vtn_src_nets()]
 
-    def get_vtn_names(self):
-        return [x["name"]+"_"+x["net_id"] for x in self.get_vtn_nets()]
+    def get_vtn_src_names(self):
+        return [x["name"]+"_"+x["net_id"] for x in self.get_vtn_src_nets()]
 
 
 class ServiceAttribute(PlCoreBase):
@@ -496,7 +519,7 @@ class TenantWithContainer(Tenant):
                      "trusty-server-multi-nic", # CloudLab
                     ]
 
-    LOOK_FOR_CONTAINER_IMAGES=["andybavier/docker-vcpe"]
+    LOOK_FOR_CONTAINER_IMAGES=["docker-vcpe"]
 
     class Meta:
         proxy = True
@@ -575,14 +598,6 @@ class TenantWithContainer(Tenant):
                 return images[0]
 
         raise XOSProgrammingError("No VPCE image (looked for %s)" % str(look_for_images))
-
-    @creator.setter
-    def creator(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator=None
-        self.set_attribute("creator_id", value)
 
     def save_instance(self, instance):
         # Override this function to do custom pre-save or post-save processing,
@@ -670,6 +685,11 @@ class TenantWithContainer(Tenant):
             else:
                 self.instance.delete()
             self.instance = None
+
+    def save(self, *args, **kwargs):
+        if (not self.creator) and (hasattr(self, "caller")) and (self.caller):
+            self.creator = self.caller
+        super(TenantWithContainer, self).save(*args, **kwargs)
 
 class CoarseTenant(Tenant):
     """ TODO: rename "CoarseTenant" --> "StaticTenant" """

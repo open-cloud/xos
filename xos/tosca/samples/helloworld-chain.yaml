@@ -1,0 +1,68 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Two services "service_one" and "service_two" with a tenancy relationship.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+
+    Private-Indirect:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          access: indirect
+
+    mysite:
+      type: tosca.nodes.Site
+
+    service_vcpe:
+      type: tosca.nodes.Service
+      requirements:
+          - helloworld_tenant:
+              node: service_helloworld
+              relationship: tosca.relationships.TenantOfService
+
+    service_helloworld:
+      type: tosca.nodes.Service
+      properties:
+          kind: helloworldservice_complete
+          view_url: /admin/helloworldservice_complete/helloworldservicecomplete/$id$/
+
+    tenant_helloworld:
+       type: tosca.nodes.Tenant
+       properties:
+           kind: helloworldservice_complete
+           service_specific_attribute: "{\"display_message\": \"Hello World from Tosca\"}"
+           model: helloworldservice_complete.models.HelloWorldTenantComplete
+       requirements:
+           - provider_service:
+               node: service_helloworld
+               relationship: tosca.relationships.MemberOfService
+
+
+    mysite_helloworld:
+      type: tosca.nodes.Slice
+      requirements:
+          - service:
+              node: service_helloworld
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
+    helloworld_access:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private-Indirect
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_helloworld
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_helloworld
+              relationship: tosca.relationships.ConnectsToSlice
+
