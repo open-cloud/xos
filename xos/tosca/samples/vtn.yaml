@@ -1,0 +1,83 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    service_ONOS_VTN:
+      type: tosca.nodes.ONOSService
+      requirements:
+      properties:
+          kind: onos
+          view_url: /admin/onos/onosservice/$id$/
+          public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
+      artifacts:
+          pubkey: /opt/xos/observers/onos/onos_key.pub
+
+    VTN_ONOS_app:
+      type: tosca.nodes.ONOSvBNGApp
+      requirements:
+          - onos_tenant:
+              node: service_ONOS_VTN
+              relationship: tosca.relationships.TenantOfService
+      properties:
+#          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
+
+    # docker image for vcpe containers
+    docker-onos:
+      # TODO: need to attach this to mydeployment
+      type: tosca.nodes.Image
+      properties:
+        kind: container
+        container_format: na
+        disk_format: na
+        path: onosproject/onos
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_onos_vtn:
+      description: ONOS Controller Slice for VTN
+      type: tosca.nodes.Slice
+      requirements:
+          - ONOS:
+              node: service_ONOS_VTN
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - onos_docker_image:
+              node: docker-onos
+              relationship: tosca.relationships.UsesImage
+      properties:
+          network: bridged
+          default_isolation: container
+
+    # Virtual machines
+    onos_app_vtn:
+      type: tosca.nodes.Compute.Container
+      capabilities:
+        # Host container properties
+        host:
+         properties:
+           num_cpus: 1
+           disk_size: 10 GB
+           mem_size: 4 MB
+        # Guest Operating System properties
+        os:
+          properties:
+            # host Operating System image properties
+            architecture: x86_64
+            type: linux
+            distribution: Ubuntu
+            version: 14.10
+      requirements:
+          - slice:
+                node: mysite_onos_vtn
+                relationship: tosca.relationships.MemberOfSlice
+          - image:
+                node: docker-onos
+                relationship: tosca.relationships.UsesImage
