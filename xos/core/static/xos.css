@@ -62,6 +62,7 @@ body.login img.logo{
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   transition: all 0.5s ease;
+  background: white;
 }
 
 #wrapper.toggled #sidebar-wrapper {

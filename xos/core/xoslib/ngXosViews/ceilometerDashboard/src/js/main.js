@@ -101,6 +101,7 @@ angular.module('xos.ceilometerDashboard', [
       this.loadMeters = () => {
         this.loader = true;
 
+        // TODO rename projects in meters
         Ceilometer.getMeters()
         .then(meters => {
           //group project by service
@@ -204,9 +205,12 @@ angular.module('xos.ceilometerDashboard', [
       if($stateParams.name && $stateParams.tenant){
         this.name = $stateParams.name;
         this.tenant = $stateParams.tenant;
+        // console.log('++++++++++', this.name, this.tenant);
+        // TODO rename tenant in resource_id
       }
-
-      // Mock
+      else{
+        throw new Error('Missing Name and Tenant Params!');
+      }
 
       /**
       * Goes trough the array and format date to be used as labels
@@ -247,7 +251,6 @@ angular.module('xos.ceilometerDashboard', [
         this.chart['labels'] = this.getLabels(lodash.sortBy(this.samplesList[resource_id], 'timestamp'));
         this.chart['series'].push(resource_id);
         this.chart['data'].push(this.getData(lodash.sortBy(this.samplesList[resource_id], 'timestamp')));
-        console.log(this.samplesList[resource_id]);
         this.chartMeters.push(this.samplesList[resource_id][0]); //use the 0 as are all samples for the same resource and I need the name
         lodash.remove(this.sampleLabels, {id: resource_id});
       }
@@ -255,7 +258,7 @@ angular.module('xos.ceilometerDashboard', [
       this.removeFromChart = (meter) => {
         this.chart.data.splice(this.chart.series.indexOf(meter.resource_id), 1);
         this.chart.series.splice(this.chart.series.indexOf(meter.resource_id), 1);
-        this.chartMeters.splice(this.chartMeters.indexOf(meter.resource_id), 1);
+        this.chartMeters.splice(lodash.findIndex(this.chartMeters, {resource_id: meter.resource_id}), 1);
         this.sampleLabels.push({
           id: meter.resource_id,
           name: meter.resource_name
