@@ -271,13 +271,14 @@ angular.module('xos.ceilometerDashboard', [
      
       this.formatSamplesLabels = (samples) => {
 
-        return lodash.uniq(samples.reduce((labels, item) => {
+        return lodash.uniq(samples, 'resource_id')
+        .reduce((labels, item) => {
           labels.push({
             id: item.resource_id,
             name: item.resource_name
           });
           return labels;
-        }, []), item => item.id);
+        }, []);
       }
 
 
