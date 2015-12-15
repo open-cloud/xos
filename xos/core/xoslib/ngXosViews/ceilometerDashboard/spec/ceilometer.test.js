@@ -92,6 +92,46 @@ describe('In Ceilometer View', () => {
       expect(vm.chartMeters[0].resource_id).toBe('anotherTenant')
       expect(vm.chartMeters[0].resource_name).toBe('anotherName')
     });
+
+    describe('The format sample labels method', () => {
+      it('should create an array of unique labels', () => {
+        // unique because every resource has multiple samples (time-series)
+        const samples = [
+          {resource_id: 1, resource_name: 'fakeName'},
+          {resource_id: 1, resource_name: 'fakeName'},
+          {resource_id: 2, resource_name: 'anotherName'},
+          {resource_id: 2, resource_name: 'anotherName'}
+        ];
+
+        const result = vm.formatSamplesLabels(samples);
+
+        expect(result.length).toBe(2);
+        expect(result[0]).toEqual({id: 1, name: 'fakeName'});
+        expect(result[1]).toEqual({id: 2, name: 'anotherName'});
+      });
+    });
+  });
+});
+
+describe('The orderObjectByKey filter', () => {
+  var $filter;
+
+  beforeEach(function () {
+    module('xos.ceilometerDashboard');
+
+    inject(function (_$filter_) {
+      $filter = _$filter_;
+    });
   });
 
+  it('should order an object by the key value', function () {
+    // Arrange.
+    const list = {c: 3, b: 2, a: 1};
+
+    // call the filter function
+    const result = $filter('orderObjectByKey')(list);
+
+    // Assert.
+    expect(result).toEqual({a: 1, b: 2, c: 3});
+  });
 });
