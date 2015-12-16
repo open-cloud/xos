@@ -6,7 +6,7 @@ NO_DOCKER_CACHE?=false
 build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
 
 .PHONY: run
-run: ; docker run -d --name ${CONTAINER_NAME} ${IMAGE_NAME}
+run: ; docker run -d --name ${CONTAINER_NAME} -v /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro ${IMAGE_NAME}
 
 .PHONY: stop
 stop: ; docker stop ${CONTAINER_NAME}

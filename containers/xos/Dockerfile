@@ -91,4 +91,4 @@ ENV HOME /root
 WORKDIR /opt/xos
 
 # Define default command.
-CMD python manage.py runserver 0.0.0.0:8000 --insecure
+CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
