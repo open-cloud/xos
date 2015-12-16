@@ -18,13 +18,16 @@ topology_template:
           pubkey: /opt/xos/observers/onos/onos_key.pub
 
     VTN_ONOS_app:
-      type: tosca.nodes.ONOSvBNGApp
+      type: tosca.nodes.ONOSVTNApp
       requirements:
           - onos_tenant:
               node: service_ONOS_VTN
               relationship: tosca.relationships.TenantOfService
       properties:
-#          dependencies: org.onosproject.proxyarp, org.onosproject.virtualbng, org.onosproject.openflow, org.onosproject.fwd
+          dependencies: org.onosproject.openstackswitching, org.onosproject.cordvtn
+          rest_onos/v1/network/configuration/: { get_atrifact: [ SELF, vtn_network_cfg_json, LOCAL_FILE ] }
+      artifacts:
+          vtn_network_cfg_json: /root/setup/vtn-network-cfg.json
 
     # docker image for vcpe containers
     docker-onos:
