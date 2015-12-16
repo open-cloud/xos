@@ -42,7 +42,7 @@
   <div class="row" ng-if="!vm.loader">
     <div class="col-xs-12">
       <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">
-        {{meter.resource_name}}
+        {{meter.resource_name || meter.resource_id}}
       </a>
     </div>
   </div>
