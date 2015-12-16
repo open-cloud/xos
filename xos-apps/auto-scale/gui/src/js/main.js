@@ -6,8 +6,9 @@ angular.module('autoscaling', [
   'ngAnimate',
   'chart.js'
 ])
-.run(() => {
-  console.log('autoscaling is running');
+.run((Autoscaling) => {
+  // start polling data
+  Autoscaling.getAutoscalingData();
 })
 .config(($stateProvider, $urlRouterProvider) => {
   $stateProvider
@@ -15,6 +16,6 @@ angular.module('autoscaling', [
     url: '/',
     template: '<service-container></service-container>'
   });
-  
+
   $urlRouterProvider.otherwise('/');
 });
