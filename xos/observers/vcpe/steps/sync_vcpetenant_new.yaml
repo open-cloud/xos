@@ -67,8 +67,39 @@
     notify:
     - restart dnsmasq
 
+  - name: create directory for "safe" config
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
+
+  - name: dnsmasq "safe" config
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: copy base ufw files
+    synchronize: src=/opt/xos/observers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    notify:
+    - reload ufw
+
+  - name: redirection rules for safe DNS
+    template: src=/opt/xos/observers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
+    notify:
+    - reload ufw
+
+  - name: base ufw setup uses /etc/rc.local
+    copy: src=/opt/xos/observers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
+    notify:
+    - copy in /etc/rc.local
+
   handlers:
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
     shell: docker exec {{ container_name }} /usr/bin/killall dnsmasq
 
+  - name: reload ufw
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
+
+  # Use docker cp instead of single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  - name: copy in /etc/rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
