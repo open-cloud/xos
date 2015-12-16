@@ -6,12 +6,23 @@ import msgpack
 import collections
 import time, thread, threading
 
+from flask import request, Request, jsonify
+from flask import Flask
+from flask import make_response
+app = Flask(__name__)
+
 projects_map = {}
 xos_tenant_info_map = {}
 xos_instances_info_map = {}
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 12346
+
+@app.route('/autoscaledata',methods=['GET'])
+def autoscaledata():
+    response = app.make_response(json.dumps(projects_map))
+    response.mimetype="application/json"
+    return response
 
 def acquire_xos_monitoring_channel():
     url = "http://ctl:9999/xoslib/monitoringchannel/"
@@ -212,17 +223,44 @@ def read_notification_from_ceilometer(host,port):
          if sample['resource_id'] not in resource_map.keys():
               resource_map[sample['resource_id']] = {}
               resource_map[sample['resource_id']]['xos_instance_info'] = getXosInstanceInfo(sample['resource_id'])
-              resource_map[sample['resource_id']]['queue'] = collections.deque(maxlen=10)
-         samples_map = resource_map[sample['resource_id']]['queue']
+              resource_map[sample['resource_id']]['queue'] = []
+         samples_queue = resource_map[sample['resource_id']]['queue']
          sample = {'counter_name':sample['counter_name'],
                    'project_id':sample['project_id'],
                    'resource_id':sample['resource_id'],
                    'timestamp':sample['timestamp'],
                    'counter_unit':sample['counter_unit'],
                    'counter_volume':sample['counter_volume']}
-         samples_map.append(sample)
+         deque = collections.deque(samples_queue, maxlen=10)
+         deque.append(sample)
+         resource_map[sample['resource_id']]['queue'] = list(deque)
       except Exception as e:
          print e
+
+def setup_webserver():
+    try:
+        #config = ConfigParser.ConfigParser()
+        #config.read('pub_sub.conf')
+        #webserver_host = config.get('WEB_SERVER','webserver_host')
+        #webserver_port = int (config.get('WEB_SERVER','webserver_port'))
+        #client_host    = config.get('CLIENT','client_host')
+        #client_port    = int (config.get('CLIENT','client_port'))
+ 
+        #log_level    = config.get('LOGGING','level')
+        #log_file       = config.get('LOGGING','filename')
+   
+        #level = LEVELS.get(log_level, logging.NOTSET) 
+        #logging.basicConfig(filename=log_file,format='%(asctime)s %(levelname)s %(message)s',\
+        #            datefmt=_DEFAULT_LOG_DATE_FORMAT,level=level) 
+        webserver_host = '0.0.0.0'
+        webserver_port = 9991
+   
+    except Exception as e:
+        print("* Error in config file:",e.__str__())
+        logging.error("* Error in confing file:%s",e.__str__())
+    else: 
+        app.run(host=webserver_host,port=webserver_port,debug=True, use_reloader=False)
+
 
 def main():
    monitoring_channel = acquire_xos_monitoring_channel()
@@ -243,6 +281,7 @@ def main():
        return
    periodic_cpu_threshold_evaluator()
    periodic_print()
+   setup_webserver()
 
 if __name__ == "__main__":
    main()
