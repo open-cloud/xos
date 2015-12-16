@@ -22,6 +22,10 @@ var eslint = require('gulp-eslint');
 var inject = require('gulp-inject');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
+var mqpacker = require('css-mqpacker');
+var csswring = require('csswring');
 
 var TEMPLATE_FOOTER = `}]);
 angular.module('xos.ceilometerDashboard').run(function($location){$location.path('/')});
@@ -35,6 +39,28 @@ module.exports = function(options){
       [options.dashboards + 'xosCeilometerDashboard.html'],
       {force: true}
     );
+  });
+
+  // minify css
+  gulp.task('css', function () {
+    var processors = [
+      autoprefixer({browsers: ['last 1 version']}),
+      mqpacker,
+      csswring
+    ];
+    
+    gulp.src([
+      `${options.css}**/*.css`,
+      `!${options.css}dev.css`
+    ])
+    .pipe(postcss(processors))
+    .pipe(gulp.dest(options.tmp + '/css/'));
+  });
+
+  gulp.task('copyCss', ['css'], function(){
+    return gulp.src([`${options.tmp}/css/*.css`])
+    .pipe(concat('xosCeilometerDashboard.css'))
+    .pipe(gulp.dest(options.static + 'css/'))
   });
 
   // compile and minify scripts
@@ -67,12 +93,15 @@ module.exports = function(options){
       .pipe(replace(/<!-- bower:css -->(\n.*)*\n<!-- endbower --><!-- endcss -->/, ''))
       .pipe(replace(/<!-- bower:js -->(\n.*)*\n<!-- endbower --><!-- endjs -->/, ''))
       .pipe(replace(/ng-app=".*"\s/, ''))
+      //rewriting css path
+      // .pipe(replace(/(<link.*">)/, ''))
       // injecting minified files
       .pipe(
         inject(
           gulp.src([
             options.static + 'js/vendor/xosCeilometerDashboardVendor.js',
-            options.static + 'js/xosCeilometerDashboard.js'
+            options.static + 'js/xosCeilometerDashboard.js',
+            options.static + 'css/xosCeilometerDashboard.css'
           ])
         )
       )
@@ -107,11 +136,13 @@ module.exports = function(options){
 
   gulp.task('build', function() {
     runSequence(
+      'lint',
       'templates',
       'babel',
       'scripts',
       'wiredep',
       'copyHtml',
+      'copyCss',
       'cleanTmp'
     );
   });
