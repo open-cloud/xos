@@ -10,9 +10,8 @@ var path = require('path');
 var bowerComponents = wiredep( {devDependencies: true} )[ 'js' ].map(function( file ){
   return path.relative(process.cwd(), file);
 });
-
-module.exports = function(config) {
 /*eslint-enable*/
+module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -45,8 +44,15 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'src/js/**/*.js': ['babel'],
-      'spec/**/*.test.js': ['babel'],
+      'spec/**/*.js': ['babel'],
       'src/**/*.html': ['ng-html2js']
+    },
+
+    babelPreprocessor: {
+      options: {
+        presets: ['es2015'],
+        sourceMap: 'inline'
+      }
     },
 
     ngHtml2JsPreprocessor: {
