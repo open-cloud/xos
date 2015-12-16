@@ -6,8 +6,10 @@ angular.module('autoscaling')
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/service-container.tpl.html',
-    controller: () => {
-
+    controller: ($rootScope) => {
+      $rootScope.$on('autoscaling.update', (evt, data) => {
+        console.log(data);
+      });
     }
   };
 });

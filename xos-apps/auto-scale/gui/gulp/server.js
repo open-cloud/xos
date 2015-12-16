@@ -8,6 +8,30 @@ var angularFilesort = require('gulp-angular-filesort');
 var babel = require('gulp-babel');
 var wiredep = require('wiredep').stream;
 var del = require('del');
+var httpProxy = require('http-proxy');
+
+const environment = process.env.NODE_ENV;
+
+if (environment){
+  var conf = require(`../env/${environment}.js`);
+}
+else{
+  var conf = require('../env/default.js')
+}
+
+console.log(conf);
+
+var proxy = httpProxy.createProxyServer({
+  target: conf.host || 'http://0.0.0.0:9999'
+});
+
+proxy.on('error', function(error, req, res) {
+  res.writeHead(500, {
+    'Content-Type': 'text/plain'
+  });
+
+  console.error('[Proxy]', error);
+});
 
 module.exports = function(options){
 
@@ -25,10 +49,16 @@ module.exports = function(options){
       },
       server: {
         baseDir: options.src,
-        // routes: {
-        //   '/api': options.api,
-        //   '/xosHelpers/src': options.helpers
-        // }
+        middleware: function(req, res, next){
+          if(
+            req.url.indexOf('autoscaledata') !== -1
+          ){
+            proxy.web(req, res);
+          }
+          else{
+            next();
+          }
+        }
       }
     });
 
@@ -54,7 +84,6 @@ module.exports = function(options){
 
   // inject scripts
   gulp.task('injectScript', function(){
-    console.log(options.tmp);
     runSequence(
        'cleanTmp',
        'babel',
