@@ -689,7 +689,7 @@ class VCPETenant(TenantWithContainer):
 
     def save_instance(self, instance):
         with transaction.atomic():
-            instance.volumes = "/etc/dnsmasq.d"
+            instance.volumes = "/etc/dnsmasq.d,/etc/ufw"
             super(VCPETenant, self).save_instance(instance)
 
             if instance.isolation in ["container", "container_vm"]:
