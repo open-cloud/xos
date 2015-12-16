@@ -4,7 +4,7 @@ LAST_CONTAINER=$(shell sudo docker ps -l -q)
 
 cloudlab: common_cloudlab xos
 
-devstack: common_devstack xos
+devstack: common_devstack devstack_net_fix xos
 
 xos:
 	rm ../../xos_configuration/*
