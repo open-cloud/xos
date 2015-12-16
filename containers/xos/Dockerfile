@@ -80,6 +80,7 @@ RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
     /opt/xos/scripts/opencloud genkeys
 
 # install Tosca engine
+RUN chmod +x /opt/xos/tosca/run.py
 RUN bash /opt/xos/tosca/install_tosca.sh
 
 EXPOSE 8000
