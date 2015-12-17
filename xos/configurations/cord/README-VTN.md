@@ -1,9 +1,11 @@
 vtn notes:
 
 inside the xos container:
+
     python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/tosca/samples/vtn.yaml
 
 ctl node:
+
     # set ONOS_VTN_HOSTNAME to the host where the VTN container was installed
     ONOS_VTN_HOSTNAME="cp-2.smbaker-xos5.xos-pg0.clemson.cloudlab.us"
     apt-get install python-pip
@@ -22,11 +24,13 @@ ctl node:
     systemctl restart neutron-server
 
 Compute node that has the ONOS Container
+
     # we need NAT rule so the neutron vtn plugin can talk to onos
     # change 172.17.0.2 to the IP address for the ONOS container (use "docker inspect")
     iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 8101 -j DNAT --to-destination 172.17.0.2
 
 Compute nodes (all of them):
+
     systemctl stop neutron-plugin-openvswitch-agent
     /usr/share/openvswitch/scripts/ovs-ctl
         update settings as per vtn docs to make port 6640 visible
