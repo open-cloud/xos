@@ -48,11 +48,11 @@ To install DevStack and XOS:
 ~/xos/xos/configurations/devel$ make devstack
 ```
 
-Note that there are some issues with the networking setup in this configuration;
-you will be able to create VMs but they are not accessible on the network.  However it is
-possible to log into a VM by first entering the appropriate network namespace.
-
 ## What you get
 
 XOS will be set up with a single Deployment and Site.  It should be in a state where
 you can create slices and associate instances with them.
+
+Note that there are some issues with the networking setup in this configuration:
+VMs do not have a working DNS configuration in `/etc/resolv.conf`.  If you fix this
+manually then everything should work.
