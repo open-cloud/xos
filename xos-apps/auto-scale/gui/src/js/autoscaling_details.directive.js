@@ -7,7 +7,14 @@ angular.module('autoscaling')
     controllerAs: 'vm',
     templateUrl: 'templates/service-container.tpl.html',
     controller: function($rootScope) {
+
+      // set to true when a service is manually selected
+      this.manualSelect = false;
+
+      // start polling
       Autoscaling.getAutoscalingData();
+
+      // list to polling events
       $rootScope.$on('autoscaling.update', (evt, data) => {
         this.printData(data);
       });
@@ -33,7 +40,23 @@ angular.module('autoscaling')
           })
         });
         // arbitrary set the first service in the list as the selected one
-        this.selectedService = this.services[Object.keys(this.services)[0]];
+        if(!this.manualSelect){
+          this.serviceName = Object.keys(this.services)[0];
+          this.selectedService = this.services[Object.keys(this.services)[0]];
+        }
+        else{
+          this.selectedService = this.services[this.serviceName]
+        }
+      };
+
+      /**
+      * Change the current selected service
+      */
+     
+      this.selectService = (serviceName) => {
+        this.serviceName = serviceName;
+        this.selectedService = this.services[serviceName];
+        this.manualSelect = true;
       };
     }
   };
@@ -61,9 +84,13 @@ angular.module('autoscaling')
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/slice-detail.tpl.html',
-    controller: function($scope) {
+    controller: function($scope, $timeout) {
 
-      this.chart = {};
+      this.chart = {
+        options: {
+          animation: true
+        }
+      };
 
       /**
       * Goes trough the array and format date to be used as labels
@@ -102,10 +129,13 @@ angular.module('autoscaling')
         this.chart.series = instanceNames;
         this.chart.data = this.getData(data, instanceNames);
 
-        console.log(this.getData(data, instanceNames));
+        // console.log(this.getData(data, instanceNames));
       }
 
-      $scope.$watch(() => this.instances, (val) => {this.drawChart(val)})
+      $scope.$watch(() => this.instances, (val) => {
+        $timeout(()=>{this.chart.options.animation = false}, 1000);
+        this.drawChart(val)
+      });
 
     }
   };
