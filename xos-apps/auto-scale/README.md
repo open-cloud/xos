@@ -9,7 +9,7 @@ This command will start the autoscaling application and start REST server on 999
 ## To verify the autoscaling application:
 1) Login to cloudlab compute nodes <br/>
 2) On each compute node, open /etc/ceilometer/pipeline.yaml file<br/>
-3) Change the polling interval for "cpu_source" meters from 600 to 60 as shown below<br/>
+3) Change the polling interval for "cpu_source" meters from 600 to poll interval period that u wish (eg. 60) as shown below.<br/>
 From:
 ```
     - name: cpu_source
@@ -28,6 +28,36 @@ To:
           - "cpu"
       sinks:
           - cpu_sink
+```
+3b) Also ensure the publisher in "cpu_sink" contains the following URL "udp://"IP of Ceilometer PUB-SUB":5004" as shown below.<br/>
+```
+    - name: cpu_sink
+      transformers:
+          - name: "rate_of_change"
+            parameters:
+                target:
+                    name: "cpu_util"
+                    unit: "%"
+                    type: "gauge"
+                    scale: "100.0 / (10**9 * (resource_metadata.cpu_number or 1))"
+      publishers:
+          - notifier://
+```
+
+To:
+```
+    - name: cpu_sink
+      transformers:
+          - name: "rate_of_change"
+            parameters:
+                target:
+                    name: "cpu_util"
+                    unit: "%"
+                    type: "gauge"
+                    scale: "100.0 / (10**9 * (resource_metadata.cpu_number or 1))"
+      publishers:
+          - notifier://
+          - udp://10.11.10.1:5004
 ```
 4) sudo service ceilometer-agent-compute restart<br/>
 5) With this change, the autoscaling application should start receiving the CPU utilization samples every 60 seconds<br/>
