@@ -20,7 +20,7 @@ UDP_PORT = 12346
 
 @app.route('/autoscaledata',methods=['GET'])
 def autoscaledata():
-    response = app.make_response(json.dumps(projects_map))
+    response = app.make_response(json.dumps(projects_map.values()))
     response.mimetype="application/json"
     return response
 
@@ -56,7 +56,7 @@ def print_samples():
    print ""
    print ""
    for project in projects_map.keys():
-        print "service=%s slice=%s, alarm_state=%s" % (projects_map[project]['xos_tenant_info']['service'] if projects_map[project]['xos_tenant_info'] else None, projects_map[project]['xos_tenant_info']['slice'] if projects_map[project]['xos_tenant_info'] else project, projects_map[project]['alarm'])
+        print "service=%s slice=%s, alarm_state=%s" % (projects_map[project]['service'], projects_map[project]['slice'] if projects_map[project]['slice'] else project, projects_map[project]['alarm'])
         for resource in projects_map[project]['resources'].keys():
              print "resource=%s" % (projects_map[project]['resources'][resource]['xos_instance_info']['instance_name'] if projects_map[project]['resources'][resource]['xos_instance_info'] else resource)
              for i in projects_map[project]['resources'][resource]['queue']:
@@ -95,7 +95,7 @@ def loadAllXosTenantInfo():
 
 def loadAllXosInstanceInfo():
     print "SRIKANTH: Loading all XOS instance info"
-    url = "http://130.127.133.87:9999/xos/instances/"
+    url = "http://ctl:9999/xos/instances/"
     admin_auth=("padmin@vicci.org", "letmein")   # use your XOS username and password
     xos_instances = requests.get(url, auth=admin_auth).json()
     for instance in xos_instances:
@@ -135,12 +135,8 @@ def handle_adjust_scale(project, adjust):
         print "SRIKANTH: %s is running with already maximum instances and can not scale up further " % project
         return
     #xos_tenant = getXosTenantInfo(project)
-    xos_tenant = projects_map[project]['xos_tenant_info']
-    if not xos_tenant:
-        print "SRIKANTH: Can not handle adjust_scale for Project %s because not associated with any slice" % project
-        return
-    xos_service = xos_tenant['service']
-    xos_slice = xos_tenant['slice']
+    xos_service = projects_map[project]['service']
+    xos_slice = projects_map[project]['slice']
     if not xos_service or not xos_slice: 
         print "SRIKANTH: Can not handle adjust_scale for Project %s because not associated with any service or slice" % project
         return
@@ -214,7 +210,10 @@ def read_notification_from_ceilometer(host,port):
               continue
          if sample['project_id'] not in projects_map.keys():
               projects_map[sample['project_id']] = {}
-              projects_map[sample['project_id']]['xos_tenant_info'] = getXosTenantInfo(sample['project_id'])
+	      xosTenantInfo = getXosTenantInfo(sample['project_id'])
+              projects_map[sample['project_id']]['project_id'] = sample['project_id']
+              projects_map[sample['project_id']]['slice'] = xosTenantInfo['slice']
+              projects_map[sample['project_id']]['service'] = xosTenantInfo['service']
               projects_map[sample['project_id']]['resources'] = {}
               projects_map[sample['project_id']]['uthreadshold_count'] = 0
               projects_map[sample['project_id']]['lthreadshold_count'] = 0
