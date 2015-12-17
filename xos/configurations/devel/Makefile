@@ -4,7 +4,7 @@ LAST_CONTAINER=$(shell sudo docker ps -l -q)
 
 cloudlab: common_cloudlab xos
 
-devstack: common_devstack devstack_net_fix xos
+devstack: upgrade_pkgs common_devstack devstack_net_fix xos
 
 xos:
 	rm ../../xos_configuration/*
@@ -31,5 +31,8 @@ enter:
 	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
 
 devstack_net_fix:
-	sudo bash -c "iptables -C nova-compute-sg-fallback -j ACCEPT || iptables -I nova-compute-sg-fallback 1 -j ACCEPT"
-	sudo bash -c "iptables -t nat -C POSTROUTING -o eth0 -s 172.24.0.0/16 -j MASQUERADE || iptables -t nat -I POSTROUTING 1 -o eth0 -s 172.24.0.0/16 -j MASQUERADE"
+	sudo ../devstack/net-fix.sh
+	sudo bash -c "source ../common/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
+
+upgrade_pkgs:
+	sudo pip install httpie --upgrade
