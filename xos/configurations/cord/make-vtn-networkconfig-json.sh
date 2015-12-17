@@ -37,8 +37,9 @@ EOF
     fi
 done
 
-NEUTRONIP="127.0.0.1"
-KEYSTONEIP="127.0.0.1"
+HOSTNAME=`hostname`
+NEUTRONIP=`getent hosts $HOSTNAME | awk '{ print $1 }'`
+KEYSTONEIP=`getent hosts $HOSTNAME | awk '{ print $1 }'`
 
 cat >> $FN <<EOF
                 ]
