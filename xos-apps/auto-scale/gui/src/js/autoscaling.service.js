@@ -33,6 +33,7 @@ angular.module('autoscaling')
 
   this.getAutoscalingData = () => {
     $http.get('/autoscaledata')
+    // $http.get('../mocks/mock.json')
     .success((res) => {
       $rootScope.$emit('autoscaling.update', this.formatData(res));
     });
