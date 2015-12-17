@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('autoscaling')
-.service('Autoscaling', function($http, $interval, $rootScope, lodash){
+.service('Autoscaling', function($http, $interval, $rootScope, lodash, $q){
 
   const pollingFrequency = 10;
   var pollinginterval;
@@ -31,16 +31,40 @@ angular.module('autoscaling')
     return list;
   };
 
-  this.getAutoscalingData = () => {
-    $http.get('/autoscaledata')
-    // $http.get('../mocks/mock.json')
+  function requestData(url){
+
+    const deferred = $q.defer();
+
+    $http.get(url)
     .success((res) => {
-      $rootScope.$emit('autoscaling.update', this.formatData(res));
+      deferred.resolve(res);
+    })
+    .error((e) => {
+      deferred.reject(e);
     });
+
+    return deferred.promise;
+  };
+
+
+  // TODO Move to Websocket
+  this.getAutoscalingData = () => {
+
+    requestData('/autoscaledata')
+    .then((res) => {
+      $rootScope.$emit('autoscaling.update', this.formatData(res));
+    })
+    .catch((e) => {
+      $rootScope.$emit('autoscaling.error', this.formatData(e));
+    });
+
     pollinginterval = $interval(() => {
-      $http.get('/autoscaledata')
-      .success((res) => {
+      requestData('/autoscaledata')
+      .then((res) => {
         $rootScope.$emit('autoscaling.update', this.formatData(res));
+      })
+      .catch((e) => {
+        $rootScope.$emit('autoscaling.error', this.formatData(e));
       });
     }, pollingFrequency * 1000)
   };
