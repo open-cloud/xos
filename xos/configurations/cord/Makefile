@@ -35,3 +35,27 @@ showlogs:
 
 enter:
 	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
+
+dataplane: etc_hosts
+	cd dataplane; ./gen-inventory.sh > hosts
+	cd dataplane; ansible-playbook -i hosts dataplane.yaml
+
+dataplane_bm: dataplane
+	cd dataplane; bash -c "./generate-bm.sh > hosts-bm"
+	cd dataplane; sudo bash -c "ansible-playbook -i hosts-bm dataplane-bm.yaml"
+
+etc_hosts:
+	sudo bash -c "sed -i '/^10.11.10/ d' /etc/hosts"
+	cd dataplane; sudo bash -c "./gen-etc-hosts.sh >> /etc/hosts"
+
+setup_client:
+	# add subscriber to vOLT?  Is there a REST API?
+	echo "Don't forget: add-subscriber-access of:0000000000000001 1 432"
+	cd dataplane; ansible -i hosts client -m shell -s -a "route del default gw 10.11.10.5; dhclient br-sub"
+	# reboot the vBNG ONOS
+	cd dataplane; ansible -i hosts onos_vbng -m shell -s -a "docker restart ONOS"
+
+cleanup: stop
+	cd dataplane; ./cleanup.sh
+	bash -c "source ../common/admin-openrc.sh; nova list --all-tenants; neutron net-list"
+	echo "Don't forget to clean up containers"
