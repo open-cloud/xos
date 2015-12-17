@@ -7,9 +7,28 @@ angular.module('autoscaling')
     controllerAs: 'vm',
     templateUrl: 'templates/service-container.tpl.html',
     controller: function($rootScope) {
+
+      this.loader = true;
+
+      // set to true when a service is manually selected
+      this.manualSelect = false;
+
+      // start polling
       Autoscaling.getAutoscalingData();
+
+      // list to polling events
       $rootScope.$on('autoscaling.update', (evt, data) => {
+        
+        if (data.length > 0) {
+          this.loader = false;
+        };
         this.printData(data);
+      });
+
+      // handle errors
+      $rootScope.$on('autoscaling.error', (evt, err) => {
+        this.loader = false;
+        this.error = err.data.message;
       });
 
       /**
@@ -26,14 +45,30 @@ angular.module('autoscaling')
             // so take them out of an array
             // and keep only the sample data
             lodash.forEach(Object.keys(this.services[service][slice]), (instance) => {
-              // console.log(this.services[service][slice][instance]);
+              // TODO maintain the instance order in the array
               this.services[service][slice][instance] = this.services[service][slice][instance][0].queue;
             });
             
           })
         });
         // arbitrary set the first service in the list as the selected one
-        this.selectedService = this.services[Object.keys(this.services)[0]];
+        if(!this.manualSelect){
+          this.serviceName = Object.keys(this.services)[0];
+          this.selectedService = this.services[Object.keys(this.services)[0]];
+        }
+        else{
+          this.selectedService = this.services[this.serviceName]
+        }
+      };
+
+      /**
+      * Change the current selected service
+      */
+     
+      this.selectService = (serviceName) => {
+        this.serviceName = serviceName;
+        this.selectedService = this.services[serviceName];
+        this.manualSelect = true;
       };
     }
   };
@@ -61,9 +96,27 @@ angular.module('autoscaling')
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/slice-detail.tpl.html',
-    controller: function($scope) {
+    controller: function($scope, $timeout) {
 
-      this.chart = {};
+      this.chart = {
+        options: {
+          datasetFill: false,
+          animation: true,
+          // animationEasing: 'easeInBack'
+        }
+      };
+
+      this.chartColors = [
+        '#286090',
+        '#F7464A',
+        '#46BFBD',
+        '#FDB45C',
+        '#97BBCD',
+        '#4D5360',
+        '#8c4f9f'
+      ];
+
+      Chart.defaults.global.colours = this.chartColors;
 
       /**
       * Goes trough the array and format date to be used as labels
@@ -73,12 +126,27 @@ angular.module('autoscaling')
       */
 
       this.getLabels = (data) => {
-        return data.reduce((list, item) => {
-          let date = new Date(item.timestamp);
-          list.push(`${date.getHours()}:${(date.getMinutes()<10?'0':'') + date.getMinutes()}:${date.getSeconds()}`);
-          return list;
-        }, []);
+        // we should compare the  labels and get the last available
+        return this.prependValues(
+          data.reduce((list, item) => {
+            let date = new Date(item.timestamp);
+            list.push(`${date.getHours()}:${(date.getMinutes()<10?'0':'') + date.getMinutes()}:${date.getSeconds()}`);
+            return list;
+          }, [])
+        , '');
       };
+
+      /**
+      * Prepend value if the array is less than 10 element
+      */
+      this.prependValues = (list, value) => {
+        if(list.length < 10){
+          list.unshift(value);
+          // call itself to check again
+          return this.prependValues(list, value);
+        }
+        return list;
+      }
 
       /**
       * Convert an object of array,
@@ -86,33 +154,44 @@ angular.module('autoscaling')
       */
       this.getData = (data, instanceNames) => {
         return lodash.map(instanceNames, (item) => {
-          return lodash.reduce(data[item], (list, sample) => {
+          return this.prependValues(lodash.reduce(data[item], (list, sample) => {
             // console.log(data[item], sample);
             list.push(sample.counter_volume);
             return list;
-          }, []);
+          }, []), null);
         });
       };
+
+      this.getMostRecentSeries = (instances) => {
+        // console.log(instances);
+        const newestValues = [];
+        instances = lodash.toArray(instances)
+        lodash.forEach(instances, (values) => {
+          newestValues.push(lodash.max(values, item => new Date(item.timestamp)));
+        });
+
+        var highestValue = 0;
+        var newestInstanceIndex = lodash.findIndex(newestValues, (val) => {
+          return new Date(val.timestamp) > highestValue;
+        });
+
+        return instances[newestInstanceIndex]
+      }
 
       this.drawChart = (data) => {
 
         const instanceNames = Object.keys(data);
 
-        this.chart.labels = this.getLabels(data[instanceNames[0]]);
+        this.chart.labels = this.getLabels(this.getMostRecentSeries(data));
         this.chart.series = instanceNames;
         this.chart.data = this.getData(data, instanceNames);
-
-        console.log(this.getData(data, instanceNames));
       }
 
-      $scope.$watch(() => this.instances, (val) => {this.drawChart(val)})
+      $scope.$watch(() => this.instances, (val) => {
+        $timeout(()=>{this.chart.options.animation = false}, 1000);
+        this.drawChart(val)
+      });
 
     }
   };
 });
-
-//  TODO
-//  [x] repeat service name in a menu
-//  [x] create a directive that receive a service
-//  [ ] print a chart for every slice
-//  [ ] print a line in the chart for every instance
