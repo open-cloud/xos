@@ -8,11 +8,14 @@ ctl node:
 
     # set ONOS_VTN_HOSTNAME to the host where the VTN container was installed
     ONOS_VTN_HOSTNAME="cp-2.smbaker-xos5.xos-pg0.clemson.cloudlab.us"
-    apt-get install python-pip
+    apt-get -y install python-pip
     pip install -U setuptools pip
     git clone https://github.com/openstack/networking-onos.git
     cd networking-onos
-    sudo python setup.py install
+    python setup.py install
+    # the above fails the first time with an error about pbr.json
+    # I ran it again and it succeeded, but I am skeptical there's
+    # not still an issue lurking...
     cat > /usr/local/etc/neutron/plugins/ml2/conf_onos.ini <<EOF
     [ml2_onos]
     url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/vtn
