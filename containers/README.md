@@ -17,7 +17,7 @@ isolated environments.
 To build and run the database container:
 
 ```
-$ cd postgres; make build && make run
+$ cd postgresql; make build && make run
 ```
 
 #### XOS Container
