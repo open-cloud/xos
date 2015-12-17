@@ -32,12 +32,15 @@ angular.module('autoscaling')
   };
 
   this.getAutoscalingData = () => {
-    // pollinginterval = $interval(() => {
-      // $http.get('/autoscaledata')
-      $http.get('../mocks/mock.json')
+    $http.get('/autoscaledata')
+    .success((res) => {
+      $rootScope.$emit('autoscaling.update', this.formatData(res));
+    });
+    pollinginterval = $interval(() => {
+      $http.get('/autoscaledata')
       .success((res) => {
         $rootScope.$emit('autoscaling.update', this.formatData(res));
       });
-    // }, pollingFrequency * 1000)
+    }, pollingFrequency * 1000)
   };
 });
