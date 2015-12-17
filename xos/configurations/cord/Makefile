@@ -18,7 +18,7 @@ common_cloudlab:
 ceilometer_dashboard:
 	#NOTE: The below dashboard install scripts assume 
 	#clouldlab openstack environment created using "OpenStack" profile
-	bash install_xos_ceilometer_dashboard.sh
+	#bash install_xos_ceilometer_dashboard.sh
 	bash install_ceilometer_patch.sh
 
 virtualbng_json:
