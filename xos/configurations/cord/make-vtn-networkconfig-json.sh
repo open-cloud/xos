@@ -53,7 +53,7 @@ cat >> $FN <<EOF
                  "do_not_push_flows" : "true",
                  "neutron_server" : "http://$NEUTRONIP:9696/v2.0/",
                  "keystone_server" : "http://$KEYSTONEIP:5000/v2.0/",
-                 "user_name" : "$OS_TENANT_NAME",
+                 "user_name" : "$OS_USERNAME",
                  "password" : "$OS_PASSWORD"
              }
         }
