@@ -41,6 +41,7 @@ module.exports = function(options){
       // reloadDelay: 500,
       // logLevel: 'debug',
       // logConnections: true,
+      // directory: true,
       startPath: '#/',
       snippetOptions: {
         rule: {
