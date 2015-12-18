@@ -20,7 +20,7 @@ topology_template:
       type: tosca.nodes.Image
 
     service_vcpe:
-      type: tosca.nodes.Service
+      type: tosca.nodes.VCPEService
       requirements:
           - helloworld_tenant:
               node: service_helloworld
