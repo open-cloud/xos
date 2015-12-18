@@ -26,7 +26,13 @@
   },
   "overrides": {
     "ui.bootstrap": {
-      "main": ["src/accordion/accordion.js", "src/collapse/collapse.js"]
+      "main": [
+        "src/accordion/accordion.js",
+        "src/collapse/collapse.js"
+      ]
     }
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.8"
   }
 }
