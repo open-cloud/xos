@@ -4,7 +4,7 @@ LAST_CONTAINER=$(shell sudo docker ps -l -q)
 
 cloudlab: common_cloudlab xos
 
-devstack: common_devstack xos
+devstack: upgrade_pkgs common_devstack devstack_net_fix xos
 
 xos:
 	rm ../../xos_configuration/*
@@ -29,3 +29,10 @@ showlogs:
 
 enter:
 	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
+
+devstack_net_fix:
+	sudo ../devstack/net-fix.sh
+	sudo bash -c "source ../common/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
+
+upgrade_pkgs:
+	sudo pip install httpie --upgrade

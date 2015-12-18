@@ -48,7 +48,7 @@ def acquire_xos_monitoring_channel():
             print 'SRIKANTH: HTTP error %s' % e.reason
             break
         except urllib2.URLError, e:
-            print 'SRIKANTH: URL error %(reason)s' % e.reason
+            print 'SRIKANTH: URL error %s' % e.reason
             pass
     return monitoring_channel
 
@@ -65,7 +65,7 @@ def print_samples():
 def periodic_print():
      print_samples()
      #Print every 1minute
-     threading.Timer(60, periodic_print).start()
+     threading.Timer(20, periodic_print).start()
 
 
 CPU_UPPER_THRESHOLD = 80 #80%
@@ -196,7 +196,7 @@ def periodic_cpu_threshold_evaluator():
               else:
                   projects_map[project]['lthreadshold_count'] = 0
                   projects_map[project]['alarm'] = INITIAL_STATE
-     threading.Timer(60, periodic_cpu_threshold_evaluator).start()
+     threading.Timer(20, periodic_cpu_threshold_evaluator).start()
 
 def read_notification_from_ceilometer(host,port):
    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
@@ -206,7 +206,18 @@ def read_notification_from_ceilometer(host,port):
       data, source = udp.recvfrom(64000)
       try:
          sample = msgpack.loads(data, encoding='utf-8')
-         if sample['counter_name'] != 'cpu_util':
+         if sample['counter_name'] == 'instance':
+             if 'delete' in sample['resource_metadata']['event_type']:
+	          xosTenantInfo = getXosTenantInfo(sample['project_id'])
+                  xosResourceInfo = getXosInstanceInfo(sample['resource_id'])
+                  print "SRIKANTH: Project %s Instance %s is getting deleted" % (xosTenantInfo['slice'] if xosTenantInfo['slice'] else sample['project_id'],xosResourceInfo) 
+                  if sample['project_id'] not in projects_map.keys():
+                       continue
+                  if sample['resource_id'] not in projects_map[sample['project_id']]['resources'].keys():
+                       continue
+                  projects_map[sample['project_id']]['resources'].pop(sample['resource_id'], None)
+             continue
+         elif sample['counter_name'] != 'cpu_util':
               continue
          if sample['project_id'] not in projects_map.keys():
               projects_map[sample['project_id']] = {}
@@ -273,10 +284,18 @@ def main():
    subscribe_data = {"sub_info":"cpu_util","app_id":"xos_auto_scale","target":"udp://10.11.10.1:12346"}
    subscribe_url = ceilometer_url + 'v2/subscribe'
    response = requests.post(subscribe_url, data=json.dumps(subscribe_data))
-   print 'SRIKANTH: Ceilometer Subscription status:%s' % response.text
+   print 'SRIKANTH: Ceilometer meter "cpu_util" Subscription status:%s' % response.text
    #TODO: Fix the typo in 'sucess'
    if (not 'sucess' in response.text) and (not 'already exists' in response.text):
-       print 'SRIKANTH: Ceilometer Subscription unsuccessful...Exiting'
+       print 'SRIKANTH: Ceilometer meter "cpu_util" Subscription unsuccessful...Exiting'
+       return
+   subscribe_data = {"sub_info":"instance","app_id":"xos_auto_scale2","target":"udp://10.11.10.1:12346"}
+   subscribe_url = ceilometer_url + 'v2/subscribe'
+   response = requests.post(subscribe_url, data=json.dumps(subscribe_data))
+   print 'SRIKANTH: Ceilometer meter "instance" Subscription status:%s' % response.text
+   #TODO: Fix the typo in 'sucess'
+   if (not 'sucess' in response.text) and (not 'already exists' in response.text):
+       print 'SRIKANTH: Ceilometer meter "instance"Subscription unsuccessful...Exiting'
        return
    periodic_cpu_threshold_evaluator()
    periodic_print()

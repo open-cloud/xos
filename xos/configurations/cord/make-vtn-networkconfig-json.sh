@@ -37,8 +37,12 @@ EOF
     fi
 done
 
-NEUTRONIP="127.0.0.1"
-KEYSTONEIP="127.0.0.1"
+# get the openstack admin password and username
+source /root/setup/admin-openrc.sh
+
+HOSTNAME=`hostname`
+NEUTRONIP=`getent hosts $HOSTNAME | awk '{ print $1 }'`
+KEYSTONEIP=`getent hosts $HOSTNAME | awk '{ print $1 }'`
 
 cat >> $FN <<EOF
                 ]
@@ -49,8 +53,8 @@ cat >> $FN <<EOF
                  "do_not_push_flows" : "true",
                  "neutron_server" : "http://$NEUTRONIP:9696/v2.0/",
                  "keystone_server" : "http://$KEYSTONEIP:5000/v2.0/",
-                 "user_name" : "admin",
-                 "password" : "passwd"
+                 "user_name" : "$OS_USERNAME",
+                 "password" : "$OS_PASSWORD"
              }
         }
     }
