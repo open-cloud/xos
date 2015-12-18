@@ -45,7 +45,7 @@ angular.module('autoscaling')
             // so take them out of an array
             // and keep only the sample data
             lodash.forEach(Object.keys(this.services[service][slice]), (instance) => {
-              // TODO maintain the instance order in the array
+              // TODO maintain the instance order
               this.services[service][slice][instance] = this.services[service][slice][instance][0].queue;
             });
             
