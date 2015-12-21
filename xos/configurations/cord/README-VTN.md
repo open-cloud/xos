@@ -39,6 +39,7 @@ Compute nodes (all of them):
     emacs /usr/share/openvswitch/scripts/ovs-ctl
         update settings as per vtn docs to make port 6640 visible
     service openvswitch-switch restart
+    ovs-vsctl del-br br-int
 
 VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all.
 
