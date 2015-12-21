@@ -36,7 +36,7 @@ Compute node that has the ONOS Container
 Compute nodes (all of them):
 
     systemctl stop neutron-plugin-openvswitch-agent
-    /usr/share/openvswitch/scripts/ovs-ctl
+    emacs /usr/share/openvswitch/scripts/ovs-ctl
         update settings as per vtn docs to make port 6640 visible
     service openvswitch-switch restart
 
