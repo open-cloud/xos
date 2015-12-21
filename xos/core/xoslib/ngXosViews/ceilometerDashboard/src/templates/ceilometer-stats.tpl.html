@@ -8,13 +8,42 @@
 
   <table class="table" ng-if="vm.stats.length > 0">
     <tr>
-      <th>Type:</th>
-      <th>Meter:</th>
-      <th>Unit:</th>
-      <th>Value:</th>
+      <th>
+        <a ng-click="order = 'category'">Type:</a>
+      </th>
+      <th>
+        <a ng-click="order = 'resource_name'">Resource:</a>
+      </th>
+      <th>
+        <a ng-click="order = 'meter'">Meter:</a>
+      </th>
+      <th>
+        Unit:
+      </th>
+      <th>
+        Value:
+      </th>
     </tr>
-    <tr ng-repeat="item in vm.stats">
+    <!-- <tr>
+      <td>
+        <input type="text" ng-model="query.category">
+      </td>
+      <td>
+        <input type="text" ng-model="query.resource_name">
+      </td>
+      <td>
+        <input type="text" ng-model="query.meter">
+      </td>
+      <td>
+        <input type="text" ng-model="query.unit">
+      </td>
+      <td>
+        <input type="text" ng-model="query.value">
+      </td>
+    </tr> -->
+    <tr ng-repeat="item in vm.stats | orderBy:order">
       <td>{{item.category}}</td>
+      <td>{{item.resource_name}}</td>
       <td>{{item.meter}}</td>
       <td>{{item.unit}}</td>
       <td>{{item.value}}</td>
