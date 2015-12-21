@@ -24,7 +24,10 @@ ctl node:
     EOF
     emacs /etc/neutron/plugins/ml2/ml2_conf.ini
         update settings as per vtn docs ([ml2] and [ml2_type_vxlan] sections)
-    systemctl restart neutron-server
+    systemctl stop neutron-server
+    # I started neutron manually to make sure it's using exactly the right config
+    # files. Maybe it can be restarted using systemctl instead...
+    /usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
 
 Compute node that has the ONOS Container
 
