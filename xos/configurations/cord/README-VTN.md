@@ -18,7 +18,7 @@ ctl node:
     # not still an issue lurking...
     cat > /usr/local/etc/neutron/plugins/ml2/conf_onos.ini <<EOF
     [ml2_onos]
-    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/vtn
+    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/openstackswitching
     username = karaf
     password = karaf
     EOF
