@@ -1,0 +1,44 @@
+{
+    "ecmaFeatures": {
+        "blockBindings": true,
+        "forOf": true,
+        "destructuring": true,
+        "arrowFunctions": true,
+        "templateStrings": true
+    },
+    "env": { 
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "plugins": [
+        //"angular"
+    ],
+    "rules": {
+        "quotes": [2, "single"],
+        "camelcase": [0, {"properties": "always"}],
+        "no-underscore-dangle": 1,
+        "eqeqeq": [2, "smart"],
+        "no-alert": 1,
+        "key-spacing": [1, { "beforeColon": false, "afterColon": true }],
+        "indent": [2, 2],
+        "no-irregular-whitespace": 1,
+        "eol-last": 0,
+        "max-nested-callbacks": [2, 4],
+        "comma-spacing": [1, {"before": false, "after": true}],
+        "no-trailing-spaces": [1, { skipBlankLines: true }],
+        "no-unused-vars": [1, {"vars": "all", "args": "after-used"}],
+        "new-cap": 0,
+        "no-undef": 2,
+
+        //"angular/ng_module_name": [2, '/^xos\.*[a-z]*$/'],
+        //"angular/ng_controller_name": [2, '/^[a-z].*Ctrl$/'],
+        //"angular/ng_service_name": [2, '/^[A-Z].*Service$/'],
+        //"angular/ng_directive_name": [2, '/^[a-z]+[[A-Z].*]*$/'],
+        //"angular/ng_di": [0, "function or array"]
+    },
+    "globals" :{
+        "angular": true,
+        "Chart": true
+    } 
+}
