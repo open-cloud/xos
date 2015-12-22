@@ -29,7 +29,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-setuptools \
     tar \
     wget \
-##### observer dependencies  
+##### observer dependencies
     python-keystoneclient \
     python-novaclient \
     python-neutronclient \
@@ -50,11 +50,11 @@ RUN pip install \
     django-timezones \
     djangorestframework==2.4.4 \
     dnslib \
-    lxml \  
+    lxml \
     markdown \
     netaddr \
     pyOpenSSL \
-    psycopg2 \ 
+    psycopg2 \
     python-ceilometerclient \
     python-dateutil \
     python-keyczar \
@@ -66,7 +66,6 @@ RUN pip install \
 RUN easy_install --upgrade httplib2
 
 RUN easy_install \
-    django_evolution \
     python_gflags \
     google_api_python_client \
     httplib2.ca_certs_locater
