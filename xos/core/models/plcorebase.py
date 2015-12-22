@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import sys
 from django import db
@@ -117,6 +118,38 @@ class PlModelMixIn(object):
                 l.append("url")
             validators[field.name] = l
         return validators
+
+    def get_backend_details(self):
+        try:
+            scratchpad = json.loads(self.backend_register)
+        except AttributeError:
+            return (None, None, None, None)
+
+        try:
+            exponent = scratchpad['exponent']
+        except KeyError:
+            exponent = None
+
+        try:
+            last_success_time = scratchpad['last_success']
+            dt = datetime.datetime.fromtimestamp(last_success_time)
+            last_success = dt.strftime("%Y-%m-%d %H:%M")
+        except KeyError:
+            last_success = None
+
+        try:
+            failures = scratchpad['failures']
+        except KeyError:
+            failures=None
+
+        try:
+            last_failure_time = scratchpad['last_failure']
+            dt = datetime.datetime.fromtimestamp(last_failure_time)
+            last_failure = dt.strftime("%Y-%m-%d %H:%M")
+        except KeyError:
+            last_failure = None
+
+        return (exponent, last_success, last_failure, failures)
 
     def get_backend_icon(self):
         is_perfect = (self.backend_status is not None) and self.backend_status.startswith("1 -")
