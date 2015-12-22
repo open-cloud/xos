@@ -39,6 +39,7 @@ def backend_icon(obj):
 
     (exponent,last_success,last_failure,failures) = obj.get_backend_details()
 
+    # FIXME: Need to clean this up by separating Javascript from Python
     if (obj.pk):
         script = """
         <script type="text/javascript">
