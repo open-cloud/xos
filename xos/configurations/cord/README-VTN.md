@@ -44,7 +44,7 @@ Compute nodes (all of them):
     service openvswitch-switch restart
     ovs-vsctl del-br br-int
 
-VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all.
+VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all. I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
 
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
 there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
