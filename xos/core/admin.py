@@ -34,10 +34,40 @@ ICON_URLS = {"success": "/static/admin/img/icon_success.gif",
 
 def backend_icon(obj):
     (icon, tooltip) = obj.get_backend_icon()
+
     icon_url = ICON_URLS.get(icon, "unknown")
 
+    (exponent,last_success,last_failure,failures) = obj.get_backend_details()
+
+    if (obj.pk):
+        script = """
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#show_details_%d").click(function () {
+                    $("#status%d").dialog({modal: true, height: 200, width: 200 });
+                });
+            });
+        </script>
+        """%(obj.pk,obj.pk)
+
+        div = """
+        <div style="display:none;" id="status%d" title="Details">
+                <p>Backoff Exponent: %r</p>
+                <p>Last Success: %r</p>
+                <p>Failures: %r</p>
+                <p>Last Failure: %r</p>
+                    </div>
+        """%(obj.pk,exponent,last_success,failures,last_failure)
+        a = '<a id="show_details_%d" href="#">'%obj.pk
+        astop = '</a>'
+    else:
+        div = ''
+        script = ''
+        a = ''
+        astop = ''
+
     if tooltip:
-        return '<span style="min-width:16px;" title="%s"><img src="%s"></span>' % (tooltip, icon_url)
+        return '%s %s <span style="min-width:16px;" title="%s">%s<img src="%s">%s</span>' % (script, div, tooltip, a,  icon_url, astop)
     else:
         return '<span style="min-width:16px;"><img src="%s"></span>' % icon_url
 
