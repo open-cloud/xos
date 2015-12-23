@@ -31,7 +31,7 @@ enter:
 	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
 
 devstack_net_fix:
-	sudo ../devstack/net-fix.sh
+	sudo ../common/devstack/net-fix.sh
 	sudo bash -c "source ../common/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
 
 upgrade_pkgs:
