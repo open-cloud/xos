@@ -16,7 +16,7 @@ common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
 ceilometer_dashboard:
-	#NOTE: The below dashboard install scripts assume 
+	#NOTE: The below dashboard install scripts assume
 	#clouldlab openstack environment created using "OpenStack" profile
 	#bash install_xos_ceilometer_dashboard.sh
 	bash install_ceilometer_patch.sh
@@ -55,7 +55,7 @@ setup_client:
 	# reboot the vBNG ONOS
 	cd dataplane; ansible -i hosts onos_vbng -m shell -s -a "docker restart ONOS"
 
-cleanup: stop
+cleanup:
 	cd dataplane; ./cleanup.sh
 	bash -c "source ../common/admin-openrc.sh; nova list --all-tenants; neutron net-list"
 	echo "Don't forget to clean up containers"
