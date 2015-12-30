@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
-from hpc.models import ServiceProvider, ContentProvider, CDNPrefix, OriginServer
+from services.hpc.models import ServiceProvider, ContentProvider, CDNPrefix, OriginServer
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
