@@ -24,9 +24,9 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-dependency_graph=/opt/xos/rr_observer/model-deps
-steps_dir=/opt/xos/rr_observer/steps
-deleters_dir=/opt/xos/rr_observer/deleters
+dependency_graph=/opt/xos/observers/requestrouter/model-deps
+steps_dir=/opt/xos/observers/requestrouter/steps
+deleters_dir=/opt/xos/observers/requestrouter/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
