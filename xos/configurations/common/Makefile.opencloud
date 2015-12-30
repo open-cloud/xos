@@ -1,7 +1,6 @@
-MYFLATLANIF:=$(shell netstat -i |grep "flat"|awk '{print $$1}' )
-MYFLATLANIP:=$(shell ifconfig $(MYFLATLANIF) | grep "inet addr" | awk -F: '{print $$2}' | awk '{print $$1}' )
+MYFLATLANIP:=$(shell hostname -i)
 
-all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key
+all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key images
 
 prereqs:
 	make -f Makefile.prereqs
@@ -12,8 +11,7 @@ admin-openrc:
 	echo 'CONTROLLER_FLAT_LAN_IP=$(MYFLATLANIP)' >> controller_settings
 
 flat_name:
-	sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{printf "%s",$$4}' > flat_net_name
-	[ -s flat_net_name ] # throw error if flat_net_name is empty
+	echo nat-net|tr -d '\n' > flat_net_name
 
 nodes_yaml:
 	bash ./make-nodes-yaml.sh
@@ -33,3 +31,6 @@ private_key: ~/.ssh/id_rsa
 node_key:
 	sudo cat /root/setup/id_rsa > node_key
 	sudo cat /root/setup/id_rsa.pub > node_key.pub
+
+images:
+	source admin-openrc.sh; glance image-show trusty-server-multi-nic || glance image-create --name trusty-server-multi-nic --disk-format qcow2 --file /proj/xos-PG0/acb/images/trusty-server-multi-nic.img --container-format bare

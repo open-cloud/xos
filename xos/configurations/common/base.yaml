@@ -29,7 +29,7 @@ topology_template:
               node: trusty-server-multi-nic
               relationship: tosca.relationships.SupportsImage
 
-    CloudLab:
+    Backend:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
@@ -37,7 +37,7 @@ topology_template:
               relationship: tosca.relationships.ControllerDeployment
       properties:
           backend_type: OpenStack
-          version: Juno
+          version: Kilo
           auth_url: { get_script_env: [ SELF, adminrc, OS_AUTH_URL, LOCAL_FILE] }
           admin_user: { get_script_env: [ SELF, adminrc, OS_USERNAME, LOCAL_FILE] }
           admin_password: { get_script_env: [ SELF, adminrc, OS_PASSWORD, LOCAL_FILE] }
@@ -61,7 +61,7 @@ topology_template:
                relationship: tosca.relationships.SiteDeployment
                requirements:
                    - controller:
-                       node: CloudLab
+                       node: Backend
                        relationship: tosca.relationships.UsesController
 
     Public shared IPv4:

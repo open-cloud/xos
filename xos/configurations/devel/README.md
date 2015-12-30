@@ -42,7 +42,7 @@ To install DevStack and XOS:
 ~$ git clone https://github.com/open-cloud/xos.git
 ~$ git clone https://git.openstack.org/openstack-dev/devstack
 ~$ cd devstack
-~/devstack$ cp ../xos/xos/configurations/devstack/local.conf .
+~/devstack$ cp ../xos/xos/configurations/common/devstack/local.conf .
 ~/devstack$ ./stack.sh
 ~/devstack$ cd ../xos/xos/configurations/devel/
 ~/xos/xos/configurations/devel$ make devstack
