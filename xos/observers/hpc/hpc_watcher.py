@@ -45,7 +45,7 @@ import django
 from django.contrib.contenttypes.models import ContentType
 from core.models import *
 from services.hpc.models import *
-from requestrouter.models import *
+from services.requestrouter.models import *
 django.setup()
 import time
 import pycurl

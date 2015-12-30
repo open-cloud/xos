@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 from xos.config import Config
 from core.models import Service
-from requestrouter.models import RequestRouterService, ServiceMap
+from services.requestrouter.models import RequestRouterService, ServiceMap
 from util.logger import Logger, logging
 import rrlib_config
 
