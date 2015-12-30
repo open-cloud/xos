@@ -4,7 +4,7 @@ sys.path.append("/opt/xos")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 import django
 from core.models import *
-from hpc.models import *
+from services.hpc.models import *
 from cord.models import *
 django.setup()
 

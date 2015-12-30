@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
-from hpc.models import *
+from services.hpc.models import *
 from requestrouter.models import *
 from django.forms import widgets
 from syndicate_storage.models import Volume

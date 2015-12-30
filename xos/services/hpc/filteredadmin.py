@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from django import forms
-from hpc.models import HpcService
+from services.hpc.models import HpcService
 from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, SliderWidget, ServicePrivilegeInline
 from core.middleware import get_request
 

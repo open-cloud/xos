@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseServerError
 from monitor import driver
 from core.models import *
-from hpc.models import *
+from services.hpc.models import *
 from requestrouter.models import *
 import xos.settings
 import json

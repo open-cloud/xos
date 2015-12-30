@@ -173,7 +173,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'core',
-    'hpc',
+    'services.hpc',
     'cord',
     'helloworldservice_complete',
     'services.onos',

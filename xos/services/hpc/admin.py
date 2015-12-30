@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from hpc.models import *
+from services.hpc.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
