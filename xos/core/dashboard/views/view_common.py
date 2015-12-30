@@ -6,7 +6,7 @@ from pprint import pprint
 import json
 from syndicate_storage.models import *
 from core.models import *
-from hpc.models import ContentProvider
+from services.hpc.models import ContentProvider
 from operator import attrgetter
 from django import template
 from django.views.decorators.csrf import csrf_exempt
