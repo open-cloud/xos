@@ -178,7 +178,7 @@ INSTALLED_APPS = (
     'helloworldservice_complete',
     'services.onos',
     'ceilometer',
-    'requestrouter',
+    'services.requestrouter',
 #    'urlfilter',
 #    'servcomp',
     'syndicate_storage',

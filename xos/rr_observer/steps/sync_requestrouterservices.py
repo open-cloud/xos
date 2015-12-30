@@ -6,7 +6,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
-from requestrouter.models import RequestRouterService
+from services.requestrouter.models import RequestRouterService
 from util.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")

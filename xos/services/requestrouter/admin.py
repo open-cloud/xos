@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from requestrouter.models import *
+from services.requestrouter.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
