@@ -114,7 +114,7 @@ class ObserverSecretValue( models.TextField ):
           return secret_str
        
        # otherwise, decrypt it
-       from syndicate_observer import syndicatelib
+       from observers.syndicate import syndicatelib
        
        # get observer private key
        config = syndicatelib.get_config()
@@ -147,7 +147,7 @@ class ObserverSecretValue( models.TextField ):
        Encrypt the value with the Observer key
        """
        
-       from syndicate_observer import syndicatelib 
+       from observers.syndicate import syndicatelib 
        
        # get observer private key
        config = syndicatelib.get_config()
@@ -236,7 +236,7 @@ class VolumeSlice(PlCoreBase):
        Make sure a SliceSecret exists for this slice
        """
        
-       from syndicate_observer import syndicatelib
+       from observers.syndicate import syndicatelib
        
        # get observer private key
        config = syndicatelib.get_config()
