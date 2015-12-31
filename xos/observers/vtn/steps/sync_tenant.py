@@ -8,7 +8,7 @@ from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
 from core.models.service import COARSE_KIND
-from cord.models import Tenant
+from services.cord.models import Tenant
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
