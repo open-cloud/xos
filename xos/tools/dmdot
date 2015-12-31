@@ -11,6 +11,14 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
 from django.db.models.fields.related import ForeignKey
 
+# try to make sure we're running from the right place
+if (not os.path.exists("core")):
+   if (os.path.exists("../core")):
+      os.chdir("..")
+   else:
+      print >> sys.stderr, "Are you sure you're running dmdot from the root of an XOS installation"
+      sys.exit(-1)
+
 # defaults
 apps = ["core", "services.hpc", "services.cord", "services.requestrouter", "services.onos"]
 output = "-json"

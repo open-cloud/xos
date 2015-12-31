@@ -184,7 +184,17 @@ def main():
             print 'Usage: modelgen [options] <template_fn>'
             exit(1)
 
-        output = args[0]
+        template_name = os.path.abspath(args[0])
+
+        # try to make sure we're running from the right place
+        if (not os.path.exists("core")):
+            if (os.path.exists("../core")):
+                os.chdir("..")
+            elif (os.path.exists("../../core")):
+                os.chdir("../..")
+            else:
+                print >> sys.stderr, "Are you sure you're running modelgen from the root of an XOS installation"
+                sys.exit(-1)
 
 	generator = Generator()
 
@@ -194,7 +204,7 @@ def main():
 		generator.add_object(m)
 
 	generator.compute_links()
-	template_contents = open(output).read()
+	template_contents = open(template_name).read()
 	template = Template(template_contents)
 	context = Context({'generator':generator})
 	print template.render(context)
