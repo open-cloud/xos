@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ceilometer.models import *
+from services.ceilometer.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
