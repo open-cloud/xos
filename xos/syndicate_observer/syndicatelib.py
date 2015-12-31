@@ -58,7 +58,7 @@ try:
    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 
    # get our models
-   import syndicate_storage.models as models
+   import services.syndicate_storage.models as models
 
    # get OpenCloud models 
    from core.models import Slice,Instance

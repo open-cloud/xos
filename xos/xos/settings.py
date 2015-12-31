@@ -179,9 +179,7 @@ INSTALLED_APPS = (
     'services.onos',
     'ceilometer',
     'services.requestrouter',
-#    'urlfilter',
-#    'servcomp',
-    'syndicate_storage',
+    'services.syndicate_storage',
     'geoposition',
     'rest_framework_swagger',
 )

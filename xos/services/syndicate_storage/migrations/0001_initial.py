@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import syndicate_storage.models
+import services.syndicate_storage.models
 import django.utils.timezone
 from django.conf import settings
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='SliceSecret',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('secret', syndicate_storage.models.ObserverSecretValue(help_text=b"Shared secret between OpenCloud and this slice's Syndicate daemons.", blank=True)),
+                ('secret', services.syndicate_storage.models.ObserverSecretValue(help_text=b"Shared secret between OpenCloud and this slice's Syndicate daemons.", blank=True)),
                 ('slice_id', models.ForeignKey(to='core.Slice')),
             ],
             options={
