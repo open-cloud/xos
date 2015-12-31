@@ -15,7 +15,6 @@ from django.forms import widgets
 from django.utils import datastructures
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from util.logger import observer_logger as logger
 
