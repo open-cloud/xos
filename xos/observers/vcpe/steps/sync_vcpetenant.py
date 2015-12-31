@@ -11,7 +11,7 @@ from observer.ansible import run_template_ssh
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
 from services.cord.models import VCPEService, VCPETenant, VOLTTenant
-from hpc.models import HpcService, CDNPrefix
+from services.hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
