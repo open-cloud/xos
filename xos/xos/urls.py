@@ -9,7 +9,7 @@ from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
-from helloworld.view import *
+from services.helloworld.view import *
 #from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics
