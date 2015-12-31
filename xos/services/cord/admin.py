@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from cord.models import *
+from services.cord.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin

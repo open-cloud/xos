@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework import status
 from core.models import *
 from django.forms import widgets
-from cord.models import VOLTTenant, VOLTService
+from services.cord.models import VOLTTenant, VOLTService
 from plus import PlusSerializerMixin
 from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, XOSPermissionDenied
 

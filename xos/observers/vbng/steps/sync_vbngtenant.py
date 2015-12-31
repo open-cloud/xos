@@ -8,7 +8,7 @@ from xos.config import Config
 from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
 from core.models import Service
-from cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
+from services.cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
