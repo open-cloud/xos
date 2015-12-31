@@ -19,7 +19,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
 from core.models import Service
-from syndicate_storage.models import Volume
+from services.syndicate_storage.models import Volume
 
 import logging
 from logging import Logger

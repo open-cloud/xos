@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from syndicate_storage.models import *
+from services.syndicate_storage.models import *
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.admin import UserAdmin
