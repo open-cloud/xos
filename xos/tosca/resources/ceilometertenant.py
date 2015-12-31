@@ -6,7 +6,7 @@ sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
-from ceilometer.models import MonitoringChannel, CeilometerService
+from services.ceilometer.models import MonitoringChannel, CeilometerService
 
 from xosresource import XOSResource
 

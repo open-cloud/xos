@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
-from ceilometer.models import *
+from services.ceilometer.models import *
 from django.forms import widgets
 from django.utils import datastructures
 from django.utils.translation import ugettext_lazy as _

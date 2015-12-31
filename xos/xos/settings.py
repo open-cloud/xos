@@ -177,7 +177,7 @@ INSTALLED_APPS = (
     'services.cord',
     'services.helloworldservice_complete',
     'services.onos',
-    'ceilometer',
+    'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
     'geoposition',
