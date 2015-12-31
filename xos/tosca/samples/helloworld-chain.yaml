@@ -37,7 +37,7 @@ topology_template:
        properties:
            kind: helloworldservice_complete
            service_specific_attribute: "{\"display_message\": \"Hello World from Tosca\"}"
-           model: helloworldservice_complete.models.HelloWorldTenantComplete
+           model: services.helloworldservice_complete.models.HelloWorldTenantComplete
        requirements:
            - provider_service:
                node: service_helloworld

@@ -4,7 +4,7 @@ from core.middleware import get_request
 from core.models import User
 from django import forms
 from django.contrib import admin
-from helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete, HELLO_WORLD_KIND
+from services.helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete, HELLO_WORLD_KIND
 
 # The class to provide an admin interface on the web for the service.
 # We do only configuration here and don't change any logic because the logic
