@@ -24,9 +24,9 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-dependency_graph=/opt/xos/syndicate_observer/model-deps
-steps_dir=/opt/xos/syndicate_observer/steps
-deleters_dir=/opt/xos/syndicate_observer/deleters
+dependency_graph=/opt/xos/observers/syndicate/model-deps
+steps_dir=/opt/xos/observers/syndicate/steps
+deleters_dir=/opt/xos/observers/syndicate/deleters
 log_file=console
 driver=None
 

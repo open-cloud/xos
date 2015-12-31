@@ -36,7 +36,7 @@ SYNDICATE_PYTHONPATH="/root/syndicate/build/out/python"
 
 # This is the location of the observer's private key.  It must be an absolute
 # path, and refer to a 4096-bit PEM-encoded RSA key.
-SYNDICATE_PRIVATE_KEY="/opt/xos/syndicate_observer/syndicatelib_config/pollserver.pem"
+SYNDICATE_PRIVATE_KEY="/opt/xos/observers/syndicate/syndicatelib_config/pollserver.pem"
 
 # This is the master secret used to generate secrets to seal sensitive information sent to the 
 # Syndicate instance mount daemons.  It is also used to seal sensitive information
