@@ -1,13 +1,10 @@
-from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port
-from core.models.plcorebase import StrippedCharField
-import os
-from django.db import models, transaction
-from django.forms.models import model_to_dict
-from django.db.models import Q
-from operator import itemgetter, attrgetter, methodcaller
-import traceback
-from xos.exceptions import *
+from core.models import (Instance, Port, Service, Slice, Subscriber, Tenant,
+                         TenantWithContainer, User)
+from django.db import transaction
+from xos.exceptions import (XOSConfigurationError, XOSDuplicateKey,
+                            XOSMissingField, XOSPermissionDenied,
+                            XOSProgrammingError)
+
 
 """
 import os
@@ -47,6 +44,7 @@ for v in VCPETenant.get_tenant_objects().all():
         v.save()
 """
 
+
 class ConfigurationError(Exception):
     pass
 
@@ -59,7 +57,9 @@ CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
 # CordSubscriberRoot
 # -------------------------------------------
 
+
 class CordSubscriberRoot(Subscriber):
+
     class Meta:
         proxy = True
 
@@ -72,7 +72,7 @@ class CordSubscriberRoot(Subscriber):
                           "url_filter_level": "PG",
                           "cdn_enable": False,
                           "users": [],
-                          "is_demo_user": False }
+                          "is_demo_user": False}
 
     sync_attributes = ("firewall_enable",
                        "firewall_rules",
@@ -105,7 +105,7 @@ class CordSubscriberRoot(Subscriber):
 
     @firewall_enable.setter
     def firewall_enable(self, value):
-        self.set_attribute("firewall_enable", value)
+        self.set_attribute("firewaXOSMissingFieldll_enable", value)
 
     @property
     def firewall_rules(self):
@@ -164,7 +164,7 @@ class CordSubscriberRoot(Subscriber):
 
     def update_user(self, uid, **kwargs):
         # kwargs may be "level" or "mac"
-        #    Setting one of these to None will cause None to be stored in the db
+        # Setting one of these to None will cause None to be stored in the db
         uid = int(uid)
         users = self.users
         for user in users:
@@ -181,11 +181,12 @@ class CordSubscriberRoot(Subscriber):
 
         for user in self.users:
             if kwargs["name"] == user["name"]:
-                raise XOSDuplicateKey("User %s already exists" % kwargs["name"])
+                raise XOSDuplicateKey(
+                    "User %s already exists" % kwargs["name"])
 
         uids = [x["id"] for x in self.users]
         if uids:
-            uid = max(uids)+1
+            uid = max(uids) + 1
         else:
             uid = 0
         newuser = kwargs.copy()
@@ -201,7 +202,7 @@ class CordSubscriberRoot(Subscriber):
         uid = int(uid)
         users = self.users
         for user in users:
-            if user["id"]==uid:
+            if user["id"] == uid:
                 users.remove(user)
                 self.users = users
                 return
@@ -221,9 +222,11 @@ class CordSubscriberRoot(Subscriber):
     def save(self, *args, **kwargs):
         if (not hasattr(self, 'caller') or not self.caller.is_admin):
             if (self.has_field_changed("service_specific_id")):
-                raise XOSPermissionDenied("You do not have permission to change service_specific_id")
+                raise XOSPermissionDenied(
+                    "You do not have permission to change service_specific_id")
         super(CordSubscriberRoot, self).save(*args, **kwargs)
-        if (self.volt) and (self.volt.vcpe): # and (self._initial_url_filter_enabled != self.url_filter_enable):
+        # and (self._initial_url_filter_enabled != self.url_filter_enable):
+        if (self.volt) and (self.volt.vcpe):
             # 1) trigger manage_bbs_account to run
             # 2) trigger vcpe observer to wake up
             self.volt.vcpe.save()
@@ -240,6 +243,7 @@ class CordSubscriberRoot(Subscriber):
 # VOLT
 # -------------------------------------------
 
+
 class VOLTService(Service):
     KIND = VOLT_KIND
 
@@ -248,17 +252,21 @@ class VOLTService(Service):
         verbose_name = "vOLT Service"
         proxy = True
 
+
 class VOLTTenant(Tenant):
+
     class Meta:
         proxy = True
 
     KIND = VOLT_KIND
 
     default_attributes = {"vlan_id": None, "s_tag": None, "c_tag": None}
+
     def __init__(self, *args, **kwargs):
         volt_services = VOLTService.get_service_objects().all()
         if volt_services:
-            self._meta.get_field("provider_service").default = volt_services[0].id
+            self._meta.get_field(
+                "provider_service").default = volt_services[0].id
         super(VOLTTenant, self).__init__(*args, **kwargs)
         self.cached_vcpe = None
 
@@ -304,7 +312,8 @@ class VOLTTenant(Tenant):
 
     @vcpe.setter
     def vcpe(self, value):
-        raise XOSConfigurationError("vOLT.vCPE cannot be set this way -- create a new vCPE object and set its subscriber_tenant instead")
+        raise XOSConfigurationError(
+            "vOLT.vCPE cannot be set this way -- create a new vCPE object and set its subscriber_tenant instead")
 
     @property
     def subscriber(self):
@@ -319,13 +328,13 @@ class VOLTTenant(Tenant):
     def creator(self):
         if getattr(self, "cached_creator", None):
             return self.cached_creator
-        creator_id=self.get_attribute("creator_id")
+        creator_id = self.get_attribute("creator_id")
         if not creator_id:
             return None
-        users=User.objects.filter(id=creator_id)
+        users = User.objects.filter(id=creator_id)
         if not users:
             return None
-        user=users[0]
+        user = users[0]
         self.cached_creator = users[0]
         return user
 
@@ -334,7 +343,7 @@ class VOLTTenant(Tenant):
         if value:
             value = value.id
         if (value != self.get_attribute("creator_id", None)):
-            self.cached_creator=None
+            self.cached_creator = None
         self.set_attribute("creator_id", value)
 
     def manage_vcpe(self):
@@ -348,8 +357,8 @@ class VOLTTenant(Tenant):
             if not vcpeServices:
                 raise XOSConfigurationError("No VCPE Services available")
 
-            vcpe = VCPETenant(provider_service = vcpeServices[0],
-                              subscriber_tenant = self)
+            vcpe = VCPETenant(provider_service=vcpeServices[0],
+                              subscriber_tenant=self)
             vcpe.caller = self.creator
             vcpe.save()
 
@@ -362,12 +371,13 @@ class VOLTTenant(Tenant):
             # TODO: This probably goes away when we rethink the ONOS-to-XOS
             # vOLT API.
 
-            subs = CordSubscriberRoot.get_tenant_objects().filter(service_specific_id = self.service_specific_id)
+            subs = CordSubscriberRoot.get_tenant_objects().filter(
+                service_specific_id=self.service_specific_id)
             if subs:
                 sub = subs[0]
             else:
-                sub = CordSubscriberRoot(service_specific_id = self.service_specific_id,
-                                         name = "autogenerated-for-vOLT-%s" % self.id)
+                sub = CordSubscriberRoot(service_specific_id=self.service_specific_id,
+                                         name="autogenerated-for-vOLT-%s" % self.id)
                 sub.save()
             self.subscriber_root = sub
             self.save()
@@ -391,25 +401,30 @@ class VOLTTenant(Tenant):
         if (self.subscriber_root is not None):
             subs = self.subscriber_root.get_subscribed_tenants(VOLTTenant)
             if (subs) and (self not in subs):
-                raise XOSDuplicateKey("Subscriber should only be linked to one vOLT")
+                raise XOSDuplicateKey(
+                    "Subscriber should only be linked to one vOLT")
 
         if not self.creator:
             if not getattr(self, "caller", None):
-                # caller must be set when creating a vCPE since it creates a slice
-                raise XOSProgrammingError("VOLTTenant's self.caller was not set")
+                # caller must be set when creating a vCPE since it creates a
+                # slice
+                raise XOSProgrammingError(
+                    "VOLTTenant's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
-                raise XOSProgrammingError("VOLTTenant's self.creator was not set")
+                raise XOSProgrammingError(
+                    "VOLTTenant's self.creator was not set")
 
         super(VOLTTenant, self).save(*args, **kwargs)
         model_policy_volt(self.pk)
-        #self.manage_vcpe()
-        #self.manage_subscriber()
-        #self.cleanup_orphans()
+        # self.manage_vcpe()
+        # self.manage_subscriber()
+        # self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vcpe()
         super(VOLTTenant, self).delete(*args, **kwargs)
+
 
 def model_policy_volt(pk):
     # TODO: this should be made in to a real model_policy
@@ -426,13 +441,14 @@ def model_policy_volt(pk):
 # VCPE
 # -------------------------------------------
 
+
 class VCPEService(Service):
     KIND = VCPE_KIND
 
-    simple_attributes = ( ("bbs_api_hostname", None),
-                          ("bbs_api_port", None),
-                          ("bbs_server", None),
-                          ("backend_network_label", "hpc_client"), )
+    simple_attributes = (("bbs_api_hostname", None),
+                         ("bbs_api_port", None),
+                         ("bbs_server", None),
+                         ("backend_network_label", "hpc_client"), )
 
     def __init__(self, *args, **kwargs):
         super(VCPEService, self).__init__(*args, **kwargs)
@@ -449,19 +465,20 @@ class VCPEService(Service):
         # There's a bit of a race here; some other user could be trying to
         # allocate a bbs_account at the same time we are.
 
-        for i in range(2,21):
-             account_name = "bbs%02d@onlab.us" % i
-             if (account_name not in bbs_accounts):
-                 return account_name
+        for i in range(2, 21):
+            account_name = "bbs%02d@onlab.us" % i
+            if (account_name not in bbs_accounts):
+                return account_name
 
-        raise XOSConfigurationError("We've run out of available broadbandshield accounts. Delete some vcpe and try again.")
+        raise XOSConfigurationError(
+            "We've run out of available broadbandshield accounts. Delete some vcpe and try again.")
 
     @property
     def bbs_slice(self):
-        bbs_slice_id=self.get_attribute("bbs_slice_id")
+        bbs_slice_id = self.get_attribute("bbs_slice_id")
         if not bbs_slice_id:
             return None
-        bbs_slices=Slice.objects.filter(id=bbs_slice_id)
+        bbs_slices = Slice.objects.filter(id=bbs_slice_id)
         if not bbs_slices:
             return None
         return bbs_slices[0]
@@ -476,6 +493,7 @@ VCPEService.setup_simple_attributes()
 
 
 class VCPETenant(TenantWithContainer):
+
     class Meta:
         proxy = True
 
@@ -495,7 +513,7 @@ class VCPETenant(TenantWithContainer):
 
     def __init__(self, *args, **kwargs):
         super(VCPETenant, self).__init__(*args, **kwargs)
-        self.cached_vbng=None
+        self.cached_vbng = None
 
     @property
     def vbng(self):
@@ -513,7 +531,8 @@ class VCPETenant(TenantWithContainer):
 
     @vbng.setter
     def vbng(self, value):
-        raise XOSConfigurationError("vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
+        raise XOSConfigurationError(
+            "vCPE.vBNG cannot be set this way -- create a new vBNG object and set it's subscriber_tenant instead")
 
     @property
     def volt(self):
@@ -576,27 +595,27 @@ class VCPETenant(TenantWithContainer):
 
     @property
     def nat_ip(self):
-        return self.addresses.get("nat", (None,None) )[0]
+        return self.addresses.get("nat", (None, None))[0]
 
     @property
     def nat_mac(self):
-        return self.addresses.get("nat", (None,None) )[1]
+        return self.addresses.get("nat", (None, None))[1]
 
     @property
     def lan_ip(self):
-        return self.addresses.get("lan", (None, None) )[0]
+        return self.addresses.get("lan", (None, None))[0]
 
     @property
     def lan_mac(self):
-        return self.addresses.get("lan", (None, None) )[1]
+        return self.addresses.get("lan", (None, None))[1]
 
     @property
     def wan_ip(self):
-        return self.addresses.get("wan", (None, None) )[0]
+        return self.addresses.get("wan", (None, None))[0]
 
     @property
     def wan_mac(self):
-        return self.addresses.get("wan", (None, None) )[1]
+        return self.addresses.get("wan", (None, None))[1]
 
     # Generate the MAC for the container interface connected to WAN
     @property
@@ -606,19 +625,19 @@ class VCPETenant(TenantWithContainer):
 
     @property
     def private_ip(self):
-        return self.addresses.get("private", (None, None) )[0]
+        return self.addresses.get("private", (None, None))[0]
 
     @property
     def private_mac(self):
-        return self.addresses.get("private", (None, None) )[1]
+        return self.addresses.get("private", (None, None))[1]
 
     @property
     def hpc_client_ip(self):
-        return self.addresses.get("hpc_client", (None, None) )[0]
+        return self.addresses.get("hpc_client", (None, None))[0]
 
     @property
     def hpc_client_mac(self):
-        return self.addresses.get("hpc_client", (None, None) )[1]
+        return self.addresses.get("hpc_client", (None, None))[1]
 
     @property
     def is_synced(self):
@@ -639,8 +658,8 @@ class VCPETenant(TenantWithContainer):
             if not vbngServices:
                 raise XOSConfigurationError("No VBNG Services available")
 
-            vbng = VBNGTenant(provider_service = vbngServices[0],
-                              subscriber_tenant = self)
+            vbng = VBNGTenant(provider_service=vbngServices[0],
+                              subscriber_tenant=self)
             vbng.caller = self.creator
             vbng.save()
 
@@ -658,7 +677,7 @@ class VCPETenant(TenantWithContainer):
                 vbng.delete()
 
         if self.orig_instance_id and (self.orig_instance_id != self.get_attribute("instance_id")):
-            instances=Instance.objects.filter(id=self.orig_instance_id)
+            instances = Instance.objects.filter(id=self.orig_instance_id)
             if instances:
                 # print "XXX clean up orphaned instance", instances[0]
                 instances[0].delete()
@@ -669,8 +688,10 @@ class VCPETenant(TenantWithContainer):
 
         if self.volt and self.volt.subscriber and self.volt.subscriber.url_filter_enable:
             if not self.bbs_account:
-                # make sure we use the proxied VCPEService object, not the generic Service object
-                vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
+                # make sure we use the proxied VCPEService object, not the
+                # generic Service object
+                vcpe_service = VCPEService.objects.get(
+                    id=self.provider_service.id)
                 self.bbs_account = vcpe_service.allocate_bbs_account()
                 super(VCPETenant, self).save()
         else:
@@ -693,16 +714,19 @@ class VCPETenant(TenantWithContainer):
             super(VCPETenant, self).save_instance(instance)
 
             if instance.isolation in ["container", "container_vm"]:
-                lan_networks = [x for x in instance.slice.networks.all() if "lan" in x.name]
+                lan_networks = [
+                    x for x in instance.slice.networks.all() if "lan" in x.name]
                 if not lan_networks:
                     raise XOSProgrammingError("No lan_network")
-                port = self.find_or_make_port(instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
+                port = self.find_or_make_port(
+                    instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
                 port.set_parameter("c_tag", self.volt.c_tag)
                 port.set_parameter("s_tag", self.volt.s_tag)
                 port.set_parameter("device", "eth1")
                 port.set_parameter("bridge", "br-lan")
 
-                wan_networks = [x for x in instance.slice.networks.all() if "wan" in x.name]
+                wan_networks = [
+                    x for x in instance.slice.networks.all() if "wan" in x.name]
                 if not wan_networks:
                     raise XOSProgrammingError("No wan_network")
                 port = self.find_or_make_port(instance, wan_networks[0])
@@ -712,23 +736,27 @@ class VCPETenant(TenantWithContainer):
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
-                # caller must be set when creating a vCPE since it creates a slice
-                raise XOSProgrammingError("VCPETenant's self.caller was not set")
+                # caller must be set when creating a vCPE since it creates a
+                # slice
+                raise XOSProgrammingError(
+                    "VCPETenant's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
-                raise XOSProgrammingError("VCPETenant's self.creator was not set")
+                raise XOSProgrammingError(
+                    "VCPETenant's self.creator was not set")
 
         super(VCPETenant, self).save(*args, **kwargs)
         model_policy_vcpe(self.pk)
-        #self.manage_instance()
-        #self.manage_vbng()
-        #self.manage_bbs_account()
-        #self.cleanup_orphans()
+        # self.manage_instance()
+        # self.manage_vbng()
+        # self.manage_bbs_account()
+        # self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
         self.cleanup_container()
         super(VCPETenant, self).delete(*args, **kwargs)
+
 
 def model_policy_vcpe(pk):
     # TODO: this should be made in to a real model_policy
@@ -746,10 +774,12 @@ def model_policy_vcpe(pk):
 # vBNG
 #----------------------------------------------------------------------------
 
+
 class VBNGService(Service):
     KIND = VBNG_KIND
 
-    simple_attributes = ( ("vbng_url", ""), )  # "http://10.0.3.136:8181/onos/virtualbng/"
+    # "http://10.0.3.136:8181/onos/virtualbng/"
+    simple_attributes = (("vbng_url", ""), )
 
     class Meta:
         app_label = "cord"
@@ -758,7 +788,9 @@ class VBNGService(Service):
 
 VBNGService.setup_simple_attributes()
 
+
 class VBNGTenant(Tenant):
+
     class Meta:
         proxy = True
 
