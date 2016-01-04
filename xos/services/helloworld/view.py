@@ -1,13 +1,8 @@
-from django.http import HttpResponse
-from django.views.generic import TemplateView, View
+from core.models import Instance
 from django import template
-from monitor import driver
-from core.models import *
-from services.helloworld.models import *
-import json
-import os
-import time
-import tempfile
+from django.views.generic import TemplateView
+from services.helloworld.models import Hello, World
+
 
 class HelloWorldView(TemplateView):
     head_template = r"""{% extends "admin/dashboard/dashboard_base.html" %}
@@ -19,7 +14,6 @@ class HelloWorldView(TemplateView):
 
     def get(self, request, name="root", *args, **kwargs):
         head_template = self.head_template
-        tail_template = self.tail_template
 
         try:
             hello_name = request.GET['hello_name']
@@ -28,18 +22,19 @@ class HelloWorldView(TemplateView):
             instance_id = int(instance_id_str)
 
             i = Instance.objects.get(pk=instance_id)
-            i.pk=None
-            i.userData=None
-            i.instance_id=None
-            i.instance_name=None
-            i.enacted=None
+            i.pk = None
+            i.userData = None
+            i.instance_id = None
+            i.instance_name = None
+            i.enacted = None
             i.save()
-            h = Hello(name=hello_name,instance_backref=i)
+            h = Hello(name=hello_name, instance_backref=i)
             h.save()
-            w = World(hello=h,name=world_name)
+            w = World(hello=h, name=world_name)
             w.save()
 
-            t = template.Template(head_template + 'Done. New instance id: %r'%i.pk + self.tail_template)
+            t = template.Template(
+                head_template + 'Done. New instance id: %r' % i.pk + self.tail_template)
         except KeyError:
             html = """<form>
                 Hello string: <input type="text" name="hello_name" placeholder="Planet"><br>
@@ -53,6 +48,6 @@ class HelloWorldView(TemplateView):
         response_kwargs = {}
         response_kwargs.setdefault('content_type', self.content_type)
         return self.response_class(
-            request = request,
-            template = t,
+            request=request,
+            template=t,
             **response_kwargs)
