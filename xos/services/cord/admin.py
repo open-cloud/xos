@@ -1,8 +1,8 @@
-from cord.models import Instance, Slice, User
 from core.admin import (ReadOnlyAwareAdmin, ServiceAttrAsTabInline,
                         ServicePrivilegeInline, SliceInline,
                         TenantRootPrivilegeInline, XOSTabularInline)
 from core.middleware import get_request
+from core.models import Instance, Slice, User
 from django import forms
 from django.contrib import admin
 from services.cord.models import (CORD_SUBSCRIBER_KIND, VBNG_KIND, VCPE_KIND,
