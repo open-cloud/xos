@@ -1,17 +1,12 @@
-from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber
-from core.models.plcorebase import StrippedCharField
-import os
-from django.db import models, transaction
-from django.forms.models import model_to_dict
-from django.db.models import Q
-from operator import itemgetter, attrgetter, methodcaller
-import traceback
-from xos.exceptions import *
-from core.models import SlicePrivilege, SitePrivilege
 from sets import Set
 
+from core.models import (Service, SitePrivilege, Slice, SlicePrivilege,
+                         TenantWithContainer)
+from django.db import transaction
+from xos.exceptions import XOSProgrammingError, XOSValidationError
+
 CEILOMETER_KIND = "ceilometer"
+
 
 class CeilometerService(Service):
     KIND = CEILOMETER_KIND
@@ -21,7 +16,9 @@ class CeilometerService(Service):
         verbose_name = "Ceilometer Service"
         proxy = True
 
+
 class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
+
     class Meta:
         proxy = True
 
@@ -32,31 +29,38 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
                        "nat_ip", "nat_mac", "ceilometer_port",)
 
     default_attributes = {}
+
     def __init__(self, *args, **kwargs):
         ceilometer_services = CeilometerService.get_service_objects().all()
         if ceilometer_services:
-            self._meta.get_field("provider_service").default = ceilometer_services[0].id
+            self._meta.get_field(
+                "provider_service").default = ceilometer_services[0].id
         super(MonitoringChannel, self).__init__(*args, **kwargs)
         self.set_attribute("use_same_instance_for_multiple_tenants", True)
 
     def can_update(self, user):
-        #Allow creation of this model instances for non-admin users also
+        # Allow creation of this model instances for non-admin users also
         return True
 
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
-                # caller must be set when creating a monitoring channel since it creates a slice
-                raise XOSProgrammingError("MonitoringChannel's self.caller was not set")
+                # caller must be set when creating a monitoring channel since
+                # it creates a slice
+                raise XOSProgrammingError(
+                    "MonitoringChannel's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
-                raise XOSProgrammingError("MonitoringChannel's self.creator was not set")
+                raise XOSProgrammingError(
+                    "MonitoringChannel's self.creator was not set")
 
         if self.pk is None:
-            #Allow only one monitoring channel per user
-            channel_count = sum ( [1 for channel in MonitoringChannel.objects.filter(kind=CEILOMETER_KIND) if (channel.creator == self.creator)] )
+            # Allow only one monitoring channel per user
+            channel_count = sum([1 for channel in MonitoringChannel.objects.filter(
+                kind=CEILOMETER_KIND) if (channel.creator == self.creator)])
             if channel_count > 0:
-                raise XOSValidationError("Already %s channels exist for user Can only create max 1 MonitoringChannel instance per user" % str(channel_count))
+                raise XOSValidationError(
+                    "Already %s channels exist for user Can only create max 1 MonitoringChannel instance per user" % str(channel_count))
 
         super(MonitoringChannel, self).save(*args, **kwargs)
         model_policy_monitoring_channel(self.pk)
@@ -110,8 +114,8 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         for sp in SitePrivilege.objects.filter(user=self.creator):
             site = sp.site
             for cs in site.controllersite.all():
-               if cs.tenant_id:
-                   tenant_ids.add(cs.tenant_id)
+                if cs.tenant_id:
+                    tenant_ids.add(cs.tenant_id)
         return tenant_ids
 
     @property
@@ -120,17 +124,17 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         for sp in SlicePrivilege.objects.filter(user=self.creator):
             slice = sp.slice
             for cs in slice.controllerslices.all():
-               if cs.tenant_id:
-                   tenant_ids.add(cs.tenant_id)
+                if cs.tenant_id:
+                    tenant_ids.add(cs.tenant_id)
         for slice in Slice.objects.filter(creator=self.creator):
             for cs in slice.controllerslices.all():
                 if cs.tenant_id:
                     tenant_ids.add(cs.tenant_id)
         if self.creator.is_admin:
-            #TODO: Ceilometer publishes the SDN meters without associating to any tenant IDs.
-            #For now, ceilometer code is changed to pusblish all such meters with tenant
-            #id as "default_admin_tenant". Here add that default tenant as authroized tenant_id
-            #for all admin users. 
+            # TODO: Ceilometer publishes the SDN meters without associating to any tenant IDs.
+            # For now, ceilometer code is changed to pusblish all such meters with tenant
+            # id as "default_admin_tenant". Here add that default tenant as authroized tenant_id
+            # for all admin users.
             tenant_ids.add("default_admin_tenant")
         return tenant_ids
 
@@ -144,16 +148,18 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
 
     @property
     def ceilometer_port(self):
-        # TODO: Find a better logic to choose unique ceilometer port number for each instance 
+        # TODO: Find a better logic to choose unique ceilometer port number for
+        # each instance
         if not self.id:
             return None
-        return 8888+self.id
+        return 8888 + self.id
 
     @property
     def ceilometer_url(self):
         if not self.ceilometer_ip:
             return None
         return "http://" + self.private_ip + ":" + str(self.ceilometer_port) + "/"
+
 
 def model_policy_monitoring_channel(pk):
     # TODO: this should be made in to a real model_policy
@@ -163,5 +169,3 @@ def model_policy_monitoring_channel(pk):
             return
         mc = mc[0]
         mc.manage_container()
-
-
