@@ -4,7 +4,10 @@ from core.middleware import get_request
 from core.models import User
 from django import forms
 from django.contrib import admin
-from services.helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete, HELLO_WORLD_KIND
+from services.helloworldservice_complete.models import (HELLO_WORLD_KIND,
+                                                        HelloWorldServiceComplete,
+                                                        HelloWorldTenantComplete)
+
 
 # The class to provide an admin interface on the web for the service.
 # We do only configuration here and don't change any logic because the logic
@@ -72,6 +75,8 @@ class HelloWorldServiceCompleteAdmin(ReadOnlyAwareAdmin):
 # service because tenants vary more than services and there isn't a common form.
 # This allows us to change the python behavior for the admin form to save extra
 # fields and control defaults.
+
+
 class HelloWorldTenantCompleteForm(forms.ModelForm):
     # Defines a field for the creator of this service. It is a dropdown which
     # is populated with all of the users.
@@ -100,7 +105,8 @@ class HelloWorldTenantCompleteForm(forms.ModelForm):
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
             if HelloWorldServiceComplete.get_service_objects().exists():
-                self.fields["provider_service"].initial = HelloWorldServiceComplete.get_service_objects().all()[0]
+                self.fields["provider_service"].initial = HelloWorldServiceComplete.get_service_objects().all()[
+                    0]
 
     # This function describes what happens when the save button is pressed on
     # the tenant form. In this case we set the values for the instance that were
