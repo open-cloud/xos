@@ -70,7 +70,14 @@ RUN easy_install \
     google_api_python_client \
     httplib2.ca_certs_locater
 
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-packages/suit/static/suit/js/
+
+RUN mkdir -p /usr/local/share /bin
+ADD http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2 /usr/local/share/
+RUN tar jxvf /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 -C /usr/local/share/
+RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
+RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
+RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
