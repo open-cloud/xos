@@ -1,4 +1,7 @@
 MYFLATLANIF:=$(shell netstat -i |grep "flat"|awk '{print $$1}' )
+ifndef MYFLATLANIF
+$(error MYFLATLANIF is empty)
+endif
 MYFLATLANIP:=$(shell ifconfig $(MYFLATLANIF) | grep "inet addr" | awk -F: '{print $$2}' | awk '{print $$1}' )
 SETUPDIR:=./setup
 
