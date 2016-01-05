@@ -1,6 +1,6 @@
 # This shouldn't be hardcoded
 DEVSTACK_ROOT:=~/devstack
-SETUPDIR:=./setup
+SETUPDIR:=../setup
 
 all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key net_fix
 
