@@ -10,8 +10,8 @@ from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
-from cord.models import VCPEService, VCPETenant, VOLTTenant
-from hpc.models import HpcService, CDNPrefix
+from services.cord.models import VCPEService, VCPETenant, VOLTTenant
+from services.hpc.models import HpcService, CDNPrefix
 from util.logger import Logger, logging
 
 # hpclibrary will be in steps/..
@@ -21,6 +21,9 @@ sys.path.insert(0,parentdir)
 from broadbandshield import BBS
 
 logger = Logger(level=logging.INFO)
+
+PARENTAL_MECHANISM="dnsmasq"
+ENABLE_QUICK_UPDATE=False
 
 class SyncVCPETenant(SyncInstanceUsingAnsible):
     provides=[VCPETenant]
@@ -125,6 +128,15 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
         except:
             full_setup = True
 
+        safe_macs=[]
+        if o.volt and o.volt.subscriber:
+            for user in o.volt.subscriber.users:
+                level = user.get("level",None)
+                mac = user.get("mac",None)
+                if level in ["G", "PG"]:
+                    if mac:
+                        safe_macs.append(mac)
+
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
                 "c_tags": c_tags,
@@ -132,7 +144,8 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                 "cdn_prefixes": cdn_prefixes,
                 "bbs_addrs": bbs_addrs,
                 "full_setup": full_setup,
-                "isolation": o.instance.isolation}
+                "isolation": o.instance.isolation,
+                "safe_browsing_macs": safe_macs}
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -169,45 +182,46 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
             url_filter_level = o.volt.subscriber.url_filter_level
             url_filter_users = o.volt.subscriber.users
 
-        # disable url_filter if there are no bbs_addrs
-        if url_filter_enable and (not fields.get("bbs_addrs",[])):
-            logger.info("disabling url_filter because there are no bbs_addrs")
-            url_filter_enable = False
+        if PARENTAL_MECHANISM=="broadbandshield":
+            # disable url_filter if there are no bbs_addrs
+            if url_filter_enable and (not fields.get("bbs_addrs",[])):
+                logger.info("disabling url_filter because there are no bbs_addrs")
+                url_filter_enable = False
 
-        if url_filter_enable:
-            bbs_hostname = None
-            if service.bbs_api_hostname and service.bbs_api_port:
-                bbs_hostname = service.bbs_api_hostname
-            else:
-                # TODO: extract from slice
-                bbs_hostname = "cordcompute01.onlab.us"
-
-            if service.bbs_api_port:
-                bbs_port = service.bbs_api_port
-            else:
-                bbs_port = 8018
-
-            if not bbs_hostname:
-                logger.info("broadbandshield is not configured")
-            else:
-                tStart = time.time()
-                bbs = BBS(o.bbs_account, "123", bbs_hostname, bbs_port)
-                bbs.sync(url_filter_level, url_filter_users)
-
-                if o.hpc_client_ip:
-                    logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
-                    bbs.associate(o.hpc_client_ip)
+            if url_filter_enable:
+                bbs_hostname = None
+                if service.bbs_api_hostname and service.bbs_api_port:
+                    bbs_hostname = service.bbs_api_hostname
                 else:
-                    logger.info("no hpc_client_ip to associate")
+                    # TODO: extract from slice
+                    bbs_hostname = "cordcompute01.onlab.us"
 
-                logger.info("bbs update time %d" % int(time.time()-tStart))
+                if service.bbs_api_port:
+                    bbs_port = service.bbs_api_port
+                else:
+                    bbs_port = 8018
+
+                if not bbs_hostname:
+                    logger.info("broadbandshield is not configured")
+                else:
+                    tStart = time.time()
+                    bbs = BBS(o.bbs_account, "123", bbs_hostname, bbs_port)
+                    bbs.sync(url_filter_level, url_filter_users)
+
+                    if o.hpc_client_ip:
+                        logger.info("associate account %s with ip %s" % (o.bbs_account, o.hpc_client_ip))
+                        bbs.associate(o.hpc_client_ip)
+                    else:
+                        logger.info("no hpc_client_ip to associate")
+
+                    logger.info("bbs update time %d" % int(time.time()-tStart))
 
 
     def run_playbook(self, o, fields):
         ansible_hash = hashlib.md5(repr(sorted(fields.items()))).hexdigest()
         quick_update = (o.last_ansible_hash == ansible_hash)
 
-        if quick_update:
+        if ENABLE_QUICK_UPDATE and quick_update:
             logger.info("quick_update triggered; skipping ansible recipe")
         else:
             if o.instance.isolation in ["container", "container_vm"]:

@@ -1,5 +1,5 @@
-IMAGE_NAME:=xosproject/xos-postgress
-CONTAINER_NAME:=xos-db-postgress
+IMAGE_NAME:=xosproject/xos-postgres
+CONTAINER_NAME:=xos-db-postgres
 NO_DOCKER_CACHE?=false
 
 .PHONY: build

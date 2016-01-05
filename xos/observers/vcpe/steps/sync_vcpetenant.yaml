@@ -50,6 +50,10 @@
       rabbit_user: {{ rabbit_user }}
       rabbit_password: {{ rabbit_password }}
       rabbit_host: {{ rabbit_host }}
+      safe_browsing:
+        {% for mac in safe_browsing_macs %}
+        - {{ mac }}
+        {% endfor %}
 
   tasks:
 {% if full_setup %}
@@ -61,7 +65,7 @@
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
 
   - name: install Docker
-    apt: name=lxc-docker-1.5.0 state=present update_cache=yes
+    apt: name=lxc-docker state=present update_cache=yes
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present
@@ -133,14 +137,12 @@
   - name: vCPE basic dnsmasq config
     copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
-    - stop dnsmasq
-    - start dnsmasq
+    - restart dnsmasq
 
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/servers.conf owner=root group=root
     notify:
-    - stop dnsmasq
-    - start dnsmasq
+    - restart dnsmasq
 
 # These are samples, not necessary for correct function of demo
 
@@ -154,11 +156,9 @@
     service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
 
   handlers:
-  - name: stop dnsmasq
-    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} /usr/bin/killall dnsmasq
-
-  - name: start dnsmasq
-    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} /usr/sbin/service dnsmasq start
+  # Dnsmasq is automatically restarted in the container
+  - name: restart dnsmasq
+    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} killall dnsmasq
 
   - name: restart vcpe
     shell: service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} stop; sleep 1; service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} start
@@ -171,3 +171,4 @@
 
   - name: start vcpe
     service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+

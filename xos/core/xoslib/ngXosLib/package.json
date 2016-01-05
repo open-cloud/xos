@@ -1,0 +1,33 @@
+{
+  "name": "ng-xos-lib",
+  "version": "1.0.0",
+  "description": "Angular Version of XosLib, containing Helpers and ngResources",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start",
+    "apigen": "node xos-resource-generator.js",
+    "swagger": "node xos-swagger-def.js",
+    "apidoc": "jsdoc api/ng-xos.js api/ng-xoslib.js api/ng-hpcapi.js -d api/docs"
+  },
+  "author": "Matteo Scandolo",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "chalk": "^1.1.1",
+    "concat": "^1.0.0",
+    "eslint": "^1.8.0",
+    "eslint-plugin-angular": "linkmesrl/eslint-plugin-angular",
+    "fetch-swagger-schema": "^0.1.2",
+    "jsdoc": "^3.3.3",
+    "swagger-js-codegen": "^1.1.5"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-ng-annotate": "^1.1.0",
+    "gulp-uglify": "^1.4.2",
+    "wiredep": "^3.0.0-beta",
+    "wrench": "^1.5.8"
+  }
+}

@@ -49,6 +49,7 @@
 
   - name: Remove IP address on public_network
     command: /sbin/ifconfig {{ public_net.stdout }} 0.0.0.0
+    when: public_net.stdout
 
   - name: Change datapath ID of bridge to match config file
     command: /usr/bin/ovs-vsctl set bridge br-vbng other-config:datapath-id={{ ovs_dpid }}

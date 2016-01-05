@@ -31,7 +31,7 @@
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
 
   - name: install Docker
-    apt: name=lxc-docker-1.5.0 state=present update_cache=yes
+    apt: name=lxc-docker state=present update_cache=yes
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present

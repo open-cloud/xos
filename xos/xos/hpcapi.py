@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from hpc.models import *
+from services.hpc.models import *
 from django.forms import widgets
 from rest_framework import filters
 from django.conf.urls import patterns, url

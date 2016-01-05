@@ -6,7 +6,7 @@ def handle_container_on_metal(instance):
         if instance.deleted:
             return
 
-        if (instance.isolation in ["container"]):
+        if (instance.isolation in ["container"]) and (instance.slice.network not in ["host", "bridged"]):
             # Our current docker-on-metal network strategy requires that there be some
             # VM on the server that connects to the networks, so that
             # the containers can piggyback off of that configuration.

@@ -93,6 +93,21 @@ node_types:
         properties:
             xos_base_service_props
 
+    tosca.nodes.Tenant:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS Tenant.
+        properties:
+            xos_base_tenant_props
+            service_specific_attribute:
+                type: string
+                required: false
+                description: Service-specific attribute, usually a string containing a json dictionary
+            model:
+                type: string
+                required: false
+                description: Name of model to use when instantiating tenant
+
     tosca.nodes.ONOSService:
         derived_from: tosca.nodes.Root
         description: >
@@ -101,6 +116,10 @@ node_types:
             xos_base_service_caps
         properties:
             xos_base_service_props
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+
 
     tosca.nodes.ONOSApp:
         derived_from: tosca.nodes.Root
@@ -141,6 +160,19 @@ node_types:
                 type: string
                 required: false
             config_network-cfg.json:
+                type: string
+                required: false
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+
+    tosca.nodes.ONOSVTNApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS VTN Application.
+        properties:
+            xos_base_tenant_props
+            dependencies:
                 type: string
                 required: false
             rest_onos/v1/network/configuration/:
@@ -346,6 +378,10 @@ node_types:
                 type: string
                 required: false
                 description: Indicates the type of controller that the network is connected to.
+            access:
+                type: string
+                required: false
+                description: The type of access semantics for this network
 
     tosca.nodes.network.Network.XOS:
           # Due to bug? in implementation, we have to copy everything from
@@ -480,7 +516,11 @@ node_types:
             path:
                 type: string
                 required: false
-                description: Path to Image file inside XOS docker container.
+                description: Path to Image file
+            tag:
+                type: string
+                required: false
+                description: For Docker images, tag of image
 
     tosca.nodes.Controller:
         derived_from: tosca.nodes.Root
@@ -595,6 +635,17 @@ node_types:
                 type: string
                 required: false
                 description: default isolation to use when bringing up instances (default to 'vm')
+            default_flavor:
+                # Note: we should probably formally introduce flavors to Tosca
+                # at some point, and use a requirement/relationship instead of
+                # a text string.
+                type: string
+                required: false
+                description: default flavor to use for slice
+            network:
+                type: string
+                required: false
+                description: type of networking to use for this slice
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
@@ -690,6 +741,10 @@ node_types:
         valid_target_types: [ tosca.capabilities.xos.Network ]
 
     tosca.relationships.UsesImage:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.Image ]
+
+    tosca.relationships.DefaultImage:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.Image ]
 

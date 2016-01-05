@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from cord.models import VBNGService
+from services.cord.models import VBNGService
 
 from service import XOSService
 

@@ -81,34 +81,48 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         if not os.path.exists(o.files_dir):
             os.makedirs(o.files_dir)
 
-        for attr in o.tenantattributes.all():
-            if attr.name.startswith("config_"):
-                fn = attr.name[7:] # .replace("_json",".json")
+        # Combine the service attributes with the tenant attributes. Tenant
+        # attribute can override service attributes.
+        attrs = o.provider_service.serviceattribute_dict
+        attrs.update(o.tenantattribute_dict)
+
+        for (name, value) in attrs.items():
+            if name.startswith("config_"):
+                fn = name[7:] # .replace("_json",".json")
                 o.config_fns.append(fn)
-                file(os.path.join(o.files_dir, fn),"w").write(attr.value)
-            if attr.name.startswith("rest_"):
-                fn = attr.name[5:].replace("/","_")
-                endpoint = attr.name[5:]
+                file(os.path.join(o.files_dir, fn),"w").write(value)
+            if name.startswith("rest_"):
+                fn = name[5:].replace("/","_")
+                endpoint = name[5:]
                 # Ansible goes out of it's way to make our life difficult. If
                 # 'lookup' sees a file that it thinks contains json, then it'll
                 # insist on parsing and return a json object. We just want
                 # a string, so prepend a space and then strip the space off
                 # later.
-                file(os.path.join(o.files_dir, fn),"w").write(" " +attr.value)
+                file(os.path.join(o.files_dir, fn),"w").write(" " +value)
                 o.rest_configs.append( {"endpoint": endpoint, "fn": fn} )
 
     def prepare_record(self, o):
         self.write_configs(o)
 
     def get_extra_attributes(self, o):
+        instance = self.get_instance(o)
+
         fields={}
         fields["files_dir"] = o.files_dir
         fields["appname"] = o.name
-        fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
+        fields["nat_ip"] = instance.get_ssh_ip()
         fields["config_fns"] = o.config_fns
         fields["rest_configs"] = o.rest_configs
-        fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
-        fields["ONOS_container"] = "ONOS"
+        if o.dependencies:
+            fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
+        else:
+            fields["dependencies"] = []
+
+        if (instance.isolation=="container"):
+            fields["ONOS_container"] = "%s-%s" % (instance.slice.name, str(instance.id))
+        else:
+            fields["ONOS_container"] = "ONOS"
         return fields
 
     def sync_fields(self, o, fields):
