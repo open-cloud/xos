@@ -10,6 +10,7 @@ ctl node:
     ONOS_VTN_HOSTNAME="cp-2.smbaker-xos5.xos-pg0.clemson.cloudlab.us"
     apt-get -y install python-pip
     pip install -U setuptools pip
+    pip install testrepository
     git clone https://github.com/openstack/networking-onos.git
     cd networking-onos
     python setup.py install
