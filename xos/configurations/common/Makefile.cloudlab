@@ -1,35 +1,38 @@
 MYFLATLANIF:=$(shell netstat -i |grep "flat"|awk '{print $$1}' )
 MYFLATLANIP:=$(shell ifconfig $(MYFLATLANIF) | grep "inet addr" | awk -F: '{print $$2}' | awk '{print $$1}' )
+SETUPDIR:=./setup
 
-all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key
+all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url other_keys
 
 prereqs:
 	make -f Makefile.prereqs
+	mkdir -p $(SETUPDIR)
 
 admin-openrc:
-	sudo cat /root/setup/admin-openrc.sh > admin-openrc.sh
-	sudo cat /root/setup/settings > controller_settings
-	echo 'CONTROLLER_FLAT_LAN_IP=$(MYFLATLANIP)' >> controller_settings
+	sudo cat /root/setup/admin-openrc.sh > $(SETUPDIR)/admin-openrc.sh
+	sudo cat /root/setup/settings > $(SETUPDIR)/controller_settings
+	echo 'CONTROLLER_FLAT_LAN_IP=$(MYFLATLANIP)' >> $(SETUPDIR)/controller_settings
 
 flat_name:
-	sudo bash -c "source /root/setup/admin-openrc.sh ; neutron net-list" |grep flat|awk '{printf "%s",$$4}' > flat_net_name
-	[ -s flat_net_name ] # throw error if flat_net_name is empty
+	bash -c "source $(SETUPDIR)/admin-openrc.sh ; neutron net-list" |grep flat|awk '{printf "%s",$$4}' > $(SETUPDIR)/flat_net_name
+	[ -s $(SETUPDIR)/flat_net_name ] # throw error if flat_net_name is empty
 
 nodes_yaml:
-	bash ./make-nodes-yaml.sh
+	bash ./make-nodes-yaml.sh > $(SETUPDIR)/nodes.yaml
 
 ceilometer_url:
-	echo http://`hostname -i`/xosmetering/ > ceilometer_url
+	echo http://`hostname -i`/xosmetering/ > $(SETUPDIR)/ceilometer_url
 
 public_key: ~/.ssh/id_rsa.pub
-	cp ~/.ssh/id_rsa.pub .
+	cp ~/.ssh/id_rsa.pub $(SETUPDIR)
 
 private_key: ~/.ssh/id_rsa
-	cp ~/.ssh/id_rsa .
+	cp ~/.ssh/id_rsa $(SETUPDIR)
 
 ~/.ssh/id_rsa.pub:
 	cat /dev/zero | ssh-keygen -q -N ""
 
-node_key:
-	sudo cat /root/setup/id_rsa > node_key
-	sudo cat /root/setup/id_rsa.pub > node_key.pub
+other_keys: public_key private_key
+	sudo cat /root/setup/id_rsa > $(SETUPDIR)/node_key
+	sudo cat /root/setup/id_rsa.pub > $(SETUPDIR)/node_key.pub
+	sudo cat /root/setup/id_rsa.pub > $(SETUPDIR)/padmin_public_key
