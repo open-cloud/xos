@@ -10,12 +10,11 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
-from ceilometer.models import *
+from services.ceilometer.models import *
 from django.forms import widgets
 from django.utils import datastructures
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from util.logger import observer_logger as logger
 

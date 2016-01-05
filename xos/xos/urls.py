@@ -8,8 +8,8 @@ from xosapi import *
 from hpcapi import *
 
 from core.views.legacyapi import LegacyXMLRPC
-from core.views.services import ServiceGridView, ServiceGraphView
-from helloworld.view import *
+from core.views.serviceGraph import ServiceGridView, ServiceGraphView
+from services.helloworld.view import *
 #from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics

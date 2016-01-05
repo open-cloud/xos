@@ -40,6 +40,5 @@ logfile=/var/log/xos_backend.log
 
 [gui]
 disable_minidashboard=True
-#branding_name=CORD
-#branding_css=/static/cord.css
-#branding_icon=/static/onos-logo.png
+branding_name=Open Cloud
+branding_icon=/static/logo.png

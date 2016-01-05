@@ -179,6 +179,44 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         o.save()
 
-    def delete_record(self, m):
-        pass
+    def delete_record(self, o):
+        try:
+            controller = o.get_controller()
+            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
+
+            if (controller_register.get('disabled',False)):
+                raise InnocuousException('Controller %s is disabled'%o.node.site_deployment.controller.name)
+        except AttributeError:
+            pass
+
+        instance = self.get_instance(o)
+        if isinstance(instance, basestring):
+            # sync to some external host
+
+            # XXX - this probably needs more work...
+
+            fields = { "hostname": instance,
+                       "instance_id": "ubuntu",     # this is the username to log into
+                       "private_key": service.key,
+                     }
+        else:
+            # sync to an XOS instance
+            fields = self.get_ansible_fields(instance)
+
+            fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
+
+        # If 'o' defines a 'sync_attributes' list, then we'll copy those
+        # attributes into the Ansible recipe's field list automatically.
+        if hasattr(o, "sync_attributes"):
+            for attribute_name in o.sync_attributes:
+                fields[attribute_name] = getattr(o, attribute_name)
+
+        fields.update(self.map_delete_inputs(o))
+
+        fields['delete']=True
+        res = self.run_playbook(o,fields)
+        try:
+                self.map_delete_outputs(o,res)
+        except AttributeError:
+                pass
 

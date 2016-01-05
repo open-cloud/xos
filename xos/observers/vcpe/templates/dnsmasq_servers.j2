@@ -3,21 +3,12 @@
 no-resolv
 
 {% if cdn_enable %}
-# CDN 
+# CDN
 {% for prefix in cdn_prefixes %}
 server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endfor %}
 {% endif %}
 
-{% if url_filter_enable %}
-# Point to BroadbandShield service, disable cache, and enable eDNS MAC passing
-add-mac
-cache-size=0
-{% for addr in bbs_addrs %}
-server={{ addr }}
-{% endfor %}
-{% else %}
 # use google's DNS service
 server=8.8.8.8
 server=8.8.4.4
-{% endif %}

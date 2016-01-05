@@ -3,8 +3,8 @@ all: setup_xos run_develserver
 setup_xos:
 	bash /opt/xos/scripts/docker_setup_xos
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
-	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab.yaml
-	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/cloudlab-nodes.yaml
+	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
+	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/nodes.yaml
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/cord.yaml
 	python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 

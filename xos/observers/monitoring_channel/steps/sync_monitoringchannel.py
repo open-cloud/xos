@@ -10,7 +10,7 @@ from observer.syncstep import SyncStep
 from observer.ansible import run_template_ssh
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
-from ceilometer.models import MonitoringChannel
+from services.ceilometer.models import MonitoringChannel
 from util.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -70,5 +70,7 @@ class SyncMonitoringChannel(SyncInstanceUsingAnsible):
 
         #o.last_ansible_hash = ansible_hash
 
-    def delete_record(self, m):
-        pass
+    def map_delete_inputs(self, o):
+        fields = {"unique_id": o.id,
+                  "delete": True}
+        return fields
