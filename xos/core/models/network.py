@@ -100,15 +100,17 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
     TRANSLATION_CHOICES = (('none', 'none'), ('NAT', 'NAT'))
     TOPOLOGY_CHOICES = (('bigswitch', 'BigSwitch'), ('physical', 'Physical'), ('custom', 'Custom'))
     CONTROLLER_CHOICES = ((None, 'None'), ('onos', 'ONOS'), ('custom', 'Custom'))
+    ACCESS_CHOICES = ((None, 'None'), ('indirect', 'Indirect'), ('direct', 'Direct'))
 
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
     guaranteed_bandwidth = models.IntegerField(default=0)
     visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
     translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
+    access = models.CharField(max_length=30, null=True, blank=True, choices=ACCESS_CHOICES, help_text="Advertise this network as a means for other slices to contact this slice")
     shared_network_name = models.CharField(max_length=30, blank=True, null=True)
     shared_network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
-    topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="BigSwitch")
+    topology_kind = models.CharField(null=False, blank=False, max_length=30, choices=TOPOLOGY_CHOICES, default="bigswitch")
     controller_kind = models.CharField(null=True, blank=True, max_length=30, choices=CONTROLLER_CHOICES, default=None)
 
     def __init__(self, *args, **kwargs):
@@ -125,6 +127,10 @@ class NetworkTemplate(PlCoreBase, ParameterMixin):
         elif (self.topology_kind=="Custom"):
             print >> sys.stderr, "XXX warning: topology_kind invalid case"
             self.toplogy_kind="custom"
+
+    def save(self, *args, **kwargs):
+        self.enforce_choices(self.access, self.ACCESS_CHOICES)
+        super(NetworkTemplate, self).save(*args, **kwargs)
 
     def __unicode__(self):  return u'%s' % (self.name)
 

@@ -1,4 +1,3 @@
-import logging
 import requests
 from six.moves import urllib
 import urllib2
@@ -11,16 +10,15 @@ from rest_framework import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
-from ceilometer.models import *
+from services.ceilometer.models import *
 from django.forms import widgets
 from django.utils import datastructures
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
+from util.logger import observer_logger as logger
 
 # This REST API endpoint provides information that the ceilometer view needs to display
-LOG = logging.getLogger(__name__)
 
 def getTenantCeilometerProxyURL(user):
     monitoring_channel = None
@@ -36,11 +34,12 @@ def getTenantCeilometerProxyURL(user):
             response = urllib2.urlopen(monitoring_channel.ceilometer_url,timeout=1)
             break
         except urllib2.HTTPError, e:
-            LOG.info('SRIKANTH: HTTP error %(reason)s' % {'reason':e.reason})
+            logger.info('SRIKANTH: HTTP error %(reason)s' % {'reason':e.reason})
             break
         except urllib2.URLError, e:
-            LOG.info('SRIKANTH: URL error %(reason)s' % {'reason':e.reason})
+            logger.info('SRIKANTH: URL error %(reason)s' % {'reason':e.reason})
             pass
+    logger.info("SRIKANTH: Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
     return monitoring_channel.ceilometer_url
 
 def getTenantControllerTenantMap(user):
@@ -48,7 +47,12 @@ def getTenantControllerTenantMap(user):
     for slice in Slice.objects.filter(creator=user):
         for cs in slice.controllerslices.all():
             if cs.tenant_id:
-                tenantmap[cs.tenant_id] = cs.slice.name
+                tenantmap[cs.tenant_id] = {"slice": cs.slice.name}
+                if cs.slice.service:
+                    tenantmap[cs.tenant_id]["service"] = slice.service.name
+                else:
+                    logger.warn("SRIKANTH: Slice %(slice)s is not associated with any service" % {'slice':cs.slice.name})
+                    tenantmap[cs.tenant_id]["service"] = "Other"
     return tenantmap
 
 def build_url(path, q, params=None):
@@ -147,6 +151,23 @@ def diff_lists(a, b):
     else:
         return list(set(a) - set(b))
 
+def get_resource_map(request, ceilometer_url):
+    resource_map = {}
+    try:
+        resources = resource_list(request, ceilometer_url=ceilometer_url)
+        for r in resources:
+            if 'display_name' in r['metadata']:
+                name = r['metadata']['display_name']
+            elif 'name' in r['metadata']:
+                name = r['metadata']['name']
+            else:
+                name = r['resource_id']
+            resource_map[r['resource_id']] = name
+    except requests.exceptions.RequestException as e:
+        raise e
+
+    return resource_map
+
 class Meters(object):
     """Class for listing of available meters.
 
@@ -158,11 +179,12 @@ class Meters(object):
 
     """
 
-    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None):
+    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None, resource_map=None):
         # Storing the request.
         self._request = request
         self.ceilometer_url = ceilometer_url
         self.tenant_map = tenant_map
+        self.resource_map = resource_map
 
         # Storing the Ceilometer meter list
         if ceilometer_meter_list:
@@ -171,7 +193,6 @@ class Meters(object):
             try:
                 query=[]
                 self._ceilometer_meter_list = meter_list(request, self.ceilometer_url, query)
-                #LOG.info('SRIKANTH: meters=%(meters)s'%{'meters':[m.project_id for m in self._ceilometer_meter_list]})
             except requests.exceptions.RequestException as e:
                 self._ceilometer_meter_list = []
                 raise e
@@ -354,9 +375,9 @@ class Meters(object):
 
         meters = []
         for meter_name in meter_names:
-            meter = self._get_meter(meter_name)
-            if meter:
-                meters.append(meter)
+            meter_candidates = self._get_meter(meter_name)
+            if meter_candidates:
+                meters.extend(meter_candidates)
         return meters
 
     def _get_meter(self, meter_name):
@@ -368,8 +389,8 @@ class Meters(object):
         :Parameters:
           - `meter_name`: A meter name we want to fetch.
         """
-        meter = self._cached_meters.get(meter_name, None)
-        if not meter:
+        meter_candidates = self._cached_meters.get(meter_name, None)
+        if not meter_candidates:
             meter_candidates = [m for m in self._ceilometer_meter_list
                                 if m["name"] == meter_name]
 
@@ -378,20 +399,27 @@ class Meters(object):
                 if meter_info:
                     label = meter_info["label"]
                     description = meter_info["description"]
+                    meter_category = meter_info["type"]
                 else:
                     label = ""
                     description = ""
-                meter = meter_candidates[0]
-                meter["label"] = label
-                meter["description"] = description
-                if meter["project_id"] in self.tenant_map.keys():
-                    meter["project_name"] = self.tenant_map[meter["project_id"]]
-                else:
-                    meter["project_name"] = meter["project_id"]
+                    meter_category = "Other"
+                for meter in meter_candidates:
+                    meter["label"] = label
+                    meter["description"] = description
+                    meter["category"] = meter_category
+                    if meter["project_id"] in self.tenant_map.keys():
+                        meter["slice"] = self.tenant_map[meter["project_id"]]["slice"]
+                        meter["service"] = self.tenant_map[meter["project_id"]]["service"]
+                    else:
+                        meter["slice"] = meter["project_id"]
+                        meter["service"] = "Other"
+                    if meter["resource_id"] in self.resource_map.keys():
+                        meter["resource_name"] = self.resource_map[meter["resource_id"]]
 
-                self._cached_meters[meter_name] = meter
+                self._cached_meters[meter_name] = meter_candidates
 
-        return meter
+        return meter_candidates
 
     def _get_nova_meters_info(self):
         """Returns additional info for each meter.
@@ -405,40 +433,49 @@ class Meters(object):
         # some day it will be supported all.
         meters_info = datastructures.SortedDict([
             ("instance", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Existence of instance"),
             }),
             ("instance:<type>", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Existence of instance <type> "
                                  "(openstack types)"),
             }),
             ("memory", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Volume of RAM"),
             }),
             ("memory.usage", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Volume of RAM used"),
             }),
             ("cpu", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("CPU time used"),
             }),
             ("cpu_util", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Average CPU utilization"),
             }),
             ("vcpus", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Number of VCPUs"),
             }),
             ("network.incoming.bytes.rate", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Average rate per sec of incoming "
                                  "bytes on a VM network interface"),
             }),
             ("network.outgoing.bytes.rate", {
+                'type': _("Nova"),
                 'label': '',
                 'description': _("Average rate per sec of outgoing "
                                  "bytes on a VM network interface"),
@@ -471,18 +508,22 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('network', {
+                'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of network"),
             }),
             ('subnet', {
+                'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of subnet"),
             }),
             ('port', {
+                'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of port"),
             }),
             ('ip.floating', {
+                'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of floating ip"),
             }),
@@ -500,30 +541,37 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('image', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Image existence check"),
             }),
             ('image.size', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Uploaded image size"),
             }),
             ('image.update', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Number of image updates"),
             }),
             ('image.upload', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Number of image uploads"),
             }),
             ('image.delete', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Number of image deletions"),
             }),
             ('image.download', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Image is downloaded"),
             }),
             ('image.serve', {
+                'type': _("Glance"),
                 'label': '',
                 'description': _("Image is served out"),
             }),
@@ -541,10 +589,12 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('volume', {
+                'type': _("Cinder"),
                 'label': '',
                 'description': _("Existence of volume"),
             }),
             ('volume.size', {
+                'type': _("Cinder"),
                 'label': '',
                 'description': _("Size of volume"),
             }),
@@ -562,26 +612,32 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('storage.objects', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Number of objects"),
             }),
             ('storage.objects.size', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Total size of stored objects"),
             }),
             ('storage.objects.containers', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Number of containers"),
             }),
             ('storage.objects.incoming.bytes', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Number of incoming bytes"),
             }),
             ('storage.objects.outgoing.bytes', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Number of outgoing bytes"),
             }),
             ('storage.api.request', {
+                'type': _("Swift"),
                 'label': '',
                 'description': _("Number of API requests against swift"),
             }),
@@ -599,10 +655,12 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('energy', {
+                'type': _("Kwapi"),
                 'label': '',
                 'description': _("Amount of energy"),
             }),
             ('power', {
+                'type': _("Kwapi"),
                 'label': '',
                 'description': _("Power consumption"),
             }),
@@ -620,50 +678,62 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('hardware.ipmi.node.power', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System Current Power"),
             }),
             ('hardware.ipmi.fan', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("Fan RPM"),
             }),
             ('hardware.ipmi.temperature', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("Sensor Temperature Reading"),
             }),
             ('hardware.ipmi.current', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("Sensor Current Reading"),
             }),
             ('hardware.ipmi.voltage', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("Sensor Voltage Reading"),
             }),
             ('hardware.ipmi.node.inlet_temperature', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System Inlet Temperature Reading"),
             }),
             ('hardware.ipmi.node.outlet_temperature', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System Outlet Temperature Reading"),
             }),
             ('hardware.ipmi.node.airflow', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System Airflow Reading"),
             }),
             ('hardware.ipmi.node.cups', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System CUPS Reading"),
             }),
             ('hardware.ipmi.node.cpu_util', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System CPU Utility Reading"),
             }),
             ('hardware.ipmi.node.mem_util', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System Memory Utility Reading"),
             }),
             ('hardware.ipmi.node.io_util', {
+                'type': _("IPMI"),
                 'label': '',
                 'description': _("System IO Utility Reading"),
             }),
@@ -681,34 +751,42 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('vcpe', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Existence of vcpe instance"),
             }),
             ('vcpe.dns.cache.size', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Number of entries in DNS cache"),
             }),
             ('vcpe.dns.total_instered_entries', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Total number of inserted entries into the cache"),
             }),
             ('vcpe.dns.replaced_unexpired_entries', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Unexpired entries that were thrown out of cache"),
             }),
             ('vcpe.dns.queries_answered_locally', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Number of cache hits"),
             }),
             ('vcpe.dns.queries_forwarded', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("Number of cache misses"),
             }),
             ('vcpe.dns.server.queries_sent', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("For each upstream server, the number of queries sent"),
             }),
             ('vcpe.dns.server.queries_failed', {
+                'type': _("VCPE"),
                 'label': '',
                 'description': _("For each upstream server, the number of queries failed"),
             }),
@@ -726,50 +804,62 @@ class Meters(object):
         # some day it will be supported all.
         return datastructures.SortedDict([
             ('switch', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Existence of switch"),
             }),
             ('switch.port', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Existence of port"),
             }),
             ('switch.port.receive.packets', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Packets received on port"),
             }),
             ('switch.port.transmit.packets', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Packets transmitted on port"),
             }),
             ('switch.port.receive.drops', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Drops received on port"),
             }),
             ('switch.port.transmit.drops', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Drops transmitted on port"),
             }),
             ('switch.port.receive.errors', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Errors received on port"),
             }),
             ('switch.port.transmit.errors', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Errors transmitted on port"),
             }),
             ('switch.flow', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Duration of flow"),
             }),
             ('switch.flow.packets', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Packets received"),
             }),
             ('switch.table', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Existence of table"),
             }),
             ('switch.table.active.entries', {
+                'type': _("SDN"),
                 'label': '',
                 'description': _("Active entries in table"),
             }),
@@ -858,14 +948,18 @@ class MetersList(APIView):
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
         tenant_map = getTenantControllerTenantMap(request.user)
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
             _('VCPE'): meters.list_vcpe(),
             _('SDN'): meters.list_sdn(),
         }
-        return Response(meters._cached_meters.values())
+        meters = []
+        for service,smeters in services.iteritems():
+             meters.extend(smeters)
+        return Response(meters)
 
 class MeterStatisticsList(APIView):
     method_kind = "list"
@@ -890,7 +984,41 @@ class MeterStatisticsList(APIView):
         except Exception as e:
            raise e 
 
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map)
+        additional_query = []
+        if date_from:
+            additional_query.append({'field': 'timestamp',
+                                     'op': 'ge',
+                                     'value': date_from})
+        if date_to:
+            additional_query.append({'field': 'timestamp',
+                                     'op': 'le',
+                                     'value': date_to})
+
+        meter_name = request.QUERY_PARAMS.get('meter', None)
+        tenant_id = request.QUERY_PARAMS.get('tenant', None)
+        resource_id = request.QUERY_PARAMS.get('resource', None)
+
+        if meter_name:
+            #Statistics query for one meter
+            query = []
+            if tenant_id:
+                query.extend(make_query(tenant_id=tenant_id))
+            if resource_id:
+                query.extend(make_query(resource_id=resource_id))
+            if additional_query:
+                query = query + additional_query
+            statistics = statistic_list(request, meter_name,
+                                        ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+            statistic = statistics[-1]
+            row = {"name": 'none',
+                   "meter": meter_name,
+                   "time": statistic["period_end"],
+                   "value": statistic["avg"]}
+            return Response(row)
+
+        #Statistics query for all meter
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
@@ -900,15 +1028,23 @@ class MeterStatisticsList(APIView):
         report_rows = []
         for service,meters in services.items():
             for meter in meters:
-                query = make_query(tenant_id=meter["project_id"])
+                query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
+                if additional_query:
+                    query = query + additional_query
                 statistics = statistic_list(request, meter["name"],
                                         ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
-                statistic = statistics[0]
+                if not statistics:
+                    continue
+                statistic = statistics[-1]
                 row = {"name": 'none',
-                       "project": meter["project_name"],
+                       "slice": meter["slice"],
+                       "project_id": meter["project_id"],
+                       "service": meter["service"],
+                       "resource_id": meter["resource_id"],
+                       "resource_name": meter["resource_name"],
                        "meter": meter["name"],
                        "description": meter["description"],
-                       "service": service,
+                       "category": service,
                        "time": statistic["period_end"],
                        "value": statistic["avg"],
                        "unit": meter["unit"]}
@@ -928,13 +1064,49 @@ class MeterSamplesList(APIView):
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
         meter_name = request.QUERY_PARAMS.get('meter', None)
-        tenant_id = request.QUERY_PARAMS.get('tenant', None)
         if not meter_name:
             raise XOSMissingField("Meter name in query params is missing")
+        limit = request.QUERY_PARAMS.get('limit', 10)
+        tenant_id = request.QUERY_PARAMS.get('tenant', None)
+        resource_id = request.QUERY_PARAMS.get('resource', None)
         query = []
         if tenant_id:
-            query.extend(make_query(tenant_id="default_admin_tenant"))
+            query.extend(make_query(tenant_id=tenant_id))
+        if resource_id:
+            query.extend(make_query(resource_id=resource_id))
         query.append({"field": "meter", "op": "eq", "value": meter_name})
         samples = sample_list(request, meter_name,
-                           ceilometer_url=tenant_ceilometer_url, query=query, limit=10) 
+                           ceilometer_url=tenant_ceilometer_url, query=query, limit=limit) 
+        if samples:
+            tenant_map = getTenantControllerTenantMap(request.user)
+            resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+            for sample in samples:
+                 if sample["project_id"] in tenant_map.keys():
+                     sample["slice"] = tenant_map[sample["project_id"]]["slice"]
+                 else:
+                     sample["slice"] = sample["project_id"]
+                 if sample["resource_id"] in resource_map.keys():
+                     sample["resource_name"] = resource_map[sample["resource_id"]]
+                 else:
+                     sample["resource_name"] = sample["resource_id"]
         return Response(samples)
+
+class ServiceAdjustScale(APIView):
+    method_kind = "list"
+    method_name = "serviceadjustscale"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()) or (not request.user.is_admin):
+            raise PermissionDenied("You must be authenticated admin user in order to use this API")
+        service = request.QUERY_PARAMS.get('service', None)
+        slice_hint = request.QUERY_PARAMS.get('slice_hint', None)
+        scale = request.QUERY_PARAMS.get('scale', None)
+        if not service or not slice_hint or not scale:
+            raise XOSMissingField("Mandatory fields missing")
+        services = Service.select_by_user(request.user)
+        logger.info('SRIKANTH: Services for this user %(services)s' % {'services':services})
+        if not services or (not services.get(name=service)):
+            raise XOSMissingField("Service not found")
+        service = services.get(name=service)
+        service.adjust_scale(slice_hint, int(scale))
+        return Response("Success")

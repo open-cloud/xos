@@ -34,10 +34,41 @@ ICON_URLS = {"success": "/static/admin/img/icon_success.gif",
 
 def backend_icon(obj):
     (icon, tooltip) = obj.get_backend_icon()
+
     icon_url = ICON_URLS.get(icon, "unknown")
 
+    (exponent,last_success,last_failure,failures) = obj.get_backend_details()
+
+    # FIXME: Need to clean this up by separating Javascript from Python
+    if (obj.pk):
+        script = """
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#show_details_%d").click(function () {
+                    $("#status%d").dialog({modal: true, height: 200, width: 200 });
+                });
+            });
+        </script>
+        """%(obj.pk,obj.pk)
+
+        div = """
+        <div style="display:none;" id="status%d" title="Details">
+                <p>Backoff Exponent: %r</p>
+                <p>Last Success: %r</p>
+                <p>Failures: %r</p>
+                <p>Last Failure: %r</p>
+                    </div>
+        """%(obj.pk,exponent,last_success,failures,last_failure)
+        a = '<a id="show_details_%d" href="#">'%obj.pk
+        astop = '</a>'
+    else:
+        div = ''
+        script = ''
+        a = ''
+        astop = ''
+
     if tooltip:
-        return '<span style="min-width:16px;" title="%s"><img src="%s"></span>' % (tooltip, icon_url)
+        return '%s %s <span style="min-width:16px;" title="%s">%s<img src="%s">%s</span>' % (script, div, tooltip, a,  icon_url, astop)
     else:
         return '<span style="min-width:16px;"><img src="%s"></span>' % icon_url
 
@@ -1054,7 +1085,7 @@ class ControllerSliceInline(XOSTabularInline):
 
 class SliceAdmin(XOSBaseAdmin):
     form = SliceForm
-    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances', "default_isolation"]
+    fieldList = ['backend_status_text', 'site', 'name', 'serviceClass', 'enabled','description', 'service', 'slice_url', 'max_instances', "default_isolation", "network"]
     fieldsets = [('Slice Details', {'fields': fieldList, 'classes':['suit-tab suit-tab-general']}),]
     readonly_fields = ('backend_status_text', )
     list_display = ('backend_status_icon', 'name', 'site','serviceClass', 'slice_url', 'max_instances')
@@ -1206,7 +1237,7 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
 class ImageAdmin(XOSBaseAdmin):
 
     fieldsets = [('Image Details',
-                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format'],
+                   {'fields': ['backend_status_text', 'name', 'kind', 'disk_format', 'container_format', 'tag', 'path'],
                     'classes': ['suit-tab suit-tab-general']})
                ]
     readonly_fields = ('backend_status_text', )
@@ -1215,7 +1246,7 @@ class ImageAdmin(XOSBaseAdmin):
 
     inlines = [InstanceInline, ControllerImagesInline]
 
-    user_readonly_fields = ['name', 'disk_format', 'container_format']
+    user_readonly_fields = ['name', 'disk_format', 'container_format', 'tag', 'path']
 
     list_display = ['backend_status_icon', 'name', 'kind']
     list_display_links = ('backend_status_icon', 'name', )
@@ -1848,7 +1879,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     user_readonly_inlines = []
     inlines = [NetworkParameterInline,]
     fieldsets = [
-        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
+        (None, {'fields': ['name', 'description', 'guaranteed_bandwidth', 'visibility', 'translation', 'access', 'shared_network_name', 'shared_network_id', 'topology_kind', 'controller_kind'],
                 'classes':['suit-tab suit-tab-general']}),]
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 

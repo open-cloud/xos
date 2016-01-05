@@ -63,10 +63,14 @@ class SyncONOSService(SyncInstanceUsingAnsible):
 
     def sync_fields(self, o, fields):
         # the super causes the playbook to be run
-
         super(SyncONOSService, self).sync_fields(o, fields)
 
     def run_playbook(self, o, fields):
+        instance = self.get_instance(o)
+        if (instance.isolation=="container"):
+            # If the instance is already a container, then we don't need to
+            # install ONOS.
+            return
         super(SyncONOSService, self).run_playbook(o, fields)
 
     def delete_record(self, m):

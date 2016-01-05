@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from hpc.models import OriginServer, ContentProvider
+from services.hpc.models import OriginServer, ContentProvider
 
 from xosresource import XOSResource
 

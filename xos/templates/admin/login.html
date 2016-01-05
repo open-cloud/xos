@@ -2,7 +2,6 @@
 {% load i18n admin_static %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="/static/suit/bootstrap/css/bootstrap.min.css" media="all"/>
 <link rel="stylesheet" type="text/css" href="{% static "xos.css" %}" />
 {% if XOS_BRANDING_CSS %}
     <link rel="stylesheet" type="text/css" href="{{ XOS_BRANDING_CSS }}">
@@ -41,7 +40,7 @@
 {% endif %}
 <div id="wrap">
 <div id="content-main">
-<h1><i class="icon-lock icon-white"></i> OpenCloud</h1>
+          <img class="logo" src="{% static XOS_BRANDING_ICON %}"/>
 <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
   <div class="form-row">
     {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}

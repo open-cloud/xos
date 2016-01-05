@@ -1,0 +1,54 @@
+<!-- <pre>{{ vm | json}}</pre> -->
+
+<div class="row">
+  <div class="col-xs-10">
+    <h1>{{vm.name | uppercase}}</h1>
+  </div>
+  <div class="col-xs-2">
+    <a ui-sref="ceilometerDashboard" class="btn btn-primary pull-right">
+      <i class="glyphicon glyphicon-arrow-left"></i> Back to list
+    </a>
+  </div>
+</div>
+<div class="row" ng-show="vm.loader">
+  <div class="col-xs-12">
+    <div class="loader">Loading</div>
+  </div>
+</div>
+<section ng-if="!vm.loader && !vm.error">
+  <div class="row">
+    <form class="form-inline col-xs-8" ng-submit="vm.addMeterToChart(vm.addMeterValue)">
+      <select ng-model="vm.addMeterValue" class="form-control" ng-options="resource.id as resource.name for resource in vm.sampleLabels"></select>
+      <button class="btn btn-success"> 
+        <i class="glyphicon glyphicon-plus"></i> Add
+      </button>
+    </form>
+    <div class="col-xs-4 text-right">
+      <a ng-click="vm.chartType = 'line'" class="btn" ng-class="{'btn-default': vm.chartType != 'bar', 'btn-primary': vm.chartType == 'line'}">Lines</a>
+      <a ng-click="vm.chartType = 'bar'" class="btn" ng-class="{'btn-default': vm.chartType != 'line', 'btn-primary': vm.chartType == 'bar'}">Bars</a>
+    </div>
+  </div>
+  <div class="row" ng-if="!vm.loader">
+    <div class="col-xs-12">
+      <canvas ng-if="vm.chartType === 'line'" id="line" class="chart chart-line" chart-data="vm.chart.data" chart-options="{datasetFill: false}"
+        chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
+      </canvas>
+      <canvas ng-if="vm.chartType === 'bar'" id="bar" class="chart chart-bar" chart-data="vm.chart.data"
+        chart-labels="vm.chart.labels" chart-legend="false" chart-series="vm.chart.series">
+      </canvas>
+      <!-- <pre>{{vm.chartMeters | json}}</pre> -->
+    </div>
+  </div>
+  <div class="row" ng-if="!vm.loader">
+    <div class="col-xs-12">
+      <a ng-click="vm.removeFromChart(meter)" class="btn btn-chart" ng-style="{'background-color': vm.chartColors[$index]}" ng-repeat="meter in vm.chartMeters">
+        {{meter.resource_name || meter.resource_id}}
+      </a>
+    </div>
+  </div>
+</section>
+<section ng-if="!vm.loader && vm.error">
+  <div class="alert alert-danger">
+    {{vm.error}}
+  </div>
+</section>

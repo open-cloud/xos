@@ -66,7 +66,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
 
     def map_sync_inputs(self, controller_network):
-        if (controller_network.network.template.name!='Private'):
+        # XXX This check should really be made from booleans, rather than using hardcoded network names
+        if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct']):
             logger.info("skipping network controller %s because it is not private" % controller_network)
             # We only sync private networks
             return SyncStep.SYNC_WITHOUT_RUNNING
@@ -81,7 +82,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
             raise Exception('Could not save network controller %s'%controller_network)
 
     def map_delete_inputs(self, controller_network):
-	if (controller_network.network.template.name!='Private'):
+        # XXX This check should really be made from booleans, rather than using hardcoded network names
+	if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct']):
             # We only sync private networks
             return
 	try:
