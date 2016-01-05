@@ -5,7 +5,7 @@ from core.models import User
 from django import forms
 from django.contrib import admin
 from subprocess import Popen, PIPE
-from vpn.models import VPNService, VPNTenant, VPN_KIND
+from services.vpn.models import VPNService, VPNTenant, VPN_KIND
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
     model = VPNService
