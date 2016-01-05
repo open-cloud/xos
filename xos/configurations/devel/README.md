@@ -1,8 +1,8 @@
 # XOS development environment
 
 This configuration can be used to do basic end-to-end development of XOS.  It launches
-an XOS container, runs the XOS develserver, and configures XOS to talk to an OpenStack
-backend.  
+XOS in three Docker containers (development GUI, Synchronizer, database) and configures XOS
+to talk to an OpenStack backend.  
 
 ## How to run it
 
