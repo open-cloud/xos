@@ -70,5 +70,7 @@ class SyncMonitoringChannel(SyncInstanceUsingAnsible):
 
         #o.last_ansible_hash = ansible_hash
 
-    def delete_record(self, m):
-        pass
+    def map_delete_inputs(self, o):
+        fields = {"unique_id": o.id,
+                  "delete": True}
+        return fields
