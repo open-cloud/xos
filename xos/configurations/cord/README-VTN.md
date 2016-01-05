@@ -38,7 +38,6 @@ Neutron driver arg-parsing issue
     emacs /usr/local/lib/python2.7/dist-packages/networking_onos/plugins/ml2/driver.py
         hard-code self.onos_path and self.onos_auth
     
-
 Compute node that has the ONOS Container
 
     # we need NAT rule so the neutron vtn plugin can talk to onos
@@ -61,3 +60,4 @@ there aren't a bunch of preexisting Neutron networks and nova instances to get i
 
 Problems:
 * If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
+* VTN doesn't like the nat-net network that XOS creates by default. Go into model_policies/model_policy_Slice.py and disable automatic creation of nat-net.
