@@ -1,8 +1,6 @@
-FN=nodes.yaml
+#!/bin/sh
 
-rm -f $FN
-
-cat >> $FN <<EOF
+cat <<EOF
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 imports:
@@ -18,11 +16,11 @@ topology_template:
         type: tosca.nodes.Site
 EOF
 
-NODES=$( bash -c "source ./admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
+NODES=$( bash -c "source ./setup/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
 I=0
 for NODE in $NODES; do
-    echo $NODE
-    cat >> $FN <<EOF
+    # echo $NODE
+    cat <<EOF
     $NODE:
       type: tosca.nodes.Node
       requirements:
