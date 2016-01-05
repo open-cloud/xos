@@ -22,7 +22,10 @@ class VPNTenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",)
 
-    default_attributes = {'server_key': 'Error key not found'}
+    default_attributes = {'server_key': 'Error key not found',
+                          'client_conf': 'Configuration not found',
+                          'server_address': '10.8.0.1',
+                          'client_address': '10.8.0.2'}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -72,6 +75,36 @@ class VPNTenant(TenantWithContainer):
     @property
     def nat_mac(self):
         return self.addresses.get("nat", (None, None))[1]
+
+    @property
+    def server_address(self):
+        return self.get_attribute(
+            'server_address',
+            self.default_attributes['server_address'])
+
+    @server_address.setter
+    def server_address(self, value):
+        self.set_attribute("server_address", value)
+
+    @property
+    def client_address(self):
+        return self.get_attribute(
+            'client_address',
+            self.default_attributes['client_address'])
+
+    @client_address.setter
+    def client_address(self, value):
+        self.set_attribute("client_address", value)
+
+    @property
+    def client_conf(self):
+        return self.get_attribute(
+            "client_conf",
+            self.default_attributes['client_conf'])
+
+    @client_conf.setter
+    def client_conf(self, value):
+        self.set_attribute("client_conf", value)
 
 
 def model_policy_vpn_tenant(pk):
