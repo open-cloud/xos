@@ -5,6 +5,9 @@ see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integratio
 inside the xos container:
 
     python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/tosca/samples/vtn.yaml
+    emacs /opt/xos/xos_configuration/xos_common_config
+        [networking]
+        use_vtn=True
 
 ctl node:
 
@@ -65,4 +68,6 @@ there aren't a bunch of preexisting Neutron networks and nova instances to get i
 
 Problems:
 * If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
-* VTN doesn't like the nat-net network that XOS creates by default. Go into model_policies/model_policy_Slice.py and disable automatic creation of nat-net.
+
+Notes:
+* Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
