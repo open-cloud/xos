@@ -44,7 +44,13 @@ docker inspect $CONTAINER > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull $IMAGE
+{% if network_method=="host" %}
+    docker run -d --name=$CONTAINER --privileged=true --net=host $VOLUME_ARGS $IMAGE
+{% elif network_method=="bridged" %}
+    docker run -d --name=$CONTAINER --privileged=true --net=bridge $VOLUME_ARGS $IMAGE
+{% else %}
     docker run -d --name=$CONTAINER --privileged=true --net=none $VOLUME_ARGS $IMAGE
+{% endif %}
 else
     docker start $CONTAINER
 fi

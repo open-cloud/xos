@@ -1144,7 +1144,7 @@ idToSelect = function(variable, selectedId, collectionName, fieldName, readOnly,
     } else {
         readOnly = "";
     }
-    result = '<select name="' + variable + '" id="field_' + variable + '"' + readOnly + '>' +
+    result = '<select class="form-control" name="' + variable + '" id="field_' + variable + '"' + readOnly + '>' +
              idToOptions(selectedId, collectionName, fieldName, filterFunc) +
              '</select>';
     return result;
@@ -1167,7 +1167,7 @@ choicesToOptions = function(selectedValue, choices) {
 }
 
 choicesToSelect = function(variable, selectedValue, choices) {
-    result = '<select name="' + variable + '" id="field_' + variable + '">' +
+    result = '<select class="form-control" name="' + variable + '" id="field_' + variable + '">' +
              choicesToOptions(selectedValue, choices) +
              '</select>';
     return result;

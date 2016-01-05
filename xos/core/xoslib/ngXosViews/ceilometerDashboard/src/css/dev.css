@@ -1,0 +1,14 @@
+@media (min-width: 768px) {
+  #xosCeilometerDashboard {
+    position: absolute;
+    top: 100px;
+    left: 20%;
+    width: 80%;
+  }
+}
+
+@media (min-width: 768px) {
+  #xosCeilometerDashboard {
+    margin: 10px
+  }
+}

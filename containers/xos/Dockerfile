@@ -1,4 +1,4 @@
-FROM       ubuntu:14.04.3
+FROM       python:2.7.11
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
@@ -29,43 +29,55 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-setuptools \
     tar \
     wget \
-##### observer dependencies  
+##### observer dependencies
     python-keystoneclient \
     python-novaclient \
     python-neutronclient \
     python-glanceclient \
     python-ceilometerclient
 
-RUN pip install -U \
+RUN pip install \
     django==1.7 \
     django-bitfield \
     django-crispy-forms \
     django-encrypted-fields \
-    django_evolution \
     django-extensions \
     django-filter \
     django-geoposition \
     django-ipware \
     django_rest_swagger \
-    django-suit \
+    django-suit==0.3a1 \
     django-timezones \
     djangorestframework==2.4.4 \
     dnslib \
-    google_api_python_client \
-    httplib2 \
-    httplib2.ca_certs_locater \
-    lxml \  
+    lxml \
     markdown \
     netaddr \
+    pyOpenSSL \
+    psycopg2 \
+    python-ceilometerclient \
     python-dateutil \
-    python_gflags \
     python-keyczar \
     pygraphviz \
     pytz \
     pyyaml \
     requests
 
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+RUN easy_install --upgrade httplib2
+
+RUN easy_install \
+    python_gflags \
+    google_api_python_client \
+    httplib2.ca_certs_locater
+
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-packages/suit/static/suit/js/
+
+RUN mkdir -p /usr/local/share /bin
+ADD http://phantomjs.googlecode.com/files/phantomjs-1.7.0-linux-x86_64.tar.bz2 /usr/local/share/
+RUN tar jxvf /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2 -C /usr/local/share/
+RUN rm -f /usr/local/share/phantomjs-1.7.0-linux-x86_64.tar.bz2
+RUN ln -s /usr/local/share/phantomjs-1.7.0-linux-x86_64 /usr/local/share/phantomjs
+RUN ln -s /usr/local/share/phantomjs/bin/phantomjs /bin/phantomjs
 
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
@@ -74,6 +86,7 @@ RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
     /opt/xos/scripts/opencloud genkeys
 
 # install Tosca engine
+RUN chmod +x /opt/xos/tosca/run.py
 RUN bash /opt/xos/tosca/install_tosca.sh
 
 EXPOSE 8000
@@ -82,7 +95,7 @@ EXPOSE 8000
 ENV HOME /root
 
 # Define working directory.
-WORKDIR /root
+WORKDIR /opt/xos
 
 # Define default command.
-CMD python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure
+CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure

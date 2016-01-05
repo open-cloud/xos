@@ -16,7 +16,7 @@ flat_name:
 	[ -s flat_net_name ] # throw error if flat_net_name is empty
 
 nodes_yaml:
-	bash ./make-cloudlab-nodes-yaml.sh
+	bash ./make-nodes-yaml.sh
 
 ceilometer_url:
 	echo http://`hostname -i`/xosmetering/ > ceilometer_url

@@ -5,6 +5,8 @@ import io
 import json
 from ceilometerclient import client
 import logging
+import urllib
+import urllib2
 from wsgilog import WsgiLog
 
 web.config.debug=False
@@ -49,6 +51,7 @@ urls = (
     r'^/v2/meters/(?P<meter_name>[A-Za-z0-9_:.\-]+)/statistics$', 'statistics_list',
     r'^/v2/samples$', 'sample_list',
     r'^/v2/resources$', 'resource_list',
+    r'^/v2/subscribe$', 'pubsub_handler',
 )
 
 app = web.application(urls, globals())
@@ -223,11 +226,15 @@ class resource_list:
              "q.op": [],
              "q.type": [],
              "q.value": [],
+             "limit": None,
+             "links": None,
         }
         query_params = web.input(**keyword_args)
         new_query, user_specified_tenants = filter_query_params(query_params)
 
         client = ceilometerclient()
+        limit=query_params.limit
+        links=query_params.links
         resources=[]
         for (k,v) in config.items('allowed_tenants'):
               if user_specified_tenants and (k not in user_specified_tenants):
@@ -237,9 +244,40 @@ class resource_list:
               query = make_query(tenant_id=k)
               final_query.extend(query)
               logger.debug('final query=%s',final_query)
-              results = client.resources.list(q=final_query, links=1)
+              results = client.resources.list(q=final_query, limit=limit, links=links)
               resources.extend(results)
         return json.dumps([ob._info for ob in resources])
+
+class pubsub_handler:
+    def POST(self):
+        global config
+        parse_ceilometer_proxy_config()
+        data_str = unicode(web.data(),'iso-8859-1')
+        post_data = json.loads(data_str)
+        final_query=[]
+        for (k,v) in config.items('allowed_tenants'):
+             query = make_query(tenant_id=k)
+             final_query.extend(query)
+        if not final_query:
+             raise Exception("Not allowed to subscribe to any meters")
+        post_data["query"] = final_query
+        #TODO: The PUB/SUB url needs to be read from config
+        put_request = urllib2.Request("http://10.11.10.1:4455/subscribe", json.dumps(post_data))
+        put_request.get_method = lambda: 'SUB'
+        put_request.add_header('Content-Type', 'application/json')
+        response = urllib2.urlopen(put_request)
+        response_text = response.read()
+        return json.dumps(response_text)
+
+    def DELETE(self):
+        data_str = web.data()
+        #TODO: The PUB/SUB url needs to be read from config
+        put_request = urllib2.Request("http://10.11.10.1:4455/unsubscribe", data_str)
+        put_request.get_method = lambda: 'UNSUB'
+        put_request.add_header('Content-Type', 'application/json')
+        response = urllib2.urlopen(put_request)
+        response_text = response.read()
+        return json.dumps(response_text)
 
 if __name__ == "__main__":
     app.run(FileLog)

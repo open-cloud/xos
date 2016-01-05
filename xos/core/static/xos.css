@@ -1,4 +1,4 @@
-g/*************************
+/************************
 colors:
     tab - active/focus color
     background-color: #105E9E !important;
@@ -12,11 +12,313 @@ ONLab darker blue select :: background-color: #004775;
 
 *************************/
 
+html, body, body.login {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body{
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/*#wrap {
+  min-height: 100%;
+}*/
+
+/* ************************* LOGIN PAGE ************************* */
+
+body.login img.logo{
+   width: 250px;
+   display: block;
+   margin: 20px auto;
+   padding-top: 20px;
+}
+
+/* ************************* SIDENAV TOGGLE ************************* */
+
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-left: 250px;
+}
+
+#sidebar-wrapper {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  width: 0;
+  height: 100%;
+  margin-left: -250px;
+  overflow-y: auto;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  background: white;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 250px;
+  padding: 10px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 250px;
+    }
+
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+
+    #sidebar-wrapper {
+      width: 250px;
+      padding: 10px;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
+
+.navbar-toggle{
+  border: 1px solid #08C;
+}
+
+.navbar-toggle .icon-bar{
+  background: #08C;
+}
+/* ************************* END SIDENAV TOGGLE ************************* */
+
+/* ************************* HEADER STYLE ************************* */
+
+.header{
+  background-color: #ffffff !important;
+  border-bottom: 3px solid #C5CCD4;
+  margin-bottom: 14px;
+  height: 85px;
+}
+
+.header .logo{
+  max-height: 80px;
+}
+
+.nav-quick-search{
+  margin: 30px -10px 0px 0px !important;
+  padding:0 25px 0 0 !important;
+  float:right !important;
+}
+
+.nav-quick-search .search-query{
+  border-radius:5px;
+  border:none;
+  box-shadow:0px;
+  background-color:lightGrey;
+  padding-left: 27px;
+}
+
+
+.header #branding {
+  width: 100%;
+  height:60px;
+  border-right:none;
+}
+
+.header a {
+  color: #08C;
+  font-weight: bold;
+  /*border-bottom: 1px solid #C5CCD4;*/
+}
+a {
+  color: #08C;
+  font-weight: bold;
+  /*border-bottom: 1px solid #C5CCD4;*/
+}
+
+
+#branding2{
+height:20px;
+width:100%;
+color: #333;
+/*background-color: #000000;*/
+margin-bottom: 10px;
+}
+
+.header #user-tools {
+    padding: 12px 20px 0px 0px;
+    float: right;
+    margin-top: -5px;
+}
+
+.header .header-content .date{
+padding-left:10px;
+}
+
+.header .header-content .time {
+font-weight: normal;
+}
+.header .header-content.header-content-first{
+height: 15px;
+padding-bottom: 0px;
+}
+
+.header .header-content {
+padding-bottom: 0px;
+padding: 7px 0 0 0px;
+}
+
+/************************* END HEADER *************************/
+
+/************************* FOOTER *************************/
+
+.footer{
+  z-index: 1001;
+  position: fixed;
+}
+
+/* FIXME */
+@media(max-width:768px) {
+  .footer{
+    display: none;
+  }
+
+  #page-content-wrapper{
+    padding-bottom: 60px;
+  }
+}
+
+.footer .content .statusMsg {
+    float: right;
+    padding: 15px 20px 0 0;
+    display: block;
+}
+/************************* END FOOTER *************************/
+
+/************************* NAV *************************/
+
+#sidebar-wrapper {
+  -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow:    3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+  box-shadow:         3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+}
+
+#sidebar-wrapper .logo{
+  max-width: 100%;
+}
+
+.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app, .icon-cog {
+  background-position: left center;
+  width:22px;
+  height:22px;
+  display: inline-block;
+  margin-right: 10px;
+  position: relative;
+  top: 5px;
+}
+
+.icon-app {
+background-image: url("opencloudApp.png");
+}
+.icon-home {
+/*  Going with darker standard color nav -- so using over png's background-image: url("Home.png"); */
+background-image: url("Home.png");
+}
+.icon-deployment{
+background-image: url("Deployments.png");
+}
+.icon-site{
+background-image: url("Sites.png");
+}
+.icon-slice{
+background-image: url("Slices.png");
+}
+.icon-user{
+background-image: url("Users.png");
+}
+.icon-reservation{
+background-image: url("Reservations.png");
+}
+.icon-cog{
+background-image: url("Services.png");
+}
+
+#sidebar-wrapper>ul>li.active>a>.icon-home ,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-home ,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-home{
+  background-image: url("Home_over.png");
+}
+
+#sidebar-wrapper>ul>li.active>a>.icon-deployment,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-deployment,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-deployment{
+  background-image: url("Deployments_over.png");
+}
+#sidebar-wrapper>ul>li.active>a>.icon-site,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-site,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-site{
+  background-image: url("Sites_over.png");
+}
+#sidebar-wrapper>ul>li.active>a>.icon-slice,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-slice,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-slice{
+  background-image: url("Slices_over.png");
+}
+#sidebar-wrapper>ul>li.active>a>.icon-user,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-user,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-user{
+  background-image: url("Users_over.png");
+}
+#sidebar-wrapper>ul>li.active>a>.icon-reservation,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-reservation,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-reservation{
+  background-image: url("Reservations_over.png");
+}
+
+#sidebar-wrapper>ul>li.active>a>.icon-cog,
+/*#sidebar-wrapper>ul>li:hover>a>.icon-cog,*/
+#sidebar-wrapper>ul>li.focus>a>.icon-cog{
+  background-image: url("Services_over.png");
+}
+/************************* END NAV *************************/
+
 /*   CSS for jquery Tabs */
 #hometabs {
 border-bottom: 1px solid #105E9E;
 font-size: 12px;
 border: 0px;
+}
+
+.ui-tabs .ui-tabs-nav {
+  padding: 0 !important;
 }
 
 .ui-tabs-active {
@@ -50,97 +352,7 @@ border: 0px;
     text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
     font-weight: normal;
 }
-/*************************/
-/*  Header elements      */
 
-.logo {
-}
-.header{
-    background-color: #ffffff !important;
-    /*background-image: url('bg2.jpg');*/
-    background-size: 100% auto;
-    background-image: none !important;
-    text-shadow: none;
-    border-bottom: 3px solid #C5CCD4;
-    margin-bottom: 14px;
-    margin-top: -120px;
-    height: 85px;
-    /*min-width: 1321px;*/
-}
-
-.nav-quick-search{
-margin: 30px -10px 0px 0px !important;
-padding:0 25px 0 0 !important;
-float:right !important;
-}
-
-.nav-quick-search .search-query{
-border-radius:5px;
-border:none;
-box-shadow:0px;
-background-color:lightGrey;
-padding-left: 27px;
-}
-
-
-.header #branding {
-width: 100%;
-height:60px;
-}
-
-.header a {
-color: #08C;
-font-weight: bold;
-/*border-bottom: 1px solid #C5CCD4;*/
-}
-a {
-color: #08C;
-font-weight: bold;
-/*border-bottom: 1px solid #C5CCD4;*/
-}
-
-.header #branding {
-border-right:none;
-}
-
-#branding2{
-height:20px;
-width:100%;
-color: #333;
-/*background-color: #000000;*/
-margin-bottom: 10px;
-}
-
-.header #user-tools {
-    padding: 12px 20px 0px 0px;
-    float: right;
-    margin-top: -5px;
-}
-
-.header .header-content .date{
-padding-left:10px;
-}
-
-.header .header-content .time {
-font-weight: normal;
-}
-.header .header-content.header-content-first{
-height: 15px;
-padding-bottom: 0px;
-}
-
-.header .header-content {
-padding-bottom: 0px;
-padding: 7px 0 0 0px;
-}
-
-/*************************/
-
-.footer .content .statusMsg {
-    float: right;
-    padding: 15px 20px 0 0;
-    display: block;
-}
 
 .alignCenter {
     text-align: center !important;
@@ -248,7 +460,7 @@ color: #105E9E ;
 #suit-center {
 padding: 20px;
 width: 100%;
-min-width:650px;
+/*min-width:650px;*/
 }
 .inner-two-columns .inner-center-column .tab-content {
 overflow-x: auto;
@@ -266,60 +478,12 @@ font-weight: bold;
 margin-bottom: 5px;
 }
 
-
-/*For changing the background color of the left side navigation list items*/
-/*For changing the color of the left side navigation list items*/
-/*For changing the font of the left side navigation list items*/
-.left-nav>ul>li>a {
-/*background-color: #CDE7FF;*/
-/* Light color nav choices */
-/*background-color: #DFECF8;*/
-/*background-color: #91BFE4;*/
-/*background-color: #DAECFC;*/
-background-color: #448CCA;
-/*ONlab.us reg color blue*/
-/*background-color: #ccffff;*/
-font-weight: normal;
-/*color: #105E9E;*/
-color: #ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
-font-size: 12px;
-border-bottom: none;
-}
-
-/*For giving the padding for the left side navigation*/
-.left-nav>ul {
-padding-left: 5px;
-}
-
-/*For increasing the height of left side navigation list items*/
-.left-nav>ul>li {
-padding-top:4px;
-line-height: 35px;
-width: 200px;
-}
-
 /*For changing background color of suit center*/
 #suit-center {
 background-color: #ffffff;
 }
 
-.left-nav>ul>li.active>a {
-/*background-color: #448CCA;*/
-/* Last Active
-background-color: #0061B7; */
-background-color: #515151;
-/*background-color: #448CCA;*/
-font-weight:normal;
-color:#ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
 
-/*left: 10px;*/
-background-image: url("right_arrow.png");
-    background-position: 97% center;
-}
 
 
 .nav-tabs-suit li{
@@ -380,45 +544,41 @@ font-size: 0;
 line-height: 0;
 }
 
-
-/* create an arrow that points down */
-
-
-.left-nav>ul>li.active>a:hover{
-/*background-color: #448CCA;*/
-/*background-color: #91BFE4;*/
-/*background-color: #D6E7F8;*/
-font-weight:normal;
-font-size: 1.2em;
-/*font-weight: bold;*/
-color:#ffffff;
-/*padding-top:10px;*/
-text-decoration:none;
+.nav-tabs-suit li.active a:hover,
+.nav-tabs-suit li a:hover{
+  background-color: #105E9E;
+  /*background-color: #515151;*/
+  font-weight:normal;
+  /*font-size: 1.2em;*/
+  color:#ffffff;
+  /*padding-top:10px;
+  text-decoration:none;*/
 }
 
-/* Adjust font weight to normal on hover, else white blurs */
-.left-nav>ul>li>a:hover{
-/*background-color: #448CCA;*/
-/*background-color: #004775;*/
-background-color: #515151;
-color:#ffffff;
-font-weight:normal;
-font-size: 1.2em;
-/*padding-top:10px;*/
-text-decoration:none;
-/*border-left: 15px solid #105E9E ;*/
-border-left: 10px solid #ffffff;
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-letter-spacing: 1px;
+.nav-tabs>.active>a{
+  border: none;
 }
-.nav-tabs-suit li.active a:hover,.nav-tabs-suit li a:hover{
-/*background-color: #448CCA;*/
-background-color: #515151;
-font-weight:normal;
-/*font-size: 1.2em;*/
-/*color:#ffffff;*/
-padding-top:10px;
-text-decoration:none;
+
+.nav-tabs-suit li a{
+  font-weight: normal;
+}
+
+.nav-tabs-suit li a:hover{
+  border: none;
+  color: #ffffff;
+  padding-top:10px;
+  /*border: 1px solid;*/
+  /*letter-spacing: 1px;*/
+  /*text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;*/
+}
+
+.nav-tabs-suit li.active a:hover{
+  /*border: none;*/
+}
+
+.nav-tabs-suit > li.active > a:focus {
+  background-color: #105E9E;
+  font-weight: normal;
 }
 
 .breadcrumb li a {
@@ -568,25 +728,6 @@ box-shadow: none;
 */
 }
 
-.nav-tabs>.active>a{
-border: none;
-}
-
-.nav-tabs-suit li a{
-  font-weight: normal;
-}
-
-.nav-tabs-suit li a:hover{
-border: none;
-color: #ffffff;
-/*letter-spacing: 1px;*/
-text-shadow: rgb(46, 43, 43) 0.1em 0.1em 0.2em;
-}
-
-.nav-tabs-suit li.active a:hover{
-border: none;
-}
-
 /*.nav-tabs-suit li.active {*/
  /*background: transparent url('home.png') no-repeat scroll center bottom;*/
   /*border-left: 5px solid transparent;
@@ -600,9 +741,10 @@ height: 0;
 }*/
 
 .login {
-background-image: url('bg.jpg');
-background-size: 100%;
-background-repeat: no-repeat;
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
 }
 
 
@@ -622,7 +764,7 @@ background-repeat: no-repeat;
     browser resizes **/
 #content-main {
     overflow-x:auto;
-    min-width: 1000px;
+    /*min-width: 1000px;*/
 }
 
 .tab-content tab-content-main {
@@ -666,14 +808,14 @@ height: 84.5%;
 
 .login #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    overflow: hidden;
+    padding: 0f;
 }
 #wrap {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
 }
 #wrap {
-    height: auto !important;
-    margin: 0 auto -60px;
-    min-height: 100%;
+    padding-bottom: 60px;
 }
 
 .forgotLink {
@@ -709,7 +851,6 @@ height: 84.5%;
 
 /*Added by Beena for adding the three components in dashboard*/
 .breadcrumb{
-		width: 37%;
 	display:inline-block;
 	background-color: #fff;
 
@@ -763,55 +904,6 @@ opacity:1;
     background-repeat: no-repeat !important;
     background-size: 120% auto !important;
     background-position: 0;*/
-}
-
-.icon-home ,.icon-deployment ,.icon-site ,.icon-slice ,.icon-user, .icon-reservation, .icon-app{
-background-position: left center;
-width:22px;
-height:22px;	
-}
-
-.icon-app {
-background-image: url("opencloudApp.png");
-}
-.icon-home {
-/*  Going with darker standard color nav -- so using over png's background-image: url("Home.png"); */
-background-image: url("Home_over.png");
-}
-.icon-deployment{
-background-image: url("Deployments_over.png");
-}
-.icon-site{
-background-image: url("Sites_over.png");
-}
-.icon-slice{
-background-image: url("Slices_over.png");
-}
-.icon-user{
-background-image: url("Users_over.png");
-}
-.icon-reservation{
-background-image: url("Reservations_over.png");
-}
-
-.left-nav>ul>li.active>a>.icon-home , .left-nav>ul>li:hover>a>.icon-home , .left-nav>ul>li.focus>a>.icon-home{
-background-image: url("Home_over.png");
-}
-
-.left-nav>ul>li.active>a>.icon-deployment,.left-nav>ul>li:hover>a>.icon-deployment,.left-nav>ul>li.focus>a>.icon-deployment{
-background-image: url("Deployments_over.png");
-}
-.left-nav>ul>li.active>a>.icon-site , .left-nav>ul>li:hover>a>.icon-site , .left-nav>ul>li.focus>a>.icon-site{
-background-image: url("Sites_over.png");
-}
-.left-nav>ul>li.active>a>.icon-slice , .left-nav>ul>li:hover>a>.icon-slice , .left-nav>ul>li.focus>a>.icon-slice {
-background-image: url("Slices_over.png");
-}
-.left-nav>ul>li.active>a>.icon-user , .left-nav>ul>li:hover>a>.icon-user , .left-nav>ul>li.focus>a>.icon-user{
-background-image: url("Users_over.png");
-}
-.left-nav>ul>li.active>a>.icon-reservation , .left-nav>ul>li:hover>a>.icon-reservation , .left-nav>ul>li.focus>a>.icon-reservation{
-background-image: url("Reservations_over.png");
 }
 
 #dashboardHPC {
@@ -1225,4 +1317,58 @@ font-size: medium;
 
 #request-site-name{
 	width: 98%;
+}
+
+/* SUIT CHANGES */
+.submit-row.fixed {
+  bottom: 60px;
+}
+
+.submit-row a.deletelink {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 5px 12px;
+  font-size: 12px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* MODAL */
+.ui-dialog{
+  z-index: 4000 !important;
+}
+
+button.ui-dialog-titlebar-close{
+  font-family: 'Glyphicons Halflings' !important;
+  display: inline-block;
+}
+
+button.ui-dialog-titlebar-close:after {
+    content: "\e014";
+}
+/* VCPe ADMIN FIX */
+/*form#vcpeservice_form ul li {
+    display: inline-block;
+    background: red;
+    margin-top: 10px;
+    width: auto;
+    padding: 10px;
+    border-radius: 5px;
 }

@@ -7,7 +7,7 @@ from translator.toscalib.tosca_template import ToscaTemplate
 import pdb
 
 from core.models import User
-from cord.models import VOLTTenant, VOLTService, CordSubscriberRoot, VOLT_KIND
+from services.cord.models import VOLTTenant, VOLTService, CordSubscriberRoot, VOLT_KIND
 
 from xosresource import XOSResource
 

@@ -12,7 +12,7 @@ from services.onos.models import ONOSApp, ONOSService
 from xosresource import XOSResource
 
 class XOSONOSApp(XOSResource):
-    provides = ["tosca.nodes.ONOSApp", "tosca.nodes.ONOSvBNGApp", "tosca.nodes.ONOSvOLTApp"]
+    provides = ["tosca.nodes.ONOSApp", "tosca.nodes.ONOSvBNGApp", "tosca.nodes.ONOSvOLTApp", "tosca.nodes.ONOSVTNApp"]
     xos_model = ONOSApp
     copyin_props = ["service_specific_id", "dependencies"]
 

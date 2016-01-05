@@ -164,7 +164,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    'suit',
+    # 'suit',
+    'xos.apps.MyDjangoSuitConfig',
     'admin_customize',
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -172,16 +173,14 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'core',
-    'hpc',
-    'cord',
-    'helloworldservice_complete',
-    'vpn',
+    'services.hpc',
+    'services.cord',
+    'services.helloworldservice_complete',
     'services.onos',
-    'ceilometer',
-    'requestrouter',
-#    'urlfilter',
-#    'servcomp',
-    'syndicate_storage',
+    'services.ceilometer',
+    'services.requestrouter',
+    'services.syndicate_storage',
+    'services.vpn',
     'geoposition',
     'rest_framework_swagger',
 )
@@ -190,75 +189,12 @@ if DJANGO_VERSION[1]>=7:
     # if django >= 1.7, then change the admin module
     INSTALLED_APPS = list(INSTALLED_APPS)
     INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
-    INSTALLED_APPS = tuple(INSTALLED_APPS)
 
 # Added for django-suit form
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
     'core.context_processors.xos',
 )
-
-# Django Suit configuration example
-SUIT_CONFIG = {
-    # header
-    'ADMIN_NAME': getattr(config, "gui_branding_name", "OpenCloud"),
-    # 'HEADER_DATE_FORMAT': 'l, j. F Y',
-    # 'HEADER_TIME_FORMAT': 'H:i',
-
-    # forms
-    #'SHOW_REQUIRED_ASTERISK': True,  # Default True
-    'CONFIRM_UNSAVED_CHANGES': True, # Default True
-
-    # menu
-    # 'SEARCH_URL': '/admin/auth/user/',
-    # 'MENU_ICONS': {
-    #    'sites': 'icon-leaf',
-    #    'auth': 'icon-lock',
-    # },
-    # 'MENU_OPEN_FIRST_CHILD': True, # Default True
-    'MENU_EXCLUDE': (
-         'auth.group',
-         'auth',
-         'core.network',
-         'core.instance',
-         'core.node',
-         'core.image',
-         'core.deploymentrole',
-         'core.siterole',
-         'core.slicerole',
-         'core.networktemplate',
-         'core.networkparametertype',
-         'core.router',
-         'core.tag',
-         'core.account',
-         'core.invoice',
-         'core.serviceclass',
-    ),
-    'MENU': (
-        #{'app': 'core', 'icon':'icon-lock'},
-        #{'app': 'core', 'icon': 'icon-lock', 'models': ('core.site', 'core.deployment', 'core.service', 'core.slice', 'core.user', 'core.reservation', 'core.account', 'core.invoice', 'core.payment', 'core.usableobject')},
-        {'label': 'Deployments', 'icon':'icon-deployment', 'url': '/admin/core/deployment/'},
-        {'label': 'Sites', 'icon':'icon-site', 'url': '/admin/core/site/'},
-        {'label': 'Slices', 'icon':'icon-slice', 'url': '/admin/core/slice/'},
-        {'label': 'Users', 'icon':'icon-user', 'url': '/admin/core/user/'},
-        {'label': 'Services', 'icon':'icon-cog', 'url': '/serviceGrid/'},
-#        {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
-#        {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
-#        {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate_storage'},
-#       {'label': 'URL Filter', 'icon': 'icon-cog', 'app': 'urlfilter'},
-#       {'label': 'Service Comp', 'icon': 'icon-cog', 'app': 'servcomp'},
-
-        #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
-    #     'sites',
-    #     {'app': 'auth', 'icon':'icon-lock', 'models': ('user', 'group')},
-    #     {'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
-    #   {'label': 'Settings', 'icon':'icon-cog', 'models': ('core.user', 'core.site')},
-    # ),
-    ),
-
-    # misc
-    # 'LIST_PER_PAGE': 15
-}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
