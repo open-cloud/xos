@@ -8,13 +8,23 @@
   - name: install openvpn
     apt: name=openvpn state=present update_cache=yes
 
+  - name: clear key
+    shell: echo "" > "static.key"
+
   - name: write key
-    shell:
-       |
-       printf "{{ server_key }}"  > "/opt/xos/observers/vpn/static.key"
+    shell: echo {{ '{{' }} item {{ '}}' }} >> static.key
+    with_items: "{{ server_key }}"
 
   - name: write config
-    shell: printf "dev tun\nifconfig 10.8.0.1 10.8.0.2\nsecret /opt/xos/observers/vpn/static.key\nkeepalive 10 60\nping-timer-rem\npersist-tun\npersist-key" > "/opt/xos/observers/vpn/server.conf"
+    shell:
+       |
+       printf "dev tun
+       ifconfig 10.8.0.1 10.8.0.2
+       secret static.key
+       keepalive 10 60
+       ping-timer-rem
+       persist-tun
+       persist-key" > server.conf
 
   - name: start openvpn
-    shell: openvpn /opt/xos/observers/vpn/server.conf
+    shell: openvpn server.conf &
