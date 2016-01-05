@@ -1,4 +1,3 @@
-#FN=/opt/xos/configurations/common/cloudlab-nodes.yaml
 FN=virtualbng.json
 
 rm -f $FN
@@ -15,7 +14,7 @@ cat >> $FN <<EOF
     "hosts" : {
 EOF
 
-NODES=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}' )
+NODES=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
 
 NODECOUNT=0
 for NODE in $NODES; do

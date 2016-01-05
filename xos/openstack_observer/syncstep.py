@@ -10,6 +10,7 @@ from django.db import reset_queries
 from observer.ansible import *
 from dependency_walker import *
 
+from time import time
 import json
 import time
 import pdb
@@ -228,7 +229,7 @@ class SyncStep(object):
                     else:
                         self.sync_record(o)
                         o.enacted = datetime.now() # Is this the same timezone? XXX
-                        scratchpad = {'next_run':0, 'exponent':0}
+                        scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time()}
                         o.backend_register = json.dumps(scratchpad)
                         o.backend_status = "1 - OK"
                         o.save(update_fields=['enacted','backend_status','backend_register'])
@@ -258,7 +259,7 @@ class SyncStep(object):
                         scratchpad['exponent']
                     except:
                         logger.log_exc("Exception while updating scratchpad")
-                        scratchpad = {'next_run':0, 'exponent':0}
+                        scratchpad = {'next_run':0, 'exponent':0, 'last_success':time.time(),'failures':0}
 
                     # Second failure
                     if (scratchpad['exponent']):
@@ -271,7 +272,17 @@ class SyncStep(object):
                             delay=8*60*60
                         scratchpad['next_run'] = time.time() + delay
 
-                    scratchpad['exponent']+=1
+                    try:
+                        scratchpad['exponent']+=1
+                    except:
+                        scratchpad['exponent']=1
+
+                    try:
+                        scratchpad['failures']+=1
+                    except KeyError:
+                        scratchpad['failures']=1
+
+                    scratchpad['last_failure']=time.time()
 
                     o.backend_register = json.dumps(scratchpad)
 

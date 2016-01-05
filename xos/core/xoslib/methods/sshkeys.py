@@ -6,7 +6,6 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
-from syndicate_storage.models import Volume
 from django.core.exceptions import PermissionDenied
 from xos.exceptions import XOSNotFound
 

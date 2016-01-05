@@ -166,6 +166,19 @@ node_types:
                 type: string
                 required: false
 
+    tosca.nodes.ONOSVTNApp:
+        derived_from: tosca.nodes.Root
+        description: >
+            An ONOS VTN Application.
+        properties:
+            xos_base_tenant_props
+            dependencies:
+                type: string
+                required: false
+            rest_onos/v1/network/configuration/:
+                type: string
+                required: false
+
     tosca.nodes.VCPEService:
         description: >
             CORD: The vCPE Service.

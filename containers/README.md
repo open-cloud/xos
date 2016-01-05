@@ -73,5 +73,5 @@ file a complete XOS solution based on docker containers can be instantiated
 using a single command. To start the instance you can use the command:
 
 ```
-$ docker-compose -f xos-compose.yml up -d
+$ docker-compose up -d
 ```
