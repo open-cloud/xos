@@ -12,6 +12,7 @@ from core.models.instance import Instance
 from util.logger import observer_logger as logger
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
+from xos.config import Config
 import json
 
 import pdb
@@ -63,6 +64,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
                     'gateway':self.alloc_gateway(controller_network.pk),
+                    'use_vtn':getattr(Config(), "networking_use_vtn", False),
                     'delete':False	
                     }
         return network_fields
