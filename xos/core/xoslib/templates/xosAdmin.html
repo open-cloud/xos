@@ -153,28 +153,45 @@
 
 <script type="text/template" id="xos-detail-template">
   <h3 class="xos-detail-title">Edit Object: <%= modelName %></h3>
-  <form>
+  <form class="inline-form">
   <table class="xos-detail-table">
   <% args = arguments; %>
   <% _.each(detailFields, function(fieldName) { %>
-     <tr><td class="xos-label-cell"><%= fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName) %>:</td>
+     <tr>
+      <td class="xos-label-cell">
+        <label><%= fieldName in fieldDisplayNames ? fieldDisplayNames[fieldName] : fieldNameToHumanReadable(fieldName) %>:</label>
+      </td>
         <% readOnly = $.inArray(fieldName, model.readOnlyFields)>=0 ? " readonly" : "";  %>
         <% if (fieldName in choices) { %>
-            <td><%= choicesToSelect(fieldName, model.attributes[fieldName], choices[fieldName]) %></td>
+            <td>
+              <%= choicesToSelect(fieldName, model.attributes[fieldName], choices[fieldName]) %>
+            </td>
         <% } else if (fieldName in foreignFields) { %>
-            <td><%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %></td>
+            <td>
+              <%= idToSelect(fieldName, model.attributes[fieldName], foreignFields[fieldName], "humanReadableName", readOnly) %>
+            </td>
         <% } else if (inputType[fieldName] == "spinner") { %>
             <!-- note: I never finished working on this spinner stuff! -->
-            <td><%= xosSpinnerTemplate({id: "spinner_" + fieldName, fieldName: fieldName, value: model.attributes[fieldName]}) %></td>
+            <td>
+              <%= xosSpinnerTemplate({id: "spinner_" + fieldName, fieldName: fieldName, value: model.attributes[fieldName]}) %>
+            </td>
         <% } else if (inputType[fieldName] == "checkbox") { %>
-            <td><input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>></td>
+            <td>
+              <input type="checkbox" name="<%= fieldName %>" <% if (model.attributes[fieldName]) print("checked"); %><%= readOnly %>>
+            </td>
         <% } else if (inputType[fieldName] == "picker") { %>
             <% lookupFunc = makeIdToName(model.m2mFields[fieldName], "humanReadableName"); %>
-            <td><%= xosPickerTemplate({pickedItems: model.attributes[fieldName], unpickedItems: model.getChoices(fieldName,true), id: "picker_" + fieldName, fieldName: fieldName, detailView: detailView, lookupFunc: lookupFunc}) %></td>
+            <td>
+              <%= xosPickerTemplate({pickedItems: model.attributes[fieldName], unpickedItems: model.getChoices(fieldName,true), id: "picker_" + fieldName, fieldName: fieldName, detailView: detailView, lookupFunc: lookupFunc}) %>
+            </td>
         <% } else if (fieldName=="backend_status") { %>
-            <td><%= xosBackendStatusTextTemplate.apply(this, args) %></td>
+            <td>
+              <%= xosBackendStatusTextTemplate.apply(this, args) %>
+            </td>
         <% } else { %>
-            <td><input type="text" name="<%= fieldName %>" value="<%= escapeForFormField(model.attributes[fieldName]) %>"<%= readOnly %>></td>
+            <td>
+              <input class="form-control" type="text" name="<%= fieldName %>" value="<%= escapeForFormField(model.attributes[fieldName]) %>"<%= readOnly %>>
+            </td>
         <% } %>
         <td  class="xos-help-cell"><%= helpText[fieldName] %></td>
      </tr>
@@ -292,7 +309,16 @@
 
 <script type="text/template" id="xos-sliceselector-select">
     <% if (caption) { %>
-    <table class="xos-detail-table"><tr><td class="xos-label-cell"><%= caption %>: </td><td><select></select></td></tr></table>
+    <table class="xos-detail-table">
+      <tr>
+        <td class="xos-label-cell">
+          <label><%= caption %>:</label>
+        </td>
+        <td>
+          <select class="form-control"></select>
+        </td>
+      </tr>
+    </table>
     <% } else { %>
     <select></select>
     <% } %>

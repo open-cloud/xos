@@ -51,35 +51,55 @@
       rabbit_user: {{ rabbit_user }}
       rabbit_password: {{ rabbit_password }}
       rabbit_host: {{ rabbit_host }}
+      safe_browsing:
+        {% for mac in safe_browsing_macs %}
+        - {{ mac }}
+        {% endfor %}
 
   tasks:
   - name: vCPE basic dnsmasq config
     copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
-    - stop dnsmasq
-    - start dnsmasq
+    - restart dnsmasq
 
   - name: dnsmasq config
     template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
-    - stop dnsmasq
-    - start dnsmasq
+    - restart dnsmasq
+
+  - name: create directory for "safe" config
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
+
+  - name: dnsmasq "safe" config
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: copy base ufw files
+    synchronize: src=/opt/xos/observers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    notify:
+    - reload ufw
+
+  - name: redirection rules for safe DNS
+    template: src=/opt/xos/observers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
+    notify:
+    - reload ufw
+
+  - name: base ufw setup uses /etc/rc.local
+    copy: src=/opt/xos/observers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
+    notify:
+    - copy in /etc/rc.local
 
   handlers:
-  - name: stop dnsmasq
+  # Dnsmasq is automatically restarted in the container
+  - name: restart dnsmasq
     shell: docker exec {{ container_name }} /usr/bin/killall dnsmasq
 
-  - name: start dnsmasq
-    shell: docker exec {{ container_name }} /usr/sbin/service dnsmasq start
+  - name: reload ufw
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
 
-  - name: restart vcpe
-    shell: service {{ container_name }} stop; sleep 1; service vcpe-{{ vlan_ids[0] }} start
-
-  - name: stop vcpe
-    service: name={{ container_name }} state=stopped
-
-  - name: remove container
-    docker: name={{ container_name }} state=absent image=docker-vcpe
-
-  - name: start vcpe
-    service: name={{ container_name }} state=started
+  # Use docker cp instead of single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  - name: copy in /etc/rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/

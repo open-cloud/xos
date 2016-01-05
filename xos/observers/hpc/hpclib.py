@@ -10,8 +10,8 @@ if __name__ == '__main__':
 
 from xos.config import Config
 from core.models import Service
-from hpc.models import HpcService
-from requestrouter.models import RequestRouterService
+from services.hpc.models import HpcService
+from services.requestrouter.models import RequestRouterService
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)

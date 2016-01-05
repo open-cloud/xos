@@ -1,8 +1,0 @@
-This configuration is based on the "devel" configuration for CloudLab.  It is
-meant to work with an OpenStack Kilo cluster installed on CloudLab using the
-procedure documented here:
-
-https://github.com/andybavier/opencloud-cluster-setup
-
-It launches an XOS container on Cloudlab that runs the XOS develserver. The
-container is left running in the background.
