@@ -1,4 +1,4 @@
-FN=vtn-network-cfg.json
+FN=$SETUPDIR/vtn-network-cfg.json
 
 rm -f $FN
 
@@ -10,7 +10,7 @@ cat >> $FN <<EOF
                 "nodes" : [
 EOF
 
-NODES=$( sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}' )
+NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
 
 NODECOUNT=0
 for NODE in $NODES; do
@@ -38,7 +38,7 @@ EOF
 done
 
 # get the openstack admin password and username
-source /root/setup/admin-openrc.sh
+source $SETUPDIR/admin-openrc.sh
 
 HOSTNAME=`hostname`
 NEUTRONIP=`getent hosts $HOSTNAME | awk '{ print $1 }'`

@@ -11,7 +11,7 @@ xos_synchronizer_openstack:
     links:
         - xos_db
     extra_hosts:
-      - ctl:${MYIP}
+        - ctl:${MYIP}
 
 # FUTURE
 #xos_swarm_synchronizer:
@@ -28,5 +28,5 @@ xos:
     links:
         - xos_db
     volumes:
-      - ../common/setup:/root/setup:ro
+      - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
