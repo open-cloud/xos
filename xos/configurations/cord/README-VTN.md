@@ -1,5 +1,7 @@
 vtn notes:
 
+see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integration-for-CORD-VTN#onos-setup
+
 inside the xos container:
 
     python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/tosca/samples/vtn.yaml
