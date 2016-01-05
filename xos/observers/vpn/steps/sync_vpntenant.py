@@ -1,8 +1,8 @@
 import os
 import sys
 from django.db.models import Q, F
-from vpn.models import VPNTenant
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+from services.vpn.models import VPNTenant
 
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
