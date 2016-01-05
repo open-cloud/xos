@@ -53,6 +53,11 @@ Compute nodes (all of them):
     service openvswitch-switch restart
     ovs-vsctl del-br br-int
 
+nm node:
+
+    # neutron-dhcp-agent causes VTN app to throw port errors, because XOS uses --no-gateway
+    systemctl stop neutron-dhcp-agent.service 
+
 VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all. I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
 
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
