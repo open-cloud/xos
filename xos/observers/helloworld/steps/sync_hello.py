@@ -4,7 +4,7 @@ import base64
 from django.db.models import F, Q
 from xos.config import Config
 from observer.syncstep import SyncStep
-from helloworld.models import Hello,World
+from services.helloworld.models import Hello,World
 from util.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")

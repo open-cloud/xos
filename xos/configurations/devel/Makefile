@@ -6,6 +6,8 @@ cloudlab: common_cloudlab xos
 
 devstack: common_devstack xos
 
+opencloud: common_opencloud xos
+
 xos:
 	if [ -a ../../xos_configuration/* ]; then rm ../../xos_configuration/*; fi
 	cp ../common/xos_common_config ../../xos_configuration/
@@ -20,6 +22,9 @@ common_cloudlab:
 
 common_devstack:
 	make -C ../common -f Makefile.devstack
+
+common_opencloud:
+	make -C ../common -f Makefile.opencloud
 
 stop:
 	sudo docker stop $(RUNNING_CONTAINER)
