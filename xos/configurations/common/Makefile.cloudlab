@@ -38,4 +38,4 @@ private_key: ~/.ssh/id_rsa
 other_keys: public_key private_key
 	sudo cat /root/setup/id_rsa > $(SETUPDIR)/node_key
 	sudo cat /root/setup/id_rsa.pub > $(SETUPDIR)/node_key.pub
-	sudo cat /root/setup/id_rsa.pub > $(SETUPDIR)/padmin_public_key
+	sudo cp $(SETUPDIR)/id_rsa.pub $(SETUPDIR)/padmin_public_key
