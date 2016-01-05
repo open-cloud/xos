@@ -33,6 +33,17 @@ class SyncControllerNetworks(OpenStackSyncStep):
         cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
         return cidr
 
+    def alloc_gateway(self, uuid):
+        # 16 bits only
+        uuid_masked = uuid & 0xffff
+        a = 10
+        b = uuid_masked >> 8
+        c = uuid_masked & 0xff
+        d = 1
+
+        gateway = '%d.%d.%d.%d'%(a,b,c,d)
+        return gateway
+
 
     def save_controller_network(self, controller_network):
         network_name = controller_network.network.name
@@ -51,6 +62,7 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
+                    'gateway':self.alloc_gateway(controller_network.pk),
                     'delete':False	
                     }
         return network_fields
