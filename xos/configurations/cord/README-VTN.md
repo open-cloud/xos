@@ -1,8 +1,13 @@
 vtn notes:
 
+see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integration-for-CORD-VTN#onos-setup
+
 inside the xos container:
 
     python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/tosca/samples/vtn.yaml
+    emacs /opt/xos/xos_configuration/xos_common_config
+        [networking]
+        use_vtn=True
 
 ctl node:
 
@@ -30,6 +35,12 @@ ctl node:
     # files. Maybe it can be restarted using systemctl instead...
     /usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
 
+Neutron driver arg-parsing issue
+
+    # For some reason, the VTN Neutron plugin isn't getting its arguments from neutron
+    emacs /usr/local/lib/python2.7/dist-packages/networking_onos/plugins/ml2/driver.py
+        hard-code self.onos_path and self.onos_auth
+    
 Compute node that has the ONOS Container
 
     # we need NAT rule so the neutron vtn plugin can talk to onos
@@ -45,6 +56,11 @@ Compute nodes (all of them):
     service openvswitch-switch restart
     ovs-vsctl del-br br-int
 
+nm node:
+
+    # neutron-dhcp-agent causes VTN app to throw port errors, because XOS uses --no-gateway
+    systemctl stop neutron-dhcp-agent.service 
+
 VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all. I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
 
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
@@ -52,3 +68,6 @@ there aren't a bunch of preexisting Neutron networks and nova instances to get i
 
 Problems:
 * If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
+
+Notes:
+* Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
