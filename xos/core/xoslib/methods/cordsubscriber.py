@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from core.models import *
 from django.forms import widgets
 from django.conf.urls import patterns, url
-from cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
+from services.cord.models import VOLTTenant, VBNGTenant, CordSubscriberRoot
 from core.xoslib.objects.cordsubscriber import CordSubscriber
 from plus import PlusSerializerMixin, XOSViewSet
 from django.shortcuts import get_object_or_404

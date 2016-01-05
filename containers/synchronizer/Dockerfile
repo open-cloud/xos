@@ -10,6 +10,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-httplib2 \
     supervisor
 
+RUN pip install -U \
+    jinja2
+
 RUN \
     git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible && \
     git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/lib/ansible/modules/extras && \
@@ -41,4 +44,4 @@ RUN git clone git://git.planet-lab.org/fofum.git /tmp/fofum && \
 # Supervisor
 RUN cp /tmp/xos/containers/synchronizer/conf/synchronizer.conf /etc/supervisor/conf.d/
 
-CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf
+CMD update-ca-certificates && /usr/bin/supervisord -c /etc/supervisor/conf.d/synchronizer.conf

@@ -22,6 +22,14 @@
         {% endfor %}
 
   tasks:
+{% if delete %}
+  - name: Remove tenant
+# FIXME: Adding dummy template action to avoid "action attribute missing in task" error
+    template: src=/opt/xos/observers/monitoring_channel/templates/ceilometer_proxy_config.j2 dest=/usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config mode=0777
+    notify:
+     - stop monitoring-channel
+     - remove container
+{% else %}
 {% if full_setup %}
   - name: Docker repository
     copy: src=/opt/xos/observers/monitoring_channel/files/docker.list
@@ -31,7 +39,7 @@
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
 
   - name: install Docker
-    apt: name=lxc-docker-1.5.0 state=present update_cache=yes
+    apt: name=lxc-docker state=present update_cache=yes
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present
@@ -75,16 +83,17 @@
 
   - name: Make sure Monitoring channel service is running
     service: name=monitoring-channel-{{ unique_id }} state=started
+{% endif %}
 
   handlers:
   - name: restart monitoring-channel
-    shell: service monitoring-channel-{{ unique_id }} stop; sleep 1; service vcpe-{{ unique_id }} start
+    shell: service monitoring-channel-{{ unique_id }} stop; sleep 1; service monitoring-channel-{{ unique_id }} start
 
   - name: stop monitoring-channel
     service: name=monitoring-channel-{{ unique_id }} state=stopped
 
   - name: remove container
-    docker: name=monitoring-channel-{{ unique_id }} state=absent image=docker-vcpe
+    docker: name=monitoring-channel-{{ unique_id }} state=absent image=monitoring-channel
 
   - name: start monitoring-channel
     service: name=monitoring-channel-{{ unique_id }} state=started
