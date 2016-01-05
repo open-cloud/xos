@@ -70,7 +70,7 @@ RUN easy_install \
     google_api_python_client \
     httplib2.ca_certs_locater
 
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-packages/suit/static/suit/js/
 
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
