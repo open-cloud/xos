@@ -32,6 +32,13 @@ ctl node:
     # files. Maybe it can be restarted using systemctl instead...
     /usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
 
+Neutron driver arg-parsing issue
+
+    # For some reason, the VTN Neutron plugin isn't getting its arguments from neutron
+    emacs /usr/local/lib/python2.7/dist-packages/networking_onos/plugins/ml2/driver.py
+        hard-code self.onos_path and self.onos_auth
+    
+
 Compute node that has the ONOS Container
 
     # we need NAT rule so the neutron vtn plugin can talk to onos
