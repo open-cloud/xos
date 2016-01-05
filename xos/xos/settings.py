@@ -173,7 +173,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'core',
-    'services.vpn',
     'services.hpc',
     'services.cord',
     'services.helloworldservice_complete',
@@ -181,6 +180,7 @@ INSTALLED_APPS = (
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.vpn',
     'geoposition',
     'rest_framework_swagger',
 )
