@@ -5,6 +5,7 @@ xos_db:
 
 xos_synchronizer_openstack:
     image: xosproject/xos-synchronizer-openstack
+    command: python /opt/xos/xos-observer.py
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: openstack
@@ -12,6 +13,8 @@ xos_synchronizer_openstack:
         - xos_db
     extra_hosts:
         - ctl:${MYIP}
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
