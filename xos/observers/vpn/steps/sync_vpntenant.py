@@ -22,7 +22,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
             objs = VPNTenant.get_tenant_objects().filter(
                 Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
             for tenant in objs:
-                tenant.client_conf = generate_client_conf(tenant)
+                tenant.client_conf = this.generate_client_conf(tenant)
         else:
             objs = VPNTenant.get_deleted_tenant_objects()
 
