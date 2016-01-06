@@ -35,8 +35,14 @@ vtn_network_cfg_json:
 stop:
 	sudo MYIP=$(MYIP) docker-compose stop
 
+rm:
+	sudo MYIP=$(MYIP) docker-compose rm
+
 showlogs:
 	sudo MYIP=$(MYIP) docker-compose logs
+
+ps:
+	sudo MYIP=$(MYIP) docker-compose ps
 
 dataplane: etc_hosts
 	cd dataplane; ./gen-inventory.sh > hosts
@@ -57,10 +63,10 @@ setup_client:
 	# reboot the vBNG ONOS
 	cd dataplane; ansible -i hosts onos_vbng -m shell -s -a "docker restart ONOS"
 
-cleanup:
+cleanup: stop rm
 	cd dataplane; ./cleanup.sh
 	bash -c "source ../setup/admin-openrc.sh; nova list --all-tenants; neutron net-list"
-	echo "Don't forget to clean up containers"
+	echo "Don't forget to clean up vCPE containers"
 
 devstack_net_fix:
 	sudo ../common/devstack/net-fix.sh
