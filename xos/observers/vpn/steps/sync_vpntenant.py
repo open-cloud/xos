@@ -21,6 +21,8 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         if (not deleted):
             objs = VPNTenant.get_tenant_objects().filter(
                 Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
+            for tenant in objs:
+                tenant.client_conf = generate_client_conf(tenant)
         else:
             objs = VPNTenant.get_deleted_tenant_objects()
 
@@ -28,3 +30,14 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
     def get_extra_attributes(self, o):
         return {"server_key": o.server_key.splitlines()}
+
+    def generate_client_conf(self, tenant):
+        conf = "remote " + tenant.nat_ip + "\n"
+        conf += "dev tun\n"
+        conf += "ifconfig " + tenant.client_address + " " + tenant.server_address + "\n"
+        conf += "secret static.key\n"
+        conf += "keepalive 10 60\n"
+        conf += "ping-timer-rem\n"
+        conf += "persist-tun\n"
+        conf += "persist-key"
+        return conf
