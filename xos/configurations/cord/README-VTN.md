@@ -47,7 +47,8 @@ Compute node that has the ONOS Container
     # change 172.17.0.2 to the IP address for the ONOS container (use "docker inspect")
     iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 8101 -j DNAT --to-destination 172.17.0.2
     iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 8181 -j DNAT --to-destination 172.17.0.2
-
+    iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 6653 -j DNAT --to-destination 172.17.0.2
+    
 Compute nodes (all of them):
 
     systemctl stop neutron-plugin-openvswitch-agent
