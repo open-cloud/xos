@@ -22,7 +22,7 @@
     shell:
        |
        printf "dev tun
-       ifconfig 10.8.0.1 10.8.0.2
+       ifconfig {{ server_address }} {{ client_address }}
        secret static.key
        keepalive 10 60
        ping-timer-rem

@@ -29,10 +29,13 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         return objs
 
     def get_extra_attributes(self, o):
-        return {"server_key": o.server_key.splitlines()}
+        return {"server_key": o.server_key.splitlines(),
+                "is_persistent": o.is_persistent,
+                "can_view_subnet": o.can_view_subnet}
 
     def generate_client_conf(self, tenant):
-        conf = "remote " + tenant.nat_ip + "\n"
+        # tenant.nat_ip maybe None when the first line executes
+        conf = "remote " + str(tenant.nat_ip) + "\n"
         conf += "dev tun\n"
         conf += "ifconfig " + tenant.client_address + " " + tenant.server_address + "\n"
         conf += "secret static.key\n"
