@@ -31,7 +31,9 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
         return {"server_key": o.server_key.splitlines(),
                 "is_persistent": o.is_persistent,
-                "can_view_subnet": o.can_view_subnet}
+                "can_view_subnet": o.can_view_subnet,
+                "server_address": o.server_address,
+                "client_address": o.client_address}
 
     def generate_client_conf(self, tenant):
         # tenant.nat_ip maybe None when the first line executes
