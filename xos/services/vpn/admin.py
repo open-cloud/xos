@@ -75,24 +75,12 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_key = self.cleaned_data.get("server_key")
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
-        self.instance.client_conf = self.generate_client_conf()
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_VPN_key(self):
         proc = Popen("openvpn --genkey --secret /dev/stdout", shell=True, stdout=PIPE)
         (stdout, stderr) = proc.communicate()
         return stdout
-
-    def generate_client_conf(self):
-        conf = "remote " + self.instance.nat_ip + "\n"
-        conf += "dev tun\n"
-        conf += "ifconfig " + self.instance.client_address + " " + self.instance.server_address + "\n"
-        conf += "secret static.key\n"
-        conf += "keepalive 10 60\n"
-        conf += "ping-timer-rem\n"
-        conf += "persist-tun\n"
-        conf += "persist-key"
-        return conf
 
     class Meta:
         model = VPNTenant
