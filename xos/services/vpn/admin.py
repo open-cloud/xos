@@ -44,6 +44,8 @@ class VPNTenantForm(forms.ModelForm):
     client_conf = forms.CharField(required=False, widget=forms.Textarea)
     server_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
     client_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
+    is_persistent = forms.BooleanField()
+    can_view_subnet = forms.BooleanField()
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -61,12 +63,16 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['client_conf'].initial = self.instance.client_conf
             self.fields['server_address'].initial = self.instance.server_address
             self.fields['client_address'].initial = self.instance.client_address
+            self.fields['is_persistent'].initial = self.instance.is_persistent
+            self.fields['can_view_subnet'].initial = self.instance.can_view_subnet
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
             self.fields['server_key'].initial = self.generate_VPN_key()
             self.fields['server_address'].initial = "10.8.0.1"
             self.fields['client_address'].initial = "10.8.0.2"
+            self.fields['is_persistent'].initial = True
+            self.fields['can_view_subnet'].initial = False
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[0]
 
@@ -75,6 +81,8 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_key = self.cleaned_data.get("server_key")
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
+        self.instance.is_persistent = self.cleaned_data.get('is_persistent')
+        self.instance.can_view_subnet = self.cleaned_data.get('can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_VPN_key(self):
@@ -92,7 +100,8 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
                                     'server_key', 'client_conf',
-                                    'server_address', 'client_address'],
+                                    'server_address', 'client_address',
+                                    'is_persistent', 'can_view_subnet'],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
