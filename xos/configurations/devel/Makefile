@@ -22,6 +22,12 @@ stop:
 showlogs:
 	sudo MYIP=$(MYIP) docker-compose logs
 
+rm: stop
+	sudo MYIP=$(MYIP) docker-compose rm
+
+ps:
+	sudo MYIP=$(MYIP) docker-compose ps
+
 devstack_net_fix:
 	sudo ../common/devstack/net-fix.sh
 	sudo bash -c "source ../setup/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
