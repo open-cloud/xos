@@ -44,8 +44,8 @@ class VPNTenantForm(forms.ModelForm):
     client_conf = forms.CharField(required=False, widget=forms.Textarea)
     server_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
     client_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
-    is_persistent = forms.BooleanField()
-    can_view_subnet = forms.BooleanField()
+    is_persistent = forms.BooleanField(required=False)
+    can_view_subnet = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
