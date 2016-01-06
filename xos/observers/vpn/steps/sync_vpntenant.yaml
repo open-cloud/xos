@@ -8,15 +8,18 @@
   - name: install openvpn
     apt: name=openvpn state=present update_cache=yes
 
+  - name: stop openvpn
+    shell: killall openvpn
+
   - name: erase key
-    shell: rm static.key
+    shell: rm -f static.key
 
   - name: write key
     shell: echo {{ '{{' }} item {{ '}}' }} >> static.key
     with_items: "{{ server_key }}"
 
   - name: erase config
-    shell: rm server.conf
+    shell: rm -f server.conf
 
   - name: write config
     shell:
