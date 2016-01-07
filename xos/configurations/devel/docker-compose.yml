@@ -5,7 +5,7 @@ xos_db:
 
 xos_synchronizer_openstack:
     image: xosproject/xos-synchronizer-openstack
-    command: python /opt/xos/xos-observer.py
+    command: bash -c "sleep 120; python /opt/xos/xos-observer.py"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: openstack

@@ -4,7 +4,7 @@ xos_db:
         - "5432"
 
 xos_synchronizer_openstack:
-    command: python /opt/xos/xos-observer.py
+    command: bash -c "sleep 120 ; python /opt/xos/xos-observer.py"
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
@@ -18,19 +18,19 @@ xos_synchronizer_openstack:
         - ./xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
 
 
-#xos_synchronizer_onos:
-#    image: xosproject/xos-synchronizer-openstack
-    #command: /usr/bin/supervisord -c /opt/xos/observers/onos/supervisor/onos-observer.conf
-#    command: python /opt/xos/observers/onos/onos-observer.py -C /opt/xos/observers/onos/onos_observer_config
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: onos
-#    links:
-#        - xos_db
-#    extra_hosts:
-#        - ctl:${MYIP}
-#    volumes:
-#        - ../setup/id_rsa:/opt/xos/observers/onos/onos_key:ro  # private key
+xos_synchronizer_onos:
+    image: xosproject/xos-synchronizer-openstack
+  #command: /usr/bin/supervisord -c /opt/xos/observers/onos/supervisor/onos-observer.conf
+    command: bash -c "sleep 120 ; python /opt/xos/observers/onos/onos-observer.py -C /opt/xos/observers/onos/onos_observer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: onos
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup/id_rsa:/opt/xos/observers/onos/onos_key:ro  # private key
 
 #xos_synchronizer_vcpe:
 #    image: xosproject/xos-synchronizer-openstack
@@ -46,17 +46,17 @@ xos_synchronizer_openstack:
 #    volumes:
 #        - ../setup/id_rsa:/opt/xos/observers/vcpe/vcpe_private_key:ro  # private key
 
-#xos_synchronizer_vbng:
-#    image: xosproject/xos-synchronizer-openstack
+xos_synchronizer_vbng:
+    image: xosproject/xos-synchronizer-openstack
     #command: /usr/bin/supervisord -c /opt/xos/observers/vbng/supervisor/vbng-observer.conf
-#    command: python /opt/xos/observers/vbng/vbng-observer.py -C /opt/xos/observers/vbng/vbng_observer_config
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: vbng
-#    links:
-#        - xos_db
-#    extra_hosts:
-#        - ctl:${MYIP}
+    command: bash -c "sleep 120 ; python /opt/xos/observers/vbng/vbng-observer.py -C /opt/xos/observers/vbng/vbng_observer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vbng
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
 
 #xos_synchronizer_monitoring_channel:
 #    image: xosproject/xos-synchronizer-openstack
