@@ -1,6 +1,5 @@
 FROM       xosproject/xos
 
-# Install custom Ansible
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     openssh-client \
     python-crypto \
@@ -8,11 +7,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-paramiko \
     python-yaml \
     python-httplib2 \
+    rsync \
     supervisor
 
 RUN pip install -U \
     jinja2
 
+# Install custom Ansible
 RUN \
     git clone -b release1.8.2 git://github.com/ansible/ansible.git /opt/ansible && \
     git clone -b release1.8.2 git://github.com/ansible/ansible-modules-extras.git /opt/ansible/lib/ansible/modules/extras && \
