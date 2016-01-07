@@ -113,7 +113,7 @@ class SyncInstanceUsingAnsible(SyncStep):
             key_name = instance.parent.slice.service.private_key_fn
 
         if not os.path.exists(key_name):
-            raise Exception("Node key %s does not exist" % node_key_name)
+            raise Exception("Node key %s does not exist" % key_name)
 
         key = file(key_name).read()
 
@@ -219,4 +219,3 @@ class SyncInstanceUsingAnsible(SyncStep):
                 self.map_delete_outputs(o,res)
         except AttributeError:
                 pass
-
