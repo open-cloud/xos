@@ -28,7 +28,11 @@
         state=absent
         {% else %}
         state=present
+        {% if use_vtn %}
+        gateway_ip={{ gateway }}
+        {% else %}
         no_gateway=true
+        {% endif %}
         dns_nameservers=8.8.8.8
         cidr={{ cidr }}
         {% endif %}
