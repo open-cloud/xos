@@ -6,7 +6,7 @@ XOS_FOLDER=$(shell pwd)
 all: frontend
 
 frontend:
-	rm ../../xos_configuration/*
+	if [ -a ../../xos_configuration/* ]; then rm ../../xos_configuration/*; fi
 	sudo apt-get -y install httpie
 	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
 	cp ../common/xos_common_config ../../xos_configuration/
@@ -16,7 +16,7 @@ frontend:
 	echo $(RUNNING_CONTAINER)
 
 interactive:
-	rm ../../xos_configuration/*
+	if [ -a ../../xos_configuration/* ]; then rm ../../xos_configuration/*; fi
 	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
 	cp ../common/xos_common_config ../../xos_configuration/
 	#cp ../cord/xos_cord_config ../../xos_configuration/
