@@ -4,6 +4,12 @@
   connection: ssh
   user: ubuntu
   sudo: yes
+  vars:
+    server_address: {{ server_address }}
+    client_address: {{ client_address }}
+    server_key: {{ server_key }}
+    is_persistent: {{ is_persistent }}
+
   tasks:
   - name: install openvpn
     apt: name=openvpn state=present update_cache=yes
@@ -21,16 +27,21 @@
   - name: erase config
     shell: rm -f server.conf
 
-  - name: write config
+  - name: write base config
     shell:
        |
        printf "dev tun
-       ifconfig {{ '{{' }} server_address {{ '}}' }} {{ '{{' }} client_address {{ '}}' }}
-       secret static.key
-       keepalive 10 60
-       ping-timer-rem
-       persist-tun
-       persist-key" > server.conf
+       ifconfig {{ server_address }} {{ client_address }}
+       secret static.key" > server.conf
+
+  - name: write persistent config
+    shell:
+      |
+      printf "keepalive 10 60
+      ping-timer-rem
+      persist-tun
+      persist-key" >> server.conf
+    when: {{ is_persistent }}
 
   - name: start openvpn
     shell: openvpn server.conf &
