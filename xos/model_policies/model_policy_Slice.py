@@ -1,3 +1,5 @@
+from xos.config import Config
+
 def handle_delete(slice):
     from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate, Slice
     from collections import defaultdict
@@ -14,6 +16,9 @@ def handle_delete(slice):
 def handle(slice):
     from core.models import Controller, ControllerSlice, SiteDeployment, Network, NetworkSlice,NetworkTemplate, Slice
     from collections import defaultdict
+
+    # only create nat_net if not using VTN
+    support_nat_net = not getattr(Config(), "networking_use_vtn", False)
 
     print "MODEL POLICY: slice", slice
 
@@ -49,8 +54,8 @@ def handle(slice):
                 public_nets.append(network)
             elif network.template.name == 'Private':
                 private_nets.append(network)
-        if not public_nets:
-                    # ensure there is at least one public network, and default it to dedicated
+        if support_nat_net and (not public_nets):
+            # ensure there is at least one public network, and default it to dedicated
             nat_net = Network(
                     name = slice.name+'-nat',
                         template = NetworkTemplate.objects.get(name='Public shared IPv4'),
@@ -78,7 +83,7 @@ def handle(slice):
                 public_net_slice = net_slice
             elif net_slice.network in private_nets:
                 private_net_slice = net_slice
-        if not public_net_slice:
+        if support_nat_net and (not public_net_slice):
             public_net_slice = NetworkSlice(slice=slice, network=public_nets[0])
             public_net_slice.save()
             print "MODEL POLICY: slice", slice, "made public_net_slice"
