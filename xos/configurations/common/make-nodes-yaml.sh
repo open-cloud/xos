@@ -1,4 +1,4 @@
-FN=nodes.yaml
+FN=$SETUPDIR/nodes.yaml
 
 rm -f $FN
 
@@ -18,7 +18,7 @@ topology_template:
         type: tosca.nodes.Site
 EOF
 
-NODES=$( bash -c "source ./admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
+NODES=$( bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
 I=0
 for NODE in $NODES; do
     echo $NODE
