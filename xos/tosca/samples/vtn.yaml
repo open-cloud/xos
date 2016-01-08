@@ -56,7 +56,7 @@ topology_template:
               node: docker-onos
               relationship: tosca.relationships.UsesImage
       properties:
-          network: bridged
+          network: host
           default_isolation: container
 
     # Virtual machines
