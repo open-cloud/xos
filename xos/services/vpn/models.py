@@ -1,9 +1,12 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
+from typing import Mapping, tuple
 
 VPN_KIND = "vpn"
 
+
 class VPNService(Service):
+    """Defines the Service for creating VPN servers."""
     KIND = VPN_KIND
 
     class Meta:
@@ -12,7 +15,9 @@ class VPNService(Service):
         app_label = "vpn"
         verbose_name = "VPN Service"
 
+
 class VPNTenant(TenantWithContainer):
+    """Defines the Tenant for creating VPN servers."""
 
     class Meta:
         proxy = True
@@ -46,6 +51,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def server_key(self):
+        """str: The server_key used to connect to the VPN server."""
         return self.get_attribute(
             "server_key",
             self.default_attributes['server_key'])
@@ -56,6 +62,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def addresses(self):
+        """Mapping[str, Tuple[str, str, str]]: The ip, mac address, and subnet of networks of this Tenant."""
         if (not self.id) or (not self.instance):
             return {}
 
@@ -71,19 +78,23 @@ class VPNTenant(TenantWithContainer):
     # This getter is necessary because nat_ip is a sync_attribute
     @property
     def nat_ip(self):
+        """str: The IP of this Tenant on the NAT network."""
         return self.addresses.get("nat", (None, None, None))[0]
 
     # This getter is necessary because nat_mac is a sync_attribute
     @property
     def nat_mac(self):
+        """str: The MAC address of this Tenant on the NAT network."""
         return self.addresses.get("nat", (None, None, None))[1]
 
     @property
     def subnet(self):
+        """str: The subnet of this Tenant on the NAT network."""
         return self.addresses.get("nat", (None, None, None))[2]
 
     @property
     def server_address(self):
+        """str: The IP address of the server on the VPN."""
         return self.get_attribute(
             'server_address',
             self.default_attributes['server_address'])
@@ -94,6 +105,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def client_address(self):
+        """str: The IP address of the client on the VPN."""
         return self.get_attribute(
             'client_address',
             self.default_attributes['client_address'])
@@ -104,6 +116,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def client_conf(self):
+        """str: The client configuration for the client to connect to this server."""
         return self.get_attribute(
             "client_conf",
             self.default_attributes['client_conf'])
@@ -114,6 +127,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def is_persistent(self):
+        """bool: True if the VPN connection is persistence, false otherwise."""
         return self.get_attribute(
             "is_persistent",
             self.default_attributes['is_persistent'])
@@ -124,6 +138,7 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def can_view_subnet(self):
+        """bool: True if the client can see the subnet of the server, false otherwise."""
         return self.get_attribute(
             "can_view_subnet",
             self.default_attributes['can_view_subnet'])
@@ -134,6 +149,7 @@ class VPNTenant(TenantWithContainer):
 
 
 def model_policy_vpn_tenant(pk):
+    """Manages the contain for the VPN Tenant."""
     # This section of code is atomic to prevent race conditions
     with transaction.atomic():
         # We find all of the tenants that are waiting to update

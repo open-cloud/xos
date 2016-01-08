@@ -8,6 +8,7 @@ parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
 
 class SyncVPNTenant(SyncInstanceUsingAnsible):
+    """Class for syncing a VPNTenant using Ansible."""
     provides = [VPNTenant]
     observes = VPNTenant
     requested_interval = 0
@@ -36,7 +37,12 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "client_address": o.client_address}
 
     def generate_client_conf(self, tenant):
-        # tenant.nat_ip maybe None when the first line executes
+        """str: Generates the client configuration to use to connect to this VPN server.
+
+        Args:
+            tenant (VPNTenant): The tenant to generate the client configuration for.
+            
+        """
         conf = "remote " + str(tenant.nat_ip) + "\n"
         conf += "dev tun\n"
         conf += "ifconfig " + tenant.client_address + " " + tenant.server_address + "\n"
