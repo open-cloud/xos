@@ -41,26 +41,17 @@ Neutron driver arg-parsing issue
     emacs /usr/local/lib/python2.7/dist-packages/networking_onos/plugins/ml2/driver.py
         hard-code self.onos_path and self.onos_auth
     
-Compute node that has the ONOS Container
+Compute nodes and nm nodes:
 
-    # we need NAT rule so the neutron vtn plugin can talk to onos
-    # change 172.17.0.2 to the IP address for the ONOS container (use "docker inspect")
-    iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 8101 -j DNAT --to-destination 172.17.0.2
-    iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 8181 -j DNAT --to-destination 172.17.0.2
-    iptables -t nat -A PREROUTING -i br-ex -p tcp --dport 6653 -j DNAT --to-destination 172.17.0.2
-    
-Compute nodes (all of them):
-
-    systemctl stop neutron-plugin-openvswitch-agent
-    emacs /usr/share/openvswitch/scripts/ovs-ctl
-        update settings as per vtn docs to make port 6640 visible
-    service openvswitch-switch restart
-    ovs-vsctl del-br br-int
-
-nm node:
-
-    # neutron-dhcp-agent causes VTN app to throw port errors, because XOS uses --no-gateway
-    systemctl stop neutron-dhcp-agent.service 
+    cd xos/configurations/cord/dataplane
+    ./generate-bm.sh > hosts-bm
+    ansible-playbook -i hosts-bm dataplane-vtn.yaml
+    # the playbook will:
+    #  1) turn off neutron openvswitch-agent
+    #  2) set openvswitch to listen on port 6641
+    #  3) restart openvswitch
+    #  4) delete any existing br-int bridge
+    #  5) [nm only] turn off neutron-dhcp-agent
 
 VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all. I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
 
@@ -71,5 +62,8 @@ Problems:
 * If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
 
 Notes:
+* I've configured the OpenvSwitch switches to use port 6641 instead of port 6641. This is because the VTN app listens on 6640
+itself, and since we're running it in docker 'host' networking more now, it would conflict with an Openvswitch that was
+also listening on 6640.
 * Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
 * When using of-vfctl to look at flow rules, if you get a protocol error, try "ovs-ofctl show -O OpenFlow13 br-int "
