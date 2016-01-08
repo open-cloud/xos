@@ -27,7 +27,7 @@ for NODE in $NODES; do
                     {
                       "hostname": "$NODE",
                       "ovsdbIp": "$NODEIP",
-                      "ovsdbPort": "6640",
+                      "ovsdbPort": "6641",
                       "bridgeId": "of:000000000000000$I"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
