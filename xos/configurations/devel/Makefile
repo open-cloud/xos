@@ -28,6 +28,12 @@ rm: stop
 ps:
 	sudo MYIP=$(MYIP) docker-compose ps
 
+enter-xos:
+	sudo docker exec -it devel_xos_1 bash
+
+enter-synchronizer:
+	sudo docker exec -it devel_xos_synchronizer_openstack_1 bash
+
 devstack_net_fix:
 	sudo ../common/devstack/net-fix.sh
 	sudo bash -c "source ../setup/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
