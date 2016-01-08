@@ -1,6 +1,7 @@
 import hashlib
 import os
 import socket
+import socket
 import sys
 import base64
 import time
@@ -73,6 +74,19 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         return os.path.join(step_dir, "..", "files", str(self.get_onos_service(o).id), o.name)
 
+    def get_cluster_configuration(self, o):
+        instance = self.get_instance(o)
+        if not instance:
+           raise "No instance for ONOS App"
+        node_ips = [socket.gethostbyname(instance.node.name)]
+
+        ipPrefix = ".".join(node_ips[0].split(".")[:3]) + ".*"
+        result = '{ "nodes": ['
+        result = result + ",".join(['{ "ip": "%s"}' % ip for ip in node_ips])
+        result = result + '], "ipPrefix": "%s"}' % ipPrefix
+        return result
+
+
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
@@ -86,7 +100,23 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         attrs = o.provider_service.serviceattribute_dict
         attrs.update(o.tenantattribute_dict)
 
-        for (name, value) in attrs.items():
+        ordered_attrs = attrs.keys()
+
+        o.early_rest_configs=[]
+        if ("cordvtn" in o.dependencies):
+            # For VTN, since it's running in a docker host container, we need
+            # to make sure it configures the cluster using the right ip addresses.
+            # NOTE: rest_onos/v1/cluster/configuration/ will reboot the cluster and
+            #   must go first.
+            name="rest_onos/v1/cluster/configuration/"
+            value= self.get_cluster_configuration(o)
+            fn = name[5:].replace("/","_")
+            endpoint = name[5:]
+            file(os.path.join(o.files_dir, fn),"w").write(" " +value)
+            o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
+
+        for name in attrs.keys():
+            value = attrs[name]
             if name.startswith("config_"):
                 fn = name[7:] # .replace("_json",".json")
                 o.config_fns.append(fn)
@@ -114,6 +144,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["nat_ip"] = instance.get_ssh_ip()
         fields["config_fns"] = o.config_fns
         fields["rest_configs"] = o.rest_configs
+        fields["early_rest_configs"] = o.early_rest_configs
         if o.dependencies:
             fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
         else:
