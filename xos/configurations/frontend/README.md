@@ -21,11 +21,15 @@ up then type `make enter` to enter the running container.
 
 Stop the containers: `make stop`
 
-Restart the containers: `make stop; make start`
+Restart the containers: `make stop; make`
 
-Open a container shell: `make enter`
+Delete the containers and relaunch them: `make rm; make`
 
 View logs: `make showlogs`
+
+See what containers are running: `make ps`
+
+Open a shell on the XOS container: `make enter-xos`
 
 ## Docs
 
