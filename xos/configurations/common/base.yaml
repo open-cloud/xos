@@ -29,7 +29,7 @@ topology_template:
               node: trusty-server-multi-nic
               relationship: tosca.relationships.SupportsImage
 
-    Backend:
+    CloudLab:
       type: tosca.nodes.Controller
       requirements:
           - deployment:
@@ -61,7 +61,7 @@ topology_template:
                relationship: tosca.relationships.SiteDeployment
                requirements:
                    - controller:
-                       node: Backend
+                       node: CloudLab
                        relationship: tosca.relationships.UsesController
 
     Public shared IPv4:

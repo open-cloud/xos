@@ -1,0 +1,23 @@
+xos_db:
+    image: xosproject/xos-postgres
+    expose:
+        - "5432"
+
+# FUTURE
+#xos_swarm_synchronizer:
+#    image: xosproject/xos-swarm-synchronizer
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: swarm
+
+xos:
+    image: xosproject/xos
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    #command: sleep 86400    # For interactive session
+    ports:
+        - "9999:8000"
+    links:
+        - xos_db
+    volumes:
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+      - ../../core/xoslib:/opt/xos/core/xoslib:ro
