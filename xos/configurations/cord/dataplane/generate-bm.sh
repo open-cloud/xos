@@ -29,9 +29,14 @@ BM_IPS=${BM_IPS[@]}
 
 echo switch_volt ansible_ssh_host=$( get_ip mysite_volt flat-lan-1-net) grenames=\"$GRE_NAMES\" bm_ips=\"$BM_IPS\"
 
+# now for the network management node
+NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
+echo "nm $NM"
+
 echo "[baremetal]"
 I=1
 for NODE in $NODES; do
     echo bm$I
     I=$((I+1))
 done
+
