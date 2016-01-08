@@ -1,13 +1,16 @@
 
+from subprocess import PIPE, Popen
+
 from core.admin import ReadOnlyAwareAdmin, SliceInline
 from core.middleware import get_request
 from core.models import User
 from django import forms
 from django.contrib import admin
-from subprocess import Popen, PIPE
-from services.vpn.models import VPNService, VPNTenant, VPN_KIND
+from services.vpn.models import VPN_KIND, VPNService, VPNTenant
+
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
+    """Defines the admin for the VPNService."""
     model = VPNService
     verbose_name = "VPN Service"
 
@@ -38,12 +41,27 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return VPNService.get_service_objects_by_user(request.user)
 
+
 class VPNTenantForm(forms.ModelForm):
+    """The form used to create and edit a VPNTenant.
+
+    Attributes:
+        creator (forms.ModelChoiceField): The XOS user that created this tenant.
+        server_key (forms.CharField): The readonly static key used to the connect to this Tenant.
+        client_conf (forms.CharField): The readonly configuration used on the client to connect to this Tenant.
+        server_address (forms.GenericIPAddressField): The ip address on the VPN of this Tenant.
+        client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
+        is_persistent (forms.BooleanField): Determines if this Tenant keeps this connection alive through failures.
+        can_view_subnet (forms.BooleanField): Determins if this Tenant makes it's subnet available to the client.
+    
+    """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_key = forms.CharField(required=False, widget=forms.Textarea)
     client_conf = forms.CharField(required=False, widget=forms.Textarea)
-    server_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
-    client_address = forms.GenericIPAddressField(protocol='IPv4', required=True)
+    server_address = forms.GenericIPAddressField(
+        protocol='IPv4', required=True)
+    client_address = forms.GenericIPAddressField(
+        protocol='IPv4', required=True)
     is_persistent = forms.BooleanField(required=False)
     can_view_subnet = forms.BooleanField(required=False)
 
@@ -61,10 +79,13 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['creator'].initial = self.instance.creator
             self.fields['server_key'].initial = self.instance.server_key
             self.fields['client_conf'].initial = self.instance.client_conf
-            self.fields['server_address'].initial = self.instance.server_address
-            self.fields['client_address'].initial = self.instance.client_address
+            self.fields[
+                'server_address'].initial = self.instance.server_address
+            self.fields[
+                'client_address'].initial = self.instance.client_address
             self.fields['is_persistent'].initial = self.instance.is_persistent
-            self.fields['can_view_subnet'].initial = self.instance.can_view_subnet
+            self.fields[
+                'can_view_subnet'].initial = self.instance.can_view_subnet
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -74,7 +95,8 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = True
             self.fields['can_view_subnet'].initial = False
             if VPNService.get_service_objects().exists():
-                self.fields["provider_service"].initial = VPNService.get_service_objects().all()[0]
+                self.fields["provider_service"].initial = VPNService.get_service_objects().all()[
+                    0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
@@ -82,16 +104,20 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.can_view_subnet = self.cleaned_data.get('can_view_subnet')
+        self.instance.can_view_subnet = self.cleaned_data.get(
+            'can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_VPN_key(self):
-        proc = Popen("openvpn --genkey --secret /dev/stdout", shell=True, stdout=PIPE)
+        """Generates a VPN key using the openvpn command."""
+        proc = Popen("openvpn --genkey --secret /dev/stdout",
+                     shell=True, stdout=PIPE)
         (stdout, stderr) = proc.communicate()
         return stdout
 
     class Meta:
         model = VPNTenant
+
 
 class VPNTenantAdmin(ReadOnlyAwareAdmin):
     verbose_name = "VPN Tenant Admin"
