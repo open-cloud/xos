@@ -63,7 +63,7 @@ Problems:
 
 Notes:
 * I've configured the OpenvSwitch switches to use port 6641 instead of port 6640. This is because the VTN app listens on 6640
-itself, and since we're running it in docker 'host' networking more now, it would conflict with an Openvswitch that was
+itself, and since we're running it in docker 'host' networking mode now, it would conflict with an Openvswitch that was
 also listening on 6640.
 * Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
 * When using of-vfctl to look at flow rules, if you get a protocol error, try "ovs-ofctl show -O OpenFlow13 br-int "
