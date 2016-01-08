@@ -18,5 +18,6 @@
   - name: Restart openvswitch
     service: name=openvswitch-switch state=restarted
 
-#  - name: Delete br-int
-#    shell: ovs-vsctl del-br br-int
+  - name: Delete br-int
+    shell: ovs-vsctl show | grep -i br-int > /dev/null && ovs-vsctl del-br br-int
+    ignore_errors: yes
