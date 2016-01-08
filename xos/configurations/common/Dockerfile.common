@@ -34,7 +34,7 @@ RUN pip install django==1.7
 RUN pip install djangorestframework==2.4.4
 RUN pip install markdown  # Markdown support for the browseable API.
 RUN pip install pyyaml    # YAML content-type support.
-RUN pip install django-filter  # Filtering support
+RUN pip install django-filter==0.11.0  # Filtering support
 RUN pip install lxml  # XML manipulation library
 RUN pip install netaddr # IP Addr library
 RUN pip install pytz
