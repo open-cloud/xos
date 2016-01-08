@@ -1,8 +1,8 @@
 # XOS development environment
 
 This configuration can be used to do basic end-to-end development of XOS.  It launches
-an XOS container, runs the XOS develserver, and configures XOS to talk to an OpenStack
-backend.  
+XOS in three Docker containers (development GUI, Synchronizer, database) and configures XOS
+to talk to an OpenStack backend.  *docker-compose* is used to manage the containers.
 
 ## How to run it
 
@@ -56,3 +56,19 @@ you can create slices and associate instances with them.
 Note that there are some issues with the networking setup in this configuration:
 VMs do not have a working DNS configuration in `/etc/resolv.conf`.  If you fix this
 manually then everything should work.
+
+## Docker Helpers
+
+Stop the containers: `make stop`
+
+Restart the containers: `make stop; make [cloudlab|devstack]`
+
+Delete the containers and relaunch them: `make rm; make [cloudlab|devstack]`
+
+View logs: `make showlogs`
+
+See what containers are running: `make ps`
+
+Open a shell on the XOS container: `make enter-xos`
+
+Open a shell on the Synchronizer container: `make enter-synchronizer`

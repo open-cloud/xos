@@ -1,4 +1,4 @@
-source ../../common/admin-openrc.sh
+source ../../setup/admin-openrc.sh
 
 get_ip () {
     LABEL=$1
@@ -9,7 +9,7 @@ get_ip () {
 GRENAMES=()
 BM_IPS=()
 
-NODES=`sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}'`
+NODES=`sudo bash -c "source ../../setup/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}'`
 I=1
 for NODE in $NODES; do
     BM_SSH_IP=`getent hosts $NODE | awk '{ print $1 }'`
