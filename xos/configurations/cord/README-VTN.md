@@ -58,9 +58,6 @@ VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You mig
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
 there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
 
-Problems:
-* If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
-
 Notes:
 * I've configured the OpenvSwitch switches to use port 6641 instead of port 6640. This is because the VTN app listens on 6640
 itself, and since we're running it in docker 'host' networking mode now, it would conflict with an Openvswitch that was
