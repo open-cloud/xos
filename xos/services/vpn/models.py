@@ -65,18 +65,22 @@ class VPNTenant(TenantWithContainer):
         # necessary for ansible.
         for ns in self.instance.ports.all():
             if "nat" in ns.network.name.lower():
-                addresses["nat"] = (ns.ip, ns.mac)
+                addresses["nat"] = (ns.ip, ns.mac, ns.network.subnet)
         return addresses
 
     # This getter is necessary because nat_ip is a sync_attribute
     @property
     def nat_ip(self):
-        return self.addresses.get("nat", (None, None))[0]
+        return self.addresses.get("nat", (None, None, None))[0]
 
     # This getter is necessary because nat_mac is a sync_attribute
     @property
     def nat_mac(self):
-        return self.addresses.get("nat", (None, None))[1]
+        return self.addresses.get("nat", (None, None, None))[1]
+
+    @property
+    def subnet(self):
+        return self.addresses.get("nat", (None, None, None))[2]
 
     @property
     def server_address(self):
