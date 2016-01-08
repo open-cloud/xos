@@ -1,5 +1,5 @@
 ---
-- hosts: baremetal
+- hosts: baremetal:nm
 
   user: root
   sudo: no
@@ -21,3 +21,11 @@
   - name: Delete br-int
     shell: ovs-vsctl show | grep -i br-int > /dev/null && ovs-vsctl del-br br-int
     ignore_errors: yes
+
+- hosts: nm
+
+  user: root
+  sudo: no
+  tasks:
+  - name: stop neutron dhcp agent
+    service: name=neutron-dhcp-agent state=stopped
