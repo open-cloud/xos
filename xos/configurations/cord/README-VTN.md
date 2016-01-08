@@ -62,7 +62,7 @@ Problems:
 * If you have more than one compute node, then the node that isn't running ONOS VTN will report as incomplete in VTN. This is because the openvswitch is trying to contact VTN on 172.17.0.2:6653. 
 
 Notes:
-* I've configured the OpenvSwitch switches to use port 6641 instead of port 6641. This is because the VTN app listens on 6640
+* I've configured the OpenvSwitch switches to use port 6641 instead of port 6640. This is because the VTN app listens on 6640
 itself, and since we're running it in docker 'host' networking more now, it would conflict with an Openvswitch that was
 also listening on 6640.
 * Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
