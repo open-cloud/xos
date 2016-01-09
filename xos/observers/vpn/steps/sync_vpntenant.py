@@ -41,14 +41,16 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
         Args:
             tenant (VPNTenant): The tenant to generate the client configuration for.
-            
+
         """
         conf = "remote " + str(tenant.nat_ip) + "\n"
         conf += "dev tun\n"
         conf += "ifconfig " + tenant.client_address + " " + tenant.server_address + "\n"
-        conf += "secret static.key\n"
-        conf += "keepalive 10 60\n"
-        conf += "ping-timer-rem\n"
-        conf += "persist-tun\n"
-        conf += "persist-key"
+        conf += "secret static.key"
+        if tenant.is_persistent:
+            conf += "\nkeepalive 10 60\n"
+            conf += "ping-timer-rem\n"
+            conf += "persist-tun\n"
+            conf += "persist-key"
+
         return conf
