@@ -1,6 +1,6 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
-from typing import Mapping, Tuple
+from typing import Mapping
 
 VPN_KIND = "vpn"
 
@@ -62,35 +62,36 @@ class VPNTenant(TenantWithContainer):
 
     @property
     def addresses(self):
-        """Mapping[str, Tuple[str, str, str]]: The ip, mac address, and subnet of networks of this Tenant."""
+        """Mapping[str, str]: The ip, mac address, and subnet of the NAT network of this Tenant."""
         if (not self.id) or (not self.instance):
             return {}
 
         addresses = {}
-        # The ports field refers to networks for the instance.
-        # This loop stores the details for the NAT network that will be
-        # necessary for ansible.
         for ns in self.instance.ports.all():
             if "nat" in ns.network.name.lower():
-                addresses["nat"] = (ns.ip, ns.mac, ns.network.subnet)
+                addresses["ip"] = ns.ip
+                addresses["mac"] = ns.mac
+                addresses["subnet"] = ns.network.subnet
+                break
+
         return addresses
 
     # This getter is necessary because nat_ip is a sync_attribute
     @property
     def nat_ip(self):
         """str: The IP of this Tenant on the NAT network."""
-        return self.addresses.get("nat", (None, None, None))[0]
+        return self.addresses.get("ip", None)
 
     # This getter is necessary because nat_mac is a sync_attribute
     @property
     def nat_mac(self):
         """str: The MAC address of this Tenant on the NAT network."""
-        return self.addresses.get("nat", (None, None, None))[1]
+        return self.addresses.get("mac", None)
 
     @property
     def subnet(self):
         """str: The subnet of this Tenant on the NAT network."""
-        return self.addresses.get("nat", (None, None, None))[2]
+        return self.addresses.get("subnet", None)
 
     @property
     def server_address(self):
