@@ -1,6 +1,5 @@
 from core.models import Service, TenantWithContainer
 from django.db import transaction
-from typing import Mapping
 
 VPN_KIND = "vpn"
 
