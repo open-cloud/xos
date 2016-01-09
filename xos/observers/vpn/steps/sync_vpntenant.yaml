@@ -37,7 +37,7 @@
   - name: write persistent config
     shell:
       |
-      printf "keepalive 10 60
+      printf "\nkeepalive 10 60
       ping-timer-rem
       persist-tun
       persist-key" >> server.conf
