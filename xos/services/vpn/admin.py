@@ -53,7 +53,7 @@ class VPNTenantForm(forms.ModelForm):
         client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
         is_persistent (forms.BooleanField): Determines if this Tenant keeps this connection alive through failures.
         can_view_subnet (forms.BooleanField): Determins if this Tenant makes it's subnet available to the client.
-    
+
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_key = forms.CharField(required=False, widget=forms.Textarea)
@@ -109,7 +109,7 @@ class VPNTenantForm(forms.ModelForm):
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_VPN_key(self):
-        """Generates a VPN key using the openvpn command."""
+        """str: Generates a VPN key using the openvpn command."""
         proc = Popen("openvpn --genkey --secret /dev/stdout",
                      shell=True, stdout=PIPE)
         (stdout, stderr) = proc.communicate()
