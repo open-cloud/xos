@@ -1,0 +1,24 @@
+xos_db:
+    image: xosproject/xos-postgres
+    expose:
+        - "5432"
+
+# FUTURE
+#xos_swarm_synchronizer:
+#    image: xosproject/xos-swarm-synchronizer
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: swarm
+
+xos:
+    image: xosproject/xos-synchronizer-openstack  # Because we test the observer too
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    ports:
+        - "9999:8000"
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+      - ../setup:/root/setup:ro
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro

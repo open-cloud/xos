@@ -1,37 +1,22 @@
 MYIP:=$(shell hostname -i)
-RUNNING_CONTAINER=$(shell sudo docker ps|grep "xos"|awk '{print $$NF}')
-LAST_CONTAINER=$(shell sudo docker ps -l -q)
-XOS_FOLDER=$(shell pwd)
-
-all: frontend
 
 frontend:
-	if [ -a ../../xos_configuration/* ]; then rm ../../xos_configuration/*; fi
-	sudo apt-get -y install httpie
-	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
-	cp ../common/xos_common_config ../../xos_configuration/
-	cd ../../..; sudo docker build -t xos -f xos/configurations/frontend/Dockerfile .
-	sudo docker run -v $(XOS_FOLDER)/../../core/xoslib:/opt/xos/core/xoslib -p 9999:8000 --add-host="0.0.0.0:127.0.0.1" xos
+	sudo make -f ../common/Makefile.prereq
+	sudo docker-compose up -d
 	bash ../common/wait_for_xos.sh
-	echo $(RUNNING_CONTAINER)
-
-interactive:
-	if [ -a ../../xos_configuration/* ]; then rm ../../xos_configuration/*; fi
-	cat ../common/Dockerfile.common Dockerfile.frontend > Dockerfile
-	cp ../common/xos_common_config ../../xos_configuration/
-	#cp ../cord/xos_cord_config ../../xos_configuration/
-	cd ../../..; sudo docker build -t xos -f xos/configurations/frontend/Dockerfile .
-	echo "Inside the container run: /usr/bin/make -C /opt/xos/configurations/frontend -f Makefile.inside"
-	sudo docker run -it -v $(shell pwd)/../..:/opt/xos -p 9999:8000 --add-host="0.0.0.0:127.0.0.1" xos
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/frontend/sample.yaml
 
 stop:
-	sudo docker stop $(RUNNING_CONTAINER)
-
-start:
-	sudo docker start $(LAST_CONTAINER)
+	sudo docker-compose stop
 
 showlogs:
-	sudo docker logs $(LAST_CONTAINER)
+	sudo docker-compose logs
 
-enter:
-	sudo docker exec -t -i $(RUNNING_CONTAINER) bash
+rm: stop
+	sudo docker-compose rm
+
+ps:
+	sudo docker-compose ps
+
+enter-xos:
+	sudo docker exec -ti frontend_xos_1 bash

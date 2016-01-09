@@ -1,0 +1,31 @@
+---
+- hosts: baremetal:nm
+
+  user: root
+  sudo: no
+  tasks:
+  - name: stop neutron openvswitch agent
+    service: name=neutron-plugin-openvswitch-agent state=stopped
+
+  - name: Update openvswitch config
+    lineinfile:
+      dest=/usr/share/openvswitch/scripts/ovs-ctl
+      insertafter="set ovsdb-server.*DB_FILE.*"
+      regexp=".*set.*--remote=ptcp.*"
+      line="        set \"$@\" --remote=ptcp:6641"
+      state=present
+
+  - name: Restart openvswitch
+    service: name=openvswitch-switch state=restarted
+
+  - name: Delete br-int
+    shell: ovs-vsctl show | grep -i br-int > /dev/null && ovs-vsctl del-br br-int
+    ignore_errors: yes
+
+- hosts: nm
+
+  user: root
+  sudo: no
+  tasks:
+  - name: stop neutron dhcp agent
+    service: name=neutron-dhcp-agent state=stopped

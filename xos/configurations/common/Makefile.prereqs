@@ -3,10 +3,13 @@ UBUNTU:=$(shell which apt > /dev/null 2>&1; echo $$?)
 ifeq ($(UBUNTU),0)
 
 # ******************* apt-based distros ***************************
-prereqs: /usr/bin/http docker
+prereqs: /usr/bin/http docker /usr/bin/curl /usr/local/bin/docker-compose
 
-/usr/bin/http: 
+/usr/bin/http:
 	sudo apt-get -y install httpie
+
+/usr/bin/curl:
+	sudo apt-get -y install curl
 
 docker:
 	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
@@ -18,11 +21,11 @@ else
 
 # (untested / work-in-progress)
 
-prereqs: /usr/bin/pip /usr/bin/http docker
+prereqs: /usr/bin/pip /usr/bin/http docker /usr/local/bin/docker-compose
 
 /usr/bin/pip:
 	curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
-	sudo python ./get-pip.py     
+	sudo python ./get-pip.py
 
 docker:
 	which docker > /dev/null || wget -qO- https://get.docker.com/ | sh
@@ -32,3 +35,7 @@ docker:
 	sudo pip install httpie
 
 endif
+
+/usr/local/bin/docker-compose:
+	sudo bash -c "curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
+	sudo chmod +x /usr/local/bin/docker-compose
