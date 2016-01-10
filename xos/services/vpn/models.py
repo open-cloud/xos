@@ -27,11 +27,11 @@ class VPNTenant(TenantWithContainer):
     sync_attributes = ("nat_ip", "nat_mac",)
 
     default_attributes = {'server_key': 'Error key not found',
-                          'client_conf': 'Configuration not found',
                           'server_address': '10.8.0.1',
                           'client_address': '10.8.0.2',
                           'can_view_subnet': False,
-                          'is_persistent': True}
+                          'is_persistent': True,
+                          'file_name': 'Not found'}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -115,17 +115,6 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("client_address", value)
 
     @property
-    def client_conf(self):
-        """str: The client configuration for the client to connect to this server."""
-        return self.get_attribute(
-            "client_conf",
-            self.default_attributes['client_conf'])
-
-    @client_conf.setter
-    def client_conf(self, value):
-        self.set_attribute("client_conf", value)
-
-    @property
     def is_persistent(self):
         """bool: True if the VPN connection is persistence, false otherwise."""
         return self.get_attribute(
@@ -146,6 +135,14 @@ class VPNTenant(TenantWithContainer):
     @can_view_subnet.setter
     def can_view_subnet(self, value):
         self.set_attribute("can_view_subnet", value)
+
+    @property
+    def file_name(self):
+        self.get_attribute("file_name", self.default_attributes['file_name'])
+
+    @file_name.setter
+    def file_name(self, value):
+        self.set_attribute('file_name', value)
 
 
 def model_policy_vpn_tenant(pk):

@@ -23,7 +23,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
             objs = VPNTenant.get_tenant_objects().filter(
                 Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
             for tenant in objs:
-                tenant.client_conf = self.generate_client_conf(tenant)
+                self.create_client_script(tenant)
         else:
             objs = VPNTenant.get_deleted_tenant_objects()
 
@@ -35,6 +35,25 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "can_view_subnet": o.can_view_subnet,
                 "server_address": o.server_address,
                 "client_address": o.client_address}
+
+    def create_client_script(self, tenant):
+        script = open(tenant.file_name, 'w')
+        # write the key portion
+        script.write("printf \"")
+        for line in tenant.server_key.splitlines():
+            script.write(line + r"\n")
+        script.write("\" > static.key\n")
+        # write the configuration portion
+        script.write("printf \"")
+        for line in self.generate_client_conf(tenant).splitlines():
+            script.write(line + r"\n")
+        script.write("\" > client.conf\n")
+        # make sure openvpn is installed
+        script.write("apt-get update\n")
+        script.write("apt-get install openvpn\n")
+        script.write("openvpn client.conf &")
+        # close the script
+        script.close()
 
     def generate_client_conf(self, tenant):
         """str: Generates the client configuration to use to connect to this VPN server.
