@@ -1,38 +1,40 @@
 # This shouldn't be hardcoded
 DEVSTACK_ROOT:=~/devstack
+SETUPDIR:=../setup
 
 all: prereqs admin-openrc flat_name nodes_yaml public_key private_key ceilometer_url node_key net_fix
 
 prereqs:
 	make -f Makefile.prereqs
 	sudo pip install httpie --upgrade
+	mkdir -p $(SETUPDIR)
 
 admin-openrc:
-	bash ./devstack-creds.sh $(DEVSTACK_ROOT) > admin-openrc.sh
-	touch controller_settings
+	bash ./devstack-creds.sh $(DEVSTACK_ROOT) > $(SETUPDIR)/admin-openrc.sh
+	touch $(SETUPDIR)/controller_settings
 
 flat_name:
-	echo private|tr -d '\n' > flat_net_name
+	echo private|tr -d '\n' > $(SETUPDIR)/flat_net_name
 	bash -c "source admin-openrc.sh; openstack network set --share private"
 
 nodes_yaml:
-	bash ./make-nodes-yaml.sh
+	bash ./make-nodes-yaml.sh > $(SETUPDIR)/nodes.yaml
 
 ceilometer_url:
-	echo http://`hostname -i`/xosmetering/ > ceilometer_url
+	echo http://`hostname -i`/xosmetering/ > $(SETUPDIR)/ceilometer_url
 
 public_key: ~/.ssh/id_rsa.pub
-	cp ~/.ssh/id_rsa.pub .
+	cp ~/.ssh/id_rsa.pub $(SETUPDIR)
 
 private_key: ~/.ssh/id_rsa
-	cp ~/.ssh/id_rsa .
+	cp ~/.ssh/id_rsa $(SETUPDIR)
 
 ~/.ssh/id_rsa.pub:
 	cat /dev/zero | ssh-keygen -q -N ""
 
 node_key:
-	sudo cat ~/.ssh/id_rsa > node_key
-	sudo cat ~/.ssh/id_rsa.pub > node_key.pub
+	sudo cat ~/.ssh/id_rsa > $(SETUPDIR)/node_key
+	sudo cat ~/.ssh/id_rsa.pub > $(SETUPDIR)/node_key.pub
 
 net_fix:
 	sudo devstack/net-fix.sh

@@ -1,4 +1,4 @@
-source ../../common/admin-openrc.sh
+source ../../setup/admin-openrc.sh
 
 get_ip () {
     LABEL=$1
@@ -9,7 +9,7 @@ get_ip () {
 GRENAMES=()
 BM_IPS=()
 
-NODES=`sudo bash -c "source /root/setup/admin-openrc.sh ; nova hypervisor-list" |grep cloudlab|awk '{print $4}'`
+NODES=`sudo bash -c "source ../../setup/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}'`
 I=1
 for NODE in $NODES; do
     BM_SSH_IP=`getent hosts $NODE | awk '{ print $1 }'`
@@ -29,9 +29,16 @@ BM_IPS=${BM_IPS[@]}
 
 echo switch_volt ansible_ssh_host=$( get_ip mysite_volt flat-lan-1-net) grenames=\"$GRE_NAMES\" bm_ips=\"$BM_IPS\"
 
+NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
+echo "nm1 ansible_ssh_host=$NM ansible_ssh_private_key_file=/root/.ssh/id_rsa"
+
 echo "[baremetal]"
 I=1
 for NODE in $NODES; do
     echo bm$I
     I=$((I+1))
 done
+
+# now for the network management node
+echo "[nm]"
+echo "nm1"

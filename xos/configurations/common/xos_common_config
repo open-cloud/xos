@@ -33,7 +33,7 @@ ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
 
 [observer]
 pretend=False
-backoff_disabled=False
+backoff_disabled=True
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
