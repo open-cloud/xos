@@ -4,6 +4,10 @@ import argparse
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from observer.backend import Backend
 from xos.config import Config, DEFAULT_CONFIG_FN
+from core.models import Instance
+from util.logger import Logger, logging, logger
+from django.db import ProgrammingError
+import time
 
 try:
     from django import setup as django_setup # django 1.7
@@ -54,6 +58,18 @@ def main():
     if django_setup: # 1.7
         django_setup()
 
+    models_active = False
+    wait = False
+    while not models_active:
+        try:
+            _ = Instance.objects.first()
+            models_active = True
+        except ProgrammingError:
+            logger.info('Waiting for data model to come up before starting...')
+            wait = True
+
+    if (wait):
+        time.sleep(60) # Safety factor, seeing that we stumbled waiting for the data model to come up.
     backend = Backend()
     backend.run()    
 
