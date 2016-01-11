@@ -1,7 +1,7 @@
 #!/bin/bash
 # set -x
 
-source ../../common/admin-openrc.sh
+source ../../setup/admin-openrc.sh
 
 get_ip () {
     LABEL=$1
