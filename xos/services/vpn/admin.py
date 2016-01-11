@@ -128,11 +128,11 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('id', 'backend_status_icon', 'instance')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
-                                    'server_key', 'file_name',
+                                    'server_key', 'file_name', 'script_link',
                                     'server_address', 'client_address',
                                     'is_persistent', 'can_view_subnet'],
                          'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance')
+    readonly_fields = ('backend_status_text', 'instance', 'script_link')
     form = VPNTenantForm
 
     suit_form_tabs = (('general', 'Details'),)
