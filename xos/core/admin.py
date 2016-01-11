@@ -270,6 +270,9 @@ class XOSAdminMixin(object):
     def backend_status_text(self, obj):
         return mark_safe(backend_text(obj))
 
+    def script_link(self, obj):
+        return mark_safe('<a href="%s" target="_blank">Script link</a>' % obj.file_name)
+
     def backend_status_icon(self, obj):
         return mark_safe(backend_icon(obj))
     backend_status_icon.short_description = ""
@@ -494,7 +497,7 @@ class SiteHostsNodesInline(SiteInline):
 
 class SiteHostsUsersInline(SiteInline):
     def queryset(self, request):
-        return Site.select_by_user(request.user).filter(hosts_users=True)        
+        return Site.select_by_user(request.user).filter(hosts_users=True)
 
 class UserInline(XOSTabularInline):
     model = User
@@ -571,7 +574,7 @@ class ServicePrivilegeInline(XOSTabularInline):
             kwargs['queryset'] = Service.select_by_user(request.user)
         if db_field.name == 'user':
             kwargs['queryset'] = User.select_by_user(request.user)
-        return super(ServicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)         
+        return super(ServicePrivilegeInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         return ServicePrivilege.select_by_user(request.user)
@@ -803,12 +806,12 @@ class ControllerAdmin(XOSBaseAdmin):
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
         obj.save_by_user(request.user)
-                    
+
     def delete_model(self, request, obj):
         obj.delete_by_user(request.user)
 
     def queryset(self, request):
-        return Controller.select_by_user(request.user)    
+        return Controller.select_by_user(request.user)
 
     @property
     def suit_form_tabs(self):
@@ -1001,11 +1004,11 @@ class SiteAdmin(XOSBaseAdmin):
 
     def save_model(self, request, obj, form, change):
         # update openstack connection to use this site/tenant
-        obj.save_by_user(request.user) 
+        obj.save_by_user(request.user)
 
     def delete_model(self, request, obj):
         obj.delete_by_user(request.user)
-        
+
 
 class SitePrivilegeAdmin(XOSBaseAdmin):
     fieldList = ['backend_status_text', 'user', 'site', 'role']
@@ -1103,7 +1106,7 @@ class SliceAdmin(XOSBaseAdmin):
           ('slicenetworks','Networks'),
           ('sliceprivileges','Privileges'),
           ('instances','Instances'),
-          #('reservations','Reservations'), 
+          #('reservations','Reservations'),
           ('tags','Tags'),
           ]
 
@@ -1112,7 +1115,7 @@ class SliceAdmin(XOSBaseAdmin):
             tabs.append( ('admin-only', 'Admin-Only') )
 
         return tabs
-    
+
     def add_view(self, request, form_url='', extra_context=None):
         # Ugly hack for CORD
         self.inlines = self.normal_inlines
@@ -1209,7 +1212,7 @@ class SlicePrivilegeAdmin(XOSBaseAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'slice':
             kwargs['queryset'] = Slice.select_by_user(request.user)
-        
+
         if db_field.name == 'user':
             kwargs['queryset'] = User.select_by_user(request.user)
 
@@ -1589,12 +1592,12 @@ class UserAdmin(XOSAdminMixin, UserAdmin):
                 login_details_fields.remove('profile')
             #if len(request.user.siteprivileges.filter(role__role = 'pi')) > 0:
                 # only admins and pis can change a user's site
-            #    self.readonly_fields = ('backend_status_text', 'site') 
+            #    self.readonly_fields = ('backend_status_text', 'site')
         self.fieldsets = (
             ('Login Details', {'fields': login_details_fields, 'classes':['suit-tab suit-tab-general']}),
             ('Contact Information', {'fields': self.fieldListContactInfo, 'classes':['suit-tab suit-tab-contact']}),
         )
-        return super(UserAdmin, self).get_form(request, obj, **kwargs)     
+        return super(UserAdmin, self).get_form(request, obj, **kwargs)
 
 class ControllerDashboardViewInline(XOSTabularInline):
     model = ControllerDashboardView
@@ -2067,7 +2070,7 @@ admin.site.register(User, UserAdmin)
 # unregister the Group model from admin.
 #admin.site.unregister(Group)
 
-# When debugging it is often easier to see all the classes, but for regular use 
+# When debugging it is often easier to see all the classes, but for regular use
 # only the top-levels should be displayed
 showAll = False
 
@@ -2103,4 +2106,3 @@ if True:
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
 #    admin.site.register(Container, ContainerAdmin)
-
