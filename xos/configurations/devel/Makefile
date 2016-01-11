@@ -2,7 +2,7 @@ MYIP:=$(shell hostname -i)
 
 cloudlab: common_cloudlab xos
 
-devstack: upgrade_pkgs common_devstack devstack_net_fix xos
+devstack: upgrade_pkgs common_devstack xos
 
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
@@ -33,10 +33,6 @@ enter-xos:
 
 enter-synchronizer:
 	sudo docker exec -it devel_xos_synchronizer_openstack_1 bash
-
-devstack_net_fix:
-	sudo ../common/devstack/net-fix.sh
-	sudo bash -c "source ../setup/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
 
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
