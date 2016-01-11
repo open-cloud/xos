@@ -15,10 +15,10 @@ admin-openrc:
 
 flat_name:
 	echo private|tr -d '\n' > $(SETUPDIR)/flat_net_name
-	bash -c "source admin-openrc.sh; openstack network set --share private"
+	bash -c "source $(SETUPDIR)/admin-openrc.sh; openstack network set --share private"
 
 nodes_yaml:
-	bash ./make-nodes-yaml.sh > $(SETUPDIR)/nodes.yaml
+	export SETUPDIR=$(SETUPDIR); bash ./make-nodes-yaml.sh 
 
 ceilometer_url:
 	echo http://`hostname -i`/xosmetering/ > $(SETUPDIR)/ceilometer_url
@@ -38,4 +38,4 @@ node_key:
 
 net_fix:
 	sudo devstack/net-fix.sh
-	bash -c "source admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
+	bash -c "source $(SETUPDIR)/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
