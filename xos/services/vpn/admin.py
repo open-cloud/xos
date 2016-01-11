@@ -94,7 +94,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['client_address'].initial = "10.8.0.2"
             self.fields['is_persistent'].initial = True
             self.fields['can_view_subnet'].initial = False
-            self.fields['file_name'].initial = "/static/vpn/" + str(time.time()) + ".vpn"
+            self.fields['file_name'].initial = str(time.time()) + ".vpn"
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[
                     0]
