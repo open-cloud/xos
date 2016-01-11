@@ -67,6 +67,11 @@
 
   - name: ceilometer proxy config
     template: src=/opt/xos/observers/monitoring_channel/templates/ceilometer_proxy_config.j2 dest=/usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config mode=0777
+    notify:
+#    - restart monitoring-channel
+     - stop monitoring-channel
+     - remove container
+     - start monitoring-channel
 
   - name: Monitoring channel upstart
     template: src=/opt/xos/observers/monitoring_channel/templates/monitoring-channel.conf.j2 dest=/etc/init/monitoring-channel-{{ unique_id }}.conf

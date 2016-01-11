@@ -57,6 +57,32 @@
         {% endfor %}
 
   tasks:
+  - name: Verify if vcpe_stats_notifier ([] is to avoid capturing the shell process) cron job is already running
+    shell: pgrep -f [v]cpe_stats_notifier | wc -l
+    register: cron_job_pids_count
+
+#  - name: DEBUG
+#    debug: var=cron_job_pids_count.stdout
+
+  - name: make sure ~/bin exists
+    file: path=~/bin state=directory owner=root group=root
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: Copy cron job to destination
+    copy: src=/opt/xos/observers/vcpe/vcpe_stats_notifier.py
+      dest=~/bin/vcpe_stats_notifier.py
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: install python-kombu
+    apt: name=python-kombu state=present
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: Initiate vcpe_stats_notifier cron job
+    command: python ~/bin/vcpe_stats_notifier.py --keystone_tenant_id={{ keystone_tenant_id }} --keystone_user_id={{ keystone_user_id }} --rabbit_user={{ rabbit_user }} --rabbit_password={{ rabbit_password }} --rabbit_host={{ rabbit_host }} --vcpeservice_rabbit_exchange='vcpeservice'
+    async: 9999999999999999
+    poll: 0
+    when: cron_job_pids_count.stdout == "0"
+
   - name: vCPE basic dnsmasq config
     copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
