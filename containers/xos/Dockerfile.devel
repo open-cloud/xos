@@ -42,7 +42,7 @@ RUN pip install \
     django-crispy-forms \
     django-encrypted-fields \
     django-extensions \
-    django-filter \
+    django-filter==0.11.0 \
     django-geoposition \
     django-ipware \
     django_rest_swagger \
