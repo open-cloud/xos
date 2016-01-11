@@ -8,7 +8,7 @@ import json
 
 from core.models import *
 
-print "Let's test!!!!!!!!"
+print "-------------------------- Let's test!!!!!!!! --------------------------"
 
 
 # Environment Tests - Should pass everytime, if not something in the config is broken.
