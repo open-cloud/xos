@@ -34,7 +34,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     python-novaclient \
     python-neutronclient \
     python-glanceclient \
-    python-ceilometerclient
+    python-ceilometerclient \
+    openvpn
 
 RUN pip install \
     django==1.7 \
