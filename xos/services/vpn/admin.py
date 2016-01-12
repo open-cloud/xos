@@ -62,14 +62,15 @@ class VPNTenantForm(forms.ModelForm):
     client_address = forms.GenericIPAddressField(
         protocol='IPv4', required=True)
     is_persistent = forms.BooleanField(required=False)
+    script_name = forms.CharField(required=False)
     can_view_subnet = forms.BooleanField(required=False)
-    file_name = forms.CharField(required=True)
+
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['server_key'].widget.attrs['readonly'] = True
-        self.fields['file_name'].widget.attrs['readonly'] = True
+        self.fields['script_name'].widget.attrs['readonly'] = True
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
 
@@ -85,7 +86,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.fields[
                 'can_view_subnet'].initial = self.instance.can_view_subnet
-            self.fields['file_name'].initial = self.instance.file_name
+            self.fields['script_name'].initial = self.instance.file_name
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -94,7 +95,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['client_address'].initial = "10.8.0.2"
             self.fields['is_persistent'].initial = True
             self.fields['can_view_subnet'].initial = False
-            self.fields['file_name'].initial = str(time.time()) + ".vpn"
+            self.fields['script_name'].initial = str(time.time()) + ".vpn"
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[
                     0]
@@ -105,7 +106,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.file_name = self.cleaned_data.get("file_name")
+        self.instance.file_name = self.cleaned_data.get("script_name")
         if self.instance.file_name == None:
             raise forms.ValidationError("File name is None despite that not making any sense")
         self.instance.can_view_subnet = self.cleaned_data.get(
@@ -130,7 +131,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('id', 'backend_status_icon', 'instance')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
-                                    'server_key', 'file_name',
+                                    'server_key', 'script_name',
                                     'server_address', 'client_address',
                                     'is_persistent', 'can_view_subnet'],
                          'classes': ['suit-tab suit-tab-general']})]
