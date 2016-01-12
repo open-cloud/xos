@@ -62,7 +62,7 @@ class VPNTenantForm(forms.ModelForm):
     client_address = forms.GenericIPAddressField(
         protocol='IPv4', required=True)
     is_persistent = forms.BooleanField(required=False)
-    script_name = forms.CharField(required=False)
+    script_name = forms.CharField(required=True)
     can_view_subnet = forms.BooleanField(required=False)
 
 
@@ -70,7 +70,7 @@ class VPNTenantForm(forms.ModelForm):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['server_key'].widget.attrs['readonly'] = True
-        self.fields['script_name'].widget.attrs['readonly'] = True
+        # self.fields['script_name'].widget.attrs['readonly'] = True
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
 
@@ -107,15 +107,11 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
         self.instance.script_name = self.clean_script_name()
+        if self.instance.script_name == None:
+            raise forms.ValidationError("Script name is None, despite that not making any sense")
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)
-
-    def clean_script_name(self):
-        data = self.cleaned_data.get('script_name')
-        if data == None:
-            raise forms.ValidationError("Script name is None, despite that not making any sense")
-        return data
 
     def generate_VPN_key(self):
         """str: Generates a VPN key using the openvpn command."""
