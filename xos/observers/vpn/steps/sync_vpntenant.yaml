@@ -15,7 +15,7 @@
     apt: name=openvpn state=present update_cache=yes
 
   - name: stop openvpn
-    shell: killall openvpn
+    shell: killall openvpn | true
 
   - name: erase key
     shell: rm -f static.key

@@ -142,7 +142,7 @@ class VPNTenant(TenantWithContainer):
 
     @file_name.setter
     def file_name(self, value):
-        self.set_attribute('file_name', value)
+        self.set_attribute("file_name", value)
 
 
 def model_policy_vpn_tenant(pk):

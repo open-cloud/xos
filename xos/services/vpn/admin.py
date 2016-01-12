@@ -105,7 +105,9 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.file_name = self.cleaned_data.get('file_name')
+        self.instance.file_name = self.cleaned_data.get("file_name")
+        if self.instance.file_name == None:
+            raise forms.ValidationError("File name is None despite that not making any sense")
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)
@@ -128,11 +130,11 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('id', 'backend_status_icon', 'instance')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
-                                    'server_key', 'file_name', 'script_link',
+                                    'server_key', 'file_name',
                                     'server_address', 'client_address',
                                     'is_persistent', 'can_view_subnet'],
                          'classes': ['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance', 'script_link')
+    readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
 
     suit_form_tabs = (('general', 'Details'),)
