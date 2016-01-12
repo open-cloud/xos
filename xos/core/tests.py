@@ -13,6 +13,8 @@ print "-------------------------- Let's test!!!!!!!! --------------------------"
 
 # Environment Tests - Should pass everytime, if not something in the config is broken.
 class SimpleTest(TestCase):
+    fixtures = []
+
     def test_basic_addition(self):
         """
         Tests that 1 + 1 always equals 2.
@@ -22,6 +24,8 @@ class SimpleTest(TestCase):
 
 # Site Test
 class SiteTest(TestCase):
+    fixtures = []
+
     def setUp(self):
         Site.objects.create(
             name="Test Site",
@@ -38,6 +42,8 @@ class SiteTest(TestCase):
 
 
 class UnautheticatedRequest(APITestCase):
+    fixtures = []
+
     def test_require_authentication(self):
         """
         Ensure that request must be authenticated
@@ -47,6 +53,8 @@ class UnautheticatedRequest(APITestCase):
 
 
 class SiteTestAPI(APITestCase):
+    fixtures = []
+
     def setUp(self):
         self.site = Site.objects.create(
           name="Test Site",
@@ -77,13 +85,11 @@ class SiteTestAPI(APITestCase):
         """
         data = {
             'name': "Another Test Site",
-            'login_base': "another_test_"
+            'login_base': "another_test_",
+            'location': [10, 20],
+            'abbreviated_name': 'test'
         }
         response = self.client.post('/xos/sites/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Site.objects.count(), 2)
         self.assertEqual(Site.objects.get(name="Another Test Site").count(), 1)
-
-    def tearDown(self):
-        Site.objects.all().delete()
-        User.objects.all().delete()
