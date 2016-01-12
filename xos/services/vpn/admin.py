@@ -106,13 +106,16 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.file_name = self.cleaned_data.get("script_name")
-        if self.instance.file_name == None:
-            raise forms.ValidationError("File name is None despite that not making any sense")
+        self.instance.file_name = self.clean_script_name()
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)
 
+    def clean_script_name(self):
+        data = self.cleaned_data.get('script_name')
+        if data == None:
+            raise forms.ValidationError("Script name is None, despite that not making any sense")
+        return data
 
     def generate_VPN_key(self):
         """str: Generates a VPN key using the openvpn command."""
