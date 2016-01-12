@@ -106,7 +106,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.script_name = self.clean_script_name()
+        self.instance.script_name = self.cleaned_data['script_name']
         if self.instance.script_name == None:
             raise forms.ValidationError("Script name is None, despite that not making any sense")
         self.instance.can_view_subnet = self.cleaned_data.get(
