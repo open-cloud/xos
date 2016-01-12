@@ -86,7 +86,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.fields[
                 'can_view_subnet'].initial = self.instance.can_view_subnet
-            self.fields['script_name'].initial = self.instance.file_name
+            self.fields['script_name'].initial = self.instance.script_name
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -106,7 +106,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.file_name = self.clean_script_name()
+        self.instance.script_name = self.clean_script_name()
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
         return super(VPNTenantForm, self).save(commit=commit)

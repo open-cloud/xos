@@ -31,7 +31,7 @@ class VPNTenant(TenantWithContainer):
                           'client_address': '10.8.0.2',
                           'can_view_subnet': False,
                           'is_persistent': True,
-                          'file_name': 'Not found'}
+                          'script_name': 'Not found'}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -137,12 +137,12 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("can_view_subnet", value)
 
     @property
-    def file_name(self):
-        self.get_attribute("file_name", self.default_attributes['file_name'])
+    def script_name(self):
+        self.get_attribute("script_name", self.default_attributes['script_name'])
 
-    @file_name.setter
-    def file_name(self, value):
-        self.set_attribute("file_name", value)
+    @script_name.setter
+    def script_name(self, value):
+        self.set_attribute("script_name", value)
 
 
 def model_policy_vpn_tenant(pk):
