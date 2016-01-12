@@ -1,0 +1,132 @@
+[
+{
+    "pk": 1, 
+    "model": "core.serviceclass", 
+    "fields": {
+        "updated": "2013-05-10T23:30:52.931Z", 
+        "membershipFee": 0, 
+        "membershipFeeMonths": 0, 
+        "created": "2013-05-10T23:30:52.931Z", 
+        "upgradeFrom": [3, 2], 
+        "commitment": 0, 
+        "name": "Best Effort", 
+        "upgradeRequiresApproval": false, 
+        "description": "Best Effort"
+    }
+}, 
+{
+    "pk": 2, 
+    "model": "core.serviceclass", 
+    "fields": {
+        "updated": "2013-05-10T23:35:51.694Z", 
+        "membershipFee": 100, 
+        "membershipFeeMonths": 1, 
+        "created": "2013-05-10T23:33:24.930Z", 
+        "upgradeFrom": [1, 3], 
+        "commitment": 365, 
+        "name": "Silver", 
+        "upgradeRequiresApproval": false, 
+        "description": "Silver"
+    }
+}, 
+{
+    "pk": 3, 
+    "model": "core.serviceclass", 
+    "fields": {
+        "updated": "2013-05-10T23:34:01.320Z", 
+        "membershipFee": 18000, 
+        "membershipFeeMonths": 12, 
+        "created": "2013-05-10T23:34:01.320Z", 
+        "upgradeFrom": [1, 2], 
+        "commitment": 365, 
+        "name": "Gold", 
+        "upgradeRequiresApproval": false, 
+        "description": "Gold"
+    }
+}, 
+{
+    "pk": 1, 
+    "model": "core.serviceresource", 
+    "fields": {
+        "updated": "2013-05-10T23:44:50.862Z", 
+        "name": "Cycles", 
+        "bucketMaxSize": 0, 
+        "created": "2013-05-10T23:37:09.312Z", 
+        "serviceClass": 1, 
+        "maxUnitsDeployment": 0, 
+        "bucketInRate": 0, 
+        "cost": 7, 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
+    }
+}, 
+{
+    "pk": 2, 
+    "model": "core.serviceresource", 
+    "fields": {
+        "updated": "2013-05-10T23:44:39.936Z", 
+        "name": "Cycles", 
+        "bucketMaxSize": 0, 
+        "created": "2013-05-10T23:44:39.936Z", 
+        "serviceClass": 2, 
+        "maxUnitsDeployment": 0, 
+        "bucketInRate": 0, 
+        "cost": 7, 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
+    }
+}, 
+{
+    "pk": 3, 
+    "model": "core.serviceresource", 
+    "fields": {
+        "updated": "2013-05-10T23:45:16.137Z", 
+        "name": "Cycles", 
+        "bucketMaxSize": 0, 
+        "created": "2013-05-10T23:45:16.137Z", 
+        "serviceClass": 3, 
+        "maxUnitsDeployment": 0, 
+        "bucketInRate": 0, 
+        "cost": 7, 
+        "calendarReservable": false, 
+        "maxDuration": 0, 
+        "maxUnitsNode": 0
+    }
+}, 
+{
+    "pk": 4, 
+    "model": "core.serviceresource", 
+    "fields": {
+        "updated": "2013-05-10T23:47:39.033Z", 
+        "name": "numberCores", 
+        "bucketMaxSize": 210, 
+        "created": "2013-05-10T23:46:33.201Z", 
+        "serviceClass": 2, 
+        "maxUnitsDeployment": 210, 
+        "bucketInRate": 10, 
+        "cost": 7, 
+        "calendarReservable": true, 
+        "maxDuration": 168, 
+        "maxUnitsNode": 6
+    }
+}, 
+{
+    "pk": 5, 
+    "model": "core.serviceresource", 
+    "fields": {
+        "updated": "2013-05-10T23:47:31.771Z", 
+        "name": "numberCores", 
+        "bucketMaxSize": 0, 
+        "created": "2013-05-10T23:47:31.770Z", 
+        "serviceClass": 3, 
+        "maxUnitsDeployment": 210, 
+        "bucketInRate": 0, 
+        "cost": 0, 
+        "calendarReservable": true, 
+        "maxDuration": 8760, 
+        "maxUnitsNode": 6
+    }
+}
+]
