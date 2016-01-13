@@ -105,6 +105,10 @@ class XOSListCreateAPIView(generics.ListCreateAPIView):
             response=Response({'detail': {"error": "PermissionDenied", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
             response.exception=True
             return response
+        elif isinstance(exc, DjangoValidationError):
+            response=Response({'detail': {"error": "ValidationError", "specific_error": str(exc), "fields": {}}}, status=status.HTTP_403_FORBIDDEN)
+            response.exception=True
+            return response
         else:
             return super(XOSListCreateAPIView, self).handle_exception(exc)
 
