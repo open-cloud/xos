@@ -68,6 +68,8 @@ itself, and since we're running it in docker 'host' networking mode now, it woul
 also listening on 6640.
 * Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
 * When using of-vfctl to look at flow rules, if you get a protocol error, try "ovs-ofctl show -O OpenFlow13 br-int "
+* Note that the VTN Synchronizer isn't started automatically. It's only use for inter-Service connectivity, so no need to mess with it until intra-Slice connectivity is working first. 
+* Note that the VTN Synchronizer won't connect non-access networks. Any network templates you want VTN to connect must have Access set to "Direct" or "Indirect". 
 
 There is no management network yet, so no way to SSH into the slices. I've been setting up a VNC tunnel, like this:
 
@@ -81,3 +83,9 @@ There is no management network yet, so no way to SSH into the slices. I've been 
     ssh -o "GatewayPorts yes"  -L 5901:192.168.0.7:5901 smbaker@cp-1.smbaker-xos3.xos-pg0.clemson.cloudlab.us
 
 Then open a VNC session to the local port on your local machine. You'll have a console on the Instance. The username is "Ubuntu" and the password can be obtained from your cloudlab experiment description
+
+Things that can be tested:
+
+* Create an Instance, it should have a Private network, and there should be a tap attached from the instance to br-int
+* Two Instances in the same Slice can talk to one another. They can be on the same machine or different machines.
+* Two Slices can talk to one another if the slices are associated with Services and those Services have a Tenancy relationship between them. Note that 1) The VTN Synchronizer must be running, 2) There must be a Private network with Access=[Direct|Indirect], and 3) The connectivity is unidirection, from subscriber service to provider service.
