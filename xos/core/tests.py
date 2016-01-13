@@ -139,7 +139,7 @@ class SliceTestAPI(APITestCase):
         response = self.client.post('/xos/slices/?no_hyperlinks=1', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def xtest_validation_slice_name(self):
+    def test_validation_slice_name(self):
         """
         The slice name should start with site.login_base
         curl -H "Accept: application/json; indent=4" -u padmin@vicci.org:letmein 'http://xos:9999/xos/slices/?no_hyperlinks=1' -H "Content-Type: application/json" -X POST --data '{"name": "test", "site":"1", "serviceClass":1}'
@@ -150,8 +150,9 @@ class SliceTestAPI(APITestCase):
             'serviceClass': self.serviceClass.id
         }
         response = self.client.post('/xos/slices/?no_hyperlinks=1', data, format='json')
-        self.assertRaise('slice name must begin with test_')
+        parsed = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(parsed['detail']['specific_error'], "slice name must begin with test_")
 
     def test_only_admin_can_change_creator(self):
         """
@@ -164,9 +165,19 @@ class SliceTestAPI(APITestCase):
             creator=self.user
         )
 
+        user2 = User(
+            username='another_testuser',
+            email='another_test@mail.org',
+            password='testing',
+            site=self.site
+        )
+        user2.save()
+
         data = model_to_dict(slice)
         print(data)
-        data['creator'] = 2
+        data['creator'] = user2.id
 
         response = self.client.put('/xos/slices/%s/?no_hyperlinks=1' % slice.id, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        parsed = json.loads(response.content)
+        self.assertEqual(parsed['detail']['specific_error'], "Insufficient privileges to change slice creator")
