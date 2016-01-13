@@ -2,12 +2,18 @@ vtn notes:
 
 see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integration-for-CORD-VTN#onos-setup
 
-inside the xos container:
+VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
+
+    cd xos/scripts
+    ./destroy-all-networks.sh
+
+inside the xos container, update the configuration. Make sure to restart Openstack Synchronizer afterward. Might be a good idea to restart the XOS UI as well:
 
     python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/tosca/samples/vtn.yaml
     emacs /opt/xos/xos_configuration/xos_common_config
         [networking]
         use_vtn=True
+    supervisorctl restart observer
 
 ctl node:
 
@@ -53,8 +59,6 @@ Compute nodes and nm nodes:
     #  4) delete any existing br-int bridge
     #  5) [nm only] turn off neutron-dhcp-agent
 
-VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). You might have to delete them all. I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
-
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
 there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
 
@@ -64,3 +68,16 @@ itself, and since we're running it in docker 'host' networking mode now, it woul
 also listening on 6640.
 * Adding use_vtn=True to the [networking] section in the XOS config file has two effects: 1) it sets the gateway in sync_controller_networks, and 2) it disables automatic creation of nat-net for new slices. This is because VTN will fail if there is no gateway on a network, and because we don't have nat-net under the VTN configuration.
 * When using of-vfctl to look at flow rules, if you get a protocol error, try "ovs-ofctl show -O OpenFlow13 br-int "
+
+There is no management network yet, so no way to SSH into the slices. I've been setting up a VNC tunnel, like this:
+
+    # on compute node, run the following and note the IP address and port number
+    virsh vncdisplay <instance-id>
+    
+    # from home
+    ssh -o "GatewayPorts yes"  -L <port+5900>:<IP>:<port+5900> <username>@<compute_node_hostname>
+    
+    # example
+    ssh -o "GatewayPorts yes"  -L 5901:192.168.0.7:5901 smbaker@cp-1.smbaker-xos3.xos-pg0.clemson.cloudlab.us
+
+Then open a VNC session to the local port on your local machine. You'll have a console on the Instance. The username is "Ubuntu" and the password can be obtained from your cloudlab experiment description
