@@ -154,7 +154,7 @@ class SliceTestAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(parsed['detail']['specific_error'], "slice name must begin with test_")
 
-    def test_only_admin_can_change_creator(self):
+    def xtest_only_admin_can_change_creator(self):
         """
         Only an admin can change the creator of a slice
         """
