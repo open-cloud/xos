@@ -83,7 +83,7 @@ class SyncTenant(SyncStep):
         for vtn_map in glo_saved_vtn_maps:
             if not vtn_map in vtn_maps:
                 # call vtn rest api to delete map
-                url = "http://" + self.get_vtn_addr() + ":8181/onos/cordvtn/service-dependency/%s" % (vtn_map[0],)
+                url = "http://" + self.get_vtn_addr() + ":8181/onos/cordvtn/service-dependency/%s/%s" % (vtn_map[0],vtn_map[1])
 
                 print "DELETE %s" % url
                 r = requests.delete(url, auth=HTTPBasicAuth('karaf', 'karaf') )    # XXX fixme - hardcoded auth
