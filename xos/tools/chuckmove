@@ -29,7 +29,7 @@ new_ns = options.new
 
 comment = '#' + SkipTo(lineEnd)
 
-module_ns = Word(alphanums + '-' + '_' + '.')
+module_ns = Word(alphanums + '-' + '_' + '.' + ',')
 old_module_ns = Combine(old_ns + Optional(Combine('.'+module_ns)))
 end_of_python_line = Or([lineEnd,comment])
 
