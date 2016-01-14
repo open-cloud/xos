@@ -1,4 +1,0 @@
-Some scripts used while testing the Ansible instance configuraiton observer
-
-xos.py was probably the prototype of an XOS SSH module for Ansible, that understood how to SSH into the instances
-without needing to play config file and environment tricks. 

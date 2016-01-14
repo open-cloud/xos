@@ -1,7 +1,0 @@
----
-- hosts: {{ instance_name }}
-  connection: ssh
-  user: ubuntu
-  tasks:
-    - name: foobar
-      shell: echo foo > /tmp/foobar
