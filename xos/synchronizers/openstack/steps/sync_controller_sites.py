@@ -6,7 +6,7 @@ from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
 from observer.syncstep import *
 from observer.ansible import *
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 import json
 
 class SyncControllerSites(OpenStackSyncStep):

@@ -9,7 +9,7 @@ from observer.syncstep import *
 from core.models import *
 from observer.ansible import *
 from openstack.driver import OpenStackDriver
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 import json
 
 class SyncControllerSlices(OpenStackSyncStep):

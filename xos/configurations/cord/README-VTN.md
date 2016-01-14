@@ -88,4 +88,20 @@ Things that can be tested:
 
 * Create an Instance, it should have a Private network, and there should be a tap attached from the instance to br-int
 * Two Instances in the same Slice can talk to one another. They can be on the same machine or different machines.
-* Two Slices can talk to one another if the slices are associated with Services and those Services have a Tenancy relationship between them. Note that 1) The VTN Synchronizer must be running, 2) There must be a Private network with Access=[Direct|Indirect], and 3) The connectivity is unidirection, from subscriber service to provider service.
+* Two Slices can talk to one another if the slices are associated with Services and those Services have a Tenancy relationship between them. Note that 1) The VTN Synchronizer must be running, 2) There must be a Private network with Access=[Direct|Indirect], and 3) The connectivity is unidirectional, from subscriber service to provider service.
+
+Testing service composition
+
+1. Change the private network template's 'Access' field from None to Direct
+2. Create a Service, Service-A
+3. Enter Slice Admin for Slice-1 and assign it to Service-A
+4. Create a Service, Service-B
+5. Enter Slice Admin for Slice-2 and assign it to Service-B
+6. Enter Service Admin for Service-B, Go to Tenancy Tab
+7. In the 'Provided Tenants' section of Service-B, create a Tenant with Subsciber-Service=Serivce-A. 
+8. Start the VTN Observer. It will send a REST request to VTN app.
+9. Launch tcpdump in one of Slice-2's instances
+10. From Slice-1, start pinging the instance in Slice-2 where you launched tcpdump
+11. You should see the pings arrive and responses sent out. Note that the ping responses will not reach Slice-1, since VTN traffic is unidirectional.
+12. Delete the Tenancy relation you created in Step #7. The ping traffic should no longer appear in the tcpdump.
+
