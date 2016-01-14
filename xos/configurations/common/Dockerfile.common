@@ -140,4 +140,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-#CMD /opt/xos/scripts/docker_start_xos
+#CMD /opt/xos/tools/docker_start_xos
