@@ -7,7 +7,7 @@ from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from observer.syncstep import *
 from core.models import Controller
 from core.models import Image, ControllerImages
-from util.logger import observer_logger as logger 
+from xos.logger import observer_logger as logger 
 from observer.ansible import *
 import json
 

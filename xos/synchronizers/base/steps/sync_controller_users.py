@@ -9,7 +9,7 @@ from core.models.site import Controller, SiteDeployment, SiteDeployment
 from core.models.user import User
 from core.models.controlleruser import ControllerUser
 from observer.ansible import *
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 import json
 
 class SyncControllerUsers(OpenStackSyncStep):
