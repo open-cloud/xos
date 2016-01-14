@@ -75,8 +75,8 @@ ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-pac
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
     mv /tmp/xos/xos /opt/ && \
-    chmod +x /opt/xos/scripts/opencloud && \
-    /opt/xos/scripts/opencloud genkeys
+    chmod +x /opt/xos/tools/xos-manage && \
+    /opt/xos/tools/xos-manage genkeys
 
 # install Tosca engine
 RUN chmod +x /opt/xos/tosca/run.py
