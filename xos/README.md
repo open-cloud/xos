@@ -2,7 +2,6 @@
 
 This is the main directory for XOS. Sub-directories include:
 
-* admin_customize, templates -- related to Django GUI
 * configurations -- collection of canned configurations
 * core -- core model definitions
 * generators -- tools to generate auxiliary structures from data model
@@ -11,6 +10,7 @@ This is the main directory for XOS. Sub-directories include:
 * openstack -- client-side interaction with OpenStack (to be depreciated)
 * services -- model definitions for a set of services
 * synchronizers -- collection of synchronizers
+* templates -- Django GUI templates
 * test -- system-wide tests to be collected here
 * tosca -- tosca modeling layer on top of RESTful API
 * tools -- assorted tools and scripts
