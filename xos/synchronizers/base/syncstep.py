@@ -8,7 +8,7 @@ from django.db.models import F, Q
 from core.models import *
 from django.db import reset_queries
 from observer.ansible import *
-from dependency_walker import *
+from generate.dependency_walker import *
 
 from time import time
 import json

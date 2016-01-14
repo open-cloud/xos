@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import pdb
-from dependency_walker import *
-import model_policies
+from generator.dependency_walker import *
+from synchronizers.openstack import model_policies
 from util.logger import logger
 from datetime import datetime
 import time
