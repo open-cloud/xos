@@ -1,5 +1,5 @@
 from core.models import Network, NetworkDeployments
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 from openstack.driver import OpenStackDriver
 
 class NetworkDeploymentDeleter(Deleter):

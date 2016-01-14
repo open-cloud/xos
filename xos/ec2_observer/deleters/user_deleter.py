@@ -1,6 +1,6 @@
 from core.models import User, UserDeployments
-from observer.deleter import Deleter
-from observer.deleters.user_deployment_deleter import UserDeploymentsDeleter
+from synchronizers.base.deleter import Deleter
+from synchronizers.base.deleters.user_deployment_deleter import UserDeploymentsDeleter
 
 class UserDeleter(Deleter):
     model='User'

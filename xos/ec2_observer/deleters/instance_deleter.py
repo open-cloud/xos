@@ -1,5 +1,5 @@
 from core.models import Instance, SliceDeployments
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 
 class InstanceDeleter(Deleter):
     model='Instance'

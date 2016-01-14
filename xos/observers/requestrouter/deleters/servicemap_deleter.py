@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 from services.requestrouter.models import ServiceMap
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 from util.logger import Logger, logging
 from xos.config import Config, XOS_DIR
 

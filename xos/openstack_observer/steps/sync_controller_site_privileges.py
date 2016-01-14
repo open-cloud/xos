@@ -3,7 +3,7 @@ import base64
 from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
-from observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from observer.syncstep import *
 from core.models.site import Controller, SitePrivilege 
 from core.models.user import User

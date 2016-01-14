@@ -6,7 +6,7 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from util.logger import Logger, logging
-from observer.syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep
 from services.hpc.models import ServiceProvider, ContentProvider, CDNPrefix, OriginServer
 from core.models import *
 

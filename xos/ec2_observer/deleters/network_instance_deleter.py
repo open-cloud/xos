@@ -1,5 +1,5 @@
 from core.models import NetworkInstance
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 
 class NetworkInstanceDeleter(Deleter):
     model='NetworkInstance'

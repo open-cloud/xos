@@ -6,8 +6,8 @@ import base64
 import time
 from django.db.models import F, Q
 from xos.config import Config
-from observer.syncstep import SyncStep
-from observer.ansible import run_template_ssh
+from synchronizers.base.syncstep import SyncStep
+from synchronizers.base.ansible import run_template_ssh
 from core.models import Service, Slice, ControllerSlice, ControllerUser
 from util.logger import Logger, logging
 

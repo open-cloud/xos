@@ -3,7 +3,7 @@ import sys
 import base64
 from django.db.models import F, Q
 from xos.config import Config
-from observer.syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep
 from services.helloworld.models import Hello,World
 from util.logger import Logger, logging
 

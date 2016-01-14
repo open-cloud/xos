@@ -1,5 +1,5 @@
 from core.models import Site, SiteDeployment
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 
 class SiteDeploymentDeleter(Deleter):
     model='SiteDeployment'

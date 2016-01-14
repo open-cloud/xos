@@ -4,7 +4,7 @@ from collections import defaultdict
 from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
-from observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from observer.syncstep import *
 from core.models import *
 from observer.ansible import *
