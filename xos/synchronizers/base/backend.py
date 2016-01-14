@@ -5,7 +5,7 @@ import time
 from synchronizers.base.event_loop import XOSObserver
 from synchronizers.base.event_manager import EventListener
 from util.logger import Logger, logging
-from synchronizers.model_policy import run_policy
+from model_policy import run_policy
 from xos.config import Config
 
 logger = Logger(level=logging.INFO)
