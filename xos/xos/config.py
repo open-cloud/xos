@@ -6,7 +6,7 @@ import ConfigParser
 import tempfile
 import codecs
 from StringIO import StringIO
-from util.xml import Xml
+from xml_util import Xml
 
 default_config = \
 """
