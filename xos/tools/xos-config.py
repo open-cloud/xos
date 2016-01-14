@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+sys.path.append("/opt/xos")
 from xos.config import Config
 
 def help():
