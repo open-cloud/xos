@@ -15,7 +15,7 @@ EOF
 NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
 
 # also configure ONOS to manage the nm node
-NM=`grep "^nm" $SETUPDIR/fqdn.map | awk '{ print $2 }'`
+NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
 NODES="$NODES $NM"
 
 NODECOUNT=0
