@@ -5,7 +5,7 @@ from xos.config import Config
 from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from core.models import Controller
 from core.models.network import *
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 
 class SyncPorts(OpenStackSyncStep):
     requested_interval = 0 # 3600

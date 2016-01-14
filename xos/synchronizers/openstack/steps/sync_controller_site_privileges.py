@@ -8,7 +8,7 @@ from observer.syncstep import *
 from core.models.site import Controller, SitePrivilege 
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSitePrivilege
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 from observer.ansible import *
 import json
 
