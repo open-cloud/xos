@@ -9,7 +9,7 @@ from core.models.slice import Controller, SlicePrivilege
 from core.models.user import User
 from core.models.controlleruser import ControllerUser, ControllerSlicePrivilege
 from observer.ansible import *
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 import json
 
 class SyncControllerSlicePrivileges(OpenStackSyncStep):

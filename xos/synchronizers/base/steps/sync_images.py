@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from core.models.image import Image
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 
 class SyncImages(OpenStackSyncStep):
     provides=[Image]

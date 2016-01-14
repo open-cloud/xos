@@ -10,7 +10,7 @@ import re
 import traceback
 import subprocess
 from xos.config import Config, XOS_DIR
-from util.logger import observer_logger
+from xos.logger import observer_logger
 
 try:
     step_dir = Config().observer_steps_dir
