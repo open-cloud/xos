@@ -1,0 +1,136 @@
+#!/bin/bash
+
+iptables -L > /dev/null
+ip6tables -L > /dev/null
+
+CONTAINER={{ container_name }}
+IMAGE={{ docker_image }}
+
+function mac_to_iface {
+    PARENT_MAC=$1
+    ifconfig|grep $PARENT_MAC| awk '{print $1}'|grep -v '\.'
+}
+
+function encapsulate_stag {
+    LAN_IFACE=$1
+    STAG=$2
+    ifconfig $LAN_IFACE >> /dev/null
+    if [ "$?" == 0 ]; then
+        STAG_IFACE=$LAN_IFACE.$STAG
+        ifconfig $LAN_IFACE up
+        ifconfig $STAG_IFACE
+        if [ "$?" == 0 ]; then
+            echo $STAG_IFACE is already created
+        else
+            ifconfig $STAG_IFACE >> /dev/null || ip link add link $LAN_IFACE name $STAG_IFACE type vlan id $STAG
+        fi
+            ifconfig $STAG_IFACE up
+    else
+        echo There is no $LAN_IFACE. Aborting.
+        exit -1
+    fi
+}
+
+
+{% if volumes %}
+{% for volume in volumes %}
+DEST_DIR=/var/container_volumes/$CONTAINER/{{ volume }}
+mkdir -p $DEST_DIR
+VOLUME_ARGS="$VOLUME_ARGS -v $DEST_DIR:{{ volume }}"
+{% endfor %}
+{% endif %}
+
+docker inspect $CONTAINER > /dev/null 2>&1
+if [ "$?" == 1 ]
+then
+    docker pull $IMAGE
+{% if network_method=="host" %}
+    docker run -d --name=$CONTAINER --privileged=true --net=host $VOLUME_ARGS $IMAGE
+{% elif network_method=="bridged" %}
+    docker run -d --name=$CONTAINER --privileged=true --net=bridge $VOLUME_ARGS $IMAGE
+{% else %}
+    docker run -d --name=$CONTAINER --privileged=true --net=none $VOLUME_ARGS $IMAGE
+{% endif %}
+else
+    docker start $CONTAINER
+fi
+
+{% if ports %}
+{% for port in ports %}
+
+{% if port.next_hop %}
+NEXTHOP_ARG="@{{ port.next_hop }}"
+{% else %}
+NEXTHOP_ARG=""
+{% endif %}
+
+{% if port.c_tag %}
+CTAG_ARG="@{{ port.c_tag }}"
+{% else %}
+CTAG_ARG=""
+{% endif %}
+
+{% if port.parent_mac %}
+# container-in-VM
+SRC_DEV=$( mac_to_iface "{{ port.parent_mac }}" )
+CMD="docker exec $CONTAINER ifconfig $SRC_DEV >> /dev/null || pipework $SRC_DEV -i {{ port.device }} $CONTAINER {{ port.ip }}/24$NEXTHOP_ARG {{ port.mac }} $CTAG_ARG"
+echo $CMD
+eval $CMD
+
+{% else %}
+# container-on-metal
+IP="{{ port.ip }}"
+{% if port.mac %}
+MAC="{{ port.mac }}"
+{% else %}
+MAC=""
+{% endif %}
+
+DEVICE="{{ port.device }}"
+BRIDGE="{{ port.bridge }}"
+{% if port.s_tag %}
+# This is intended for lan_network. Assume that BRIDGE is set to br_lan. We
+# create a device that strips off the S-TAG.
+STAG="{{ port.s_tag }}"
+encapsulate_stag $BRIDGE $STAG
+SRC_DEV=$STAG_IFACE
+{% else %}
+# This is for a standard neutron private network. We use a donor VM to setup
+# openvswitch for us, and we snoop at its devices and create a tap using the
+# same settings.
+XOS_NETWORK_ID="{{ port.xos_network_id }}"
+INSTANCE_MAC="{{ port.snoop_instance_mac }}"
+INSTANCE_ID="{{ port.snoop_instance_id }}"
+INSTANCE_TAP=`virsh domiflist $INSTANCE_ID | grep -i $INSTANCE_MAC | awk '{print $1}'`
+INSTANCE_TAP=${INSTANCE_TAP:3}
+VLAN_ID=`ovs-vsctl show | grep -i -A 1 port.*$INSTANCE_TAP | grep -i tag | awk '{print $2}'`
+# One tap for all containers per XOS/neutron network. Included the VLAN_ID in the
+# hash, to cover the case where XOS is reinstalled and the XOS network ids
+# get reused.
+TAP="con`echo ${XOS_NETWORK_ID}_$VLAN_ID|md5sum|awk '{print $1}'`"
+TAP=${TAP:0:10}
+echo im=$INSTANCE_MAC ii=$INSTANCE_ID it=$INSTANCE_TAP vlan=$VLAN_ID tap=$TAP con=$CONTAINER dev=$DEVICE mac=$MAC
+ovs-vsctl show | grep -i $TAP
+if [[ $? == 1 ]]; then
+    echo creating tap
+    ovs-vsctl add-port $BRIDGE $TAP tag=$VLAN_ID -- set interface $TAP type=internal
+else
+    echo tap exists
+fi
+SRC_DEV=$TAP
+{% endif %}
+
+CMD="docker exec $CONTAINER ifconfig $DEVICE >> /dev/null || pipework $SRC_DEV -i $DEVICE $CONTAINER $IP/24$NEXTHOP_ARG $MAC $CTAG_ARG"
+echo $CMD
+eval $CMD
+{% endif %}
+{% endfor %}
+{% endif %}
+
+# Attach to container
+# (this is only done when using upstart, since upstart expects to be attached
+#  to a running service)
+if [[ "$1" == "ATTACH" ]]; then
+    docker start -a $CONTAINER
+fi
+

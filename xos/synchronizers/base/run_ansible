@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source /opt/ansible/hacking/env-setup >> /dev/null
+ansible-playbook -v "$@"
