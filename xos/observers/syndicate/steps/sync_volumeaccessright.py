@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
 from django.db.models import F, Q
 from xos.config import Config
-from observer.syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep
 from core.models import Service
 
 import logging

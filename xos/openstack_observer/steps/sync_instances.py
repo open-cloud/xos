@@ -4,7 +4,7 @@ import socket
 from django.db.models import F, Q
 from xos.config import Config
 from xos.settings import RESTAPI_HOSTNAME, RESTAPI_PORT
-from observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from core.models.instance import Instance
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
 from core.models.network import Network, NetworkSlice, ControllerNetwork

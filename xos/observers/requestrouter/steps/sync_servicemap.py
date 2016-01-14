@@ -6,7 +6,7 @@ import base64
 import traceback
 from django.db.models import F, Q
 from xos.config import Config, XOS_DIR
-from observer.syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep
 from core.models import Service
 from services.requestrouter.models import ServiceMap
 from util.logger import Logger, logging

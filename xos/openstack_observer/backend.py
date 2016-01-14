@@ -2,8 +2,8 @@ import os
 import sys
 import threading
 import time
-from observer.event_loop import XOSObserver
-from observer.event_manager import EventListener
+from synchronizers.base.event_loop import XOSObserver
+from synchronizers.base.event_manager import EventListener
 from util.logger import Logger, logging
 from model_policy import run_policy
 from xos.config import Config

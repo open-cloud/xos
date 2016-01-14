@@ -1,5 +1,5 @@
 from core.models import Slice, SliceDeployments, User
-from observer.deleter import Deleter
+from synchronizers.base.deleter import Deleter
 from openstack.driver import OpenStackDriver
 
 class SliceDeploymentsDeleter(Deleter):

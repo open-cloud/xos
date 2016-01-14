@@ -17,7 +17,7 @@ if __name__ == "__main__":
         sys.argv.remove("--nomodelpolicy")
 
     if "--noobserver" in sys.argv:
-        import observer
+        import synchronizers.base
         observer.EnableObserver(False)
         sys.argv.remove("--noobserver")
 

@@ -3,7 +3,7 @@ import base64
 import datetime
 from django.db.models import F, Q
 from xos.config import Config
-from observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from core.models.user import User
 from util.logger import observer_logger as logger
 

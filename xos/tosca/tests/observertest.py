@@ -5,7 +5,7 @@ import StringIO
 import subprocess
 import sys
 
-from observer.event_loop import XOSObserver
+from synchronizers.base.event_loop import XOSObserver
 from model_policy import run_policy_once
 from xos.config import set_override
 from util.logger import Logger, observer_logger

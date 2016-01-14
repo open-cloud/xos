@@ -3,7 +3,7 @@ import os
 import sys
 
 sys.path.append("../..")
-import observer.ansible
+import synchronizers.base.ansible
 
 print sys.argv
 

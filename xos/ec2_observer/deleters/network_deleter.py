@@ -1,6 +1,6 @@
 from core.models import Network, NetworkDeployments
-from observer.deleter import Deleter
-from observer.deleters.network_deployment_deleter import NetworkDeploymentDeleter
+from synchronizers.base.deleter import Deleter
+from synchronizers.base.deleters.network_deployment_deleter import NetworkDeploymentDeleter
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)

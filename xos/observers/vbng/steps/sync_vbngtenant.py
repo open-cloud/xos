@@ -5,8 +5,8 @@ import sys
 import base64
 from django.db.models import F, Q
 from xos.config import Config
-from observer.syncstep import SyncStep
-from observer.ansible import run_template_ssh
+from synchronizers.base.syncstep import SyncStep
+from synchronizers.base.ansible import run_template_ssh
 from core.models import Service
 from services.cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
 from services.hpc.models import HpcService, CDNPrefix
