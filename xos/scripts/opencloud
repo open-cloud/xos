@@ -99,7 +99,7 @@ function stopserver {
 }
 function runserver {
     ensure_postgres_running
-    PUBLIC_HOSTNAME=`$XOS_DIR/xos-config.py get server_hostname $HOSTNAME`
+    PUBLIC_HOSTNAME="0.0.0.0"
     echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
     python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure&
 }
