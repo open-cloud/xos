@@ -15,7 +15,7 @@ from core.models.plcorebase import StrippedCharField
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
 from core.middleware import get_request
-import model_policy
+import synchronizers.model_policy
 
 # ------ from plcorebase.py ------
 try:

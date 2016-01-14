@@ -12,12 +12,12 @@ if __name__ == "__main__":
         sys.argv.remove("--makemigrations")
 
     if "--nomodelpolicy" in sys.argv:
-        import model_policy
+        import synchronizers.model_policy as model_policy
         model_policy.EnableModelPolicy(False)
         sys.argv.remove("--nomodelpolicy")
 
     if "--noobserver" in sys.argv:
-        import synchronizers.base
+        import synchronizers.base as observer
         observer.EnableObserver(False)
         sys.argv.remove("--noobserver")
 
