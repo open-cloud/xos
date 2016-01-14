@@ -25,7 +25,8 @@ class HpcServiceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(HpcServiceForm, self).__init__(*args, **kwargs)
-        self.fields['scale'].initial = kwargs["instance"].scale
+        if ("instance" in kwargs) and (hasattr(kwargs["instance"], "scale")):
+            self.fields['scale'].initial = kwargs["instance"].scale
 
     def save(self, *args, **kwargs):
         if self.cleaned_data['scale']:
