@@ -16,7 +16,7 @@ xos_synchronizer_openstack:
     volumes:
         - ../setup:/root/setup:ro
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-        - ./xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+        - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
 
 
 xos_synchronizer_onos:
@@ -50,5 +50,5 @@ xos:
     volumes:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-      - ./xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+      - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
       - ../setup/id_rsa.pub:/opt/xos/observers/onos/onos_key.pub:ro

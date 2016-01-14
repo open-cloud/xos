@@ -22,11 +22,21 @@ disable security groups.
 * Login to the *ctl* node of your experiment and run:
 ```
 ctl:~$ git clone https://github.com/open-cloud/xos.git
-ctl:~$ cd xos/xos/configurations/devel/
-ctl:~/xos/xos/configurations/devel$ make cloudlab
+ctl:~$ cd xos/xos/configurations/vtn/
+ctl:~/xos/xos/configurations/vtn$ make cloudlab
 ```
 
+The configuration provides an Ansible script that automates the configuration
+steps outlined in [the VTN README](../cord/README-VTN.md).  Run:
+```
+ctl:~/xos/xos/configurations/vtn$ make destroy-networks
+ctl:~/xos/xos/configurations/vtn$ sudo ansible-playbook setup.yml 
+```
+
+
 ### DevStack
+
+*NOTE: THIS CONFIGURATION IS NOT YET WORKING WITH DEVSTACK.*
 
 The following instructions can be used to install DevStack and XOS together
 on a single node.  This setup has been run successfully in a VirtualBox VM
