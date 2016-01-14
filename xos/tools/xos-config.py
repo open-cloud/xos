@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 import sys
-sys.path.append("/opt/xos")
+
+# add the parent directory to sys.path
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+
 from xos.config import Config
 
 def help():
