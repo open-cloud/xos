@@ -1,9 +1,9 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab xos
+cloudlab: common_cloudlab ansible_hosts xos
 
-devstack: upgrade_pkgs common_devstack xos
+devstack: upgrade_pkgs common_devstack ansible_hosts xos
 
 xos: vtn_network_cfg_json
 	sudo MYIP=$(MYIP) docker-compose up -d
@@ -20,6 +20,9 @@ common_devstack:
 
 vtn_network_cfg_json:
 	export SETUPDIR=$(SETUPDIR); bash ../cord/make-vtn-networkconfig-json.sh
+
+ansible_hosts:
+	sudo bash -c "export SETUPDIR=$(SETUPDIR); scripts/gen-inventory.sh"
 
 stop:
 	sudo MYIP=$(MYIP) docker-compose stop
@@ -41,3 +44,6 @@ enter-synchronizer:
 
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
+
+destroy-networks:
+	sudo ../../tools/destroy-all-networks.sh
