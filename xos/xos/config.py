@@ -82,6 +82,7 @@ DO NOT EDIT. This file was automatically generated at
 			try:
 				if os.path.isdir(filename):
 					config_list = list(reversed(os.listdir(filename)))
+ 					config_list.remove('README.md')
 					config_list = [os.path.join(filename, s) for s in config_list]
 					self.config.read(config_list)
 				else:
