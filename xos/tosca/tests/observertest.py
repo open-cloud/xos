@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 from synchronizers.base.event_loop import XOSObserver
-from model_policy import run_policy_once
+from synchronizers.model_policy import run_policy_once
 from xos.config import set_override
 from util.logger import Logger, observer_logger
 
