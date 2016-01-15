@@ -5,7 +5,7 @@ from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from services.helloworld.models import Hello,World
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")

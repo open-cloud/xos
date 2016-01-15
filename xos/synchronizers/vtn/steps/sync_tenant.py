@@ -9,7 +9,7 @@ from synchronizers.base.syncstep import SyncStep
 from core.models import Service
 from core.models.service import COARSE_KIND
 from services.cord.models import Tenant
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 from requests.auth import HTTPBasicAuth
 
 # hpclibrary will be in steps/..

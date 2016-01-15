@@ -12,7 +12,7 @@ from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
 from services.cord.models import VCPEService, VCPETenant, VOLTTenant
 from services.hpc.models import HpcService, CDNPrefix
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")

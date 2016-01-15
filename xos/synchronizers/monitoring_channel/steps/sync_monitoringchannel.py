@@ -11,7 +11,7 @@ from synchronizers.base.ansible import run_template_ssh
 from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
 from services.ceilometer.models import MonitoringChannel
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)
