@@ -29,7 +29,7 @@ new_ns = options.new
 
 comment = '#' + SkipTo(lineEnd)
 
-module_ns = Word(alphanums + '-' + '_' + '.' + ',')
+module_ns = Word(alphanums + '-' + '_' + '.')
 old_module_ns = Combine(old_ns + Optional(Combine('.'+module_ns)))
 end_of_python_line = Or([lineEnd,comment])
 
@@ -38,7 +38,7 @@ as_suffix = 'as' + module_ns
 import_pure = 'import' + old_module_ns 
 import_pure_line = import_pure + Optional(as_suffix) + end_of_python_line
 
-import_from = 'from' + old_module_ns + 'import' + module_ns 
+import_from = 'from' + old_module_ns + 'import' + commaSeparatedList
 import_from_line = import_from + Optional(as_suffix) + end_of_python_line
 
 import_line = Or([import_pure_line, import_from_line])
