@@ -2,7 +2,7 @@ import os
 import sys
 from django.db.models import Q, F
 from services.helloworldservice_complete.models import HelloWorldServiceComplete, HelloWorldTenantComplete
-from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
