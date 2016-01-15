@@ -11,6 +11,61 @@ from core.models import *
 
 print "-------------------------- Let's test!!!!!!!! --------------------------"
 
+from django.apps import apps
+from django.test.client import Client
+from django.test import testcases
+from django.http import SimpleCookie, HttpRequest, QueryDict
+from importlib import import_module
+from django.conf import settings
+class FixedClient(Client):
+    def login(self, **credentials):
+        """
+        Sets the Factory to appear as if it has successfully logged into a site.
+
+        Returns True if login is possible; False if the provided credentials
+        are incorrect, or the user is inactive, or if the sessions framework is
+        not available.
+        """
+        from django.contrib.auth import authenticate, login
+        user = authenticate(**credentials)
+        if (user and user.is_active and
+                apps.is_installed('django.contrib.sessions')):
+            engine = import_module(settings.SESSION_ENGINE)
+
+            # Create a fake request to store login details.
+            request = HttpRequest()
+
+            # XOS's admin.py requires these to be filled in
+            request.POST = {"username": credentials["username"],
+                            "password": credentials["password"]}
+
+            if self.session:
+                request.session = self.session
+            else:
+                request.session = engine.SessionStore()
+            login(request, user)
+
+            # Save the session values.
+            request.session.save()
+
+            # Set the cookie to represent the session.
+            session_cookie = settings.SESSION_COOKIE_NAME
+            self.cookies[session_cookie] = request.session.session_key
+            cookie_data = {
+                'max-age': None,
+                'path': '/',
+                'domain': settings.SESSION_COOKIE_DOMAIN,
+                'secure': settings.SESSION_COOKIE_SECURE or None,
+                'expires': None,
+                }
+            self.cookies[session_cookie].update(cookie_data)
+
+            return True
+        else:
+            return False
+
+class FixedAPITestCase(testcases.TestCase):
+    client_class = FixedClient
 
 # Environment Tests - Should pass everytime, if not something in the config is broken.
 class SimpleTest(TestCase):
@@ -42,7 +97,7 @@ class SiteTest(TestCase):
         self.assertEqual(site.login_base, "test_")
 
 
-class UnautheticatedRequest(APITestCase):
+class UnautheticatedRequest(FixedAPITestCase):
     fixtures = []
 
     def test_require_authentication(self):
@@ -53,13 +108,13 @@ class UnautheticatedRequest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class SiteTestAPI(APITestCase):
+class SiteTestAPI(FixedAPITestCase):
     fixtures = []
 
     def setUp(self):
         self.site = Site.objects.create(
-          name="Test Site",
-          login_base="test_"
+            name="Test Site",
+            login_base="test_"
         )
         self.user = User(
             username='testuser',
@@ -69,9 +124,9 @@ class SiteTestAPI(APITestCase):
             is_admin=True
         )
         self.user.save()
-        self.client.login(email='test@mail.org', password='testing')
+        self.client.login(username='test@mail.org', password='testing')
 
-    def xtest_read_site_API(self):
+    def test_read_site_API(self):
         """
         Read a Site trough API
         """
@@ -81,7 +136,7 @@ class SiteTestAPI(APITestCase):
         self.assertEqual(len(parsed), 1)
         self.assertEqual(parsed[0]['login_base'], 'test_')
 
-    def xtest_create_site_API(self):
+    def test_create_site_API(self):
         """
         Create a Site trough API
         """
@@ -97,13 +152,13 @@ class SiteTestAPI(APITestCase):
         self.assertEqual(Site.objects.filter(name="Another Test Site").count(), 1)
 
 
-class SliceTestAPI(APITestCase):
+class SliceTestAPI(FixedAPITestCase):
     fixtures = []
 
     def setUp(self):
         self.site = Site.objects.create(
-          name="Test Site",
-          login_base="test_"
+            name="Test Site",
+            login_base="test_"
         )
         self.pi = SiteRole.objects.create(role='pi')
         self.user = User(
@@ -119,11 +174,11 @@ class SliceTestAPI(APITestCase):
             role=self.pi
         )
         self.serviceClass = ServiceClass.objects.create(
-           name='Test Service Class'
+            name='Test Service Class'
         )
-        self.client.login(email='test@mail.org', password='testing')
+        self.client.login(username='test@mail.org', password='testing')
 
-    def xtest_create_site_slice(self):
+    def test_create_site_slice(self):
         """
         Add a slice to a given site
         """
@@ -135,7 +190,7 @@ class SliceTestAPI(APITestCase):
         response = self.client.post('/xos/slices/?no_hyperlinks=1', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def xtest_validation_slice_name(self):
+    def test_validation_slice_name(self):
         """
         The slice name should start with site.login_base
         curl -H "Accept: application/json; indent=4" -u padmin@vicci.org:letmein 'http://xos:9999/xos/slices/?no_hyperlinks=1' -H "Content-Type: application/json" -X POST --data '{"name": "test", "site":"1", "serviceClass":1}'
@@ -150,7 +205,7 @@ class SliceTestAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(parsed['detail']['specific_error'], "slice name must begin with test_")
 
-    def xtest_only_admin_can_change_creator(self):
+    def test_only_admin_can_change_creator(self):
         """
         Only an admin can change the creator of a slice
         """
@@ -177,7 +232,7 @@ class SliceTestAPI(APITestCase):
         parsed = json.loads(response.content)
         self.assertEqual(parsed['detail']['specific_error'], "Insufficient privileges to change slice creator")
 
-class ServiceTestAPI(APITestCase):
+class ServiceTestAPI(FixedAPITestCase):
     fixtures = []
 
     def setUp(self):
@@ -232,30 +287,30 @@ class ServiceTestAPI(APITestCase):
     # [ ] user update service2
     # [ ] usercan NOT update service2
     # [x] admin update service1
-    def xtest_admin_read_all_service(self):
+    def test_admin_read_all_service(self):
         """
         Admin should read all the services
         """
-        self.client.login(email='admin@mail.org', password='testing')
+        self.client.login(username='admin@mail.org', password='testing')
         response = self.client.get('/xos/services/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json.loads(response.content)), 2)
 
     # need to understand how slices are related
-    def xtest_user_read_all_service(self):
+    def test_user_read_all_service(self):
         """
         User should read only service for which have privileges
         """
-        self.client.login(email='user@mail.org', password='testing')
+        self.client.login(username='user@mail.org', password='testing')
         response = self.client.get('/xos/services/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json.loads(response.content)), 1)
 
-    def xtest_admin_read_one_service(self):
+    def test_admin_read_one_service(self):
         """
         Read a given service
         """
-        self.client.login(email='admin@mail.org', password='testing')
+        self.client.login(username='admin@mail.org', password='testing')
         response = self.client.get('/xos/services/%s/' % self.service1.id, format='json')
         parsed = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -268,9 +323,10 @@ class ServiceTestAPI(APITestCase):
         data = model_to_dict(self.service1)
         data['name'] = "newName"
 
-        self.client.login(email='admin@mail.org', password='testing')
+        self.client.login(username='admin@mail.org', password='testing')
         response = self.client.put('/xos/services/%s/' % self.service1.id, data, format='json')
         parsed = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         model = Service.objects.get(id=self.service1.id)
         self.assertEqual(model.name, data['name'])
+        
