@@ -9,7 +9,7 @@ from xos.config import Config, XOS_DIR
 from synchronizers.base.syncstep import SyncStep
 from core.models import Service
 from services.requestrouter.models import ServiceMap
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
 sys.path.insert(0,parentdir)

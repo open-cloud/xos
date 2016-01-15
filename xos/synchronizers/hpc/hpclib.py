@@ -12,7 +12,7 @@ from xos.config import Config
 from core.models import Service
 from services.hpc.models import HpcService
 from services.requestrouter.models import RequestRouterService
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
