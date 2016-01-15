@@ -1,0 +1,131 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: {{ username }}
+  sudo: yes
+  vars:
+      container_name: {{ container_name }}
+      cdn_enable: {{ cdn_enable }}
+      dnsdemux_ip: {{ dnsdemux_ip }}
+      firewall_enable: {{ firewall_enable }}
+      url_filter_enable: {{ url_filter_enable }}
+      vlan_ids:
+        {% for vlan_id in vlan_ids %}
+        - {{ vlan_id }}
+        {% endfor %}
+      c_tags:
+        {% for c_tag in c_tags %}
+        - {{ c_tag }}
+        {% endfor %}
+      s_tags:
+        {% for s_tag in s_tags %}
+        - {{ s_tag }}
+        {% endfor %}
+      firewall_rules:
+        {% for firewall_rule in firewall_rules.split("\n") %}
+        - {{ firewall_rule }}
+        {% endfor %}
+      cdn_prefixes:
+        {% for prefix in cdn_prefixes %}
+        - {{ prefix }}
+        {% endfor %}
+      bbs_addrs:
+        {% for bbs_addr in bbs_addrs %}
+        - {{ bbs_addr }}
+        {% endfor %}
+      nat_ip: {{ nat_ip }}
+      nat_mac: {{ nat_mac }}
+      lan_ip: {{ lan_ip }}
+      lan_mac: {{ lan_mac }}
+      wan_ip: {{ wan_ip }}
+      wan_mac: {{ wan_mac }}
+      wan_container_mac: {{ wan_container_mac }}
+      wan_next_hop: 10.0.1.253   # FIX ME
+      private_ip: {{ private_ip }}
+      private_mac: {{ private_mac }}
+      hpc_client_ip: {{ hpc_client_ip }}
+      hpc_client_mac: {{ hpc_client_mac }}
+      keystone_tenant_id: {{ keystone_tenant_id }}
+      keystone_user_id: {{ keystone_user_id }}
+      rabbit_user: {{ rabbit_user }}
+      rabbit_password: {{ rabbit_password }}
+      rabbit_host: {{ rabbit_host }}
+      safe_browsing:
+        {% for mac in safe_browsing_macs %}
+        - {{ mac }}
+        {% endfor %}
+
+  tasks:
+  - name: Verify if vcpe_stats_notifier ([] is to avoid capturing the shell process) cron job is already running
+    shell: pgrep -f [v]cpe_stats_notifier | wc -l
+    register: cron_job_pids_count
+
+#  - name: DEBUG
+#    debug: var=cron_job_pids_count.stdout
+
+  - name: make sure ~/bin exists
+    file: path=~/bin state=directory owner=root group=root
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: Copy cron job to destination
+    copy: src=/opt/xos/observers/vcpe/vcpe_stats_notifier.py
+      dest=~/bin/vcpe_stats_notifier.py
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: install python-kombu
+    apt: name=python-kombu state=present
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: Initiate vcpe_stats_notifier cron job
+    command: python ~/bin/vcpe_stats_notifier.py --keystone_tenant_id={{ keystone_tenant_id }} --keystone_user_id={{ keystone_user_id }} --rabbit_user={{ rabbit_user }} --rabbit_password={{ rabbit_password }} --rabbit_host={{ rabbit_host }} --vcpeservice_rabbit_exchange='vcpeservice'
+    async: 9999999999999999
+    poll: 0
+    when: cron_job_pids_count.stdout == "0"
+
+  - name: vCPE basic dnsmasq config
+    copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: dnsmasq config
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: create directory for "safe" config
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
+
+  - name: dnsmasq "safe" config
+    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: copy base ufw files
+    synchronize: src=/opt/xos/observers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    notify:
+    - reload ufw
+
+  - name: redirection rules for safe DNS
+    template: src=/opt/xos/observers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
+    notify:
+    - reload ufw
+
+  - name: base ufw setup uses /etc/rc.local
+    copy: src=/opt/xos/observers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
+    notify:
+    - copy in /etc/rc.local
+
+  handlers:
+  # Dnsmasq is automatically restarted in the container
+  - name: restart dnsmasq
+    shell: docker exec {{ container_name }} /usr/bin/killall dnsmasq
+
+  - name: reload ufw
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
+
+  # Use docker cp instead of single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  - name: copy in /etc/rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/

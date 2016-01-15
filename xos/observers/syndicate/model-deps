@@ -1,0 +1,16 @@
+{
+    "SlicePrivilege": [
+        "User", 
+        "Slice"
+    ], 
+    "Slice": [
+        "Site", 
+        "Service"
+    ], 
+    "VolumeAccessRight": [
+        "Volume"
+    ], 
+    "User": [
+        "Site"
+    ]
+}
