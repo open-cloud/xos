@@ -14,6 +14,10 @@ parser.add_option("-q", "--quiet",
                           action="store_false", dest="verbose",
                           help="be vewwy quiet (I'm hunting wabbits)")
 
+parser.add_option("-r", "--reuse",
+                          action="store_false", dest="reuse",
+                          help="Reuse .orig files. Dangerous!")
+
 parser.add_option("-o", "--old", 
                           metavar="old", help="Old namespace")
 
@@ -56,9 +60,11 @@ for root, dirs, files in os.walk(f):
         if (n.endswith('.py')):
             full_path = '/'.join([root,n])
             orig_path = full_path + '.orig'
-            print 'Working on %s:'%full_path
-            if (not os.path.exists(orig_path)):
-                print 'Copying %s->%s:'%(full_path,orig_path)
+            if (options.verbose):
+                print 'Working on %s:'%full_path
+            if (not os.path.exists(orig_path) or not options.reuse):
+                if (options.verbose):
+                    print 'Copying %s->%s:'%(full_path,orig_path)
                 copy(full_path, orig_path)
             f_contents = open(orig_path).read()
             new_contents = []
