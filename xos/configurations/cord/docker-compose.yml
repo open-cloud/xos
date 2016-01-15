@@ -4,7 +4,7 @@ xos_db:
         - "5432"
 
 xos_synchronizer_openstack:
-    command: bash -c "sleep 120 ; python /opt/xos/xos-observer.py"
+    command: bash -c "sleep 120 ; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
