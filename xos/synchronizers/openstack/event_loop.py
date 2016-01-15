@@ -26,7 +26,7 @@ from synchronizers.base.steps import *
 from syncstep import SyncStep
 from toposort import toposort
 from synchronizers.base.error_mapper import *
-from openstack_observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject
 
 # Load app models
