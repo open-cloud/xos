@@ -1,0 +1,116 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: {{ username }}
+  sudo: yes
+
+  vars:
+    container_name: {{ container_name }}
+    docker_image: {{ docker_image }}
+    network_method: {{ network_method }}
+    ports:
+    {% for port in ports %}
+       - device: {{ port.device }}
+         xos_network_id: {{ port.xos_network_id }}
+         mac: {{ port.mac|default("") }}
+         ip: {{ port.ip }}
+         snoop_instance_mac: {{ port.snoop_instance_mac }}
+         snoop_instance_id: {{ port.snoop_instance_id }}
+         parent_mac: {{ port.parent_mac|default("") }}
+         s_tag: {{ port.s_tag|default("")  }}
+         c_tag: {{ port.c_tag|default("") }}
+         next_hop: {{ port.next_hop|default("") }}
+         bridge: {{ port.bridge }}
+    {% endfor %}
+    volumes:
+    {% for volume in volumes %}
+       - {{ volume }}
+    {% endfor %}
+
+  tasks:
+
+#  - name: Fix /etc/hosts
+#    lineinfile:
+#      dest=/etc/hosts
+#      regexp="127.0.0.1 localhost"
+#      line="127.0.0.1 localhost {{ instance_hostname }}"
+
+  - name: Add repo key
+    apt_key:
+      keyserver=hkp://pgp.mit.edu:80
+      id=58118E89F3A912897C070ADBF76221572C52609D
+
+  - name: Install Docker repo
+    apt_repository:
+      repo="deb https://apt.dockerproject.org/repo ubuntu-trusty main"
+      state=present
+
+  - name: Install Docker
+    apt:
+      name={{ '{{' }} item {{ '}}' }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - docker-engine
+    - python-pip
+    - python-httplib2
+
+  # Something is installing a requests library that is incompative with pip, and
+  # will cause this recipe to fail next time it tries to run pip. Only the one
+  # in /usr/local/lib is bad. There's still a good one in /usr/lib
+  - name: check if bad requests library installed
+    stat: path=/usr/local/lib/python2.7/dist-packages/requests
+    register: bad_requests
+
+  - name: remove bad request library
+    shell: mv /usr/local/lib/python2.7/dist-packages/requests /usr/local/lib/python2.7/dist-packages/requests-bad
+    when: bad_requests.stat.exists == True
+
+  - name: Install docker-py
+    pip:
+      name=docker-py
+      state=latest
+
+  - name: install Pipework
+    get_url: url=https://raw.githubusercontent.com/jpetazzo/pipework/master/pipework
+       dest=/usr/local/bin/pipework
+       mode=0755
+
+#  - name: Start Container
+#    docker:
+#      docker_api_version: "1.18"
+#      name: {{ container_name }}
+#      # was: reloaded
+#      state: running
+#      image: {{ docker_image }}
+
+  - name: check if systemd is installed
+    stat: path=/usr/bin/systemctl
+    register: systemctl
+
+  - name: container upstart
+    template: src=/opt/xos/openstack_observer/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
+
+  - name: container systemd
+    template: src=/opt/xos/openstack_observer/templates/container.service.j2 dest=/lib/systemd/system/container-{{ container_name }}.service
+
+  - name: container startup script
+    template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
+
+  - name: container teardown script
+    template: src=/opt/xos/openstack_observer/templates/stop-container.sh.j2 dest=/usr/local/sbin/stop-container-{{ container_name }}.sh mode=0755
+
+  - name: restart systemd
+    shell: systemctl daemon-reload
+    when: systemctl.stat.exists == True
+
+{% if ports %}
+  - name: make sure bridges are setup
+    shell: ifconfig {{ '{{' }} item.bridge {{ '}}' }}
+    with_items: "ports"
+{% endif %}
+
+  - name: Make sure container is running
+    service: name=container-{{ container_name }} state=started
+

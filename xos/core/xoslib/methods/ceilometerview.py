@@ -16,7 +16,7 @@ from django.utils import datastructures
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
-from util.logger import observer_logger as logger
+from xos.logger import observer_logger as logger
 
 # This REST API endpoint provides information that the ceilometer view needs to display
 

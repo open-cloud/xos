@@ -1,0 +1,54 @@
+xos_db:
+    image: xosproject/xos-postgres
+    expose:
+        - "5432"
+
+xos_synchronizer_openstack:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: openstack
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup:/root/setup:ro
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+
+
+xos_synchronizer_onos:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "python /opt/xos/observers/onos/onos-observer.py -C /opt/xos/observers/onos/onos_observer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: onos
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup:/root/setup:ro
+        - ../setup/id_rsa:/opt/xos/observers/onos/onos_key:ro  # private key
+
+# FUTURE
+#xos_swarm_synchronizer:
+#    image: xosproject/xos-swarm-synchronizer
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: swarm
+
+xos:
+    image: xosproject/xos
+    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    ports:
+        - "9999:8000"
+    links:
+        - xos_db
+    volumes:
+      - ../setup:/root/setup:ro
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+      - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
+      - ../setup/id_rsa.pub:/opt/xos/observers/onos/onos_key.pub:ro
