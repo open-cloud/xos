@@ -9,7 +9,7 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from core.models import Service, Slice, ControllerSlice, ControllerUser
-from xos.logger import Logger, logging
+from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
