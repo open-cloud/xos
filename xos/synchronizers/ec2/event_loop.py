@@ -14,7 +14,7 @@ from core.models import *
 from django.db.models import F, Q
 #from openstack.manager import OpenStackManager
 from openstack.driver import OpenStackDriver
-from util.logger import Logger, logging, logger
+from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
 from observer.steps import *

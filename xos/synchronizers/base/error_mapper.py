@@ -1,5 +1,5 @@
 from xos.config import Config
-from util.logger import Logger, logging, logger
+from xos.logger import Logger, logging, logger
 
 class ErrorMapper:
 	def __init__(self, error_map_file):

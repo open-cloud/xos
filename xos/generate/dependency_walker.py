@@ -12,7 +12,7 @@ import json
 import pdb
 from core.models import *
 
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 logger = Logger(level=logging.INFO)
 
 missing_links={}
