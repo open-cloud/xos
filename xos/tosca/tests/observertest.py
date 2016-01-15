@@ -8,7 +8,7 @@ import sys
 from synchronizers.base.event_loop import XOSObserver
 from synchronizers.model_policy import run_policy_once
 from xos.config import set_override
-from util.logger import Logger, observer_logger
+from xos.logger import Logger, observer_logger
 
 class BaseObserverToscaTest(BaseToscaTest):
     hide_observer_output = True
