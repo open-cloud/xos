@@ -5,7 +5,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from synchronizers.base.backend import Backend
 from xos.config import Config, DEFAULT_CONFIG_FN
 from core.models import Instance
-from util.logger import Logger, logging, logger
+from xos.logger import Logger, logging, logger
 from django.db import ProgrammingError
 import time
 

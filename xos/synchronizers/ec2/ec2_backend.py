@@ -2,7 +2,7 @@ import threading
 import time
 from ec2_observer.event_loop import XOSObserver
 from ec2_observer.event_manager import EventListener
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 

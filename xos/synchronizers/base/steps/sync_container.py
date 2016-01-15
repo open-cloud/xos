@@ -11,7 +11,7 @@ from observer.syncstep import SyncStep, DeferredException
 from synchronizers.base.ansible import run_template_ssh
 from core.models import Service, Slice, Instance
 from services.onos.models import ONOSService, ONOSApp
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 # hpclibrary will be in steps/..
 parentdir = os.path.join(os.path.dirname(__file__),"..")
