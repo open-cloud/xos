@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import os
 import argparse
+import sys
+
+sys.path.append('/opt/xos')
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from synchronizers.base.backend import Backend
 from xos.config import Config, DEFAULT_CONFIG_FN
