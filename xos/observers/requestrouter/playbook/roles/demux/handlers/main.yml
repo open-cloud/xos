@@ -1,0 +1,3 @@
+---
+- name: restart dnsdemux
+  service: name=dnsdemux state=restarted

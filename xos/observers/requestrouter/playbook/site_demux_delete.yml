@@ -1,0 +1,9 @@
+---
+# This playbook deletes the dnsdemux configuration files from request router instances
+
+- name: deletes the configuration files from request router instances
+  hosts: all
+  #remote_user: {{r_user}}
+
+  roles:
+    - delete_demux

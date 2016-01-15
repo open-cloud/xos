@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function mac_to_iface {
+    MAC=$1
+    ifconfig|grep $MAC| awk '{print $1}'|grep -v '\.'
+}
+
+iptables -L > /dev/null
+ip6tables -L > /dev/null
+
+STAG={{ s_tags[0] }}
+CTAG={{ c_tags[0] }}
+VCPE=vcpe-$STAG-$CTAG
+
+docker inspect $VCPE > /dev/null 2>&1
+if [ "$?" == 1 ]
+then
+    docker pull andybavier/docker-vcpe
+    docker run -d --name=$VCPE --privileged=true --net=none -v /etc/$VCPE/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
+else
+    docker start $VCPE
+fi
+
+# Set up networking via pipework
+WAN_IFACE=$( mac_to_iface {{ wan_mac }} )
+docker exec $VCPE ifconfig eth0 >> /dev/null || pipework $WAN_IFACE -i eth0 $VCPE {{ wan_ip }}/24@{{ wan_next_hop }} {{ wan_container_mac }}
+
+# LAN_IFACE=$( mac_to_iface {{ lan_mac }} )
+# Need to encapsulate VLAN traffic so that Neutron doesn't eat it
+# Assumes that br-lan has been set up appropriately by a previous step
+LAN_IFACE=br-lan
+ifconfig $LAN_IFACE >> /dev/null
+if [ "$?" == 0 ]
+then
+    ifconfig $LAN_IFACE.$STAG >> /dev/null || ip link add link $LAN_IFACE name $LAN_IFACE.$STAG type vlan id $STAG
+    ifconfig $LAN_IFACE.$STAG up
+    docker exec $VCPE ifconfig eth1 >> /dev/null || pipework $LAN_IFACE.$STAG -i eth1 $VCPE 192.168.0.1/24 @$CTAG
+fi
+
+#HPC_IFACE=$( mac_to_iface {{ hpc_client_mac }} )
+#docker exec $VCPE ifconfig eth2 >> /dev/null || pipework $HPC_IFACE -i eth2 $VCPE {{ hpc_client_ip }}/24
+
+# Make sure VM's eth0 (hpc_client) has no IP address
+#ifconfig $HPC_IFACE 0.0.0.0
+
+# Now can start up dnsmasq
+docker exec $VCPE service dnsmasq start
+
+# Attach to container
+docker start -a $VCPE

@@ -1,0 +1,19 @@
+---
+# This playbook contains plays to copy configurations to destination
+- name: create  maps.d directory ( and creates all intermeadiate directories )
+  #copy: src={{src_dnsredir}}/{{name}}.d dest={{dst_dnsredir_confdir}}
+  file: src={{src_dnsredir}}/{{name}}.d/maps.d dest={{dst_dnsredir_confdir}}/{{name}}.d/maps.d state=directory
+ 
+- name: copy map.conf
+  copy: src={{src_dnsredir}}/{{name}}.d/maps.d/map.conf dest={{dst_dnsredir_confdir}}/{{name}}.d/maps.d/map.conf
+ 
+- name: copy codeen_nodes.conf
+  copy: src={{src_dnsredir}}/{{name}}.d/codeen_nodes.conf dest={{dst_dnsredir_confdir}}/{{name}}.d/codeen_nodes.conf
+  
+- name: copy node-to-ip.txt
+  copy: src={{src_dnsredir}}/{{name}}.d/node-to-ip.txt dest={{dst_dnsredir_confdir}}/{{name}}.d/node-to-ip.txt
+
+- name: copy dnsredir config file
+  copy: src={{src_dnsredir}}/{{name}}.conf dest={{dst_dnsredir_conf}}/{{name}}.conf
+  notify: restart dnsredir
+

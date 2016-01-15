@@ -1,0 +1,9 @@
+---
+# This playbook copies the dnsdemux configuration files from temp directory.
+
+- name: copies the configuration files from temp directory
+  hosts: all
+  #remote_user: {{r_user}}
+
+  roles:
+    - demux

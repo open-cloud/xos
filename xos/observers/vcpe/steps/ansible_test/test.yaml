@@ -1,0 +1,12 @@
+---
+- hosts: onlab_test405-372
+  connection: xos
+  user: ubuntu
+  vars:
+     foo: 25
+#  instance_name: instance-00000045
+#  slice_name: onlab_hpc-355
+
+  tasks:
+    - name: foobar
+      shell: echo foo > /tmp/foobar
