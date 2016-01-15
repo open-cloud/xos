@@ -11,7 +11,7 @@ if __name__ == '__main__':
 from xos.config import Config
 from core.models import Service
 from services.requestrouter.models import RequestRouterService, ServiceMap
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 import rrlib_config
 
 logger = Logger(level=logging.INFO)

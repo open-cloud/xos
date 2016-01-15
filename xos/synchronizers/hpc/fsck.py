@@ -7,7 +7,7 @@ import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 sys.path.append("/opt/xos")
 from xos.config import Config, DEFAULT_CONFIG_FN, XOS_DIR
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 from synchronizers.base.syncstep import SyncStep
 
 try:
