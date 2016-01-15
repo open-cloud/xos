@@ -4,8 +4,8 @@ from django.db.models import F, Q
 from xos.config import Config
 from openstack_observer.openstacksyncstep import OpenStackSyncStep
 from core.models.site import *
-from observer.syncstep import *
-from observer.ansible import *
+from synchronizers.base.syncstep import *
+from synchronizers.base.ansible import *
 from xos.logger import observer_logger as logger
 import json
 

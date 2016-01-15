@@ -8,8 +8,8 @@ from synchronizers.base.openstacksyncstep import OpenStackSyncStep
 from core.models.instance import Instance
 from core.models.slice import Slice, SlicePrivilege, ControllerSlice
 from core.models.network import Network, NetworkSlice, ControllerNetwork
-from observer.ansible import *
-from observer.syncstep import *
+from synchronizers.base.ansible import *
+from synchronizers.base.syncstep import *
 from xos.logger import observer_logger as logger
 
 def escape(s):

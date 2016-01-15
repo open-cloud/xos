@@ -6,7 +6,7 @@ from django.db.models import F, Q
 
 from xos.config import Config
 from xos.logger import Logger, logging
-from observer.steps import *
+from synchronizers.base.steps import *
 
 logger = Logger(level=logging.INFO)
 

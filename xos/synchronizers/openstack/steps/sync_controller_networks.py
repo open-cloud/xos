@@ -5,12 +5,12 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.openstacksyncstep import OpenStackSyncStep
-from observer.syncstep import *
+from synchronizers.base.syncstep import *
 from core.models.network import *
 from core.models.slice import *
 from core.models.instance import Instance
 from xos.logger import observer_logger as logger
-from observer.ansible import *
+from synchronizers.base.ansible import *
 from openstack.driver import OpenStackDriver
 from xos.config import Config
 import json

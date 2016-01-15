@@ -17,10 +17,10 @@ from openstack.driver import OpenStackDriver
 from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
-from observer.steps import *
+from synchronizers.base.steps import *
 from syncstep import SyncStep
 from toposort import toposort
-from observer.error_mapper import *
+from synchronizers.base.error_mapper import *
 
 debug_mode = False
 
