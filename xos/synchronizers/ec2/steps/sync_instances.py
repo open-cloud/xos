@@ -7,7 +7,7 @@ from ec2_observer.syncstep import SyncStep
 from core.models.instance import Instance
 from core.models.slice import SlicePrivilege, SliceDeployments
 from core.models.network import Network, NetworkSlice, NetworkDeployments
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 from ec2_observer.awslib import *
 from core.models.site import *
 from core.models.slice import *
