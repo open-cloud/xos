@@ -3,7 +3,7 @@ import base64
 from datetime import datetime
 from xos.config import Config
 from xos.logger import Logger, logging
-from observer.steps import *
+from synchronizers.base.steps import *
 from django.db.models import F, Q
 from core.models import * 
 from django.db import reset_queries

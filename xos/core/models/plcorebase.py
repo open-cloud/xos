@@ -15,7 +15,7 @@ from cgi import escape as html_escape
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
-    from observer import *
+    from synchronizers.base import *
 except:
     print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback

@@ -4,11 +4,11 @@ from collections import defaultdict
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.openstacksyncstep import OpenStackSyncStep
-from observer.syncstep import *
+from synchronizers.base.syncstep import *
 from core.models import Controller
 from core.models import Image, ControllerImages
 from xos.logger import observer_logger as logger 
-from observer.ansible import *
+from synchronizers.base.ansible import *
 import json
 
 class SyncControllerImages(OpenStackSyncStep):

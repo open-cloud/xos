@@ -3,11 +3,11 @@ import base64
 from datetime import datetime
 from xos.config import Config
 from xos.logger import Logger, logging
-from observer.steps import *
+from synchronizers.base.steps import *
 from django.db.models import F, Q
 from core.models import *
 from django.db import reset_queries
-from observer.ansible import *
+from synchronizers.base.ansible import *
 from generate.dependency_walker import *
 
 from time import time

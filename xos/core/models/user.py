@@ -20,7 +20,7 @@ import synchronizers.model_policy
 # ------ from plcorebase.py ------
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
-    from observer import *
+    from synchronizers.base import *
 except:
     print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback
