@@ -1,7 +1,7 @@
 from core.models import Slice, SliceDeployments, User
 from synchronizers.base.deleter import Deleter
 from synchronizers.base.deleters.slice_deployment_deleter import SliceDeploymentsDeleter
-from util.logger import Logger, logging
+from xos.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
 
