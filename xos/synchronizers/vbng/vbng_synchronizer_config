@@ -23,10 +23,10 @@ nova_enabled=True
 
 [observer]
 name=vbng
-dependency_graph=/opt/xos/observers/vbng/model-deps
+dependency_graph=/opt/xos/synchronizers/vbng/model-deps
 steps_dir=/opt/xos/synchronizers/vbng/steps
-sys_dir=/opt/xos/observers/vbng/sys
-deleters_dir=/opt/xos/observers/vbng/deleters
+sys_dir=/opt/xos/synchronizers/vbng/sys
+deleters_dir=/opt/xos/synchronizers/vbng/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None

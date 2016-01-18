@@ -23,10 +23,10 @@ nova_enabled=True
 
 [observer]
 name=vtn
-dependency_graph=/opt/xos/observers/vtn/model-deps
+dependency_graph=/opt/xos/synchronizers/vtn/model-deps
 steps_dir=/opt/xos/synchronizers/vtn/steps
-sys_dir=/opt/xos/observers/vtn/sys
-deleters_dir=/opt/xos/observers/vtn/deleters
+sys_dir=/opt/xos/synchronizers/vtn/sys
+deleters_dir=/opt/xos/synchronizers/vtn/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
