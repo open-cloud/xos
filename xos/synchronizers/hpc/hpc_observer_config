@@ -24,7 +24,7 @@ nova_enabled=True
 [observer]
 name=hpc
 dependency_graph=/opt/xos/observers/hpc/model-deps
-steps_dir=/opt/xos/observers/hpc/steps
+steps_dir=/opt/xos/synchronizers/hpc/steps
 deleters_dir=/opt/xos/observers/hpc/deleters
 log_file=console
 #/var/log/hpc.log

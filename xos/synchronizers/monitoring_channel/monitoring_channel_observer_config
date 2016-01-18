@@ -24,7 +24,7 @@ nova_enabled=True
 [observer]
 name=monitoring_channel
 dependency_graph=/opt/xos/observers/monitoring_channel/model-deps
-steps_dir=/opt/xos/observers/monitoring_channel/steps
+steps_dir=/opt/xos/synchronizers/monitoring_channel/steps
 sys_dir=/opt/xos/observers/monitoring_channel/sys
 deleters_dir=/opt/xos/observers/monitoring_channel/deleters
 log_file=console

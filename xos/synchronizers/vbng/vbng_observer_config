@@ -24,7 +24,7 @@ nova_enabled=True
 [observer]
 name=vbng
 dependency_graph=/opt/xos/observers/vbng/model-deps
-steps_dir=/opt/xos/observers/vbng/steps
+steps_dir=/opt/xos/synchronizers/vbng/steps
 sys_dir=/opt/xos/observers/vbng/sys
 deleters_dir=/opt/xos/observers/vbng/deleters
 log_file=console

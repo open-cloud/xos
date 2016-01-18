@@ -25,7 +25,7 @@ nova_enabled=True
 
 [observer]
 dependency_graph=/opt/xos/observers/requestrouter/model-deps
-steps_dir=/opt/xos/observers/requestrouter/steps
+steps_dir=/opt/xos/synchronizers/requestrouter/steps
 deleters_dir=/opt/xos/observers/requestrouter/deleters
 log_file=console
 #/var/log/hpc.log
