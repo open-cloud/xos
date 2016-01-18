@@ -23,10 +23,10 @@ nova_enabled=True
 
 [observer]
 name=onos
-dependency_graph=/opt/xos/observers/onos/model-deps
+dependency_graph=/opt/xos/synchronizers/onos/model-deps
 steps_dir=/opt/xos/synchronizers/onos/steps
-sys_dir=/opt/xos/observers/onos/sys
-deleters_dir=/opt/xos/observers/onos/deleters
+sys_dir=/opt/xos/synchronizers/onos/sys
+deleters_dir=/opt/xos/synchronizers/onos/deleters
 log_file=console
 driver=None
 pretend=False
