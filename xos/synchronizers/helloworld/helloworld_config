@@ -37,7 +37,7 @@ backoff_disabled=False
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
-steps_dir=/opt/xos/observers/helloworld/steps
+steps_dir=/opt/xos/synchronizers/helloworld/steps
 applist=helloworld
 
 [gui]

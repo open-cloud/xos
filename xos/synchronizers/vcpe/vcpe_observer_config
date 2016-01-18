@@ -24,7 +24,7 @@ nova_enabled=True
 [observer]
 name=vcpe
 dependency_graph=/opt/xos/observers/vcpe/model-deps
-steps_dir=/opt/xos/observers/vcpe/steps
+steps_dir=/opt/xos/synchronizers/vcpe/steps
 sys_dir=/opt/xos/observers/vcpe/sys
 deleters_dir=/opt/xos/observers/vcpe/deleters
 log_file=console
