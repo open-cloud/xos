@@ -3,6 +3,8 @@
 *.swp
 profile
 *.moved-aside
+.idea
+xos.iml
 xos/configurations/frontend/Dockerfile
 xos/core/xoslib/karma-*
 xos/core/xoslib/docs

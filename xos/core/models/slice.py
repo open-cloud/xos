@@ -15,6 +15,7 @@ from core.models import Controller
 from core.models import Flavor, Image
 from core.models.plcorebase import StrippedCharField
 from django.core.exceptions import PermissionDenied, ValidationError
+from xos.exceptions import *
 
 # Create your models here.
 
@@ -52,13 +53,13 @@ class Slice(PlCoreBase):
         site = Site.objects.get(id=self.site.id)
         # allow preexisting slices to keep their original name for now
         if not self.id and not self.name.startswith(site.login_base):
-            raise ValidationError('slice name must begin with %s' % site.login_base)
+            raise XOSValidationError('slice name must begin with %s' % site.login_base)
 
         if self.name == site.login_base+"_":
-            raise ValidationError('slice name is too short')
+            raise XOSValidationError('slice name is too short')
 
         if " " in self.name:
-            raise ValidationError('slice name must not contain spaces')
+            raise XOSValidationError('slice name must not contain spaces')
 
         if self.serviceClass is None:
             # We allowed None=True for serviceClass because Django evolution
@@ -82,7 +83,7 @@ class Slice(PlCoreBase):
                 raise PermissionDenied("Insufficient privileges to change slice creator")
         
         if not self.creator:
-            raise ValidationError('slice has no creator')
+            raise XOSValidationError('slice has no creator')
 
         if self.network=="Private Only":
             # "Private Only" was the default from the old Tenant View
