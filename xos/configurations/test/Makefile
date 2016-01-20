@@ -12,6 +12,10 @@ xos:
 	sudo MYIP=$(MYIP) docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./alltests.py"
 	sudo MYIP=$(MYIP) docker-compose run xos bash -c "cd /opt/xos/tosca/tests; python ./allObserverTests.py"
 
+containers:
+	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
+
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
