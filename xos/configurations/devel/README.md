@@ -65,6 +65,8 @@ Restart the containers: `make stop; make [cloudlab|devstack]`
 
 Delete the containers and relaunch them: `make rm; make [cloudlab|devstack]`
 
+Build the containers from scratch using the local XOS source tree: `make containers`
+
 View logs: `make showlogs`
 
 See what containers are running: `make ps`
