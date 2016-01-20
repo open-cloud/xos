@@ -100,7 +100,7 @@ def run_template(name, opts, path='', expected_num=None, ansible_config=None, an
 
     if (not Config().observer_pretend):
         if not run_ansible_script:
-            run_ansible_script = os.path.join(XOS_DIR, "observer/run_ansible")
+            run_ansible_script = os.path.join(XOS_DIR, "synchronizers/base/run_ansible")
 
         process = subprocess.Popen("%s %s" % (run_ansible_script, shellquote(fqp)), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
         msg = process.stdout.read()
