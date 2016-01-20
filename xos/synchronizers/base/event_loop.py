@@ -121,7 +121,7 @@ class XOSObserver:
 			if hasattr(Config(), "observer_steps_dir"):
 				step_dir = Config().observer_steps_dir
 			else:
-				step_dir = XOS_DIR + "/observer/steps"
+				step_dir = XOS_DIR + "/synchronizers/openstack/steps"
 
 		for fn in os.listdir(step_dir):
 			pathname = os.path.join(step_dir,fn)

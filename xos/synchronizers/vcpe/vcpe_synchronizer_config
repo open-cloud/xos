@@ -22,16 +22,20 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-name=vtn
-dependency_graph=/opt/xos/observers/vtn/model-deps
-steps_dir=/opt/xos/observers/vtn/steps
-sys_dir=/opt/xos/observers/vtn/sys
-deleters_dir=/opt/xos/observers/vtn/deleters
+name=vcpe
+dependency_graph=/opt/xos/synchronizers/vcpe/model-deps
+steps_dir=/opt/xos/synchronizers/vcpe/steps
+sys_dir=/opt/xos/synchronizers/vcpe/sys
+deleters_dir=/opt/xos/synchronizers/vcpe/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
 pretend=False
 backoff_disabled=True
+save_ansible_output=True
+# set proxy_ssh to false on cloudlab
+proxy_ssh=False
+full_setup=True
 
 [feefie]
 client_id='vicci_dev_central'
