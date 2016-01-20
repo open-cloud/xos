@@ -14,6 +14,10 @@ cord: ceilometer_dashboard virtualbng_json vtn_network_cfg_json
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/cord.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 
+containers:
+	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
+
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
