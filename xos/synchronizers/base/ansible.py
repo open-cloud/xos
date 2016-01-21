@@ -16,7 +16,7 @@ try:
     step_dir = Config().observer_steps_dir
     sys_dir = Config().observer_sys_dir
 except:
-    step_dir = XOS_DIR + '/observer/steps'
+    step_dir = XOS_DIR + '/synchronizers/openstack/steps'
     sys_dir = '/opt/opencloud'
 
 os_template_loader = jinja2.FileSystemLoader( searchpath=step_dir)

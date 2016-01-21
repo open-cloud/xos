@@ -30,7 +30,7 @@ The configuration provides an Ansible script that automates the configuration
 steps outlined in [the VTN README](../cord/README-VTN.md).  Run:
 ```
 ctl:~/xos/xos/configurations/vtn$ make destroy-networks
-ctl:~/xos/xos/configurations/vtn$ sudo ansible-playbook setup.yml 
+ctl:~/xos/xos/configurations/vtn$ sudo ansible-playbook setup.yml
 ```
 
 
@@ -68,6 +68,8 @@ Stop the containers: `make stop`
 Restart the containers: `make stop; make [cloudlab|devstack]`
 
 Delete the containers and relaunch them: `make rm; make [cloudlab|devstack]`
+
+Build the containers from scratch using the local XOS source tree: `make containers`
 
 View logs: `make showlogs`
 

@@ -6,7 +6,7 @@ import base64
 import time
 from django.db.models import F, Q
 from xos.config import Config
-from observers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.base.syncstep import SyncStep, DeferredException
 from synchronizers.base.ansible import run_template_ssh
 from core.models import Service, Slice, Instance

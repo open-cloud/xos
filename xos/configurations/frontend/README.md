@@ -25,6 +25,8 @@ Restart the containers: `make stop; make`
 
 Delete the containers and relaunch them: `make rm; make`
 
+Build the containers from scratch using the local XOS source tree: `make containers`
+
 View logs: `make showlogs`
 
 See what containers are running: `make ps`
