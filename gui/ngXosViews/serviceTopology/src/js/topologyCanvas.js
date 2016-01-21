@@ -9,7 +9,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/topology_canvas.tpl.html',
-      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation){
+      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances){
 
         // count the mas depth of an object
         const depthOf = (obj) => {
@@ -24,38 +24,6 @@
           }
           return 1 + depth
         };
-
-        ServiceRelation.get()
-          .then(res => {
-            //console.log(res);
-          });
-
-        const treeData = [
-          {
-            'name': 'Top Level',
-            'parent': 'null',
-            'children': [
-              {
-                'name': 'Level 2: A',
-                'parent': 'Top Level',
-                'children': [
-                  {
-                    'name': 'Son of A',
-                    'parent': 'Level 2: A'
-                  },
-                  {
-                    'name': 'Daughter of A',
-                    'parent': 'Level 2: A'
-                  }
-                ]
-              },
-              {
-                'name': 'Level 2: B',
-                'parent': 'Top Level'
-              }
-            ]
-          }
-        ];
 
         const width = $window.innerWidth - serviceTopologyConfig.widthMargin;
         const height = $window.innerHeight - serviceTopologyConfig.heightMargin;
@@ -128,8 +96,8 @@
             .attr('transform', function(d) {
               // this is the starting position
               return 'translate(' + source.y0 + ',' + source.x0 + ')';
-            });
-            //.on('click', click);
+            })
+            .on('click', click);
 
           nodeEnter.append('circle')
             .attr('r', 1e-6)
@@ -137,6 +105,12 @@
 
           nodeEnter.append('text')
             .attr('x', function(d) { return d.children || d._children ? -13 : 13; })
+            .attr('transform', function(d) {
+              if((d.children || d._children) && d.parent || d._parent){
+                return 'rotate(30)';
+              }
+              return;
+            })
             .attr('dy', '.35em')
             .attr('text-anchor', function(d) { return d.children || d._children ? 'end' : 'start'; })
             .text(function(d) { return d.name; })
@@ -201,12 +175,32 @@
           });
         }
 
+        const click = (d) => {
+          console.log(d);
+          this.selectedService = {
+            id: d.id,
+            name: d.name
+          };
+          Slice.query({service: d.id}).$promise
+          .then(slices => {
+            this.instances = null;
+            this.slices = slices;
+          })
+        };
+
         ServiceRelation.get()
         .then((tree) => {
           console.log(tree);
           draw(tree);
         });
-        //draw(treeData[0]);
+
+        this.getInstances = (slice) => {
+          Instances.query({slice: slice.id}).$promise
+          .then((instances) => {
+            this.selectedSlice = slice;
+            this.instances = instances;
+          })
+        };
       }
     }
   });

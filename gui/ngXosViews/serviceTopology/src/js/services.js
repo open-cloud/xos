@@ -8,6 +8,12 @@
   .service('Tenant', function($resource){
     return $resource('/xos/tenants');
   })
+  .service('Slice', function($resource){
+    return $resource('/xos/slices', {id: '@id'});
+  })
+  .service('Instances', function($resource){
+    return $resource('/xos/instances', {id: '@id'});
+  })
   .service('ServiceRelation', function($q, _, lodash, Services, Tenant){
 
     // find all the relation defined for a given root

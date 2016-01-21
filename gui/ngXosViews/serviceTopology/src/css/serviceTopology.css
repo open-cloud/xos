@@ -23,3 +23,10 @@ service-canvas {
     stroke: #ccc;
     stroke-width: 2px;
 }
+
+.service-details{
+    width: 200px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
