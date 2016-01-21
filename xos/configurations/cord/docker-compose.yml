@@ -4,7 +4,7 @@ xos_db:
         - "5432"
 
 xos_synchronizer_openstack:
-    command: python /opt/xos/synchronizers/openstack/xos-synchronizer.py
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
@@ -20,7 +20,7 @@ xos_synchronizer_openstack:
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
-    command: python /opt/xos/synchronizers/onos/onos-synchronizer.py -C /opt/xos/synchronizers/onos/onos_synchronizer_config
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/onos/onos-synchronizer.py -C /opt/xos/synchronizers/onos/onos_synchronizer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: onos
@@ -33,7 +33,7 @@ xos_synchronizer_onos:
 
 xos_synchronizer_vcpe:
     image: xosproject/xos-synchronizer-openstack
-    command: python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /opt/xos/synchronizers/vcpe/vcpe_synchronizer_config
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /opt/xos/synchronizers/vcpe/vcpe_synchronizer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: vcpe
@@ -47,7 +47,7 @@ xos_synchronizer_vcpe:
 
 xos_synchronizer_vbng:
     image: xosproject/xos-synchronizer-openstack
-    command: python /opt/xos/synchronizers/vbng/vbng-synchronizer.py -C /opt/xos/synchronizers/vbng/vbng_synchronizer_config
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vbng/vbng-synchronizer.py -C /opt/xos/synchronizers/vbng/vbng_synchronizer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: vbng
@@ -58,7 +58,7 @@ xos_synchronizer_vbng:
 
 xos_synchronizer_monitoring_channel:
     image: xosproject/xos-synchronizer-openstack
-    command: python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer_config
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: monitoring_channel
