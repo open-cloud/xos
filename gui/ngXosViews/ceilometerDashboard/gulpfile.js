@@ -11,8 +11,8 @@ var options = {
   dist: 'dist/',
   api: '../../ngXosLib/api/',
   helpers: '../../ngXosLib/xosHelpers/src/',
-  static: '../../static/', // this is the django static folder
-  dashboards: '../../dashboards/' // this is the django html folder
+  static: '../../../xos/core/xoslib/static/', // this is the django static folder
+  dashboards: '../../../xos/core/xoslib/dashboards/' // this is the django html folder
 };
 
 wrench.readdirSyncRecursive('./gulp')

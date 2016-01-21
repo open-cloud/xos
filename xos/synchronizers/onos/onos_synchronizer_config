@@ -22,16 +22,19 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-name=vbng
-dependency_graph=/opt/xos/observers/vbng/model-deps
-steps_dir=/opt/xos/observers/vbng/steps
-sys_dir=/opt/xos/observers/vbng/sys
-deleters_dir=/opt/xos/observers/vbng/deleters
+name=onos
+dependency_graph=/opt/xos/synchronizers/onos/model-deps
+steps_dir=/opt/xos/synchronizers/onos/steps
+sys_dir=/opt/xos/synchronizers/onos/sys
+deleters_dir=/opt/xos/synchronizers/onos/deleters
 log_file=console
-#/var/log/hpc.log
 driver=None
 pretend=False
 backoff_disabled=True
+save_ansible_output=True
+# set proxy_ssh to false on cloudlab
+proxy_ssh=False
+full_setup=True
 
 [feefie]
 client_id='vicci_dev_central'

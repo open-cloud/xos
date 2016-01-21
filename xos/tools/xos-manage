@@ -82,7 +82,7 @@ function syncdb {
     python $XOS_DIR/manage.py syncdb --noinput
     if [[ $DJANGO_17 ]]; then
         echo "Loading initial data from fixture..."
-        python $XOS_DIR/manage.py --noobserver --nomodelpolicy loaddata $XOS_DIR/core/fixtures/initial_data.json
+        python $XOS_DIR/manage.py --noobserver --nomodelpolicy loaddata $XOS_DIR/core/fixtures/core_initial_data.json
     fi
 }
 function evolvedb {
@@ -170,8 +170,8 @@ if [ "$COMMAND" = "repairdb" ]; then
     dumpdata
     # TODO: This is where we could run migration scripts to upgrade the
     #   dumped data to the new models.
-    mv $XOS_DIR/core/fixtures/initial_data.json $XOS_DIR/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/initial_data.json
+    mv $XOS_DIR/core/fixtures/core_initial_data.json $XOS_DIR/core/fixtures/core_initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/core_initial_data.json
     dropdb
     createdb
     syncdb
@@ -183,8 +183,8 @@ if [ "$COMMAND" = "restoredb" ]; then
     fi
     stopserver
     ensure_postgres_running
-    mv $XOS_DIR/core/fixtures/initial_data.json $XOS_DIR/core/fixtures/initial_data.json-old
-    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/initial_data.json
+    mv $XOS_DIR/core/fixtures/core_initial_data.json $XOS_DIR/core/fixtures/core_initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/core_initial_data.json
     dropdb
     createdb
     syncdb
