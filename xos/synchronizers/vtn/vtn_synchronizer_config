@@ -22,14 +22,16 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-name=hpc
-dependency_graph=/opt/xos/observers/hpc/model-deps
-steps_dir=/opt/xos/observers/hpc/steps
-deleters_dir=/opt/xos/observers/hpc/deleters
+name=vtn
+dependency_graph=/opt/xos/synchronizers/vtn/model-deps
+steps_dir=/opt/xos/synchronizers/vtn/steps
+sys_dir=/opt/xos/synchronizers/vtn/sys
+deleters_dir=/opt/xos/synchronizers/vtn/deleters
 log_file=console
 #/var/log/hpc.log
 driver=None
-#cmi_hostname=openclouddev0.internet2.edu
+pretend=False
+backoff_disabled=True
 
 [feefie]
 client_id='vicci_dev_central'

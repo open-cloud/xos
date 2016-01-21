@@ -10,6 +10,10 @@ xos:
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 
+containers:
+	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
+
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
 
@@ -40,5 +44,5 @@ upgrade_pkgs:
 rebuild_xos:
 	make -C ../../../containers/xos devel
 
-rebuild_synchronizer: 
+rebuild_synchronizer:
 	make -C ../../../containers/synchronizer

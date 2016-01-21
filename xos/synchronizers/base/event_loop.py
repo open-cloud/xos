@@ -26,7 +26,7 @@ from synchronizers.base.steps import *
 from syncstep import SyncStep
 from toposort import toposort
 from synchronizers.base.error_mapper import *
-from openstack_observer.openstacksyncstep import OpenStackSyncStep
+from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject
 
 # Load app models
@@ -121,7 +121,7 @@ class XOSObserver:
 			if hasattr(Config(), "observer_steps_dir"):
 				step_dir = Config().observer_steps_dir
 			else:
-				step_dir = XOS_DIR + "/observer/steps"
+				step_dir = XOS_DIR + "/synchronizers/openstack/steps"
 
 		for fn in os.listdir(step_dir):
 			pathname = os.path.join(step_dir,fn)

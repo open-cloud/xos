@@ -5,8 +5,6 @@ deployment=VICCI
 
 [db]
 name=xos
-#user=plstackuser
-#password=2uMDYtJK
 user=postgres
 password=password
 host=localhost
@@ -24,11 +22,14 @@ mail_support_address=support@localhost
 nova_enabled=True
 
 [observer]
-dependency_graph=/opt/xos/observers/syndicate/model-deps
-steps_dir=/opt/xos/observers/syndicate/steps
-deleters_dir=/opt/xos/observers/syndicate/deleters
+name=hpc
+dependency_graph=/opt/xos/synchronizers/hpc/model-deps
+steps_dir=/opt/xos/synchronizers/hpc/steps
+deleters_dir=/opt/xos/synchronizers/hpc/deleters
 log_file=console
+#/var/log/hpc.log
 driver=None
+#cmi_hostname=openclouddev0.internet2.edu
 
 [feefie]
 client_id='vicci_dev_central'
