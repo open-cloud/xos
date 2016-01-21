@@ -6,22 +6,22 @@ XOS_GIT_BRANCH?=master
 NO_DOCKER_CACHE?=false
 
 .PHONY: build
-build: ; docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
+build: ; sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
 
 .PHONY: custom
 custom: ; cat Dockerfile.templ | sed -e "s|XOS_GIT_REPO|${XOS_GIT_REPO}|g" -e "s|XOS_GIT_BRANCH|${XOS_GIT_BRANCH}|g" | docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} -
 
 .PHONY: devel
-devel: ; cd ../..; ls; docker build -f containers/xos/Dockerfile.devel --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
+devel: ; cd ../..; ls; sudo docker build -f containers/xos/Dockerfile.devel --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
 
 .PHONY: run
-run: ; docker run -d --name ${CONTAINER_NAME} -p 80:8000 -v /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro ${IMAGE_NAME}
+run: ; sudo docker run -d --name ${CONTAINER_NAME} -p 80:8000 -v /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro ${IMAGE_NAME}
 
 .PHONY: runtosca
-runtosca: ; docker exec -it ${CONTAINER_NAME} /usr/bin/python /opt/xos/tosca/run.py padmin@vicci.org ${TOSCA_CONFIG_PATH}
+runtosca: ; sudo docker exec -it ${CONTAINER_NAME} /usr/bin/python /opt/xos/tosca/run.py padmin@vicci.org ${TOSCA_CONFIG_PATH}
 
 .PHONY: stop
-stop: ; docker stop ${CONTAINER_NAME}
+stop: ; sudo docker stop ${CONTAINER_NAME}
 
 .PHONY: rm
-rm: ; docker rm ${CONTAINER_NAME}
+rm: ; sudo docker rm ${CONTAINER_NAME}
