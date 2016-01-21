@@ -15,7 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "d3": "~3.5.13"
+    "d3": "~3.5.13",
+    "lodash": "~4.0.0"
   },
   "devDependencies": {
     "jquery": "~2.1.4",
