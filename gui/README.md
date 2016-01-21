@@ -50,6 +50,7 @@ It will automatically ad a `token` to all your request, eventually you can take 
 - **HpcApi** wrapper for `/hpcapi` endpoints.
 
 >_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
+
 # ngXosViews
 
 On top of auto-generated Django Admin Views and developer defined Service Views a set of custom views can be generate in XOS.
