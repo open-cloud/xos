@@ -310,6 +310,14 @@ background-image: url("Services.png");
 }
 /************************* END NAV *************************/
 
+/************************* FORM TWEAKS *************************/
+@media (min-width: 992px){
+    .form-column.col-lg-4 {
+        width: 66.66666667%;
+    }
+}
+/************************* FORM TWEAKS *************************/
+
 /*   CSS for jquery Tabs */
 #hometabs {
 border-bottom: 1px solid #105E9E;
