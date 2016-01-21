@@ -4,13 +4,13 @@ This is a collection of helpers to develop views as Angular SPA.
 
 ## Tools
 
-These tools are designed to help develop a GUI view. As they born for this purpose if often necessary that a XOS instance is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
+These tools are designed to help develop a GUI view. They assume XOS is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally sufficient for GUI development.
 
 ### Apigen
 
 Usage: `npm run apigen`
 
-This tool will automatically generate an angular resource file for each endpoint available in Swagger.
+This tool automatically generates an angular resource file for each endpoint available in Swagger.
 
 >You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can also see a list of available methods through Swagger at `http://localhost:9999/docs/`
 
@@ -23,7 +23,7 @@ XOS comes with a preset of common libraries, as listed in `bower.json`:
 - angular-cookie
 - ng-lodash
 
-These libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+These libraries are served through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
 - enter `ngXosLib` folder
 - run `bower install [myPackage] --save`
 - rebuild the file with `gulp vendor`
@@ -42,7 +42,7 @@ angular.module('xos.myView', [
 ])
 ```
 
-It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
+It will automatically ad a `token` to all your requests, eventually you can take advantage of some other services:
 
 - **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
 - **XosApi** wrapper for `/xos` endpoints.
@@ -53,11 +53,11 @@ It will automatically ad a `token` to all your request, eventually you can take 
 
 # ngXosViews
 
-On top of auto-generated Django Admin Views and developer defined Service Views a set of custom views can be generate in XOS.
+On top of auto-generated Django Admin Views and developer-defined Service Views, a set of custom views can be generate in XOS.
 
-This views are based on AngularJs and they communicate with XOS trough the REST APIs, providing a powerful and flexible way to present and manage data.
+These views are based on AngularJs and they communicate with XOS through the REST APIs, providing a powerful and flexible way to present and manage data.
 
-## How to create a view
+## How to create a View
 
 ### Getting Started
 
