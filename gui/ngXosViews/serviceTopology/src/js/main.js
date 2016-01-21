@@ -17,22 +17,6 @@ angular.module('xos.serviceTopology', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.directive('usersList', function(){
-  return {
-    restrict: 'E',
-    scope: {},
-    bindToController: true,
-    controllerAs: 'vm',
-    templateUrl: 'templates/users-list.tpl.html',
-    controller: function(Services){
-      // retrieving user list
-      Services.query().$promise
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
-    }
-  };
+.factory('_', function($window){
+  return window._;
 });

@@ -9,7 +9,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/topology_canvas.tpl.html',
-      controller: function($element, $window, d3, serviceTopologyConfig){
+      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation){
 
         // count the mas depth of an object
         const depthOf = (obj) => {
@@ -24,6 +24,11 @@
           }
           return 1 + depth
         };
+
+        ServiceRelation.get()
+          .then(res => {
+            //console.log(res);
+          });
 
         const treeData = [
           {
@@ -68,14 +73,13 @@
           .append('g')
           .attr("transform", "translate(" + serviceTopologyConfig.widthMargin+ "," + serviceTopologyConfig.heightMargin + ")");;
 
-        const resizeCanvas = () => {
-          var targetSize = svg.node().getBoundingClientRect();
-
-          d3.select(self.frameElement)
-            .attr('width', `${targetSize.width}px`)
-            .attr('height', `${targetSize.height}px`)
-        };
-
+        //const resizeCanvas = () => {
+        //  var targetSize = svg.node().getBoundingClientRect();
+        //
+        //  d3.select(self.frameElement)
+        //    .attr('width', `${targetSize.width}px`)
+        //    .attr('height', `${targetSize.height}px`)
+        //};
         //d3.select(window)
         //  .on('load', () => {
         //    resizeCanvas();
@@ -85,15 +89,17 @@
         //    resizeCanvas();
         //    update(root);
         //  });
-
-        var root = treeData[0];
-        root.x0 = $window.innerHeight / 2;
-        root.y0 = 0;
-
+        var root;
         var i = 0;
         var duration = 750;
 
-        update(root);
+        const draw = (tree) => {
+          root = tree;
+          root.x0 = $window.innerHeight / 2;
+          root.y0 = 0;
+
+          update(root);
+        };
 
         function update(source) {
 
@@ -194,6 +200,13 @@
             d.y0 = d.y;
           });
         }
+
+        ServiceRelation.get()
+        .then((tree) => {
+          console.log(tree);
+          draw(tree);
+        });
+        //draw(treeData[0]);
       }
     }
   });
