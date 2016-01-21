@@ -4,7 +4,7 @@ This is a collection of helpers to develop views as Angular SPA.
 
 ## Tools
 
-This tools are designed to help you developing UI for XOS. As they born for this purpose if often necessary that a XOS instance is running on your sistem and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
+These tools are designed to help develop a GUI view. As they born for this purpose if often necessary that a XOS instance is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
 
 ### Apigen
 
@@ -12,18 +12,18 @@ Usage: `npm run apigen`
 
 This tool will automatically generate an angular resource file for each endpoint available in Swagger.
 
->You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can have a list of available method also trough Swagger at `http://localhost:9999/docs/`
+>You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can also see a list of available methods through Swagger at `http://localhost:9999/docs/`
 
 ### Vendors
 
-Xos comes with a preset of common libraries, as listed in `bower.json`:
+XOS comes with a preset of common libraries, as listed in `bower.json`:
 - angular
 - angular-route
 - angular-resource
 - angular-cookie
 - ng-lodash
 
-This libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+These libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
 - enter `ngXosLib` folder
 - run `bower install [myPackage] --save`
 - rebuild the file with `gulp vendor`
