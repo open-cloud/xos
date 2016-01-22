@@ -1,5 +1,5 @@
 <div class="service-details">
-    <div ng-show="vm.slices.length > 0" class="service-slices">
+    <div class="service-slices animate" ng-hide="vm.slices.length == 0">
         <div class="panel panel-info">
             <div class="panel-heading">
                 Slices for service:
@@ -12,7 +12,7 @@
             </ul>
         </div>
     </div>
-    <div class="service-instances" ng-show="vm.instances.length > 0">
+    <div class="service-instances animate" ng-hide="vm.instances.length == 0">
         <div class="panel panel-warning">
             <div class="panel-heading">
                 Instances:

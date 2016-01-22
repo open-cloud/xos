@@ -4,6 +4,7 @@ angular.module('xos.serviceTopology', [
   'ngResource',
   'ngCookies',
   'ngLodash',
+  'ngAnimate',
   'ui.router',
   'xos.helpers'
 ])
