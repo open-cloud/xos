@@ -84,7 +84,6 @@
           nodes.forEach(function(d) {
             // position the child node horizontally
             d.y = d.depth * (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
-            console.log(d.x);
           });
 
           // Update the nodes…
@@ -206,7 +205,7 @@
             name: d.name
           };
 
-          Slice.query({service: d.id}).$promise
+          Slice.query({service: d.service.id}).$promise
           .then(slices => {
             _this.slices = slices;
 
@@ -237,7 +236,6 @@
                 })
                 .text(() => {
                   if(slices[0]){
-                    console.log(slices[0].humanReadableName);
                     return slices[0].humanReadableName;
                   }
 
