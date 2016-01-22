@@ -35,9 +35,12 @@
 
     const buildLevel = (tenants, services, rootService, parentName = null) => {
 
+      console.log(rootService);
+
       const tree = {
         name: rootService.humanReadableName,
         parent: parentName,
+        service: rootService,
         children: []
       };
 
