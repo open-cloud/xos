@@ -11,6 +11,9 @@
       templateUrl: 'templates/topology_canvas.tpl.html',
       controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances){
 
+        this.instances = [];
+        this.slices = [];
+
         // count the mas depth of an object
         const depthOf = (obj) => {
           var depth = 0;
@@ -173,28 +176,82 @@
           });
         }
 
-        this.instances = [];
-        this.slices = [];
-
         var _this = this;
         const click = function(d) {
 
-          d3.select(this).attr('r', 30);
+          // empty panel
+          _this.slices = [];
+          _this.instances = [];
+
+          var nodes = d3.selectAll('circle')
+            .transition()
+            .duration(duration)
+            .attr('r', 10);
+
+          d3.selectAll('rect.slice-detail')
+            .remove();
+
+          d3.selectAll('text.slice-name')
+            .remove();
+
+          var selectedNode = d3.select(this);
+
+          selectedNode
+            .transition()
+            .duration(duration)
+            .attr('r', 30);
 
           _this.selectedService = {
             id: d.id,
             name: d.name
           };
+
           Slice.query({service: d.id}).$promise
           .then(slices => {
-            _this.instances = [];
             _this.slices = slices;
+
+            if(slices.length > 0){
+              const parentNode = d3.select(this.parentNode);
+
+              parentNode
+                .append('rect')
+                .style('opacity', 0)
+                .attr({
+                  width: 150,
+                  height: 50,
+                  y: 35,
+                  x: -75,
+                  class: 'slice-detail'
+                })
+                .transition()
+                .duration(duration)
+                .style('opacity', 1);
+
+              parentNode
+                .append('text')
+                .style('opacity', 0)
+                .attr({
+                  y: 65,
+                  x: -60,
+                  class: 'slice-name'
+                })
+                .text(() => {
+                  if(slices[0]){
+                    console.log(slices[0].humanReadableName);
+                    return slices[0].humanReadableName;
+                  }
+
+                  return '';
+                })
+                .transition()
+                .duration(duration)
+                .style('opacity', 1);
+              }
           })
         };
 
         ServiceRelation.get()
         .then((tree) => {
-          console.log(tree);
           draw(tree);
         });
 
