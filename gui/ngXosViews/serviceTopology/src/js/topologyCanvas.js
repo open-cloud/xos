@@ -79,9 +79,7 @@
 
           // Normalize for fixed-depth.
           nodes.forEach(function(d) {
-            console.log(d);
-            // 180 should be based on window.width and max node depth
-
+            // position the child node horizontally
             d.y = d.depth * (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
             console.log(d.x);
           });
@@ -96,12 +94,12 @@
             .attr('transform', function(d) {
               // this is the starting position
               return 'translate(' + source.y0 + ',' + source.x0 + ')';
-            })
-            .on('click', click);
+            });
 
           nodeEnter.append('circle')
             .attr('r', 1e-6)
-            .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff'; });
+            .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff'; })
+            .on('click', click);
 
           nodeEnter.append('text')
             .attr('x', function(d) { return d.children || d._children ? -13 : 13; })
@@ -175,16 +173,22 @@
           });
         }
 
-        const click = (d) => {
-          console.log(d);
-          this.selectedService = {
+        this.instances = [];
+        this.slices = [];
+
+        var _this = this;
+        const click = function(d) {
+
+          d3.select(this).attr('r', 30);
+
+          _this.selectedService = {
             id: d.id,
             name: d.name
           };
           Slice.query({service: d.id}).$promise
           .then(slices => {
-            this.instances = null;
-            this.slices = slices;
+            _this.instances = [];
+            _this.slices = slices;
           })
         };
 
