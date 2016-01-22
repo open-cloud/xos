@@ -137,7 +137,21 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.openflow-base, org.onosproject.olt
+          install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
+          dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
+          component_config: >
+             {
+                "org.ciena.onos.ext_notifier.KafkaNotificationBridge":{
+                   "rabbit.user": "<rabbit_user>",
+                   "rabbit.password": "<rabbit_password>",
+                   "rabbit.host": "<rabbit_host>",
+                   "publish.rabbit": "true",
+                   "volt.events.rabbit.topic": "notifications.info",
+                   "volt.events.rabbit.exchange": "voltlistener",
+                   "volt.events.opaque.info": "{project_id: <keystone_tenant_id>, user_id: <keystone_user_id>}",
+                   "publish.volt.events": "true"
+                }
+             }
 #          config_network-cfg.json: >
 #            {
 #              "devices" : {

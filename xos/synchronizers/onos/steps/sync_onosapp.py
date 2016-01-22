@@ -5,12 +5,14 @@ import socket
 import sys
 import base64
 import time
+import re
+import json
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from core.models import Service, Slice
+from core.models import Service, Slice, ControllerSlice, ControllerUser
 from services.onos.models import ONOSService, ONOSApp
 from xos.logger import Logger, logging
 
@@ -86,10 +88,31 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         result = result + '], "ipPrefix": "%s"}' % ipPrefix
         return result
 
+    def get_dynamic_parameter_value(self, o, param):
+        instance = self.get_instance(o)
+        if not instance:
+           raise "No instance for ONOS App"
+        if param == 'rabbit_host':
+            return instance.controller.rabbit_host
+        if param == 'rabbit_user':
+            return instance.controller.rabbit_user
+        if param == 'rabbit_password':
+            return instance.controller.rabbit_password
+        if param == 'keystone_tenant_id':
+            cslice = ControllerSlice.objects.get(slice=instance.slice)
+            if not cslice:
+                raise Exception("Controller slice object for %s does not exist" % instance.slice.name)
+            return cslice.tenant_id
+        if param == 'keystone_user_id':
+            cuser = ControllerUser.objects.get(user=instance.creator)
+            if not cuser:
+                raise Exception("Controller user object for %s does not exist" % instance.creator)
+            return cuser.kuser_id
 
     def write_configs(self, o):
         o.config_fns = []
         o.rest_configs = []
+        o.component_configs = []
         o.files_dir = self.get_files_dir(o)
 
         if not os.path.exists(o.files_dir):
@@ -131,6 +154,20 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 # later.
                 file(os.path.join(o.files_dir, fn),"w").write(" " +value)
                 o.rest_configs.append( {"endpoint": endpoint, "fn": fn} )
+            if name.startswith("component_config"):
+                components = json.loads(value)
+                for component in components.keys():
+                    config = components[component]
+                    for key in config.keys():
+                         config_val = config[key]
+                         found = re.findall('<(.+?)>',config_val)
+                         for x in found:
+                            #Get value corresponding to that string
+                            val = self.get_dynamic_parameter_value(o, x)
+                            if val:
+	                       config_val = re.sub('<'+x+'>', val, config_val)
+                            #TODO: else raise an exception?
+	                 o.component_configs.append( {"component": component, "config_params": "'{\""+key+"\":\""+config_val+"\"}'"} )
 
     def prepare_record(self, o):
         self.write_configs(o)
@@ -145,10 +182,16 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["config_fns"] = o.config_fns
         fields["rest_configs"] = o.rest_configs
         fields["early_rest_configs"] = o.early_rest_configs
+        fields["component_configs"] = o.component_configs
         if o.dependencies:
             fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
         else:
             fields["dependencies"] = []
+
+        if o.install_dependencies:
+            fields["install_dependencies"] = [x.strip() for x in o.install_dependencies.split(",")]
+        else:
+            fields["install_dependencies"] = []
 
         if (instance.isolation=="container"):
             fields["ONOS_container"] = "%s-%s" % (instance.slice.name, str(instance.id))
