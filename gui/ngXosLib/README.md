@@ -1,38 +1,38 @@
 # ngXosLib
 
-This is a collection of helpers to develop views as Angular SPA.
+A collection of programs to develop Views as Angular SPA.
 
 ## Tools
 
-This tools are designed to help you developing UI for XOS. As they born for this purpose if often necessary that a XOS instance is running on your sistem and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
+These tools are designed to help develop UIs for XOS. They assume XOS is running on your system at `localhost:9999`. The `xos/configurations/frontend` is normally a sufficient configuration for development.
 
 ### Apigen
 
 Usage: `npm run apigen`
 
-This tool will automatically generate an angular resource file for each endpoint available in Swagger.
+This tool generates an angular resource file for each endpoint available in Swagger.
 
->You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can have a list of available method also trough Swagger at `http://localhost:9999/docs/`
+>You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can also see a list of available methods through Swagger at `http://localhost:9999/docs/`
 
 ### Vendors
 
-Xos comes with a preset of common libraries, as listed in `bower.json`:
+XOS comes with a set of common libraries, as listed in `bower.json`:
 - angular
 - angular-route
 - angular-resource
 - angular-cookie
 - ng-lodash
 
-This libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+These libraries are served through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one):
 - enter `ngXosLib` folder
 - run `bower install [myPackage] --save`
 - rebuild the file with `gulp vendor`
 
->_NOTE before adding libraries please discuss it to avoid this file to became huge_
+>_NOTE: before adding libraries please discuss it on the devel list to avoid this file becoming huge_
 
 ### Helpers
 
-XOS comes with an helper library that is automatically loaded in the Django template.
+XOS comes with a helper library that is automatically loaded in the Django template.
 
 To use it, add `xos.helpers` to your required modules:
 
@@ -42,7 +42,7 @@ angular.module('xos.myView', [
 ])
 ```
 
-It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
+It will automatically add a `token` to all your requests. Eventually you can take advantage of some other services:
 
 - **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
 - **XosApi** wrapper for `/xos` endpoints.
@@ -51,47 +51,47 @@ It will automatically ad a `token` to all your request, eventually you can take 
 
 >_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
 
-### Yo Xos
+### Yo XOS
 
-We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.
+We have created a [yeoman](http://yeoman.io/) generator to help to scaffold views.
 
->As it is in an early stage of development you should manually link it to your system, to do this enter `xos/core/xoslib/ngXosLib/generator-xos` and run `npm link`.
+>As it is in an early stage of development you should manually link it to your system. To do this, enter `xos/core/xoslib/ngXosLib/generator-xos` and run `npm link`.
 
-#### To generate a new view
+#### To Generate a New View
 
-From `xos/core/xoslib` run `yo xos`. This command will create a new folder with the provided name in: `xos/core/xoslib/ngXosViews` that contain your application.
+From `xos/core/xoslib` run `yo xos`. This command creates a new folder with the provided name in: `xos/core/xoslib/ngXosViews` that contain your application.
 
->If you left empty the view name it should be `xos/core/xoslib/ngXosViews/sampleView`
+>If you left the View name empty, it should be `xos/core/xoslib/ngXosViews/sampleView`
 
-#### Run a development server
+#### Run a Development Server
 
-In your `view` folder and run `npm start`.
+In your `view` folder run `npm start`.
 
-_This will install required dependencies and start a local server with [BrowserSync](http://www.browsersync.io/)_
+_This will install the required dependencies and start a local server with [BrowserSync](http://www.browsersync.io/)_
 
-#### Publish your view
+#### Publish your View
 
 Once your view is done, from your view root folder, run: `npm run build`.
 
-This will build your application and copy files in the appropriate locations to be used by django.
+This will build your application and copy files in the appropriate locations to be used by Django.
 
 At this point you can enter: `http://localhost:9999/admin/core/dashboardview/add/` and add your custom view.
 
 >_NOTE url field should be `template:xosSampleView`_
 
-#### Install dependencies in your app
+#### Install Dependencies in Your app
 
-To install a local dependency use bower with `--save`. Common modules are saved in `devDependencies` as they already loaded in the Django template.
+To install a local dependency, use bower with `--save`. Common modules are saved in `devDependencies` as they already loaded in the Django template.
 
-The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
+The `npm start` command watches your dependencies and automatically injects it in your `index.html`.
 
 #### Linting
 
-A styleguide is enforced trough [EsLint](http://eslint.org/) and is checked during the build process. We **highly** suggest to install the linter in your editor to have realtime hint.
+A styleguide is enforced through [EsLint](http://eslint.org/) and is checked during the build process. We **highly** suggest installing the linter in your editor to have realtime hints.
 
 #### Test
 
-The generator set up a test environment with a default test.
+The generator sets up a test environment with a default test.
 To run it execute: `npm test`
 
 ## TODO
