@@ -9,7 +9,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/topology_canvas.tpl.html',
-      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances){
+      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers){
 
         this.instances = [];
         this.slices = [];
@@ -200,6 +200,10 @@
             .duration(duration)
             .attr('r', 30);
 
+          if(!d.service){
+            return;
+          }
+
           _this.selectedService = {
             id: d.id,
             name: d.name
@@ -248,7 +252,11 @@
           })
         };
 
-        ServiceRelation.get()
+        Subscribers.query().$promise
+        .then((subscribers) => {
+          this.subscribers = subscribers;
+          return ServiceRelation.get(subscribers[0])
+        })
         .then((tree) => {
           draw(tree);
         });
