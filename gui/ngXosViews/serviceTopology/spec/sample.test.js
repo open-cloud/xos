@@ -1,37 +1,126 @@
 'use strict';
 
-describe('The User List', () => {
+describe('The Service Relation Service', () => {
   
-  var scope, element, isolatedScope, httpBackend;
+  var Service;
 
   beforeEach(module('xos.serviceTopology'));
   beforeEach(module('templates'));
 
-  beforeEach(inject(function($httpBackend, $compile, $rootScope){
-    
-    httpBackend = $httpBackend;
-    // Setting up mock request
-    $httpBackend.expectGET('/xos/users/?no_hyperlinks=1').respond([
-      {
-        email: 'teo@onlab.us',
-        firstname: 'Matteo',
-        lastname: 'Scandolo' 
-      }
-    ]);
-  
-    scope = $rootScope.$new();
-    element = angular.element('<users-list></users-list>');
-    $compile(element)(scope);
-    scope.$digest();
-    isolatedScope = element.isolateScope().vm;
+  // inject the cartService
+  beforeEach(inject(function (_ServiceRelation_) {
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    Service = _ServiceRelation_;
   }));
 
-  it('should load 1 users', () => {
-    httpBackend.flush();
-    expect(isolatedScope.users.length).toBe(1);
-    expect(isolatedScope.users[0].email).toEqual('teo@onlab.us');
-    expect(isolatedScope.users[0].firstname).toEqual('Matteo');
-    expect(isolatedScope.users[0].lastname).toEqual('Scandolo');
+  describe('given a service', () => {
+
+    const levelRelations = [
+      {
+        subscriber_service: 1
+      },
+      {
+        subscriber_service: 1
+      },
+      {
+        subscriber_service: 2
+      }
+    ];
+
+    it('should find all involved relations', () => {
+      expect(typeof Service.findLevelRelation).toBe('function');
+      let levelRelation = Service.findLevelRelation(levelRelations, 1);
+      expect(levelRelation.length).toBe(2);
+    });
   });
+
+  describe('given a set of relation', () => {
+
+    const levelRelations = [
+      {
+        provider_service: 1
+      },
+      {
+        provider_service: 2
+      }
+    ];
+
+    const services = [
+      {
+        id: 1
+      },
+      {
+        id: 2
+      },
+      {
+        id: 3
+      }
+    ];
+
+    it('should find all the provider service', () => {
+      expect(typeof Service.findLevelServices).toBe('function');
+      let levelServices = Service.findLevelServices(levelRelations, services);
+      expect(levelServices.length).toBe(2);
+    });
+  });
+
+  describe('given a list of services and a list of relations', () => {
+
+    const services = [
+      {
+        id: 1,
+        humanReadableName: 'service-1'
+      },
+      {
+        id: 2,
+        humanReadableName: 'service-2'
+      },
+      {
+        id: 3,
+        humanReadableName: 'service-3'
+      },
+      {
+        id: 4,
+        humanReadableName: 'service-4'
+      }
+    ];
+
+    const relations = [
+      {
+        provider_service: 2,
+        subscriber_service: 1,
+      },
+      {
+        provider_service: 3,
+        subscriber_service: 2
+      },
+      {
+        provider_service: 4,
+        subscriber_service: 1
+      },
+      {
+        subscriber_root: 1,
+        provider_service: 1
+      }
+    ];
+
+    it('should return a tree ordered by relations', () => {
+      let tree = Service.buildServiceTree(services, relations);
+
+      expect(tree.name).toBe('fakeSubs');
+      expect(tree.parent).toBeNull();
+      expect(tree.children.length).toBe(1);
+
+      expect(tree.children[0].name).toBe('service-1');
+      expect(tree.children[0].parent).toBeNull();
+      expect(tree.children[0].children.length).toBe(2);
+
+      expect(tree.children[0].children[0].name).toBe('service-2');
+      expect(tree.children[0].children[0].children[0].name).toBe('service-3');
+
+      expect(tree.children[0].children[1].name).toBe('service-4');
+    });
+  });
+
 
 });

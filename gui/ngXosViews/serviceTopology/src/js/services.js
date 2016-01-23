@@ -14,6 +14,9 @@
   .service('Instances', function($resource){
     return $resource('/xos/instances', {id: '@id'});
   })
+  .service('Subscribers', function($resource){
+    return $resource('/xos/subscribers', {id: '@id'});
+  })
   .service('ServiceRelation', function($q, _, lodash, Services, Tenant){
 
     // find all the relation defined for a given root
@@ -34,8 +37,6 @@
     };
 
     const buildLevel = (tenants, services, rootService, parentName = null) => {
-
-      console.log(rootService);
 
       const tree = {
         name: rootService.humanReadableName,
@@ -64,20 +65,26 @@
       return tree;
     };
 
-    const buildServiceTree = (services, tenants) => {
+    const buildServiceTree = (services, tenants, subscriber = {id:1, name: 'fakeSubs'}) => {
 
       // find the root service
       // it is the one attached to subsriber_root
       // as now we have only one root so this can work
-      const rootServiceId = lodash.find(tenants, {subscriber_root: 1}).provider_service;
+      const rootServiceId = lodash.find(tenants, {subscriber_root: subscriber.id}).provider_service;
       const rootService = lodash.find(services, {id: rootServiceId});
 
       const serviceTree = buildLevel(tenants, services, rootService);
 
-      return serviceTree;
+      return {
+        name: subscriber.name,
+        parent: null,
+        children: [serviceTree]
+      };
+
+      //return serviceTree;
     };
 
-    this.get = () => {
+    const get = (subscriber) => {
       var deferred = $q.defer();
       var services, tenants;
       Services.query().$promise
@@ -87,7 +94,7 @@
       })
       .then((res) => {
         tenants = res;
-        deferred.resolve(buildServiceTree(services, tenants));
+        deferred.resolve(buildServiceTree(services, tenants, subscriber));
       })
       .catch((e) => {
         throw new Error(e);
@@ -95,6 +102,12 @@
 
       return deferred.promise;
     }
+
+    this.get = get;
+    this.buildLevel = buildLevel;
+    this.buildServiceTree = buildServiceTree;
+    this.findLevelRelation = findLevelRelation;
+    this.findLevelServices = findLevelServices;
   });
 
 }());
