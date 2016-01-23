@@ -255,10 +255,6 @@
         Subscribers.query().$promise
         .then((subscribers) => {
           this.subscribers = subscribers;
-          return ServiceRelation.get(subscribers[0])
-        })
-        .then((tree) => {
-          draw(tree);
         });
 
         this.getInstances = (slice) => {
@@ -267,6 +263,13 @@
             this.selectedSlice = slice;
             this.instances = instances;
           })
+        };
+
+        this.getServiceChain = (subscriber) => {
+          ServiceRelation.get(subscriber)
+            .then((tree) => {
+              draw(tree);
+            });
         };
       }
     }
