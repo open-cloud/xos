@@ -1,0 +1,14 @@
+# Upstart script for container
+description "container"
+author "smbaker@gmail.com"
+start on filesystem and started docker
+stop on runlevel [!2345]
+respawn
+
+script
+  /usr/local/sbin/start-container-{{ container_name }}.sh ATTACH
+end script
+
+post-stop script
+  /usr/local/sbin/stop-container-{{ container_name }}.sh
+end script

@@ -104,8 +104,8 @@ ADD xos /opt/xos
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
 
-RUN chmod +x /opt/xos/scripts/opencloud
-RUN /opt/xos/scripts/opencloud genkeys
+RUN chmod +x /opt/xos/tools/xos-manage
+RUN /opt/xos/tools/xos-manage genkeys
 
 # Workaround for AUFS issue
 # https://github.com/docker/docker/issues/783#issuecomment-56013588
@@ -119,7 +119,7 @@ RUN service postgresql start; sudo -u postgres psql -c "alter user postgres with
 # RUN sed -i 's/DEBUG = False/DEBUG = True/' /opt/xos/xos/settings.py
 
 # Cruft to workaround problems with migrations, should go away...
-RUN /opt/xos/scripts/opencloud remigrate
+RUN /opt/xos/tools/xos-manage remigrate
 
 # git clone uses cached copy, doesn't pick up latest
 RUN git -C /opt/ansible pull
@@ -141,4 +141,4 @@ WORKDIR /root
 
 # Define default command.
 #CMD ["/bin/bash"]
-#CMD /opt/xos/scripts/docker_start_xos
+#CMD /opt/xos/tools/docker_start_xos

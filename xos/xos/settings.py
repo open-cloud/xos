@@ -166,7 +166,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     # 'suit',
     'xos.apps.MyDjangoSuitConfig',
-    'admin_customize',
+    'xos.admin_customize',
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',

@@ -9,13 +9,13 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
-import model_policy
+import synchronizers.model_policy
 from model_autodeletion import ephemeral_models
 from cgi import escape as html_escape
 
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
-    from observer import *
+    from synchronizers.base import *
 except:
     print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback

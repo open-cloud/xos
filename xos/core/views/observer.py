@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from monitor import driver
 from core.models import *
 import json
 import os

@@ -1,0 +1,238 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo usage: $0 "[initdb | createdb | dropdb | syncdb | runserver | resetdb | dumpdata]"
+    exit
+fi
+
+XOS_DIR=/opt/xos
+BACKUP_DIR=/opt/xos_backups
+DBNAME=xos
+
+DJANGO_17=`python -c "import django; from distutils.version import StrictVersion; print int(StrictVersion(django.get_version()) >= StrictVersion('1.7'))"`
+
+cd $XOS_DIR
+
+function is_ubuntu {
+    if ! which lsb_release &> /dev/null; then
+        # lsb_release is not installed
+        return 1
+    fi
+    if lsb_release -i | grep -i ubuntu &> /dev/null; then
+        return 0
+    fi
+    return 2
+}
+
+function ensure_postgres_running {
+    # "sudo -u postgres pg_ctl -D /var/lib/postgres/data status" doesn't work
+    # right on Vicci, so let's try to detect it by seeing if the port is
+    # being listened on
+
+    netstat -nl | grep -i ":5432 " > /dev/null
+    if [[ $? == 0 ]]; then
+        echo "Postgres is already running"
+        return
+    fi
+
+    # note that initdb isn't needed in Ubuntu distributions, and calling it
+    # will throw spurious error messages
+    if ! is_ubuntu; then
+        service postgresql initdb
+    fi
+    service postgresql start
+
+    netstat -nl | grep -i ":5432 " > /dev/null
+    if [[ $? != 0 ]]; then
+        # it's still not running...
+	# this is intended for Vicci where some D-Bus issue is
+        # preventing systemctl from working properly.
+        echo "Trying fallback mechanism to start Postgres"
+        sudo -u postgres initdb -D /var/lib/pgsql/data/
+        sudo -u postgres pg_ctl -D /var/lib/pgsql/data -l logfile start
+    fi
+
+}
+
+function wait_postgres {
+    sudo -u postgres psql -c '\q'
+    while [[ "$?" != "0" ]]; do
+        echo Waiting for postgres to start
+        sleep 1
+        sudo -u postgres psql -c '\q'
+    done
+}
+
+function db_exists {
+   sudo -u postgres psql $DBNAME -c '\q' 2>/dev/null
+   return $?
+}
+
+function createdb {
+    wait_postgres
+    echo "Creating XOS database..."
+    sudo -u postgres createdb $DBNAME
+}
+function dropdb {
+    echo "Dropping XOS database..."
+    sudo -u postgres dropdb $DBNAME
+}
+function syncdb {
+    echo "Syncing XOS services..."
+    python $XOS_DIR/manage.py syncdb --noinput
+    if [[ $DJANGO_17 ]]; then
+        echo "Loading initial data from fixture..."
+        python $XOS_DIR/manage.py --noobserver --nomodelpolicy loaddata $XOS_DIR/core/fixtures/core_initial_data.json
+    fi
+}
+function evolvedb {
+    echo "Evolving XOS services..."
+    python $XOS_DIR/manage.py evolve --hint --execute --noinput
+}
+function migratedb {
+    echo "Migrating XOS services..."
+    python $XOS_DIR/manage.py migrate
+}
+function stopserver {
+    echo "Stopping any running XOS Service(s)"
+    pkill -f "python.*runserver"
+}
+function runserver {
+    ensure_postgres_running
+    PUBLIC_HOSTNAME="0.0.0.0"
+    echo "Starting XOS Service on $PUBLIC_HOSTNAME:8000"
+    python manage.py runserver $PUBLIC_HOSTNAME:8000 --insecure&
+}
+
+function dumpdata {
+    mkdir -p $BACKUP_DIR
+    FN="$BACKUP_DIR/dumpdata-`date +%Y-%m-%d_%H:%M:%S`.json"
+    echo "Saving data to $FN"
+    python manage.py dumpdata core hpc syndicate_storage requestrouter -a --indent 4 > $FN
+    if [[ ! -f $FN ]]; then
+        echo "FAILED to create $FN"
+        exit
+    fi
+    SIZE=$(du -k "$FN" | cut -f 1)
+    if [[ $SIZE -lt 9 ]]; then
+        echo "Dumpdata was empty. Deleting and aborting"
+        rm $FN
+        exit
+    fi
+    rm -f $BACKUP_DIR/dumpdata-latest.json
+    ln -s $FN $BACKUP_DIR/dumpdata-latest.json
+}
+
+function genkeys {
+    mkdir -p public_keys
+    mkdir -p private_keys
+    echo "Generating keys"
+	keyczart create --location=private_keys --name="OpenCloud" --purpose=crypt --asymmetric=rsa
+	keyczart addkey --location=private_keys --status=primary --size=1024
+	keyczart pubkey --location=private_keys --destination=public_keys
+    if [[ ! -f public_keys/1 ]]; then
+        echo "FAILED to create keys"
+        exit
+    fi
+}
+
+function makemigrations {
+    rm -rf /opt/xos/*/migrations /opt/xos/services/*/migrations
+    python ./manage.py makemigrations core
+    python ./manage.py makemigrations hpc
+    python ./manage.py makemigrations requestrouter
+    python ./manage.py makemigrations syndicate_storage
+    python ./manage.py makemigrations cord
+    python ./manage.py makemigrations ceilometer
+    python ./manage.py makemigrations helloworldservice_complete
+    python ./manage.py makemigrations vpn
+    python ./manage.py makemigrations onos
+    #python ./manage.py makemigrations servcomp
+}
+
+function remigrate {
+    if db_exists; then
+        dropdb
+    fi
+    makemigrations
+}
+
+COMMAND=$1
+
+if [ "$COMMAND" = "initdb" ]; then
+    stopserver
+    ensure_postgres_running
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "repairdb" ]; then
+    stopserver
+    ensure_postgres_running
+    dumpdata
+    # TODO: This is where we could run migration scripts to upgrade the
+    #   dumped data to the new models.
+    mv $XOS_DIR/core/fixtures/core_initial_data.json $XOS_DIR/core/fixtures/core_initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/core_initial_data.json
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "restoredb" ]; then
+    if [[ ! -f $BACKUP_DIR/dumpdata-latest.json ]]; then
+       echo There is no dumpdata to restore
+       exit
+    fi
+    stopserver
+    ensure_postgres_running
+    mv $XOS_DIR/core/fixtures/core_initial_data.json $XOS_DIR/core/fixtures/core_initial_data.json-old
+    cp $BACKUP_DIR/dumpdata-latest.json $XOS_DIR/core/fixtures/core_initial_data.json
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "evolvedb" -o "$COMMAND" = "migratedb" ]; then
+    stopserver
+    ensure_postgres_running
+    if [[ $DJANGO_17 ]]; then
+        migratedb
+    else
+        evolvedb
+    fi
+fi
+if [ "$COMMAND" = "resetdb" ]; then
+    stopserver
+    ensure_postgres_running
+    dropdb
+    createdb
+    syncdb
+fi
+if [ "$COMMAND" = "syncdb" ]; then
+    stopserver
+    syncdb
+fi
+if [ "$COMMAND" = "runserver" ]; then
+    stopserver
+    runserver
+fi
+if [ "$COMMAND" = "stopserver" ]; then
+    stopserver
+fi
+if [ "$COMMAND" = "dumpdata" ]; then
+    dumpdata
+fi
+if [ "$COMMAND" = "genkeys" ]; then
+    genkeys
+fi
+if [ "$COMMAND" = "generateapi" ]; then
+   python apigen/modelgen apigen/api.template.py > xos/xosapi.py
+fi
+if [ "$COMMAND" = "remigrate" ]; then
+   ensure_postgres_running
+   remigrate
+   createdb
+   syncdb
+fi
+if [ "$COMMAND" = "makemigrations" ]; then
+   makemigrations
+   syncdb
+fi

@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+from pyparsing import *
+from optparse import OptionParser
+import os
+from os.path import join,exists
+from shutil import copy
+
+usage = "usage: %prog --old <old namespace> --new <new namespace> <directory root>"
+
+parser = OptionParser(usage=usage)
+
+parser.add_option("-q", "--quiet",
+                          action="store_false", dest="verbose",
+                          help="be vewwy quiet (I'm hunting wabbits)")
+
+parser.add_option("-r", "--reuse",
+                          action="store_false", dest="reuse",
+                          help="Reuse .orig files. Dangerous!")
+
+parser.add_option("-o", "--old", 
+                          metavar="old", help="Old namespace")
+
+parser.add_option("-n", "--new",
+                          default="new", help="New namespace")
+
+(options, args) = parser.parse_args()
+
+old_ns = options.old
+new_ns = options.new
+
+# grammar
+
+comment = '#' + SkipTo(lineEnd)
+
+module_ns = Word(alphanums + '-' + '_' + '.' + '*')
+old_module_ns = Combine(old_ns + Optional(Combine('.'+module_ns)))
+end_of_python_line = Or([lineEnd,comment])
+
+as_suffix = 'as' + module_ns
+
+import_pure = 'import' + old_module_ns 
+import_pure_line = import_pure + Optional(as_suffix) + end_of_python_line
+
+import_from = 'from' + old_module_ns + 'import' + commaSeparatedList
+import_from_line = import_from + Optional(as_suffix) + end_of_python_line
+
+import_line = Or([import_pure_line, import_from_line])
+
+# Make a list of Python files to deal with
+
+try:
+    f = args[0]
+except IndexError:
+    print 'Specify a directory root'
+    exit(1)
+
+for root, dirs, files in os.walk(f):
+    for n in files:
+        if (n.endswith('.py')):
+            full_path = '/'.join([root,n])
+            orig_path = full_path + '.orig'
+            if (options.verbose):
+                print 'Working on %s:'%full_path
+            if (not os.path.exists(orig_path) or not options.reuse):
+                if (options.verbose):
+                    print 'Copying %s->%s:'%(full_path,orig_path)
+                copy(full_path, orig_path)
+            f_contents = open(orig_path).read()
+            new_contents = []
+            for l in f_contents.splitlines():
+                try:
+                    match = import_line.parseString(l)
+                    l = l.replace(old_ns, new_ns)
+                except ParseException:
+                    pass
+                new_contents.append(l)
+
+            new_file = '\n'.join(new_contents)
+            if (f_contents.endswith('\n')):
+                new_file+='\n'
+            open(full_path,'w').write(new_file)

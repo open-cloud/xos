@@ -17,7 +17,7 @@ isolated environments.
 To build and run the database container:
 
 ```
-$ cd postgres; make build && make run
+$ cd postgresql; make build && make run
 ```
 
 #### XOS Container
@@ -29,7 +29,7 @@ $ cd xos; make build && make run
 ```
 
 You should now be able to access the login page by visiting
-`http://localhost:80` and log in using the default `paadmin@vicci.org` account
+`http://localhost:8000` and log in using the default `padmin@vicci.org` account
 with password `letmein`. It may be helpful to bootstrap xos with some sample
 data; deployment, controllers, sites, slices, etc. You can get started by
 loading tosca configuration for the opencloud demo dataset:

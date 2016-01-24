@@ -1,0 +1,12 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  {% if delete -%}
+  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} tenant={{ tenant }} tenant_description="{{ tenant_description }}" state=absent
+  {% else -%}
+  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"
+  {% for role in roles %}
+  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} user="{{ name }}" role={{ role }} tenant={{ tenant }}
+  {% endfor %}
+  {% endif %}

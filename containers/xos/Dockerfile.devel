@@ -43,7 +43,7 @@ RUN pip install \
     django-crispy-forms \
     django-encrypted-fields \
     django-extensions \
-    django-filter \
+    django-filter==0.11.0 \
     django-geoposition \
     django-ipware \
     django_rest_swagger \
@@ -75,8 +75,8 @@ ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-pac
 
 # Install XOS
 ADD xos /opt/xos
-RUN chmod +x /opt/xos/scripts/opencloud
-RUN /opt/xos/scripts/opencloud genkeys
+RUN chmod +x /opt/xos/tools/xos-manage
+RUN /opt/xos/tools/xos-manage genkeys
 
 # install Tosca engine
 RUN chmod +x /opt/xos/tosca/run.py

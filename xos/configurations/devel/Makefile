@@ -2,13 +2,17 @@ MYIP:=$(shell hostname -i)
 
 cloudlab: common_cloudlab xos
 
-devstack: upgrade_pkgs common_devstack devstack_net_fix xos
+devstack: upgrade_pkgs common_devstack xos
 
 xos:
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+
+containers:
+	cd ../../../containers/xos; make devel
+	cd ../../../containers/synchronizer; make
 
 common_cloudlab:
 	make -C ../common -f Makefile.cloudlab
@@ -34,9 +38,11 @@ enter-xos:
 enter-synchronizer:
 	sudo docker exec -it devel_xos_synchronizer_openstack_1 bash
 
-devstack_net_fix:
-	sudo ../common/devstack/net-fix.sh
-	sudo bash -c "source ../setup/admin-openrc.sh; neutron subnet-update private-subnet --dns-nameservers list=true 8.8.8.8 8.8.4.4"
-
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
+
+rebuild_xos:
+	make -C ../../../containers/xos devel
+
+rebuild_synchronizer:
+	make -C ../../../containers/synchronizer
