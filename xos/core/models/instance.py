@@ -15,7 +15,6 @@ from core.models import Tag
 from core.models import Flavor
 from django.contrib.contenttypes import generic
 from xos.config import Config
-from monitor import driver as monitor
 from django.core.exceptions import PermissionDenied, ValidationError
 
 config = Config()

@@ -1,7 +1,6 @@
 from django.http import HttpResponse
 from django.views.generic import TemplateView, View
 from django import template
-from monitor import driver
 from core.models import *
 from services.helloworld.models import *
 import json

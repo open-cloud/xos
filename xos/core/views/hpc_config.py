@@ -1,5 +1,4 @@
 from django.http import HttpResponse, HttpResponseServerError
-from monitor import driver
 from core.models import *
 from services.hpc.models import *
 from services.requestrouter.models import *

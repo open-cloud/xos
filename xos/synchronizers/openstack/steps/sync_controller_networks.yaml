@@ -1,0 +1,39 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - quantum_network:
+        auth_url={{ endpoint }}
+        login_username={{ admin_user }}
+        login_tenant_name={{ tenant_name }}
+        login_password={{ admin_password }}
+        tenant_name={{ tenant_name }}
+        name={{ name }}
+        {% if delete %}
+        state=absent
+        {% else %}
+        state=present
+        {% endif %}
+        shared=true
+  {% if not delete %}
+  - quantum_subnet:
+        auth_url={{ endpoint }}
+        login_username={{ admin_user }}
+        login_tenant_name={{ tenant_name }}
+        login_password={{ admin_password }}
+        tenant_name={{ tenant_name }}
+        name={{ subnet_name }}
+        network_name={{ name }}
+        {% if delete %}
+        state=absent
+        {% else %}
+        state=present
+        {% if use_vtn %}
+        gateway_ip={{ gateway }}
+        {% else %}
+        no_gateway=true
+        {% endif %}
+        dns_nameservers=8.8.8.8
+        cidr={{ cidr }}
+        {% endif %}
+  {% endif %}

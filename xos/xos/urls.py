@@ -27,7 +27,6 @@ def redirect_to_apache(request):
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^stats', 'core.views.stats.Stats', name='stats'),
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
     url(r'^helloworld', HelloWorldView.as_view(), name='helloWorld'),
     url(r'^serviceGrid', ServiceGridView.as_view(), name='serviceGrid'),

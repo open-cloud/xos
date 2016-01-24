@@ -1,0 +1,5 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - keystone_user: endpoint={{ endpoint }} login_user={{ admin_user }} login_password={{ admin_password }} login_tenant_name={{ admin_tenant }} tenant={{ tenant }} tenant_description="{{ tenant_description }}"

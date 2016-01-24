@@ -15,12 +15,12 @@ from core.models.plcorebase import StrippedCharField
 from timezones.fields import TimeZoneField
 from operator import itemgetter, attrgetter
 from core.middleware import get_request
-import model_policy
+import synchronizers.model_policy
 
 # ------ from plcorebase.py ------
 try:
     # This is a no-op if observer_disabled is set to 1 in the config file
-    from observer import *
+    from synchronizers.base import *
 except:
     print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback
