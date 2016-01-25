@@ -141,6 +141,10 @@
           return promises;
         }, []);
 
+        // TODO add networks
+        // decide how, they should be manually drawn
+        // as they connect more instances without parent dependencies
+
         return $q.all(promisesArr);
       })
       .then((instances) => {

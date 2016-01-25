@@ -11,6 +11,8 @@
       templateUrl: 'templates/topology_canvas.tpl.html',
       controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, TreeLayout){
 
+        // TODO draw legend
+
         this.instances = [];
         this.slices = [];
 

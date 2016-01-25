@@ -31,10 +31,12 @@
       // Normalize for fixed-depth.
       nodes.forEach(function(d) {
         // position the child node horizontally
-        d.y = d.depth * (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
-        console.log(d.id);
-        if(d.type == 'slice'){
-          console.info('slice found!', d);
+        const step = (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
+        d.y = d.depth * step;
+        if(d.type === 'slice' || d.type === 'instance'){
+          d.y = d.depth * step - (step / 2);
+          //d.x = d.parent.x + (step / 2);
+          //console.log(d.parent);
         }
       });
 
@@ -49,6 +51,7 @@
           transform: d => `translate(${source.y0},${source.x0})` // this is the starting position
         });
 
+      // TODO append different shapes base on type
       nodeEnter.append('circle')
         .attr('r', 1e-6)
         .style('fill', d => d._children ? 'lightsteelblue' : '#fff')
@@ -98,7 +101,7 @@
 
       // Enter any new links at the parent's previous position.
       link.enter().insert('path', 'g')
-        .attr('class', 'link')
+        .attr('class', d => `link ${d.target.type}`)
         .attr('d', function(d) {
           var o = {x: source.x0, y: source.y0};
           return diagonal({source: o, target: o});
@@ -127,9 +130,8 @@
 
     const serviceClick = function(d) {
 
-      // empty panel
-      //_this.slices = [];
-      //_this.instances = [];
+      // toggling selected status
+      d.selected = !d.selected;
 
       // reset all the nodes to default radius
       var nodes = d3.selectAll('circle')
@@ -154,61 +156,18 @@
         return;
       }
 
-      //_this.selectedService = {
-      //  id: d.id,
-      //  name: d.name
-      //};
-
       ServiceRelation.getServiceInterfaces(d.service.id)
         .then(interfaceTree => {
 
           const isDetailed = lodash.find(d.children, {type: 'slice'});
           if(isDetailed){
-            d.selected = false;
             lodash.remove(d.children, {type: 'slice'});
           }
           else {
-            d.selected = true;
-
             d.children = d.children.concat(interfaceTree);
           }
 
           updateTree(_svg, _layout, _source);
-            // draw a rect with slice names
-            //const parentNode = d3.select(this.parentNode);
-            //parentNode
-            //  .append('rect')
-            //  .style('opacity', 0)
-            //  .attr({
-            //    width: 150,
-            //    height: 50,
-            //    y: 35,
-            //    x: -75,
-            //    class: 'slice-detail'
-            //  })
-            //  .transition()
-            //  .duration(serviceTopologyConfig.duration)
-            //  .style('opacity', 1);
-            // TODO attach a click listener to draw instances and networks
-
-            //parentNode
-            //  .append('text')
-            //  .style('opacity', 0)
-            //  .attr({
-            //    y: 65,
-            //    x: -60,
-            //    class: 'slice-name'
-            //  })
-            //  .text(() => {
-            //    if(slices[0]){
-            //      return slices[0].humanReadableName;
-            //    }
-            //
-            //    return '';
-            //  })
-            //  .transition()
-            //  .duration(serviceTopologyConfig.duration)
-            //  .style('opacity', 1);
         });
     };
 
