@@ -17,7 +17,7 @@
   .service('Subscribers', function($resource){
     return $resource('/xos/subscribers', {id: '@id'});
   })
-  .service('ServiceRelation', function($q, _, lodash, Services, Tenant){
+  .service('ServiceRelation', function($q, lodash, Services, Tenant, Slice, Instances){
 
     // count the mas depth of an object
     const depthOf = (obj) => {
@@ -128,6 +128,49 @@
       return deferred.promise;
     };
 
+    const getServiceInterfaces = (serviceId) => {
+      var deferred = $q.defer();
+
+      var _slices;
+
+      Slice.query({service: serviceId}).$promise
+      .then((slices) => {
+        _slices = slices;
+        const promisesArr = slices.reduce((promises, slice) => {
+          promises.push(Instances.query({slice: slice.id}).$promise);
+          return promises;
+        }, []);
+
+        return $q.all(promisesArr);
+      })
+      .then((instances) => {
+        console.log(instances);
+        // parse data to build a tree (2 level only)
+        var interfaceTree = [];
+        lodash.forEach(_slices, (slice, i) => {
+          let current = {
+            name: slice.name,
+            slice: slice,
+            type: 'slice',
+            children: instances[i].map((instance) => {
+              return {
+                name: instance.humanReadableName,
+                children: [],
+                type: 'instance',
+                instance: instance
+              };
+
+            })
+          };
+          interfaceTree.push(current);
+        });
+        console.log(interfaceTree)
+        deferred.resolve(interfaceTree);
+      });
+
+      return deferred.promise;
+    };
+
     // export APIs
     this.get = get;
     this.buildLevel = buildLevel;
@@ -135,6 +178,7 @@
     this.findLevelRelation = findLevelRelation;
     this.findLevelServices = findLevelServices;
     this.depthOf = depthOf;
+    this.getServiceInterfaces = getServiceInterfaces;
   });
 
 }());

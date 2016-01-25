@@ -4,6 +4,11 @@ service-canvas {
     display: block;
 }
 
+service-canvas svg {
+    position: absolute;
+    top: 0;
+}
+
 .node {
     cursor: pointer;
 }
@@ -17,6 +22,14 @@ service-canvas {
 .node.subscriber circle,
 .node.internet circle {
     stroke: #ffdb07;
+}
+
+.node.slice circle {
+    stroke: #b01dff;
+}
+
+.node.instance circle {
+    stroke: #ea25ff;
 }
 
 .node rect.slice-detail{

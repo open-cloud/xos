@@ -9,7 +9,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/topology_canvas.tpl.html',
-      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers){
+      controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, TreeLayout){
 
         this.instances = [];
         this.slices = [];
@@ -17,18 +17,15 @@
         const width = $window.innerWidth - serviceTopologyConfig.widthMargin;
         const height = $window.innerHeight - serviceTopologyConfig.heightMargin;
 
-        const tree = d3.layout.tree()
+        const treeLayout = d3.layout.tree()
           .size([height, width]);
-
-        const diagonal = d3.svg.diagonal()
-          .projection(d => [d.y, d.x]);
 
         const svg = d3.select($element[0])
           .append('svg')
           .style('width', `${$window.innerWidth}px`)
           .style('height', `${$window.innerHeight}px`)
           .append('g')
-          .attr('transform', 'translate(' + serviceTopologyConfig.widthMargin+ '','' + serviceTopologyConfig.heightMargin + '')'');;
+          .attr('transform', 'translate(' + serviceTopologyConfig.widthMargin+ ',' + serviceTopologyConfig.heightMargin + ')');
 
         //const resizeCanvas = () => {
         //  var targetSize = svg.node().getBoundingClientRect();
@@ -47,199 +44,16 @@
         //    update(root);
         //  });
         var root;
-        var i = 0;
-        var duration = 750;
 
         const draw = (tree) => {
           root = tree;
           root.x0 = $window.innerHeight / 2;
           root.y0 = 0;
 
-          update(root);
+          TreeLayout.updateTree(svg, treeLayout, root);
         };
-
-        function update(source) {
-
-          const maxDepth = depthOf(source);
-
-          // Compute the new tree layout.
-          var nodes = tree.nodes(root).reverse(),
-            links = tree.links(nodes);
-
-          // Normalize for fixed-depth.
-          nodes.forEach(function(d) {
-            // position the child node horizontally
-            d.y = d.depth * (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
-          });
-
-          // Update the nodes…
-          var node = svg.selectAll('g.node')
-            .data(nodes, function(d) { return d.id || (d.id = ++i); });
-
-          // Enter any new nodes at the parent's previous position.
-          var nodeEnter = node.enter().append('g')
-            .attr({
-              class: d => `node ${d.type}`
-            })
-            .attr('transform', function(d) {
-              // this is the starting position
-              return 'translate(' + source.y0 + ',' + source.x0 + ')';
-            });
-
-          nodeEnter.append('circle')
-            .attr('r', 1e-6)
-            .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff'; })
-            .on('click', click);
-
-          nodeEnter.append('text')
-            .attr('x', function(d) { return d.children || d._children ? -13 : 13; })
-            .attr('transform', function(d) {
-              if((d.children || d._children) && d.parent || d._parent){
-                return 'rotate(30)';
-              }
-            })
-            .attr('dy', '.35em')
-            .attr('text-anchor', function(d) { return d.children || d._children ? 'end' : 'start'; })
-            .text(function(d) { return d.name; })
-            .style('fill-opacity', 1e-6);
-
-          // Transition nodes to their new position.
-          var nodeUpdate = node.transition()
-            .duration(duration)
-            .attr('transform', function(d) {
-              return 'translate(' + d.y + ',' + d.x + ')';
-            });
-
-          nodeUpdate.select('circle')
-            .attr('r', 10)
-            .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff'; });
-
-          nodeUpdate.select('text')
-            .style('fill-opacity', 1);
-
-          // Transition exiting nodes to the parent's new position.
-          var nodeExit = node.exit().transition()
-            .duration(duration)
-            .attr('transform', function(d) { return 'translate(' + source.y + ',' + source.x + ')'; })
-            .remove();
-
-          nodeExit.select('circle')
-            .attr('r', 1e-6);
-
-          nodeExit.select('text')
-            .style('fill-opacity', 1e-6);
-
-          // Update the links…
-          var link = svg.selectAll('path.link')
-            .data(links, function(d) { return d.target.id; });
-
-          // Enter any new links at the parent's previous position.
-          link.enter().insert('path', 'g')
-            .attr('class', 'link')
-            .attr('d', function(d) {
-              var o = {x: source.x0, y: source.y0};
-              return diagonal({source: o, target: o});
-            });
-
-          // Transition links to their new position.
-          link.transition()
-            .duration(duration)
-            .attr('d', diagonal);
-
-          // Transition exiting nodes to the parent's new position.
-          link.exit().transition()
-            .duration(duration)
-            .attr('d', function(d) {
-              var o = {x: source.x, y: source.y};
-              return diagonal({source: o, target: o});
-            })
-            .remove();
-
-          // Stash the old positions for transition.
-          nodes.forEach(function(d) {
-            d.x0 = d.x;
-            d.y0 = d.y;
-          });
-        }
 
         var _this = this;
-        const click = function(d) {
-
-          // empty panel
-          _this.slices = [];
-          _this.instances = [];
-
-          var nodes = d3.selectAll('circle')
-            .transition()
-            .duration(duration)
-            .attr('r', 10);
-
-          d3.selectAll('rect.slice-detail')
-            .remove();
-
-          d3.selectAll('text.slice-name')
-            .remove();
-
-          var selectedNode = d3.select(this);
-
-          selectedNode
-            .transition()
-            .duration(duration)
-            .attr('r', 15);
-
-          if(!d.service){
-            return;
-          }
-
-          _this.selectedService = {
-            id: d.id,
-            name: d.name
-          };
-
-          Slice.query({service: d.service.id}).$promise
-          .then(slices => {
-            _this.slices = slices;
-
-            if(slices.length > 0){
-              // TODO slice can be more than 1 create a for loop
-              const parentNode = d3.select(this.parentNode);
-
-              parentNode
-                .append('rect')
-                .style('opacity', 0)
-                .attr({
-                  width: 150,
-                  height: 50,
-                  y: 35,
-                  x: -75,
-                  class: 'slice-detail'
-                })
-                .transition()
-                .duration(duration)
-                .style('opacity', 1);
-                // TODO attach a click listener to draw instances and networks
-
-              parentNode
-                .append('text')
-                .style('opacity', 0)
-                .attr({
-                  y: 65,
-                  x: -60,
-                  class: 'slice-name'
-                })
-                .text(() => {
-                  if(slices[0]){
-                    return slices[0].humanReadableName;
-                  }
-
-                  return '';
-                })
-                .transition()
-                .duration(duration)
-                .style('opacity', 1);
-            }
-          })
-        };
 
         Subscribers.query().$promise
         .then((subscribers) => {
@@ -258,6 +72,7 @@
           })
         };
 
+        // redraw when subrsbiber change
         this.getServiceChain = (subscriber) => {
           ServiceRelation.get(subscriber)
             .then((tree) => {
