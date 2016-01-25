@@ -26,12 +26,12 @@ class VPNTenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",)
 
-    default_attributes = {'server_key': 'Error key not found',
+    default_attributes = {'server_key': None,
                           'server_address': '10.8.0.1',
                           'client_address': '10.8.0.2',
                           'can_view_subnet': False,
                           'is_persistent': True,
-                          'script_name': 'Not found'}
+                          'script_name': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()

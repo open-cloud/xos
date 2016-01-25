@@ -47,7 +47,6 @@ class VPNTenantForm(forms.ModelForm):
 
     Attributes:
         creator (forms.ModelChoiceField): The XOS user that created this tenant.
-        server_key (forms.CharField): The readonly static key used to the connect to this Tenant.
         client_conf (forms.CharField): The readonly configuration used on the client to connect to this Tenant.
         server_address (forms.GenericIPAddressField): The ip address on the VPN of this Tenant.
         client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
@@ -56,20 +55,17 @@ class VPNTenantForm(forms.ModelForm):
 
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
-    server_key = forms.CharField(required=True, widget=forms.Textarea)
     server_address = forms.GenericIPAddressField(
         protocol='IPv4', required=True)
     client_address = forms.GenericIPAddressField(
         protocol='IPv4', required=True)
     is_persistent = forms.BooleanField(required=False)
-    script_name = forms.CharField(required=True)
     can_view_subnet = forms.BooleanField(required=False)
 
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['server_key'].widget.attrs['readonly'] = True
         # self.fields['script_name'].widget.attrs['readonly'] = True
         self.fields[
             'provider_service'].queryset = VPNService.get_service_objects().all()
@@ -78,7 +74,6 @@ class VPNTenantForm(forms.ModelForm):
 
         if self.instance:
             self.fields['creator'].initial = self.instance.creator
-            self.fields['server_key'].initial = self.instance.server_key
             self.fields[
                 'server_address'].initial = self.instance.server_address
             self.fields[
@@ -86,31 +81,31 @@ class VPNTenantForm(forms.ModelForm):
             self.fields['is_persistent'].initial = self.instance.is_persistent
             self.fields[
                 'can_view_subnet'].initial = self.instance.can_view_subnet
-            self.fields['script_name'].initial = self.instance.script_name
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
-            self.fields['server_key'].initial = self.generate_VPN_key()
             self.fields['server_address'].initial = "10.8.0.1"
             self.fields['client_address'].initial = "10.8.0.2"
             self.fields['is_persistent'].initial = True
             self.fields['can_view_subnet'].initial = False
-            self.fields['script_name'].initial = str(time.time()) + ".vpn"
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[
                     0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
-        self.instance.server_key = self.cleaned_data.get("server_key")
         self.instance.server_address = self.cleaned_data.get("server_address")
         self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.script_name = self.cleaned_data['script_name']
-        if self.instance.script_name == None:
-            raise forms.ValidationError("Script name is None, despite that not making any sense")
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
+
+        if self.instance.script_name == None:
+            self.instance.script_name = str(time.time()) + ".vpn"
+
+        if self.instance.server_key == None:
+            self.instance.server_key = self.generate_VPN_key()
+
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_VPN_key(self):
@@ -130,7 +125,6 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('id', 'backend_status_icon', 'instance')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
-                                    'server_key', 'script_name',
                                     'server_address', 'client_address',
                                     'is_persistent', 'can_view_subnet'],
                          'classes': ['suit-tab suit-tab-general']})]
