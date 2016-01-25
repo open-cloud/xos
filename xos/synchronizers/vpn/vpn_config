@@ -10,12 +10,12 @@ port=5432
 [api]
 nova_enabled=True
 
-# Sets options for the observer
+# Sets options for the synchronizer
 [observer]
 name=vpn
-dependency_graph=/opt/xos/observers/vpn/model-deps
-steps_dir=/opt/xos/observers/vpn/steps
-sys_dir=/opt/xos/observers/vpn/sys
+dependency_graph=/opt/xos/synchronizer/vpn/model-deps
+steps_dir=/opt/xos/synchronizer/vpn/steps
+sys_dir=/opt/xos/synchronizer/vpn/sys
 logfile=/var/log/xos_backend.log
 pretend=False
 backoff_disabled=True

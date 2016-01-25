@@ -13,7 +13,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     observes = VPNTenant
     requested_interval = 0
     template_name = "sync_vpntenant.yaml"
-    service_key_name = "/opt/xos/observers/vpn/vpn_private_key"
+    service_key_name = "/opt/xos/synchronizer/vpn/vpn_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncVPNTenant, self).__init__(*args, **kwargs)
