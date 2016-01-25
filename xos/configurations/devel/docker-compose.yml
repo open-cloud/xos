@@ -18,7 +18,7 @@ xos_synchronizer_openstack:
 
 xos_synchronizer_vpn:
     image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120 ; python /opt/xos/observers/vpn/vpn-observer.py -C /opt/xos/observers/vpn/vpn_config"
+    command: bash -c "sleep 120 ; python /opt/xos/synchronizers/vpn/vpn-synchronizer.py -C /opt/xos/synchronizers/vpn/vpn_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: vpn
@@ -27,7 +27,7 @@ xos_synchronizer_vpn:
     extra_hosts:
         - ctl:${MYIP}
     volumes:
-        - ../setup/id_rsa:/opt/xos/observers/vpn/vpn_private_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/vpn/vpn_private_key:ro  # private key
 
 # FUTURE
 #xos_swarm_synchronizer:
