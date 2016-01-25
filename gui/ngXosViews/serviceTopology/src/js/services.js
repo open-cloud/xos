@@ -89,7 +89,7 @@
       return tree;
     };
 
-    const buildServiceTree = (services, tenants, subscriber = {id:1, name: 'fakeSubs'}) => {
+    const buildServiceTree = (services, tenants, subscriber = {id: 1, name: 'fakeSubs'}) => {
 
       // find the root service
       // it is the one attached to subsriber_root
@@ -106,7 +106,6 @@
         children: [serviceTree]
       };
 
-      //return serviceTree;
     };
 
     const get = (subscriber) => {

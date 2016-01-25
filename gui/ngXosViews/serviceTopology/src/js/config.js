@@ -5,7 +5,11 @@
   .constant('serviceTopologyConfig', {
     widthMargin: 100,
     heightMargin: 30,
-    duration: 750
+    duration: 750,
+    circle: {
+      radius: 10,
+      selectedRadius: 15
+    }
   })
 
 }());

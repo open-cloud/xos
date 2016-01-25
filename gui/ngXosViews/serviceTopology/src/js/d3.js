@@ -35,8 +35,6 @@
         d.y = d.depth * step;
         if(d.type === 'slice' || d.type === 'instance'){
           d.y = d.depth * step - (step / 2);
-          //d.x = d.parent.x + (step / 2);
-          //console.log(d.parent);
         }
       });
 
@@ -58,27 +56,32 @@
         .on('click', serviceClick);
 
       nodeEnter.append('text')
-        .attr('x', function(d) { return d.children || d._children ? -13 : 13; })
-        .attr('transform', function(d) {
-          if((d.children || d._children) && d.parent || d._parent){
-            return 'rotate(30)';
-          }
+        .attr({
+          x: d => d.children ? -serviceTopologyConfig.circle.selectedRadius -3 : serviceTopologyConfig.circle.selectedRadius + 3,
+          dy: '.35em',
+          transform: d => {
+            if (d.children && d.parent){
+              if(d.parent.x < d.x){
+                return 'rotate(-30)';
+              }
+              return 'rotate(30)';
+            }
+          },
+          'text-anchor': d => d.children ? 'end' : 'start'
         })
-        .attr('dy', '.35em')
-        .attr('text-anchor', function(d) { return d.children || d._children ? 'end' : 'start'; })
-        .text(function(d) { return d.name; })
+        .text(d => d.name)
         .style('fill-opacity', 1e-6);
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
         .duration(serviceTopologyConfig.duration)
-        .attr('transform', function(d) {
-          return 'translate(' + d.y + ',' + d.x + ')';
+        .attr({
+          'transform': d => `translate(${d.y},${d.x})`
         });
 
       nodeUpdate.select('circle')
-        .attr('r', d => d.selected ? 15 : 10)
-        .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff'; });
+        .attr('r', d => d.selected ? serviceTopologyConfig.circle.selectedRadius : serviceTopologyConfig.circle.radius)
+        .style('fill', d => d.selected ? 'lightsteelblue' : '#fff');
 
       nodeUpdate.select('text')
         .style('fill-opacity', 1);
@@ -86,7 +89,9 @@
       // Transition exiting nodes to the parent's new position.
       var nodeExit = node.exit().transition()
         .duration(serviceTopologyConfig.duration)
-        .attr('transform', function(d) { return 'translate(' + source.y + ',' + source.x + ')'; })
+        .attr({
+          'transform': d => `translate(${source.y},${source.x})`
+        })
         .remove();
 
       nodeExit.select('circle')
@@ -130,31 +135,19 @@
 
     const serviceClick = function(d) {
 
+      if(!d.service){
+        return;
+      }
+
       // toggling selected status
       d.selected = !d.selected;
-
-      // reset all the nodes to default radius
-      var nodes = d3.selectAll('circle')
-        .transition()
-        .duration(serviceTopologyConfig.duration)
-        .attr('r', 10);
-
-      // remove slices details
-      d3.selectAll('rect.slice-detail')
-        .remove();
-      d3.selectAll('text.slice-name')
-        .remove();
 
       var selectedNode = d3.select(this);
 
       selectedNode
         .transition()
         .duration(serviceTopologyConfig.duration)
-        .attr('r', 15);
-
-      if(!d.service){
-        return;
-      }
+        .attr('r', serviceTopologyConfig.circle.selectedRadius);
 
       ServiceRelation.getServiceInterfaces(d.service.id)
         .then(interfaceTree => {
