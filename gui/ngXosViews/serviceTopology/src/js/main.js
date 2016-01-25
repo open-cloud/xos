@@ -17,7 +17,4 @@ angular.module('xos.serviceTopology', [
 })
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
-})
-.factory('_', function($window){
-  return window._;
 });

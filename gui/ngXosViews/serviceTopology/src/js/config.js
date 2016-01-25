@@ -4,7 +4,8 @@
   angular.module('xos.serviceTopology')
   .constant('serviceTopologyConfig', {
     widthMargin: 100,
-    heightMargin: 30
+    heightMargin: 30,
+    duration: 750
   })
 
 }());
