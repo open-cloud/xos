@@ -5,5 +5,10 @@
     .factory('d3', function($window){
       return $window.d3;
     })
+  .service('TreeLayout', function(){
+    this.updateTree = (source) => {
+
+    }
+  });
 
 }());

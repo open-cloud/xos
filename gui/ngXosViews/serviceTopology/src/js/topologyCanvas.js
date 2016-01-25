@@ -14,20 +14,6 @@
         this.instances = [];
         this.slices = [];
 
-        // count the mas depth of an object
-        const depthOf = (obj) => {
-          var depth = 0;
-          if (obj.children) {
-            obj.children.forEach(function (d) {
-              var tmpDepth = depthOf(d);
-              if (tmpDepth > depth) {
-                depth = tmpDepth
-              }
-            })
-          }
-          return 1 + depth
-        };
-
         const width = $window.innerWidth - serviceTopologyConfig.widthMargin;
         const height = $window.innerHeight - serviceTopologyConfig.heightMargin;
 
@@ -42,7 +28,7 @@
           .style('width', `${$window.innerWidth}px`)
           .style('height', `${$window.innerHeight}px`)
           .append('g')
-          .attr("transform", "translate(" + serviceTopologyConfig.widthMargin+ "," + serviceTopologyConfig.heightMargin + ")");;
+          .attr('transform', 'translate(' + serviceTopologyConfig.widthMargin+ '','' + serviceTopologyConfig.heightMargin + '')'');;
 
         //const resizeCanvas = () => {
         //  var targetSize = svg.node().getBoundingClientRect();
@@ -92,7 +78,9 @@
 
           // Enter any new nodes at the parent's previous position.
           var nodeEnter = node.enter().append('g')
-            .attr('class', 'node')
+            .attr({
+              class: d => `node ${d.type}`
+            })
             .attr('transform', function(d) {
               // this is the starting position
               return 'translate(' + source.y0 + ',' + source.x0 + ')';
@@ -109,7 +97,6 @@
               if((d.children || d._children) && d.parent || d._parent){
                 return 'rotate(30)';
               }
-              return;
             })
             .attr('dy', '.35em')
             .attr('text-anchor', function(d) { return d.children || d._children ? 'end' : 'start'; })
@@ -198,7 +185,7 @@
           selectedNode
             .transition()
             .duration(duration)
-            .attr('r', 30);
+            .attr('r', 15);
 
           if(!d.service){
             return;
@@ -214,6 +201,7 @@
             _this.slices = slices;
 
             if(slices.length > 0){
+              // TODO slice can be more than 1 create a for loop
               const parentNode = d3.select(this.parentNode);
 
               parentNode
@@ -229,6 +217,7 @@
                 .transition()
                 .duration(duration)
                 .style('opacity', 1);
+                // TODO attach a click listener to draw instances and networks
 
               parentNode
                 .append('text')
@@ -248,13 +237,17 @@
                 .transition()
                 .duration(duration)
                 .style('opacity', 1);
-              }
+            }
           })
         };
 
         Subscribers.query().$promise
         .then((subscribers) => {
           this.subscribers = subscribers;
+          if(subscribers.length === 1){
+            this.selectedSubscriber = subscribers[0];
+            this.getServiceChain(this.selectedSubscriber);
+          }
         });
 
         this.getInstances = (slice) => {

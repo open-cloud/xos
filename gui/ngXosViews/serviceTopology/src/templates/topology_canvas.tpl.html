@@ -1,4 +1,6 @@
-<select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber" ng-change="vm.getServiceChain(vm.selectedSubscriber)"></select>
+<select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber" ng-change="vm.getServiceChain(vm.selectedSubscriber)">
+    <option value="">Select a subscriber...</option>
+</select>
 <div class="service-details">
     <div class="service-slices animate" ng-hide="vm.slices.length == 0">
         <div class="panel panel-info">

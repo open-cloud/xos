@@ -19,6 +19,20 @@
   })
   .service('ServiceRelation', function($q, _, lodash, Services, Tenant){
 
+    // count the mas depth of an object
+    const depthOf = (obj) => {
+      var depth = 0;
+      if (obj.children) {
+        obj.children.forEach(function (d) {
+          var tmpDepth = depthOf(d);
+          if (tmpDepth > depth) {
+            depth = tmpDepth
+          }
+        })
+      }
+      return 1 + depth
+    };
+
     // find all the relation defined for a given root
     const findLevelRelation = (tenants, rootId) => {
       return lodash.filter(tenants, service => {
@@ -41,6 +55,7 @@
       const tree = {
         name: rootService.humanReadableName,
         parent: parentName,
+        type: 'service',
         service: rootService,
         children: []
       };
@@ -62,6 +77,15 @@
         tree.children.push(buildLevel(tenants, unlinkedServices, service, rootService.humanReadableName));
       });
 
+      // if it is the last element append internet
+      if(tree.children.length === 0){
+        tree.children.push({
+          name: 'Internet',
+          type: 'internet',
+          children: []
+        });
+      }
+
       return tree;
     };
 
@@ -78,6 +102,7 @@
       return {
         name: subscriber.name,
         parent: null,
+        type: 'subscriber',
         children: [serviceTree]
       };
 
@@ -101,13 +126,15 @@
       });
 
       return deferred.promise;
-    }
+    };
 
+    // export APIs
     this.get = get;
     this.buildLevel = buildLevel;
     this.buildServiceTree = buildServiceTree;
     this.findLevelRelation = findLevelRelation;
     this.findLevelServices = findLevelServices;
+    this.depthOf = depthOf;
   });
 
 }());
