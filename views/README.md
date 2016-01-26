@@ -4,35 +4,35 @@ This is a collection of helpers to develop views as Angular SPA.
 
 ## Tools
 
-This tools are designed to help you developing UI for XOS. As they born for this purpose if often necessary that a XOS instance is running on your sistem and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally enough.
+These tools are designed to help develop a GUI view. They assume XOS is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally sufficient for GUI development.
 
 ### Apigen
 
 Usage: `npm run apigen`
 
-This tool will automatically generate an angular resource file for each endpoint available in Swagger.
+This tool generates an angular resource file for each endpoint available in Swagger.
 
->You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can have a list of available method also trough Swagger at `http://localhost:9999/docs/`
+>You can generate api related documentation with: `npm run apidoc`. The output is locate in `api/docs`. You can also see a list of available methods through Swagger at `http://localhost:9999/docs/`
 
 ### Vendors
 
-Xos comes with a preset of common libraries, as listed in `bower.json`:
+XOS comes with a set of common libraries, as listed in `bower.json`:
 - angular
 - angular-route
 - angular-resource
 - angular-cookie
 - ng-lodash
 
-This libraries are server through Django, so they will not be included in your minified vendor file. To add a library and generate a new file (that will override the old one), you should:
+These libraries are served through Django, so they are not included in your minified vendor file. To add a library and generate a new file (that will override the old one):
 - enter `ngXosLib` folder
 - run `bower install [myPackage] --save`
 - rebuild the file with `gulp vendor`
 
->_NOTE before adding libraries please discuss it to avoid this file to became huge_
+>_NOTE before adding libraries please discuss it on the devel list to avoid this file becoming too big_
 
 ### Helpers
 
-XOS comes with an helper library that is automatically loaded in the Django template.
+XOS comes with a helper library that is automatically loaded in the Django template.
 
 To use it, add `xos.helpers` to your required modules:
 
@@ -42,54 +42,54 @@ angular.module('xos.myView', [
 ])
 ```
 
-It will automatically ad a `token` to all your request, eventually you can take advantage of some other services:
+It will automatically add a `token` to all your requests. Eventually you can take advantage of some other services:
 
 - **NoHyperlinks Interceptor**: will add a `?no_hyperlinks=1` to your request, to tell Django to return ids instead of links.
 - **XosApi** wrapper for `/xos` endpoints.
 - **XoslibApi** wrapper for `/xoslib` endpoints.
 - **HpcApi** wrapper for `/hpcapi` endpoints.
 
->_NOTE: for the API related service, check documentation in [Apigen](#apigen) section._
+>_NOTE: for the API related service, check the documentation in Section [Apigen](#apigen)._
 
 # ngXosViews
 
-On top of auto-generated Django Admin Views and developer defined Service Views a set of custom views can be generate in XOS.
+In addition to auto-generated Django Admin Views and developer-defined Service Views, a set of custom views can be generate in XOS.
 
-This views are based on AngularJs and they communicate with XOS trough the REST APIs, providing a powerful and flexible way to present and manage data.
+These views are based on AngularJs and they communicate with XOS through the REST APIs, providing a powerful and flexible way to present and manage data.
 
-## How to create a view
+## How to Create a View
 
 ### Getting Started
 
-We have created a [yeoman](http://yeoman.io/) generator to help you scaffolding views.
+We have created a [yeoman](http://yeoman.io/) generator to help scaffold views.
 
->As it is in an early stage of development you should manually link it to your system, to do this enter `/gui/ngXosLib/generator-xos` and run `npm link`.
+>As it is in an early stage of development, you should manually link it to your system. To do this enter `/gui/ngXosLib/generator-xos` and run `npm link`.
 
-#### To generate a new view
+#### To Generate a New View
 
-From `/gui` run `yo xos`. This command will create a new folder with the provided name in: `/gui/ngXosViews` that contain your application.
+From `/gui` run `yo xos`. This command will create a new folder with the provided name in `/gui/ngXosViews` that contains your application.
 
->If you left empty the view name it should be `/gui/ngXosViews/sampleView`
+>If you left View name empty it should be `/gui/ngXosViews/sampleView`
 
-#### Run a development server
+#### Run a Development Server
 
-In your `view` folder and run `npm start`.
+In your `view` folder run `npm start`.
 
-_This will install required dependencies and start a local server with [BrowserSync](http://www.browsersync.io/)_
+This will install the required dependencies and start a local server with [BrowserSync](http://www.browsersync.io/).
 
-#### Publish your view
+#### Publish Your View
 
 Once your view is done, from your view root folder, run: `npm run build`.
 
-This will build your application and copy files in the appropriate locations to be used by django.
+This will build your application and copy files in the appropriate directories for use by Django.
 
 At this point you can enter: `http://localhost:9999/admin/core/dashboardview/add/` and add your custom view.
 
->_NOTE url field should be `template:xosSampleView`_
+>_NOTE: url field should be `template:xosSampleView`_
 
-##### Add this view to a configuration setup
+##### Add This View to a Configuration Setup
 
-You can easily set this as a default view in a configuration just editing the `{config}.yml` file for that configuration, adding this lines:
+You can easily set this as a default view in a configuration by editing the `{config}.yml` file for that configuration. Add these lines:
 
 ```
 {TabName}:                                    
@@ -98,7 +98,7 @@ You can easily set this as a default view in a configuration just editing the `{
       url: template:{viewName}     
 ```
 
-and the edit the _User_ section (normally it starts with `padmin@vicci.org`) in this way:
+Then edit the _User_ section (normally it starts with `padmin@vicci.org`) as follows:
 
 ```
 padmin@vicci.org:                                          
@@ -116,18 +116,18 @@ padmin@vicci.org:
           relationship: tosca.relationships.UsesDashboard  
 ```
 
-#### Install dependencies in your app
+#### Install Dependencies in Your App
 
 To install a local dependency use bower with `--save`. Common modules are saved in `devDependencies` as they already loaded in the Django template.
 
-The `npm start` command is watching your dependencies and will automatically inject it in your `index.html`.
+The `npm start` command watches your dependencies and will automatically inject it in your `index.html`.
 
 #### Linting
 
-A styleguide is enforced trough [EsLint](http://eslint.org/) and is checked during the build process. We **highly** suggest to install the linter in your editor to have realtime hint.
+A styleguide is enforced through [EsLint](http://eslint.org/) and is checked during the build process. We **highly** recommend installing the linter in your editor to have realtime hints.
 
 #### Test
 
-The generator set up a test environment with a default test.
-To run it execute: `npm test`
+The generator sets up a test environment with a default test.
+To run it, execute: `npm test`
 

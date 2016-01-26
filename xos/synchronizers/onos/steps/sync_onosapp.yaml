@@ -7,6 +7,13 @@
   vars:
     appname: {{ appname }}
     dependencies: {{ dependencies }}
+{% if component_configs %}
+    component_configs:
+{% for component_config in component_configs %}
+       - component: {{ component_config.component }}
+         config_params: {{  component_config.config_params }}
+{% endfor %}
+{% endif %}
 {% if rest_configs %}
     rest_configs:
 {% for rest_config in rest_configs %}
@@ -86,6 +93,30 @@
     wait_for: timeout=15
 {% endif %}
 
+{% if install_dependencies %}
+  - name: Install app file directory
+    file:
+      path=/home/ubuntu/{{ appname }}/apps/
+      state=directory
+
+  - name: Copy over app install files to ONOS host
+    copy:
+      src=/opt/xos/observers/onos/{{ '{{' }} item {{ '}}' }}
+      dest=/home/ubuntu/{{ appname }}/apps/{{ '{{' }} item {{ '}}' }}
+    with_items:
+        {% for install_app in install_dependencies %}
+        - {{ install_app }}
+        {% endfor %}
+
+  - name: POST onos-app install command
+    command: >
+        curl -XPOST -HContent-Type:application/octet-stream -u karaf:karaf --data-binary @/home/ubuntu/{{ appname }}/apps/{{ '{{' }} item {{ '}}' }} http://{{ '{{' }} onosaddr.stdout  {{ '}}' }}:8181/onos/v1/applications
+    with_items:
+        {% for dependency in install_dependencies %}
+        - {{ dependency }}
+        {% endfor %}
+{% endif %}
+
 {% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
@@ -97,6 +128,23 @@
         {% for dependency in dependencies %}
         - {{ dependency }}
         {% endfor %}
+{% endif %}
+
+{% if component_configs %}
+  - name: Add ONOS component configuration values
+    command: >
+        curl -XPOST -HContent-Type:application/json -u karaf:karaf -d {{ '{{' }} item.config_params | to_json {{ '}}' }} http://{{ '{{' }} onosaddr.stdout  {{ '}}' }}:8181/onos/v1/configuration/{{
+ '{{' }} item.component {{ '}}' }}
+    with_items: "component_configs"
+
+#    uri:
+#      url: http://{{ '{{' }} onosaddr.stdout {{ '}}' }}:8181/onos/v1/configuration/{{ '{{' }} item.component {{ '}}' }} #http://localhost:8181/onos/v1/configuration/
+#      body: "{{ '{{' }} item.config_params | to_json {{ '}}' }}"
+#      body_format: json
+#      method: POST
+#      user: karaf
+#      password: karaf
+#    with_items: "component_configs"
 {% endif %}
 
 {% if rest_configs %}
