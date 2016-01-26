@@ -34,9 +34,9 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
+          private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
       artifacts:
-          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
+          pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
     service_vbng:
       type: tosca.nodes.VBNGService
@@ -54,7 +54,7 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
       artifacts:
-          pubkey: /opt/xos/observers/onos/onos_key.pub
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
 
 #
 # To actually bring up the vBNG app
@@ -124,7 +124,7 @@ topology_template:
               }
             }
       artifacts:
-          pubkey: /opt/xos/observers/onos/onos_key.pub
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
 
 
     vOLT_ONOS_app:

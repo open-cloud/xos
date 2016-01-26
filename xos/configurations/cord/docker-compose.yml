@@ -29,7 +29,7 @@ xos_synchronizer_onos:
     extra_hosts:
         - ctl:${MYIP}
     volumes:
-        - ../setup/id_rsa:/opt/xos/observers/onos/onos_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
 
 xos_synchronizer_vcpe:
     image: xosproject/xos-synchronizer-openstack
@@ -42,7 +42,7 @@ xos_synchronizer_vcpe:
     extra_hosts:
         - ctl:${MYIP}
     volumes:
-        - ../setup/id_rsa:/opt/xos/observers/vcpe/vcpe_private_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
         - ../setup:/root/setup:ro
 
 xos_synchronizer_vbng:
@@ -67,7 +67,7 @@ xos_synchronizer_monitoring_channel:
     extra_hosts:
         - ctl:${MYIP}
     volumes:
-        - ../setup/id_rsa:/opt/xos/observers/monitoring_channel/monitoring_channel_private_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
 
 
 # FUTURE
@@ -88,6 +88,6 @@ xos:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
       - ./xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
-      - ../setup/id_rsa.pub:/opt/xos/observers/onos/onos_key.pub:ro
-      - ../setup/id_rsa.pub:/opt/xos/observers/vcpe/vcpe_public_key:ro
-      - ../setup/id_rsa.pub:/opt/xos/observers/monitoring_channel/monitoring_channel_public_key:ro
+      - ../setup/id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
+      - ../setup/id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
+      - ../setup/id_rsa.pub:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key:ro
