@@ -137,12 +137,13 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("can_view_subnet", value)
 
     @property
-    def script_name(self):
-        self.get_attribute("script_name", self.default_attributes['script_name'])
+    def script(self):
+        """string: The file name of the client script"""
+        self.get_attribute("script", self.default_attributes['script'])
 
-    @script_name.setter
-    def script_name(self, value):
-        self.set_attribute("script_name", value)
+    @script.setter
+    def script(self, value):
+        self.set_attribute("script", value)
 
 
 def model_policy_vpn_tenant(pk):

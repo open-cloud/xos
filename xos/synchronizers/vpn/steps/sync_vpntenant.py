@@ -22,8 +22,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         if (not deleted):
             objs = VPNTenant.get_tenant_objects().filter(
                 Q(enacted__lt=F('updated')) | Q(enacted=None), Q(lazy_blocked=False))
-            for tenant in objs:
-                self.create_client_script(tenant)
         else:
             objs = VPNTenant.get_deleted_tenant_objects()
 
@@ -37,7 +35,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "client_address": o.client_address}
 
     def create_client_script(self, tenant):
-        script = open("/opt/xos/core/static/vpn/" + str(tenant.script_name), 'w')
+        script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
         # write the key portion
         script.write("printf \"")
         for line in tenant.server_key.splitlines():
@@ -54,6 +52,10 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         script.write("openvpn client.conf &")
         # close the script
         script.close()
+
+    def run_playbook(self, o, fields):
+        self.create_client_script(o)
+        super(SyncVPNTenant, self).run_playbook(o, fields)
 
     def generate_client_conf(self, tenant):
         """str: Generates the client configuration to use to connect to this VPN server.
