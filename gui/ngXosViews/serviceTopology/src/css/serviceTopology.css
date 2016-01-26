@@ -4,7 +4,7 @@ service-canvas {
     display: block;
 }
 
-service-canvas select.subscriber-select{
+service-canvas .subscriber-select{
     z-index: 1000;
     position: absolute;
     width: 200px;
@@ -15,6 +15,19 @@ service-canvas select.subscriber-select{
 service-canvas svg {
     position: absolute;
     top: 0;
+}
+
+/* LEGEND */
+
+.legend {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 1px;
+    position: relative;
+}
+
+.legend text {
+    stroke: #000;
 }
 
 .node {
@@ -29,7 +42,7 @@ service-canvas svg {
 
 .node.subscriber circle,
 .node.internet circle {
-    stroke: #ffdb07;
+    stroke: #05ffcb;
 }
 
 .node.slice circle {
@@ -37,7 +50,7 @@ service-canvas svg {
 }
 
 .node.instance circle {
-    stroke: #ea25ff;
+    stroke: #ff8b00;
 }
 
 .node rect.slice-detail{
@@ -56,9 +69,11 @@ service-canvas svg {
     stroke-width: 2px;
 }
 
-.link.slice,
-.link.instance {
+.link.slice {
     stroke: rgba(157, 4, 183, 0.29);
+}
+.link.instance{
+    stroke: rgba(255, 138, 0, 0.65);
 }
 
 .service-details{
