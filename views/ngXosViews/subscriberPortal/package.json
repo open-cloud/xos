@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
+    "prestart": "npm install && bower install",
     "start": "browser-sync start --config bs-config.js"
   },
   "author": "Matteo Scandolo",
