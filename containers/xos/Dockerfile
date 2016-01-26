@@ -1,4 +1,4 @@
-FROM       ubuntu:14.04.2
+FROM       python:2.7.11
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345

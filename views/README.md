@@ -4,7 +4,7 @@ This is a collection of helpers to develop views as Angular SPA.
 
 ## Tools
 
-These tools are designed to help develop a GUI view. They assume XOS is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally sufficient for GUI development.
+These tools are designed to help develop a graphical view. They assume XOS is running on your system and responding at: `localhost:9999`. The `xos/configurations/frontend` is normally sufficient for GUI development.
 
 ### Apigen
 
@@ -63,13 +63,13 @@ These views are based on AngularJs and they communicate with XOS through the RES
 
 We have created a [yeoman](http://yeoman.io/) generator to help scaffold views.
 
->As it is in an early stage of development, you should manually link it to your system. To do this enter `/gui/ngXosLib/generator-xos` and run `npm link`.
+>As it is in an early stage of development, you should manually link it to your system. To do this enter `/views/ngXosLib/generator-xos` and run `npm link`.
 
 #### To Generate a New View
 
-From `/gui` run `yo xos`. This command will create a new folder with the provided name in `/gui/ngXosViews` that contains your application.
+From `/views` run `yo xos`. This command will create a new folder with the provided name in `/views/ngXosViews` that contains your application.
 
->If you left View name empty it should be `/gui/ngXosViews/sampleView`
+>If you left View name empty it should be `/views/ngXosViews/sampleView`
 
 #### Run a Development Server
 

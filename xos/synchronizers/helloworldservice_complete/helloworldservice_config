@@ -15,11 +15,11 @@ nova_enabled=True
 # Optional name
 name=helloworldservice
 # This is the location to the dependency graph you generate
-dependency_graph=/opt/xos/observers/helloworldservice_complete/model-deps
+dependency_graph=/opt/xos/synchronizers/helloworldservice_complete/model-deps
 # The location of your SyncSteps
 steps_dir=/opt/xos/synchronizers/helloworldservice_complete/steps
 # A temporary directory that will be used by ansible
-sys_dir=/opt/xos/observers/helloworldservice_complete/sys
+sys_dir=/opt/xos/synchronizers/helloworldservice_complete/sys
 # Location of the file to save logging messages to the backend log is often used
 logfile=/var/log/xos_backend.log
 # If this option is true, then nothing will change, we simply pretend to run
