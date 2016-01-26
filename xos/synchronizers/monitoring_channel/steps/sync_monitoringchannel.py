@@ -23,7 +23,7 @@ class SyncMonitoringChannel(SyncInstanceUsingAnsible):
     observes=MonitoringChannel
     requested_interval=0
     template_name = "sync_monitoringchannel.yaml"
-    service_key_name = "/opt/xos/observers/monitoring_channel/monitoring_channel_private_key"
+    service_key_name = "/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncMonitoringChannel, self).__init__(*args, **kwargs)

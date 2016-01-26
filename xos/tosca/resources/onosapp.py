@@ -14,7 +14,7 @@ from xosresource import XOSResource
 class XOSONOSApp(XOSResource):
     provides = ["tosca.nodes.ONOSApp", "tosca.nodes.ONOSvBNGApp", "tosca.nodes.ONOSvOLTApp", "tosca.nodes.ONOSVTNApp"]
     xos_model = ONOSApp
-    copyin_props = ["service_specific_id", "dependencies"]
+    copyin_props = ["service_specific_id", "dependencies", "install_dependencies"]
 
     def get_xos_args(self, throw_exception=True):
         args = super(XOSONOSApp, self).get_xos_args()
@@ -58,6 +58,8 @@ class XOSONOSApp(XOSResource):
             if k.startswith("config_"):
                 self.set_tenant_attr(obj, k, v)
             elif k.startswith("rest_"):
+                self.set_tenant_attr(obj, k, v)
+            elif k.startswith("component_config"):
                 self.set_tenant_attr(obj, k, v)
 
     def can_delete(self, obj):

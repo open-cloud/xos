@@ -23,7 +23,7 @@ class SyncHelloWorldTenantComplete(SyncInstanceUsingAnsible):
     template_name = "sync_helloworldtenant.yaml"
     # The location of the SSH private key to use when ansible connects to
     # instances.
-    service_key_name = "/opt/xos/observers/helloworldservice_complete/helloworldservice_private_key"
+    service_key_name = "/opt/xos/synchronizers/helloworldservice_complete/helloworldservice_private_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncHelloWorldTenantComplete, self).__init__(*args, **kwargs)

@@ -38,6 +38,7 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     KIND = ONOS_KIND
 
     default_attributes = {"name": "",
+                          "install_dependencies": "",
                           "dependencies": ""}
     def __init__(self, *args, **kwargs):
         onos_services = ONOSService.get_service_objects().all()
@@ -83,6 +84,14 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     @dependencies.setter
     def dependencies(self, value):
         self.set_attribute("dependencies", value)
+
+    @property
+    def install_dependencies(self):
+        return self.get_attribute("install_dependencies", self.default_attributes["install_dependencies"])
+
+    @install_dependencies.setter
+    def install_dependencies(self, value):
+        self.set_attribute("install_dependencies", value)
 
     #@property
     #def instance(self):

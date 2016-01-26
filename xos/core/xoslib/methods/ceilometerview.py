@@ -468,6 +468,80 @@ class Meters(object):
                 'label': '',
                 'description': _("Number of VCPUs"),
             }),
+            ("disk.read.requests", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of read requests"),
+            }),
+            ("disk.write.requests", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of write requests"),
+            }),
+            ("disk.read.bytes", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Volume of reads"),
+            }),
+            ("disk.write.bytes", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Volume of writes"),
+            }),
+            ("disk.read.requests.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average rate of read requests"),
+            }),
+            ("disk.write.requests.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average rate of write requests"),
+            }),
+            ("disk.read.bytes.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average rate of reads"),
+            }),
+            ("disk.write.bytes.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average volume of writes"),
+            }),
+            ("disk.root.size", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Size of root disk"),
+            }),
+            ("disk.ephemeral.size", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Size of ephemeral disk"),
+            }),
+            ("network.incoming.bytes", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of incoming bytes "
+                                 "on the network for a VM interface"),
+            }),
+            ("network.outgoing.bytes", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of outgoing bytes "
+                                 "on the network for a VM interface"),
+            }),
+            ("network.incoming.packets", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of incoming "
+                                 "packets for a VM interface"),
+            }),
+            ("network.outgoing.packets", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Number of outgoing "
+                                 "packets for a VM interface"),
+            }),
             ("network.incoming.bytes.rate", {
                 'type': _("Nova"),
                 'label': '',
@@ -479,6 +553,18 @@ class Meters(object):
                 'label': '',
                 'description': _("Average rate per sec of outgoing "
                                  "bytes on a VM network interface"),
+            }),
+            ("network.incoming.packets.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average rate per sec of incoming "
+                                 "packets on a VM network interface"),
+            }),
+            ("network.outgoing.packets.rate", {
+                'type': _("Nova"),
+                'label': '',
+                'description': _("Average rate per sec of outgoing "
+                                 "packets on a VM network interface"),
             }),
         ])
         # Adding flavor based meters into meters_info dict
@@ -512,20 +598,75 @@ class Meters(object):
                 'label': '',
                 'description': _("Existence of network"),
             }),
+            ('network.create', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Creation requests for this network"),
+            }),
+            ('network.update', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Update requests for this network"),
+            }),
             ('subnet', {
                 'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of subnet"),
+            }),
+            ('subnet.create', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Creation requests for this subnet"),
+            }),
+            ('subnet.update', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Update requests for this subnet"),
             }),
             ('port', {
                 'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of port"),
             }),
+            ('port.create', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Creation requests for this port"),
+            }),
+            ('port.update', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Update requests for this port"),
+            }),
+            ('router', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Existence of router"),
+            }),
+            ('router.create', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Creation requests for this router"),
+            }),
+            ('router.update', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Update requests for this router"),
+            }),
             ('ip.floating', {
                 'type': _("Neutron"),
                 'label': '',
                 'description': _("Existence of floating ip"),
+            }),
+            ('ip.floating.create', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Creation requests for this floating ip"),
+            }),
+            ('ip.floating.update', {
+                'type': _("Neutron"),
+                'label': '',
+                'description': _("Update requests for this floating ip"),
             }),
         ])
 
