@@ -31,7 +31,7 @@ class VPNTenant(TenantWithContainer):
                           'client_address': '10.8.0.2',
                           'can_view_subnet': False,
                           'is_persistent': True,
-                          'script_name': None}
+                          'script': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
