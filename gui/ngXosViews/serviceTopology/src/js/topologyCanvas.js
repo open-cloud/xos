@@ -11,7 +11,7 @@
       templateUrl: 'templates/topology_canvas.tpl.html',
       controller: function($element, $window, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, TreeLayout){
 
-        // TODO draw legend
+        // NOTE $window is not the right reference, we should refer to container size
 
         this.instances = [];
         this.slices = [];
@@ -26,7 +26,8 @@
           .append('svg')
           .style('width', `${$window.innerWidth}px`)
           .style('height', `${$window.innerHeight}px`)
-          .append('g')
+
+        const treeContainer = svg.append('g')
           .attr('transform', 'translate(' + serviceTopologyConfig.widthMargin+ ',' + serviceTopologyConfig.heightMargin + ')');
 
         //const resizeCanvas = () => {
@@ -52,8 +53,10 @@
           root.x0 = $window.innerHeight / 2;
           root.y0 = 0;
 
-          TreeLayout.updateTree(svg, treeLayout, root);
+          TreeLayout.updateTree(treeContainer, treeLayout, root);
         };
+
+        TreeLayout.drawLegend(svg);
 
         var _this = this;
 

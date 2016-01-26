@@ -7,6 +7,100 @@
     })
   .service('TreeLayout', function($window, lodash, ServiceRelation, serviceTopologyConfig, Slice, Instances){
 
+    const drawLegend = (svg) => {
+      const legendContainer = svg.append('g')
+        .attr({
+          class: 'legend'
+        });
+
+      legendContainer.append('rect')
+      .attr({
+        transform: d => `translate(10, 80)`,
+        width: 100,
+        height: 130
+      });
+
+      // service
+      const service = legendContainer.append('g')
+      .attr({
+        class: 'node service'
+      });
+
+      service.append('circle')
+      .attr({
+        r: serviceTopologyConfig.circle.radius,
+        transform: d => `translate(30, 100)`
+      });
+
+      service.append('text')
+      .attr({
+        transform: d => `translate(45, 100)`,
+        dy: '.35em'
+      })
+      .text('Service')
+        .style('fill-opacity', 1);
+
+      // endpoints
+      const endpoints = legendContainer.append('g')
+        .attr({
+          class: 'node internet'
+        });
+
+      endpoints.append('circle')
+        .attr({
+          r: serviceTopologyConfig.circle.radius,
+          transform: d => `translate(30, 130)`
+        });
+
+      endpoints.append('text')
+        .attr({
+          transform: d => `translate(45, 130)`,
+          dy: '.35em'
+        })
+        .text('Enpoints')
+        .style('fill-opacity', 1);
+
+      // slice
+      const slice = legendContainer.append('g')
+        .attr({
+          class: 'node slice'
+        });
+
+      slice.append('circle')
+        .attr({
+          r: serviceTopologyConfig.circle.radius,
+          transform: d => `translate(30, 160)`
+        });
+
+      slice.append('text')
+        .attr({
+          transform: d => `translate(45, 160)`,
+          dy: '.35em'
+        })
+        .text('Slices')
+        .style('fill-opacity', 1);
+
+      // instance
+      const instance = legendContainer.append('g')
+        .attr({
+          class: 'node instance'
+        });
+
+      instance.append('circle')
+        .attr({
+          r: serviceTopologyConfig.circle.radius,
+          transform: d => `translate(30, 190)`
+        });
+
+      instance.append('text')
+        .attr({
+          transform: d => `translate(45, 190)`,
+          dy: '.35em'
+        })
+        .text('Instances')
+        .style('fill-opacity', 1);
+    };
+
     var _svg, _layout, _source;
 
     var i = 0;
@@ -165,6 +259,7 @@
     };
 
     this.updateTree = updateTree;
+    this.drawLegend = drawLegend;
   });
 
 }());
