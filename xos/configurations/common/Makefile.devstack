@@ -15,7 +15,7 @@ admin-openrc:
 
 flat_name:
 	echo private|tr -d '\n' > $(SETUPDIR)/flat_net_name
-	bash -c "source $(SETUPDIR)/admin-openrc.sh; openstack network set --share private"
+	bash -c "source $(SETUPDIR)/admin-openrc.sh; neutron net-update private --shared"
 
 nodes_yaml:
 	export SETUPDIR=$(SETUPDIR); bash ./make-nodes-yaml.sh
