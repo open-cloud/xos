@@ -46,6 +46,7 @@
                             availId = (current === basic) ? family : basic;
                             resource.bundles.forEach(function (bundle) {
                                 if (bundle.id === availId) {
+                                    // NOTE available should be an array
                                     $scope.available = bundle;
                                 }
                             });

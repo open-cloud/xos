@@ -28,25 +28,9 @@
       'cordHome',
       'cordUser',
       'cordBundle'
-    ],
-    viewIds = [
-    ],
-    viewDependencies = [],
-    dependencies;
+    ];
 
-  function capitalize(word) {
-    return word ? word[0].toUpperCase() + word.slice(1) : word;
-  }
-
-  viewIds.forEach(function (id) {
-    if (id) {
-      viewDependencies.push('cord' + capitalize(id));
-    }
-  });
-
-  dependencies = modules.concat(viewDependencies);
-
-  angular.module('cordGui', dependencies)
+  angular.module('cordGui', modules)
     .config(['$routeProvider', function ($routeProvider) {
       $routeProvider
         .when('/login', {
