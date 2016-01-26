@@ -34,7 +34,8 @@ service-canvas svg {
     cursor: pointer;
 }
 
-.node circle {
+.node circle,
+.node rect{
     fill: #fff;
     stroke: steelblue;
     stroke-width: 3px;
@@ -45,11 +46,11 @@ service-canvas svg {
     stroke: #05ffcb;
 }
 
-.node.slice circle {
+.node.slice rect {
     stroke: #b01dff;
 }
 
-.node.instance circle {
+.node.instance rect {
     stroke: #ff8b00;
 }
 

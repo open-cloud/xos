@@ -127,6 +127,28 @@
       return deferred.promise;
     };
 
+    const buildServiceInterfacesTree = (slices, instances) => {
+      var interfaceTree = [];
+      lodash.forEach(slices, (slice, i) => {
+        let current = {
+          name: slice.name,
+          slice: slice,
+          type: 'slice',
+          children: instances[i].map((instance) => {
+            return {
+              name: instance.humanReadableName,
+              children: [],
+              type: 'instance',
+              instance: instance
+            };
+
+          })
+        };
+        interfaceTree.push(current);
+      });
+      return interfaceTree;
+    };
+
     const getServiceInterfaces = (serviceId) => {
       var deferred = $q.defer();
 
@@ -147,41 +169,23 @@
         return $q.all(promisesArr);
       })
       .then((instances) => {
-        console.log(instances);
-        // parse data to build a tree (2 level only)
-        var interfaceTree = [];
-        lodash.forEach(_slices, (slice, i) => {
-          let current = {
-            name: slice.name,
-            slice: slice,
-            type: 'slice',
-            children: instances[i].map((instance) => {
-              return {
-                name: instance.humanReadableName,
-                children: [],
-                type: 'instance',
-                instance: instance
-              };
-
-            })
-          };
-          interfaceTree.push(current);
-        });
-        console.log(interfaceTree)
-        deferred.resolve(interfaceTree);
+        deferred.resolve(buildServiceInterfacesTree(_slices, instances));
       });
 
       return deferred.promise;
     };
 
     // export APIs
-    this.get = get;
-    this.buildLevel = buildLevel;
-    this.buildServiceTree = buildServiceTree;
-    this.findLevelRelation = findLevelRelation;
-    this.findLevelServices = findLevelServices;
-    this.depthOf = depthOf;
-    this.getServiceInterfaces = getServiceInterfaces;
+    return {
+      get: get,
+      buildLevel: buildLevel,
+      buildServiceTree: buildServiceTree,
+      findLevelRelation: findLevelRelation,
+      findLevelServices: findLevelServices,
+      depthOf: depthOf,
+      getServiceInterfaces: getServiceInterfaces,
+      buildServiceInterfacesTree: buildServiceInterfacesTree
+    }
   });
 
 }());

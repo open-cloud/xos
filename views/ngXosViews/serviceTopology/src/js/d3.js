@@ -17,7 +17,7 @@
       .attr({
         transform: d => `translate(10, 80)`,
         width: 100,
-        height: 130
+        height: 100
       });
 
       // service
@@ -40,41 +40,24 @@
       .text('Service')
         .style('fill-opacity', 1);
 
-      // endpoints
-      const endpoints = legendContainer.append('g')
-        .attr({
-          class: 'node internet'
-        });
-
-      endpoints.append('circle')
-        .attr({
-          r: serviceTopologyConfig.circle.radius,
-          transform: d => `translate(30, 130)`
-        });
-
-      endpoints.append('text')
-        .attr({
-          transform: d => `translate(45, 130)`,
-          dy: '.35em'
-        })
-        .text('Enpoints')
-        .style('fill-opacity', 1);
-
       // slice
       const slice = legendContainer.append('g')
         .attr({
           class: 'node slice'
         });
 
-      slice.append('circle')
+      slice.append('rect')
         .attr({
-          r: serviceTopologyConfig.circle.radius,
-          transform: d => `translate(30, 160)`
+          width: 20,
+          height: 20,
+          x: -10,
+          y: -10,
+          transform: d => `translate(30, 130)`
         });
 
       slice.append('text')
         .attr({
-          transform: d => `translate(45, 160)`,
+          transform: d => `translate(45, 130)`,
           dy: '.35em'
         })
         .text('Slices')
@@ -86,15 +69,18 @@
           class: 'node instance'
         });
 
-      instance.append('circle')
+      instance.append('rect')
         .attr({
-          r: serviceTopologyConfig.circle.radius,
-          transform: d => `translate(30, 190)`
+          width: 20,
+          height: 20,
+          x: -10,
+          y: -10,
+          transform: d => `translate(30, 160)`
         });
 
       instance.append('text')
         .attr({
-          transform: d => `translate(45, 190)`,
+          transform: d => `translate(45, 160)`,
           dy: '.35em'
         })
         .text('Instances')
@@ -142,12 +128,48 @@
           class: d => `node ${d.type}`,
           transform: d => `translate(${source.y0},${source.x0})` // this is the starting position
         });
+      
+      const subscriberNodes = nodeEnter.filter('.subscriber');
+      const internetNodes = nodeEnter.filter('.internet');
+      const serviceNodes = nodeEnter.filter('.service');
+      const instanceNodes = nodeEnter.filter('.instance');
+      const sliceNodes = nodeEnter.filter('.slice');
 
-      // TODO append different shapes base on type
-      nodeEnter.append('circle')
+      subscriberNodes.append('path')
+        .attr({
+          d: 'M20.771,12.364c0,0,0.849-3.51,0-4.699c-0.85-1.189-1.189-1.981-3.058-2.548s-1.188-0.454-2.547-0.396c-1.359,0.057-2.492,0.792-2.492,1.188c0,0-0.849,0.057-1.188,0.397c-0.34,0.34-0.906,1.924-0.906,2.321s0.283,3.058,0.566,3.624l-0.337,0.113c-0.283,3.283,1.132,3.68,1.132,3.68c0.509,3.058,1.019,1.756,1.019,2.548s-0.51,0.51-0.51,0.51s-0.452,1.245-1.584,1.698c-1.132,0.452-7.416,2.886-7.927,3.396c-0.511,0.511-0.453,2.888-0.453,2.888h26.947c0,0,0.059-2.377-0.452-2.888c-0.512-0.511-6.796-2.944-7.928-3.396c-1.132-0.453-1.584-1.698-1.584-1.698s-0.51,0.282-0.51-0.51s0.51,0.51,1.02-2.548c0,0,1.414-0.397,1.132-3.68H20.771z',
+          transform: 'translate(-20, -20)'
+        });
+
+      internetNodes.append('path')
+        .attr({
+          d: 'M209,15a195,195 0 1,0 2,0zm1,0v390m195-195H15M59,90a260,260 0 0,0 302,0 m0,240 a260,260 0 0,0-302,0M195,20a250,250 0 0,0 0,382 m30,0 a250,250 0 0,0 0-382',
+          stroke: '#000',
+          'stroke-width': '20px',
+          fill: 'none',
+          transform: 'translate(-10, -10), scale(0.05)'
+        });
+
+      serviceNodes.append('circle')
         .attr('r', 1e-6)
         .style('fill', d => d._children ? 'lightsteelblue' : '#fff')
         .on('click', serviceClick);
+
+      sliceNodes.append('rect')
+        .attr({
+          width: 20,
+          height: 20,
+          x: -10,
+          y: -10
+        });
+
+      instanceNodes.append('rect')
+        .attr({
+          width: 20,
+          height: 20,
+          x: -10,
+          y: -10
+        });
 
       nodeEnter.append('text')
         .attr({

@@ -145,5 +145,45 @@ describe('The Service Relation Service', () => {
     });
   });
 
+  describe('given slices and instances', () => {
+    const slices = [
+      {
+        id: 12,
+        name: 'First'
+      },
+      {
+        id: 13,
+        name: 'Second'
+      }
+    ];
+
+    const instances = [
+      [
+        {
+          humanReadableName: 'first-slice-instance-1'
+        },
+        {
+          humanReadableName: 'first-slice-instance-2'
+        }
+      ],
+      [
+        {
+          humanReadableName: 'second-slice-instance'
+        }
+      ]
+    ];
+
+    it('should create a tree grouping instances', () => {
+      const res = Service.buildServiceInterfacesTree(slices, instances);
+
+      expect(res[0].name).toBe('First');
+      expect(res[0].children[0].name).toBe('first-slice-instance-1');
+      expect(res[0].children[1].name).toBe('first-slice-instance-2');
+
+      expect(res[1].name).toBe('Second');
+      expect(res[1].children[0].name).toBe('second-slice-instance');
+    });
+  });
+
 
 });
