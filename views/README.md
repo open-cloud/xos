@@ -63,7 +63,7 @@ These views are based on AngularJs and they communicate with XOS through the RES
 
 We have created a [yeoman](http://yeoman.io/) generator to help scaffold views.
 
->As it is in an early stage of development, you should manually link it to your system. To do this enter `/gui/ngXosLib/generator-xos` and run `npm link`.
+>As it is in an early stage of development, you should manually link it to your system. To do this enter `/views/ngXosLib/generator-xos` and run `npm link`.
 
 #### To Generate a New View
 
