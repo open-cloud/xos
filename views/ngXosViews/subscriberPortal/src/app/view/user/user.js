@@ -22,9 +22,15 @@
         family = 'family',
         url_filter = 'url_filter';
 
+    function randomDate(start, end) {
+        return new Date(
+          start.getTime() + Math.random() * (end.getTime() - start.getTime())
+        );
+    }
+
     angular.module('cordUser', [])
-        .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout',
-            function ($log, $scope, $resource, $timeout) {
+        .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout', '$filter',
+            function ($log, $scope, $resource, $timeout, $filter) {
                 var BundleData, bundleResource;
                 $scope.page.curr = 'user';
                 $scope.isFamily = false;
@@ -63,6 +69,15 @@
                         // success
                         function () {
                             $scope.users = userResource.users;
+                            if ($.isEmptyObject($scope.shared.userActivity)) {
+                                $scope.users.forEach(function (user) {
+                                    var date = randomDate(new Date(2015, 0, 1),
+                                      new Date());
+
+                                    $scope.shared.userActivity[user.id] =
+                                      $filter('date')(date, 'mediumTime');
+                                });
+                            }
                         },
                         // error
                         function () {

@@ -40,12 +40,16 @@ module.exports = {
   ],
   "server": {
     baseDir: './src',
+    routes: {
+      '/rs/dashboard': './mocks/dashboard.json',
+      '/rs/bundle': './mocks/bundle.json',
+      '/rs/users': './mocks/users.json'
+    },
     middleware: function(req, res, next){
       if(
         req.url.indexOf('/xos/') !== -1 ||
         req.url.indexOf('/xoslib/') !== -1 ||
-        req.url.indexOf('/hpcapi/') !== -1 ||
-        req.url.indexOf('/rs/') !== -1
+        req.url.indexOf('/hpcapi/') !== -1
       ){
         if(conf.xoscsrftoken && conf.xossessionid){
           req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;

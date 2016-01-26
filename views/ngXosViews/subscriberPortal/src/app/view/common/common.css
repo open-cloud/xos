@@ -20,6 +20,7 @@
 
 html, body, div#frame, div#view {
     height: 100%;
+    overflow: scroll;
 }
 
 head, body, footer,
