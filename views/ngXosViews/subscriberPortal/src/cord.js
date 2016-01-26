@@ -15,68 +15,70 @@
  */
 
 (function () {
-    'use strict';
+  'use strict';
 
-    var modules = [
-            'ngRoute',
-            'ngResource',
-            'ngAnimate',
-            'cordMast',
-            'cordFoot',
-            'cordNav'
-        ],
-        viewIds = [
-            'login',
-            'home',
-            'user',
-            'bundle'
-        ],
-        viewDependencies = [],
-        dependencies;
+  var modules = [
+      'ngRoute',
+      'ngResource',
+      'ngAnimate',
+      'cordMast',
+      'cordFoot',
+      'cordNav',
+      'cordLogin',
+      'cordHome',
+      'cordUser',
+      'cordBundle'
+    ],
+    viewIds = [
+    ],
+    viewDependencies = [],
+    dependencies;
 
-    function capitalize(word) {
-        return word ? word[0].toUpperCase() + word.slice(1) : word;
+  function capitalize(word) {
+    return word ? word[0].toUpperCase() + word.slice(1) : word;
+  }
+
+  viewIds.forEach(function (id) {
+    if (id) {
+      viewDependencies.push('cord' + capitalize(id));
     }
+  });
 
-    viewIds.forEach(function (id) {
-        if (id) {
-            viewDependencies.push('cord' + capitalize(id));
-        }
-    });
+  dependencies = modules.concat(viewDependencies);
 
-    dependencies = modules.concat(viewDependencies);
-
-    angular.module('cordGui', dependencies)
-        .config(['$routeProvider', function ($routeProvider) {
-            $routeProvider
-                .otherwise({
-                    redirectTo: '/login'
-                });
-
-            function viewCtrlName(vid) {
-                return 'Cord' + capitalize(vid) + 'Ctrl';
-            }
-
-            function viewTemplateUrl(vid) {
-                return 'app/view/' + vid + '/' + vid + '.html';
-            }
-
-            viewIds.forEach(function (vid) {
-                if (vid) {
-                    $routeProvider.when('/' + vid, {
-                        controller: viewCtrlName(vid),
-                        controllerAs: 'ctrl',
-                        templateUrl: viewTemplateUrl(vid)
-                    });
-                }
-            });
-        }])
-        .controller('CordCtrl', ['$scope', '$location',
-            function ($scope, $location) {
-                $scope.shared = {
-                    url: 'http://' + $location.host() + ':' + $location.port(),
-                    userActivity: {}
-                };
-                $scope.page = {};
-            }]);
+  angular.module('cordGui', dependencies)
+    .config(['$routeProvider', function ($routeProvider) {
+      $routeProvider
+        .when('/login', {
+          controller: 'CordLoginCtrl',
+          controllerAs: 'ctrl',
+          templateUrl: 'app/view/login/login.html'
+        })
+        .when('/home', {
+          controller: 'CordHomeCtrl',
+          controllerAs: 'ctrl',
+          templateUrl: 'app/view/home/home.html'
+        })
+        .when('/user', {
+          controller: 'CordUserCtrl',
+          controllerAs: 'ctrl',
+          templateUrl: 'app/view/user/user.html'
+        })
+        .when('/bundle', {
+          controller: 'CordBundleCtrl',
+          controllerAs: 'ctrl',
+          templateUrl: 'app/view/bundle/bundle.html'
+        })
+        .otherwise({
+          redirectTo: '/login'
+        });
+    }])
+    .controller('CordCtrl', ['$scope', '$location',
+      function ($scope, $location) {
+        $scope.shared = {
+          url: 'http://' + $location.host() + ':' + $location.port(),
+          userActivity: {}
+        };
+        $scope.page = {};
+      }]);
 }());
