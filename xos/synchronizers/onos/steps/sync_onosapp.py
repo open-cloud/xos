@@ -27,7 +27,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     observes=ONOSApp
     requested_interval=0
     template_name = "sync_onosapp.yaml"
-    service_key_name = "/opt/xos/observers/onos/onos_key"
+    service_key_name = "/opt/xos/synchronizers/onos/onos_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncONOSApp, self).__init__(*args, **kwargs)

@@ -195,7 +195,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     print "ANSIBLE_CONFIG=%s" % config_pathname
     print "ANSIBLE_HOSTS=%s" % hosts_pathname
 
-    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/observer/run_ansible_verbose")
+    return run_template(name, opts, path, ansible_config = config_pathname, ansible_hosts = hosts_pathname, run_ansible_script="/opt/xos/synchronizers/base/run_ansible_verbose")
 
 
 
