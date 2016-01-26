@@ -91,6 +91,19 @@
 
     var i = 0;
 
+    const getInitialNodePosition = (node, source, direction = 'enter') => {
+      // this is the starting position
+      // TODO if enter use y0 and x0 else x and y
+      // TODO start from the node that has been clicked
+      if(node.parent){
+        if(direction === 'enter' && node.parent.y0 && node.parent.x0){
+          return `translate(${node.parent.y0},${node.parent.x0})`;
+        }
+        return `translate(${node.parent.y},${node.parent.x})`;
+      }
+      return `translate(${source.y0},${source.x0})`;
+    };
+
     // given a canvas, a layout and a data source, draw a tree layout
     const updateTree = (svg, layout, source) => {
 
@@ -126,9 +139,9 @@
       var nodeEnter = node.enter().append('g')
         .attr({
           class: d => `node ${d.type}`,
-          transform: d => `translate(${source.y0},${source.x0})` // this is the starting position
+          transform: d => getInitialNodePosition(d, source)
         });
-      
+
       const subscriberNodes = nodeEnter.filter('.subscriber');
       const internetNodes = nodeEnter.filter('.internet');
       const serviceNodes = nodeEnter.filter('.service');
@@ -206,7 +219,7 @@
       var nodeExit = node.exit().transition()
         .duration(serviceTopologyConfig.duration)
         .attr({
-          'transform': d => `translate(${source.y},${source.x})`
+          'transform': d => getInitialNodePosition(d, source, 'exit')
         })
         .remove();
 
