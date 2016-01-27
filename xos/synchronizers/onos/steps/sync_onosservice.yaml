@@ -52,7 +52,7 @@
       - "9876:9876"
 
   - name: Get Docker IP
-    script: /opt/xos/observers/onos/scripts/dockerip.sh {{ ONOS_container }}
+    script: /opt/xos/synchronizers/onos/scripts/dockerip.sh {{ ONOS_container }}
     register: dockerip
 
   - name: Wait for ONOS to come up

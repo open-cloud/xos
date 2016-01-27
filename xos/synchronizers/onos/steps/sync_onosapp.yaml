@@ -32,7 +32,7 @@
   tasks:
 
   - name: Get Docker IP
-    script: /opt/xos/observers/onos/scripts/dockerip.sh {{ ONOS_container }}
+    script: /opt/xos/synchronizers/onos/scripts/dockerip.sh {{ ONOS_container }}
     register: onosaddr
 
   - name: Wait for ONOS to come up
@@ -101,7 +101,7 @@
 
   - name: Copy over app install files to ONOS host
     copy:
-      src=/opt/xos/observers/onos/{{ '{{' }} item {{ '}}' }}
+      src=/opt/xos/synchronizers/onos/{{ '{{' }} item {{ '}}' }}
       dest=/home/ubuntu/{{ appname }}/apps/{{ '{{' }} item {{ '}}' }}
     with_items:
         {% for install_app in install_dependencies %}
