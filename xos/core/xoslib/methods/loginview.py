@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import serializers
+from django.core import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
@@ -29,19 +29,22 @@ class LoginView(APIView):
 
         u = User.objects.filter(email=username)
         if not u:
-            raise XOSNotFound("User %s does not exist" % username)
+            raise PermissionDenied("Permission Denied")
 
         u=u[0]
 
         if not u.check_password(password):
-            raise PermissionDenied("Incorrect password")
+            raise PermissionDenied("Permission Denied")
 
         auth = {"username": username, "password": password}
         request.session["auth"] = auth
         request.session.save()
 
-        return Response({"xoscsrftoken": django.middleware.csrf.get_token(request),
-                         "xossessionid": request.session.session_key})
+        return Response({
+            "xoscsrftoken": django.middleware.csrf.get_token(request),
+            "xossessionid": request.session.session_key,
+            "user": serializers.serialize('json', [u])
+        })
 
     def get(self, request, format=None):
         username = request.GET.get("username", None)
