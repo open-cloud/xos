@@ -15,64 +15,59 @@
  */
 
 (function () {
-    'use strict';
+  'use strict';
 
-    var urlSuffix = '/rs/bundle';
+  var urlSuffix = '/rs/bundle';
 
-    var basic = 'basic',
-        family = 'family';
+  var basic = 'basic',
+    family = 'family';
 
-    angular.module('cordBundle', [])
-        .controller('CordBundleCtrl', ['$log', '$scope', '$resource',
-            function ($log, $scope, $resource) {
-                var BundleData, resource,
-                    getData;
-                $scope.page.curr = 'bundle';
-                $scope.show = false;
+  angular.module('cordBundle', [])
+    .controller('CordBundleCtrl', function ($log, $scope, $resource, cordConfig) {
+      var BundleData, resource,
+        getData;
+      $scope.page.curr = 'bundle';
+      $scope.show = false;
 
-                getData = function (id) {
-                    if (!id) { id = ''; }
+      // set the current bundle
+      $scope.name = cordConfig.bundles[cordConfig.activeBundle].name;
+      $scope.desc = cordConfig.bundles[cordConfig.activeBundle].desc;
+      $scope.funcs = cordConfig.bundles[cordConfig.activeBundle].functions;
 
-                    BundleData = $resource($scope.shared.url + urlSuffix + '/' + id);
-                    resource = BundleData.get({},
-                        // success
-                        function () {
-                            var current, availId;
-                            current = resource.bundle.id;
-                            $scope.name = resource.bundle.name;
-                            $scope.desc = resource.bundle.desc;
-                            $scope.funcs = resource.bundle.functions;
+      // set the available bundle
+      if(cordConfig.activeBundle === 0) {
+        $scope.available = cordConfig.bundles[1];
+      }
+      else{
+        $scope.available = cordConfig.bundles[0];
+      }
 
-                            availId = (current === basic) ? family : basic;
-                            resource.bundles.forEach(function (bundle) {
-                                if (bundle.id === availId) {
-                                    // NOTE available should be an array
-                                    $scope.available = bundle;
-                                }
-                            });
-                        },
-                        // error
-                        function () {
-                            $log.error('Problem with resource', resource);
-                        });
-                };
+      // switching the bundles
+      $scope.changeBundle = function (id) {
+        if(cordConfig.activeBundle === 0){
+          cordConfig.activeBundle = 1;
+          $scope.available = cordConfig.bundles[0];
+        }
+        else{
+          cordConfig.activeBundle = 0;
+          $scope.available = cordConfig.bundles[1];
+        }
+        $scope.name = cordConfig.bundles[cordConfig.activeBundle].name;
+        $scope.desc = cordConfig.bundles[cordConfig.activeBundle].desc;
+        $scope.funcs = cordConfig.bundles[cordConfig.activeBundle].functions;
+      };
 
-                getData();
+      // hiding and showing bundles
+      $scope.showBundles = function () {
+        $scope.show = !$scope.show;
+      };
 
-                $scope.changeBundle = function (id) {
-                    getData(id);
-                };
+      $log.debug('Cord Bundle Ctrl has been created.');
+    })
 
-                $scope.showBundles = function () {
-                    $scope.show = !$scope.show;
-                };
-
-                $log.debug('Cord Bundle Ctrl has been created.');
-            }])
-
-        .directive('bundleAvailable', [function () {
-            return {
-                templateUrl: 'app/view/bundle/available.html'
-            };
-        }]);
+    .directive('bundleAvailable', [function () {
+      return {
+        templateUrl: 'app/view/bundle/available.html'
+      };
+    }]);
 }());

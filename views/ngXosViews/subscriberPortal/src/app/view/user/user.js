@@ -22,16 +22,10 @@
     family = 'family',
     url_filter = 'url_filter';
 
-  function randomDate(start, end) {
-    return new Date(
-      start.getTime() + Math.random() * (end.getTime() - start.getTime())
-    );
-  }
-
   angular.module('cordUser', [])
     .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout', '$filter', 'SubscriberUsers', 'cordConfig',
       function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig) {
-        var BundleData, bundleResource;
+
         $scope.page.curr = 'user';
         $scope.isFamily = false;
         $scope.newLevels = {};
@@ -43,35 +37,20 @@
         // NOTE subscriberId should be retrieved by login
         SubscriberUsers.query({subscriberId: 1}).$promise
           .then(function(res){
-            $scope.isFamily = cordConfig.bundles[0].id === 'family';
+            $scope.isFamily = cordConfig.bundles[cordConfig.activeBundle].id === 'family';
             // if bundle is family search for url_filter level
             if ($scope.isFamily) {
-              angular.forEach(cordConfig.bundles[0].functions, function(fn){
+              angular.forEach(cordConfig.bundles[cordConfig.activeBundle].functions, function(fn){
                 if(fn.id === 'url_filter'){
                   $scope.levels = fn.params.levels;
                 }
               });
             }
 
-            // NOTE the loops creates data that are not available in xos should we move them in a service? Should we define a small backend to store this infos?
-
-            // add an icon to the user
-            res.users.map(function(user){
-              user['icon_id'] = 'mom';
-              return user;
-            });
-
-            // add a random login date to the user
-            res.users.forEach(function(user){
-              if(!angular.isDefined(cordConfig.userActivity[user.id])){
-                var date = randomDate(new Date(2015, 0, 1), new Date());
-                cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');
-              }
-            });
             $scope.users = res.users;
           })
           .catch(function () {
-            $log.error('Problem with resource', bundleResource);
+            $log.error('Problem with resource', SubscriberUsers);
           });
 
         $scope.updateLevel = function(user){
