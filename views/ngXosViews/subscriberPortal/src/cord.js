@@ -21,6 +21,7 @@
       'ngRoute',
       'ngResource',
       'ngAnimate',
+      'ngCookies',
       'cordRest',
       'cordMast',
       'cordFoot',
@@ -119,7 +120,14 @@
         }
       ]
     })
-    .run(function($location, cordConfig){
+    .run(function($rootScope, $location, cordConfig, User){
       cordConfig.url = 'http://' + $location.host() + ':' + $location.port();
+
+      // basic authentication
+      $rootScope.$on('$routeChangeStart', function(next, current) {
+        if(!User.isLoggedIn()){
+          $location.path('/login');
+        }
+      });
     });
 }());
