@@ -15,32 +15,23 @@
  */
 
 (function () {
-    'use strict';
+  'use strict';
 
-    var urlSuffix = '/rs/logout';
+  var urlSuffix = '/rs/logout';
 
-    angular.module('cordMast', [])
-        .controller('CordMastCtrl',
-        ['$log','$scope', '$resource', '$location', '$window',
-            function ($log, $scope, $resource, $location, $window) {
-                var LogoutData, resource;
-
-                $scope.logout = function () {
-                    $log.debug('Logging out...');
-                    LogoutData = $resource($scope.shared.url + urlSuffix);
-                    resource = LogoutData.get({},
-                        function () {
-                            $location.path('/login');
-                            $window.location.href = $location.absUrl();
-                            $log.debug('Resource received:', resource);
-                        });
-                };
-            }])
-
-        .directive('mast', function () {
-            return {
-                restrict: 'E',
-                templateUrl: 'app/fw/mast/mast.html'
-            };
+  angular.module('cordMast', [])
+    .controller('CordMastCtrl', function ($log, $scope, $location, User) {
+      $scope.logout = function () {
+        User.logout()
+        .then(function(){
+          $location.path('/login');
         });
+      };
+    })
+    .directive('mast', function () {
+      return {
+        restrict: 'E',
+        templateUrl: 'app/fw/mast/mast.html'
+      };
+    });
 }());

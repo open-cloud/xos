@@ -40,7 +40,6 @@
 
             User.login($scope.email, $scope.password)
             .then(function(user){
-              console.log(user);
               $location.url('/home');
             });
 

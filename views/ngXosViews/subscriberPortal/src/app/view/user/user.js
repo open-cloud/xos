@@ -75,7 +75,6 @@
           });
 
         $scope.updateLevel = function(user){
-          console.log(user);
           user.$save()
             .then(function(){
               console.log('saved');
