@@ -15,46 +15,50 @@
  */
 
 (function () {
-    'use strict';
+  'use strict';
 
-    var urlSuffix = '/rs/dashboard';
+  var urlSuffix = '/rs/dashboard';
 
-    function randomDate(start, end) {
-        return new Date(
-            start.getTime() + Math.random() * (end.getTime() - start.getTime())
-        );
-    }
+  function randomDate(start, end) {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    );
+  }
 
-    angular.module('cordHome', [])
-        .controller('CordHomeCtrl', ['$log', '$scope', '$resource', '$filter',
-            function ($log, $scope, $resource, $filter) {
-                var DashboardData, resource;
-                $scope.page.curr = 'dashboard';
+  angular.module('cordHome', [])
+    .controller('CordHomeCtrl', [
+      '$log', '$scope', '$resource', '$filter', 'cordConfig', 'SubscriberUsers', 'Helpers',
+      function ($log, $scope, $resource, $filter, cordConfig, SubscriberUsers, Helpers) {
+        var DashboardData, resource;
+        $scope.page.curr = 'dashboard';
 
-                DashboardData = $resource($scope.shared.url + urlSuffix);
-                resource = DashboardData.get({},
-                    // success
-                    function () {
-                        $scope.bundle_name = resource.bundle_name;
-                        $scope.bundle_desc = resource.bundle_desc;
-                        $scope.users = resource.users;
+        // NOTE subscriberId should be retrieved by login
+        SubscriberUsers.query({subscriberId: 1}).$promise
+        .then(function(res){
+          $scope.bundle_name = cordConfig.bundles[0].name;
+          $scope.bundle_desc = cordConfig.bundles[0].desc;
 
-                        if ($.isEmptyObject($scope.shared.userActivity)) {
-                            $scope.users.forEach(function (user) {
-                                var date = randomDate(new Date(2015, 0, 1),
-                                    new Date());
+          // NOTE the loops creates data that are not available in xos should we move them in a service? Should we define a small backend to store this infos?
 
-                                $scope.shared.userActivity[user.id] =
-                                    $filter('date')(date, 'mediumTime');
-                            });
-                        }
-                    },
-                    // error
-                    function () {
-                        $log.error('Problem with resource', resource);
-                    });
-                $log.debug('Resource received:', resource);
+          // add an icon to the user
+          res.users.map(function(user){
+            user['icon_id'] = 'mom';
+            return user;
+          });
 
-                $log.debug('Cord Home Ctrl has been created.');
-        }]);
+          // add a random login date to the user
+          res.users.forEach(function(user){
+            if(!angular.isDefined(cordConfig.userActivity[user.id])){
+              var date = randomDate(new Date(2015, 0, 1), new Date());
+              cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');
+            }
+          });
+          $scope.users = res.users;
+        })
+        .catch(function(){
+          $log.error('Problem with resource', resource);
+        });
+
+        $log.debug('Cord Home Ctrl has been created.');
+      }]);
 }());

@@ -15,166 +15,159 @@
  */
 
 (function () {
-    'use strict';
+  'use strict';
 
-    var bundleUrlSuffix = '/rs/bundle',
-        userUrlSuffix = '/rs/users',
-        family = 'family',
-        url_filter = 'url_filter';
+  var bundleUrlSuffix = '/rs/bundle',
+    userUrlSuffix = '/rs/users',
+    family = 'family',
+    url_filter = 'url_filter';
 
-    function randomDate(start, end) {
-        return new Date(
-          start.getTime() + Math.random() * (end.getTime() - start.getTime())
-        );
-    }
+  function randomDate(start, end) {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    );
+  }
 
-    angular.module('cordUser', [])
-        .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout', '$filter',
-            function ($log, $scope, $resource, $timeout, $filter) {
-                var BundleData, bundleResource;
-                $scope.page.curr = 'user';
-                $scope.isFamily = false;
-                $scope.newLevels = {};
-                $scope.showCheck = false;
-                $scope.ratingsShown = false;
+  angular.module('cordUser', [])
+    .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout', '$filter', 'SubscriberUsers', 'cordConfig',
+      function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig) {
+        var BundleData, bundleResource;
+        $scope.page.curr = 'user';
+        $scope.isFamily = false;
+        $scope.newLevels = {};
+        $scope.showCheck = false;
+        $scope.ratingsShown = false;
 
-                // === Get data functions ---
+        // === Get data functions ---
 
-                BundleData = $resource($scope.shared.url + bundleUrlSuffix);
-                bundleResource = BundleData.get({},
-                    // success
-                    function () {
-                        var result;
-                        $scope.isFamily = (bundleResource.bundle.id === family);
-                        if ($scope.isFamily) {
-                            result = $.grep(
-                                bundleResource.bundle.functions,
-                                function (elem) {
-                                    if (elem.id === url_filter) { return true; }
-                                }
-                            );
-                            $scope.levels = result[0].params.levels;
-                        }
-                    },
-                    // error
-                    function () {
-                        $log.error('Problem with resource', bundleResource);
-                    }
-                );
-
-                function getUsers(url) {
-                    var UserData, userResource;
-                    UserData = $resource(url);
-                    userResource = UserData.get({},
-                        // success
-                        function () {
-                            $scope.users = userResource.users;
-                            if ($.isEmptyObject($scope.shared.userActivity)) {
-                                $scope.users.forEach(function (user) {
-                                    var date = randomDate(new Date(2015, 0, 1),
-                                      new Date());
-
-                                    $scope.shared.userActivity[user.id] =
-                                      $filter('date')(date, 'mediumTime');
-                                });
-                            }
-                        },
-                        // error
-                        function () {
-                            $log.error('Problem with resource', userResource);
-                        }
-                    );
+        // NOTE subscriberId should be retrieved by login
+        SubscriberUsers.query({subscriberId: 1}).$promise
+          .then(function(res){
+            $scope.isFamily = cordConfig.bundles[0].id === 'family';
+            // if bundle is family search for url_filter level
+            if ($scope.isFamily) {
+              angular.forEach(cordConfig.bundles[0].functions, function(fn){
+                if(fn.id === 'url_filter'){
+                  $scope.levels = fn.params.levels;
                 }
+              });
+            }
 
-                getUsers($scope.shared.url + userUrlSuffix);
+            // NOTE the loops creates data that are not available in xos should we move them in a service? Should we define a small backend to store this infos?
 
-                // === Form functions ---
-
-                function levelUrl(id, level) {
-                    return $scope.shared.url +
-                        userUrlSuffix + '/' + id + '/apply/url_filter/level/' + level;
+            // add an icon to the user
+            res.users.map(function(user){
+              user['icon_id'] = 'mom';
+              // NOTE mock data, waiting for #CORD-516
+              var levels = ['R', 'PG', 'PG-13'];
+              user.profile = {
+                url_filter: {
+                  level: levels[Math.floor(Math.random() * levels.length)]
                 }
+              };
+              return user;
+            });
 
-                $scope.applyChanges = function (changeLevels) {
-                    var requests = [];
+            // add a random login date to the user
+            res.users.forEach(function(user){
+              if(!angular.isDefined(cordConfig.userActivity[user.id])){
+                var date = randomDate(new Date(2015, 0, 1), new Date());
+                cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');
+              }
+            });
+            $scope.users = res.users;
+          })
+          .catch(function () {
+            $log.error('Problem with resource', bundleResource);
+          });
 
-                    if ($scope.users) {
-                        $.each($scope.users, function (index, user) {
-                            var id = user.id,
-                                level = user.profile.url_filter.level;
-                            if ($scope.newLevels[id] !== level) {
-                                requests.push(levelUrl(id, $scope.newLevels[id]));
-                            }
-                        });
+        // === Form functions ---
 
-                        $.each(requests, function (index, req) {
-                            getUsers(req);
-                        });
-                    }
-                    changeLevels.$setPristine();
-                    $scope.showCheck = true;
-                    $timeout(function () {
-                        $scope.showCheck = false;
-                    }, 3000);
-                };
+        function levelUrl(id, level) {
+          return $scope.shared.url +
+            userUrlSuffix + '/' + id + '/apply/url_filter/level/' + level;
+        }
 
-                $scope.cancelChanges = function (changeLevels) {
-                    if ($scope.users) {
-                        $.each($scope.users, function (index, user) {
-                            $scope.newLevels[user.id] = user.profile.url_filter.level;
-                        });
-                    }
-                    changeLevels.$setPristine();
-                    $scope.showCheck = false;
-                };
+        $scope.applyChanges = function (changeLevels) {
+          var requests = [];
 
-                $scope.showRatings = function () {
-                    $scope.ratingsShown = !$scope.ratingsShown;
-                };
+          if ($scope.users) {
+            $.each($scope.users, function (index, user) {
+              var id = user.id,
+                level = user.profile.url_filter.level;
+              if ($scope.newLevels[id] !== level) {
+                requests.push(levelUrl(id, $scope.newLevels[id]));
+              }
+            });
 
-            $log.debug('Cord User Ctrl has been created.');
-        }])
+            $.each(requests, function (index, req) {
+              getUsers(req);
+            });
+          }
+          changeLevels.$setPristine();
+          $scope.showCheck = true;
+          $timeout(function () {
+            $scope.showCheck = false;
+          }, 3000);
+        };
 
-        .directive('ratingsPanel', ['$log', function ($log) {
-            return  {
-                templateUrl: 'app/view/user/ratingPanel.html',
-                link: function (scope, elem, attrs) {
-                    function fillSubMap(order, bool) {
-                        var result = {};
-                        $.each(order, function (index, cat) {
-                            result[cat] = bool;
-                        });
-                        return result;
-                    }
-                    function processSubMap(prhbSites) {
-                        var result = {};
-                        $.each(prhbSites, function (index, cat) {
-                            result[cat] = true;
-                        });
-                        return result;
-                    }
+        $scope.cancelChanges = function (changeLevels) {
+          if ($scope.users) {
+            $.each($scope.users, function (index, user) {
+              $scope.newLevels[user.id] = user.profile.url_filter.level;
+            });
+          }
+          changeLevels.$setPristine();
+          $scope.showCheck = false;
+        };
 
-                    function preprocess(data, order) {
-                        return {
-                            ALL: fillSubMap(order, false),
-                            G: processSubMap(data.G),
-                            PG: processSubMap(data.PG),
-                            PG_13: processSubMap(data.PG_13),
-                            R: processSubMap(data.R),
-                            NONE: fillSubMap(order, true)
-                        };
-                    }
+        $scope.showRatings = function () {
+          $scope.ratingsShown = !$scope.ratingsShown;
+        };
 
-                    $.getJSON('/app/data/pc_cats.json', function (data) {
-                        scope.level_order = data.level_order;
-                        scope.category_order = data.category_order;
-                        scope.prohibitedSites = preprocess(
-                            data.prohibited, data.category_order
-                        );
-                        scope.$apply();
-                    });
-                }
+        $log.debug('Cord User Ctrl has been created.');
+      }])
+
+    .directive('ratingsPanel', ['$log', function ($log) {
+      return  {
+        templateUrl: 'app/view/user/ratingPanel.html',
+        link: function (scope, elem, attrs) {
+          function fillSubMap(order, bool) {
+            var result = {};
+            $.each(order, function (index, cat) {
+              result[cat] = bool;
+            });
+            return result;
+          }
+          function processSubMap(prhbSites) {
+            var result = {};
+            $.each(prhbSites, function (index, cat) {
+              result[cat] = true;
+            });
+            return result;
+          }
+
+          function preprocess(data, order) {
+            return {
+              ALL: fillSubMap(order, false),
+              G: processSubMap(data.G),
+              PG: processSubMap(data.PG),
+              PG_13: processSubMap(data.PG_13),
+              R: processSubMap(data.R),
+              NONE: fillSubMap(order, true)
             };
-        }]);
+          }
+
+          $.getJSON('/app/data/pc_cats.json', function (data) {
+            scope.level_order = data.level_order;
+            scope.category_order = data.category_order;
+            scope.prohibitedSites = preprocess(
+              data.prohibited, data.category_order
+            );
+            scope.$apply();
+          });
+        }
+      };
+    }]);
 
 }());
