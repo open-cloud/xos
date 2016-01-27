@@ -21,6 +21,7 @@
       'ngRoute',
       'ngResource',
       'ngAnimate',
+      'cordRest',
       'cordMast',
       'cordFoot',
       'cordNav',
@@ -57,12 +58,68 @@
           redirectTo: '/login'
         });
     }])
-    .controller('CordCtrl', ['$scope', '$location',
-      function ($scope, $location) {
+    .controller('CordCtrl', ['$scope', '$location', 'cordConfig',
+      function ($scope, $location, cordConfig) {
         $scope.shared = {
-          url: 'http://' + $location.host() + ':' + $location.port(),
-          userActivity: {}
+          url: 'http://' + $location.host() + ':' + $location.port()
         };
+        $scope.shared.userActivity = cordConfig.userActivity;
         $scope.page = {};
-      }]);
+      }])
+    .constant('cordConfig', {
+      url: '',
+      userActivity: {}, //check if really needed
+      bundles: [
+        {
+          "id": "family",
+          "name": "Family Bundle",
+          "desc": "Description for family bundle",
+          "functions": [
+            {
+              "id": "internet",
+              "name": "Internet",
+              "desc": "Basic internet connectivity.",
+              "params": {}
+            },
+            {
+              "id": "firewall",
+              "name": "Firewall",
+              "desc": "Normal firewall protection.",
+              "params": {}
+            },
+            {
+              "id": "url_filter",
+              "name": "Parental Control",
+              "desc": "Variable levels of URL filtering.",
+              "params": {
+                "level": "PG",
+                "levels": [ "PG", "PG-13", "R" ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "basic",
+          "name": "Basic Bundle",
+          "desc": "Description for basic bundle",
+          "functions": [
+            {
+              "id": "internet",
+              "name": "Internet",
+              "desc": "Basic internet connectivity.",
+              "params": {}
+            },
+            {
+              "id": "firewall",
+              "name": "Firewall",
+              "desc": "Normal firewall protection.",
+              "params": {}
+            }
+          ]
+        }
+      ]
+    })
+    .run(function($location, cordConfig){
+      cordConfig.url = 'http://' + $location.host() + ':' + $location.port();
+    });
 }());
