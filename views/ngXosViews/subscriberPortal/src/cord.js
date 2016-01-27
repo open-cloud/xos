@@ -93,7 +93,7 @@
               "desc": "Variable levels of URL filtering.",
               "params": {
                 "level": "PG",
-                "levels": [ "PG", "PG-13", "R" ]
+                "levels": [ "PG", "PG_13", "R" ]
               }
             }
           ]

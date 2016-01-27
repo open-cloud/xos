@@ -58,13 +58,6 @@
             // add an icon to the user
             res.users.map(function(user){
               user['icon_id'] = 'mom';
-              // NOTE mock data, waiting for #CORD-516
-              var levels = ['R', 'PG', 'PG-13'];
-              user.profile = {
-                url_filter: {
-                  level: levels[Math.floor(Math.random() * levels.length)]
-                }
-              };
               return user;
             });
 
@@ -81,6 +74,43 @@
             $log.error('Problem with resource', bundleResource);
           });
 
+        $scope.updateLevel = function(user){
+          console.log(user);
+          user.$save()
+            .then(function(){
+              console.log('saved');
+            })
+            .catch(function(e){
+              throw new Error(e);
+            });
+        };
+
+        //function getUsers(url) {
+        //  var UserData, userResource;
+        //  UserData = $resource(url);
+        //  userResource = UserData.get({},
+        //    // success
+        //    function () {
+        //      $scope.users = userResource.users;
+        //      if ($.isEmptyObject($scope.shared.userActivity)) {
+        //        $scope.users.forEach(function (user) {
+        //          var date = randomDate(new Date(2015, 0, 1),
+        //            new Date());
+        //
+        //          $scope.shared.userActivity[user.id] =
+        //            $filter('date')(date, 'mediumTime');
+        //        });
+        //      }
+        //    },
+        //    // error
+        //    function () {
+        //      $log.error('Problem with resource', userResource);
+        //    }
+        //  );
+        //}
+        //
+        //getUsers($scope.shared.url + userUrlSuffix);
+
         // === Form functions ---
 
         function levelUrl(id, level) {
@@ -88,6 +118,7 @@
             userUrlSuffix + '/' + id + '/apply/url_filter/level/' + level;
         }
 
+        // NOTE This will trigger one request for each user to update url_filter level
         $scope.applyChanges = function (changeLevels) {
           var requests = [];
 

@@ -15,6 +15,15 @@ import socket
 import time
 import django.middleware.csrf
 from xos.exceptions import *
+from django.forms.models import model_to_dict
+
+def serialize_user(model):
+    serialized = model_to_dict(model)
+    del serialized['last_login']
+    del serialized['timezone']
+    del serialized['password']
+    print serialized
+    return json.dumps(serialized)
 
 class LoginView(APIView):
     method_kind = "list"
@@ -43,7 +52,7 @@ class LoginView(APIView):
         return Response({
             "xoscsrftoken": django.middleware.csrf.get_token(request),
             "xossessionid": request.session.session_key,
-            "user": serializers.serialize('json', [u])
+            "user": serialize_user(u)
         })
 
     def get(self, request, format=None):
