@@ -271,7 +271,7 @@ class XOSAdminMixin(object):
         return mark_safe(backend_text(obj))
 
     def script_link(self, obj):
-        return mark_safe('<a href="%s" target="_blank">Script link</a>' % obj.file_name)
+        return mark_safe('<a href="/static/vpn/%s" target="_blank">Script link</a>' % obj.script)
 
     def backend_status_icon(self, obj):
         return mark_safe(backend_icon(obj))
