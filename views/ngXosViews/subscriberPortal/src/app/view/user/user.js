@@ -17,127 +17,52 @@
 (function () {
   'use strict';
 
-  var bundleUrlSuffix = '/rs/bundle',
-    userUrlSuffix = '/rs/users',
-    family = 'family',
-    url_filter = 'url_filter';
-
   angular.module('cordUser', [])
-    .controller('CordUserCtrl', ['$log', '$scope', '$resource', '$timeout', '$filter', 'SubscriberUsers', 'cordConfig',
-      function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig) {
+    .controller('CordUserCtrl', function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig) {
 
-        $scope.page.curr = 'user';
-        $scope.isFamily = false;
-        $scope.newLevels = {};
-        $scope.showCheck = false;
-        $scope.ratingsShown = false;
+      $scope.page.curr = 'user';
+      $scope.isFamily = false;
+      $scope.newLevels = {};
+      $scope.showCheck = false;
+      $scope.ratingsShown = false;
 
-        // === Get data functions ---
-
-        // NOTE subscriberId should be retrieved by login
-        SubscriberUsers.query({subscriberId: 1}).$promise
-          .then(function(res){
-            $scope.isFamily = cordConfig.bundles[cordConfig.activeBundle].id === 'family';
-            // if bundle is family search for url_filter level
-            if ($scope.isFamily) {
-              angular.forEach(cordConfig.bundles[cordConfig.activeBundle].functions, function(fn){
-                if(fn.id === 'url_filter'){
-                  $scope.levels = fn.params.levels;
-                }
-              });
-            }
-
-            $scope.users = res.users;
-          })
-          .catch(function () {
-            $log.error('Problem with resource', SubscriberUsers);
-          });
-
-        $scope.updateLevel = function(user){
-          user.$save()
-            .then(function(){
-              console.log('saved');
-            })
-            .catch(function(e){
-              throw new Error(e);
-            });
-        };
-
-        //function getUsers(url) {
-        //  var UserData, userResource;
-        //  UserData = $resource(url);
-        //  userResource = UserData.get({},
-        //    // success
-        //    function () {
-        //      $scope.users = userResource.users;
-        //      if ($.isEmptyObject($scope.shared.userActivity)) {
-        //        $scope.users.forEach(function (user) {
-        //          var date = randomDate(new Date(2015, 0, 1),
-        //            new Date());
-        //
-        //          $scope.shared.userActivity[user.id] =
-        //            $filter('date')(date, 'mediumTime');
-        //        });
-        //      }
-        //    },
-        //    // error
-        //    function () {
-        //      $log.error('Problem with resource', userResource);
-        //    }
-        //  );
-        //}
-        //
-        //getUsers($scope.shared.url + userUrlSuffix);
-
-        // === Form functions ---
-
-        function levelUrl(id, level) {
-          return $scope.shared.url +
-            userUrlSuffix + '/' + id + '/apply/url_filter/level/' + level;
-        }
-
-        // NOTE This will trigger one request for each user to update url_filter level
-        $scope.applyChanges = function (changeLevels) {
-          var requests = [];
-
-          if ($scope.users) {
-            $.each($scope.users, function (index, user) {
-              var id = user.id,
-                level = user.profile.url_filter.level;
-              if ($scope.newLevels[id] !== level) {
-                requests.push(levelUrl(id, $scope.newLevels[id]));
+      // NOTE subscriberId should be retrieved by login
+      SubscriberUsers.query({subscriberId: 1}).$promise
+        .then(function(res){
+          $scope.isFamily = cordConfig.bundles[cordConfig.activeBundle].id === 'family';
+          // if bundle is family search for url_filter level
+          if ($scope.isFamily) {
+            angular.forEach(cordConfig.bundles[cordConfig.activeBundle].functions, function(fn){
+              if(fn.id === 'url_filter'){
+                $scope.levels = fn.params.levels;
               }
             });
-
-            $.each(requests, function (index, req) {
-              getUsers(req);
-            });
           }
-          changeLevels.$setPristine();
-          $scope.showCheck = true;
-          $timeout(function () {
-            $scope.showCheck = false;
-          }, 3000);
-        };
 
-        $scope.cancelChanges = function (changeLevels) {
-          if ($scope.users) {
-            $.each($scope.users, function (index, user) {
-              $scope.newLevels[user.id] = user.profile.url_filter.level;
-            });
-          }
-          changeLevels.$setPristine();
-          $scope.showCheck = false;
-        };
+          $scope.users = res.users;
+        })
+        .catch(function () {
+          $log.error('Problem with resource', SubscriberUsers);
+        });
 
-        $scope.showRatings = function () {
-          $scope.ratingsShown = !$scope.ratingsShown;
-        };
+      $scope.updateLevel = function(user){
+        // TODO save this data and show a confirmation to the user
+        user.$save()
+          .then(function(){
+            console.log('saved');
+          })
+          .catch(function(e){
+            throw new Error(e);
+          });
+      };
 
-        $log.debug('Cord User Ctrl has been created.');
-      }])
+      $scope.showRatings = function () {
+        $scope.ratingsShown = !$scope.ratingsShown;
+      };
 
-    .directive('ratingsPanel', ['$log', function ($log) {
+      $log.debug('Cord User Ctrl has been created.');
+    })
+    .directive('ratingsPanel', function ($log) {
       return  {
         templateUrl: 'app/view/user/ratingPanel.html',
         link: function (scope, elem, attrs) {
@@ -177,6 +102,5 @@
           });
         }
       };
-    }]);
-
+    });
 }());

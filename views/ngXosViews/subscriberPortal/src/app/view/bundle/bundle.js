@@ -64,10 +64,9 @@
 
       $log.debug('Cord Bundle Ctrl has been created.');
     })
-
-    .directive('bundleAvailable', [function () {
+    .directive('bundleAvailable', function () {
       return {
         templateUrl: 'app/view/bundle/available.html'
       };
-    }]);
+    });
 }());

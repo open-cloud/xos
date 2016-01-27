@@ -16,37 +16,25 @@
 
 (function () {
   'use strict';
-  var urlSuffix = '/rs/login';
 
   angular.module('cordLogin', [])
-    .controller('CordLoginCtrl', [
-      '$log', '$scope', '$resource', '$location', '$window', 'User',
-      function ($log, $scope, $resource, $location, $window, User) {
-        var LoginData, resource;
-        $scope.page.curr = 'login';
+    .controller('CordLoginCtrl', function ($log, $scope, $resource, $location, $window, User) {
 
-        function getResource(email) {
-          LoginData = $resource($scope.shared.url + urlSuffix + '/' + email);
-          resource = LoginData.get({},
-            function () {
-              $location.url('/home');
-              $window.location.href = $location.absUrl();
-            });
+      $scope.page.curr = 'login';
+
+      $scope.login = function () {
+        if ($scope.email && $scope.password) {
+          //getResource($scope.email);
+
+          User.login($scope.email, $scope.password)
+          .then(function(user){
+            $location.url('/home');
+          });
+
+          $scope.shared.login = $scope.email;
         }
+      };
 
-        $scope.login = function () {
-          if ($scope.email && $scope.password) {
-            //getResource($scope.email);
-
-            User.login($scope.email, $scope.password)
-            .then(function(user){
-              $location.url('/home');
-            });
-
-            $scope.shared.login = $scope.email;
-          }
-        };
-
-        $log.debug('Cord Login Ctrl has been created.');
-      }]);
+      $log.debug('Cord Login Ctrl has been created.');
+    });
 }());
