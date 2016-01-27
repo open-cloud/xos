@@ -19,12 +19,6 @@
 
   var urlSuffix = '/rs/dashboard';
 
-  function randomDate(start, end) {
-    return new Date(
-      start.getTime() + Math.random() * (end.getTime() - start.getTime())
-    );
-  }
-
   angular.module('cordHome', [])
     .controller('CordHomeCtrl', [
       '$log', '$scope', '$resource', '$filter', 'cordConfig', 'SubscriberUsers', 'Helpers',
@@ -35,24 +29,8 @@
         // NOTE subscriberId should be retrieved by login
         SubscriberUsers.query({subscriberId: 1}).$promise
         .then(function(res){
-          $scope.bundle_name = cordConfig.bundles[0].name;
-          $scope.bundle_desc = cordConfig.bundles[0].desc;
-
-          // NOTE the loops creates data that are not available in xos should we move them in a service? Should we define a small backend to store this infos?
-
-          // add an icon to the user
-          res.users.map(function(user){
-            user['icon_id'] = 'mom';
-            return user;
-          });
-
-          // add a random login date to the user
-          res.users.forEach(function(user){
-            if(!angular.isDefined(cordConfig.userActivity[user.id])){
-              var date = randomDate(new Date(2015, 0, 1), new Date());
-              cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');
-            }
-          });
+          $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
+          $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
           $scope.users = res.users;
         })
         .catch(function(){

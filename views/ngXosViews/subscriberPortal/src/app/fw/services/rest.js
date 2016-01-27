@@ -35,13 +35,49 @@ angular.module('cordRest', [])
   .service('Subscribers', function($resource, cordConfig){
     return $resource(cordConfig.url + '/xoslib/rs/subscriber');
   })
-  .service('SubscriberUsers', function($resource, cordConfig){
+  .service('SubscriberUsers', function($resource, $filter, cordConfig, Helpers){
     // TODO define an interceptor as res.users should be resources
     // NOTE SubscriberId should ne retrieved from login information
     return $resource(cordConfig.url + '/xoslib/rs/subscriber/:subscriberId/users/:id', {}, {
       query: {
         method: 'GET',
-        isArray: false
+        isArray: false,
+        interceptor: {
+          response: function(res){
+            // this is used to fake some data that are not XOS related,
+            // but can be provided by any external services
+
+            // add an icon to the user
+            res.data.users.map(function(user){
+              console.log(user)
+              switch (user.name){
+                case 'Mom\'s PC':
+                  user['icon_id'] = 'mom';
+                  break
+                case 'Jack\'s Laptop':
+                  user['icon_id'] = 'boy2';
+                  break
+                case 'Jill\'s Laptop':
+                  user['icon_id'] = 'girl1';
+                  break
+                case 'Dad\'s PC':
+                  user['icon_id'] = 'dad';
+                  break
+              }
+
+              return user;
+            });
+
+            // add a random login date to the user
+            res.data.users.forEach(function(user){
+              if(!angular.isDefined(cordConfig.userActivity[user.id])){
+                var date = Helpers.randomDate(new Date(2015, 0, 1), new Date());
+                cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');
+              }
+            });
+            return res.data;
+          }
+        }
       }
     });
     //return $resource(cordConfig.url + '/xoslib/corduser/:id')
