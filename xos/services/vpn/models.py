@@ -139,7 +139,7 @@ class VPNTenant(TenantWithContainer):
     @property
     def script(self):
         """string: The file name of the client script"""
-        self.get_attribute("script", self.default_attributes['script'])
+        return self.get_attribute("script", self.default_attributes['script'])
 
     @script.setter
     def script(self, value):
