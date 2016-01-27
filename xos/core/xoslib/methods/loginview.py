@@ -17,13 +17,14 @@ import django.middleware.csrf
 from xos.exceptions import *
 from django.forms.models import model_to_dict
 
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 def serialize_user(model):
     serialized = model_to_dict(model)
-    del serialized['last_login']
     del serialized['timezone']
     del serialized['password']
-    print serialized
-    return json.dumps(serialized)
+    return json.dumps(serialized, default=date_handler)
 
 class LoginView(APIView):
     method_kind = "list"
