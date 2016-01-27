@@ -90,16 +90,16 @@
     register: systemctl
 
   - name: container upstart
-    template: src=/opt/xos/openstack_observer/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
+    template: src=/opt/xos/synchronizers/openstack/templates/container.conf.j2 dest=/etc/init/container-{{ container_name }}.conf
 
   - name: container systemd
-    template: src=/opt/xos/openstack_observer/templates/container.service.j2 dest=/lib/systemd/system/container-{{ container_name }}.service
+    template: src=/opt/xos/synchronizers/openstack/templates/container.service.j2 dest=/lib/systemd/system/container-{{ container_name }}.service
 
   - name: container startup script
-    template: src=/opt/xos/openstack_observer/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/openstack/templates/start-container.sh.j2 dest=/usr/local/sbin/start-container-{{ container_name }}.sh mode=0755
 
   - name: container teardown script
-    template: src=/opt/xos/openstack_observer/templates/stop-container.sh.j2 dest=/usr/local/sbin/stop-container-{{ container_name }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/openstack/templates/stop-container.sh.j2 dest=/usr/local/sbin/stop-container-{{ container_name }}.sh mode=0755
 
   - name: restart systemd
     shell: systemctl daemon-reload
