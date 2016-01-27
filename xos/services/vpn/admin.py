@@ -100,7 +100,8 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.can_view_subnet = self.cleaned_data.get(
             'can_view_subnet')
 
-        self.instance.script_name = "hell"
+        if (not self.instance.script):
+            self.instance.script = str(time.time()) + ".vpn"
 
         if (not self.instance.server_key):
             self.instance.server_key = self.generate_VPN_key()
