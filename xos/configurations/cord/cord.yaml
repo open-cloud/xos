@@ -118,7 +118,7 @@ topology_template:
                     "defaultVlan" : "1"
                   },
                   "basic" : {
-                    "driver" : "default"
+                    "driver" : "pmc-olt"
                   }
                 }
               }
