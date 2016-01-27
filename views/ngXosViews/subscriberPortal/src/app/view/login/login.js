@@ -15,32 +15,39 @@
  */
 
 (function () {
-    'use strict';
-    var urlSuffix = '/rs/login';
+  'use strict';
+  var urlSuffix = '/rs/login';
 
-    angular.module('cordLogin', [])
-        .controller('CordLoginCtrl',
-        ['$log', '$scope', '$resource', '$location', '$window',
-            function ($log, $scope, $resource, $location, $window) {
-                var LoginData, resource;
-                $scope.page.curr = 'login';
+  angular.module('cordLogin', [])
+    .controller('CordLoginCtrl', [
+      '$log', '$scope', '$resource', '$location', '$window', 'User',
+      function ($log, $scope, $resource, $location, $window, User) {
+        var LoginData, resource;
+        $scope.page.curr = 'login';
 
-                function getResource(email) {
-                    LoginData = $resource($scope.shared.url + urlSuffix + '/' + email);
-                    resource = LoginData.get({},
-                        function () {
-                            $location.url('/home');
-                            $window.location.href = $location.absUrl();
-                        });
-                }
+        function getResource(email) {
+          LoginData = $resource($scope.shared.url + urlSuffix + '/' + email);
+          resource = LoginData.get({},
+            function () {
+              $location.url('/home');
+              $window.location.href = $location.absUrl();
+            });
+        }
 
-                $scope.login = function () {
-                    if ($scope.email && $scope.password) {
-                        getResource($scope.email);
-                        $scope.shared.login = $scope.email;
-                    }
-                };
+        $scope.login = function () {
+          if ($scope.email && $scope.password) {
+            //getResource($scope.email);
 
-                $log.debug('Cord Login Ctrl has been created.');
-        }]);
+            User.login($scope.email, $scope.password)
+            .then(function(user){
+              console.log(user);
+              $location.url('/home');
+            });
+
+            $scope.shared.login = $scope.email;
+          }
+        };
+
+        $log.debug('Cord Login Ctrl has been created.');
+      }]);
 }());

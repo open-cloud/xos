@@ -51,10 +51,10 @@ module.exports = {
         req.url.indexOf('/xoslib/') !== -1 ||
         req.url.indexOf('/hpcapi/') !== -1
       ){
-        if(conf.xoscsrftoken && conf.xossessionid){
-          req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
-          req.headers['x-csrftoken'] = conf.xoscsrftoken;
-        }
+        //if(conf.xoscsrftoken && conf.xossessionid){
+        //  req.headers.cookie = `xoscsrftoken=${conf.xoscsrftoken}; xossessionid=${conf.xossessionid}`;
+        //  req.headers['x-csrftoken'] = conf.xoscsrftoken;
+        //}
         proxy.web(req, res);
       }
       else{

@@ -19,21 +19,17 @@
         </div>
 
         <div class="main-right" ng-class="{family: isFamily}">
-            <form ng-if="isFamily"
-                  name="changeLevels">
+            <form ng-if="isFamily" name="changeLevels">
                 <table class="user-form">
                     <tr>
                         <th>
                             Select Site Rating
-                            <span class="help"
-                                  ng-click="showRatings()"> (?)</span>
+                            <span class="help" ng-click="showRatings()"> (?)</span>
                         </th>
                     </tr>
                     <tr ng-repeat="user in users" class="options">
                         <td>
-                            <select ng-init="newLevels[user.id]=user.profile.url_filter.level"
-                                    ng-model="newLevels[user.id]"
-                                    ng-options="l for l in levels">
+                            <select ng-model="user.level" ng-options="l for l in levels" ng-change="updateLevel(user)">
                             </select>
                         </td>
                     </tr>
