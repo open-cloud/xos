@@ -14,6 +14,7 @@ import json
 import socket
 import time
 import django.middleware.csrf
+from xos.exceptions import *
 
 class LoginView(APIView):
     method_kind = "list"
@@ -21,14 +22,14 @@ class LoginView(APIView):
 
     def do_login(self, request, username, password):
         if not username:
-            raise Exception("No username specified")
+            raise XOSMissingField("No username specified")
 
         if not password:
-            raise Exception("No password specified")
+            raise XOSMissingField("No password specified")
 
         u = User.objects.filter(email=username)
         if not u:
-            raise Exception("User %s does not exist" % username)
+            raise XOSNotFound("User %s does not exist" % username)
 
         u=u[0]
 
