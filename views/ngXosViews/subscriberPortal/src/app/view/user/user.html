@@ -33,19 +33,6 @@
                             </select>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="buttons">
-                            <div ng-show="showCheck">
-                                <icon size="20px" id="checkMark"></icon>
-                            </div>
-                            <input type="reset" value="Cancel"
-                                   ng-click="cancelChanges(changeLevels)"
-                                   ng-disabled="changeLevels.$pristine">
-                            <input type="button" value="Apply"
-                                   ng-click="applyChanges(changeLevels)"
-                                   ng-disabled="changeLevels.$pristine">
-                        </td>
-                    </tr>
                 </table>
             </form>
         </div>

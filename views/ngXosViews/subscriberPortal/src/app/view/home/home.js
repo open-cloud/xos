@@ -17,26 +17,22 @@
 (function () {
   'use strict';
 
-  var urlSuffix = '/rs/dashboard';
-
   angular.module('cordHome', [])
-    .controller('CordHomeCtrl', [
-      '$log', '$scope', '$resource', '$filter', 'cordConfig', 'SubscriberUsers', 'Helpers',
-      function ($log, $scope, $resource, $filter, cordConfig, SubscriberUsers, Helpers) {
-        var DashboardData, resource;
-        $scope.page.curr = 'dashboard';
+    .controller('CordHomeCtrl', function ($log, $scope, cordConfig, SubscriberUsers) {
 
-        // NOTE subscriberId should be retrieved by login
-        SubscriberUsers.query({subscriberId: 1}).$promise
-        .then(function(res){
-          $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
-          $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
-          $scope.users = res.users;
-        })
-        .catch(function(){
-          $log.error('Problem with resource', resource);
-        });
+      $scope.page.curr = 'dashboard';
 
-        $log.debug('Cord Home Ctrl has been created.');
-      }]);
+      // NOTE subscriberId should be retrieved by login
+      SubscriberUsers.query({subscriberId: 1}).$promise
+      .then(function(res){
+        $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
+        $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
+        $scope.users = res.users;
+      })
+      .catch(function(){
+        $log.error('Problem with resource', SubscriberUsers);
+      });
+
+      $log.debug('Cord Home Ctrl has been created.');
+    });
 }());

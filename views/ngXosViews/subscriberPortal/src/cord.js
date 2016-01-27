@@ -59,14 +59,13 @@
           redirectTo: '/login'
         });
     }])
-    .controller('CordCtrl', ['$scope', '$location', 'cordConfig',
-      function ($scope, $location, cordConfig) {
-        $scope.shared = {
-          url: 'http://' + $location.host() + ':' + $location.port()
-        };
-        $scope.shared.userActivity = cordConfig.userActivity;
-        $scope.page = {};
-      }])
+    .controller('CordCtrl', function ($scope, $location, cordConfig) {
+      $scope.shared = {
+        url: 'http://' + $location.host() + ':' + $location.port()
+      };
+      $scope.shared.userActivity = cordConfig.userActivity;
+      $scope.page = {};
+    })
     .constant('cordConfig', {
       url: '',
       userActivity: {}, //check if really needed
