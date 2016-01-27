@@ -49,7 +49,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         # make sure openvpn is installed
         script.write("apt-get update\n")
         script.write("apt-get install openvpn\n")
-        script.write("openvpn client.conf &")
+        script.write("openvpn client.conf &\n")
         # close the script
         script.close()
 
