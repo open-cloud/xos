@@ -19,6 +19,15 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
 from django.contrib.auth import authenticate
 
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
+def serialize_user(model):
+    serialized = model_to_dict(model)
+    del serialized['timezone']
+    del serialized['password']
+    return json.dumps(serialized, default=date_handler)
+
 class LoginView(APIView):
     method_kind = "list"
     method_name = "login"
@@ -40,8 +49,11 @@ class LoginView(APIView):
         request.session['_auth_user_backend'] = u.backend
         request.session.save()
 
-        return Response({"xoscsrftoken": django.middleware.csrf.get_token(request),
-                         "xossessionid": request.session.session_key})
+        return Response({
+            "xoscsrftoken": django.middleware.csrf.get_token(request),
+            "xossessionid": request.session.session_key,
+            "user": serialize_user(u)
+        })
 
     def get(self, request, format=None):
         username = request.GET.get("username", None)
@@ -87,4 +99,3 @@ class LogoutView(APIView):
     def post(self, request, format=None):
         sessionid = request.DATA.get("xossessionid", None)
         return self.do_logout(request, sessionid)
-

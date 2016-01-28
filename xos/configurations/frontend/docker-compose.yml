@@ -20,4 +20,4 @@ xos:
         - xos_db
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-      - ../../core/xoslib:/opt/xos/core/xoslib:ro
+      - ../../core/xoslib:/opt/xos/core/xoslib
