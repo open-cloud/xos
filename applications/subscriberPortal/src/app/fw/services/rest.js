@@ -18,15 +18,29 @@
   "use strict";
 
   angular.module('cordRest', [])
+  .factory('SetCSRFToken', function setCSRFToken($cookies) {
+    return {
+      request: function(request){
+        request.headers['X-CSRFToken'] = $cookies.get('xoscsrftoken');
+        return request;
+      }
+    };
+  })
   .service('User', function($http, $q, $cookies, cordConfig){
     this.login = function(username, password){
       var deferred = $q.defer();
+      var user;
 
+      // logging in the user
       $http.post(cordConfig.url + '/xoslib/login/', {username: username, password: password})
       .then(function(res){
         $cookies.put('user', res.data.user);
         $cookies.put('sessionid', res.data.xossessionid);
-        deferred.resolve(JSON.parse(res.data.user));
+        user = JSON.parse(res.data.user);
+        return $http.get(cordConfig.url + '/xos/tenantrootprivileges?user=' + user.id);
+      }).then(function(subscriber){
+          console.log(subscriber);
+          deferred.resolve(user);
       })
       .catch(function(e){
         throw new Error(e);
@@ -65,14 +79,14 @@
     return $resource(cordConfig.url + '/xoslib/rs/subscriber/:subscriberId/users/:id', {}, {
       query: {
         method: 'GET',
-        isArray: false,
+        isArray: true,
         interceptor: {
           response: function(res){
             // this is used to fake some data that are not XOS related,
             // but can be provided by any external services
 
             // add an icon to the user
-            res.data.users.map(function(user){
+            res.data.map(function(user){
               switch (user.name){
                 case 'Mom\'s PC':
                   user['icon_id'] = 'mom';
@@ -92,7 +106,7 @@
             });
 
             // add a random login date to the user
-            res.data.users.forEach(function(user){
+            res.data.forEach(function(user){
               if(!angular.isDefined(cordConfig.userActivity[user.id])){
                 var date = Helpers.randomDate(new Date(2015, 0, 1), new Date());
                 cordConfig.userActivity[user.id] = $filter('date')(date, 'mediumTime');

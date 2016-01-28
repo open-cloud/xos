@@ -27,7 +27,7 @@
       .then(function(res){
         $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
         $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
-        $scope.users = res.users;
+        $scope.users = res;
       })
       .catch(function(){
         $log.error('Problem with resource', SubscriberUsers);

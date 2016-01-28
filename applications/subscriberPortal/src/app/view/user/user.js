@@ -38,8 +38,7 @@
               }
             });
           }
-
-          $scope.users = res.users;
+          $scope.users = res;
         })
         .catch(function () {
           $log.error('Problem with resource', SubscriberUsers);
