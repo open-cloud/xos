@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.core import serializers
+from rest_framework import serializers
 from rest_framework import generics
 from rest_framework.views import APIView
 from core.models import *
@@ -15,9 +15,9 @@ import socket
 import time
 import django.middleware.csrf
 from xos.exceptions import *
-from django.forms.models import model_to_dict
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
+from django.contrib.auth import authenticate
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
@@ -39,17 +39,14 @@ class LoginView(APIView):
         if not password:
             raise XOSMissingField("No password specified")
 
-        u = User.objects.filter(email=username)
+        u=authenticate(username=username, password=password)
         if not u:
-            raise PermissionDenied("Permission Denied")
-
-        u=u[0]
-
-        if not u.check_password(password):
-            raise PermissionDenied("Permission Denied")
+            raise PermissionDenied("Failed to authenticate user %s" % username)
 
         auth = {"username": username, "password": password}
         request.session["auth"] = auth
+        request.session['_auth_user_id'] = u.pk
+        request.session['_auth_user_backend'] = u.backend
         request.session.save()
 
         return Response({
@@ -89,6 +86,9 @@ class LogoutView(APIView):
         if "auth" in session:
             del session["auth"]
             session.save()
+        if "_auth_user_id" in session:
+            del session["_auth_user_id"]
+            session.save()
 
         return Response("Logged Out")
 
@@ -99,4 +99,3 @@ class LogoutView(APIView):
     def post(self, request, format=None):
         sessionid = request.DATA.get("xossessionid", None)
         return self.do_logout(request, sessionid)
-
