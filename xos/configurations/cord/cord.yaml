@@ -453,6 +453,18 @@ topology_template:
         path: andybavier/docker-vcpe
         tag: develop
 
+    # Let's add a user who can be administrator of the household
+    johndoe@myhouse.com:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
     # A subscriber
     My House:
        type: tosca.nodes.CORDSubscriber
@@ -462,6 +474,10 @@ topology_template:
            cdn_enable: false
            url_filter_enable: false
            url_filter_level: R
+       requirements:
+          - house_admin:
+              node: johndoe@myhouse.com
+              relationship: tosca.relationships.AdminPrivilege
 
     Mom's PC:
        type: tosca.nodes.CORDUser
