@@ -181,7 +181,8 @@
           width: 20,
           height: 20,
           x: -10,
-          y: -10
+          y: -10,
+          class: d => d.active ?'' : 'active'
         });
 
       nodeEnter.append('text')
@@ -235,7 +236,7 @@
 
       // Enter any new links at the parent's previous position.
       link.enter().insert('path', 'g')
-        .attr('class', d => `link ${d.target.type}`)
+        .attr('class', d => `link ${d.target.type} ${d.target.active ? '' : 'active'}`)
         .attr('d', function(d) {
           var o = {x: source.x0, y: source.y0};
           return diagonal({source: o, target: o});
@@ -278,7 +279,7 @@
         .duration(serviceTopologyConfig.duration)
         .attr('r', serviceTopologyConfig.circle.selectedRadius);
 
-      ServiceRelation.getServiceInterfaces(d.service.id)
+      ServiceRelation.getServiceInterfaces(d.service)
         .then(interfaceTree => {
 
           const isDetailed = lodash.find(d.children, {type: 'slice'});

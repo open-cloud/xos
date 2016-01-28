@@ -40,6 +40,22 @@
       });
     };
 
+    const findSpecificInformation = (tenants, rootId) => {
+      var tenants = lodash.filter(tenants, service => {
+        return service.provider_service === rootId && service.subscriber_tenant;
+      });
+
+      var info;
+
+      tenants.forEach((tenant) => {
+        if(tenant.service_specific_attribute){
+          info = JSON.parse(tenant.service_specific_attribute);
+        }
+      });
+
+      return info;
+    };
+
     // find all the service defined by a given array of relations
     const findLevelServices = (relations, services) => {
       const levelServices = [];
@@ -51,14 +67,6 @@
     };
 
     const buildLevel = (tenants, services, rootService, parentName = null) => {
-
-      const tree = {
-        name: rootService.humanReadableName,
-        parent: parentName,
-        type: 'service',
-        service: rootService,
-        children: []
-      };
 
       // build an array of unlinked services
       // these are the services that should still placed in the tree
@@ -72,6 +80,16 @@
 
       // remove this item from the list (performance
       unlinkedServices = lodash.difference(unlinkedServices, levelServices);
+
+      rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
+
+      const tree = {
+        name: rootService.humanReadableName,
+        parent: parentName,
+        type: 'service',
+        service: rootService,
+        children: []
+      };
 
       lodash.forEach(levelServices, (service) => {
         tree.children.push(buildLevel(tenants, unlinkedServices, service, rootService.humanReadableName));
@@ -127,7 +145,15 @@
       return deferred.promise;
     };
 
-    const buildServiceInterfacesTree = (slices, instances) => {
+    const buildServiceInterfacesTree = (service, slices, instances) => {
+
+      const isActive = (service, instance) => {
+        if(service.service_specific_attribute){
+          return service.service_specific_attribute.instance_id === instance.id;
+        }
+        return false;
+      }
+
       var interfaceTree = [];
       lodash.forEach(slices, (slice, i) => {
         let current = {
@@ -135,11 +161,13 @@
           slice: slice,
           type: 'slice',
           children: instances[i].map((instance) => {
+
             return {
               name: instance.humanReadableName,
               children: [],
               type: 'instance',
-              instance: instance
+              instance: instance,
+              active: isActive(service, instance)
             };
 
           })
@@ -149,12 +177,12 @@
       return interfaceTree;
     };
 
-    const getServiceInterfaces = (serviceId) => {
+    const getServiceInterfaces = (service) => {
       var deferred = $q.defer();
 
       var _slices;
 
-      Slice.query({service: serviceId}).$promise
+      Slice.query({service: service.id}).$promise
       .then((slices) => {
         _slices = slices;
         const promisesArr = slices.reduce((promises, slice) => {
@@ -169,7 +197,7 @@
         return $q.all(promisesArr);
       })
       .then((instances) => {
-        deferred.resolve(buildServiceInterfacesTree(_slices, instances));
+        deferred.resolve(buildServiceInterfacesTree(service, _slices, instances));
       });
 
       return deferred.promise;
@@ -184,7 +212,8 @@
       findLevelServices: findLevelServices,
       depthOf: depthOf,
       getServiceInterfaces: getServiceInterfaces,
-      buildServiceInterfacesTree: buildServiceInterfacesTree
+      buildServiceInterfacesTree: buildServiceInterfacesTree,
+      findSpecificInformation: findSpecificInformation
     }
   });
 
