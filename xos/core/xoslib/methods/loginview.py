@@ -17,6 +17,7 @@ import django.middleware.csrf
 from xos.exceptions import *
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
+from django.contrib.auth import authenticate
 
 class LoginView(APIView):
     method_kind = "list"
@@ -29,17 +30,14 @@ class LoginView(APIView):
         if not password:
             raise XOSMissingField("No password specified")
 
-        u = User.objects.filter(email=username)
+        u=authenticate(username=username, password=password)
         if not u:
-            raise XOSNotFound("User %s does not exist" % username)
-
-        u=u[0]
-
-        if not u.check_password(password):
-            raise PermissionDenied("Incorrect password")
+            raise PermissionDenied("Failed to authenticate user %s" % username)
 
         auth = {"username": username, "password": password}
         request.session["auth"] = auth
+        request.session['_auth_user_id'] = u.pk
+        request.session['_auth_user_backend'] = u.backend
         request.session.save()
 
         return Response({"xoscsrftoken": django.middleware.csrf.get_token(request),
@@ -75,6 +73,9 @@ class LogoutView(APIView):
         session = SessionStore(session_key=sessionid)
         if "auth" in session:
             del session["auth"]
+            session.save()
+        if "_auth_user_id" in session:
+            del session["_auth_user_id"]
             session.save()
 
         return Response("Logged Out")
