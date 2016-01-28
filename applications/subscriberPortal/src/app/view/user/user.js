@@ -18,7 +18,7 @@
   'use strict';
 
   angular.module('cordUser', [])
-    .controller('CordUserCtrl', function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig, SubscriberUsersUrlFilterLevel) {
+    .controller('CordUserCtrl', function ($log, $scope, $resource, $timeout, $filter, $cookies, SubscriberUsers, cordConfig, SubscriberUsersUrlFilterLevel) {
 
       $scope.page.curr = 'user';
       $scope.isFamily = false;
