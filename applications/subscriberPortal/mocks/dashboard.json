@@ -1,0 +1,10 @@
+{
+  "bundle_name": "Family Bundle",
+  "bundle_desc": "This is the bundle description. Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+  "users": [
+    { "id": 1, "name": "Mom's MacBook", "icon_id": "mom", "mac": "00:11:22:33:44:55" },
+    { "id": 1, "name": "Dad's iPad", "icon_id": "dad", "mac": "00:11:22:33:44:66" },
+    { "id": 1, "name": "Dick's laptop", "icon_id": "boy2", "mac": "00:11:22:33:44:77" },
+    { "id": 1, "name": "Jane's laptop", "icon_id": "girl1", "mac": "00:11:22:33:44:88" }
+  ]
+}
