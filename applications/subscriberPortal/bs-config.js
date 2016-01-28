@@ -36,7 +36,9 @@ proxy.on('error', function(error, req, res) {
 
 module.exports = {
   "files": [
-    './src/**/*'
+    './src/**/*.css',
+    './src/**/*.js',
+    './src/**/*.json'
   ],
   "server": {
     baseDir: './src',
