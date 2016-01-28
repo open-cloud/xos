@@ -18,6 +18,45 @@
     padding-top: 2%;
 }
 
+#user .icon-saved{
+    background-image: url('../../../imgs/icon-saved.gif');
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-size: cover;
+}
+
+/* when hiding the picture */
+#user .icon-saved.ng-hide-add         { animation:0.5s lightSpeedOut ease; }
+
+/* when showing the picture */
+#user .icon-saved.ng-hide-remove      { animation:0.5s lightSpeedIn ease; }
+
+/* light speed out */
+@keyframes lightSpeedOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(100%, 0, 0) skewX(30deg);
+        transform: translate3d(100%, 0, 0) skewX(30deg);
+        opacity: 0;
+    }
+}
+
+@keyframes lightSpeedIn {
+
+    0% {
+        transform: translate3d(100%, 0, 0) skewX(30deg);
+        transform: translate3d(100%, 0, 0) skewX(30deg);
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 #user div.main-left {
     width: 98%;
     padding-left: 1%;

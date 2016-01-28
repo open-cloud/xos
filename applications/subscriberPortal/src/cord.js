@@ -69,7 +69,7 @@
     .constant('cordConfig', {
       url: '',
       userActivity: {}, //check if really needed
-      activeBundle: 0,
+      activeBundle: 1,
       bundles: [
         {
           "id": "family",

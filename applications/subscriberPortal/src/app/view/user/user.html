@@ -31,6 +31,7 @@
                         <td>
                             <select ng-model="user.level" ng-options="l for l in levels" ng-change="updateLevel(user)">
                             </select>
+                            <user-updated-tick user="user">Saved</user-updated-tick>
                         </td>
                     </tr>
                 </table>

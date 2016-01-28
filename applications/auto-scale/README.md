@@ -1,3 +1,10 @@
+# Autoscaling Application
+The auto-scaling app uses monitoring data to decide when to scale a service up/down.
+
+It is treated as an application rather than yet another
+service because it offers only a GUI front-end; it is not
+modelled as a service that other services can build upon.
+
 #How to
 
 Ensure that the CORD config is installed and then run:

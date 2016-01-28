@@ -18,7 +18,7 @@
   'use strict';
 
   angular.module('cordUser', [])
-    .controller('CordUserCtrl', function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig) {
+    .controller('CordUserCtrl', function ($log, $scope, $resource, $timeout, $filter, SubscriberUsers, cordConfig, SubscriberUsersUrlFilterLevel) {
 
       $scope.page.curr = 'user';
       $scope.isFamily = false;
@@ -47,9 +47,10 @@
 
       $scope.updateLevel = function(user){
         // TODO save this data and show a confirmation to the user
-        user.$save()
+        // NOTE subscriberId should be retrieved by login
+        SubscriberUsersUrlFilterLevel.updateUrlFilterLevel(1, user.id, user.level)
           .then(function(){
-            console.log('saved');
+            user.updated = true;
           })
           .catch(function(e){
             throw new Error(e);
@@ -61,6 +62,26 @@
       };
 
       $log.debug('Cord User Ctrl has been created.');
+    })
+    .directive('userUpdatedTick', function($timeout){
+      return {
+        restric: 'E',
+        scope: {
+          user: '='
+        },
+        template: '<span class="icon-saved" ng-show="saved"></span>',
+        link: function(scope, elem){
+          scope.saved = false;
+          scope.$watch('user.updated', function(val){
+            if(val){
+              scope.saved = true;
+              $timeout(function(){
+                scope.saved = false;
+              }, 3000);
+            }
+          });
+        }
+      }
     })
     .directive('ratingsPanel', function ($log) {
       return  {

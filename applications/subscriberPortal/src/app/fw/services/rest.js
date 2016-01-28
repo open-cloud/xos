@@ -95,7 +95,19 @@
       }
     });
   })
-  .service('SubscriberUsersUrlFilterLevel', function($resource, cordConfig){
-    return $resource(cordConfig.url + '/xoslib/rs/subscriber/:subscriberId/users/:userId/url_filter/');
+  .service('SubscriberUsersUrlFilterLevel', function($q, $http, cordConfig){
+    this.updateUrlFilterLevel = function(subscriberId, userId, level){
+      var deferred = $q.defer();
+
+      $http.put(cordConfig.url + '/xoslib/rs/subscriber/' + subscriberId + '/users/' + userId + '/url_filter/' + level)
+      .then(function(res){
+        deferred.resolve(res);
+      })
+      .catch(function(e){
+        throw new Error(e);
+      });
+
+      return deferred.promise;
+    };
   });
 }());
