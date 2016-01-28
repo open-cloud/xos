@@ -34,7 +34,7 @@ form, select, input, option, label {
 
 h1, h2, h3, h4, h5, h6,
 p, a, li, th, td,
-select, input, option, label {
+select, input, option, label, div {
     font-family: sans-serif, "Droid Sans", "Lucida Grande", Arial, Helvetica;
     color: #3C3C3C;
 }

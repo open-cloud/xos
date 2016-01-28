@@ -22,6 +22,7 @@
     return {
       request: function(request){
         request.headers['X-CSRFToken'] = $cookies.get('xoscsrftoken');
+        request.headers['sessionId'] = $cookies.get('sessionid');
         return request;
       }
     };
@@ -38,11 +39,13 @@
         $cookies.put('sessionid', res.data.xossessionid);
         user = JSON.parse(res.data.user);
         return $http.get(cordConfig.url + '/xos/tenantrootprivileges?user=' + user.id);
-      }).then(function(subscriber){
-          console.log(subscriber);
-          deferred.resolve(user);
+      })
+      .then(function(subscriber){
+        console.log(subscriber);
+        deferred.resolve(user);
       })
       .catch(function(e){
+        deferred.reject(e);
         throw new Error(e);
       });
 

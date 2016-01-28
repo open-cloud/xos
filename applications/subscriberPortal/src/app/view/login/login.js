@@ -29,6 +29,9 @@
           User.login($scope.email, $scope.password)
           .then(function(user){
             $location.url('/home');
+          })
+          .catch(function(e){
+            $scope.error = true;
           });
 
           $scope.shared.login = $scope.email;

@@ -28,7 +28,9 @@ _Subscribers_, _Users_ and _Parental Control_ are information managed by XOS and
 
 _All commands in this section refers to `applications/subscriberPortal`_
 
-_Note that NodeJs is required to run this demo_To open this demo:
+_Note that NodeJs and Bower are required to run this demo_
+
+To open this demo:
 
  - open `env/default.js` and replace `host` with the URL of your XOS installation.
  - from the portal root execute `npm start`
