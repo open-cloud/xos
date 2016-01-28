@@ -40,8 +40,11 @@
         user = JSON.parse(res.data.user);
         return $http.get(cordConfig.url + '/xos/tenantrootprivileges?user=' + user.id);
       })
-      .then(function(subscriber){
-        console.log(subscriber);
+      .then(function(subscribers){
+        // subscribers are an array because the way Django perform query
+        // but one user is related to only one subscriber
+
+        $cookies.put('subscriberId', subscribers.data[0].id);
         deferred.resolve(user);
       })
       .catch(function(e){

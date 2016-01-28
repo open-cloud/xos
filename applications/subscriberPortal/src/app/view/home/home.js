@@ -18,12 +18,11 @@
   'use strict';
 
   angular.module('cordHome', [])
-    .controller('CordHomeCtrl', function ($log, $scope, cordConfig, SubscriberUsers) {
+    .controller('CordHomeCtrl', function ($log, $scope, $cookies, cordConfig, SubscriberUsers) {
 
       $scope.page.curr = 'dashboard';
 
-      // NOTE subscriberId should be retrieved by login
-      SubscriberUsers.query({subscriberId: 1}).$promise
+      SubscriberUsers.query({subscriberId: $cookies.get('subscriberId')}).$promise
       .then(function(res){
         $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
         $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;

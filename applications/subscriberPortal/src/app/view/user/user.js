@@ -25,9 +25,8 @@
       $scope.newLevels = {};
       $scope.showCheck = false;
       $scope.ratingsShown = false;
-
-      // NOTE subscriberId should be retrieved by login
-      SubscriberUsers.query({subscriberId: 1}).$promise
+      
+      SubscriberUsers.query({subscriberId: $cookies.get('subscriberId')}).$promise
         .then(function(res){
           $scope.isFamily = cordConfig.bundles[cordConfig.activeBundle].id === 'family';
           // if bundle is family search for url_filter level

@@ -40,6 +40,7 @@ module.exports = {
   ],
   "server": {
     baseDir: './src',
+    //directory: true,
     routes: {
       '/rs/dashboard': './mocks/dashboard.json',
       '/rs/bundle': './mocks/bundle.json',
