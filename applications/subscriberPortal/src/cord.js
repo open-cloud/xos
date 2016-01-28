@@ -33,7 +33,10 @@
     ];
 
   angular.module('cordGui', modules)
-    .config(['$routeProvider', function ($routeProvider) {
+    .config(function ($routeProvider, $httpProvider) {
+
+      $httpProvider.interceptors.push('SetCSRFToken');
+
       $routeProvider
         .when('/login', {
           controller: 'CordLoginCtrl',
@@ -58,7 +61,7 @@
         .otherwise({
           redirectTo: '/login'
         });
-    }])
+    })
     .controller('CordCtrl', function ($scope, $location, cordConfig) {
       $scope.shared = {
         url: 'http://' + $location.host() + ':' + $location.port()
