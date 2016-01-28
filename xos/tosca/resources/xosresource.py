@@ -103,10 +103,16 @@ class XOSResource(object):
     def postprocess_privileges(self, roleclass, privclass, rolemap, obj, toFieldName):
         for (rel, role) in rolemap:
             for email in self.get_requirements(rel):
-                role = self.get_xos_object(roleclass, role=role)
+                role_obj = self.get_xos_object(roleclass, throw_exception=False, role=role)
+                if not role_obj:
+                    # if the role doesn't exist, make it
+                    self.info("Creating %s %s" % (roleclass.__name__, role))
+                    role_obj = roleclass(role=role)
+                    role_obj.save()
+
                 user = self.get_xos_object(User, email=email)
-                if not privclass.objects.filter(user=user, role=role, **{toFieldName: obj}):
-                    sp = privclass(user=user, role=role, **{toFieldName: obj})
+                if not privclass.objects.filter(user=user, role=role_obj, **{toFieldName: obj}):
+                    sp = privclass(user=user, role=role_obj, **{toFieldName: obj})
                     sp.save()
                     self.info("Added privilege on %s role %s for %s" % (str(obj), str(role), str(user)))
 
