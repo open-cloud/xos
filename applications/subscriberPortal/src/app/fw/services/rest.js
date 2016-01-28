@@ -25,6 +25,7 @@
       $http.post(cordConfig.url + '/xoslib/login/', {username: username, password: password})
       .then(function(res){
         $cookies.put('user', res.data.user);
+        $cookies.put('sessionid', res.data.xossessionid);
         deferred.resolve(JSON.parse(res.data.user));
       })
       .catch(function(e){
@@ -44,8 +45,16 @@
 
     this.logout = function(){
       var deferred = $q.defer();
-      $cookies.remove('user');
-      deferred.resolve();
+      var sessionId = $cookies.get('sessionid');
+      $http.post(cordConfig.url + '/xoslib/logout/', {xossessionid: sessionId})
+      .then(function(res){
+        $cookies.remove('user');
+        deferred.resolve();
+      })
+      .catch(function(e){
+        throw new Error(e);
+      });
+
       return deferred.promise;
     };
   })
