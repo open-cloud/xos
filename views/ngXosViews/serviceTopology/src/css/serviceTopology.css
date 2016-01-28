@@ -51,6 +51,10 @@ service-canvas svg {
 }
 
 .node.instance rect {
+    stroke: #ccc;
+}
+
+.node.instance rect.active {
     stroke: #ff8b00;
 }
 
@@ -74,6 +78,10 @@ service-canvas svg {
     stroke: rgba(157, 4, 183, 0.29);
 }
 .link.instance{
+    stroke: #ccc;
+}
+
+.link.instance.active{
     stroke: rgba(255, 138, 0, 0.65);
 }
 

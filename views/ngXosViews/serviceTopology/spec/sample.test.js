@@ -38,7 +38,9 @@ describe('The Service Relation Service', () => {
 
     const levelRelations = [
       {
-        provider_service: 1
+        provider_service: 1,
+        service_specific_attribute: '{"instance_id": "instance1"}',
+        subscriber_tenant: 2
       },
       {
         provider_service: 2
@@ -62,7 +64,14 @@ describe('The Service Relation Service', () => {
       let levelServices = Service.findLevelServices(levelRelations, services);
       expect(levelServices.length).toBe(2);
     });
+
+    it('should retrieve all service specific information', () => {
+      let info = Service.findSpecificInformation(levelRelations, 1);
+      expect(info.instance_id).toBe('instance1');
+    });
   });
+
+
 
   describe('given a list of services and a list of relations', () => {
 
@@ -160,24 +169,34 @@ describe('The Service Relation Service', () => {
     const instances = [
       [
         {
-          humanReadableName: 'first-slice-instance-1'
+          humanReadableName: 'first-slice-instance-1',
+          id: 1
         },
         {
-          humanReadableName: 'first-slice-instance-2'
+          humanReadableName: 'first-slice-instance-2',
+          id: 2
         }
       ],
       [
         {
-          humanReadableName: 'second-slice-instance'
+          humanReadableName: 'second-slice-instance',
+          id: 3
         }
       ]
     ];
 
+    const service = {
+      service_specific_attribute: {
+        instance_id: 1
+      }
+    };
+
     it('should create a tree grouping instances', () => {
-      const res = Service.buildServiceInterfacesTree(slices, instances);
+      const res = Service.buildServiceInterfacesTree(service, slices, instances);
 
       expect(res[0].name).toBe('First');
       expect(res[0].children[0].name).toBe('first-slice-instance-1');
+      expect(res[0].children[0].active).toBeTruthy();
       expect(res[0].children[1].name).toBe('first-slice-instance-2');
 
       expect(res[1].name).toBe('Second');
