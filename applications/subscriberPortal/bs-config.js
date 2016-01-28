@@ -52,7 +52,6 @@ module.exports = {
         req.url.indexOf('/xoslib/') !== -1 ||
         req.url.indexOf('/hpcapi/') !== -1
       ){
-        console.log(req.headers)
         if(req.headers['X-CSRFToken']){
           req.headers['x-csrftoken'] = req.headers['x-csrftoken'];
           req.headers.cookie = `xoscsrftoken=${req.headers['x-csrftoken']}; xossessionid=${req.headers['sessionid']}`;
