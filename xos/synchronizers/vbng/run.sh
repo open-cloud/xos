@@ -3,4 +3,4 @@
 #fi
 
 export XOS_DIR=/opt/xos
-python vbng-observer.py  -C $XOS_DIR/observers/vbng/vbng_observer_config
+python vbng-synchronizer.py  -C $XOS_DIR/synchronizers/vbng/vbng_synchronizer_config

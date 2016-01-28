@@ -1,0 +1,72 @@
+<!-- browserSync -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>XOS - Autoscaling Framework</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, max-scale=1">
+  <!-- bower:css -->
+  <link rel="stylesheet" href="vendor/angular-chart.js/dist/angular-chart.css" />
+  <link rel="stylesheet" href="vendor/bootstrap-css/css/bootstrap.min.css" />
+  <!-- endbower --><!-- endcss -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- endinject -->
+</head>
+<body>
+  
+</body>
+</html>
+
+<div ng-app="autoscaling">
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button> -->
+        <a class="navbar-brand" href="#">XOS - Autoscaling Framework</a>
+      </div>
+      <!-- <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse --> -->
+    </div>
+  </nav>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div ui-view ng-class="stateName"></div>
+      </div>
+    </div>
+  </div>
+  <!-- bower:js -->
+  <script src="vendor/angular/angular.js"></script>
+  <script src="vendor/Chart.js/Chart.js"></script>
+  <script src="vendor/angular-chart.js/dist/angular-chart.js"></script>
+  <script src="vendor/angular-animate/angular-animate.js"></script>
+  <script src="vendor/ui.bootstrap/src/accordion/accordion.js"></script>
+  <script src="vendor/ui.bootstrap/src/collapse/collapse.js"></script>
+  <script src="vendor/jquery/dist/jquery.js"></script>
+  <script src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src="vendor/ng-lodash/build/ng-lodash.js"></script>
+  <script src="vendor/bootstrap-css/js/bootstrap.min.js"></script>
+  <script src="vendor/angular-mocks/angular-mocks.js"></script>
+  <!-- endbower --><!-- endjs -->
+
+  <!-- inject:js -->
+  <script src="/.tmp/main.js"></script>
+  <script src="/.tmp/autoscaling_details.directive.js"></script>
+  <script src="/.tmp/autoscaling.service.js"></script>
+  <!-- endinject -->
+</div>
+

@@ -145,6 +145,12 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            install_dependencies:
+                type: string
+                required: false
+            component_config:
+                type: string
+                required: false
 
     tosca.nodes.ONOSvBNGApp:
         derived_from: tosca.nodes.Root
@@ -160,6 +166,12 @@ node_types:
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
             dependencies:
+                type: string
+                required: false
+            install_dependencies:
+                type: string
+                required: false
+            component_config:
                 type: string
                 required: false
             config_addresses.json:
@@ -186,6 +198,12 @@ node_types:
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
             dependencies:
+                type: string
+                required: false
+            install_dependencies:
+                type: string
+                required: false
+            component_config:
                 type: string
                 required: false
             config_network-cfg.json:

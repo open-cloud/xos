@@ -34,9 +34,9 @@ topology_template:
           view_url: /admin/cord/vcpeservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
-          private_key_fn: /opt/xos/observers/vcpe/vcpe_private_key
+          private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
       artifacts:
-          pubkey: /opt/xos/observers/vcpe/vcpe_public_key
+          pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
     service_vbng:
       type: tosca.nodes.VBNGService
@@ -54,7 +54,7 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
       artifacts:
-          pubkey: /opt/xos/observers/onos/onos_key.pub
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
 
 #
 # To actually bring up the vBNG app
@@ -118,13 +118,13 @@ topology_template:
                     "defaultVlan" : "1"
                   },
                   "basic" : {
-                    "driver" : "default"
+                    "driver" : "pmc-olt"
                   }
                 }
               }
             }
       artifacts:
-          pubkey: /opt/xos/observers/onos/onos_key.pub
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
 
 
     vOLT_ONOS_app:
@@ -137,7 +137,21 @@ topology_template:
               node: service_volt
               relationship: tosca.relationships.UsedByService
       properties:
-          dependencies: org.onosproject.openflow-base, org.onosproject.olt
+          install_dependencies: onos-ext-notifier-1.0-SNAPSHOT.oar, onos-ext-volt-event-publisher-1.0-SNAPSHOT.oar
+          dependencies: org.onosproject.openflow-base, org.onosproject.olt, org.ciena.onos.ext_notifier, org.ciena.onos.volt_event_publisher
+          component_config: >
+             {
+                "org.ciena.onos.ext_notifier.KafkaNotificationBridge":{
+                   "rabbit.user": "<rabbit_user>",
+                   "rabbit.password": "<rabbit_password>",
+                   "rabbit.host": "<rabbit_host>",
+                   "publish.rabbit": "true",
+                   "volt.events.rabbit.topic": "notifications.info",
+                   "volt.events.rabbit.exchange": "voltlistener",
+                   "volt.events.opaque.info": "{project_id: <keystone_tenant_id>, user_id: <keystone_user_id>}",
+                   "publish.volt.events": "true"
+                }
+             }
 #          config_network-cfg.json: >
 #            {
 #              "devices" : {
@@ -439,6 +453,18 @@ topology_template:
         path: andybavier/docker-vcpe
         tag: develop
 
+    # Let's add a user who can be administrator of the household
+    johndoe@myhouse.com:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+
     # A subscriber
     My House:
        type: tosca.nodes.CORDSubscriber
@@ -448,6 +474,10 @@ topology_template:
            cdn_enable: false
            url_filter_enable: false
            url_filter_level: R
+       requirements:
+          - house_admin:
+              node: johndoe@myhouse.com
+              relationship: tosca.relationships.AdminPrivilege
 
     Mom's PC:
        type: tosca.nodes.CORDUser
