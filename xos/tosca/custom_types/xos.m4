@@ -140,6 +140,12 @@ node_types:
             dependencies:
                 type: string
                 required: false
+            install_dependencies:
+                type: string
+                required: false
+            component_config:
+                type: string
+                required: false
             config_addresses.json:
                 type: string
                 required: false
@@ -157,6 +163,12 @@ node_types:
         properties:
             xos_base_tenant_props
             dependencies:
+                type: string
+                required: false
+            install_dependencies:
+                type: string
+                required: false
+            component_config:
                 type: string
                 required: false
             config_network-cfg.json:

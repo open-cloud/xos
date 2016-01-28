@@ -228,7 +228,7 @@ class CordSubscriberViewSet(XOSViewSet):
 
     def get_users(self, request, pk=None):
         subscriber = self.get_object()
-        return Response({"users": subscriber.users})
+        return Response(subscriber.users)
 
     def get_user_level(self, request, pk=None, uid=None):
         subscriber = self.get_object()

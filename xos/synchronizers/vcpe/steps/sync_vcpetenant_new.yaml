@@ -69,7 +69,7 @@
     when: cron_job_pids_count.stdout == "0"
 
   - name: Copy cron job to destination
-    copy: src=/opt/xos/observers/vcpe/vcpe_stats_notifier.py
+    copy: src=/opt/xos/synchronizers/vcpe/vcpe_stats_notifier.py
       dest=~/bin/vcpe_stats_notifier.py
     when: cron_job_pids_count.stdout == "0"
 
@@ -84,12 +84,12 @@
     when: cron_job_pids_count.stdout == "0"
 
   - name: vCPE basic dnsmasq config
-    copy: src=/opt/xos/observers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
+    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: dnsmasq config
-    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
@@ -97,22 +97,22 @@
     file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
 
   - name: dnsmasq "safe" config
-    template: src=/opt/xos/observers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: copy base ufw files
-    synchronize: src=/opt/xos/observers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    synchronize: src=/opt/xos/synchronizers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
     notify:
     - reload ufw
 
   - name: redirection rules for safe DNS
-    template: src=/opt/xos/observers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
     notify:
     - reload ufw
 
   - name: base ufw setup uses /etc/rc.local
-    copy: src=/opt/xos/observers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
     notify:
     - copy in /etc/rc.local
 

@@ -3,4 +3,4 @@
 #fi
 
 export XOS_DIR=/opt/xos
-python vcpe-observer.py  -C $XOS_DIR/observers/vcpe/vcpe_observer_config
+python vcpe-synchronizer.py  -C $XOS_DIR/synchronizers/vcpe/vcpe_synchronizer_config
