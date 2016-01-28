@@ -329,6 +329,7 @@ topology_template:
       properties:
           display_name: I2-atl
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -343,6 +344,7 @@ topology_template:
       properties:
           display_name: I2-chi
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -357,6 +359,7 @@ topology_template:
       properties:
           display_name: I2-hou
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -371,6 +374,7 @@ topology_template:
       properties:
           display_name: I2-kas
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -385,6 +389,7 @@ topology_template:
       properties:
           display_name: I2-lax
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -399,6 +404,7 @@ topology_template:
       properties:
           display_name: I2-nyc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -413,6 +419,7 @@ topology_template:
       properties:
           display_name: I2-slc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -427,6 +434,7 @@ topology_template:
       properties:
           display_name: I2-seae
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -441,6 +449,7 @@ topology_template:
       properties:
           display_name: I2-sng
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -455,6 +464,7 @@ topology_template:
       properties:
           display_name: I2-wdc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -469,6 +479,7 @@ topology_template:
       properties:
           display_name: Princeton
           site_url: http://opencloud.us/
+          hosts_nodes: true
       requirements:
           - deployment:
                node: campus
@@ -483,6 +494,7 @@ topology_template:
       properties:
           display_name: Stanford
           site_url: http://opencloud.us/
+          hosts_nodes: true 
       requirements:
           - deployment:
                node: campus
@@ -497,6 +509,7 @@ topology_template:
       properties:
           display_name: Washington
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -511,6 +524,7 @@ topology_template:
       properties:
           display_name: GTech
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -525,6 +539,7 @@ topology_template:
       properties:
           display_name: Arizona
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -539,6 +554,7 @@ topology_template:
       properties:
           display_name: Internet2
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -553,6 +569,7 @@ topology_template:
       properties:
           display_name: Singapore
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -567,6 +584,7 @@ topology_template:
       properties:
           display_name: ON.Lab
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
