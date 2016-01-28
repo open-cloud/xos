@@ -9,7 +9,7 @@ in whichever language as it should only integrate XOS api with your services (eg
 ## Concept Demonstrated
 
 This is intended to be a portal for a Subscriber user to manage a Parent Control Application provided by XOS.
-To Subscriber will be able to chose a switch between two bundles:
+To Subscriber will be able to choose between two bundles:
  - Basic Bundle
  - Family Bundle
  
@@ -28,11 +28,10 @@ _Subscribers_, _Users_ and _Parental Control_ are information managed by XOS and
 
 _All commands in this section refers to `applications/subscriberPortal`_
 
-To open this demo:
+_Note that NodeJs is required to run this demo_To open this demo:
+
  - open `env/default.js` and replace `host` with the URL of your XOS installation.
  - from the portal root execute `npm start`
-
-_Note that NodeJs is required to run this demo_
 
 This should open the demo in the browser.
 
