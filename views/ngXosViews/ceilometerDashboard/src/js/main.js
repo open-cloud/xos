@@ -91,12 +91,10 @@ angular.module('xos.ceilometerDashboard', [
     templateUrl: 'templates/ceilometer-dashboard.tpl.html',
     controller: function(Ceilometer){
 
-      console.log(Ceilometer.selectedService, Ceilometer.selectedSlice, Ceilometer.selectedResource);
-
       // this open the accordion
       this.accordion = {
         open: {}
-      }
+      };
 
       /**
       * Open the active panel base on the service stored values
@@ -328,6 +326,7 @@ angular.module('xos.ceilometerDashboard', [
     }
   }
 })
+  // NOTE reading this on demand for a single
 .directive('ceilometerStats', function(){
   return {
     restrict: 'E',
