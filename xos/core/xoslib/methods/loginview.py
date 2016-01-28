@@ -16,6 +16,8 @@ import time
 import django.middleware.csrf
 from xos.exceptions import *
 from django.forms.models import model_to_dict
+from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.sessions.models import Session
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
@@ -68,4 +70,33 @@ class LoginView(APIView):
 
         return self.do_login(request, username, password)
 
+class LogoutView(APIView):
+    method_kind = "list"
+    method_name = "logout"
+
+    def do_logout(self, request, sessionid):
+        if not sessionid:
+            raise XOSMissingField("No xossessionid specified")
+
+        # Make sure the session exists. This prevents us from accidentally
+        # creating empty sessions with SessionStore()
+        session = Session.objects.filter(session_key=sessionid)
+        if not session:
+            # session doesn't exist
+            raise PermissionDenied("Session does not exist")
+
+        session = SessionStore(session_key=sessionid)
+        if "auth" in session:
+            del session["auth"]
+            session.save()
+
+        return Response("Logged Out")
+
+    def get(self, request, format=None):
+        sessionid = request.GET.get("xossessionid", None)
+        return self.do_logout(request, sessionid)
+
+    def post(self, request, format=None):
+        sessionid = request.DATA.get("xossessionid", None)
+        return self.do_logout(request, sessionid)
 

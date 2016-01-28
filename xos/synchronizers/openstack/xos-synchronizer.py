@@ -8,7 +8,7 @@ sys.path.append('/opt/xos')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
 from synchronizers.base.backend import Backend
 from xos.config import Config, DEFAULT_CONFIG_FN
-from core.models import Instance
+from core.models import Instance,NetworkTemplate
 from xos.logger import Logger, logging, logger
 from django.db import ProgrammingError
 import time
@@ -67,9 +67,12 @@ def main():
     while not models_active:
         try:
             _ = Instance.objects.first()
+            _ = NetworkTemplate.objects.first()
             models_active = True
-        except ProgrammingError:
+        except Exception,e:
+            logger.info(str(e))
             logger.info('Waiting for data model to come up before starting...')
+            time.sleep(10)
             wait = True
 
     if (wait):
