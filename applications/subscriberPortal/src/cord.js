@@ -25,7 +25,6 @@
       'cordRest',
       'cordMast',
       'cordFoot',
-      'cordNav',
       'cordLogin',
       'cordHome',
       'cordUser',

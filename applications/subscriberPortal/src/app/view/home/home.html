@@ -1,42 +1,50 @@
 <!-- Home page partial html -->
 <div id="home" class="container">
-    <div class="main-left">
-        <img src="/imgs/home.jpg">
-    </div>
-
-    <div class="main-right">
-        <div class="move-down">
+    <div class="row">
+        <div class="col-sm-6 hidden-xs">
+            <img class="img-responsive" src="/imgs/home.jpg">
+        </div>
+        <div class="col-sm-6">
             <div class="bundle-title">
-                <h4>Welcome Dad!</h4>
+                <h2>Welcome Dad!</h2>
                 <h5>You are subscribed to the</h5>
-                <h3>{{bundle_name}}</h3>
             </div>
 
-            <p>{{bundle_desc}}</p>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{bundle_name}}</h3>
+                </div>
+                <div class="panel-body">
+                    {{bundle_desc}}
+                </div>
+            </div>
 
-
-            <h4>Users</h4>
-            <table class="users">
-                <thead>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Users</h3>
+                </div>
+                <table class="table">
+                    <thead>
                     <tr>
-                        <th class="user-pic"></th>
+                        <th></th>
                         <th>Name</th>
                         <th>Last Login</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
 
-                <!--<pre>{{users | json}}</pre>-->
+                    <!--<pre>{{users | json}}</pre>-->
 
-                <tr ng-repeat="user in users" class="fadein">
-                        <td class="user-pic">
+                    <tr ng-repeat="user in users" class="animate-repeat">
+                        <td class="avatar">
                             <img ng-src="{{'/imgs/' + user.icon_id + '.jpg'}}">
                         </td>
                         <td>{{user.name}}</td>
                         <td>{{shared.userActivity[user.id]}}</td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
