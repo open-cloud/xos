@@ -9,28 +9,45 @@
 @import '../app/view/user/user.css';
 @import '../app/view/bundle/bundle.css';
 
+$cord-red: #CE5650;
+
+/* Navigation styles
+-------------------------------------------------- */
+nav {
+  .navbar-brand {
+    padding-top: 0;
+    img {
+      width: 130px;
+    }
+  }
+
+  li:hover,
+  li.active {
+    border-bottom: 2px solid $cord-red;
+  }
+
+  li > a{
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    margin-top: 5px;
+  }
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
   position: relative;
   min-height: 100%;
 }
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
+
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 60px;
+  height: 30px;
+  line-height: 30px;
   background-color: #f5f5f5;
-}
-
-.navbar-brand {
-  padding-top: 0;
-  img {
-    width: 130px;
-  }
+  z-index: 100;
+  box-shadow: 0 10px 5px 10px gray;
 }
