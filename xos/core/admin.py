@@ -789,14 +789,34 @@ class DeploymentAdmin(XOSBaseAdmin):
 
         return AdminFormMetaClass
 
+class ControllerAdminForm(forms.ModelForm):
+    backend_disabled = forms.BooleanField(required=False)
+    class Meta:
+        model = Controller
+
+    def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
+      super(ControllerAdminForm, self).__init__(*args, **kwargs)
+
+      if self.instance and self.instance.pk:
+        self.fields['backend_disabled'].initial = self.instance.get_backend_register('disabled', False)
+      else:
+        # defaults when adding new controller
+        self.fields['backend_disabled'].initial = False
+
+    def save(self, commit=True):
+      self.instance.set_backend_register("disabled", self.cleaned_data["backend_disabled"])
+      return super(ControllerAdminForm, self).save(commit=commit)
+
 class ControllerAdmin(XOSBaseAdmin):
     model = Controller
-    fieldList = ['deployment', 'name', 'backend_type', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain', 'rabbit_host', 'rabbit_user', 'rabbit_password']
+    fieldList = ['deployment', 'name', 'backend_type', 'backend_disabled', 'version', 'auth_url', 'admin_user', 'admin_tenant','admin_password', 'domain', 'rabbit_host', 'rabbit_user', 'rabbit_password']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-general']})]
     inlines = [ControllerSiteInline] # ,ControllerImagesInline]
     list_display = ['backend_status_icon', 'name', 'version', 'backend_type']
     list_display_links = ('backend_status_icon', 'name', )
     readonly_fields = ('backend_status_text',)
+    form = ControllerAdminForm
 
     user_readonly_fields = []
 
