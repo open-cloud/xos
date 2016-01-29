@@ -24,7 +24,7 @@ topology_template:
               node: service_ONOS_VTN
               relationship: tosca.relationships.TenantOfService
       properties:
-          dependencies: org.onosproject.openflow, org.onosproject.dhcp, org.onosproject.openstackswitching, org.onosproject.cordvtn
+          dependencies: org.onosproject.drivers, org.onosproject.drivers.ovsdb, org.onosproject.lldpprovider, org.onosproject.openflow-base, org.onosproject.ovsdb-base, org.onosproject.dhcp, org.onosproject.openstackswitching, org.onosproject.cordvtn
           rest_onos/v1/network/configuration/: { get_artifact: [ SELF, vtn_network_cfg_json, LOCAL_FILE ] }
       artifacts:
           vtn_network_cfg_json: /root/setup/vtn-network-cfg.json
