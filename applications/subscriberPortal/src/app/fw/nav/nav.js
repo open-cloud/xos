@@ -15,7 +15,7 @@
  */
 
 angular.module('cordNav', [])
-    .directive('nav', function () {
+    .directive('navigation', function () {
         return {
             restrict: 'E',
             templateUrl: 'app/fw/nav/nav.html'

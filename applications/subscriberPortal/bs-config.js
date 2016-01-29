@@ -38,7 +38,11 @@ module.exports = {
   "files": [
     './src/**/*.css',
     './src/**/*.js',
-    './src/**/*.json'
+    './src/**/*.json',
+    './src/**/*.html',
+    './src/**/*.jpg',
+    './src/**/*.png',
+    './src/**/*.gif'
   ],
   "server": {
     baseDir: './src',
