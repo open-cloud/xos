@@ -4,10 +4,17 @@ xos_db:
         - "5432"
 
 xos_synchronizer_openstack:
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
+    extra_hosts:
+        - ctl:128.110.96.49
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: openstack
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
@@ -17,9 +24,11 @@ xos_synchronizer_openstack:
 #        org.xosproject.target: swarm
 
 xos:
-    image: xosproject/xos
     command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
-    ports:
-        - "8000:8000"
+    image: xosproject/xos
     links:
         - xos_db
+    ports:
+        - "9999:8000"
+    volumes:
+        - .:/root/setup:ro
