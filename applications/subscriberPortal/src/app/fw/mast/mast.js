@@ -31,7 +31,19 @@
     .directive('mast', function () {
       return {
         restrict: 'E',
-        templateUrl: 'app/fw/mast/mast.html'
+        templateUrl: 'app/fw/mast/mast.html',
+        controller: 'CordMastCtrl',
+        controllerAs: ''
       };
-    });
+    })
+  .directive('closeOnRouteChange', function(){
+    return {
+      restrict: 'A',
+      link: function(scope, elem){
+        scope.$on('$routeChangeStart', function(next, current) {
+          elem.removeClass('in');
+        });
+      }
+    }
+  });
 }());

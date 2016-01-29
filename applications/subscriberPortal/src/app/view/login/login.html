@@ -1,18 +1,23 @@
 <!-- Login page partial html -->
-<div id="login" class="container">
-    <div id="login-wrapper">
-        <div id="login-form">
-            <div class="outline"></div>
-            <h2>Subscriber Portal</h2>
-            <form ng-submit="login()">
-                <input ng-model="email" type="text" placeholder="email" required>
-                <input ng-model="password" type="password" placeholder="password" required>
-                <input ng-click="login()" type="button" value="Log In">
-                <div class="login-error" ng-show="error">
+<div class="container login">
+    <div class="login-wrapper">
+        <h3 class="text-center">Subscriber Portal</h3>
+        <form ng-submit="login()">
+            <div class="form-group">
+                <input class="form-control" ng-model="email" type="text" placeholder="email" required>
+            </div>
+            <div class="form-group">
+                <input class="form-control" ng-model="password" type="password" placeholder="password" required>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary btn-block" type="submit">Log In</button>
+            </div>
+            <div class="form-group" ng-show="error">
+                <div class="alert alert-danger">
                     Sorry, your login failed.
                     Please try again.
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>

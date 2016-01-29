@@ -67,7 +67,7 @@
         scope: {
           user: '='
         },
-        template: '<span class="icon-saved" ng-show="saved"></span>',
+        template: '<span class="icon-saved animate" ng-show="saved"></span>',
         link: function(scope, elem){
           scope.saved = false;
           scope.$watch('user.updated', function(val){
