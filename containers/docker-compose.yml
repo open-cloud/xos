@@ -5,8 +5,6 @@ xos_db:
 
 xos_synchronizer_openstack:
     command: bash -c "sleep 120; python /opt/xos/synchronizers/openstack/xos-synchronizer.py"
-    extra_hosts:
-        - ctl:128.110.96.49
     image: xosproject/xos-synchronizer-openstack
     labels:
         org.xosproject.kind: synchronizer
@@ -29,6 +27,6 @@ xos:
     links:
         - xos_db
     ports:
-        - "9999:8000"
+        - "8000:8000"
     volumes:
         - .:/root/setup:ro
