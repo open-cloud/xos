@@ -1,0 +1,69 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+
+  tasks:
+
+  - name: Fix /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="127.0.0.1 localhost"
+      line="127.0.0.1 localhost {{ instance_hostname }}"
+
+  - name: Add repo key
+    apt_key:
+      keyserver=hkp://pgp.mit.edu:80
+      id=58118E89F3A912897C070ADBF76221572C52609D
+
+  - name: Install Docker repo
+    apt_repository:
+      repo="deb https://apt.dockerproject.org/repo ubuntu-trusty main"
+      state=present
+
+  - name: Install Docker
+    apt:
+      name={{ '{{' }} item {{ '}}' }}
+      state=latest
+      update_cache=yes
+    with_items:
+    - docker-engine
+    - python-pip
+    - python-httplib2
+
+  - name: Install docker-py
+    pip:
+      name=docker-py
+      state=latest
+
+  - name: sflow pub-sub config
+    template: src=/opt/xos/synchronizers/monitoring_channel/templates/sflow_pub_sub/sflow_pub_sub_config.j2 dest=/usr/local/share/sflow_pub_sub.conf mode=0777
+
+  - name: Start SFLOW pub-sub container
+    docker:
+      docker_api_version: "1.18"
+      name: {{ sflow_container }}
+      # was: reloaded
+      state: running
+      image: srikanthvavila/sflowpubsub
+      ports:
+      - "{{ sflow_port }}:{{ sflow_port }}/udp"
+      - "{{ sflow_api_port }}:{{ sflow_api_port }}"
+      volumes:
+      - /usr/local/share/sflow_pub_sub.conf:/usr/local/share/sflow_pub_sub/sflow_pub_sub.conf
+
+  - name: Get Docker IP
+    #TODO: copy dockerip.sh to monitoring service synchronizer
+    script: /opt/xos/synchronizers/onos/scripts/dockerip.sh {{ sflow_container }}
+    register: dockerip
+
+  - name: Wait for SFlow service to come up
+    wait_for:
+      host={{ '{{' }} dockerip.stdout {{ '}}' }}
+      port={{ '{{' }} item {{ '}}' }}
+      state=present
+    with_items:
+    - {{ sflow_port }}
+    - {{ sflow_api_port }}

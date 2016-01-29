@@ -166,16 +166,18 @@ def model_policy_monitoring_channel(pk):
 
 
 SFLOW_KIND = "sflow"
+SFLOW_PORT = 6343
+SFLOW_API_PORT = 33333
 
 class SFlowService(Service):
     KIND = SFLOW_KIND
 
     class Meta:
-        app_label = "sflow"
+        app_label = "ceilometer"
         verbose_name = "sFlow Collection Service"
         proxy = True
 
-    default_attributes = {"sflow_port": "6343", "sflow_api_port":"33333"}
+    default_attributes = {"sflow_port": SFLOW_PORT, "sflow_api_port": SFLOW_API_PORT}
 
     sync_attributes = ("sflow_port", "sflow_api_port",)
 
