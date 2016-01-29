@@ -5,13 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
-    "prestart": "npm install && bower install",
-    "start": "browser-sync start --config bs-config.js"
+    "preserver": "npm install && bower install && wiredep --dependencies --src src/index.html",
+    "styles": "node-sass -w --include-path --source-map-embed -o ./src/style ./src/sass/*.scss",
+    "server": "browser-sync start --config bs-config.js",
+    "start": "parallelshell \"npm run server\" \"npm run styles\""
   },
   "author": "Matteo Scandolo",
   "license": "ISC",
   "devDependencies": {
     "browser-sync": "^2.11.1",
-    "http-proxy": "^1.12.1"
-  }
+    "http-proxy": "^1.12.1",
+    "node-sass": "^3.4.2",
+    "parallelshell": "^2.0.0",
+    "wiredep": "^3.0.0"
+  },
+  "dependencies": {}
 }

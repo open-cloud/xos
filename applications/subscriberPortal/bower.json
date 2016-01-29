@@ -21,6 +21,7 @@
     "jquery": "~2.2.0",
     "angular-resource": "~1.4.9",
     "angular-route": "~1.4.9",
-    "angular-cookies": "~1.4.9"
+    "angular-cookies": "~1.4.9",
+    "bootstrap-sass": "~3.3.6"
   }
 }
