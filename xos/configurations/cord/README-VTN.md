@@ -29,7 +29,7 @@ ctl node:
     # I ran it again and it succeeded, but I am skeptical there's
     # not still an issue lurking...
     cat > /usr/local/etc/neutron/plugins/ml2/conf_onos.ini <<EOF
-    [ml2_onos]
+    [onos]
     url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/openstackswitching
     username = karaf
     password = karaf
@@ -41,12 +41,6 @@ ctl node:
     # files. Maybe it can be restarted using systemctl instead...
     /usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
 
-Neutron driver arg-parsing issue
-
-    # For some reason, the VTN Neutron plugin isn't getting its arguments from neutron
-    emacs /usr/local/lib/python2.7/dist-packages/networking_onos/plugins/ml2/driver.py
-        hard-code self.onos_path and self.onos_auth
-    
 Compute nodes and nm nodes:
 
     cd xos/configurations/cord/dataplane
@@ -59,6 +53,13 @@ Compute nodes and nm nodes:
     #  4) delete any existing br-int bridge
     #  5) [nm only] turn off neutron-dhcp-agent
 
+Additional compute node stuff:
+    ovs-vsctl del-br br-tun
+    ovs-vsctl del-br br-flat-lan-1
+    ip addr add <addr-that-was-assinged-to-flat-lan-1> dev br-int
+    ip link set br-int up
+    ip route add <network-that-was-assigned-to-flat-lan-1> dev br-int
+    
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
 there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
 
