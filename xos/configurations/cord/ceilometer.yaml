@@ -50,7 +50,7 @@ node_types:
             sflow_port:
               type: integer
               required: false
-              default: 6643
+              default: 6343
               description: sFlow listening port
             sflow_api_port:
               type: integer
@@ -86,7 +86,7 @@ topology_template:
       properties:
           view_url: /admin/ceilometer/sflowservice/$id$/
           kind: sflow
-          sflow_port: 6643
+          sflow_port: 6343
           sflow_api_port: 33333
 
     Private:

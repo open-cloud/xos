@@ -53,7 +53,8 @@ class SyncSFlowService(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
         fields={}
         fields["instance_hostname"] = self.get_instance(o).instance_name.replace("_","-")
-        fields["listening_endpoint"] = o.listening_endpoint
+        fields["sflow_port"] = o.sflow_port
+        fields["sflow_api_port"] = o.sflow_api_port
         fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
         fields["sflow_container"] = "sflowpubsub"
         return fields

@@ -13,7 +13,7 @@ from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice, ControllerSlice, ControllerUser
-from services.ceilometer.models import SFlowTenant
+from services.ceilometer.models import SFlowService, SFlowTenant
 from xos.logger import Logger, logging
 
 # hpclibrary will be in steps/..
@@ -47,12 +47,25 @@ class SyncSFlowTenant(SyncInstanceUsingAnsible):
 
         return sflows[0]
 
+    def get_instance(self, o):
+        # We assume the SFlow service owns a slice, so pick one of the instances
+        # inside that slice to sync to.
+
+        serv = self.get_sflow_service(o)
+
+        if serv.slices.exists():
+            slice = serv.slices.all()[0]
+            if slice.instances.exists():
+                return slice.instances.all()[0]
+
+        return None
+
     def get_extra_attributes(self, o):
         instance = self.get_instance(o)
 
         fields={}
-        fields["sflow_api_base_url"] = get_sflow_service(self, o).sflow_api_url
-        fields["sflow_api_port"] = get_sflow_service(self, o).sflow_api_port
+        fields["sflow_api_base_url"] = self.get_sflow_service(o).sflow_api_url
+        fields["sflow_api_port"] = self.get_sflow_service(o).sflow_api_port
         fields["listening_endpoint"] = o.listening_endpoint
         fields["sflow_container"] = "sflowpubsub"
 

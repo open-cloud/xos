@@ -4,6 +4,9 @@
   connection: ssh
   user: ubuntu
   sudo: yes
+  vars:
+     sflow_port: {{ sflow_port }}
+     sflow_api_port: {{ sflow_api_port }}
 
   tasks:
 
@@ -48,6 +51,9 @@
       # was: reloaded
       state: running
       image: srikanthvavila/sflowpubsub
+      expose:
+      - {{ sflow_api_port }}
+      - {{ sflow_port }}
       ports:
       - "{{ sflow_port }}:{{ sflow_port }}/udp"
       - "{{ sflow_api_port }}:{{ sflow_api_port }}"
@@ -65,5 +71,4 @@
       port={{ '{{' }} item {{ '}}' }}
       state=present
     with_items:
-    - {{ sflow_port }}
     - {{ sflow_api_port }}
