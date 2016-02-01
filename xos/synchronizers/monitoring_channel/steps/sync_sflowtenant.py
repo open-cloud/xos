@@ -64,6 +64,7 @@ class SyncSFlowTenant(SyncInstanceUsingAnsible):
         instance = self.get_instance(o)
 
         fields={}
+        fields["nat_ip"] = instance.get_ssh_ip()
         fields["sflow_api_base_url"] = self.get_sflow_service(o).sflow_api_url
         fields["sflow_api_port"] = self.get_sflow_service(o).sflow_api_port
         fields["listening_endpoint"] = o.listening_endpoint
