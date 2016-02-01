@@ -55,6 +55,8 @@ Compute nodes and nm nodes:
 
 Additional compute node stuff:
 
+Br-flat-lan-1 needs to be deleted, since VTN will be attaching br-int directly to the eth device that br-flat-lan-1 was using. Additionally, we need to assign an IP address to br-int (sounds like Hyunsun is working on having VTN do that for us). Adding the route was not in Hyunsun's instructions, but I found I had to do it in order to get the compute nodes to talk to one another.
+
     ovs-vsctl del-br br-tun
     ovs-vsctl del-br br-flat-lan-1
     ip addr add <addr-that-was-assinged-to-flat-lan-1> dev br-int
