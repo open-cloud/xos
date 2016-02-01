@@ -42,14 +42,18 @@ def getTenantCeilometerProxyURL(user):
     logger.info("SRIKANTH: Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
     return monitoring_channel.ceilometer_url
 
-def getTenantControllerTenantMap(user):
+def getTenantControllerTenantMap(user, slice=None):
     tenantmap={}
-    for slice in Slice.objects.filter(creator=user):
-        for cs in slice.controllerslices.all():
+    if not slice:
+        slices = Slice.objects.filter(creator=user)
+    else:
+        slices = [slice]
+    for s in slices:
+        for cs in s.controllerslices.all():
             if cs.tenant_id:
                 tenantmap[cs.tenant_id] = {"slice": cs.slice.name}
                 if cs.slice.service:
-                    tenantmap[cs.tenant_id]["service"] = slice.service.name
+                    tenantmap[cs.tenant_id]["service"] = cs.slice.service.name
                 else:
                     logger.warn("SRIKANTH: Slice %(slice)s is not associated with any service" % {'slice':cs.slice.name})
                     tenantmap[cs.tenant_id]["service"] = "Other"
@@ -151,10 +155,10 @@ def diff_lists(a, b):
     else:
         return list(set(a) - set(b))
 
-def get_resource_map(request, ceilometer_url):
+def get_resource_map(request, ceilometer_url, query=None):
     resource_map = {}
     try:
-        resources = resource_list(request, ceilometer_url=ceilometer_url)
+        resources = resource_list(request, ceilometer_url=ceilometer_url, query=query)
         for r in resources:
             if 'display_name' in r['metadata']:
                 name = r['metadata']['display_name']
@@ -179,7 +183,7 @@ class Meters(object):
 
     """
 
-    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, tenant_map=None, resource_map=None):
+    def __init__(self, request=None, ceilometer_meter_list=None, ceilometer_url=None, query=None, tenant_map=None, resource_map=None):
         # Storing the request.
         self._request = request
         self.ceilometer_url = ceilometer_url
@@ -191,8 +195,10 @@ class Meters(object):
             self._ceilometer_meter_list = ceilometer_meter_list
         else:
             try:
-                query=[]
-                self._ceilometer_meter_list = meter_list(request, self.ceilometer_url, query)
+                meter_query=[]
+                if query:
+                    meter_query = query
+                self._ceilometer_meter_list = meter_list(request, self.ceilometer_url, meter_query)
             except requests.exceptions.RequestException as e:
                 self._ceilometer_meter_list = []
                 raise e
@@ -1139,13 +1145,14 @@ class MeterStatisticsList(APIView):
         tenant_id = request.QUERY_PARAMS.get('tenant', None)
         resource_id = request.QUERY_PARAMS.get('resource', None)
 
+        query = []
+        if tenant_id:
+            query.extend(make_query(tenant_id=tenant_id))
+        if resource_id:
+            query.extend(make_query(resource_id=resource_id))
+
         if meter_name:
             #Statistics query for one meter
-            query = []
-            if tenant_id:
-                query.extend(make_query(tenant_id=tenant_id))
-            if resource_id:
-                query.extend(make_query(resource_id=resource_id))
             if additional_query:
                 query = query + additional_query
             statistics = statistic_list(request, meter_name,
@@ -1159,7 +1166,7 @@ class MeterStatisticsList(APIView):
 
         #Statistics query for all meter
         resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, query=query, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
@@ -1231,6 +1238,94 @@ class MeterSamplesList(APIView):
                  else:
                      sample["resource_name"] = sample["resource_id"]
         return Response(samples)
+
+class XOSInstanceStatisticsList(APIView):
+    method_kind = "list"
+    method_name = "xos-instance-statistics"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+        tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
+        if (not tenant_ceilometer_url):
+            raise XOSMissingField("Tenant ceilometer URL is missing")
+        instance_uuid = request.QUERY_PARAMS.get('instance-uuid', None)
+        if not instance_uuid:
+            raise XOSMissingField("Instance UUID in query params is missing")
+        if not Instance.objects.filter(instance_uuid=instance_uuid):
+            raise XOSMissingField("XOS Instance object is missing for this uuid")
+        xos_instance = Instance.objects.filter(instance_uuid=instance_uuid)[0]
+        tenant_map = getTenantControllerTenantMap(request.user, xos_instance.slice)
+        tenant_id = tenant_map.keys()[0]
+        resource_ids = []
+        resource_ids.append(instance_uuid)
+        for p in xos_instance.ports.all():
+            #neutron port resource id is represented in ceilometer as "nova instance-name"+"-"+"nova instance-id"+"-"+"tap"+first 11 characters of port-id
+            resource_ids.append(xos_instance.instance_id+"-"+instance_uuid+"-tap"+p.port_id[:11])
+        
+        date_options = request.QUERY_PARAMS.get('period', 1)
+        date_from = request.QUERY_PARAMS.get('date_from', '')
+        date_to = request.QUERY_PARAMS.get('date_to', '')
+
+        try:
+            date_from, date_to = calc_date_args(date_from,
+                                                date_to,
+                                                date_options)
+        except Exception as e:
+           raise e 
+
+        additional_query = []
+        if date_from:
+            additional_query.append({'field': 'timestamp',
+                                     'op': 'ge',
+                                     'value': date_from})
+        if date_to:
+            additional_query.append({'field': 'timestamp',
+                                     'op': 'le',
+                                     'value': date_to})
+
+        report_rows = []
+        for resource_id in resource_ids:
+            query = []
+            if tenant_id:
+                query.extend(make_query(tenant_id=tenant_id))
+            if resource_id:
+                query.extend(make_query(resource_id=resource_id))
+
+            #Statistics query for all meter
+            resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url, query=query)
+            meters = Meters(request, ceilometer_url=tenant_ceilometer_url, query=query, tenant_map=tenant_map, resource_map=resource_map)
+            services = {
+                _('Nova'): meters.list_nova(),
+                _('Neutron'): meters.list_neutron(),
+                _('VCPE'): meters.list_vcpe(),
+                _('SDN'): meters.list_sdn(),
+            }
+            for service,meters in services.items():
+                for meter in meters:
+                    query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
+                    if additional_query:
+                        query = query + additional_query
+                    statistics = statistic_list(request, meter["name"],
+                                            ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                    if not statistics:
+                        continue
+                    statistic = statistics[-1]
+                    row = {"name": 'none',
+                           "slice": meter["slice"],
+                           "project_id": meter["project_id"],
+                           "service": meter["service"],
+                           "resource_id": meter["resource_id"],
+                           "resource_name": meter["resource_name"],
+                           "meter": meter["name"],
+                           "description": meter["description"],
+                           "category": service,
+                           "time": statistic["period_end"],
+                           "value": statistic["avg"],
+                           "unit": meter["unit"]}
+                    report_rows.append(row)
+
+        return Response(report_rows)
 
 class ServiceAdjustScale(APIView):
     method_kind = "list"
