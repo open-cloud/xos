@@ -54,6 +54,7 @@ Compute nodes and nm nodes:
     #  5) [nm only] turn off neutron-dhcp-agent
 
 Additional compute node stuff:
+
     ovs-vsctl del-br br-tun
     ovs-vsctl del-br br-flat-lan-1
     ip addr add <addr-that-was-assinged-to-flat-lan-1> dev br-int
