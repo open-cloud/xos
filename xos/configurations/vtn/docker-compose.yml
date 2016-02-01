@@ -21,7 +21,7 @@ xos_synchronizer_openstack:
 
 xos_synchronizer_onos:
     image: xosproject/xos-synchronizer-openstack
-    command: bash -c "python /opt/xos/observers/onos/onos-observer.py -C /opt/xos/observers/onos/onos_observer_config"
+    command: bash -c "python /opt/xos/synchronizers/onos/onos-observer.py -C /opt/xos/synchronizers/onos/onos_observer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: onos
