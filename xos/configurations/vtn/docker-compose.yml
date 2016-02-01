@@ -31,7 +31,7 @@ xos_synchronizer_onos:
         - ctl:${MYIP}
     volumes:
         - ../setup:/root/setup:ro
-        - ../setup/id_rsa:/opt/xos/observers/onos/onos_key:ro  # private key
+        - ../setup/id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
 
 # FUTURE
 #xos_swarm_synchronizer:
@@ -51,4 +51,4 @@ xos:
       - ../setup:/root/setup:ro
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
       - ./files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
-      - ../setup/id_rsa.pub:/opt/xos/observers/onos/onos_key.pub:ro
+      - ../setup/id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
