@@ -1,0 +1,22 @@
+FROM       ubuntu:14.04.2
+MAINTAINER Andy Bavier <acb@cs.princeton.edu>
+
+# XXX Workaround for docker bug:
+# https://github.com/docker/docker/issues/6345
+# Kernel 3.15 breaks docker, uss the line below as a workaround
+# until there is a fix
+RUN ln -s -f /bin/true /usr/bin/chfn
+# XXX End workaround
+
+# Install.
+RUN apt-get update && apt-get install -y \
+    python-pip \
+    python-dev
+
+RUN pip install Flask
+RUN mkdir -p /usr/local/share/
+ADD sflow_pub_sub /usr/local/share/sflow_pub_sub
+RUN chmod +x /usr/local/share/sflow_pub_sub/sflow_pub_sub_main.py
+RUN chmod +x /usr/local/share/sflow_pub_sub/start_sflow_pub_sub
+WORKDIR /usr/local/share/sflow_pub_sub/
+CMD /usr/local/share/sflow_pub_sub/start_sflow_pub_sub

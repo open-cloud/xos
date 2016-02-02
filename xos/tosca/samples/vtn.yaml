@@ -15,7 +15,7 @@ topology_template:
           view_url: /admin/onos/onosservice/$id$/
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
       artifacts:
-          pubkey: /opt/xos/observers/onos/onos_key.pub
+          pubkey: /opt/xos/synchronizers/onos/onos_key.pub
 
     VTN_ONOS_app:
       type: tosca.nodes.ONOSVTNApp

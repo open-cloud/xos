@@ -13,7 +13,7 @@ cat >> $FN <<EOF
                 "nodes" : [
 EOF
 
-NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep enabled|awk '{print $4}' )
+NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep -v ID|grep -v +|awk '{print $4}' )
 
 # also configure ONOS to manage the nm node
 NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
@@ -33,7 +33,7 @@ for NODE in $NODES; do
     # the eth device and ip address that was assigned to flat-net-1.
     sudo scp root@$NODE:/root/setup/info.flat-lan-1 $SETUPDIR/flat-lan-$NODE
     PHYPORT=`bash -c "source $SETUPDIR/flat-lan-$NODE; echo \\\$DATADEV"`
-    LOCALIP=`bash -c "source $SETUPDIR/flat-lan-$NODE; echo \\\$DATAIP"` 
+    LOCALIP=`bash -c "source $SETUPDIR/flat-lan-$NODE; echo \\\$DATAIP"`
 
     ((I++))
     cat >> $FN <<EOF

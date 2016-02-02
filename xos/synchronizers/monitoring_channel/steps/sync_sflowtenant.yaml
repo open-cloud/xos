@@ -1,0 +1,28 @@
+---
+- hosts: {{ instance_name }}
+  gather_facts: False
+  connection: ssh
+  user: {{ username }}
+  sudo: yes
+
+  tasks:
+
+  - name: Get Docker IP
+    #TODO: copy dockerip.sh to monitoring service synchronizer
+    script: /opt/xos/synchronizers/onos/scripts/dockerip.sh {{ sflow_container }}
+    register: sflowserviceaddr
+
+  - name: Wait for SFlow service to come up
+    wait_for:
+      host={{ '{{' }} sflowserviceaddr.stdout {{ '}}' }}
+      port={{ '{{' }} item {{ '}}' }}
+      state=present
+    with_items:
+    - {{ sflow_api_port }}
+
+  - name: Invoke SFlow service REST API to subscribe
+    uri:
+      url: http://{{ '{{' }} sflowserviceaddr.stdout {{ '}}' }}:{{ sflow_api_port }}/subscribe
+      body: "{{ listening_endpoint }}"
+      body_format: raw
+      method: POST
