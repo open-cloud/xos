@@ -14,6 +14,15 @@ class VPNService(Service):
         app_label = "vpn"
         verbose_name = "VPN Service"
 
+    @property
+    def ca(self):
+        """str: the string for the ca certificate"""
+        return self.get_attribute("ca", None)
+
+    @ca.setter
+    def ca(self, value):
+        self.set_attribute("ca", value)
+
 
 class VPNTenant(TenantWithContainer):
     """Defines the Tenant for creating VPN servers."""
@@ -31,7 +40,8 @@ class VPNTenant(TenantWithContainer):
                           'client_address': '10.8.0.2',
                           'can_view_subnet': False,
                           'is_persistent': True,
-                          'script': None}
+                          'script': None,
+                          'ca': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -144,6 +154,15 @@ class VPNTenant(TenantWithContainer):
     @script.setter
     def script(self, value):
         self.set_attribute("script", value)
+
+    @property
+    def ca(self):
+        """str: the string for the ca certificate"""
+        return self.get_attribute("ca", self.default_attributes['ca'])
+
+    @ca.setter
+    def ca(self, value):
+        self.set_attribute("ca", value)
 
 
 def model_policy_vpn_tenant(pk):

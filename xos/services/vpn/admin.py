@@ -7,6 +7,7 @@ from core.models import User
 from django import forms
 from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
+from xos.exceptions import XOSProgrammingError
 
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
@@ -38,8 +39,32 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
                            'top',
                            'administration'),)
 
+    form = VPNServiceForm
+
     def queryset(self, request):
         return VPNService.get_service_objects_by_user(request.user)
+
+class VPNServiceForm(forms.ModelForm):
+    """The form used to create and edit a VPNService."""
+
+
+    def __init__(self, *args, **kwargs):
+        super(VPNServiceForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        if (not self.instance.ca):
+            self.instance.ca = self.generate_ca
+
+        return super(VPNServiceForm, self).save(commit=commit)
+
+    def generate_ca(self):
+        """str: Generates a CA certificate."""
+        proc = Popen("./ca.sh", shell=True, stdout=PIPE)
+        (stdout, stderr) = proc.communicate()
+        return stdout
+
+    class Meta:
+        model = VPNService
 
 
 class VPNTenantForm(forms.ModelForm):
@@ -105,6 +130,11 @@ class VPNTenantForm(forms.ModelForm):
 
         if (not self.instance.server_key):
             self.instance.server_key = self.generate_VPN_key()
+
+        if (self.instance.provider_service):
+            self.instance.ca = self.instance.provider_service.ca
+        else:
+            raise XOSProgrammingError("VPN Tenant does not have provider service)
 
         return super(VPNTenantForm, self).save(commit=commit)
 
