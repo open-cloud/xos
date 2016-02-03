@@ -188,10 +188,7 @@ angular.module('xos.ceilometerDashboard', [
 .directive('ceilometerSamples', function(lodash, $stateParams){
   return {
     restrict: 'E',
-    scope: {
-      name: '=name',
-      tenant: '=tenant'
-    },
+    scope: {},
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-samples.tpl.html',
