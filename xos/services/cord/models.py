@@ -6,6 +6,8 @@ from django.db import models, transaction
 from django.forms.models import model_to_dict
 from django.db.models import Q
 from operator import itemgetter, attrgetter, methodcaller
+from core.models import Tag
+from core.models.service import LeastLoadedNodeScheduler
 import traceback
 from xos.exceptions import *
 
@@ -474,6 +476,12 @@ class VCPEService(Service):
 
 VCPEService.setup_simple_attributes()
 
+#class STagBlock(PlCoreBase):
+#    instance = models.ForeignKey(Instance, related_name="s_tags")
+#    s_tag = models.CharField(null=false, blank=false, unique=true, max_length=10)
+#    #c_tags = models.TextField(null=true, blank=true)
+#
+#    def __unicode__(self): return u'%s' % (self.s_tag)
 
 class VCPETenant(TenantWithContainer):
     class Meta:
@@ -663,6 +671,78 @@ class VCPETenant(TenantWithContainer):
                 # print "XXX clean up orphaned instance", instances[0]
                 instances[0].delete()
 
+    def get_slice(self):
+        if not self.provider_service.slices.count():
+            raise XOSConfigurationError("The service has no slices")
+        slice = self.provider_service.slices.all()[0]
+        return slice
+
+    def find_instance_for_s_tag(self, s_tag):
+        #s_tags = STagBlock.objects.find(s_s_tag)
+        #if s_tags:
+        #    return s_tags[0].instance
+
+        tags = Tag.objects.filter(name="s_tag", value=s_tag)
+        if tags:
+            return tags[0].content_object
+
+        return None
+
+    def find_or_make_instance_for_s_tag(self, s_tag):
+        instance = self.find_instance_for_s_tag(self.volt.s_tag)
+        if instance:
+            return instance
+
+        flavors = Flavor.objects.filter(name="m1.small")
+        if not flavors:
+            raise XOSConfigurationError("No m1.small flavor")
+
+        slice = self.provider_service.slices.all()[0]
+
+        if slice.default_isolation == "container_vm":
+            (node, parent) = ContainerVmScheduler(slice).pick()
+        else:
+            (node, parent) = LeastLoadedNodeScheduler(slice).pick()
+
+        instance = Instance(slice = slice,
+                        node = node,
+                        image = self.image,
+                        creator = self.creator,
+                        deployment = node.site_deployment.deployment,
+                        flavor = flavors[0],
+                        isolation = slice.default_isolation,
+                        parent = parent)
+        self.save_instance(instance)
+
+        return instance
+
+    def manage_container(self):
+        from core.models import Instance, Flavor
+
+        if self.deleted:
+            return
+
+        # For container or container_vm isolation, use what TenantWithCotnainer
+        # provides us
+        slice = self.get_slice()
+        if slice.default_isolation in ["container_vm", "container"]:
+            super(VCPETenant,self).manage_container()
+            return
+
+        if not self.volt:
+            raise XOSConfigurationError("This vCPE container has no volt")
+
+        instance = self.find_or_make_instance_for_s_tag(self.volt.s_tag)
+        self.instance = instance
+        super(TenantWithContainer, self).save()
+
+    def cleanup_container(self):
+        if self.get_slice().default_isolation in ["container_vm", "container"]:
+            super(VCPETenant,self).cleanup_container()
+
+        # To-do: cleanup unused instances
+        pass
+
     def manage_bbs_account(self):
         if self.deleted:
             return
@@ -708,6 +788,14 @@ class VCPETenant(TenantWithContainer):
                 port = self.find_or_make_port(instance, wan_networks[0])
                 port.set_parameter("next_hop", value="10.0.1.253")   # FIX ME
                 port.set_parameter("device", "eth0")
+
+            # tag the instance with the s-tag, so we can easily find the
+            # instance later
+            if self.volt and self.volt.s_tag:
+                tags = Tag.objects.filter(name="s_tag", value=self.volt.s_tag)
+                if not tags:
+                    tag = Tag(service=self.provider_service, content_object=instance, name="s_tag", value=self.volt.s_tag)
+                    tag.save()
 
     def save(self, *args, **kwargs):
         if not self.creator:
