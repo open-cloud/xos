@@ -62,13 +62,13 @@ angular.module('xos.ceilometerDashboard', [
     return deferred.promise;
   }
 
-  this.getStats = (sliceName) => {
+  this.getStats = (options) => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/meterstatistics/', {cache: true})
+    $http.get('/xoslib/meterstatistics/', {cache: true, params: options})
     // $http.get('../stats_mock.son', {cache: true})
     .then((res) => {
-      deferred.resolve(lodash.filter(res.data, {slice: sliceName}))
+      deferred.resolve(res.data);
     })
     .catch((e) => {
       deferred.reject(e);
@@ -90,8 +90,6 @@ angular.module('xos.ceilometerDashboard', [
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-dashboard.tpl.html',
     controller: function(Ceilometer){
-
-      console.log(Ceilometer.selectedService, Ceilometer.selectedSlice, Ceilometer.selectedResource);
 
       // this open the accordion
       this.accordion = {
@@ -153,6 +151,7 @@ angular.module('xos.ceilometerDashboard', [
       */
       this.selectedResources = null;
       this.selectResources = (resources, slice, service) => {
+
         //cleaning
         this.selectedResources = null;
         this.selectedResource = null;
@@ -166,6 +165,11 @@ angular.module('xos.ceilometerDashboard', [
         // store the status
         Ceilometer.selectedSlice = slice;
         Ceilometer.selectedService = service;
+
+        // store tenant (slice id for ceilometer)
+        // it is passed to ceilometer-stats directive
+        console.log(resources);
+        this.selectedTenant = resources[Object.keys(resources)[0]][0].project_id;
       }
 
       /**
@@ -330,14 +334,17 @@ angular.module('xos.ceilometerDashboard', [
     restrict: 'E',
     scope: {
       name: '=name',
+      tenant: '=tenant'
     },
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-stats.tpl.html',
     controller: function($scope, Ceilometer) {
-      this.getStats = () => {
+
+      this.getStats = (tenant) => {
+        console.log(this.tenant);
         this.loader = true;
-        Ceilometer.getStats(this.name)
+        Ceilometer.getStats({tenant: tenant})
         .then(res => {
           this.stats = res;
         })
@@ -349,9 +356,11 @@ angular.module('xos.ceilometerDashboard', [
         });
       };
 
-      this.getStats();
-
-      $scope.$watch(() => this.name, () => {this.getStats();});
+      $scope.$watch(() => this.name, (val) => {
+        if(val){
+          this.getStats(this.tenant);
+        }
+      });
     }
   }
 })
