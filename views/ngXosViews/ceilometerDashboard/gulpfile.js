@@ -11,7 +11,7 @@ var options = {
   dist: 'dist/',
   api: '../../ngXosLib/api/',
   helpers: '../../ngXosLib/xosHelpers/src/',
-  static: '../../../xos/core/xoslib/static/', // this is the django static folder
+  static: '../../../xos/core/xoslib/static/', // this is the django static folder from dev environment
   dashboards: '../../../xos/core/xoslib/dashboards/' // this is the django html folder
 };
 

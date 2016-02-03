@@ -102,7 +102,8 @@ module.exports = function(options){
             options.static + 'js/vendor/xosCeilometerDashboardVendor.js',
             options.static + 'js/xosCeilometerDashboard.js',
             options.static + 'css/xosCeilometerDashboard.css'
-          ])
+          ]),
+          {ignorePath: '/../../../xos/core/xoslib'}
         )
       )
       .pipe(rename('xosCeilometerDashboard.html'))
