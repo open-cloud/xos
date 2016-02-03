@@ -1,5 +1,4 @@
 import time
-from subprocess import PIPE, Popen
 
 from core.admin import ReadOnlyAwareAdmin, SliceInline
 from core.middleware import get_request
@@ -7,7 +6,6 @@ from core.models import User
 from django import forms
 from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
-from xos.exceptions import XOSProgrammingError
 
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
@@ -39,32 +37,8 @@ class VPNServiceAdmin(ReadOnlyAwareAdmin):
                            'top',
                            'administration'),)
 
-    form = VPNServiceForm
-
     def queryset(self, request):
         return VPNService.get_service_objects_by_user(request.user)
-
-class VPNServiceForm(forms.ModelForm):
-    """The form used to create and edit a VPNService."""
-
-
-    def __init__(self, *args, **kwargs):
-        super(VPNServiceForm, self).__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        if (not self.instance.ca):
-            self.instance.ca = self.generate_ca
-
-        return super(VPNServiceForm, self).save(commit=commit)
-
-    def generate_ca(self):
-        """str: Generates a CA certificate."""
-        proc = Popen("./ca.sh", shell=True, stdout=PIPE)
-        (stdout, stderr) = proc.communicate()
-        return stdout
-
-    class Meta:
-        model = VPNService
 
 
 class VPNTenantForm(forms.ModelForm):
@@ -86,7 +60,6 @@ class VPNTenantForm(forms.ModelForm):
         protocol='IPv4', required=True)
     is_persistent = forms.BooleanField(required=False)
     can_view_subnet = forms.BooleanField(required=False)
-
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -128,22 +101,25 @@ class VPNTenantForm(forms.ModelForm):
         if (not self.instance.script):
             self.instance.script = str(time.time()) + ".vpn"
 
-        if (not self.instance.server_key):
-            self.instance.server_key = self.generate_VPN_key()
+        if (not self.instance.ca_cert):
+            self.generate_ca_crt()
 
-        if (self.instance.provider_service):
-            self.instance.ca = self.instance.provider_service.ca
-        else:
-            raise XOSProgrammingError("VPN Tenant does not have provider service)
+        if ((not self.instance.server_cert) or (not self.instance.server_key)):
+            self.generate_server_credentials()
 
         return super(VPNTenantForm, self).save(commit=commit)
 
-    def generate_VPN_key(self):
-        """str: Generates a VPN key using the openvpn command."""
-        proc = Popen("openvpn --genkey --secret /dev/stdout",
-                     shell=True, stdout=PIPE)
-        (stdout, stderr) = proc.communicate()
-        return stdout
+    def generate_ca_crt(self):
+        """str: Generates the ca cert by reading from the ca file"""
+        with open("/opt/openvpn/keys/ca.crt") as crt:
+            return crt.readlines()
+
+    def generate_server_credentials(self):
+        with open("/opt/openvpn/keys/server.crt") as crt:
+            self.instance.server_crt = crt.readlines()
+
+        with open("/opt/openvpn/keys/server.key") as key:
+            self.instance.server_key = key.readlines()
 
     class Meta:
         model = VPNTenant

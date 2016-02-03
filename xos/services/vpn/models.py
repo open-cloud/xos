@@ -14,15 +14,6 @@ class VPNService(Service):
         app_label = "vpn"
         verbose_name = "VPN Service"
 
-    @property
-    def ca(self):
-        """str: the string for the ca certificate"""
-        return self.get_attribute("ca", None)
-
-    @ca.setter
-    def ca(self, value):
-        self.set_attribute("ca", value)
-
 
 class VPNTenant(TenantWithContainer):
     """Defines the Tenant for creating VPN servers."""
@@ -41,7 +32,9 @@ class VPNTenant(TenantWithContainer):
                           'can_view_subnet': False,
                           'is_persistent': True,
                           'script': None,
-                          'ca': None}
+                          'ca_crt': None,
+                          'server_crt': None,
+                          'server_key': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -156,13 +149,31 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("script", value)
 
     @property
-    def ca(self):
+    def ca_crt(self):
         """str: the string for the ca certificate"""
-        return self.get_attribute("ca", self.default_attributes['ca'])
+        return self.get_attribute("ca_crt", self.default_attributes['ca_crt'])
 
-    @ca.setter
-    def ca(self, value):
-        self.set_attribute("ca", value)
+    @ca_crt.setter
+    def ca_crt(self, value):
+        self.set_attribute("ca_crt", value)
+
+    @property
+    def server_crt(self):
+        """str: the string for the server certificate"""
+        return self.get_attribute("server_crt", self.default_attributes['server_crt'])
+
+    @server_crt.setter
+    def server_crt(self, value):
+        self.set_attribute("server_crt", value)
+
+    @property
+    def server_key(self):
+        """str: the string for the server certificate"""
+        return self.get_attribute("server_key", self.default_attributes['server_key'])
+
+    @server_key.setter
+    def server_key(self, value):
+        self.set_attribute("server_key", value)
 
 
 def model_policy_vpn_tenant(pk):
