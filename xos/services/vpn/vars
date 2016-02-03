@@ -1,4 +1,4 @@
-export EASY_RSA="`pwd`"
+export EASY_RSA="/opt/openvpn"
 
 export OPENSSL="openssl"
 export PKCS11TOOL="pkcs11-tool"
@@ -6,7 +6,7 @@ export GREP="grep"
 
 export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`
 
-export KEY_DIR="/users/root/"
+export KEY_DIR="$EASY_RSA/keys"
 
 # PKCS11 fixes
 export PKCS11_MODULE_PATH="dummy"
