@@ -81,9 +81,13 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
     def map_sync_inputs(self, controller_network):
         # XXX This check should really be made from booleans, rather than using hardcoded network names
-        if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct']):
-            logger.info("skipping network controller %s because it is not private" % controller_network)
-            # We only sync private networks
+        #if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct', 'management_template'):
+        #    logger.info("skipping network controller %s because it is not private" % controller_network)
+        #    # We only sync private networks
+        #    return SyncStep.SYNC_WITHOUT_RUNNING
+
+        # hopefully a better approach than above
+        if (controller_network.network.template.shared_network_name or controller_network.network.template.shared_network_id):
             return SyncStep.SYNC_WITHOUT_RUNNING
         
         if not controller_network.controller.admin_user:
