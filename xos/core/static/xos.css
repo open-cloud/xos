@@ -1328,11 +1328,8 @@ font-size: medium;
 }
 
 /* SUIT CHANGES */
-.submit-row.fixed {
-  bottom: 60px;
-}
 
-.submit-row a.deletelink {
+.form-buttons a.deletelink {
   color: #fff;
   background-color: #d9534f;
   border-color: #d43f3a;

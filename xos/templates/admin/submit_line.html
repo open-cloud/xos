@@ -1,9 +1,9 @@
 {% load i18n %}
-<div class="submit-row clearfix">
-  {% if show_save %}<button type="submit" class="btn btn-high btn-info" name="_save">{% trans 'Save' %}</button>{% endif %}
-  {% if show_save_and_continue %}<button type="submit" name="_continue" class=" btn btn-high">{% trans 'Save and continue editing' %}</button>{% endif %}
-  {% if show_save_as_new %}<button type="submit" name="_saveasnew" class="btn">{% trans 'Save as new' %}</button>{%endif%}
-  {% if show_save_and_add_another %}<button type="submit" name="_addanother" class="btn">{% trans 'Save and add another' %}</button>{% endif %}
+<div class="form-buttons clearfix">
+  {% if show_save %}<button type="submit" class="btn btn-high btn-success" name="_save">{% trans 'Save' %}</button>{% endif %}
+  {% if show_save_and_continue %}<button type="submit" name="_continue" class=" btn btn-high btn-info">{% trans 'Save and continue editing' %}</button>{% endif %}
+  {% if show_save_as_new %}<button type="submit" name="_saveasnew" class="btn btn-info">{% trans 'Save as new' %}</button>{%endif%}
+  {% if show_save_and_add_another %}<button type="submit" name="_addanother" class="btn btn-info">{% trans 'Save and add another' %}</button>{% endif %}
 
   {% if show_delete_link %}
       {% if custom_delete_url %}
