@@ -1,0 +1,146 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/cdn.yaml
+
+topology_template:
+  node_templates:
+    HyperCache:
+      properties:
+          # HyperCache service must already exist before running this recipe
+          no-create: true
+          no-destroy: true
+          no-update: true
+
+    # Setup the CDN Service Provider
+
+    main_service_provider:
+        type: tosca.nodes.ServiceProvider
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+
+    # Wall Street Journal Content Provider
+
+    wsj_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    www.wsj.com:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_www.wsj.com
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    si.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_si.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    s.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_s.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    ore.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_ore.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    http_www.wsj.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_si.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_s.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_ore.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # ON.Lab content provider
+
+    on_lab_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    downloads.onosproject.org:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_downloads.onosproject.org
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    onlab.vicci.org:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_onlab.vicci.org
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    http_downloads.onosproject.org:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_onlab.vicci.org:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
