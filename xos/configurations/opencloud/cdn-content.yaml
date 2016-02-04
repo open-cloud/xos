@@ -9,10 +9,11 @@ imports:
 topology_template:
   node_templates:
     HyperCache:
+      type: tosca.nodes.CDNService
       properties:
           # HyperCache service must already exist before running this recipe
           no-create: true
-          no-destroy: true
+          no-delete: true
           no-update: true
 
     # Setup the CDN Service Provider
