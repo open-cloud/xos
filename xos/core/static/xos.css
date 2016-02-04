@@ -652,7 +652,7 @@ overflow: visible !important;
 .login #content-main h1 {
 /*background: #EBF0F2;*/
 /*background: url("open-cloud-login-themed-light.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);*/
-background: url("cord_logo_3.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);
+/*background: url("cord_logo_3.png") no-repeat scroll 40% center / 89% auto rgba(235, 240, 242, 0);*/
 /*background-position: 40%;*/
 height: 55px;
 background-repeat: no-repeat;
@@ -1328,11 +1328,8 @@ font-size: medium;
 }
 
 /* SUIT CHANGES */
-.submit-row.fixed {
-  bottom: 60px;
-}
 
-.submit-row a.deletelink {
+.form-buttons a.deletelink {
   color: #fff;
   background-color: #d9534f;
   border-color: #d43f3a;
