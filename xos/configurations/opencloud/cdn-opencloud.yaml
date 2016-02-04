@@ -19,7 +19,7 @@ topology_template:
       type: tosca.nodes.Site
       properties:
           # Assume the onlab site exists, and don't touch it
-          no-delete: true
+          no-create: true
           no-update: true
           no-delete: true
 
