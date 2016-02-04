@@ -753,34 +753,6 @@ topology_template:
 
 
 # Slices
-    onlab_cmi:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_hpc:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_dnsredir:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_dnsdemux:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
     princeton_publicdata:
       type: tosca.nodes.Slice
       requirements:
@@ -789,15 +761,6 @@ topology_template:
               relationship: tosca.relationships.MemberOfSite
 
 # Services
-    hypercache:
-      type: tosca.nodes.Service
-      capabilities:
-          scalable:
-              properties:
-                  max_instances: 25
-                  min_instances: 1
-                  default_instances: 1
-
     syndicate:
       type: tosca.nodes.Service
       capabilities:
