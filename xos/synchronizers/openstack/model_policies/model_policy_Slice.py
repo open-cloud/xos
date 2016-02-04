@@ -40,6 +40,9 @@ def handle(slice):
         # Host and Bridged docker containers need no networks and they will
         # only get in the way.
         print "MODEL POLICY: Skipping network creation"
+    elif slice.network in ["noauto"]:
+        # do nothing
+        pass
     else:
         # make sure slice has at least 1 public and 1 private networkd
         public_nets = []
