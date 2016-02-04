@@ -663,6 +663,10 @@ node_types:
                 type: string
                 required: false
                 description: type of networking to use for this slice
+            exposed_ports:
+                type: string
+                required: false
+                description: comma-separated list of protocol _space_ port that represent ports the slice should expose
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root
