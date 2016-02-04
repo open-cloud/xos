@@ -21,7 +21,7 @@ from xos.exceptions import *
 
 class Slice(PlCoreBase):
     ISOLATION_CHOICES = (('vm', 'Virtual Machine'), ('container', 'Container'), ('container_vm', 'Container In VM'))
-    NETWORK_CHOICES = ((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'))
+    NETWORK_CHOICES = ((None, 'Default'), ('host', 'Host'), ('bridged', 'Bridged'), ('noauto', 'No Automatic Networks'))
 
     name = StrippedCharField(unique=True, help_text="The Name of the Slice", max_length=80)
     enabled = models.BooleanField(default=True, help_text="Status for this Slice")

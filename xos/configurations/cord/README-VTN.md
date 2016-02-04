@@ -63,6 +63,10 @@ Br-flat-lan-1 needs to be deleted, since VTN will be attaching br-int directly t
     ip link set br-int up
     ip route add <network-that-was-assigned-to-flat-lan-1> dev br-int
     
+To get the management network working, we need to create management network template, slice, and network. configurations/cord/vtn.yaml will do this for you. Then add a connection to the management network for any slice that needs management connectivity. Note the subnet that gets assigned to the management network. Management-gateway-ip is the .1 address on the subnet. On the compute node:
+
+    ip addr add <management-gateway-ip>/24 dev br-int
+    
 For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
 there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
 
