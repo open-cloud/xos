@@ -231,7 +231,10 @@ BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
 
 XOS_BRANDING_NAME = getattr(config, "gui_branding_name", "OpenCloud")
 XOS_BRANDING_CSS = getattr(config, "gui_branding_css", None)
-XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/favicon.png")
+XOS_BRANDING_ICON = getattr(config, "gui_branding_icon", "/static/logo.png")
+XOS_BRANDING_FAVICON = getattr(config, "gui_branding_favicon", "/static/favicon.png")
+XOS_BRANDING_BG = getattr(config, "gui_branding_bg", "/static/bg.png")
+
 
 DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)
 ENCRYPTED_FIELDS_KEYDIR = XOS_DIR + '/private_keys'

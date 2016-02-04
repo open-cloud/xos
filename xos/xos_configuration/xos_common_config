@@ -42,3 +42,4 @@ logfile=/var/log/xos_backend.log
 disable_minidashboard=True
 branding_name=Open Cloud
 branding_icon=/static/logo.png
+branding_favicon=/static/favicon.png
