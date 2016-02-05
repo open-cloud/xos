@@ -1329,6 +1329,12 @@ font-size: medium;
 
 /* SUIT CHANGES */
 
+.form-buttons {
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid #cccccc;
+}
+
 .form-buttons a.deletelink {
   color: #fff;
   background-color: #d9534f;
