@@ -32,6 +32,7 @@ class Slice(PlCoreBase):
     max_instances = models.IntegerField(default=10)
     service = models.ForeignKey(Service, related_name='slices', null=True, blank=True)
     network = models.CharField(null=True, blank=True, max_length=256, choices=NETWORK_CHOICES)
+    exposed_ports = models.CharField(null=True, blank=True, max_length=256)
     tags = generic.GenericRelation(Tag)
     serviceClass = models.ForeignKey(ServiceClass, related_name = "slices", null=True, default=get_default_serviceclass)
     creator = models.ForeignKey(User, related_name='slices', blank=True, null=True)
