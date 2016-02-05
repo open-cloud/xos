@@ -26,6 +26,8 @@ topology_template:
     onlab_cmi:
       description: CMI Slice
       type: tosca.nodes.Slice
+      properties:
+          exposed_ports: tcp 8003, tcp 8004, tcp 8140
       requirements:
           - cdn_service:
               node: HyperCache
@@ -37,6 +39,8 @@ topology_template:
     onlab_hpc:
       description: HyperCache Slice
       type: tosca.nodes.Slice
+      properties:
+          exposed_ports: tcp 2120:2128, tcp 3200:3209, tcp 8006, tcp 8009, tcp 8015
       requirements:
           - cdn_service:
               node: HyperCache
@@ -48,6 +52,8 @@ topology_template:
     onlab_dnsredir:
       description: HyperCache Slice
       type: tosca.nodes.Slice
+      properties:
+          exposed_ports: udp 53541, tcp 8016
       requirements:
           - cdn_service:
               node: HyperCache
@@ -59,6 +65,8 @@ topology_template:
     onlab_dnsdemux:
       description: HyperCache Slice
       type: tosca.nodes.Slice
+      properties:
+          exposed_ports: udp 53, tcp 8017
       requirements:
           - cdn_service:
               node: HyperCache
