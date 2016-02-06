@@ -53,7 +53,7 @@
       image: srikanthvavila/sflowpubsub
       expose:
       - {{ sflow_api_port }}
-      - {{ sflow_port }}
+      - {{ sflow_port }}/udp
       ports:
       - "{{ sflow_port }}:{{ sflow_port }}/udp"
       - "{{ sflow_api_port }}:{{ sflow_api_port }}"
