@@ -18,15 +18,32 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse
 from django.contrib.admin.utils import quote
 
+class CeilometerServiceForm(forms.ModelForm):
+    ceilometer_pub_sub_url = forms.CharField(required=False, max_length=1024, help_text="REST URL of ceilometer PUB/SUB component in http://IP:port/ format")
+
+    def __init__(self,*args,**kwargs):
+        super (CeilometerServiceForm,self ).__init__(*args,**kwargs)
+        if self.instance:
+            # fields for the attributes
+            self.fields['ceilometer_pub_sub_url'].initial = self.instance.ceilometer_pub_sub_url
+
+    def save(self, commit=True):
+        self.instance.ceilometer_pub_sub_url = self.cleaned_data.get("ceilometer_pub_sub_url")
+        return super(CeilometerServiceForm, self).save(commit=commit)
+
+    class Meta:
+        model = CeilometerService
+
 class CeilometerServiceAdmin(ReadOnlyAwareAdmin):
     model = CeilometerService
     verbose_name = "Ceilometer Service"
     verbose_name_plural = "Ceilometer Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description','ceilometer_pub_sub_url', "view_url","icon_url" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    form = CeilometerServiceForm
 
     extracontext_registered_admins = True
 

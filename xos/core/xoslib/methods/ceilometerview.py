@@ -57,6 +57,9 @@ def getTenantControllerTenantMap(user, slice=None):
                 else:
                     logger.warn("SRIKANTH: Slice %(slice)s is not associated with any service" % {'slice':cs.slice.name})
                     tenantmap[cs.tenant_id]["service"] = "Other"
+    #TEMPORARY WORK AROUND: There are some resource in network like whitebox switches does not belong to a specific tenant.
+    #They are all associated with "default_admin_tenant" tenant
+    tenantmap["default_admin_tenant"] = {"slice": "default_admin_tenant", "service": "Other"}
     return tenantmap
 
 def build_url(path, q, params=None):
@@ -1263,8 +1266,7 @@ class XOSSliceServiceList(APIView):
                 service_map[v['service']] = {}
                 service_map[v['service']]['service'] = v['service']
                 service_map[v['service']]['slices'] = []
-            slice_details['slice'] = v['slice']
-            slice_details['project_id'] = k
+            slice_details = {'slice':v['slice'], 'project_id':k}
             service_map[v['service']]['slices'].append(slice_details)
         return Response(service_map.values())
 
