@@ -22,6 +22,14 @@ class CeilometerService(Service):
         verbose_name = "Ceilometer Service"
         proxy = True
 
+    @property
+    def ceilometer_pub_sub_url(self):
+        return self.get_attribute("ceilometer_pub_sub_url", None)
+
+    @ceilometer_pub_sub_url.setter
+    def ceilometer_pub_sub_url(self, value):
+        self.set_attribute("ceilometer_pub_sub_url", value)
+
 class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
     class Meta:
         proxy = True
