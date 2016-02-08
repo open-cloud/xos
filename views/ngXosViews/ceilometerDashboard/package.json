@@ -7,7 +7,6 @@
     "start": "gulp serve",
     "prebuild": "npm install && bower install",
     "build": "gulp",
-    "pretest": "npm install",
     "test": "karma start",
     "lint": "eslint src/js/"
   },

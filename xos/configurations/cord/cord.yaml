@@ -278,8 +278,8 @@ topology_template:
           - vcpe_docker_image:
               node: docker-vcpe
               relationship: tosca.relationships.UsesImage
-      properties:
-          default_isolation: container
+#      properties:
+#          default_isolation: container
 
     mysite_onos_vbng:
       description: ONOS Controller Slice for vBNG

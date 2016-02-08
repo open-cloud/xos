@@ -36,7 +36,7 @@
   {% block blockbots %}
   <meta name="robots" content="NONE,NOARCHIVE"/>
   {% endblock %}
-  <link rel="shortcut icon" href="{{ XOS_BRANDING_ICON }}"></head>
+  <link rel="shortcut icon" href="{{ XOS_BRANDING_FAVICON }}"></head>
   {% load i18n %}
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
   <div id="dialog-placeholder">
@@ -91,7 +91,7 @@
                     </button>
                     {% block logo %}
                       <a href="{% url 'admin:index' %}" class="visible-xs">
-                        <img class="logo" src="{% static 'cord_logo_3.png' %}"/>
+                        <img class="logo" src="{% static XOS_BRANDING_ICON %}"/>
                       </a>
                     {% endblock %}
                     <!-- <div id="branding">

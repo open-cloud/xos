@@ -19,6 +19,8 @@ class XOSNodeSelector(object):
 
     def get_nodes(self, quantity):
         nodes = self.get_allowed_nodes()
-        # TODO: sort the nodes by some useful metric to pick the best one
+        # TODO: filter out any nonfunctional nodes
+        # sort by fewest number of instances
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return nodes[:quantity]
 

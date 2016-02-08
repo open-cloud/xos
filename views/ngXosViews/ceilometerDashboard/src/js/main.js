@@ -33,10 +33,24 @@ angular.module('xos.ceilometerDashboard', [
 })
 .service('Ceilometer', function($http, $q, lodash){
 
-  this.getMeters = () => {
+  this.getMappings = () => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/meters/', {cache: true})
+    $http.get('/xoslib/xos-slice-service-mapping/')
+    .then((res) => {
+      deferred.resolve(res.data)
+    })
+    .catch((e) => {
+      deferred.reject(e);
+    });
+
+    return deferred.promise;
+  }
+
+  this.getMeters = (params) => {
+    let deferred = $q.defer();
+
+    $http.get('/xoslib/meters/', {cache: true, params: params})
     // $http.get('../meters_mock.json', {cache: true})
     .then((res) => {
       deferred.resolve(res.data)
@@ -62,13 +76,13 @@ angular.module('xos.ceilometerDashboard', [
     return deferred.promise;
   }
 
-  this.getStats = (sliceName) => {
+  this.getStats = (options) => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/meterstatistics/', {cache: true})
+    $http.get('/xoslib/meterstatistics/', {cache: true, params: options})
     // $http.get('../stats_mock.son', {cache: true})
     .then((res) => {
-      deferred.resolve(lodash.filter(res.data, {slice: sliceName}))
+      deferred.resolve(res.data);
     })
     .catch((e) => {
       deferred.reject(e);
@@ -91,6 +105,8 @@ angular.module('xos.ceilometerDashboard', [
     templateUrl: 'templates/ceilometer-dashboard.tpl.html',
     controller: function(Ceilometer){
 
+      this.showStats = false;
+
       // this open the accordion
       this.accordion = {
         open: {}
@@ -103,68 +119,71 @@ angular.module('xos.ceilometerDashboard', [
         if(Ceilometer.selectedService){
           this.accordion.open[Ceilometer.selectedService] = true;
           if(Ceilometer.selectedSlice){
+            this.loadSliceMeter(Ceilometer.selectedSlice, Ceilometer.selectedService);
             this.selectedSlice = Ceilometer.selectedSlice;
-            this.selectedResources = this.projects[Ceilometer.selectedService][Ceilometer.selectedSlice]
             if(Ceilometer.selectedResource){
               this.selectedResource = Ceilometer.selectedResource;
-              this.selectedMeters = this.selectedResources[Ceilometer.selectedResource];
             }
           }
         }
       }
 
-      this.loadMeters = () => {
+      /**
+      * Load the list of service and slices
+      */
+
+      this.loadMappings = () => {
         this.loader = true;
-
-        // TODO rename projects in meters
-        Ceilometer.getMeters()
-        .then(meters => {
-          //group project by service
-          this.projects = lodash.groupBy(meters, 'service');
-          lodash.forEach(Object.keys(this.projects), (project) => {
-            // inside each service group by slice
-            this.projects[project] = lodash.groupBy(this.projects[project], 'slice');
-            lodash.forEach(Object.keys(this.projects[project]), (slice) => {
-              // inside each service => slice group by resource
-              this.projects[project][slice] = lodash.groupBy(this.projects[project][slice], 'resource_name');
-            });
-          });
-
-          // open selected panels
+        Ceilometer.getMappings()
+        .then((services) => {
+          this.services = services;
           this.openPanels();
         })
         .catch(err => {
-          this.error = err.data.detail;
+          this.error = (err.data && err.data.detail) ? err.data.detail : 'An Error occurred. Please try again later.';
         })
         .finally(() => {
           this.loader = false;
         });
-      }
+      };
 
-      this.loadMeters();
+      this.loadMappings();
 
       /**
-      * Select Resources for a slice
-      *
-      * @param Array resources The list of selected resources
-      * @returns void
+      * Load the list of a single slice
       */
-      this.selectedResources = null;
-      this.selectResources = (resources, slice, service) => {
-        //cleaning
-        this.selectedResources = null;
-        this.selectedResource = null;
-        this.selectedMeters = null;
+     
+      this.loadSliceMeter = (slice, service_name) => {
 
-        // hold the resource list for the current slice
-        this.selectedResources = resources;
-        this.selectedSlice = slice;
-        this.selectedService = service;
+        Ceilometer.selectedSlice = null;
+        Ceilometer.selectedService = null;
+        Ceilometer.selectedResources = null;
+
+        // visualization info
+        this.loader = true;
+        this.selectedSlice = slice.slice;
+        this.selectedTenant = slice.project_id;
 
         // store the status
         Ceilometer.selectedSlice = slice;
-        Ceilometer.selectedService = service;
-      }
+        Ceilometer.selectedService = service_name;
+
+        Ceilometer.getMeters({tenant: slice.project_id})
+        .then((sliceMeters) => {
+          this.selectedResources = lodash.groupBy(sliceMeters, 'resource_name');
+
+          // hacky
+          if(Ceilometer.selectedResource){
+            this.selectedMeters = this.selectedResources[Ceilometer.selectedResource];
+          }
+        })
+        .catch(err => {
+          this.error = (err.data && err.data.detail) ? err.data.detail : 'An Error occurred. Please try again later.';
+        })
+        .finally(() => {
+          this.loader = false;
+        });
+      };
 
       /**
       * Select Meters for a resource
@@ -186,10 +205,7 @@ angular.module('xos.ceilometerDashboard', [
 .directive('ceilometerSamples', function(lodash, $stateParams){
   return {
     restrict: 'E',
-    scope: {
-      name: '=name',
-      tenant: '=tenant'
-    },
+    scope: {},
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-samples.tpl.html',
@@ -332,14 +348,16 @@ angular.module('xos.ceilometerDashboard', [
     restrict: 'E',
     scope: {
       name: '=name',
+      tenant: '=tenant'
     },
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/ceilometer-stats.tpl.html',
     controller: function($scope, Ceilometer) {
-      this.getStats = () => {
+
+      this.getStats = (tenant) => {
         this.loader = true;
-        Ceilometer.getStats(this.name)
+        Ceilometer.getStats({tenant: tenant})
         .then(res => {
           this.stats = res;
         })
@@ -351,24 +369,11 @@ angular.module('xos.ceilometerDashboard', [
         });
       };
 
-      this.getStats();
-
-      $scope.$watch(() => this.name, () => {this.getStats();});
+      $scope.$watch(() => this.name, (val) => {
+        if(val){
+          this.getStats(this.tenant);
+        }
+      });
     }
   }
-})
-.filter('orderObjectByKey', function(lodash) {
-  return function(items) {
-
-    if(!items){
-      return;
-    }
-
-    return lodash.reduce(Object.keys(items).reverse(), (list, key) => {
-      list[key] = items[key];
-      return list;
-    }, {});
-
-  };
 });
-;

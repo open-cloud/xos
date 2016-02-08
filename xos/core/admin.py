@@ -1343,7 +1343,7 @@ class InstanceAdmin(XOSBaseAdmin):
     list_display = ['backend_status_icon', 'all_ips_string', 'instance_id', 'instance_name', 'isolation', 'slice', 'flavor', 'image', 'node', 'deployment']
     list_display_links = ('backend_status_icon', 'all_ips_string', 'instance_id', )
 
-    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'), ('container', 'Container Settings'))
+    suit_form_tabs =(('general', 'Instance Details'), ('ports', 'Ports'), ('container', 'Container Settings'), ('tags', 'Tags'))
 
     inlines = [TagInline, InstancePortInline]
 
