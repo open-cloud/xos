@@ -140,6 +140,9 @@ RUN source /opt/openvpn/vars
 RUN /opt/openvpn/clean-all
 RUN /opt/openvpn/build-ca --batch
 RUN /opt/openvpn/build-key-server --batch server
+RUN /opt/openvpn/build-dh
+RUN chmod 777 /opt/openvpn/keys/server.key
+RUN chmod 777 /opt/openvpn/keys/dh2048.pem
 
 EXPOSE 8000
 

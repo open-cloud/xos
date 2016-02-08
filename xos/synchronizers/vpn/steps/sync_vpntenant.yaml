@@ -5,10 +5,14 @@
   user: ubuntu
   sudo: yes
   vars:
-    server_address: {{ server_address }}
-    client_address: {{ client_address }}
+    ca_crt: {{ ca_crt }}
+    server_crt: {{ server_crt }}
     server_key: {{ server_key }}
+    server_network: {{ server_network }}
     is_persistent: {{ is_persistent }}
+    vpn_subnet: {{ vpn_subnet }}
+    clients_can_see_each_other: {{ clients_can_see_each_other }}
+    dh: {{ dh }}
 
   tasks:
   - name: install openvpn
@@ -17,28 +21,67 @@
   - name: stop openvpn
     shell: killall openvpn | true
 
-  - name: erase key
-    shell: rm -f static.key
+  - name: erase server key
+    shell: rm -f server.key
 
-  - name: write key
-    shell: echo {{ '{{' }} item {{ '}}' }} >> static.key
+  - name: write server key
+    shell: echo {{ '{{' }} item {{ '}}' }} >> server.key
     with_items: "{{ server_key }}"
+
+  - name: erase server crt
+    shell: rm -f server.crt
+
+  - name: write server crt
+    shell: echo {{ '{{' }} item {{ '}}' }} >> server.crt
+    with_items: "{{ server_crt }}"
+
+  - name: erase ca crt
+    shell: rm -f ca.crt
+
+  - name: write ca crt
+    shell: echo {{ '{{' }} item {{ '}}' }} >> ca.crt
+    with_items: "{{ ca_crt }}"
+
+  - name: erase dh
+    shell: rm -f dh2048.pem
+
+  - name: write dh
+    shell: echo {{ '{{' }} item {{ '}}' }} >> dh2048.pem
+    with_items: "{{ dh }}"
 
   - name: erase config
     shell: rm -f server.conf
 
+  - name: erase auth script
+    shell: rm -f auth.sh
+
+  - name: write auth script
+    shell: "exit 0" > auth.sh
+
   - name: write base config
     shell:
        |
-       printf "dev tun
-       ifconfig {{ server_address }} {{ client_address }}
-       secret static.key" > server.conf
+       printf "script-security 3 system
+       port 1194
+       proto udp
+       dev tun
+       cert server.crt
+       key server.key
+       dh dh2048.pem
+       server {{ server_network }} {{ vpn_subnet }}
+       ifconfig-pool-persist ipp.txt
+       comp-lzo
+       status openvpn-status.log
+       verb 3
+       auth-user-pass-verify auth.sh via-file
+       client-cert-not-required
+       username-as-common-name
+       " > server.conf
 
   - name: write persistent config
     shell:
       |
       printf "\nkeepalive 10 60
-      ping-timer-rem
       persist-tun
       persist-key" >> server.conf
     when: {{ is_persistent }}

@@ -1,11 +1,15 @@
 import os
 import sys
-from django.db.models import Q, F
-from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+import time
+
+from django.db.models import F, Q
 from services.vpn.models import VPNTenant
+from synchronizers.base.SyncInstanceUsingAnsible import \
+    SyncInstanceUsingAnsible
 
 parentdir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, parentdir)
+
 
 class SyncVPNTenant(SyncInstanceUsingAnsible):
     """Class for syncing a VPNTenant using Ansible."""
@@ -27,12 +31,16 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
         return objs
 
-    def get_extra_attributes(self, o):
-        return {"server_key": o.server_key.splitlines(),
-                "is_persistent": o.is_persistent,
-                "can_view_subnet": o.can_view_subnet,
-                "server_address": o.server_address,
-                "client_address": o.client_address}
+    def get_extra_attributes(self, tenant):
+        return {"server_key": tenant.server_key,
+                "is_persistent": tenant.is_persistent,
+                "vpn_subnet": tenant.vpn_subnet,
+                "server_network": tenant.server_network,
+                "clients_can_see_each_other": tenant.clients_can_see_each_other,
+                "ca_crt": tenant.ca_crt,
+                "server_crt": tenant.server_crt,
+                "dh": tenant.dh
+                }
 
     def create_client_script(self, tenant):
         script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
@@ -46,6 +54,13 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         for line in self.generate_client_conf(tenant).splitlines():
             script.write(line + r"\n")
         script.write("\" > client.conf\n")
+        script.write("printf \"")
+        for line in self.generate_login().splitlines():
+            script.write(line + r"\n")
+        script.write("\" > login.up\n")
+        for line in tenant.ca_crt:
+            script.write(line + r"\n")
+        script.write("\" > ca.crt\n")
         # make sure openvpn is installed
         script.write("apt-get update\n")
         script.write("apt-get install openvpn\n")
@@ -57,6 +72,9 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         self.create_client_script(o)
         super(SyncVPNTenant, self).run_playbook(o, fields)
 
+    def generate_login(self):
+        return str(time.time()) + "\npassword\n"
+
     def generate_client_conf(self, tenant):
         """str: Generates the client configuration to use to connect to this VPN server.
 
@@ -64,14 +82,19 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
             tenant (VPNTenant): The tenant to generate the client configuration for.
 
         """
-        conf = "remote " + str(tenant.nat_ip) + "\n"
-        conf += "dev tun\n"
-        conf += "ifconfig " + tenant.client_address + " " + tenant.server_address + "\n"
-        conf += "secret static.key"
+        conf = ("client\n" +
+            "auth-user-pass login.up\n" +
+            "dev tun\n" +
+            "proto udp\n" +
+            "remote " + str(tenant.nat_ip) + " 1194\n" +
+            "resolv-retry infinite\n" +
+            "nobind\n" +
+            "ca ca.crt\n" +
+            "comp-lzo\n" +
+            "verb 3\n")
+
         if tenant.is_persistent:
-            conf += "\nkeepalive 10 60\n"
-            conf += "ping-timer-rem\n"
             conf += "persist-tun\n"
-            conf += "persist-key"
+            conf += "persist-key\n"
 
         return conf
