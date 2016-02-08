@@ -54,12 +54,11 @@ class VPNTenantForm(forms.ModelForm):
 
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
-    server_address = forms.GenericIPAddressField(
-        protocol='IPv4', required=True)
-    client_address = forms.GenericIPAddressField(
-        protocol='IPv4', required=True)
+    server_network = forms.GenericIPAddressField(
+        protocol="IPv4", required=True)
+    vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
-    can_view_subnet = forms.BooleanField(required=False)
+    clients_can_see_each_other = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -72,31 +71,30 @@ class VPNTenantForm(forms.ModelForm):
 
         if self.instance:
             self.fields['creator'].initial = self.instance.creator
+            self.fields['vpn_subnet'].initial = self.instance.vpn_subnet
             self.fields[
-                'server_address'].initial = self.instance.server_address
+                'server_network'].initial = self.instance.server_network
             self.fields[
-                'client_address'].initial = self.instance.client_address
+                'clients_can_see_each_other'].initial = self.instance.clients_can_see_each_other
             self.fields['is_persistent'].initial = self.instance.is_persistent
-            self.fields[
-                'can_view_subnet'].initial = self.instance.can_view_subnet
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
-            self.fields['server_address'].initial = "10.8.0.1"
-            self.fields['client_address'].initial = "10.8.0.2"
+            self.fields['vpn_subnet'].initial = "255.255.255.0"
+            self.fields['server_network'].initial = "10.66.77.0"
+            self.fields['clients_can_see_each_other'].initial = True
             self.fields['is_persistent'].initial = True
-            self.fields['can_view_subnet'].initial = False
             if VPNService.get_service_objects().exists():
                 self.fields["provider_service"].initial = VPNService.get_service_objects().all()[
                     0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
-        self.instance.server_address = self.cleaned_data.get("server_address")
-        self.instance.client_address = self.cleaned_data.get("client_address")
         self.instance.is_persistent = self.cleaned_data.get('is_persistent')
-        self.instance.can_view_subnet = self.cleaned_data.get(
-            'can_view_subnet')
+        self.instance.vpn_subnet = self.cleaned_data.get("vpn_subnet")
+        self.instance.server_network = self.cleaned_data.get('server_network')
+        self.instance.clients_can_see_each_other = self.cleaned_data.get(
+            'clients_can_see_each_other')
 
         if (not self.instance.script):
             self.instance.script = str(time.time()) + ".vpn"
@@ -121,19 +119,23 @@ class VPNTenantForm(forms.ModelForm):
         with open("/opt/openvpn/keys/server.key") as key:
             self.instance.server_key = key.readlines()
 
+        with open("/opt/openvpn/keys/dh2048.pem") as dh:
+            self.instance.dh = dh.readlines()
+
     class Meta:
         model = VPNTenant
 
 
 class VPNTenantAdmin(ReadOnlyAwareAdmin):
     verbose_name = "VPN Tenant Admin"
-    list_display = ('id', 'backend_status_icon', 'instance')
-    list_display_links = ('id', 'backend_status_icon', 'instance')
+    list_display = ('id', 'backend_status_icon', 'instance',
+                    'server_network', 'vpn_subnet')
+    list_display_links = ('id', 'backend_status_icon',
+                          'instance', 'server_network', 'vpn_subnet')
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
-                                    'script_link', 'server_address',
-                                    'client_address', 'is_persistent',
-                                    'can_view_subnet'],
+                                    'server_network', 'vpn_subnet', 'is_persistent',
+                                    'clients_can_see_each_other', 'script_link'],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance', 'script_link')
     form = VPNTenantForm

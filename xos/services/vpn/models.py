@@ -27,14 +27,15 @@ class VPNTenant(TenantWithContainer):
     sync_attributes = ("nat_ip", "nat_mac",)
 
     default_attributes = {'server_key': None,
-                          'server_address': '10.8.0.1',
-                          'client_address': '10.8.0.2',
-                          'can_view_subnet': False,
+                          'vpn_subnet': None,
+                          'server_network': None,
+                          'clients_can_see_each_other': True,
                           'is_persistent': True,
                           'script': None,
                           'ca_crt': None,
                           'server_crt': None,
-                          'server_key': None}
+                          'server_key': None,
+                          'dh': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -96,26 +97,26 @@ class VPNTenant(TenantWithContainer):
         return self.addresses.get("subnet", None)
 
     @property
-    def server_address(self):
+    def server_network(self):
         """str: The IP address of the server on the VPN."""
         return self.get_attribute(
-            'server_address',
-            self.default_attributes['server_address'])
+            'server_network',
+            self.default_attributes['server_network'])
 
-    @server_address.setter
-    def server_address(self, value):
-        self.set_attribute("server_address", value)
+    @server_network.setter
+    def server_network(self, value):
+        self.set_attribute("server_network", value)
 
     @property
-    def client_address(self):
+    def vpn_subnet(self):
         """str: The IP address of the client on the VPN."""
         return self.get_attribute(
-            'client_address',
-            self.default_attributes['client_address'])
+            'vpn_subnet',
+            self.default_attributes['vpn_subnet'])
 
-    @client_address.setter
-    def client_address(self, value):
-        self.set_attribute("client_address", value)
+    @vpn_subnet.setter
+    def vpn_subnet(self, value):
+        self.set_attribute("vpn_subnet", value)
 
     @property
     def is_persistent(self):
@@ -129,15 +130,15 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("is_persistent", value)
 
     @property
-    def can_view_subnet(self):
+    def clients_can_see_each_other(self):
         """bool: True if the client can see the subnet of the server, false otherwise."""
         return self.get_attribute(
-            "can_view_subnet",
-            self.default_attributes['can_view_subnet'])
+            "clients_can_see_each_other",
+            self.default_attributes['clients_can_see_each_other'])
 
-    @can_view_subnet.setter
-    def can_view_subnet(self, value):
-        self.set_attribute("can_view_subnet", value)
+    @clients_can_see_each_other.setter
+    def clients_can_see_each_other(self, value):
+        self.set_attribute("clients_can_see_each_other", value)
 
     @property
     def script(self):
@@ -174,6 +175,15 @@ class VPNTenant(TenantWithContainer):
     @server_key.setter
     def server_key(self, value):
         self.set_attribute("server_key", value)
+
+    @property
+    def dh(self):
+        """str: the string for the server certificate"""
+        return self.get_attribute("dh", self.default_attributes['dh'])
+
+    @dh.setter
+    def server_key(self, value):
+        self.set_attribute("dh", value)
 
 
 def model_policy_vpn_tenant(pk):
