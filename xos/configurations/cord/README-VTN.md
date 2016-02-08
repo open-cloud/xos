@@ -4,7 +4,7 @@ see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integratio
 
 VTN doesn't seem to like cloudlab's networks (flat-net-1, ext-net, etc). I've placed a script in xos/scripts/ called destroy-all-networks.sh that will automate tearing down all of cloudlab's neutron networks.
 
-    cd xos/scripts
+    cd xos/tools
     ./destroy-all-networks.sh
 
 inside the xos container, update the configuration. Make sure to restart Openstack Synchronizer afterward. Might be a good idea to restart the XOS UI as well:
@@ -61,7 +61,7 @@ Br-flat-lan-1 needs to be deleted, since VTN will be attaching br-int directly t
     ovs-vsctl del-br br-flat-lan-1
     ip addr add <addr-that-was-assinged-to-flat-lan-1> dev br-int
     ip link set br-int up
-    ip route add <network-that-was-assigned-to-flat-lan-1> dev br-int
+    ip route add <network-that-was-assigned-to-flat-lan-1>/24 dev br-int
     
 To get the management network working, we need to create management network template, slice, and network. configurations/cord/vtn.yaml will do this for you. Then add a connection to the management network for any slice that needs management connectivity. Note the subnet that gets assigned to the management network. Management-gateway-ip is the .1 address on the subnet. On the compute node:
 
