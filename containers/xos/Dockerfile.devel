@@ -117,7 +117,7 @@ ENV KEY_EMAIL devel@xosproject.org
 ENV KEY_OU Development
 ENV KEY_NAME server
 RUN /opt/openvpn/clean-all
-RUN env OPENSSL="openssl" /opt/openvpn/opt/openvpn/build-ca --batch
+RUN env OPENSSL="openssl" /opt/openvpn/build-ca --batch
 RUN /opt/openvpn/build-key-server --batch server
 RUN /opt/openvpn/build-dh
 RUN chmod 777 /opt/openvpn/keys/server.key
