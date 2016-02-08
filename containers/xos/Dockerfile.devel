@@ -95,6 +95,7 @@ WORKDIR /opt/xos
 CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
 
 # for OpenVPN
+RUN openssl --version
 RUN mkdir -p /opt/openvpn
 RUN cp -r /usr/share/easy-rsa/* /opt/openvpn/
 ENV EASY_RSA /opt/openvpn
