@@ -97,11 +97,27 @@ CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
 # for OpenVPN
 RUN mkdir -p /opt/openvpn
 RUN cp -r /usr/share/easy-rsa/* /opt/openvpn/
-RUN cp /opt/xos/services/vpn/vars /opt/openvpn/vars
-RUN bash source /opt/openvpn/vars
-RUN bash /opt/openvpn/clean-all
-RUN bash /opt/openvpn/build-ca --batch
-RUN bash /opt/openvpn/build-key-server --batch server
-RUN bash /opt/openvpn/build-dh
+ENV EASY_RSA /opt/openvpn
+ENV OPENSSL openssl
+ENV PKCS11TOOL pkcs11-tool
+ENV GREP grep
+ENV KEY_CONFIG $EASY_RSA/whichopensslcnf $EASY_RSA
+ENV KEY_DIR $EASY_RSA/keys
+ENV PKCS11_MODULE_PATH dummy
+ENV PKCS11_PIN dummy
+ENV KEY_SIZE 2048
+ENV CA_EXPIRE 3650
+ENV KEY_EXPIRE 3650
+ENV KEY_COUNTRY US
+ENV KEY_PROVINCE AZ
+ENV KEY_CITY Tucson
+ENV KEY_ORG XOS
+ENV KEY_EMAIL devel@xosproject.org
+ENV KEY_OU Development
+ENV KEY_NAME server
+RUN /opt/openvpn/clean-all
+RUN /opt/openvpn/build-ca --batch
+RUN /opt/openvpn/build-key-server --batch server
+RUN /opt/openvpn/build-dh
 RUN chmod 777 /opt/openvpn/keys/server.key
 RUN chmod 777 /opt/openvpn/keys/dh2048.pem
