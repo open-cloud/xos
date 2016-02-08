@@ -40,6 +40,9 @@ def handle(slice):
         # Host and Bridged docker containers need no networks and they will
         # only get in the way.
         print "MODEL POLICY: Skipping network creation"
+    elif slice.network in ["noauto"]:
+        # do nothing
+        pass
     else:
         # make sure slice has at least 1 public and 1 private networkd
         public_nets = []
@@ -61,6 +64,8 @@ def handle(slice):
                         template = NetworkTemplate.objects.get(name='Public shared IPv4'),
                     owner = slice
                     )
+            if slice.exposed_ports:
+                nat_net.ports = slice.exposed_ports
             nat_net.save()
             public_nets.append(nat_net)
             print "MODEL POLICY: slice", slice, "made nat-net"

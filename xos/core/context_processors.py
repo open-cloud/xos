@@ -14,4 +14,6 @@ def xos(request):
             "XOS_BRANDING_NAME": settings.XOS_BRANDING_NAME,
             "XOS_BRANDING_CSS": settings.XOS_BRANDING_CSS,
             "XOS_BRANDING_ICON": settings.XOS_BRANDING_ICON,
+            "XOS_BRANDING_FAVICON": settings.XOS_BRANDING_FAVICON,
+            "XOS_BRANDING_BG": settings.XOS_BRANDING_BG,
             "sites": allSites}

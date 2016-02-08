@@ -34,6 +34,35 @@ class SyncInstances(OpenStackSyncStep):
             userdata += '  - %s\n' % key
         return userdata
 
+    def sort_controller_networks(self, nets):
+        nets = list(nets)
+        result = []
+
+        # Enforce VTN's network order requirement. The access network must be
+        # inserted into the first slot. The management network must be inserted
+        # into the second slot.
+
+        # move the private and/or access network to the first spot
+        for net in nets[:]:
+            tem = net.network.template
+            if (tem.visibility == "private") and (tem.translation=="none") and ("management" not in tem.name):
+                result.append(net)
+                nets.remove(net)
+
+        # move the management network to the second spot
+        for net in nets[:]:
+            tem = net.network.template
+            if (tem.visibility == "private") and (tem.translation=="none") and ("management" in tem.name):
+                if len(result)!=1:
+                    raise Exception("Management network needs to be inserted in slot 1, but there are %d private nets" % len(result))
+                result.append(net)
+                nets.remove(net)
+
+        # add everything else. For VTN there probably shouldn't be any more.
+        result.extend(nets)
+
+        return result
+
     def map_sync_inputs(self, instance):
         inputs = {}
 	metadata_update = {}
@@ -60,8 +89,8 @@ class SyncInstances(OpenStackSyncStep):
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=instance.node.site_deployment.controller)
 
+        controller_networks = self.sort_controller_networks(controller_networks)
         for controller_network in controller_networks:
-
             # Lenient exception - causes slow backoff
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':

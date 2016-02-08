@@ -7,6 +7,7 @@ from ceilometerclient import client
 import logging
 import urllib
 import urllib2
+from urlparse import urlparse
 from wsgilog import WsgiLog
 
 web.config.debug=False
@@ -252,6 +253,11 @@ class pubsub_handler:
     def POST(self):
         global config
         parse_ceilometer_proxy_config()
+        ceilometer_pub_sub_url = config.get('default', 'ceilometer_pub_sub_url')
+        url = urlparse(ceilometer_pub_sub_url)
+        if (not url.scheme) or (not url.netloc): 
+             raise Exception("Ceilometer PUB/SUB URL not set")
+        ceilometer_pub_sub_url = url.scheme + "://" + url.netloc + "/subscribe"
         data_str = unicode(web.data(),'iso-8859-1')
         post_data = json.loads(data_str)
         final_query=[]
@@ -262,7 +268,7 @@ class pubsub_handler:
              raise Exception("Not allowed to subscribe to any meters")
         post_data["query"] = final_query
         #TODO: The PUB/SUB url needs to be read from config
-        put_request = urllib2.Request("http://10.11.10.1:4455/subscribe", json.dumps(post_data))
+        put_request = urllib2.Request(ceilometer_pub_sub_url, json.dumps(post_data))
         put_request.get_method = lambda: 'SUB'
         put_request.add_header('Content-Type', 'application/json')
         response = urllib2.urlopen(put_request)
@@ -270,9 +276,14 @@ class pubsub_handler:
         return json.dumps(response_text)
 
     def DELETE(self):
+        ceilometer_pub_sub_url = config.get('default', 'ceilometer_pub_sub_url')
+        url = urlparse(ceilometer_pub_sub_url)
+        if (not url.scheme) or (not url.netloc): 
+             raise Exception("Ceilometer PUB/SUB URL not set")
+        ceilometer_pub_sub_url = url.scheme + "://" + url.netloc + "/unsubscribe"
         data_str = web.data()
         #TODO: The PUB/SUB url needs to be read from config
-        put_request = urllib2.Request("http://10.11.10.1:4455/unsubscribe", data_str)
+        put_request = urllib2.Request(ceilometer_pub_sub_url, data_str)
         put_request.get_method = lambda: 'UNSUB'
         put_request.add_header('Content-Type', 'application/json')
         response = urllib2.urlopen(put_request)

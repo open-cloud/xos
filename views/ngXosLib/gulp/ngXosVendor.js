@@ -8,7 +8,7 @@ module.exports = function(options){
     var bowerDeps = wiredep().js;
     return gulp.src(bowerDeps)
       .pipe(concat('ngXosVendor.js'))
-      .pipe(uglify())
+      // .pipe(uglify())
       .pipe(gulp.dest(options.ngXosVendor));
   });
 };

@@ -4,12 +4,12 @@
   </div>
   <div class="col-xs-2 text-right">
     <a href="" class="btn btn-default" 
-      ng-show="vm.selectedResources && !vm.showStats"
+      ng-show="vm.selectedSlice && !vm.showStats"
       ng-click="vm.showStats = true">
       <i class="glyphicon glyphicon-transfer"></i>
     </a>
     <a href="" class="btn btn-default" 
-      ng-show="vm.selectedResources && vm.showStats"
+      ng-show="vm.selectedSlice && vm.showStats"
       ng-click="vm.showStats = false">
       <i class="glyphicon glyphicon-transfer"></i>
     </a>
@@ -28,22 +28,23 @@
         <h3>XOS Service: </h3>
         <uib-accordion close-others="true" template-url="templates/accordion.html">
           <uib-accordion-group
-            ng-repeat="(service, slices) in vm.projects | orderObjectByKey"
+            ng-repeat="service in vm.services | orderBy:'-service'"
             template-url="templates/accordion-group.html"
-            is-open="vm.accordion.open[service]"
-            heading="{{service}}">
+            is-open="vm.accordion.open[service.service]"
+            heading="{{service.service}}">
             <h4>Slices:</h4>
-            <a ng-repeat="(slice, resources) in slices" 
-              ng-class="{active: slice === vm.selectedSlice}"
-              ng-click="vm.selectResources(resources, slice, service)"
+            <a ng-repeat="slice in service.slices" 
+              ng-class="{active: slice.slice === vm.selectedSlice}"
+              ng-click="vm.loadSliceMeter(slice, service.service)"
               href="#" class="list-group-item" >
-              {{slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
+              {{slice.slice}} <i class="glyphicon glyphicon-chevron-right pull-right"></i>
             </a>
           </uib-accordion-group>
         </uib-accordion>
     </div>
     <section class="side-container col-sm-9">
       <div class="row">
+        <!-- STATS -->
         <article ng-hide="!vm.showStats" class="stats animate-slide-left">
           <div class="col-xs-12">
             <div class="list-group">
@@ -51,13 +52,14 @@
                 <h3>Stats</h3>
               </div>
               <div class="list-group-item">
-                <ceilometer-stats ng-if="vm.selectedSlice" name="vm.selectedSlice"></ceilometer-stats>
+                <ceilometer-stats ng-if="vm.selectedSlice" name="vm.selectedSlice" tenant="vm.selectedTenant"></ceilometer-stats>
               </div>
             </div>
           </div>
         </article>
+        <!-- METERS -->
         <article ng-hide="vm.showStats" class="meters animate-slide-left">
-          <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedResources">
+          <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedSlice">
             <div class="list-group">
               <div class="list-group-item">
                 <h3>Resources</h3>
