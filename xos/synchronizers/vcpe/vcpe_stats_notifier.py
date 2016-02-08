@@ -8,6 +8,7 @@ import re
 import time, threading
 import sys, getopt
 import logging
+import os
 
 
 logfile = "vcpe_stats_notifier.log"
@@ -21,8 +22,8 @@ handler=logging.handlers.RotatingFileHandler(logfile,maxBytes=1000000, backupCou
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-def extract_dns_stats_from_all_vcpes():
-    p = subprocess.Popen('docker ps', shell=True, stdout=subprocess.PIPE) 
+def get_all_docker_containers():
+    p = subprocess.Popen('docker ps --no-trunc', shell=True, stdout=subprocess.PIPE) 
     firstline = True
     dockercontainers = {}
     while True:
@@ -37,6 +38,56 @@ def extract_dns_stats_from_all_vcpes():
                 container_fields = {}
                 container_fields['id'] = fields[0]
                 dockercontainers[fields[-1]] = container_fields
+    return dockercontainers
+
+def extract_compute_stats_from_all_vcpes(dockercontainers):
+    for k,v in dockercontainers.iteritems():
+        cmd = 'sudo docker stats --no-stream=true ' + v['id'] 
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE) 
+        firstline = True
+        while True:
+            out = p.stdout.readline()
+            if out == '' and p.poll() != None:
+                break
+            if out != '':
+                if firstline is True:
+                    firstline = False
+                else:
+                    fields = out.split()
+                    #['CONTAINER_ID', 'CPU%', 'MEMUSE', 'UNITS', '/', 'MEMLIMIT', 'UNITS', 'MEM%', 'NET I/O', 'UNITS', '/', 'NET I/O LIMIT', 'UNITS', 'BLOCK I/O', 'UNITS', '/', 'BLOCK I/O LIMIT', 'UNITS']
+                    v['cpu_util'] = fields[1][:-1]
+                    if fields[6] == 'GB':
+                       v['memory'] = str(float(fields[5]) * 1000)
+                    else:
+                       v['memory'] = fields[5]
+                    if fields[3] == 'GB':
+                       v['memory_usage'] = str(float(fields[2]) * 1000)
+                    else:
+                       v['memory_usage'] = fields[2]
+        v['network_stats'] = []
+        for intf in ['eth0', 'eth1']:
+            cmd = 'sudo docker exec ' + v['id'] + ' ifconfig ' + intf
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            out,err = p.communicate()
+            if out:
+                intf_stats = {}
+                m = re.search("RX bytes:(\d+)", str(out))
+                if m:
+                    intf_stats['rx_bytes'] = m.group(1)
+                m = re.search("TX bytes:(\d+)", str(out))
+                if m:
+                    intf_stats['tx_bytes'] = m.group(1)
+                m = re.search("RX packets:(\d+)", str(out))
+                if m:
+                    intf_stats['rx_packets'] = m.group(1)
+                m = re.search("TX packets:(\d+)", str(out))
+                if m:
+                    intf_stats['tx_packets'] = m.group(1)
+                if intf_stats:
+                    intf_stats['intf'] = intf
+                    v['network_stats'].append(intf_stats)
+
+def extract_dns_stats_from_all_vcpes(dockercontainers):
     for k,v in dockercontainers.iteritems():
          cmd = 'docker exec ' + v['id'] + ' killall -10 dnsmasq'
          p = subprocess.Popen (cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -112,9 +163,11 @@ def publish_cpe_stats():
 
      logger.debug('publish_cpe_stats invoked')
 
-     cpe_container_stats = extract_dns_stats_from_all_vcpes()
+     dockercontainers = get_all_docker_containers()
+     cpe_container_compute_stats = extract_compute_stats_from_all_vcpes(dockercontainers)
+     cpe_container_dns_stats = extract_dns_stats_from_all_vcpes(dockercontainers)
 
-     for k,v in cpe_container_stats.iteritems():
+     for k,v in cpe_container_dns_stats.iteritems():
           msg = {'event_type': 'vcpe', 
                  'message_id':six.text_type(uuid.uuid4()),
                  'publisher_id': cpe_publisher_id,
@@ -127,6 +180,29 @@ def publish_cpe_stats():
                 }
           producer.publish(msg)
           logger.debug('Publishing vcpe event: %s', msg)
+
+          compute_payload = {}
+          if 'cpu_util' in v:
+               compute_payload['cpu_util']= v['cpu_util']
+          if 'memory' in v:
+               compute_payload['memory']= v['memory']
+          if 'memory_usage' in v:
+               compute_payload['memory_usage']= v['memory_usage']
+          if ('network_stats' in v) and (v['network_stats']):
+               compute_payload['network_stats']= v['network_stats']
+          if compute_payload:
+               compute_payload['vcpe_id'] = k
+               compute_payload['user_id'] = keystone_user_id
+               compute_payload['tenant_id'] = keystone_tenant_id
+               msg = {'event_type': 'vcpe.compute.stats', 
+                      'message_id':six.text_type(uuid.uuid4()),
+                      'publisher_id': cpe_publisher_id,
+                      'timestamp':datetime.datetime.now().isoformat(),
+                      'priority':'INFO',
+                      'payload': compute_payload 
+                     }
+               producer.publish(msg)
+               logger.debug('Publishing vcpe.dns.cache.size event: %s', msg)
 
           if 'cache_size' in v:
                msg = {'event_type': 'vcpe.dns.cache.size', 

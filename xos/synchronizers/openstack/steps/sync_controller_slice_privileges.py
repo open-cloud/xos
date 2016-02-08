@@ -18,7 +18,7 @@ class SyncControllerSlicePrivileges(OpenStackSyncStep):
     observes=ControllerSlicePrivilege
     playbook = 'sync_controller_users.yaml'
 
-    def map_inputs(self, controller_slice_privilege):
+    def map_sync_inputs(self, controller_slice_privilege):
         if not controller_slice_privilege.controller.admin_user:
             logger.info("controller %r has no admin_user, skipping" % controller_slice_privilege.controller)
             return

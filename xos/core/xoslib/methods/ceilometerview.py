@@ -57,6 +57,9 @@ def getTenantControllerTenantMap(user, slice=None):
                 else:
                     logger.warn("SRIKANTH: Slice %(slice)s is not associated with any service" % {'slice':cs.slice.name})
                     tenantmap[cs.tenant_id]["service"] = "Other"
+    #TEMPORARY WORK AROUND: There are some resource in network like whitebox switches does not belong to a specific tenant.
+    #They are all associated with "default_admin_tenant" tenant
+    tenantmap["default_admin_tenant"] = {"slice": "default_admin_tenant", "service": "Other"}
     return tenantmap
 
 def build_url(path, q, params=None):
@@ -1094,9 +1097,19 @@ class MetersList(APIView):
         tenant_ceilometer_url = getTenantCeilometerProxyURL(request.user)
         if (not tenant_ceilometer_url):
             raise XOSMissingField("Tenant ceilometer URL is missing")
+
+        tenant_id = request.QUERY_PARAMS.get('tenant', None)
+        resource_id = request.QUERY_PARAMS.get('resource', None)
+
+        query = []
+        if tenant_id:
+            query.extend(make_query(tenant_id=tenant_id))
+        if resource_id:
+            query.extend(make_query(resource_id=resource_id))
+
         tenant_map = getTenantControllerTenantMap(request.user)
-        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
-        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, tenant_map=tenant_map, resource_map=resource_map)
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url, query=query)
+        meters = Meters(request, ceilometer_url=tenant_ceilometer_url, query=query, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
@@ -1165,7 +1178,7 @@ class MeterStatisticsList(APIView):
             return Response(row)
 
         #Statistics query for all meter
-        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url)
+        resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url, query=query)
         meters = Meters(request, ceilometer_url=tenant_ceilometer_url, query=query, tenant_map=tenant_map, resource_map=resource_map)
         services = {
             _('Nova'): meters.list_nova(),
@@ -1239,6 +1252,24 @@ class MeterSamplesList(APIView):
                      sample["resource_name"] = sample["resource_id"]
         return Response(samples)
 
+class XOSSliceServiceList(APIView):
+    method_kind = "list"
+    method_name = "xos-slice-service-mapping"
+
+    def get(self, request, format=None):
+        if (not request.user.is_authenticated()):
+            raise PermissionDenied("You must be authenticated in order to use this API")
+        tenant_map = getTenantControllerTenantMap(request.user)
+        service_map={}
+        for k,v in tenant_map.iteritems():
+            if not (v['service'] in service_map.keys()):
+                service_map[v['service']] = {}
+                service_map[v['service']]['service'] = v['service']
+                service_map[v['service']]['slices'] = []
+            slice_details = {'slice':v['slice'], 'project_id':k}
+            service_map[v['service']]['slices'].append(slice_details)
+        return Response(service_map.values())
+
 class XOSInstanceStatisticsList(APIView):
     method_kind = "list"
     method_name = "xos-instance-statistics"
@@ -1295,9 +1326,15 @@ class XOSInstanceStatisticsList(APIView):
             #Statistics query for all meter
             resource_map = get_resource_map(request, ceilometer_url=tenant_ceilometer_url, query=query)
             meters = Meters(request, ceilometer_url=tenant_ceilometer_url, query=query, tenant_map=tenant_map, resource_map=resource_map)
+            exclude_nova_meters_info = [ "instance", "instance:<type>", "disk.read.requests", "disk.write.requests",
+                "disk.read.bytes", "disk.write.bytes", "disk.read.requests.rate", "disk.write.requests.rate", "disk.read.bytes.rate",
+                "disk.write.bytes.rate", "disk.root.size", "disk.ephemeral.size"]
+            exclude_neutron_meters_info = [ 'network.create', 'network.update', 'subnet.create',
+                'subnet.update', 'port.create', 'port.update', 'router.create', 'router.update',
+                'ip.floating.create', 'ip.floating.update']
             services = {
-                _('Nova'): meters.list_nova(),
-                _('Neutron'): meters.list_neutron(),
+                _('Nova'): meters.list_nova(except_meters=exclude_nova_meters_info),
+                _('Neutron'): meters.list_neutron(except_meters=exclude_neutron_meters_info),
                 _('VCPE'): meters.list_vcpe(),
                 _('SDN'): meters.list_sdn(),
             }
