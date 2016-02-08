@@ -96,8 +96,7 @@ CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
 
 # for OpenVPN
 RUN mkdir -p /opt/openvpn
-RUN git clone https://github.com/OpenVPN/easy-rsa.git /opt/openvpn
-RUN git -C /opt/openvpn pull origin master
+RUN cp -r /usr/share/easy-rsa/* /opt/openvpn/
 RUN cp /opt/xos/services/vpn/vars /opt/openvpn/vars
 RUN . /opt/openvpn/vars
 RUN /opt/openvpn/clean-all
