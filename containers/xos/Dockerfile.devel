@@ -101,7 +101,7 @@ ENV EASY_RSA /opt/openvpn
 ENV OPENSSL openssl
 ENV PKCS11TOOL pkcs11-tool
 ENV GREP grep
-ENV KEY_CONFIG '$EASY_RSA/whichopensslcnf $EASY_RSA'
+ENV KEY_CONFIG `$EASY_RSA/whichopensslcnf $EASY_RSA`
 ENV KEY_DIR $EASY_RSA/keys
 ENV PKCS11_MODULE_PATH dummy
 ENV PKCS11_PIN dummy
