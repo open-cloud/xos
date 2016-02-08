@@ -93,3 +93,16 @@ WORKDIR /opt/xos
 
 # Define default command.
 CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
+
+# for OpenVPN
+RUN mkdir -p /opt/openvpn
+RUN git clone https://github.com/OpenVPN/easy-rsa.git /opt/openvpn
+RUN git -C /opt/openvpn pull origin master
+RUN cp /opt/xos/services/vpn/vars /opt/openvpn/vars
+RUN source /opt/openvpn/vars
+RUN /opt/openvpn/clean-all
+RUN /opt/openvpn/build-ca --batch
+RUN /opt/openvpn/build-key-server --batch server
+RUN /opt/openvpn/build-dh
+RUN chmod 777 /opt/openvpn/keys/server.key
+RUN chmod 777 /opt/openvpn/keys/dh2048.pem
