@@ -3,16 +3,16 @@
     <service-topology service-chain="vm.serviceChain"></service-topology>
   </div>
   <div class="half-height">
-    <div class="row col-sm-3">
-      <div class="panel panel-default">
+    <div class="row col-sm-offset-9 col-sm-3">
+      <div class="panel panel-primary">
         <div class="panel-heading">Select a subscriber:</div>
         <div class="panel-body">
-          <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber" ng-change="vm.getServiceChain(vm.selectedSubscriber)">
+          <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber">
             <option value="">Select a subscriber...</option>
           </select>
         </div>
       </div>
-      <logic-topology></logic-topology>
     </div>
+    <logic-topology ng-if="vm.subscribers" subscribers="vm.subscribers" selected="vm.selectedSubscriber"></logic-topology>
   </div>
 </div>
