@@ -1,0 +1,60 @@
+---
+- hosts: neutron-api
+  sudo: yes
+  vars:
+    vtn_host: node2.juju2.xos-pg0.clemson.cloudlab.us
+  tasks:
+
+  # Most of this should happen in the neutron-api charm
+  # Make a local copy and deploy from there for starters
+  # * Use latest copy of neutron-api charm
+  # * Add an "onos-vtn" core plugin
+  # * Do the rest of tehse steps when the "onos-vtn" plugin is selected
+  # * Can we add a "vtn-host" argument to the charm?
+  - apt: name={{ item }} state=installed
+    with_items:
+    - python-pip
+
+  - pip: name={{ item }} state=latest
+    with_items:
+    - setuptools
+    - pip
+    - testrepository
+  - git: repo=https://github.com/openstack/networking-onos.git
+      dest=/srv/networking-onos
+  - shell: cd /srv/networking-onos; python setup.py install
+
+  # Edit /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
+  - ini_file: dest=/usr/local/etc/neutron/plugins/ml2/conf_onos.ini
+      section=onos option=url_path value=http://{{ vtn_host }}:8181/onos/openstackswitching
+  - ini_file: dest=/usr/local/etc/neutron/plugins/ml2/conf_onos.ini
+      section=onos option=username value=karaf
+  - ini_file: dest=/usr/local/etc/neutron/plugins/ml2/conf_onos.ini
+      section=onos option=password value=karaf
+
+  # Edit /etc/neutron/neutron.conf
+#  - ini_file: dest=/etc/neutron/neutron.conf
+#      section=DEFAULT option=core_plugin value=neutron.plugins.ml2.plugin.Ml2Plugin
+
+  # Edit /etc/neutron/plugins/ml2/ml2_conf.ini
+  # DOING IT THIS WAY WILL CONFLICT WITH JUJU!
+  - ini_file: dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+      section=ml2 option=tenant_network_types value=vxlan
+  - ini_file: dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+      section=ml2 option=type_drivers value=vxlan
+  - ini_file: dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+      section=ml2 option=mechanism_drivers value=onos_ml2
+
+  # Already present
+  #- ini_file: dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+  #    section=ml2_type_vxlan option=vni_ranges value=1001:2000
+
+  - service: name=neutron-server state=stopped enabled=no
+  # Run neutron-server with extra config file
+  # DOING IT THIS WAY WILL CONFLICT WITH JUJU!
+  - copy: src=files/neutron-supervisor.conf dest=/etc/supervisor/conf.d/
+  - shell: supervisorctl reload
+
+#  - shell: ../../scripts/destroy-all-networks.sh
+  - shell: cd ../cord/dataplane; bash ./generate-bm.sh > hosts-bm
+  - shell: cd ../cord/dataplane; ansible-playbook -i hosts-bm dataplane-vtn.yaml
