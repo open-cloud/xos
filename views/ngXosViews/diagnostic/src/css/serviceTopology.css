@@ -17,6 +17,13 @@ logic-topology {
     top: 0;
 }
 
+logic-topology .subscriber circle,
+logic-topology .device circle{
+    fill: #fff;
+    stroke: green;
+    stroke-width: 1px;
+}
+
 /* LEGEND */
 
 .legend {
