@@ -292,7 +292,7 @@ def GetConfiguration(name, slice_remap={}):
             'hostipmap':hostipmap,
             'hostnatmap':hostnatmap,
             'hostprivmap':hostprivmap,
-            'instances': instances,
+            'slivers': instances,
             'interfaces': allinterfaces,
             'sites': sites,
             'nodes': nodes}
