@@ -1,3 +1,18 @@
-<div class="half-height">
-  <service-topology service-chain="vm.serviceChain"></service-topology>  
+<div class="container-fluid">
+  <div class="half-height">
+    <service-topology service-chain="vm.serviceChain"></service-topology>
+  </div>
+  <div class="half-height">
+    <div class="row col-sm-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Select a subscriber:</div>
+        <div class="panel-body">
+          <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber" ng-change="vm.getServiceChain(vm.selectedSubscriber)">
+            <option value="">Select a subscriber...</option>
+          </select>
+        </div>
+      </div>
+      <logic-topology></logic-topology>
+    </div>
+  </div>
 </div>

@@ -14,8 +14,39 @@
   .service('Instances', function($resource){
     return $resource('/xos/instances', {id: '@id'});
   })
-  .service('Subscribers', function($resource){
-    return $resource('/xos/subscribers', {id: '@id'});
+  .service('Subscribers', function($resource, $q, SubscriberDevice){
+    return $resource('/xos/subscribers', {id: '@id'}, {
+      queryWithDevices: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function(res){
+            const deferred = $q.defer();
+
+            let requests = [];
+
+            angular.forEach(res.data, (subscriber) => {
+              requests.push(SubscriberDevice.query({id: subscriber.id}));
+            })
+
+            $q.all(requests)
+            .then((list) => {
+              console.log(list);
+              res.data.map((subscriber, i) => {
+                subscriber.devices = list[i];
+                return subscriber;
+              });
+              deferred.resolve(res.data);
+            })
+
+            return deferred.promise;
+          }
+        }
+      }
+    });
+  })
+  .service('SubscriberDevice', function($resource){
+    return $resource('/xoslib/rs/subscriber/:id/users/', {id: '@id'});
   })
   .service('ServiceRelation', function($q, lodash, Services, Tenant, Slice, Instances){
 

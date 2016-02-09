@@ -15,34 +15,40 @@
 
         const el = $element[0];
 
-        this.instances = [];
-        this.slices = [];
+        d3.select(window)
+        .on('resize', () => {
+          console.log('resize');
+          draw(this.serviceChain);
+        });
 
-        const width = el.clientWidth - (serviceTopologyConfig.widthMargin * 2);
-        const height = el.clientHeight - (serviceTopologyConfig.heightMargin * 2);
-
-        const treeLayout = d3.layout.tree()
-          .size([height, width]);
-
-        const svg = d3.select($element[0])
-          .append('svg')
-          .style('width', `${el.clientWidth}px`)
-          .style('height', `${el.clientHeight}px`)
-
-        const treeContainer = svg.append('g')
-          .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 4},${serviceTopologyConfig.heightMargin})`);
-
-        var root;
+        var root, svg;
 
         const draw = (tree) => {
+
+          // clean
+          d3.select($element[0]).select('svg').remove();
+
+          const width = el.clientWidth - (serviceTopologyConfig.widthMargin * 2);
+          const height = el.clientHeight - (serviceTopologyConfig.heightMargin * 2);
+
+          const treeLayout = d3.layout.tree()
+            .size([height, width]);
+
+          svg = d3.select($element[0])
+            .append('svg')
+            .style('width', `${el.clientWidth}px`)
+            .style('height', `${el.clientHeight}px`)
+
+          const treeContainer = svg.append('g')
+            .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 4},${serviceTopologyConfig.heightMargin})`);
+
           root = tree;
           root.x0 = height / 2;
           root.y0 = width / 2;
 
+          TreeLayout.drawLegend(svg);
           TreeLayout.updateTree(treeContainer, treeLayout, root);
         };
-
-        TreeLayout.drawLegend(svg);
 
         this.getInstances = (slice) => {
           Instances.query({slice: slice.id}).$promise
