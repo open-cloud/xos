@@ -21,21 +21,28 @@
         isArray: true,
         interceptor: {
           response: function(res){
+
+            /**
+            * For each subscriber retrieve devices and append them
+            */
+
             const deferred = $q.defer();
 
             let requests = [];
 
             angular.forEach(res.data, (subscriber) => {
-              requests.push(SubscriberDevice.query({id: subscriber.id}));
+              requests.push(SubscriberDevice.query({id: subscriber.id}).$promise);
             })
 
             $q.all(requests)
             .then((list) => {
-              console.log(list);
               res.data.map((subscriber, i) => {
                 subscriber.devices = list[i];
                 return subscriber;
               });
+
+              // faking to have 2 subscriber
+              res.data.push(res.data[0]);
               deferred.resolve(res.data);
             })
 

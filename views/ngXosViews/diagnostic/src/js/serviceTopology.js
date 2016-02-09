@@ -11,19 +11,20 @@
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $window, $scope, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, TreeLayout){
+      controller: function($element, $window, $scope, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, ServiceTopologyHelper){
 
         const el = $element[0];
 
         d3.select(window)
         .on('resize', () => {
-          console.log('resize');
           draw(this.serviceChain);
         });
 
         var root, svg;
 
         const draw = (tree) => {
+
+          // TODO update instead clear and redraw
 
           // clean
           d3.select($element[0]).select('svg').remove();
@@ -46,8 +47,8 @@
           root.x0 = height / 2;
           root.y0 = width / 2;
 
-          TreeLayout.drawLegend(svg);
-          TreeLayout.updateTree(treeContainer, treeLayout, root);
+          ServiceTopologyHelper.drawLegend(svg);
+          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
         };
 
         this.getInstances = (slice) => {

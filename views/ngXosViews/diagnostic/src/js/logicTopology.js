@@ -5,15 +5,38 @@
     return {
       restrict: 'E',
       scope: {
-        serviceChain: '='
+        subscribers: '=',
+        selected: '='
       },
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $log){
+      controller: function($element, $log, $scope, d3, LogicTopologyHelper){
         $log.info('Logic Plane');
 
-        
+        var svg;
+
+        $scope.$watch(() => this.subscribers, (subscribers) => {
+          if(subscribers){
+            LogicTopologyHelper.handleSubscribers(svg, subscribers);
+          }
+        });
+
+        $scope.$watch(() => this.selected, (selected) => {
+          if(selected){
+            $log.info(`Update logic layer for subscriber ${selected.humanReadableName}`);
+          }
+        });
+
+        const handleSvg = (el) => {
+
+          svg = d3.select(el)
+          .append('svg')
+          .style('width', `${el.clientWidth}px`)
+          .style('height', `${el.clientHeight}px`);
+        }
+
+        handleSvg($element[0]);
       }
     };
   });

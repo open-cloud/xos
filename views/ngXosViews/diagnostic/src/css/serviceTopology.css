@@ -4,10 +4,17 @@ diagnostic .half-height {
     height: 50%;
 }
 
-service-topology {
+.half-height + .half-height {
+    border-top: 1px solid black;
+}
+
+service-topology,
+logic-topology {
     height: 100%;
     width: 100%;
     display: block;
+    position: absolute;
+    top: 0;
 }
 
 /* LEGEND */
@@ -61,7 +68,7 @@ service-topology {
     font: 12px sans-serif;
 }
 
-.link {
+.link, .device-link {
     fill: none;
     stroke: #ccc;
     stroke-width: 2px;

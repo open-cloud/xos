@@ -10,7 +10,6 @@
       controller: function(Subscribers, ServiceRelation){
         Subscribers.queryWithDevices().$promise
         .then((subscribers) => {
-          console.log(subscribers);
           this.subscribers = subscribers;
           return ServiceRelation.get(subscribers[0]);
         })
