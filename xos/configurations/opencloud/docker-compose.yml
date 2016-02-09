@@ -15,6 +15,7 @@ xos_synchronizer_openstack:
     volumes:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
+        - ./files/xos_opencloud_config:/opt/xos/xos_configuration/xos_opencloud_config:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
@@ -32,3 +33,4 @@ xos:
         - xos_db
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+      - ./files/xos_opencloud_config:/opt/xos/xos_configuration/xos_opencloud_config:ro
