@@ -43,5 +43,7 @@ xos:
         - "80:80"
     volumes:
         - .:/root/setup:ro
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ../cord/xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
