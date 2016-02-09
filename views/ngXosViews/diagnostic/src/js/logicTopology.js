@@ -18,7 +18,7 @@
 
         $scope.$watch(() => this.subscribers, (subscribers) => {
           if(subscribers){
-            LogicTopologyHelper.handleSubscribers(svg, subscribers);
+            LogicTopologyHelper.addSubscribers(svg, angular.copy(subscribers));
           }
         });
 
@@ -37,6 +37,7 @@
         }
 
         handleSvg($element[0]);
+        LogicTopologyHelper.drawTree(svg);
       }
     };
   });

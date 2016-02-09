@@ -41,8 +41,6 @@
                 return subscriber;
               });
 
-              // faking to have 2 subscriber
-              res.data.push(res.data[0]);
               deferred.resolve(res.data);
             })
 
