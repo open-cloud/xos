@@ -62,3 +62,9 @@ class XOSConflictingField(APIException):
                             "specific_error": why,
                             "fields": fields})
 
+class XOSServiceUnavailable(APIException):
+    status_code=503
+    def __init__(self, why="Service temporarily unavailable, try again later", fields={}):
+        APIException.__init__(self, {"error": "XOSServiceUnavailable",
+                            "specific_error": why,
+                            "fields": fields})
