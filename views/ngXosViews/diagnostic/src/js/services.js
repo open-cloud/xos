@@ -145,64 +145,6 @@
       return deferred.promise;
     };
 
-    const buildServiceInterfacesTree = (service, slices, instances) => {
-
-      const isActive = (service, instance) => {
-        if(service.service_specific_attribute){
-          return service.service_specific_attribute.instance_id === instance.id;
-        }
-        return false;
-      }
-
-      var interfaceTree = [];
-      lodash.forEach(slices, (slice, i) => {
-        let current = {
-          name: slice.name,
-          slice: slice,
-          type: 'slice',
-          children: instances[i].map((instance) => {
-
-            return {
-              name: instance.humanReadableName,
-              children: [],
-              type: 'instance',
-              instance: instance,
-              active: isActive(service, instance)
-            };
-
-          })
-        };
-        interfaceTree.push(current);
-      });
-      return interfaceTree;
-    };
-
-    const getServiceInterfaces = (service) => {
-      var deferred = $q.defer();
-
-      var _slices;
-
-      Slice.query({service: service.id}).$promise
-      .then((slices) => {
-        _slices = slices;
-        const promisesArr = slices.reduce((promises, slice) => {
-          promises.push(Instances.query({slice: slice.id}).$promise);
-          return promises;
-        }, []);
-
-        // TODO add networks
-        // decide how, they should be manually drawn
-        // as they connect more instances without parent dependencies
-
-        return $q.all(promisesArr);
-      })
-      .then((instances) => {
-        deferred.resolve(buildServiceInterfacesTree(service, _slices, instances));
-      });
-
-      return deferred.promise;
-    };
-
     // export APIs
     return {
       get: get,
@@ -211,8 +153,6 @@
       findLevelRelation: findLevelRelation,
       findLevelServices: findLevelServices,
       depthOf: depthOf,
-      getServiceInterfaces: getServiceInterfaces,
-      buildServiceInterfacesTree: buildServiceInterfacesTree,
       findSpecificInformation: findSpecificInformation
     }
   });

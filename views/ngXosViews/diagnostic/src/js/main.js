@@ -10,9 +10,9 @@ angular.module('xos.serviceTopology', [
 ])
 .config(($stateProvider) => {
   $stateProvider
-  .state('user-list', {
+  .state('home', {
     url: '/',
-    template: '<service-canvas></service-canvas>'
+    template: '<diagnostic></diagnostic>'
   });
 })
 .config(function($httpProvider){
