@@ -40,9 +40,9 @@
       var diagonal = d3.svg.diagonal()
       .source({x: deviceX, y: deviceY})
       .target({x: targetX, y: targetY})
-      .projection(d => {
-        return [d.x, d.y];
-      });
+      // .projection(d => {
+      //   return [d.y, d.x];
+      // });
 
       deviceGroup
         .append('path')
