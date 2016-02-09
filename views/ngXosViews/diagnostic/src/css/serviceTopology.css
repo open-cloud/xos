@@ -1,20 +1,13 @@
-service-canvas {
+/* CONTAINER */
+diagnostic .half-height {
+    position: relative;
+    height: 50%;
+}
+
+service-topology {
     height: 100%;
     width: 100%;
     display: block;
-}
-
-service-canvas .subscriber-select{
-    z-index: 1000;
-    position: absolute;
-    width: 200px;
-    top: 10px;
-    left: 10px;
-}
-
-service-canvas svg {
-    position: absolute;
-    top: 0;
 }
 
 /* LEGEND */
@@ -38,7 +31,7 @@ service-canvas svg {
 .node rect{
     fill: #fff;
     stroke: steelblue;
-    stroke-width: 3px;
+    stroke-width: 1px;
 }
 
 .node.subscriber circle,
