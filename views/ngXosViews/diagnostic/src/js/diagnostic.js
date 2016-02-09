@@ -8,11 +8,11 @@
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
       controller: function(Subscribers, ServiceRelation){
-        Subscribers.query().$promise
+        Subscribers.queryWithDevices().$promise
         .then((subscribers) => {
+          console.log(subscribers);
           this.subscribers = subscribers;
-          this.selectedSubscriber = subscribers[0];
-          return ServiceRelation.get(this.selectedSubscriber);
+          return ServiceRelation.get(subscribers[0]);
         })
         .then((serviceChain) => {
           this.serviceChain = serviceChain;
