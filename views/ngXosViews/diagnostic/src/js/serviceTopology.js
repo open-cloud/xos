@@ -47,7 +47,7 @@
           root.x0 = height / 2;
           root.y0 = width / 2;
 
-          ServiceTopologyHelper.drawLegend(svg);
+          // ServiceTopologyHelper.drawLegend(svg);
           ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
         };
 
