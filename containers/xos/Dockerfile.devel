@@ -95,30 +95,12 @@ WORKDIR /opt/xos
 CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
 
 # for OpenVPN
-RUN openssl version
 RUN mkdir -p /opt/openvpn
-RUN cp -r /usr/share/easy-rsa/* /opt/openvpn/
-ENV EASY_RSA /opt/openvpn
-ENV OPENSSL openssl
-ENV PKCS11TOOL pkcs11-tool
-ENV GREP grep
-ENV KEY_CONFIG `$EASY_RSA/whichopensslcnf $EASY_RSA`
-ENV KEY_DIR $EASY_RSA/keys
-ENV PKCS11_MODULE_PATH dummy
-ENV PKCS11_PIN dummy
-ENV KEY_SIZE 2048
-ENV CA_EXPIRE 3650
-ENV KEY_EXPIRE 3650
-ENV KEY_COUNTRY US
-ENV KEY_PROVINCE AZ
-ENV KEY_CITY Tucson
-ENV KEY_ORG XOS
-ENV KEY_EMAIL devel@xosproject.org
-ENV KEY_OU Development
-ENV KEY_NAME server
-RUN /opt/openvpn/clean-all
-RUN env OPENSSL="openssl" /opt/openvpn/build-ca --batch
-RUN /opt/openvpn/build-key-server --batch server
-RUN /opt/openvpn/build-dh
-RUN chmod 777 /opt/openvpn/keys/server.key
-RUN chmod 777 /opt/openvpn/keys/dh2048.pem
+RUN git clone https://github.com/OpenVPN/easy-rsa.git -b release/2.x /opt/openvpn
+RUN git -C /opt/openvpn pull origin release/2.x
+RUN /opt/openvpn/easyrsa3 --batch init-pki
+RUN /opt/openvpn/easyrsa3 --batch --req-cn=XOS build-ca nopass
+RUN /opt/openvpn/easyrsa3 --batch build-server-full server nopass
+RUN /opt/openvpn/easyrsa3 --batch gen-dh
+RUN chmod 777 /opt/openvpn/easyrsa3/pki/private/server.key
+RUN chmod 777 /opt/openvpn/easyrsa3/pki/dh.pem
