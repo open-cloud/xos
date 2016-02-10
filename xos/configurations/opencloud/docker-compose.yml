@@ -31,6 +31,20 @@ xos_synchronizer_hpc:
         - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
         - ./files/xos_opencloud_config:/opt/xos/xos_configuration/xos_opencloud_config:ro
 
+xos_watcher_hpc:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/hpc/hpc_watcher.py"
+    #command: sleep 86400
+    labels:
+        org.xosproject.kind: watcher
+        org.xosproject.target: hpc
+    links:
+        - xos_db
+    volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
+        - ./files/xos_opencloud_config:/opt/xos/xos_configuration/xos_opencloud_config:ro
+
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer
