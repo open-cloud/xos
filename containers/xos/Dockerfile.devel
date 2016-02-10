@@ -96,8 +96,8 @@ CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
 
 # for OpenVPN
 RUN mkdir -p /opt/openvpn
-RUN git clone https://github.com/OpenVPN/easy-rsa.git -b release/2.x /opt/openvpn
-RUN git -C /opt/openvpn pull origin release/2.x
+RUN git clone https://github.com/OpenVPN/easy-rsa.git /opt/openvpn
+RUN git -C /opt/openvpn pull origin master
 RUN /opt/openvpn/easyrsa3 --batch init-pki
 RUN /opt/openvpn/easyrsa3 --batch --req-cn=XOS build-ca nopass
 RUN /opt/openvpn/easyrsa3 --batch build-server-full server nopass
