@@ -126,10 +126,10 @@ describe('The Service Relation Service', () => {
 
       expect(tree.children[0].children[0].name).toBe('service-2');
       expect(tree.children[0].children[0].children[0].name).toBe('service-3');
-      expect(tree.children[0].children[0].children[0].children[0].name).toBe('Internet');
+      expect(tree.children[0].children[0].children[0].children[0].name).toBe('Router');
 
       expect(tree.children[0].children[1].name).toBe('service-4');
-      expect(tree.children[0].children[1].children[0].name).toBe('Internet');
+      expect(tree.children[0].children[1].children[0].name).toBe('Router');
     });
   });
 

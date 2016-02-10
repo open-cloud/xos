@@ -8,6 +8,7 @@
     duration: 750,
     circle: {
       radius: 10,
+      r: 10,
       selectedRadius: 15
     },
     square: {
@@ -15,6 +16,12 @@
       height: 20,
       x: -10,
       y: -10
+    },
+    rack: {
+      width: 50,
+      height: 50,
+      x: -25,
+      y: -25
     }
   })
 

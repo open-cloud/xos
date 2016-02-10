@@ -4,6 +4,14 @@ diagnostic .half-height {
     height: 50%;
 }
 
+diagnostic .subscriber-select{
+    max-width: 200px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+}
+
 .half-height + .half-height {
     border-top: 1px solid black;
 }
@@ -22,6 +30,12 @@ logic-topology .device circle{
     fill: #fff;
     stroke: green;
     stroke-width: 1px;
+}
+
+logic-topology .network .cloud {
+    fill: #fff;
+    stroke: green;
+    stroke-width: 1px;   
 }
 
 /* LEGEND */
@@ -49,7 +63,9 @@ logic-topology .device circle{
 }
 
 .node.subscriber circle,
-.node.internet circle {
+.node.subscriber rect,
+.node.router circle,
+.node.router rect {
     stroke: #05ffcb;
 }
 

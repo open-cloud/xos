@@ -38,8 +38,15 @@
             .then((list) => {
               res.data.map((subscriber, i) => {
                 subscriber.devices = list[i];
+                subscriber.type = 'subscriber';
+
+                subscriber.devices.map(d => d.type = 'device')
+
                 return subscriber;
               });
+
+              // faking to have 2 subscriber
+              res.data.push(angular.copy(res.data[0]));
 
               deferred.resolve(res.data);
             })
@@ -134,8 +141,8 @@
       // if it is the last element append internet
       if(tree.children.length === 0){
         tree.children.push({
-          name: 'Internet',
-          type: 'internet',
+          name: 'Router',
+          type: 'router',
           children: []
         });
       }
