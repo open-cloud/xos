@@ -43,10 +43,10 @@
     with_items: "{{ ca_crt }}"
 
   - name: erase dh
-    shell: rm -f dh2048.pem
+    shell: rm -f dh.pem
 
   - name: write dh
-    shell: echo {{ '{{' }} item {{ '}}' }} >> dh2048.pem
+    shell: echo {{ '{{' }} item {{ '}}' }} >> dh.pem
     with_items: "{{ dh }}"
 
   - name: erase config
@@ -67,7 +67,7 @@
        dev tun
        cert server.crt
        key server.key
-       dh dh2048.pem
+       dh dh.pem
        server {{ server_network }} {{ vpn_subnet }}
        ifconfig-pool-persist ipp.txt
        comp-lzo
