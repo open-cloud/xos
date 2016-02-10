@@ -56,7 +56,7 @@
     shell: rm -f auth.sh
 
   - name: write auth script
-    shell: "exit 0" > auth.sh
+    shell: echo "exit 0" > auth.sh
 
   - name: write base config
     shell:

@@ -37,10 +37,17 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "vpn_subnet": tenant.vpn_subnet,
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": tenant.clients_can_see_each_other,
-                "ca_crt": tenant.ca_crt,
+                "ca_crt": self.get_escaped_ca_crt(tenant),
                 "server_crt": tenant.server_crt,
                 "dh": tenant.dh
                 }
+
+    def get_escaped_ca_crt(self, tenant):
+        result = list()
+        for line in tenant.ca_crt:
+            result.append(line.replace(":", "\\\\u003a"))
+
+        return result
 
     def create_client_script(self, tenant):
         script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
