@@ -1,4 +1,4 @@
-FROM       python:2.7.11
+FROM       ubuntu:14.04.3
 
 # XXX Workaround for docker bug:
 # https://github.com/docker/docker/issues/6345
@@ -70,7 +70,7 @@ RUN easy_install \
     google_api_python_client \
     httplib2.ca_certs_locater
 
-ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/site-packages/suit/static/suit/js/
+ADD http://code.jquery.com/jquery-1.9.1.min.js /usr/local/lib/python2.7/dist-packages/suit/static/suit/js/
 
 # Install XOS
 RUN git clone git://github.com/open-cloud/xos.git /tmp/xos && \
@@ -86,10 +86,9 @@ EXPOSE 8000
 
 # Set environment variables.
 ENV HOME /root
-ENV PYTHONPATH /usr/local/lib/python2.7/site-packages:/usr/lib/python2.7/dist-packages
 
 # Define working directory.
 WORKDIR /opt/xos
 
 # Define default command.
-CMD update-ca-certificates && python manage.py runserver 0.0.0.0:8000 --insecure
+CMD update-ca-certificates && python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations

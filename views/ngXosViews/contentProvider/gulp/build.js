@@ -73,7 +73,8 @@ module.exports = function(options){
           gulp.src([
             options.static + 'js/vendor/xosContentProviderVendor.js',
             options.static + 'js/xosContentProvider.js'
-          ])
+          ]),
+          {ignorePath: '/../../../xos/core/xoslib'}
         )
       )
       .pipe(rename('xosContentProvider.html'))

@@ -91,6 +91,7 @@ node_types:
         capabilities:
             xos_base_service_caps
         properties:
+            xos_base_props
             xos_base_service_props
 
     tosca.nodes.Tenant:
@@ -115,6 +116,7 @@ node_types:
         capabilities:
             xos_base_service_caps
         properties:
+            xos_base_props
             xos_base_service_props
             rest_onos/v1/network/configuration/:
                 type: string
@@ -198,6 +200,7 @@ node_types:
         capabilities:
             xos_base_service_caps
         properties:
+            xos_base_props
             xos_base_service_props
             backend_network_label:
                 type: string
@@ -211,6 +214,7 @@ node_types:
         capabilities:
             xos_base_service_caps
         properties:
+            xos_base_props
             xos_base_service_props
             vbng_url:
                 type: string
@@ -224,6 +228,7 @@ node_types:
         capabilities:
             xos_base_service_caps
         properties:
+            xos_base_props
             xos_base_service_props
 
     tosca.nodes.Subscriber:
@@ -658,6 +663,10 @@ node_types:
                 type: string
                 required: false
                 description: type of networking to use for this slice
+            exposed_ports:
+                type: string
+                required: false
+                description: comma-separated list of protocol _space_ port that represent ports the slice should expose
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root

@@ -329,6 +329,7 @@ topology_template:
       properties:
           display_name: I2-atl
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -343,6 +344,7 @@ topology_template:
       properties:
           display_name: I2-chi
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -357,6 +359,7 @@ topology_template:
       properties:
           display_name: I2-hou
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -371,6 +374,7 @@ topology_template:
       properties:
           display_name: I2-kas
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -385,6 +389,7 @@ topology_template:
       properties:
           display_name: I2-lax
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -399,6 +404,7 @@ topology_template:
       properties:
           display_name: I2-nyc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -413,6 +419,7 @@ topology_template:
       properties:
           display_name: I2-slc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -427,6 +434,7 @@ topology_template:
       properties:
           display_name: I2-seae
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -441,6 +449,7 @@ topology_template:
       properties:
           display_name: I2-sng
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -455,6 +464,7 @@ topology_template:
       properties:
           display_name: I2-wdc
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: backbone
@@ -469,6 +479,7 @@ topology_template:
       properties:
           display_name: Princeton
           site_url: http://opencloud.us/
+          hosts_nodes: true
       requirements:
           - deployment:
                node: campus
@@ -483,6 +494,7 @@ topology_template:
       properties:
           display_name: Stanford
           site_url: http://opencloud.us/
+          hosts_nodes: true 
       requirements:
           - deployment:
                node: campus
@@ -497,6 +509,7 @@ topology_template:
       properties:
           display_name: Washington
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -511,6 +524,7 @@ topology_template:
       properties:
           display_name: GTech
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -525,6 +539,7 @@ topology_template:
       properties:
           display_name: Arizona
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -539,6 +554,7 @@ topology_template:
       properties:
           display_name: Internet2
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -553,6 +569,7 @@ topology_template:
       properties:
           display_name: Singapore
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -567,6 +584,7 @@ topology_template:
       properties:
           display_name: ON.Lab
           site_url: http://opencloud.us/
+          hosts_nodes: false 
       requirements:
           - deployment:
                node: campus
@@ -735,34 +753,6 @@ topology_template:
 
 
 # Slices
-    onlab_cmi:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_hpc:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_dnsredir:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
-    onlab_dnsdemux:
-      type: tosca.nodes.Slice
-      requirements:
-          - site:
-              node: onlab
-              relationship: tosca.relationships.MemberOfSite
-
     princeton_publicdata:
       type: tosca.nodes.Slice
       requirements:
@@ -771,15 +761,6 @@ topology_template:
               relationship: tosca.relationships.MemberOfSite
 
 # Services
-    hypercache:
-      type: tosca.nodes.Service
-      capabilities:
-          scalable:
-              properties:
-                  max_instances: 25
-                  min_instances: 1
-                  default_instances: 1
-
     syndicate:
       type: tosca.nodes.Service
       capabilities:
@@ -788,3 +769,893 @@ topology_template:
                   max_instances: 25
                   min_instances: 1
                   default_instances: 1
+# Nodes
+    node37.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node39.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node41.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node43.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node45.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node49.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node51.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node52.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node54.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node55.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node57.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node59.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node65.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node66.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node67.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node68.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node69.princeton.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: princeton
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node2.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node3.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node5.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node6.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node7.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node8.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node9.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node10.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node11.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node12.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node13.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node14.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node15.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node16.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node17.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node18.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node19.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node20.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node21.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node22.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node23.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node24.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node25.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node26.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node27.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node28.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node29.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node30.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node31.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node32.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node33.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node34.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node35.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node37.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node38.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node39.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node40.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node41.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node42.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node43.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node44.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node45.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node46.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node47.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node48.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node49.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node50.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node51.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node52.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node54.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node55.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node56.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node57.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node58.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node59.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node60.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node61.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node62.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node63.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node64.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node67.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node68.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node69.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment
+
+
+    node70.stanford.vicci.org:
+      type: tosca.nodes.Node
+      requirements:
+        - site:
+            node: stanford
+            relationship: tosca.relationships.MemberOfSite
+        - deployment:
+            node: campus
+            relationship: tosca.relationships.MemberOfDeployment

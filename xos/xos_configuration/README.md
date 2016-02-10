@@ -1,16 +1,16 @@
 # Managing Configurations
 
-XOS comes with several pre-configured envirnments. The main available configurations are:
+XOS comes with several pre-configured environments. The main available configurations are:
 
 - Frontend Only
-- - CORD
-Every configurations come with different settings and different features, from GUI elements to Services.
+- CORD
+Every configuration comes with different settings and different features, from GUI elements to Services.
 
-__NOTE: in this folder files should not be added. They will broke the configuration system.__
+__NOTE: files should not be added by hand to this folder. They will break the configuration system.__
 
 ## Basic configuration
 
-A common configuration file is saved in `xos/configurations/common/xos_common_config`. In this file are stored all the common configurations for XOS.
+A common configuration file is saved in `xos/configurations/common/xos_common_config`. This file stores all the common configurations for XOS.
 
 This is the base config:
 ``
@@ -66,16 +66,16 @@ branding_icon=/static/logo.png
 
 ### How it works
 
-In some environment some changes to the configuration are needed, to achieve this XOS reads configurations from a `xos/xos_configuration`.
+In some environments changes to the configuration are needed. To achieve this, XOS reads configurations from a `xos/xos_configuration`.
 
-All the configuration files in this folder will be parsed with [ConfigParser](https://docs.python.org/2/library/configparser.html).
+All the configuration files in this folder are parsed with [ConfigParser](https://docs.python.org/2/library/configparser.html).
 
-### Exetending a configuration
+### Extending a configuration
 
 _An example is available in the CORD config_
 
 These are the basic step to extend a configuration. 
-_From now we'll use `myConf` as placeholder for the current configuration._
+_The following uses `myConf` as a placeholder for the current configuration._
 
 **Local Config**
 

@@ -19,5 +19,7 @@ xos:
     links:
         - xos_db
     volumes:
-      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-      - ../../core/xoslib:/opt/xos/core/xoslib:ro
+      - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
+      - ../../core/xoslib:/opt/xos/core/xoslib
+      - ../../core/static:/opt/xos/core/static
+      - ../../templates/admin:/opt/xos/templates/admin

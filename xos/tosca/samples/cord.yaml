@@ -70,8 +70,19 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
 
-    # Now let's add a subscriber
+    # Let's add a user who can be administrator of the household
+    johndoe@myhouse.com:
+      type: tosca.nodes.User
+      properties:
+          password: letmein
+          firstname: john
+          lastname: doe
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
 
+    # Now let's add a subscriber
     My House:
        type: tosca.nodes.CORDSubscriber
        properties:
@@ -80,6 +91,10 @@ topology_template:
            cdn_enable: true
            url_filter_enable: true
            url_filter_level: R
+       requirements:
+          - house_admin:
+              node: johndoe@myhouse.com
+              relationship: tosca.relationships.AdminPrivilege
 
     Mom's PC:
        type: tosca.nodes.CORDUser
@@ -134,6 +149,8 @@ topology_template:
             - subscriber:
                 node: My House
                 relationship: tosca.relationships.BelongsToSubscriber
+
+
 
 
 

@@ -1,0 +1,11 @@
+[LOGGING]
+level = DEBUG
+filename = sflow_pub_sub.log
+
+[WEB_SERVER]
+webserver_host = 0.0.0.0
+webserver_port = 33333
+
+[SFLOW]
+listening_ip_addr = 0.0.0.0
+listening_port = 6343

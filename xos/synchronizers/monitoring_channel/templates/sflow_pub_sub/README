@@ -1,0 +1,37 @@
+
+Subscribe-Publish Frame Work:
+1.Command to Install Flask Webserver frame work.
+  sudo pip install Flask
+
+  Along with flask we need the following packages:
+   msgpack
+   fnmatch
+   operator
+   logging
+   oslo_utils
+   ConfigParser
+ 
+2.Files: i.sub_main.py
+         ii.pubrecords.py
+         iii.pub_sub.conf
+
+3.Command to start the server:
+    #python sun_main.py
+4.Command for subscription:
+      i.app_id:Application ID,should be unique.
+      ii.target:
+           Presently only udp is supported.
+           a.udp:<ip:portno>
+           b.kafka:<kafkaip:kafkaport>
+      iii.sub_info:Sunscription notifications.ex:cpu_util,cpu_*
+      iv.query:
+         Below information need to provide as part of query.
+         a.field:fileds like user id ,porject id etc.,
+         b.op:"eq","gt","lt" etc.,
+         c.value:value of the fileds.
+     Example:
+  		 curl -i -H "Content-Type: application/json" -X SUB -d '{"app_id":"10","target":"udp://10.11.10.1:5006","sub_info":"cpu_util","query":[{"field":"user_id","op":"eq","value":"e1271a86bd4e413c87248baf2e5f01e0"},{"field":"project_id","op":"eq","value":"b1a3bf16d2014b47be9aefea88087318"},{"field":"resource_id","op":"eq","value":"658cd03f-d0f0-4f55-9f48-39e7222a8646"}]}' -L http://10.11.10.1:4455/subscribe
+
+5.Command for unsunscription:
+    For unsubcription only appid will be needed.
+    curl -i -H "Content-Type: application/json" -X UNSUB -d '{"app_id":"10"}' http://10.11.10.1:4455/unsubscribe

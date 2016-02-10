@@ -34,22 +34,21 @@ class SyncControllerNetworks(OpenStackSyncStep):
         cidr = '%d.%d.%d.%d/24'%(a,b,c,d)
         return cidr
 
-    def alloc_gateway(self, uuid):
-        # 16 bits only
-        uuid_masked = uuid & 0xffff
-        a = 10
-        b = uuid_masked >> 8
-        c = uuid_masked & 0xff
-        d = 1
-
-        gateway = '%d.%d.%d.%d'%(a,b,c,d)
-        return gateway
-
+    def alloc_gateway(self, subnet):
+        parts = subnet.split(".")
+        if len(parts)!=4:
+            raise Exception("Invalid subnet %s" % subnet)
+        return ".".join(parts[:3]) + ".1"
 
     def save_controller_network(self, controller_network):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
-        cidr = self.alloc_subnet(controller_network.pk)
+        if controller_network.subnet and controller_network.subnet.strip():
+            # If a subnet is already specified (pass in by the creator), then
+            # use that rather than auto-generating one.
+            cidr = controller_network.subnet.strip()
+        else:
+            cidr = self.alloc_subnet(controller_network.pk)
         self.cidr=cidr
         slice = controller_network.network.owner
 
@@ -63,9 +62,9 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'subnet_name':subnet_name,
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
-                    'gateway':self.alloc_gateway(controller_network.pk),
+                    'gateway':self.alloc_gateway(cidr),
                     'use_vtn':getattr(Config(), "networking_use_vtn", False),
-                    'delete':False	
+                    'delete':False
                     }
         return network_fields
 
@@ -81,9 +80,13 @@ class SyncControllerNetworks(OpenStackSyncStep):
 
     def map_sync_inputs(self, controller_network):
         # XXX This check should really be made from booleans, rather than using hardcoded network names
-        if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct']):
-            logger.info("skipping network controller %s because it is not private" % controller_network)
-            # We only sync private networks
+        #if (controller_network.network.template.name not in ['Private', 'Private-Indirect', 'Private-Direct', 'management_template'):
+        #    logger.info("skipping network controller %s because it is not private" % controller_network)
+        #    # We only sync private networks
+        #    return SyncStep.SYNC_WITHOUT_RUNNING
+
+        # hopefully a better approach than above
+        if (controller_network.network.template.shared_network_name or controller_network.network.template.shared_network_id):
             return SyncStep.SYNC_WITHOUT_RUNNING
         
         if not controller_network.controller.admin_user:

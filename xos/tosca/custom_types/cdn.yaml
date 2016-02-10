@@ -33,6 +33,26 @@ node_types:
             user:
                 type: tosca.capabilities.xos.CDNPrefix
 
+    tosca.nodes.HpcHealthCheck:
+        derived_from: tosca.nodes.Root
+
+        properties:
+            kind:
+                type: string
+                required: true
+                description: dns | http | nameserver
+            resource_name:
+                type: string
+                required: true
+                description: name of resource to query
+            result_contains:
+                type: string
+                required: false
+                description: soemthing to look for inside the result
+        capabilities:
+            healthcheck:
+                type: tosca.capabilities.xos.HpcHealthCheck
+
     tosca.relationships.MemberOfServiceProvider:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.ServiceProvider ]
@@ -55,6 +75,9 @@ node_types:
         derived_from: tosca.capabilities.Root
 
     tosca.capabilities.xos.OriginServer:
+        derived_from: tosca.capabilities.Root
+
+    tosca.capabilities.xos.HpcHealthCheck:
         derived_from: tosca.capabilities.Root
 
 
