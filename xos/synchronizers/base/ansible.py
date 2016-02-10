@@ -158,12 +158,12 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     private_key = opts["private_key"]
     baremetal_ssh = opts.get("baremetal_ssh",False)
     if baremetal_ssh:
-        # no instance_id or nat_ip for baremetal
+        # no instance_id or ssh_ip for baremetal
         # we never proxy to baremetal
         proxy_ssh = False
     else:
         instance_id = opts["instance_id"]
-        nat_ip = opts["nat_ip"]
+        ssh_ip = opts["ssh_ip"]
         try:
             proxy_ssh = Config().observer_proxy_ssh
         except:
@@ -195,7 +195,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
         f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
     else:
         # acb: Login user is hardcoded, this is not great
-        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (nat_ip, private_key_pathname))
+        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (ssh_ip, private_key_pathname))
     f.close()
 
     # SSH will complain if private key is world or group readable

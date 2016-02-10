@@ -205,7 +205,6 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         fields = self.get_extra_attributes_common(o)
 
-        fields["nat_ip"] = instance.get_ssh_ip()
         fields["config_fns"] = o.config_fns
         fields["early_rest_configs"] = o.early_rest_configs
         fields["component_configs"] = o.component_configs
