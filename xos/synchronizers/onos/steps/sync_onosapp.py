@@ -9,6 +9,7 @@ import re
 import json
 from django.db.models import F, Q
 from xos.config import Config
+from synchronizers.base.ansible import run_template
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
@@ -68,6 +69,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
     def is_no_container(self, o):
         return self.get_onos_service(o).no_container
+
+    def skip_ansible_fields(self, o):
+        return self.is_no_container(o)
 
     def get_files_dir(self, o):
         if not hasattr(Config(), "observer_steps_dir"):
