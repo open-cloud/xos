@@ -111,37 +111,60 @@ topology_template:
                   node: main_service_provider
                   relationship: tosca.relationships.MemberOfServiceProvider
 
-    downloads.onosproject.org:
-        type: tosca.nodes.CDNPrefix
-        requirements:
-             - content_provider:
-                   node: on_lab_content
-                   relationship: tosca.relationships.MemberOfContentProvider
-             - default_origin_server:
-                   node: http_downloads.onosproject.org
-                   relationship: tosca.relationships.DefaultOriginServer
-
+    # Create CDN prefix onlab.vicci.org
     onlab.vicci.org:
         type: tosca.nodes.CDNPrefix
         requirements:
              - content_provider:
                    node: on_lab_content
                    relationship: tosca.relationships.MemberOfContentProvider
+
+    http_onos-videos.s3.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Create origin server s3-us-west-1.amazonaws.com
+    http_s3-us-west-1.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Create origin server s3.amazonaws.com
+    http_s3.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Test Content Provider
+
+    testcp2:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    http_www.cs.arizona.edu:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: testcp2
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    test-cdn.opencloud.us:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: testcp2
+                   relationship: tosca.relationships.MemberOfContentProvider
+
              - default_origin_server:
-                   node: http_onlab.vicci.org
+                   node: http_www.cs.arizona.edu
                    relationship: tosca.relationships.DefaultOriginServer
-
-    http_downloads.onosproject.org:
-        type: tosca.nodes.OriginServer
-        requirements:
-             - content_provider:
-                   node: on_lab_content
-                   relationship: tosca.relationships.MemberOfContentProvider
-
-    http_onlab.vicci.org:
-        type: tosca.nodes.OriginServer
-        requirements:
-             - content_provider:
-                   node: on_lab_content
-                   relationship: tosca.relationships.MemberOfContentProvider
-
