@@ -100,7 +100,7 @@ class VPNTenantForm(forms.ModelForm):
             self.instance.script = str(time.time()) + ".vpn"
 
         if (not self.instance.ca_crt):
-            self.generate_ca_crt()
+            self.instance.ca_crt = self.generate_ca_crt()
 
         if ((not self.instance.server_crt) or (not self.instance.server_key)):
             self.generate_server_credentials()
