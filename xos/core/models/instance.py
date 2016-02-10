@@ -101,6 +101,9 @@ class Instance(PlCoreBase):
     volumes = models.TextField(null=True, blank=True, help_text="Comma-separated list of directories to expose to parent context")
     parent = models.ForeignKey("Instance", null=True, blank=True, help_text="Parent Instance for containers nested inside of VMs")
 
+    def get_controller (self):
+        return node.site_deployment.controller
+
     def __unicode__(self):
         if self.name and Slice.objects.filter(id=self.slice_id) and (self.name != self.slice.name):
             # NOTE: The weird check on self.slice_id was due to a problem when
