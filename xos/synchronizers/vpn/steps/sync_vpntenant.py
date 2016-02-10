@@ -44,11 +44,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
 
     def create_client_script(self, tenant):
         script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
-        # write the key portion
-        script.write("printf \"")
-        for line in tenant.server_key.splitlines():
-            script.write(line + r"\n")
-        script.write("\" > static.key\n")
         # write the configuration portion
         script.write("printf \"")
         for line in self.generate_client_conf(tenant).splitlines():
