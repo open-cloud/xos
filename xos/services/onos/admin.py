@@ -19,16 +19,28 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin.utils import quote
 
 class ONOSServiceForm(forms.ModelForm):
-    use_external_host = forms.CharField(required=False)
+    rest_hostname = forms.CharField(required=False)
+    rest_port = forms.CharField(required=False)
+    no_container = forms.BooleanField(required=False)
+#    external_hostname = forms.CharField(required=False)
+#    external_container = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (ONOSServiceForm,self ).__init__(*args,**kwargs)
         if self.instance:
             # fields for the attributes
-            self.fields['use_external_host'].initial = self.instance.use_external_host
+            self.fields['rest_hostname'].initial = self.instance.rest_hostname
+            self.fields['rest_port'].initial = self.instance.rest_port
+            self.fields['no_container'].initial = self.instance.no_container
+#            self.fields['external_hostname'].initial = self.instance.external_hostname
+#            self.fields['external_container'].initial = self.instance.external_hostname
 
     def save(self, commit=True):
-        self.instance.use_external_host = self.cleaned_data.get("use_external_host")
+        self.instance.rest_hostname = self.cleaned_data.get("rest_hostname")
+        self.instance.rest_port = self.cleaned_data.get("rest_port")
+        self.instance.no_container = self.cleaned_data.get("no_container")
+#        self.instance.external_hostname = self.cleaned_data.get("external_hostname")
+#        self.instance.external_container = self.cleaned_data.get("external_container")
         return super(ONOSServiceForm, self).save(commit=commit)
 
     class Meta:
@@ -40,7 +52,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "ONOS Services"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url", "use_external_host" ], 'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url", "rest_hostname", "rest_port", "no_container" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
     form = ONOSServiceForm
