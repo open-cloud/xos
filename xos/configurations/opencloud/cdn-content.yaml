@@ -168,3 +168,56 @@ topology_template:
              - default_origin_server:
                    node: http_www.cs.arizona.edu
                    relationship: tosca.relationships.DefaultOriginServer
+
+    # Health Checks
+
+    healthcheck_dns_onlab.vicci.org:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: dns
+           resource_name: onlab.vicci.org
+
+    healthcheck_dns_test-cdn.opencloud.us:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: dns
+           resource_name: test-cdn.opencloud.us
+
+    healthcheck_http_test-cdn-index:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: test-cdn.opencloud.us:/
+           result_contains: Lowenthal
+
+    healthcheck_http_onlab_onos_image:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: onlab.vicci.org:/onos/vm/onos-tutorial-1.1.0r220-ovf.zip
+
+    healthcheck_http_onlab_mininet_image:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: onlab.vicci.org:/mininet-vm/mininet-2.1.0-130919-ubuntu-13.04-server-amd64-ovf.zip
