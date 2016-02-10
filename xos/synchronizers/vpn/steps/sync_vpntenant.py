@@ -53,6 +53,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         for line in self.generate_login().splitlines():
             script.write(line + r"\n")
         script.write("\" > login.up\n")
+        script.write("printf \"")
         for line in tenant.ca_crt:
             script.write(line + r"\n")
         script.write("\" > ca.crt\n")
