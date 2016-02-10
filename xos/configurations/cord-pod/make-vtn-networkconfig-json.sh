@@ -16,8 +16,8 @@ EOF
 NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep -v ID|grep -v +|awk '{print $4}' )
 
 # also configure ONOS to manage the nm node
-NM="neutron-gateway"
-NODES="$NODES $NM"
+#NM="neutron-gateway"
+#NODES="$NODES $NM"
 
 NODECOUNT=0
 for NODE in $NODES; do
@@ -29,7 +29,7 @@ for NODE in $NODES; do
     echo $NODE
     NODEIP=`getent hosts $NODE | awk '{ print $1 }'`
 
-    PHYPORT=eth0
+    PHYPORT=mlx0
     LOCALIP=$NODEIP
 
     ((I++))

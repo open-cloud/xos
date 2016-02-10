@@ -1,6 +1,6 @@
 import os
 import base64
-from syncstep import SyncStep
+from synchronizers.base.syncstep import SyncStep
 
 class OpenStackSyncStep(SyncStep):
     """ XOS Sync step for copying data to OpenStack 
