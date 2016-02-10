@@ -182,7 +182,7 @@ class VPNTenant(TenantWithContainer):
         return self.get_attribute("dh", self.default_attributes['dh'])
 
     @dh.setter
-    def server_key(self, value):
+    def dh(self, value):
         self.set_attribute("dh", value)
 
 
