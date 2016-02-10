@@ -151,6 +151,15 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            rest_hostname:
+                type: string
+                required: false
+            rest_port:
+                type: string
+                required: false
+            no_container:
+                type: boolean
+                default: false
 
 
     tosca.nodes.ONOSApp:
