@@ -109,17 +109,17 @@ class VPNTenantForm(forms.ModelForm):
 
     def generate_ca_crt(self):
         """str: Generates the ca cert by reading from the ca file"""
-        with open("/opt/openvpn/keys/ca.crt") as crt:
+        with open("/opt/openvpn/easyrsa3/pki/ca.crt") as crt:
             return crt.readlines()
 
     def generate_server_credentials(self):
-        with open("/opt/openvpn/keys/server.crt") as crt:
+        with open("/opt/openvpn/easyrsa3/pki/issued/server.crt") as crt:
             self.instance.server_crt = crt.readlines()
 
-        with open("/opt/openvpn/keys/server.key") as key:
+        with open("/opt/openvpn/easyrsa3/pki/private/server.key") as key:
             self.instance.server_key = key.readlines()
 
-        with open("/opt/openvpn/keys/dh2048.pem") as dh:
+        with open("/opt/openvpn/easyrsa3/pki/dh.pem") as dh:
             self.instance.dh = dh.readlines()
 
     class Meta:
