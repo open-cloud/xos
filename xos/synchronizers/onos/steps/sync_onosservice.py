@@ -58,14 +58,18 @@ class SyncONOSService(SyncInstanceUsingAnsible):
         fields["ONOS_container"] = "ONOS"
         return fields
 
+    def sync_record(self, o):
+        if o.no_container:
+            logger.info("no work to do for onos service, because o.no_container is set")
+            o.save()
+        else:
+            super(SyncONOSService, self).sync_record(o)
+
     def sync_fields(self, o, fields):
         # the super causes the playbook to be run
         super(SyncONOSService, self).sync_fields(o, fields)
 
     def run_playbook(self, o, fields):
-        if o.no_container:
-            # If no_container is selected, then we have nothing to do
-            return
         instance = self.get_instance(o)
         if (instance.isolation=="container"):
             # If the instance is already a container, then we don't need to
