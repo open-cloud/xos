@@ -554,6 +554,22 @@ class TenantWithContainer(Tenant):
         self.set_attribute("instance_id", value)
 
     @property
+    def external_hostname(self):
+        return self.get_attribute("external_hostname", "")
+
+    @external_hostname.setter
+    def external_hostname(self, value):
+        self.set_attribute("external_hostname", value)
+
+    @property
+    def external_container(self):
+        return self.get_attribute("external_container", "")
+
+    @external_container.setter
+    def external_container(self, value):
+        self.set_attribute("external_container", value)
+
+    @property
     def creator(self):
         from core.models import User
         if getattr(self, "cached_creator", None):

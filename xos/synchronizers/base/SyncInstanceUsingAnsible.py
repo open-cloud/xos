@@ -44,6 +44,14 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         return o.instance
 
+    def get_external_sync(self, o):
+        hostname = getattr(o, "external_hostname", None)
+        container = getattr(o, "external_container", None)
+        if hostname and container:
+            return (hostname, container)
+        else:
+            return None
+
     def run_playbook(self, o, fields, template_name=None):
         if not template_name:
             template_name = self.template_name
@@ -142,18 +150,28 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         self.prepare_record(o)
 
-        instance = self.get_instance(o)
-
-        if isinstance(instance, basestring):
+        if self.get_external_sync(o):
             # sync to some external host
 
-            # XXX - this probably needs more work...
+            # UNTESTED
 
-            fields = { "hostname": instance,
-                       "instance_id": "ubuntu",     # this is the username to log into
-                       "private_key": service.key,
+            (hostname, container_name) = self.get_external_sync(o)
+            fields = { "hostname": hostname,
+                       "baremetal_ssh": True,
+                       "instance_name": "rootcontext",
+                       "username": "root",
+                       "container_name": container_name
                      }
+            key_name = self.get_node_key(node)
+            if not os.path.exists(key_name):
+                raise Exception("Node key %s does not exist" % key_name)
+
+            key = file(key_name).read()
+
+            fields["private_key"] = key
+            # TO DO: Ceilometer stuff
         else:
+            instance = self.get_instance(o)
             # sync to an XOS instance
             if not instance:
                 self.defer_sync(o, "waiting on instance")
@@ -165,7 +183,7 @@ class SyncInstanceUsingAnsible(SyncStep):
 
             fields = self.get_ansible_fields(instance)
 
-            fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
+        fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.

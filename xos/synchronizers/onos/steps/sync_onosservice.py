@@ -43,9 +43,6 @@ class SyncONOSService(SyncInstanceUsingAnsible):
 
         serv = o
 
-        if serv.use_external_host:
-            return serv.use_external_host
-
         if serv.slices.exists():
             slice = serv.slices.all()[0]
             if slice.instances.exists():
@@ -66,6 +63,9 @@ class SyncONOSService(SyncInstanceUsingAnsible):
         super(SyncONOSService, self).sync_fields(o, fields)
 
     def run_playbook(self, o, fields):
+        if o.no_container:
+            # If no_container is selected, then we have nothing to do
+            return
         instance = self.get_instance(o)
         if (instance.isolation=="container"):
             # If the instance is already a container, then we don't need to
