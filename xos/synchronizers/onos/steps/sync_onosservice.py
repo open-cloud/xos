@@ -54,7 +54,7 @@ class SyncONOSService(SyncInstanceUsingAnsible):
         fields={}
         fields["instance_hostname"] = self.get_instance(o).instance_name.replace("_","-")
         fields["appname"] = o.name
-        fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
+        fields["ssh_ip"] = self.get_instance(o).get_ssh_ip()
         fields["ONOS_container"] = "ONOS"
         return fields
 

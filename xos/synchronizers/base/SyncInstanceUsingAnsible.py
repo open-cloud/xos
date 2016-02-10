@@ -94,6 +94,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "hostname": instance.node.name,
                        "instance_id": instance.instance_id,
                        "username": "ubuntu",
+                       "ssh_ip": instance.get_ssh_ip(),
                      }
             key_name = self.service_key_name
         elif (instance.isolation == "container"):
@@ -105,6 +106,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "instance_name": "rootcontext",
                        "username": "root",
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
+                       # ssh_ip is not used for container-on-metal
                      }
             key_name = self.get_node_key(node)
         else:
@@ -121,7 +123,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "instance_name": instance.parent.name,
                        "instance_id": instance.parent.instance_id,
                        "username": "ubuntu",
-                       "nat_ip": instance.parent.get_ssh_ip(),
+                       "ssh_ip": instance.parent.get_ssh_ip(),
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                          }
             key_name = instance.parent.slice.service.private_key_fn
