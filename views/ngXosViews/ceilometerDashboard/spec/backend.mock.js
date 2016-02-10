@@ -2,46 +2,23 @@
 (function () {
 
   const meters = [
-    // service_1
-    //  - slice_1
-    //    - resource_1
-    // service_2
-    //  - slice_2
-    //    - resource_2
-    //    - resource_3
-    //  - slice_3
-    //    - resource_4
     {
-      service: 'service_1',
-      slice: 'slice_1',
-      resource_name: 'resource_1',
-      resource_id: 'resource_id_1',
-      name: 'instance_1',
-      unit: 'instance'
+      service: 'service-a',
+      slice: 'slice-a-1',
+      name: 'network.outgoing.packets.rate',
+      resource_name: 'resource-1'
     },
     {
-      service: 'service_2',
-      slice: 'slice_2',
-      resource_name: 'resource_2',
-      resource_id: 'resource_id_2',
-      name: 'instance_2',
-      unit: 'instance'
+      service: 'service-a',
+      slice: 'slice-a-1',
+      name: 'network.incoming.packets.rate',
+      resource_name: 'resource-1'
     },
     {
-      service: 'service_2',
-      slice: 'slice_2',
-      resource_name: 'resource_3',
-      resource_id: 'resource_id_3',
-      name: 'instance_2',
-      unit: 'instance'
-    },
-    {
-      service: 'service_2',
-      slice: 'slice_3',
-      resource_name: 'resource_4',
-      resource_id: 'resource_id_4',
-      name: 'instance_3',
-      unit: 'instance'
+      service: 'service-a',
+      slice: 'slice-a-1',
+      name: 'network.incoming.packets.rate',
+      resource_name: 'resource-2'
     }
   ];
 
@@ -90,9 +67,39 @@
     }
   ];
 
+  const mapping = [
+    {
+      service: 'service-a',
+      slice: [
+        {
+          project_id: 'id-a-1',
+          slice: 'slice-a-1'
+        },
+        {
+          project_id: 'id-a-2',
+          slice: 'slice-a-2'
+        }
+      ]
+    },
+    {
+      service: 'service-b',
+      slice: [
+        {
+          project_id: 'id-b-1',
+          slice: 'slice-b-1'
+        },
+        {
+          project_id: 'id-b-2',
+          slice: 'slice-b-2'
+        }
+      ]
+    }
+  ]
+
   angular.module('xos.ceilometerDashboard')
   .run(($httpBackend) => {
     $httpBackend.whenGET(/metersamples/).respond(samples);
+    $httpBackend.whenGET(/xos-slice-service-mapping/).respond(mapping);
     $httpBackend.whenGET(/meters/).respond(meters);
   });
 })();

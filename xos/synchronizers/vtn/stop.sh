@@ -1,1 +1,1 @@
-pkill -9 -f vtn-observer.py
+pkill -9 -f vtn-synchronizer.py

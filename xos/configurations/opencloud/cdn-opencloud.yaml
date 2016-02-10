@@ -1,0 +1,77 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/cdn.yaml
+
+topology_template:
+  node_templates:
+    HyperCache:
+      type: tosca.nodes.CDNService
+      description: Content Delivery Network
+      properties:
+          view_url: /admin/hpc/hpcservice/$id$/
+          icon_url: /static/primarycons_blue/network.png
+
+    onlab:
+      type: tosca.nodes.Site
+      properties:
+          # Assume the onlab site exists, and don't touch it
+          no-create: true
+          no-update: true
+          no-delete: true
+
+    onlab_cmi:
+      description: CMI Slice
+      type: tosca.nodes.Slice
+      properties:
+          exposed_ports: tcp 8003, tcp 8004, tcp 8140
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_hpc:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      properties:
+          exposed_ports: tcp 2120:2128, tcp 3200:3209, tcp 8006, tcp 8009, tcp 8015, tcp 80
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_dnsredir:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      properties:
+          exposed_ports: udp 53541, tcp 8016
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+
+    onlab_dnsdemux:
+      description: HyperCache Slice
+      type: tosca.nodes.Slice
+      properties:
+          exposed_ports: udp 53, tcp 8017
+      requirements:
+          - cdn_service:
+              node: HyperCache
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: onlab
+              relationship: tosca.relationships.MemberOfSite
+

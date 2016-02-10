@@ -7,7 +7,8 @@
     "test": "karma start",
     "apigen": "node xos-resource-generator.js",
     "swagger": "node xos-swagger-def.js",
-    "apidoc": "jsdoc api/ng-xos.js api/ng-xoslib.js api/ng-hpcapi.js -d api/docs"
+    "apidoc": "jsdoc api/ng-xos.js api/ng-xoslib.js api/ng-hpcapi.js -d api/docs",
+    "build": "gulp vendor"
   },
   "author": "Matteo Scandolo",
   "license": "ISC",

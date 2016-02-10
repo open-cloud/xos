@@ -1,0 +1,223 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/cdn.yaml
+
+topology_template:
+  node_templates:
+    HyperCache:
+      type: tosca.nodes.CDNService
+      properties:
+          # HyperCache service must already exist before running this recipe
+          no-create: true
+          no-delete: true
+          no-update: true
+
+    # Setup the CDN Service Provider
+
+    main_service_provider:
+        type: tosca.nodes.ServiceProvider
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+
+    # Wall Street Journal Content Provider
+
+    wsj_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    www.wsj.com:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_www.wsj.com
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    si.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_si.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    s.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_s.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    ore.wsj.net:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+             - default_origin_server:
+                   node: http_ore.wsj.net
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    http_www.wsj.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_si.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_s.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_ore.wsj.net:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: wsj_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # ON.Lab content provider
+
+    on_lab_content:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    # Create CDN prefix onlab.vicci.org
+    onlab.vicci.org:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    http_onos-videos.s3.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Create origin server s3-us-west-1.amazonaws.com
+    http_s3-us-west-1.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Create origin server s3.amazonaws.com
+    http_s3.amazonaws.com:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: on_lab_content
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    # Test Content Provider
+
+    testcp2:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+    http_www.cs.arizona.edu:
+        type: tosca.nodes.OriginServer
+        requirements:
+             - content_provider:
+                   node: testcp2
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+    test-cdn.opencloud.us:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: testcp2
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+             - default_origin_server:
+                   node: http_www.cs.arizona.edu
+                   relationship: tosca.relationships.DefaultOriginServer
+
+    # Health Checks
+
+    healthcheck_dns_onlab.vicci.org:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: dns
+           resource_name: onlab.vicci.org
+
+    healthcheck_dns_test-cdn.opencloud.us:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: dns
+           resource_name: test-cdn.opencloud.us
+
+    healthcheck_http_test-cdn-index:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: test-cdn.opencloud.us:/
+           result_contains: Lowenthal
+
+    healthcheck_http_onlab_onos_image:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: onlab.vicci.org:/onos/vm/onos-tutorial-1.1.0r220-ovf.zip
+
+    healthcheck_http_onlab_mininet_image:
+        type: tosca.nodes.HpcHealthCheck
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+        properties:
+           kind: http
+           resource_name: onlab.vicci.org:/mininet-vm/mininet-2.1.0-130919-ubuntu-13.04-server-amd64-ovf.zip

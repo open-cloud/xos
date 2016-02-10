@@ -76,6 +76,24 @@ class XOSUser(XOSResource):
 
         self.info("Created User '%s'" % (str(user), ))
 
+    def update(self, obj):
+        xos_args = self.get_xos_args()
+
+        password = None
+        if "password" in xos_args:
+            # password needs to be set with set_password function
+            password = xos_args["password"]
+            del xos_args["password"]
+
+        for (k,v) in xos_args.items():
+            setattr(obj, k, v)
+
+        if password:
+            obj.set_password(password)
+
+        self.postprocess(obj)
+        obj.save()
+
     def delete(self, obj):
         if obj.slices.exists():
             self.info("User %s has active slices; skipping delete" % obj.name)

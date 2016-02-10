@@ -10,7 +10,7 @@ from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
-from services.ceilometer.models import MonitoringChannel
+from services.ceilometer.models import CeilometerService, MonitoringChannel
 from xos.logger import Logger, logging
 
 parentdir = os.path.join(os.path.dirname(__file__),"..")
@@ -42,6 +42,13 @@ class SyncMonitoringChannel(SyncInstanceUsingAnsible):
         #   2) Ceilometer API service endpoint URL if running externally
         #   3) Credentials to access Ceilometer API service
 
+        ceilometer_services = CeilometerService.get_service_objects().filter(id=o.provider_service.id)
+        if not ceilometer_services:
+            raise "No associated Ceilometer service"
+        ceilometer_service = ceilometer_services[0]
+        ceilometer_pub_sub_url = ceilometer_service.ceilometer_pub_sub_url
+        if not ceilometer_pub_sub_url:
+            ceilometer_pub_sub_url = ''
         instance = self.get_instance(o)
 
         try:
@@ -55,6 +62,7 @@ class SyncMonitoringChannel(SyncInstanceUsingAnsible):
                   "admin_user":instance.controller.admin_user,
                   "admin_password":instance.controller.admin_password,
                   "admin_tenant":instance.controller.admin_tenant,
+                  "ceilometer_pub_sub_url": ceilometer_pub_sub_url,
                   "full_setup": full_setup}
 
         return fields

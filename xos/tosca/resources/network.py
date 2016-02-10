@@ -39,6 +39,10 @@ class XOSNetwork(XOSResource):
             # we have to manually fill in some defaults.
             args["permit_all_slices"] = True
 
+        cidr = self.get_property_default("cidr", None)
+        if cidr:
+            args["subnet"] = cidr
+
         return args
 
     def postprocess(self, obj):

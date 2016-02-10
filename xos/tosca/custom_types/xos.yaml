@@ -29,6 +29,18 @@ node_types:
             service:
                 type: tosca.capabilities.xos.Service
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             kind:
                 type: string
                 default: generic
@@ -93,6 +105,18 @@ node_types:
             service:
                 type: tosca.capabilities.xos.Service
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             kind:
                 type: string
                 default: generic
@@ -143,12 +167,6 @@ node_types:
                 required: false
                 description: Service specific ID opaque to XOS but meaningful to service
             dependencies:
-                type: string
-                required: false
-            install_dependencies:
-                type: string
-                required: false
-            component_config:
                 type: string
                 required: false
 
@@ -243,6 +261,18 @@ node_types:
             service:
                 type: tosca.capabilities.xos.Service
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             kind:
                 type: string
                 default: generic
@@ -289,6 +319,18 @@ node_types:
             service:
                 type: tosca.capabilities.xos.Service
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             kind:
                 type: string
                 default: generic
@@ -335,6 +377,18 @@ node_types:
             service:
                 type: tosca.capabilities.xos.Service
         properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             kind:
                 type: string
                 default: generic
@@ -866,6 +920,10 @@ node_types:
                 type: string
                 required: false
                 description: type of networking to use for this slice
+            exposed_ports:
+                type: string
+                required: false
+                description: comma-separated list of protocol _space_ port that represent ports the slice should expose
 
     tosca.nodes.Node:
         derived_from: tosca.nodes.Root

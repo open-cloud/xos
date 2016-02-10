@@ -119,6 +119,22 @@ class PlModelMixIn(object):
             validators[field.name] = l
         return validators
 
+    def get_backend_register(self, k, default=None):
+        try:
+            return json.loads(self.backend_register).get(k, default)
+        except AttributeError:
+            return default
+
+    def set_backend_register(self, k, v):
+        br = {}
+        try:
+            br=json.loads(self.backend_register)
+        except AttributeError:
+            br={}
+
+        br[k] = v
+        self.backend_register = json.dumps(br)
+
     def get_backend_details(self):
         try:
             scratchpad = json.loads(self.backend_register)
