@@ -46,8 +46,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         serv = self.get_onos_service(o)
 
-        if serv.use_external_host:
-            return serv.use_external_host
+        if serv.no_container:
+            raise Exception("get_instance() was called on a service that was marked no_container")
 
         if serv.slices.exists():
             slice = serv.slices.all()[0]
@@ -65,6 +65,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             return None
 
         return onoses[0]
+
+    def is_no_container(self, o):
+        return self.get_onos_service(o).no_container
 
     def get_files_dir(self, o):
         if not hasattr(Config(), "observer_steps_dir"):
@@ -126,7 +129,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         ordered_attrs = attrs.keys()
 
         o.early_rest_configs=[]
-        if ("cordvtn" in o.dependencies):
+        if ("cordvtn" in o.dependencies) and (not self.is_no_container(o)):
             # For VTN, since it's running in a docker host container, we need
             # to make sure it configures the cluster using the right ip addresses.
             # NOTE: rest_onos/v1/cluster/configuration/ will reboot the cluster and
@@ -172,21 +175,36 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     def prepare_record(self, o):
         self.write_configs(o)
 
-    def get_extra_attributes(self, o):
-        instance = self.get_instance(o)
+    def get_extra_attributes_common(self, o):
+        fields = {}
 
-        fields={}
+        # These are attributes that are not dependent on Instance. For example,
+        # REST API stuff.
+
+        onos = self.get_onos_service(o)
+
         fields["files_dir"] = o.files_dir
         fields["appname"] = o.name
-        fields["nat_ip"] = instance.get_ssh_ip()
-        fields["config_fns"] = o.config_fns
         fields["rest_configs"] = o.rest_configs
-        fields["early_rest_configs"] = o.early_rest_configs
-        fields["component_configs"] = o.component_configs
+        fields["rest_hostname"] = onos.rest_hostname
+        fields["rest_port"] = onos.rest_port
+
         if o.dependencies:
             fields["dependencies"] = [x.strip() for x in o.dependencies.split(",")]
         else:
             fields["dependencies"] = []
+
+        return fields
+
+    def get_extra_attributes_full(self, o):
+        instance = self.get_instance(o)
+
+        fields = self.get_extra_attributes_common(o)
+
+        fields["nat_ip"] = instance.get_ssh_ip()
+        fields["config_fns"] = o.config_fns
+        fields["early_rest_configs"] = o.early_rest_configs
+        fields["component_configs"] = o.component_configs
 
         if o.install_dependencies:
             fields["install_dependencies"] = [x.strip() for x in o.install_dependencies.split(",")]
@@ -199,12 +217,23 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             fields["ONOS_container"] = "ONOS"
         return fields
 
+    def get_extra_attributes(self, o):
+        if self.is_no_container(o):
+            return self.get_extra_attributes_common(o)
+        else:
+            return self.get_extra_attributes_full(o)
+
     def sync_fields(self, o, fields):
         # the super causes the playbook to be run
         super(SyncONOSApp, self).sync_fields(o, fields)
 
     def run_playbook(self, o, fields):
-        super(SyncONOSApp, self).run_playbook(o, fields)
+        if self.is_no_container(o):
+            # There is no machine to SSH to, so use the synchronizer's
+            # run_template method directly.
+            run_template("sync_onosapp_nocontainer.yaml", fields)
+        else:
+            super(SyncONOSApp, self).run_playbook(o, fields)
 
     def delete_record(self, m):
         pass
