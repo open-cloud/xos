@@ -1,0 +1,6 @@
+Notes on setup
+
+Requirements:
+* admin-openrc.sh: Admin credentials for your OpenStack cloud
+* id_rsa[.pub]: Keypair for use by the various services
+* node_key: Private key that allows root login to the compute nodes 
