@@ -3,6 +3,7 @@ from six.moves import urllib
 import urllib2
 import pytz
 import datetime
+import time
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -29,17 +30,23 @@ def getTenantCeilometerProxyURL(user):
     if not monitoring_channel:
         raise XOSMissingField("Monitoring channel is missing for this tenant...Create one and invoke this REST API")
     #TODO: Wait until URL is completely UP
+    MAX_ATTEMPTS = 5
+    attempts = 0
     while True:
         try:
-            response = urllib2.urlopen(monitoring_channel.ceilometer_url,timeout=1)
+            response = urllib2.urlopen(monitoring_channel.ceilometer_url)
             break
         except urllib2.HTTPError, e:
-            logger.info('SRIKANTH: HTTP error %(reason)s' % {'reason':e.reason})
+            logger.info('HTTP error %(reason)s' % {'reason':e.reason})
             break
         except urllib2.URLError, e:
-            logger.info('SRIKANTH: URL error %(reason)s' % {'reason':e.reason})
+            attempts += 1
+            if attempts >= MAX_ATTEMPTS:
+                raise XOSServiceUnavailable("Ceilometer channel is not ready yet...Try again later")
+            logger.info('URL error %(reason)s' % {'reason':e.reason})
+            time.sleep(1)
             pass
-    logger.info("SRIKANTH: Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
+    logger.info("Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
     return monitoring_channel.ceilometer_url
 
 def getTenantControllerTenantMap(user, slice=None):
