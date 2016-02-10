@@ -34,11 +34,20 @@ def parse_output(msg):
         if (l.startswith(magic_str)):
             w = len(magic_str)
             str = l[w:]
+
+            # handle ok: [127.0.0.1] => (item=org.onosproject.driver) => {...
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
             d = json.loads(str)
             results.append(d)
         elif (l.startswith(magic_str2)):
             w = len(magic_str2)
             str = l[w:]
+
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
             d = json.loads(str)
             results.append(d)
 
