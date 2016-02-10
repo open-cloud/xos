@@ -55,7 +55,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         script.write("\" > login.up\n")
         script.write("printf \"")
         for line in tenant.ca_crt:
-            script.write(line + r"\n")
+            script.write(line.rstrip() + r"\n")
         script.write("\" > ca.crt\n")
         # make sure openvpn is installed
         script.write("apt-get update\n")
