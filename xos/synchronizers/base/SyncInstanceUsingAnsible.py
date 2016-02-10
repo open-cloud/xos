@@ -26,6 +26,12 @@ class SyncInstanceUsingAnsible(SyncStep):
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
 
+    def skip_ansible_fields(self, o):
+        # Return True if the instance processing and get_ansible_fields stuff
+        # should be skipped. This hook is primarily for the OnosApp
+        # sync step, so it can do its external REST API sync thing.
+        return False
+
     def defer_sync(self, o, reason):
         logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
@@ -150,38 +156,41 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         self.prepare_record(o)
 
-        if self.get_external_sync(o):
-            # sync to some external host
-
-            # UNTESTED
-
-            (hostname, container_name) = self.get_external_sync(o)
-            fields = { "hostname": hostname,
-                       "baremetal_ssh": True,
-                       "instance_name": "rootcontext",
-                       "username": "root",
-                       "container_name": container_name
-                     }
-            key_name = self.get_node_key(node)
-            if not os.path.exists(key_name):
-                raise Exception("Node key %s does not exist" % key_name)
-
-            key = file(key_name).read()
-
-            fields["private_key"] = key
-            # TO DO: Ceilometer stuff
+        if self.skip_ansible_fields(o):
+            fields = {}
         else:
-            instance = self.get_instance(o)
-            # sync to an XOS instance
-            if not instance:
-                self.defer_sync(o, "waiting on instance")
-                return
+            if self.get_external_sync(o):
+                # sync to some external host
 
-            if not instance.instance_name:
-                self.defer_sync(o, "waiting on instance.instance_name")
-                return
+                # UNTESTED
 
-            fields = self.get_ansible_fields(instance)
+                (hostname, container_name) = self.get_external_sync(o)
+                fields = { "hostname": hostname,
+                           "baremetal_ssh": True,
+                           "instance_name": "rootcontext",
+                           "username": "root",
+                           "container_name": container_name
+                         }
+                key_name = self.get_node_key(node)
+                if not os.path.exists(key_name):
+                    raise Exception("Node key %s does not exist" % key_name)
+
+                key = file(key_name).read()
+
+                fields["private_key"] = key
+                # TO DO: Ceilometer stuff
+            else:
+                instance = self.get_instance(o)
+                # sync to an XOS instance
+                if not instance:
+                    self.defer_sync(o, "waiting on instance")
+                    return
+
+                if not instance.instance_name:
+                    self.defer_sync(o, "waiting on instance.instance_name")
+                    return
+
+                fields = self.get_ansible_fields(instance)
 
         fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
 
