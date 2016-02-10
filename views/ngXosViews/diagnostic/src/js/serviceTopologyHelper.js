@@ -124,7 +124,7 @@
         });
 
       const subscriberNodes = nodeEnter.filter('.subscriber');
-      const internetNodes = nodeEnter.filter('.internet');
+      const internetNodes = nodeEnter.filter('.router');
       const serviceNodes = nodeEnter.filter('.service');
       const instanceNodes = nodeEnter.filter('.instance');
       const sliceNodes = nodeEnter.filter('.slice');
