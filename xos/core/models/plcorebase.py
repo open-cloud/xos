@@ -224,6 +224,9 @@ class PlCoreBase(models.Model, PlModelMixIn):
         self._initial = self._dict # for PlModelMixIn
         self.silent = False
 
+    def get_controller(self):
+        return self.controller
+
     def can_update(self, user):
         return user.can_update_root()
 
