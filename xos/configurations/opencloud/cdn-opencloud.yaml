@@ -40,7 +40,7 @@ topology_template:
       description: HyperCache Slice
       type: tosca.nodes.Slice
       properties:
-          exposed_ports: tcp 2120:2128, tcp 3200:3209, tcp 8006, tcp 8009, tcp 8015
+          exposed_ports: tcp 2120:2128, tcp 3200:3209, tcp 8006, tcp 8009, tcp 8015, tcp 80
       requirements:
           - cdn_service:
               node: HyperCache

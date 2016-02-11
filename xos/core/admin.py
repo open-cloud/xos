@@ -1840,7 +1840,7 @@ class ControllerNetworkInline(XOSTabularInline):
     verbose_name_plural = "Controller Networks"
     verbose_name = "Controller Network"
     suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['backend_status_icon', 'controller','net_id','subnet_id']
+    fields = ['backend_status_icon', 'controller','net_id','subnet_id','subnet']
     readonly_fields = ('backend_status_icon', )
 
 class NetworkForm(forms.ModelForm):
