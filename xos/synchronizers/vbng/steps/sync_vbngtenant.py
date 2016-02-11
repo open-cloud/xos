@@ -8,7 +8,7 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from core.models import Service
-from services.cord.models import VCPEService, VCPETenant, VBNGTenant, VBNGService
+from services.cord.models import VCPEService, VSGTenant, VBNGTenant, VBNGService
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
 
@@ -21,8 +21,8 @@ sys.path.insert(0,parentdir)
 logger = Logger(level=logging.INFO)
 
 class SyncVBNGTenant(SyncStep):
-    provides=[VCPETenant]
-    observes=VCPETenant
+    provides=[VSGTenant]
+    observes=VSGTenant
     requested_interval=0
 
     def __init__(self, **args):
@@ -84,7 +84,7 @@ class SyncVBNGTenant(SyncStep):
         raise Exception("vBNG service does not have vbng_url set, and is not linked to an ONOSApp")
 
     def get_private_interface(self, o):
-        vcpes = VCPETenant.get_tenant_objects().all()
+        vcpes = VSGTenant.get_tenant_objects().all()
         vcpes = [x for x in vcpes if (x.vbng is not None) and (x.vbng.id == o.id)]
         if not vcpes:
             raise Exception("No vCPE tenant is associated with vBNG %s" % str(o.id))
