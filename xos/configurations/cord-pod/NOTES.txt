@@ -1,0 +1,38 @@
+Notes on setup
+
+Requirements:
+* admin-openrc.sh: Admin credentials for your OpenStack cloud
+* id_rsa[.pub]: Keypair for use by the various services
+* node_key: Private key that allows root login to the compute nodes
+
+Steps for bringing up the POD:
+
+OpenStack
+* Configure management net
+  - mgmtbr on head nodes
+  - dnsmasq on head1 using cord config file
+* Install OpenStack using the openstack-cluster-install repo
+  TO ADD:
+  - Create XOS VM
+  - Install git, make, OpenStack clients
+  - Check out XOS inside VM
+  - Copy admin-openrc.sh and id_rsa* to correct location
+* Add trusty-server-multi-nic image to OpenStack
+
+VTN
+* Install Docker on the head node
+* Edit /etc/default/docker so that it points to mgmtbr
+* Create onos-cord Docker container
+  # docker ...
+
+XOS
+* Create xos Docker containers attached to mgmtbr
+  # docker ...
+* Bring up XOS cord-pod configuration
+
+
+
+
+
+Test VTN
+* Try to create a network: neutron net-create testnet

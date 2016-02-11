@@ -23,8 +23,8 @@ from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
 from synchronizers.base.steps import *
-from syncstep import SyncStep
-from toposort import toposort
+from synchronizers.base.syncstep import SyncStep
+from synchronizers.base.toposort import toposort
 from synchronizers.base.error_mapper import *
 from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject

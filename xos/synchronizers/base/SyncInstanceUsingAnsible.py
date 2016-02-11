@@ -26,6 +26,12 @@ class SyncInstanceUsingAnsible(SyncStep):
     def __init__(self, **args):
         SyncStep.__init__(self, **args)
 
+    def skip_ansible_fields(self, o):
+        # Return True if the instance processing and get_ansible_fields stuff
+        # should be skipped. This hook is primarily for the OnosApp
+        # sync step, so it can do its external REST API sync thing.
+        return False
+
     def defer_sync(self, o, reason):
         logger.info("defer object %s due to %s" % (str(o), reason))
         raise Exception("defer object %s due to %s" % (str(o), reason))
@@ -43,6 +49,14 @@ class SyncInstanceUsingAnsible(SyncStep):
         # method.
 
         return o.instance
+
+    def get_external_sync(self, o):
+        hostname = getattr(o, "external_hostname", None)
+        container = getattr(o, "external_container", None)
+        if hostname and container:
+            return (hostname, container)
+        else:
+            return None
 
     def run_playbook(self, o, fields, template_name=None):
         if not template_name:
@@ -80,6 +94,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "hostname": instance.node.name,
                        "instance_id": instance.instance_id,
                        "username": "ubuntu",
+                       "ssh_ip": instance.get_ssh_ip(),
                      }
             key_name = self.service_key_name
         elif (instance.isolation == "container"):
@@ -91,6 +106,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "instance_name": "rootcontext",
                        "username": "root",
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
+                       # ssh_ip is not used for container-on-metal
                      }
             key_name = self.get_node_key(node)
         else:
@@ -107,7 +123,7 @@ class SyncInstanceUsingAnsible(SyncStep):
                        "instance_name": instance.parent.name,
                        "instance_id": instance.parent.instance_id,
                        "username": "ubuntu",
-                       "nat_ip": instance.parent.get_ssh_ip(),
+                       "ssh_ip": instance.parent.get_ssh_ip(),
                        "container_name": "%s-%s" % (instance.slice.name, str(instance.id))
                          }
             key_name = instance.parent.slice.service.private_key_fn
@@ -142,30 +158,43 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         self.prepare_record(o)
 
-        instance = self.get_instance(o)
-
-        if isinstance(instance, basestring):
-            # sync to some external host
-
-            # XXX - this probably needs more work...
-
-            fields = { "hostname": instance,
-                       "instance_id": "ubuntu",     # this is the username to log into
-                       "private_key": service.key,
-                     }
+        if self.skip_ansible_fields(o):
+            fields = {}
         else:
-            # sync to an XOS instance
-            if not instance:
-                self.defer_sync(o, "waiting on instance")
-                return
+            if self.get_external_sync(o):
+                # sync to some external host
 
-            if not instance.instance_name:
-                self.defer_sync(o, "waiting on instance.instance_name")
-                return
+                # UNTESTED
 
-            fields = self.get_ansible_fields(instance)
+                (hostname, container_name) = self.get_external_sync(o)
+                fields = { "hostname": hostname,
+                           "baremetal_ssh": True,
+                           "instance_name": "rootcontext",
+                           "username": "root",
+                           "container_name": container_name
+                         }
+                key_name = self.get_node_key(node)
+                if not os.path.exists(key_name):
+                    raise Exception("Node key %s does not exist" % key_name)
 
-            fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
+                key = file(key_name).read()
+
+                fields["private_key"] = key
+                # TO DO: Ceilometer stuff
+            else:
+                instance = self.get_instance(o)
+                # sync to an XOS instance
+                if not instance:
+                    self.defer_sync(o, "waiting on instance")
+                    return
+
+                if not instance.instance_name:
+                    self.defer_sync(o, "waiting on instance.instance_name")
+                    return
+
+                fields = self.get_ansible_fields(instance)
+
+        fields["ansible_tag"] =  o.__class__.__name__ + "_" + str(o.id)
 
         # If 'o' defines a 'sync_attributes' list, then we'll copy those
         # attributes into the Ansible recipe's field list automatically.

@@ -43,9 +43,6 @@ class SyncONOSService(SyncInstanceUsingAnsible):
 
         serv = o
 
-        if serv.use_external_host:
-            return serv.use_external_host
-
         if serv.slices.exists():
             slice = serv.slices.all()[0]
             if slice.instances.exists():
@@ -57,9 +54,16 @@ class SyncONOSService(SyncInstanceUsingAnsible):
         fields={}
         fields["instance_hostname"] = self.get_instance(o).instance_name.replace("_","-")
         fields["appname"] = o.name
-        fields["nat_ip"] = self.get_instance(o).get_ssh_ip()
+        fields["ssh_ip"] = self.get_instance(o).get_ssh_ip()
         fields["ONOS_container"] = "ONOS"
         return fields
+
+    def sync_record(self, o):
+        if o.no_container:
+            logger.info("no work to do for onos service, because o.no_container is set")
+            o.save()
+        else:
+            super(SyncONOSService, self).sync_record(o)
 
     def sync_fields(self, o, fields):
         # the super causes the playbook to be run
