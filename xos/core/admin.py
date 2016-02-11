@@ -42,13 +42,7 @@ def backend_icon(obj):
     # FIXME: Need to clean this up by separating Javascript from Python
     if (obj.pk):
         script = """
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $("#show_details_%d").click(function () {
-                    $("#status%d").dialog({modal: true, height: 200, width: 200 });
-                });
-            });
-        </script>
+        <script type="text/javascript">$(document).ready(function () {$("#show_details_%d").click(function () {$("#status%d").dialog({modal: true, height: 200, width: 200 });});});</script>
         """%(obj.pk,obj.pk)
 
         div = """
