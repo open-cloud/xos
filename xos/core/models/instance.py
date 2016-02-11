@@ -186,6 +186,9 @@ class Instance(PlCoreBase):
 
     # return an address that the synchronizer can use to SSH to the instance
     def get_ssh_ip(self):
+        management=self.get_network_ip("management")
+        if management:
+            return management
         return self.get_network_ip("nat")
 
     @staticmethod
