@@ -15,10 +15,10 @@ logger = Logger(level=logging.INFO)
 
 class SyncInstanceUsingAnsible(SyncStep):
     # All of the following should be defined for classes derived from this
-    # base class. Examples below use VCPETenant.
+    # base class. Examples below use VSGTenant.
 
-    # provides=[VCPETenant]
-    # observes=VCPETenant
+    # provides=[VSGTenant]
+    # observes=VSGTenant
     # requested_interval=0
     # template_name = "sync_vcpetenant.yaml"
     # service_key_name = "/opt/xos/observers/vcpe/vcpe_private_key"

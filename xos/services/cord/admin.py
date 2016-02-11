@@ -158,14 +158,14 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
     def queryset(self, request):
         return VCPEService.get_service_objects_by_user(request.user)
 
-class VCPETenantForm(forms.ModelForm):
+class VSGTenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     last_ansible_hash = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
-        super (VCPETenantForm,self ).__init__(*args,**kwargs)
+        super (VSGTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = VCPEService.get_service_objects().all()
         if self.instance:
@@ -185,24 +185,24 @@ class VCPETenantForm(forms.ModelForm):
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.instance = self.cleaned_data.get("instance")
         self.instance.last_ansible_hash = self.cleaned_data.get("last_ansible_hash")
-        return super(VCPETenantForm, self).save(commit=commit)
+        return super(VSGTenantForm, self).save(commit=commit)
 
     class Meta:
-        model = VCPETenant
+        model = VSGTenant
 
-class VCPETenantAdmin(ReadOnlyAwareAdmin):
+class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
                                      'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
-    form = VCPETenantForm
+    form = VSGTenantForm
 
     suit_form_tabs = (('general','Details'),)
 
     def queryset(self, request):
-        return VCPETenant.get_tenant_objects_by_user(request.user)
+        return VSGTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
 # vBNG
@@ -363,7 +363,7 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
 admin.site.register(VCPEService, VCPEServiceAdmin)
-admin.site.register(VCPETenant, VCPETenantAdmin)
+admin.site.register(VSGTenant, VSGTenantAdmin)
 admin.site.register(VBNGService, VBNGServiceAdmin)
 admin.site.register(VBNGTenant, VBNGTenantAdmin)
 admin.site.register(CordSubscriberRoot, CordSubscriberRootAdmin)
