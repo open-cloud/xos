@@ -181,7 +181,15 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f = open(config_pathname, "w")
     f.write("[ssh_connection]\n")
     if proxy_ssh:
-        proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
+        proxy_ssh_key = getattr(Config(), "observer_proxy_ssh_key", None)
+        proxy_ssh_user = getattr(Config(), "observer_proxy_ssh_user", "root")
+        if proxy_ssh_key:
+            # If proxy_ssh_key is known, then we can proxy into the compute
+            # node without needing to have the OpenCloud sshd machinery in
+            # place.
+            proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s nc %s 22" % (proxy_ssh_key, proxy_ssh_user, hostname, ssh_ip)
+        else:
+            proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
         f.write('ssh_args = -o "%s"\n' % proxy_command)
     f.write('scp_if_ssh = True\n')
     f.write('pipelining = True\n')
