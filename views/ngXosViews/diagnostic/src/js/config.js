@@ -18,10 +18,22 @@
       y: -10
     },
     rack: {
-      width: 50,
+      width: 60,
       height: 50,
-      x: -25,
+      x: -30,
       y: -25
+    },
+    computeNode: {
+      width: 50,
+      height: 20,
+      x: -25,
+      y: -10
+    },
+    instance: {
+      width: 40,
+      height: 16,
+      x: -20,
+      y: -8
     }
   })
 

@@ -12,7 +12,42 @@
     return $resource('/xos/slices', {id: '@id'});
   })
   .service('Instances', function($resource){
-    return $resource('/xos/instances', {id: '@id'});
+    return $resource('/xos/instances', {id: '@id'}, {});
+  })
+  .service('Node', function($resource, $q, Instances){
+    return $resource('/xos/nodes', {id: '@id'}, {
+      queryWithInstances: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function(res){
+
+            // TODO update the API to include instances in nodes
+            // http://stackoverflow.com/questions/14573102/how-do-i-include-related-model-fields-using-django-rest-framework
+
+            const deferred = $q.defer();
+
+            let requests = [];
+
+            angular.forEach(res.data, (node) => {
+              requests.push(Instances.query({node: node.id}).$promise);
+            })
+
+            $q.all(requests)
+            .then((list) => {
+              res.data.map((node, i) => {
+                node.instances = list[i];
+                return node;
+              });
+
+              deferred.resolve(res.data);
+            })
+
+            return deferred.promise;
+          }
+        }
+      }
+    });
   })
   .service('Subscribers', function($resource, $q, SubscriberDevice){
     return $resource('/xos/subscribers', {id: '@id'}, {
