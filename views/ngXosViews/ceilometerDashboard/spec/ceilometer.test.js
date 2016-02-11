@@ -47,10 +47,10 @@ describe('In Ceilometer View', () => {
       it('should load corresponding meters', () => {
         vm.loadSliceMeter(vm.services[0].slice[0]);
 
+        httpBackend.flush();
+
         expect(vm.selectedSlice).toEqual('slice-a-1');
         expect(vm.selectedTenant).toEqual('id-a-1');
-
-        httpBackend.flush();
 
         expect(Object.keys(vm.selectedResources).length).toBe(2);
         expect(vm.selectedResources['resource-1'].length).toBe(2);

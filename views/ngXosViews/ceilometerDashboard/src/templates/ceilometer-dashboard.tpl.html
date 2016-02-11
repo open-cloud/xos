@@ -59,6 +59,9 @@
         </article>
         <!-- METERS -->
         <article ng-hide="vm.showStats" class="meters animate-slide-left">
+          <div class="alert alert-danger" ng-show="vm.ceilometerError">
+            {{vm.ceilometerError}}
+          </div>
           <div class="col-sm-4 animate-slide-left" ng-hide="!vm.selectedSlice">
             <div class="list-group">
               <div class="list-group-item">
