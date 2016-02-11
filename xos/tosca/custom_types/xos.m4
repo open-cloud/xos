@@ -202,9 +202,9 @@ node_types:
                 type: string
                 required: false
 
-    tosca.nodes.VCPEService:
+    tosca.nodes.VSGService:
         description: >
-            CORD: The vCPE Service.
+            CORD: The vSG Service.
         derived_from: tosca.nodes.Root
         capabilities:
             xos_base_service_caps
