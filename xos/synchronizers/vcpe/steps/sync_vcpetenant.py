@@ -10,7 +10,7 @@ from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice
-from services.cord.models import VCPEService, VSGTenant, VOLTTenant
+from services.cord.models import VSGService, VSGTenant, VOLTTenant
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
 
@@ -47,7 +47,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         if not o.provider_service:
             return None
 
-        vcpes = VCPEService.get_service_objects().filter(id=o.provider_service.id)
+        vcpes = VSGService.get_service_objects().filter(id=o.provider_service.id)
         if not vcpes:
             return None
 

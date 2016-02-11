@@ -12,7 +12,7 @@ topology_template:
       type: tosca.nodes.Service
       requirements:
           - vcpe_tenant:
-              node: service_vcpe
+              node: service_vsg
               relationship: tosca.relationships.TenantOfService
           - lan_network:
               node: lan_network
@@ -24,14 +24,14 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
-    service_vcpe:
-      type: tosca.nodes.VCPEService
+    service_vsg:
+      type: tosca.nodes.VSGService
       requirements:
           - vbng_tenant:
               node: service_vbng
               relationship: tosca.relationships.TenantOfService
       properties:
-          view_url: /admin/cord/vcpeservice/$id$/
+          view_url: /admin/cord/vsgservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
@@ -270,7 +270,7 @@ topology_template:
       type: tosca.nodes.Slice
       requirements:
           - vcpe_service:
-              node: service_vcpe
+              node: service_vsg
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
