@@ -308,11 +308,11 @@ class VOLTTenant(Tenant):
             return
 
         if self.vcpe is None:
-            vcpeServices = VCPEService.get_service_objects().all()
-            if not vcpeServices:
-                raise XOSConfigurationError("No VCPE Services available")
+            vsgServices = VSGService.get_service_objects().all()
+            if not vsgServices:
+                raise XOSConfigurationError("No VSG Services available")
 
-            vcpe = VSGTenant(provider_service = vcpeServices[0],
+            vcpe = VSGTenant(provider_service = vsgServices[0],
                               subscriber_tenant = self)
             vcpe.caller = self.creator
             vcpe.save()
@@ -390,7 +390,7 @@ def model_policy_volt(pk):
 # VCPE
 # -------------------------------------------
 
-class VCPEService(Service):
+class VSGService(Service):
     KIND = VCPE_KIND
 
     simple_attributes = ( ("bbs_api_hostname", None),
@@ -399,7 +399,7 @@ class VCPEService(Service):
                           ("backend_network_label", "hpc_client"), )
 
     def __init__(self, *args, **kwargs):
-        super(VCPEService, self).__init__(*args, **kwargs)
+        super(VSGService, self).__init__(*args, **kwargs)
 
     class Meta:
         app_label = "cord"
@@ -436,7 +436,7 @@ class VCPEService(Service):
             value = value.id
         self.set_attribute("bbs_slice_id", value)
 
-VCPEService.setup_simple_attributes()
+VSGService.setup_simple_attributes()
 
 #class STagBlock(PlCoreBase):
 #    instance = models.ForeignKey(Instance, related_name="s_tags")
@@ -711,8 +711,8 @@ class VSGTenant(TenantWithContainer):
 
         if self.volt and self.volt.subscriber and self.volt.subscriber.url_filter_enable:
             if not self.bbs_account:
-                # make sure we use the proxied VCPEService object, not the generic Service object
-                vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
+                # make sure we use the proxied VSGService object, not the generic Service object
+                vcpe_service = VSGService.objects.get(id=self.provider_service.id)
                 self.bbs_account = vcpe_service.allocate_bbs_account()
                 super(VSGTenant, self).save()
         else:

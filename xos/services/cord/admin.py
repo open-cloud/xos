@@ -98,7 +98,7 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
 # vCPE
 #-----------------------------------------------------------------------------
 
-class VCPEServiceForm(forms.ModelForm):
+class VSGServiceForm(forms.ModelForm):
     bbs_api_hostname = forms.CharField(required=False)
     bbs_api_port = forms.IntegerField(required=False)
     bbs_server = forms.CharField(required=False)
@@ -106,7 +106,7 @@ class VCPEServiceForm(forms.ModelForm):
     bbs_slice = forms.ModelChoiceField(queryset=Slice.objects.all(), required=False)
 
     def __init__(self,*args,**kwargs):
-        super (VCPEServiceForm,self ).__init__(*args,**kwargs)
+        super (VSGServiceForm,self ).__init__(*args,**kwargs)
         if self.instance:
             self.fields['bbs_api_hostname'].initial = self.instance.bbs_api_hostname
             self.fields['bbs_api_port'].initial = self.instance.bbs_api_port
@@ -120,13 +120,13 @@ class VCPEServiceForm(forms.ModelForm):
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
         self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
-        return super(VCPEServiceForm, self).save(commit=commit)
+        return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
-        model = VCPEService
+        model = VSGService
 
-class VCPEServiceAdmin(ReadOnlyAwareAdmin):
-    model = VCPEService
+class VSGServiceAdmin(ReadOnlyAwareAdmin):
+    model = VSGService
     verbose_name = "vCPE Service"
     verbose_name_plural = "vCPE Service"
     list_display = ("backend_status_icon", "name", "enabled")
@@ -137,7 +137,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
                                      'classes':['suit-tab suit-tab-backend']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
-    form = VCPEServiceForm
+    form = VSGServiceForm
 
     extracontext_registered_admins = True
 
@@ -156,7 +156,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
                            ) #('hpctools.html', 'top', 'tools') )
 
     def queryset(self, request):
-        return VCPEService.get_service_objects_by_user(request.user)
+        return VSGService.get_service_objects_by_user(request.user)
 
 class VSGTenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
@@ -167,7 +167,7 @@ class VSGTenantForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (VSGTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VCPEService.get_service_objects().all()
+        self.fields['provider_service'].queryset = VSGService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
             self.fields['bbs_account'].initial = self.instance.bbs_account
@@ -178,8 +178,8 @@ class VSGTenantForm(forms.ModelForm):
             # default fields for an 'add' form
             self.fields['kind'].initial = VCPE_KIND
             self.fields['creator'].initial = get_request().user
-            if VCPEService.get_service_objects().exists():
-               self.fields["provider_service"].initial = VCPEService.get_service_objects().all()[0]
+            if VSGService.get_service_objects().exists():
+               self.fields["provider_service"].initial = VSGService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
@@ -362,7 +362,7 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
 
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
-admin.site.register(VCPEService, VCPEServiceAdmin)
+admin.site.register(VSGService, VSGServiceAdmin)
 admin.site.register(VSGTenant, VSGTenantAdmin)
 admin.site.register(VBNGService, VBNGServiceAdmin)
 admin.site.register(VBNGTenant, VBNGTenantAdmin)
