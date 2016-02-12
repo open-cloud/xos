@@ -52,9 +52,17 @@
       state=latest
       update_cache=yes
     with_items:
-    - docker-engine
+# XXX docker 1.10 is not working on cloudlab
+#    - docker-engine
     - python-pip
     - python-httplib2
+
+  - name: Install Docker 1.9.1
+    apt:
+      name={{ '{{' }} item {{ '}}' }}
+      update_cache=yes
+    with_items:
+    - docker-engine=1.9.1-0~trusty
 
   # Something is installing a requests library that is incompative with pip, and
   # will cause this recipe to fail next time it tries to run pip. Only the one
