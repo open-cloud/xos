@@ -31,6 +31,45 @@
     };
 
     /**
+     * Calculate the horizontal position for each element.
+     * subsrcribers, devices and routers have the same fixed width 20
+     * network have a fixed width 104
+     * rack have a fixed width 105
+     * build and array of 6 elements representing the position of each element in the svg
+     * to equally space them
+     */
+
+    this.computeElementPosition = (svgWidth) => {
+
+      let xPos = [];
+
+      let totalElWidth = lodash.reduce(serviceTopologyConfig.elWidths, (el, val) => val + el, 0);
+
+      let remainingSpace = svgWidth - totalElWidth - serviceTopologyConfig.widthMargin;
+
+      let step = remainingSpace / (serviceTopologyConfig.elWidths.length - 1);
+
+      lodash.forEach(serviceTopologyConfig.elWidths, (el, i) => {
+
+        // get half of the previous elements width
+        let previousElWidth = 0;
+        if(i !== 0){
+          previousElWidth = lodash.reduce(serviceTopologyConfig.elWidths.slice(0, i), (el, val) => val + el, 0) / 2;
+        }
+
+        let elPos =
+          serviceTopologyConfig.widthMargin // right margin
+          + (step * i) // space between elements
+          + (el / 2) // this el width
+          + previousElWidth; // previous elements width
+
+        xPos.push(svgWidth - elPos);
+      })
+
+      return xPos
+    };
+
+    /**
     * from a nested data structure,
     * create nodes and links for a D3 Tree Layout
     */
@@ -38,10 +77,12 @@
       let nodes = layout.nodes(data);
 
       // Normalize for fixed-depth.
-      nodes.forEach(function(d) {
+      nodes.forEach((d) => {
         // position the child node horizontally
-        const step = ((svgWidth - (serviceTopologyConfig.widthMargin * 2)) / 7);
-        d.y = (6 - d.depth) * step;
+        // const step = ((svgWidth - (serviceTopologyConfig.widthMargin * 2)) / 7);
+        // d.y = (6 - d.depth) * step;
+        d.y = this.computeElementPosition(svgWidth)[d.depth];
+        console.log(d.id, d.y);
       });
 
       let links = layout.links(nodes);
