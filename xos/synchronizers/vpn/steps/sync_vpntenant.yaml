@@ -6,7 +6,7 @@
   sudo: yes
   vars:
     ca_crt: {{ ca_crt }}
-    server_crt: "{{ server_crt }}"
+    server_crt: {{ server_crt }}
     server_key: {{ server_key }}
     server_network: {{ server_network }}
     is_persistent: {{ is_persistent }}
@@ -26,28 +26,28 @@
 
   - name: write server key
     shell: echo {{ '{{' }} item {{ '}}' }} >> server.key
-    with_items: "{{ server_key }}"
+    with_items: {{ server_key }}
 
   - name: erase server crt
     shell: rm -f server.crt
 
   - name: write server crt
     shell: echo {{ '{{' }} item {{ '}}' }} >> server.crt
-    with_items: "{{ server_crt }}"
+    with_items: {{ server_crt }}
 
   - name: erase ca crt
     shell: rm -f ca.crt
 
   - name: write ca crt
     shell: echo {{ '{{' }} item {{ '}}' }} >> ca.crt
-    with_items: "{{ ca_crt }}"
+    with_items: {{ ca_crt }}
 
   - name: erase dh
     shell: rm -f dh.pem
 
   - name: write dh
     shell: echo {{ '{{' }} item {{ '}}' }} >> dh.pem
-    with_items: "{{ dh }}"
+    with_items: {{ dh }}
 
   - name: erase config
     shell: rm -f server.conf
