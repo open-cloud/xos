@@ -132,6 +132,13 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         ordered_attrs = attrs.keys()
 
+        onos = self.get_onos_service(o)
+        if onos.node_key:
+            file(os.path.join(o.files_dir, "node_key"),"w").write(onos.node_key)
+            o.node_key_fn="node_key"
+        else:
+            o.node_key_fn=None
+
         o.early_rest_configs=[]
         if ("cordvtn" in o.dependencies) and (not self.is_no_container(o)):
             # For VTN, since it's running in a docker host container, we need
@@ -208,6 +215,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["config_fns"] = o.config_fns
         fields["early_rest_configs"] = o.early_rest_configs
         fields["component_configs"] = o.component_configs
+        fields["node_key_fn"] = o.node_key_fn
 
         if o.install_dependencies:
             fields["install_dependencies"] = [x.strip() for x in o.install_dependencies.split(",")]

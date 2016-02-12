@@ -130,6 +130,9 @@ node_types:
             no_container:
                 type: boolean
                 default: false
+            node_key:
+                type: string
+                required: false
 
 
     tosca.nodes.ONOSApp:
