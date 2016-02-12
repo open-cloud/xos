@@ -23,7 +23,8 @@ class ONOSService(Service):
 
     default_attributes = {"rest_hostname": "",
                           "rest_port": "8181",
-                          "no_container": False}
+                          "no_container": False,
+                          "node_key": ""}
 
     @property
     def rest_hostname(self):
@@ -48,6 +49,14 @@ class ONOSService(Service):
     @no_container.setter
     def no_container(self, value):
         self.set_attribute("no_container", value)
+
+    @property
+    def node_key(self):
+        return self.get_attribute("node_key", self.default_attributes["node_key"])
+
+    @node_key.setter
+    def node_key(self, value):
+        self.set_attribute("node_key", value)
 
 
 class ONOSApp(Tenant):   # aka 'ONOSTenant'

@@ -10,14 +10,20 @@ cat >> $FN <<EOF
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
                 "gatewayMac" : "00:00:00:00:00:01",
+                "localManagementIp": "172.27.0.1/24",
+                "ovsdbPort": "6641",
+                "sshPort": "22",
+                "sshUser": "root",
+                "sshKeyFile": "/root/node_key",
                 "nodes" : [
 EOF
 
 NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep -v ID|grep -v +|awk '{print $4}' )
 
+# XXX disabled - we don't need or want the nm node at this time
 # also configure ONOS to manage the nm node
-NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
-NODES="$NODES $NM"
+# NM=`grep "^nm" /root/setup/fqdn.map | awk '{ print $2 }'`
+# NODES="$NODES $NM"
 
 NODECOUNT=0
 for NODE in $NODES; do
@@ -39,11 +45,10 @@ for NODE in $NODES; do
     cat >> $FN <<EOF
                     {
                       "hostname": "$NODE",
-                      "ovsdbIp": "$NODEIP",
-                      "ovsdbPort": "6641",
+                      "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
-                      "phyPortName": "$PHYPORT",
-                      "localIp": "$LOCALIP"
+                      "dataplaneIntf": "$PHYPORT",
+                      "dataplaneIp": "$LOCALIP"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN
