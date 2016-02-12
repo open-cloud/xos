@@ -45,7 +45,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     def get_escaped_ca_crt(self, tenant):
         result = list()
         for line in tenant.ca_crt:
-            result.append(line.replace(":", "\\\\u003a"))
+            result.append("\"" + line + "\"")
 
         return result
 
