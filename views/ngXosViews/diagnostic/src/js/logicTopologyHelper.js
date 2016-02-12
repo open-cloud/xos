@@ -45,7 +45,7 @@
 
       let totalElWidth = lodash.reduce(serviceTopologyConfig.elWidths, (el, val) => val + el, 0);
 
-      let remainingSpace = svgWidth - totalElWidth - serviceTopologyConfig.widthMargin;
+      let remainingSpace = svgWidth - totalElWidth - (serviceTopologyConfig.widthMargin * 2);
 
       let step = remainingSpace / (serviceTopologyConfig.elWidths.length - 1);
 
@@ -54,7 +54,7 @@
         // get half of the previous elements width
         let previousElWidth = 0;
         if(i !== 0){
-          previousElWidth = lodash.reduce(serviceTopologyConfig.elWidths.slice(0, i), (el, val) => val + el, 0) / 2;
+          previousElWidth = lodash.reduce(serviceTopologyConfig.elWidths.slice(0, i), (el, val) => val + el, 0);
         }
 
         let elPos =

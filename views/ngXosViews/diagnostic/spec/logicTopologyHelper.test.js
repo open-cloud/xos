@@ -36,12 +36,12 @@
     it('should calculate horizontal position for each element', () => {
       let [el0x, el1x, el2x, el3x, el4x, el5x] = Service.computeElementPosition(900);
 
-      expect(el0x).toBeSimilar(900 - 30);
-      expect(el1x).toBeSimilar(900 - 183.4);
-      expect(el2x).toBeSimilar(900 - 337.3);
-      expect(el3x).toBeSimilar(900 - 490.7);
-      expect(el4x).toBeSimilar(900 - 602.1);
-      expect(el5x).toBeSimilar(900 - 713.5);
+      expect(el0x).toBeSimilar(870);
+      expect(el1x).toBeSimilar(736.6);
+      expect(el2x).toBeSimilar(560.7);
+      expect(el3x).toBeSimilar(384.8);
+      expect(el4x).toBeSimilar(251.4);
+      expect(el5x).toBeSimilar(95);
     });
   });
 

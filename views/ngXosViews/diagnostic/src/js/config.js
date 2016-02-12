@@ -13,7 +13,7 @@
     //   network: 104,
     //   rack: 105
     // },
-    elWidths: [20, 104, 105, 104, 20, 20],
+    elWidths: [20, 104, 105, 104, 20, 150],
     circle: {
       radius: 10,
       r: 10,
