@@ -5,14 +5,10 @@
   user: ubuntu
   sudo: yes
   vars:
-    ca_crt: {{ ca_crt }}
-    server_crt: {{ server_crt }}
-    server_key: {{ server_key }}
     server_network: {{ server_network }}
     is_persistent: {{ is_persistent }}
     vpn_subnet: {{ vpn_subnet }}
     clients_can_see_each_other: {{ clients_can_see_each_other }}
-    dh: {{ dh }}
 
   tasks:
   - name: install openvpn
