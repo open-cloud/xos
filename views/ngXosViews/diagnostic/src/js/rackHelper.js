@@ -71,12 +71,10 @@
         return val + this.getComputeNodeSize(node.instances)[1]
       }, 0);
 
-      console.log('previousElEight ' + previousElEight);
       const y =
         serviceTopologyConfig.computeNode.margin
         + (serviceTopologyConfig.computeNode.margin * position)
         + previousElEight;
-
 
       return [x, y];
     };
