@@ -403,7 +403,7 @@ class VSGService(Service):
 
     class Meta:
         app_label = "cord"
-        verbose_name = "vCPE Service"
+        verbose_name = "vSG Service"
         proxy = True
 
     def allocate_bbs_account(self):
