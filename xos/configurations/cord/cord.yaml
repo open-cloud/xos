@@ -145,6 +145,7 @@ topology_template:
                    "rabbit.user": "<rabbit_user>",
                    "rabbit.password": "<rabbit_password>",
                    "rabbit.host": "<rabbit_host>",
+                   "publish.kafka": "false",
                    "publish.rabbit": "true",
                    "volt.events.rabbit.topic": "notifications.info",
                    "volt.events.rabbit.exchange": "voltlistener",

@@ -222,6 +222,7 @@ class Meters(object):
         self._kwapi_meters_info = self._get_kwapi_meters_info()
         self._ipmi_meters_info = self._get_ipmi_meters_info()
         self._vcpe_meters_info = self._get_vcpe_meters_info()
+        self._volt_meters_info = self._get_volt_meters_info()
         self._sdn_meters_info = self._get_sdn_meters_info()
 
         # Storing the meters info of all services together.
@@ -233,6 +234,7 @@ class Meters(object):
                                self._kwapi_meters_info,
                                self._ipmi_meters_info,
                                self._vcpe_meters_info,
+                               self._volt_meters_info,
                                self._sdn_meters_info)
         self._all_meters_info = {}
         for service_meters in all_services_meters:
@@ -333,6 +335,16 @@ class Meters(object):
         """
 
         return self._list(only_meters=self._vcpe_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_volt(self, except_meters=None):
+        """Returns a list of meters tied to volt service
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+
+        return self._list(only_meters=self._volt_meters_info.keys(),
                           except_meters=except_meters)
 
     def list_sdn(self, except_meters=None):
@@ -949,6 +961,39 @@ class Meters(object):
             }),
         ])
 
+    def _get_volt_meters_info(self):
+        """Returns additional info for each meter
+
+        That will be used for augmenting the Ceilometer meter
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('volt.device', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Existence of olt device"),
+            }),
+            ('volt.device.disconnect', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Olt device disconnected"),
+            }),
+            ('volt.device.subscriber', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Existence of olt subscriber"),
+            }),
+            ('volt.device.subscriber.unregister', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Olt subscriber unregistered"),
+            }),
+        ])
+
     def _get_sdn_meters_info(self):
         """Returns additional info for each meter
 
@@ -1121,6 +1166,7 @@ class MetersList(APIView):
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
             _('VCPE'): meters.list_vcpe(),
+            _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
         meters = []
@@ -1191,6 +1237,7 @@ class MeterStatisticsList(APIView):
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
             _('VCPE'): meters.list_vcpe(),
+            _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
         report_rows = []
@@ -1343,6 +1390,7 @@ class XOSInstanceStatisticsList(APIView):
                 _('Nova'): meters.list_nova(except_meters=exclude_nova_meters_info),
                 _('Neutron'): meters.list_neutron(except_meters=exclude_neutron_meters_info),
                 _('VCPE'): meters.list_vcpe(),
+                _('VOLT'): meters.list_volt(),
                 _('SDN'): meters.list_sdn(),
             }
             for service,meters in services.items():

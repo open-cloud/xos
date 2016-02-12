@@ -7,6 +7,7 @@ import base64
 import time
 import re
 import json
+from collections import OrderedDict
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.ansible import run_template
@@ -169,7 +170,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 file(os.path.join(o.files_dir, fn),"w").write(" " +value)
                 o.rest_configs.append( {"endpoint": endpoint, "fn": fn} )
             if name.startswith("component_config"):
-                components = json.loads(value)
+                components = json.loads(value,object_pairs_hook=OrderedDict)
                 for component in components.keys():
                     config = components[component]
                     for key in config.keys():
