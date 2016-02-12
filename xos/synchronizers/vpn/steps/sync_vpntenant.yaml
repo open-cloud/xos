@@ -41,6 +41,9 @@
   - name: write auth script
     shell: echo "exit 0" > auth.sh
 
+  - name: make auth script executable
+    shell: chmod 777 auth.sh
+
   - name: write base config
     shell:
        |
