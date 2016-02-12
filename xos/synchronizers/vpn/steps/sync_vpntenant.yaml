@@ -19,35 +19,22 @@
     apt: name=openvpn state=present update_cache=yes
 
   - name: stop openvpn
-    shell: killall openvpn | true
+    shell: killall openvpn || true
 
-  - name: erase server key
-    shell: rm -f server.key
+  - name: make sure /opt/openvpn exists
+    file: path=/opt/openvpn state=directory
 
-  - name: write server key
-    shell: echo {{ '{{' }} item {{ '}}' }} >> server.key
-    with_items: "{{ server_key }}"
+  - name: get server key
+    copy: src=/opt/openvpn/easyrsa3/pki/private/server.key dest=/opt/openvpn/server.key
 
-  - name: erase server crt
-    shell: rm -f server.crt
+  - name: get server crt
+    copy: src=/opt/openvpn/easyrsa3/pki/issued/server.crt dest=/opt/openvpn/server.crt
 
-  - name: write server crt
-    shell: echo {{ '{{' }} item {{ '}}' }} >> server.crt
-    with_items: "{{ server_crt }}"
+  - name: get ca crt
+    copy: src=/opt/openvpn/easyrsa3/pki/ca.crt dest=/opt/openvpn/ca.crt
 
-  - name: erase ca crt
-    shell: rm -f ca.crt
-
-  - name: write ca crt
-    shell: echo {{ '{{' }} item {{ '}}' }} >> ca.crt
-    with_items: "{{ ca_crt }}"
-
-  - name: erase dh
-    shell: rm -f dh.pem
-
-  - name: write dh
-    shell: echo {{ '{{' }} item {{ '}}' }} >> dh.pem
-    with_items: "{{ dh }}"
+  - name: get dh
+    copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
 
   - name: erase config
     shell: rm -f server.conf
@@ -65,9 +52,10 @@
        port 1194
        proto udp
        dev tun
-       cert server.crt
-       key server.key
-       dh dh.pem
+       ca /opt/openvpn/ca.crt
+       cert /opt/openvpn/server.crt
+       key /opt/openvpn/server.key
+       dh /opt/openvpn/dh.pem
        server {{ server_network }} {{ vpn_subnet }}
        ifconfig-pool-persist ipp.txt
        comp-lzo
