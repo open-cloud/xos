@@ -37,15 +37,15 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "vpn_subnet": tenant.vpn_subnet,
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": tenant.clients_can_see_each_other,
-                "ca_crt": self.get_escaped_ca_crt(tenant),
-                "server_crt": tenant.server_crt,
+                "ca_crt": tenant.ca_crt,
+                "server_crt": self.get_escaped_ca_crt(tenant),
                 "dh": tenant.dh
                 }
 
     def get_escaped_ca_crt(self, tenant):
         result = list()
-        for line in tenant.ca_crt:
-            result.append(line.replace(":", "\\\\u003a"))
+        for line in tenant.server_crt:
+            result.append("\"" + line + "\"")
 
         return result
 
