@@ -47,8 +47,8 @@ for NODE in $NODES; do
                       "hostname": "$NODE",
                       "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
-                      "dataplaneIntf": "$PHYPORT",
-                      "dataplaneIp": "$LOCALIP"
+                      "dataPlaneIntf": "$PHYPORT",
+                      "dataPlaneIp": "$LOCALIP/24"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN
