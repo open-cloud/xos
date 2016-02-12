@@ -52,15 +52,15 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
     def create_client_script(self, tenant):
         script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
         # write the configuration portion
-        script.write("printf \"")
+        script.write("printf \"%b\" \"")
         for line in self.generate_client_conf(tenant).splitlines():
             script.write(line + r"\n")
         script.write("\" > client.conf\n")
-        script.write("printf \"")
+        script.write("printf \"%b\" \"")
         for line in self.generate_login().splitlines():
             script.write(line + r"\n")
         script.write("\" > login.up\n")
-        script.write("printf \"")
+        script.write("printf \"%b\" \"")
         for line in tenant.ca_crt:
             script.write(line.rstrip() + r"\n")
         script.write("\" > ca.crt\n")
