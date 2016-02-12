@@ -16,8 +16,21 @@
 
         var svg;
 
+
+        const handleSvg = (el) => {
+
+          svg = d3.select(el)
+          .append('svg')
+          .style('width', `${el.clientWidth}px`)
+          .style('height', `${el.clientHeight}px`);
+        }
+
         $scope.$watch(() => this.subscribers, (subscribers) => {
           if(subscribers){
+
+            // TODO
+            // build here the full data structure
+
             LogicTopologyHelper.addSubscribers(svg, angular.copy(subscribers));
           }
         });
@@ -27,14 +40,6 @@
             $log.info(`Update logic layer for subscriber ${selected.humanReadableName}`);
           }
         });
-
-        const handleSvg = (el) => {
-
-          svg = d3.select(el)
-          .append('svg')
-          .style('width', `${el.clientWidth}px`)
-          .style('height', `${el.clientHeight}px`);
-        }
 
         handleSvg($element[0]);
         LogicTopologyHelper.drawTree(svg);
