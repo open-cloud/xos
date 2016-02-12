@@ -46,6 +46,8 @@ def handle(controller):
         if network not in ctrls_by_network or \
             controller not in ctrls_by_network[network]:
             controller_network = ControllerNetwork(controller=controller, network=network)
+            if network.subnet and network.subnet.strip():
+                controller_network.subnet = network.subnet.strip()
             controller_network.save()
     # relations for all images
     ctrls_by_image = defaultdict(list)
