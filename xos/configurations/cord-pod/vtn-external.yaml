@@ -14,7 +14,7 @@ topology_template:
           kind: onos
           view_url: /admin/onos/onosservice/$id$/
           no_container: true
-          rest_hostname: ctl.smbaker-xos-neu.xos-pg0.clemson.cloudlab.us
+          rest_hostname: onos-cord
 
     VTN_ONOS_app:
       type: tosca.nodes.ONOSVTNApp
@@ -27,5 +27,3 @@ topology_template:
           rest_onos/v1/network/configuration/: { get_artifact: [ SELF, vtn_network_cfg_json, LOCAL_FILE ] }
       artifacts:
           vtn_network_cfg_json: /root/setup/vtn-network-cfg.json
-
-
