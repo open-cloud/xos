@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port, AddressPool
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -10,6 +10,7 @@ from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
 import traceback
 from xos.exceptions import *
+from xos.config import Config
 
 class ConfigurationError(Exception):
     pass
@@ -18,6 +19,8 @@ VOLT_KIND = "vOLT"
 VCPE_KIND = "vCPE"
 VBNG_KIND = "vBNG"
 CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
+
+CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 
 # -------------------------------------------
 # CordSubscriberRoot
@@ -453,7 +456,8 @@ class VSGTenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",
                        "lan_ip", "lan_mac",
-                       "wan_ip", "wan_mac", "wan_container_mac",
+                       "wan_ip", "wan_mac",
+                       "wan_container_ip", "wan_container_mac",
                        "private_ip", "private_mac",
                        "hpc_client_ip", "hpc_client_mac")
 
@@ -461,7 +465,8 @@ class VSGTenant(TenantWithContainer):
                           "container_id": None,
                           "users": [],
                           "bbs_account": None,
-                          "last_ansible_hash": None}
+                          "last_ansible_hash": None,
+                          "wan_container_ip": None}
 
     def __init__(self, *args, **kwargs):
         super(VSGTenant, self).__init__(*args, **kwargs)
@@ -544,6 +549,10 @@ class VSGTenant(TenantWithContainer):
                 addresses["hpc_client"] = (ns.ip, ns.mac)
         return addresses
 
+    # ------------------------------------------------------------------------
+    # The following IP addresses all come from the VM
+    # Note: They might not be useful for the VTN-vSG
+
     @property
     def nat_ip(self):
         return self.addresses.get("nat", (None,None) )[0]
@@ -568,10 +577,33 @@ class VSGTenant(TenantWithContainer):
     def wan_mac(self):
         return self.addresses.get("wan", (None, None) )[1]
 
+    # end of VM IP address stubs
+    # ------------------------------------------------------------------------
+
+    @property
+    def wan_container_ip(self):
+        if CORD_USE_VTN:
+            # When using VTN, wan_container_ip is stored and maintained inside
+            # of the vSG object.
+            return self.get_attribute("wan_container_ip", self.default_attributes["wan_container_ip"])
+        else:
+            # When not using VTN, wan_container_ip is the same as wan_ip.
+            # XXX Is this broken for multiple-containers-per-VM?
+            return self.wan_ip
+
+    @wan_container_ip.setter
+    def wan_container_ip(self, value):
+        if CORD_USE_VTN:
+            self.set_attribute("wan_container_ip", value)
+        else:
+            raise Exception("wan_container_ip.setter called on non-VTN CORD")
+
     # Generate the MAC for the container interface connected to WAN
     @property
     def wan_container_mac(self):
-        (a, b, c, d) = self.wan_ip.split('.')
+        if not self.wan_container_ip:
+            return None
+        (a, b, c, d) = self.wan_container_ip.split('.')
         return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
 
     @property
@@ -721,6 +753,25 @@ class VSGTenant(TenantWithContainer):
                 self.bbs_account = None
                 super(VSGTenant, self).save()
 
+    def manage_wan_container_ip(self):
+        if CORD_USE_VTN:
+            if not self.wan_container_ip:
+                ap = AddressPool.objects.filter("public_addresses")
+                if not ap:
+                    raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
+                ap = ap[0]
+
+                addr = ap.get_address()
+                if not addr:
+                    raise Exception("AddressPool 'public_addresses' has run out of addresses.")
+
+                self.wan_container_ip = addr
+
+    def cleanup_wan_container_ip(self):
+        if CORD_USE_VTN and self.wan_container_ip:
+            AddressPool.objects.filter("public_addresses")[0].put_address(self.wan_container_ip)
+            self.wan_container_ip = None
+
     def find_or_make_port(self, instance, network, **kwargs):
         port = Port.objects.filter(instance=instance, network=network)
         if port:
@@ -731,10 +782,14 @@ class VSGTenant(TenantWithContainer):
         return port
 
     def get_lan_network(self, instance):
-        # TODO: for VTN, pick the access network
-
         slice = self.provider_service.slices.all()[0]
-        lan_networks = [x for x in slice.networks.all() if "lan" in x.name]
+        if CORD_USE_VTN:
+            # there should only be one network private network, and its template should not be the management template
+            lan_networks = [x for x in slice.networks.all() if x.template.visibility=="private" and (not "management" in x.template.name)]
+            if len(lan_networks)>1:
+                raise XOSProgrammingError("The vSG slice should only have one non-management private network")
+        else:
+            lan_networks = [x for x in slice.networks.all() if "lan" in x.name]
         if not lan_networks:
             raise XOSProgrammingError("No lan_network")
         return lan_networks[0]
@@ -786,14 +841,11 @@ class VSGTenant(TenantWithContainer):
 
         super(VSGTenant, self).save(*args, **kwargs)
         model_policy_vcpe(self.pk)
-        #self.manage_instance()
-        #self.manage_vbng()
-        #self.manage_bbs_account()
-        #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
         self.cleanup_container()
+        self.cleanup_wan_container_ip()
         super(VSGTenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):
@@ -803,6 +855,7 @@ def model_policy_vcpe(pk):
         if not vcpe:
             return
         vcpe = vcpe[0]
+        vcpe.manage_wan_container_ip()
         vcpe.manage_container()
         vcpe.manage_vbng()
         vcpe.manage_bbs_account()
