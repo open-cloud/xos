@@ -84,8 +84,18 @@ class SyncInstances(OpenStackSyncStep):
         if instance.slice.service and instance.slice.service.public_key:
             pubkeys.add(instance.slice.service.public_key)
 
+        # handle ports the were created by the user
+        port_ids=[]
+        for port in Port.objects.filter(instance=instance):
+            if not port.port_id:
+                raise DeferredException("Instance %s waiting on port %s" % (instance, port))
+            port_ids.append(port.port_id)
+
+        # we want to exclude from 'nics' any network that already has a Port
+        existing_port_networks = [port.network for network in Port.objects.filter(instance=instance)]
+
         nics = []
-        networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice)]
+        networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice) if ns.network not in existing_port_networks]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=instance.node.site_deployment.controller)
 
