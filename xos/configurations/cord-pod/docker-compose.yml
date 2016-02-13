@@ -12,6 +12,8 @@ xos_synchronizer_openstack:
     links:
         - xos_db
     volumes:
+        - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+	- ../cord//xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
         - .:/root/setup:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
 
@@ -27,12 +29,37 @@ xos_synchronizer_onos:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
 
-# FUTURE
-#xos_swarm_synchronizer:
-#    image: xosproject/xos-swarm-synchronizer
+#xos_synchronizer_vcpe:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
 #    labels:
 #        org.xosproject.kind: synchronizer
-#        org.xosproject.target: swarm
+#        org.xosproject.target: vcpe
+#    links:
+#        - xos_db
+#    volumes:
+#        - .:/root/setup:ro
+#        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
+
+#xos_synchronizer_vbng:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vbng/vbng-synchronizer.py -C /opt/xos/synchronizers/vbng/vbng_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: vbng
+#    links:
+#        - xos_db
+
+#xos_synchronizer_monitoring_channel:
+#    image: xosproject/xos-synchronizer-openstack
+#    command: bash -c "sleep 120; python /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer.py -C /opt/xos/synchronizers/monitoring_channel/monitoring_channel_synchronizer_config"
+#    labels:
+#        org.xosproject.kind: synchronizer
+#        org.xosproject.target: monitoring_channel
+#    links:
+#        - xos_db
+#    volumes:
+#        - ./id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
 
 xos:
     command: python /opt/xos/manage.py runserver 0.0.0.0:80 --insecure --makemigrations
