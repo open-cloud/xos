@@ -37,7 +37,7 @@ for NODE in $NODES; do
 
     PHYPORT=mlx0
     # How to set LOCALIP?
-    LOCALIP=10.0.1.1
+    LOCALIP=10.0.2.1
 
     ((I++))
     cat >> $FN <<EOF
