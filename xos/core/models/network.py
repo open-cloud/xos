@@ -1,7 +1,7 @@
 import os
 import socket
 import sys
-from django.db import models
+from django.db import models, transaction
 from core.models import PlCoreBase, Site, Slice, Instance, Controller
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
@@ -348,9 +348,17 @@ class AddressPool(PlCoreBase):
         with transaction.atomic():
             ap = AddressPool.objects.get(pk=self.pk)
             if ap.addresses:
-                parts = ap.addresses.split()
-                addr = parts.pop()
+                addresses = ap.addresses or ""
+                parts = addresses.split()
+                addr = parts.pop(0)
                 ap.addresses = " ".join(parts)
+
+                inuse = ap.inuse or ""
+                parts = inuse.split()
+                if not (addr in parts):
+                    parts.insert(0,addr)
+                    ap.inuse = " ".join(parts)
+
                 ap.save()
             else:
                 addr = None
@@ -359,9 +367,18 @@ class AddressPool(PlCoreBase):
     def put_address(self, addr):
         with transaction.atomic():
             ap = AddressPool.objects.get(pk=self.pk)
-            parts = ap.address.split()
+            addresses = ap.addresses or ""
+            parts = addresses.split()
             if addr not in parts:
-                parts.push(addr)
+                parts.insert(0,addr)
                 ap.addresses = " ".join(parts)
-                ap.save()
+
+            inuse = ap.inuse or ""
+            parts = inuse.split()
+            if addr in parts:
+                parts.remove(addr)
+                ap.inuse = " ".join(parts)
+
+            ap.save()
+
 
