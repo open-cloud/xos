@@ -24,6 +24,11 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
+    public_addresses:
+      type: tosca.nodes.AddressPool
+      properties:
+          addresses: 10.123.0.0/24 10.124.0.0/24
+
     service_vsg:
       type: tosca.nodes.VSGService
       requirements:

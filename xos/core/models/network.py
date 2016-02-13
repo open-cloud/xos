@@ -337,4 +337,30 @@ class NetworkParameter(PlCoreBase):
     def __unicode__(self):
         return self.parameter.name
 
+class AddressPool(PlCoreBase):
+    name = models.CharField(max_length=32)
+    addresses = models.TextField(blank=True, null=True)
+
+    def __unicode__(self): return u'%s' % (self.name)
+
+    def get_address(self):
+        with transaction.atomic():
+            ap = AddressPool.objects.get(pk=self.pk)
+            if ap.addresses:
+                parts = ap.addresses.split()
+                addr = parts.pop()
+                ap.addresses = " ".join(parts)
+                ap.save()
+            else:
+                addr = None
+        return addr
+
+    def put_address(self, addr):
+        with transaction.atomic():
+            ap = AddressPool.objects.get(pk=self.pk)
+            parts = ap.address.split()
+            if addr not in parts:
+                parts.push(addr)
+                ap.addresses = " ".join(parts)
+                ap.save()
 

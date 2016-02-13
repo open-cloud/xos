@@ -522,6 +522,17 @@ node_types:
                 required: false
                 description: Comma-separated list of flavors that this deployment supports.
 
+    tosca.nodes.AddressPool:
+        derived_from: tosca.nodes.Root
+        description: >
+            A pool of addresses
+        properties:
+            xos_base_props
+            addresses:
+                type: string
+                required: false
+                description: space-separated list of addresses
+
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
         description: >
