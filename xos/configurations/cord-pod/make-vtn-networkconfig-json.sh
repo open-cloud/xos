@@ -10,11 +10,17 @@ cat >> $FN <<EOF
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
                 "gatewayMac" : "00:00:00:00:00:01",
+                "localManagementIp": "10.90.0.147/24",
+                "ovsdbPort": "6641",
+                "sshPort": "22",
+                "sshUser": "root",
+                "sshKeyFile": "/root/node_key",
                 "nodes" : [
 EOF
 
 NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep -v ID|grep -v +|awk '{print $4}' )
 
+# XXX disabled - we don't need or want the nm node at this time
 # also configure ONOS to manage the nm node
 #NM="neutron-gateway"
 #NODES="$NODES $NM"
@@ -30,17 +36,17 @@ for NODE in $NODES; do
     NODEIP=`getent hosts $NODE | awk '{ print $1 }'`
 
     PHYPORT=mlx0
-    LOCALIP=$NODEIP
+    # How to set LOCALIP?
+    LOCALIP=10.0.1.1
 
     ((I++))
     cat >> $FN <<EOF
                     {
                       "hostname": "$NODE",
-                      "ovsdbIp": "$NODEIP",
-                      "ovsdbPort": "6641",
+                      "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
-                      "phyPortName": "$PHYPORT",
-                      "localIp": "$LOCALIP"
+                      "dataPlaneIntf": "$PHYPORT",
+                      "dataPlaneIp": "$LOCALIP/24"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN
@@ -61,7 +67,7 @@ cat >> $FN <<EOF
             "openstackswitching" : {
                  "do_not_push_flows" : "true",
                  "neutron_server" : "$NEUTRON_URL/v2.0/",
-                 "keystone_server" : "$OS_AUTH_URL",
+                 "keystone_server" : "$OS_AUTH_URL/",
                  "user_name" : "$OS_USERNAME",
                  "password" : "$OS_PASSWORD"
              }
