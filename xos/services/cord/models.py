@@ -674,6 +674,7 @@ class VSGTenant(TenantWithContainer):
                         flavor = flavors[0],
                         isolation = slice.default_isolation,
                         parent = parent)
+
         self.save_instance(instance)
 
         return instance
@@ -729,16 +730,23 @@ class VSGTenant(TenantWithContainer):
             port.save()
         return port
 
+    def get_lan_network(self, instance):
+        # TODO: for VTN, pick the access network
+
+        slice = self.provider_service.slices.all()[0]
+        lan_networks = [x for x in slice.networks.all() if "lan" in x.name]
+        if not lan_networks:
+            raise XOSProgrammingError("No lan_network")
+        return lan_networks[0]
+
     def save_instance(self, instance):
         with transaction.atomic():
             instance.volumes = "/etc/dnsmasq.d,/etc/ufw"
             super(VSGTenant, self).save_instance(instance)
 
             if instance.isolation in ["container", "container_vm"]:
-                lan_networks = [x for x in instance.slice.networks.all() if "lan" in x.name]
-                if not lan_networks:
-                    raise XOSProgrammingError("No lan_network")
-                port = self.find_or_make_port(instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
+                lan_network = self.get_lan_network(instance)
+                port = self.find_or_make_port(instance, lan_network, ip="192.168.0.1", port_id="unmanaged")
                 port.set_parameter("c_tag", self.volt.c_tag)
                 port.set_parameter("s_tag", self.volt.s_tag)
                 port.set_parameter("device", "eth1")
@@ -750,6 +758,14 @@ class VSGTenant(TenantWithContainer):
                 port = self.find_or_make_port(instance, wan_networks[0])
                 port.set_parameter("next_hop", value="10.0.1.253")   # FIX ME
                 port.set_parameter("device", "eth0")
+
+            if instance.isolation in ["vm"]:
+                lan_network = self.get_lan_network(instance)
+                port = self.find_or_make_port(instance, lan_network)
+                port.set_parameter("c_tag", self.volt.c_tag)
+                port.set_parameter("s_tag", self.volt.s_tag)
+                port.set_parameter("neutron_port_name", "stag-%s" % self.volt.s_tag)
+                port.save()
 
             # tag the instance with the s-tag, so we can easily find the
             # instance later
