@@ -756,7 +756,7 @@ class VSGTenant(TenantWithContainer):
     def manage_wan_container_ip(self):
         if CORD_USE_VTN:
             if not self.wan_container_ip:
-                ap = AddressPool.objects.filter("public_addresses")
+                ap = AddressPool.objects.filter(name="public_addresses")
                 if not ap:
                     raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
                 ap = ap[0]
