@@ -340,6 +340,7 @@ class NetworkParameter(PlCoreBase):
 class AddressPool(PlCoreBase):
     name = models.CharField(max_length=32)
     addresses = models.TextField(blank=True, null=True)
+    inuse = models.TextField(blank=True, null=True)
 
     def __unicode__(self): return u'%s' % (self.name)
 
