@@ -769,7 +769,7 @@ class VSGTenant(TenantWithContainer):
 
     def cleanup_wan_container_ip(self):
         if CORD_USE_VTN and self.wan_container_ip:
-            AddressPool.objects.filter("public_addresses")[0].put_address(self.wan_container_ip)
+            AddressPool.objects.filter(name="public_addresses")[0].put_address(self.wan_container_ip)
             self.wan_container_ip = None
 
     def find_or_make_port(self, instance, network, **kwargs):
