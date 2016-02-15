@@ -37,7 +37,7 @@ for NODE in $NODES; do
 
     PHYPORT=mlx0
     # How to set LOCALIP?
-    LOCALIP=10.0.2.1
+    LOCALIPNET="192.168.199"
 
     ((I++))
     cat >> $FN <<EOF
@@ -46,7 +46,7 @@ for NODE in $NODES; do
                       "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
                       "dataPlaneIntf": "$PHYPORT",
-                      "dataPlaneIp": "$LOCALIP/24"
+                      "dataPlaneIp": "$LOCALIPNET.$I/24"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN
