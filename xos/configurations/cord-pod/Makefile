@@ -1,5 +1,5 @@
 .PHONY: xos
-xos: nodes.yaml images.yaml vtn_network_cfg_json
+xos: nodes.yaml images.yaml vtn_network_cfg_json virtualbng_json
 	sudo docker-compose up -d
 	../common/wait_for_xos_port.sh 80
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
@@ -14,6 +14,9 @@ nodes.yaml:
 
 images.yaml:
 	export SETUPDIR=.; bash ../common/make-images-yaml.sh
+
+virtualbng_json:
+	export SETUPDIR=.; bash ./make-virtualbng-json.sh
 
 vtn_network_cfg_json:
 	export SETUPDIR=.; bash ./make-vtn-networkconfig-json.sh
