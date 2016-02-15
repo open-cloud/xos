@@ -163,6 +163,7 @@ class VSGTenantForm(forms.ModelForm):
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     last_ansible_hash = forms.CharField(required=False)
+    wan_container_ip = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGTenantForm,self ).__init__(*args,**kwargs)
@@ -174,6 +175,7 @@ class VSGTenantForm(forms.ModelForm):
             self.fields['creator'].initial = self.instance.creator
             self.fields['instance'].initial = self.instance.instance
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
+            self.fields['wan_container_ip'].initial = self.instance.wan_container_ip
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VCPE_KIND
@@ -194,7 +196,7 @@ class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
+                                     'wan_container_ip', 'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
     form = VSGTenantForm

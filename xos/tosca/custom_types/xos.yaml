@@ -634,6 +634,18 @@ node_types:
             This is a variant of the TOSCA Network object that includes additional
             XOS-specific properties.
           properties:
+            no-delete:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to delete this object
+            no-create:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to create this object
+            no-update:
+                type: boolean
+                default: false
+                description: Do not allow Tosca to update this object
             ip_version:
               type: integer
               required: no
