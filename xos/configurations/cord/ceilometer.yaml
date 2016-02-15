@@ -161,6 +161,9 @@ topology_template:
     trusty-server-multi-nic:
       type: tosca.nodes.Image
 
+    trusty-server-multi-nic-docker:
+      type: tosca.nodes.Image
+
     mysite_ceilometer:
       description: Ceilometer Proxy Slice
       type: tosca.nodes.Slice
@@ -172,7 +175,7 @@ topology_template:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
           - default_image:
-                node: trusty-server-multi-nic
+                node: trusty-server-multi-nic-docker
                 relationship: tosca.relationships.DefaultImage
       properties:
           default_flavor: m1.small

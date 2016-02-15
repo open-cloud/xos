@@ -661,11 +661,14 @@ class TenantWithContainer(Tenant):
                 instance = self.pick_least_loaded_instance_in_slice(slices)
 
             if not instance:
-                flavors = Flavor.objects.filter(name="m1.small")
-                if not flavors:
-                    raise XOSConfigurationError("No m1.small flavor")
-
                 slice = self.provider_service.slices.all()[0]
+
+                flavor = slice.default_flavor
+                if not flavor:
+                    flavors = Flavor.objects.filter(name="m1.small")
+                    if not flavors:
+                        raise XOSConfigurationError("No m1.small flavor")
+                    flavor = flavors[0]
 
                 if slice.default_isolation == "container_vm":
                     (node, parent) = ContainerVmScheduler(slice).pick()
@@ -677,7 +680,7 @@ class TenantWithContainer(Tenant):
                                 image = self.image,
                                 creator = self.creator,
                                 deployment = node.site_deployment.deployment,
-                                flavor = flavors[0],
+                                flavor = flavor,
                                 isolation = slice.default_isolation,
                                 parent = parent)
                 self.save_instance(instance)
