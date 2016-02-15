@@ -14,12 +14,12 @@ topology_template:
           - vsg_tenant:
               node: service_vsg
               relationship: tosca.relationships.TenantOfService
-          - lan_network:
-              node: lan_network
-              relationship: tosca.relationships.UsesNetwork
-          - wan_network:
-              node: wan_network
-              relationship: tosca.relationships.UsesNetwork
+#          - lan_network:
+#              node: lan_network
+#              relationship: tosca.relationships.UsesNetwork
+#          - wan_network:
+#              node: wan_network
+#              relationship: tosca.relationships.UsesNetwork
       properties:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
