@@ -13,7 +13,7 @@ xos_synchronizer_openstack:
         - xos_db
     volumes:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
-	- ../cord//xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
+        - ../cord//xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
         - .:/root/setup:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
 
