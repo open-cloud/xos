@@ -34,8 +34,7 @@ class SyncInstances(OpenStackSyncStep):
             userdata += '  - %s\n' % key
         return userdata
 
-    def sort_controller_networks(self, nets):
-        nets = list(nets)
+    def sort_nics(self, nics):
         result = []
 
         # Enforce VTN's network order requirement. The access network must be
@@ -43,23 +42,27 @@ class SyncInstances(OpenStackSyncStep):
         # into the second slot.
 
         # move the private and/or access network to the first spot
-        for net in nets[:]:
-            tem = net.network.template
-            if (tem.visibility == "private") and (tem.translation=="none") and ("management" not in tem.name):
-                result.append(net)
-                nets.remove(net)
+        for nic in nics[:]:
+            network=nic.get("network", None)
+            if network:
+                tem = network.template
+                if (tem.visibility == "private") and (tem.translation=="none") and ("management" not in tem.name):
+                    result.append(nic)
+                    nics.remove(nic)
 
         # move the management network to the second spot
-        for net in nets[:]:
-            tem = net.network.template
-            if (tem.visibility == "private") and (tem.translation=="none") and ("management" in tem.name):
-                if len(result)!=1:
-                    raise Exception("Management network needs to be inserted in slot 1, but there are %d private nets" % len(result))
-                result.append(net)
-                nets.remove(net)
+        for net in nics[:]:
+            network=nic.get("network", None)
+            if network:
+                tem = network.template
+                if (tem.visibility == "private") and (tem.translation=="none") and ("management" in tem.name):
+                    if len(result)!=1:
+                        raise Exception("Management network needs to be inserted in slot 1, but there are %d private nics" % len(result))
+                    result.append(nic)
+                    nics.remove(nic)
 
         # add everything else. For VTN there probably shouldn't be any more.
-        result.extend(nets)
+        result.extend(nics)
 
         return result
 
@@ -84,29 +87,30 @@ class SyncInstances(OpenStackSyncStep):
         if instance.slice.service and instance.slice.service.public_key:
             pubkeys.add(instance.slice.service.public_key)
 
+        nics=[]
+
         # handle ports the were created by the user
         port_ids=[]
         for port in Port.objects.filter(instance=instance):
             if not port.port_id:
                 raise DeferredException("Instance %s waiting on port %s" % (instance, port))
-            port_ids.append(port.port_id)
+            nics.append({"kind": "port", "value": port.port_id, "network": port.network})
 
         # we want to exclude from 'nics' any network that already has a Port
         existing_port_networks = [port.network for network in Port.objects.filter(instance=instance)]
 
-        nics = []
         networks = [ns.network for ns in NetworkSlice.objects.filter(slice=instance.slice) if ns.network not in existing_port_networks]
         controller_networks = ControllerNetwork.objects.filter(network__in=networks,
                                                                 controller=instance.node.site_deployment.controller)
 
-        controller_networks = self.sort_controller_networks(controller_networks)
+        #controller_networks = self.sort_controller_networks(controller_networks)
         for controller_network in controller_networks:
             # Lenient exception - causes slow backoff
             if controller_network.network.template.visibility == 'private' and \
                controller_network.network.template.translation == 'none':
                    if not controller_network.net_id:
                         raise DeferredException("Instance %s Private Network %s has no id; Try again later" % (instance, controller_network.network.name))
-                   nics.append(controller_network.net_id)
+                   nics.append({"kind": "net", "value": controller_network.net_id, "network": controller_network.network})
 
         # now include network template
         network_templates = [network.template.shared_network_name for network in networks \
@@ -117,12 +121,14 @@ class SyncInstances(OpenStackSyncStep):
         nets = driver.shell.quantum.list_networks()['networks']
         for net in nets:
             if net['name'] in network_templates:
-                nics.append(net['id'])
+                nics.append({"kind": "net", "value": net['id'], "network": None})
 
         if (not nics):
             for net in nets:
                 if net['name']=='public':
-                    nics.append(net['id'])
+                    nics.append({"kind": "net", "value": net['id'], "network": None})
+
+        nics = self.sort_nics(nics)
 
         image_name = None
         controller_images = instance.image.controllerimages.filter(controller=instance.node.site_deployment.controller)

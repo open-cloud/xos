@@ -20,6 +20,12 @@ topology_template:
          disk_format: QCOW2
          container_format: BARE
 
+    trusty-server-multi-nic-docker:
+      type: tosca.nodes.Image
+      properties:
+         disk_format: QCOW2
+         container_format: BARE
+
     MyDeployment:
       type: tosca.nodes.Deployment
       properties:
@@ -27,6 +33,9 @@ topology_template:
       requirements:
           - image:
               node: trusty-server-multi-nic
+              relationship: tosca.relationships.SupportsImage
+          - image:
+              node: trusty-server-multi-nic-docker
               relationship: tosca.relationships.SupportsImage
 
     CloudLab:

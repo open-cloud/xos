@@ -421,6 +421,7 @@ node_types:
             This is a variant of the TOSCA Network object that includes additional
             XOS-specific properties.
           properties:
+            xos_base_props
             ip_version:
               type: integer
               required: no
