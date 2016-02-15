@@ -74,3 +74,4 @@ xos:
         - ../cord/xos_cord_config:/opt/xos/xos_configuration/xos_cord_config:ro
         - ../vtn/files/xos_vtn_config:/opt/xos/xos_configuration/xos_vtn_config:ro
         - ./id_rsa.pub:/opt/xos/synchronizers/onos/onos_key.pub:ro
+        - ./id_rsa.pub:/opt/xos/synchronizers/vcpe/vcpe_public_key:ro
