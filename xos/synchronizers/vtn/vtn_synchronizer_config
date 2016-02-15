@@ -36,3 +36,6 @@ backoff_disabled=True
 [feefie]
 client_id='vicci_dev_central'
 user_id='pl'
+
+[networking]
+use_vtn=True
