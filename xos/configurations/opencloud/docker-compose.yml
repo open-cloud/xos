@@ -16,6 +16,7 @@ xos_synchronizer_openstack:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
         - /usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro
         - ./files/xos_opencloud_config:/opt/xos/xos_configuration/xos_opencloud_config:ro
+        - ./images:/opt/xos/images:ro
 
 xos_synchronizer_hpc:
     image: xosproject/xos-synchronizer-openstack
