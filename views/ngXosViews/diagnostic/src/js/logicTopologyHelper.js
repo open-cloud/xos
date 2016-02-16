@@ -108,11 +108,11 @@
         transform: `translate(${svgWidth / 2}, ${svgHeight / 2})`
       });
 
-      NodeDrawer.addNetworks(nodeEnter.filter('.network'));
-      NodeDrawer.addRack(nodeEnter.filter('.rack'));
-      NodeDrawer.addPhisical(nodeEnter.filter('.router'));
-      NodeDrawer.addPhisical(nodeEnter.filter('.subscriber'));
-      NodeDrawer.addDevice(nodeEnter.filter('.device'));
+      NodeDrawer.addNetworks(node.filter('.network'));
+      NodeDrawer.addRack(node.filter('.rack'));
+      NodeDrawer.addPhisical(node.filter('.router'));
+      NodeDrawer.addPhisical(node.filter('.subscriber'));
+      NodeDrawer.addDevice(node.filter('.device'));
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
@@ -201,6 +201,24 @@
    
     this.addComputeNodes = (computeNodes) => {
       baseData.children[0].children[0].computeNodes = computeNodes;
+    };
+
+    this.getInstanceStatus = (instanceId) => {
+
+      const computeNodes = baseData.children[0].children[0].computeNodes;
+
+      let targetInstance = computeNodes.reduce((selected, node) => {
+        let found = lodash.find(node.instances, {id: instanceId});
+
+        if(found){
+          return found;
+        }
+      }, null);
+
+      // object are passed by reference,
+      // updating this update the instance in the tree
+      targetInstance.selected = true;
+
     }
   });
 

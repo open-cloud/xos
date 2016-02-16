@@ -161,7 +161,10 @@
       instanceContainer
       .attr({
         transform: `translate(${width / 2}, ${ height / 2})`,
-        class: 'instance',
+        class: d => {
+          console.log(d.name, d.selected);
+          return `instance ${d.selected ? 'active' : ''}`
+        },
       })
       .transition()
       .duration(serviceTopologyConfig.duration)
