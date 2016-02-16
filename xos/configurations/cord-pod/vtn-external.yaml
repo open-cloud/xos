@@ -7,6 +7,12 @@ imports:
 
 topology_template:
   node_templates:
+    management_template:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
     management:
       type: tosca.nodes.network.Network
       properties:
