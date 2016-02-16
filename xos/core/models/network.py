@@ -259,6 +259,7 @@ class Port(PlCoreBase, ParameterMixin):
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
+    xos_created = models.BooleanField(default=False) # True if XOS created this port in Neutron, False if port created by Neutron and observed by XOS
 
     class Meta:
         unique_together = ('network', 'instance')
