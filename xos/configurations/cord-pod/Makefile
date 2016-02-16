@@ -6,8 +6,8 @@ xos: nodes.yaml images.yaml vtn_network_cfg_json virtualbng_json
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/vtn-external.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/vtn/vtn.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/vtn/cord-vtn-vsg.yaml
 
 nodes.yaml:
 	export SETUPDIR=.; bash ../common/make-nodes-yaml.sh
