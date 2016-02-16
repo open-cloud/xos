@@ -22,6 +22,27 @@ class SyncPorts(OpenStackSyncStep):
         else:
             self.sync_ports()
 
+    def get_driver(self, port):
+        # We need to use a client driver that specifies the tenant
+        # of the destination instance. Nova-compute will not connect
+        # ports to instances if the port's tenant does not match
+        # the instance's tenant.
+
+        # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
+        # not being in working condition.
+        from openstack.client import OpenStackClient
+        from openstack.driver import OpenStackDriver
+        controller = port.instance.node.site_deployment.controller
+        slice = port.instance.slice
+        caller = port.network.owner.creator
+        auth = {'username': caller.email,
+                'password': caller.remote_password,
+                'tenant': slice.name}
+        client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
+        driver = OpenStackDriver(client=client)
+
+        return driver
+
     def sync_ports(self):
         logger.info("sync'ing Ports [delete=False]")
 
@@ -170,21 +191,7 @@ class SyncPorts(OpenStackSyncStep):
                     logger.info("deferring port %s because controllerNetwork does not have a port-id yet" % port)
                     continue
                 try:
-                    # We need to use a client driver that specifies the tenant
-                    # of the destination instance. Nova-compute will not connect
-                    # ports to instances if the port's tenant does not match
-                    # the instance's tenant.
-
-                    # A bunch of stuff to compensate for OpenStackDriver.client_driveR()
-                    # not being in working condition.
-                    from openstack.client import OpenStackClient
-                    from openstack.driver import OpenStackDriver
-                    caller = port.network.owner.creator
-                    auth = {'username': caller.email,
-                            'password': caller.remote_password,
-                            'tenant': slice.name}
-                    client = OpenStackClient(controller=controller, **auth) # cacert=self.config.nova_ca_ssl_cert,
-                    driver = OpenStackDriver(client=client)
+                    driver = self.get_driver(port)
 
                     args = {"network_id": cn.net_id}
                     neutron_port_name = port.get_parameters().get("neutron_port_name", None)
@@ -208,8 +215,15 @@ class SyncPorts(OpenStackSyncStep):
             self.delete_record(port)
 
     def delete_record(self, port):
-        if port.xos_created:
+        if port.xos_created and port.port_id:
             logger.info("calling openstack to destroy port %s" % port.port_id)
+            try:
+                driver = self.get_driver(port)
+                driver.shell.quantum.delete_port(port.port_id)
+            except:
+                logger.log_exc("failed to delete port %s from neutron" % port.port_id)
+                return
+
         logger.info("Purging port %s" % port)
         port.delete(purge=True)
 
