@@ -33,11 +33,11 @@
       y: -10
     },
     instance: {
-      width: 40,
-      height: 16,
+      width: 80,
+      height: 36,
       margin: 5,
-      x: -20,
-      y: -8
+      x: -40,
+      y: -18
     }
   })
 
