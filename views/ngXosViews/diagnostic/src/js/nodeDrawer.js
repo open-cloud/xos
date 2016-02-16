@@ -97,6 +97,17 @@
 
     };
 
+    // NOTE Stripping unuseful names to shorten labels.
+    // This is not elegant
+    const formatInstanceName = (name) => {
+      return name
+        .replace('app_', '')
+        .replace('service_', '')
+        .replace('ovs_', '')
+        .replace('mysite_', '')
+        .replace('_instance', '');
+    };
+
     this.drawInstances = (container, instances) => {
 
       let elements = container.selectAll('.instances')
@@ -116,11 +127,16 @@
 
       instanceContainer.append('text')
       .attr({
-        'text-anchor': 'start',
-        y: 13, //FIXME
-        x: 5 //FIXME
+        'text-anchor': 'middle',
+        y: 23, //FIXME
+        x: 40 //FIXME
       })
-      .text(d => d.name);
+      .text(d => formatInstanceName(d.name));
+
+      instanceContainer
+      .on('click', d => {
+        console.log(d);
+      });
     };
 
     this.addPhisical = (nodes) => {
