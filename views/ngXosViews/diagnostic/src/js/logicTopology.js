@@ -11,7 +11,7 @@
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $log, $scope, d3, LogicTopologyHelper, Node){
+      controller: function($element, $log, $scope, $rootScope, d3, LogicTopologyHelper, Node){
         $log.info('Logic Plane');
 
         var svg;
@@ -44,6 +44,14 @@
             $log.info(`Update logic layer for subscriber ${selected.humanReadableName}`);
           }
         });
+
+        $rootScope.$on('instance.detail', (evt, instance) => {
+
+          $log.info(`Highlight instance; ${instance.id}`)
+
+          LogicTopologyHelper.getInstanceStatus(instance.id);
+          LogicTopologyHelper.updateTree(svg);
+        })
 
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);

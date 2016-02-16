@@ -44,6 +44,12 @@ logic-topology .node.rack rect{
     stroke-width: 1px;
 }
 
+logic-topology .node .instance.active rect{
+    fill: lightsteelblue;
+    stroke: steelblue;
+    stroke-width: 1px;   
+}
+
 /* LEGEND */
 
 .legend {
