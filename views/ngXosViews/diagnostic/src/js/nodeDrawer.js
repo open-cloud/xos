@@ -120,7 +120,7 @@
         y: 13, //FIXME
         x: 5 //FIXME
       })
-      .text(d => d.humanReadableName.split('.')[0]);
+      .text(d => d.name);
     };
 
     this.addPhisical = (nodes) => {

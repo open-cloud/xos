@@ -67,8 +67,6 @@
 
     this.getComputeNodePosition = (nodes, position) => {
 
-      console.log(position);
-
       const x = serviceTopologyConfig.computeNode.margin;
 
       let previousElEight = lodash.reduce(nodes.slice(0, position), (val, node) => {
