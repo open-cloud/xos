@@ -9,7 +9,7 @@
   var instanceId = 0;
 
   angular.module('xos.serviceTopology')
-  .service('NodeDrawer', function(d3, serviceTopologyConfig, Node, RackHelper){
+  .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper){
     this.addNetworks = (nodes) => {
       nodes.append('path')
       .attr({
@@ -27,39 +27,59 @@
 
     this.addRack = (nodes) => {
 
-      // NOTE is good to request data here? Probably not.
-
-      Node.queryWithInstances().$promise
-      .then((computeNodes) => {
-        let [w, h] = RackHelper.getRackSize(computeNodes);
+      // loop because of D3
+      // rack will be only one
+      nodes.each(d => {
+        let [w, h] = RackHelper.getRackSize(d.computeNodes);
 
         let rack = nodes
-        .append('g').
-        attr({
+        .append('g');
+
+        rack
+        .attr({
+          transform: `translate(0,0)`
+        })
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
           transform: d => `translate(${- (w / 2)}, ${- (h / 2)})`
         });
 
         rack
         .append('rect')
         .attr({
+          width: 0,
+          height: 0
+        })
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
           width: w,
           height: h
         });
 
-        nodes.append('text')
+        rack.append('text')
         .attr({
           'text-anchor': 'middle',
-          y: - (h / 2) - 10
+          y: - 10,
+          x: w / 2,
+          opacity: 0
         })
-        .text(d => d.name);
+        .text(d => d.name)
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
+        })
 
-        this.drawComputeNodes(rack, computeNodes);
+        this.drawComputeNodes(rack, d.computeNodes);
+
       });
+
     };
 
     this.drawComputeNodes = (container, nodes) => {
       
-
       let elements = container.selectAll('.compute-nodes')
       .data(nodes, d => {
         if(!angular.isString(d.d3Id)){
@@ -68,13 +88,28 @@
         return d.d3Id;
       });
 
-      var nodeContainer = elements.enter().append('g')
+      let {width, height} = container.node().getBoundingClientRect();
+
+      var nodeContainer = elements.enter().append('g');
+
+      nodeContainer
       .attr({
+        transform: `translate(${width / 2}, ${ height / 2})`,
         class: 'compute-node',
+      })
+      .transition()
+      .duration(serviceTopologyConfig.duration)
+      .attr({
         transform: (d) => `translate(${RackHelper.getComputeNodePosition(nodes, d.d3Id.replace('compute-node-', '') - 1)})`
       });
 
       nodeContainer.append('rect')
+      .attr({
+        width: 0,
+        height: 0
+      })
+      .transition()
+      .duration(serviceTopologyConfig.duration)
       .attr({
         width: d => RackHelper.getComputeNodeSize(d.instances)[0],
         height: d => RackHelper.getComputeNodeSize(d.instances)[1],
@@ -84,9 +119,15 @@
       .attr({
         'text-anchor': 'start',
         y: 15, //FIXME
-        x: 10 //FIXME
+        x: 10, //FIXME
+        opacity: 0
       })
-      .text(d => d.humanReadableName.split('.')[0]);
+      .text(d => d.humanReadableName.split('.')[0])
+      .transition()
+      .duration(serviceTopologyConfig.duration)
+      .attr({
+        opacity: 1
+      })
 
       // if there are Compute Nodes
       if(nodeContainer.length > 0){
@@ -110,16 +151,31 @@
 
     this.drawInstances = (container, instances) => {
 
+      let {width, height} = container.node().getBoundingClientRect();
+
       let elements = container.selectAll('.instances')
       .data(instances, d => angular.isString(d.d3Id) ? d.d3Id : d.d3Id = `instance-${++instanceId}`)
 
-      var instanceContainer = elements.enter().append('g')
+      var instanceContainer = elements.enter().append('g');
+
+      instanceContainer
       .attr({
+        transform: `translate(${width / 2}, ${ height / 2})`,
         class: 'instance',
+      })
+      .transition()
+      .duration(serviceTopologyConfig.duration)
+      .attr({
         transform: d => `translate(${RackHelper.getInstancePosition(d.d3Id.replace('instance-', '') - 1)})`
       });
 
       instanceContainer.append('rect')
+      .attr({
+        width: 0,
+        height: 0
+      })
+      .transition()
+      .duration(serviceTopologyConfig.duration)
       .attr({
         width: serviceTopologyConfig.instance.width,
         height: serviceTopologyConfig.instance.height
@@ -129,9 +185,15 @@
       .attr({
         'text-anchor': 'middle',
         y: 23, //FIXME
-        x: 40 //FIXME
+        x: 40, //FIXME
+        opacity: 0
       })
-      .text(d => formatInstanceName(d.name));
+      .text(d => formatInstanceName(d.name))
+      .transition()
+      .duration(serviceTopologyConfig.duration)
+      .attr({
+        opacity: 1
+      });
 
       instanceContainer
       .on('click', d => {

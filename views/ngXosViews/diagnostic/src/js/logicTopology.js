@@ -11,7 +11,7 @@
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $log, $scope, d3, LogicTopologyHelper){
+      controller: function($element, $log, $scope, d3, LogicTopologyHelper, Node){
         $log.info('Logic Plane');
 
         var svg;
@@ -28,10 +28,14 @@
         $scope.$watch(() => this.subscribers, (subscribers) => {
           if(subscribers){
 
-            // TODO
-            // build here the full data structure
+            LogicTopologyHelper.addSubscribers(angular.copy(subscribers));
 
-            LogicTopologyHelper.addSubscribers(svg, angular.copy(subscribers));
+            Node.queryWithInstances().$promise
+            .then((computeNodes) => {
+              LogicTopologyHelper.addComputeNodes(computeNodes);
+              LogicTopologyHelper.updateTree(svg);
+            });
+            
           }
         });
 
@@ -42,7 +46,7 @@
         });
 
         handleSvg($element[0]);
-        LogicTopologyHelper.drawTree(svg);
+        LogicTopologyHelper.setupTree(svg);
       }
     };
   });
