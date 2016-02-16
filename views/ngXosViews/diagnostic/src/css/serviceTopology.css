@@ -38,6 +38,12 @@ logic-topology .network .cloud {
     stroke-width: 1px;   
 }
 
+logic-topology .node.rack rect{
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
 /* LEGEND */
 
 .legend {

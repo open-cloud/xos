@@ -19,6 +19,7 @@
       const labelSpace = this.getComputeNodeLabelSize();
 
       const height = (serviceTopologyConfig.instance.height * rows) + (serviceTopologyConfig.instance.margin * (rows + 1)) + labelSpace;
+
       return [width, height];
     });
 
@@ -65,6 +66,9 @@
     */
 
     this.getComputeNodePosition = (nodes, position) => {
+
+      console.log(position);
+
       const x = serviceTopologyConfig.computeNode.margin;
 
       let previousElEight = lodash.reduce(nodes.slice(0, position), (val, node) => {

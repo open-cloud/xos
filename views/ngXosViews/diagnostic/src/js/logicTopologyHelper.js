@@ -79,10 +79,7 @@
       // Normalize for fixed-depth.
       nodes.forEach((d) => {
         // position the child node horizontally
-        // const step = ((svgWidth - (serviceTopologyConfig.widthMargin * 2)) / 7);
-        // d.y = (6 - d.depth) * step;
         d.y = this.computeElementPosition(svgWidth)[d.depth];
-        console.log(d.id, d.y);
       });
 
       let links = layout.links(nodes);

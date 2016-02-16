@@ -39,7 +39,6 @@
                 node.instances = list[i];
                 return node;
               });
-              console.log(res.data);
               deferred.resolve(res.data);
             })
 

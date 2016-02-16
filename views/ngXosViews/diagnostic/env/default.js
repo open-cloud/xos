@@ -8,6 +8,6 @@
 
 module.exports = {
   host: 'http://clnode078.clemson.cloudlab.us:9999/',
-  xoscsrftoken: 'Lbrkulk7c9fQOloSjhQEqLdDDFRNHsuL',
-  xossessionid: '7j0w1m7t4qcyu472voe32jz6ck9dnq14'
+  xoscsrftoken: 'GZ6rjD63x2mkx6BpNjHVSpMg3YvxV4HL',
+  xossessionid: 'sz214m5mr3xyc983l1oi9no369ixs73h'
 };

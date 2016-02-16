@@ -9,7 +9,7 @@
   var instanceId = 0;
 
   angular.module('xos.serviceTopology')
-  .service('NodeDrawer', function(d3, serviceTopologyConfig, Node){
+  .service('NodeDrawer', function(d3, serviceTopologyConfig, Node, RackHelper){
     this.addNetworks = (nodes) => {
       nodes.append('path')
       .attr({
@@ -31,23 +31,35 @@
 
       Node.queryWithInstances().$promise
       .then((computeNodes) => {
-        this.drawComputeNodes(nodes, computeNodes);
+        let [w, h] = RackHelper.getRackSize(computeNodes);
+
+        let rack = nodes
+        .append('g').
+        attr({
+          transform: d => `translate(${- (w / 2)}, ${- (h / 2)})`
+        });
+
+        rack
+        .append('rect')
+        .attr({
+          width: w,
+          height: h
+        });
+
+        nodes.append('text')
+        .attr({
+          'text-anchor': 'middle',
+          y: - (h / 2) - 10
+        })
+        .text(d => d.name);
+
+        this.drawComputeNodes(rack, computeNodes);
       });
-
-      // NOTE should we draw the rack?
-      nodes.append('rect')
-      .attr(serviceTopologyConfig.rack);
-
-      nodes.append('text')
-      .attr({
-        'text-anchor': 'middle',
-        y: serviceTopologyConfig.rack.y - 10
-      })
-      .text(d => d.name);
     };
 
     this.drawComputeNodes = (container, nodes) => {
-      console.log('drawComputeNodes');
+      
+
       let elements = container.selectAll('.compute-nodes')
       .data(nodes, d => {
         if(!angular.isString(d.d3Id)){
@@ -58,11 +70,23 @@
 
       var nodeContainer = elements.enter().append('g')
       .attr({
-        class: 'compute-node'
+        class: 'compute-node',
+        transform: (d) => `translate(${RackHelper.getComputeNodePosition(nodes, d.d3Id.replace('compute-node-', '') - 1)})`
       });
 
       nodeContainer.append('rect')
-      .attr(serviceTopologyConfig.computeNode);
+      .attr({
+        width: d => RackHelper.getComputeNodeSize(d.instances)[0],
+        height: d => RackHelper.getComputeNodeSize(d.instances)[1],
+      });
+
+      nodeContainer.append('text')
+      .attr({
+        'text-anchor': 'start',
+        y: 15, //FIXME
+        x: 10 //FIXME
+      })
+      .text(d => d.humanReadableName.split('.')[0]);
 
       // if there are Compute Nodes
       if(nodeContainer.length > 0){
@@ -74,19 +98,29 @@
     };
 
     this.drawInstances = (container, instances) => {
-      
-      // TODO position instances... How??
 
       let elements = container.selectAll('.instances')
       .data(instances, d => angular.isString(d.d3Id) ? d.d3Id : d.d3Id = `instance-${++instanceId}`)
 
       var instanceContainer = elements.enter().append('g')
       .attr({
-        class: 'instance'
+        class: 'instance',
+        transform: d => `translate(${RackHelper.getInstancePosition(d.d3Id.replace('instance-', '') - 1)})`
       });
 
       instanceContainer.append('rect')
-      .attr(serviceTopologyConfig.instance);
+      .attr({
+        width: serviceTopologyConfig.instance.width,
+        height: serviceTopologyConfig.instance.height
+      });
+
+      instanceContainer.append('text')
+      .attr({
+        'text-anchor': 'start',
+        y: 13, //FIXME
+        x: 5 //FIXME
+      })
+      .text(d => d.humanReadableName.split('.')[0]);
     };
 
     this.addPhisical = (nodes) => {
