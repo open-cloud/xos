@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.serviceTopology')
-  .service('ServiceTopologyHelper', function($window, $log, lodash, ServiceRelation, serviceTopologyConfig){
+  .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
 
     const drawLegend = (svg) => {
       const legendContainer = svg.append('g')
@@ -126,8 +126,6 @@
       const subscriberNodes = nodeEnter.filter('.subscriber');
       const internetNodes = nodeEnter.filter('.router');
       const serviceNodes = nodeEnter.filter('.service');
-      const instanceNodes = nodeEnter.filter('.instance');
-      const sliceNodes = nodeEnter.filter('.slice');
 
       subscriberNodes.append('rect')
         .attr(serviceTopologyConfig.square);
@@ -139,23 +137,6 @@
         .attr('r', 1e-6)
         .style('fill', d => d._children ? 'lightsteelblue' : '#fff')
         .on('click', serviceClick);
-
-      sliceNodes.append('rect')
-        .attr({
-          width: 20,
-          height: 20,
-          x: -10,
-          y: -10
-        });
-
-      instanceNodes.append('rect')
-        .attr({
-          width: 20,
-          height: 20,
-          x: -10,
-          y: -10,
-          class: d => d.active ?'' : 'active'
-        });
 
       nodeEnter.append('text')
         .attr({
@@ -182,7 +163,9 @@
         });
 
       nodeUpdate.select('circle')
-        .attr('r', d => d.selected ? serviceTopologyConfig.circle.selectedRadius : serviceTopologyConfig.circle.radius)
+        .attr('r', d => {
+          return d.selected ? serviceTopologyConfig.circle.selectedRadius : serviceTopologyConfig.circle.radius
+        })
         .style('fill', d => d.selected ? 'lightsteelblue' : '#fff');
 
       nodeUpdate.select('text')
@@ -234,11 +217,19 @@
 
     const serviceClick = function(d) {
 
-      $log.info('TODO emit an event to highlight VMs');
+      $log.info('TODO emit an event to highlight VMs', d);
+
+      if(d.service.service_specific_attribute && d.service.service_specific_attribute.instance_id){
+        $rootScope.$emit('instance.detail', {id: d.service.service_specific_attribute.instance_id});
+      }
 
       if(!d.service){
         return;
       }
+
+      // unselect all
+      _svg.selectAll('circle')
+      .each(d => d.selected = false);
 
       // toggling selected status
       d.selected = !d.selected;
@@ -249,6 +240,8 @@
         .transition()
         .duration(serviceTopologyConfig.duration)
         .attr('r', serviceTopologyConfig.circle.selectedRadius);
+
+      updateTree(_svg, _layout, _source);
     };
 
     this.updateTree = updateTree;

@@ -17,6 +17,7 @@
             {
               name: 'Rack',
               type: 'rack',
+              computeNodes: [],
               children: [
                 {
                   name: 'LAN',
@@ -154,7 +155,7 @@
     /**
     * Calculate the svg size and setup tree layout
     */
-    this.drawTree = (svg) => {
+    this.setupTree = (svg) => {
       
 
       svgWidth = svg.node().getBoundingClientRect().width;
@@ -165,19 +166,24 @@
 
       layout = d3.layout.tree()
       .size([height, width]);
+    };
 
+    /**
+    * Update the tree layout
+    */
+
+    this.updateTree = (svg) => {
       // Compute the new tree layout.
       [nodes, links] = computeLayout(baseData);
 
       drawNodes(svg, nodes);
       drawLinks(svg, links);
-      
-    };
+    }
 
     /**
     * Add Subscribers to the tree
     */
-    this.addSubscribers = (svg, subscribers) => {
+    this.addSubscribers = (subscribers) => {
 
       subscribers.map((subscriber) => {
         subscriber.children = subscriber.devices;
@@ -185,11 +191,16 @@
 
       // add subscriber to data tree
       baseData.children[0].children[0].children[0].children = subscribers;
+      
+      return baseData;
+    };
 
-      [nodes, links] = computeLayout(baseData);
-
-      drawNodes(svg, nodes);
-      drawLinks(svg, links);
+    /**
+    * Add compute nodes to the rack element
+    */
+   
+    this.addComputeNodes = (computeNodes) => {
+      baseData.children[0].children[0].computeNodes = computeNodes;
     }
   });
 
