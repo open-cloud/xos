@@ -16,8 +16,14 @@ class SyncPorts(OpenStackSyncStep):
     #     has, and then work backward from each port's network-id to determine
     #     which Network is associated from the port.
 
-    def call(self, **args):
-        logger.info("sync'ing network instances")
+    def call(self, failed=[], deletion=False):
+        if deletion:
+            self.delete_ports()
+        else:
+            self.sync_ports()
+
+    def sync_ports(self):
+        logger.info("sync'ing Ports [delete=False]")
 
         ports = Port.objects.all()
         ports_by_id = {}
@@ -190,12 +196,20 @@ class SyncPorts(OpenStackSyncStep):
                     if neutron_port["fixed_ips"]:
                         port.ip = neutron_port["fixed_ips"][0]["ip_address"]
                     port.mac = neutron_port["mac_address"]
+                    port.xos_created = True
                 except:
                     logger.log_exc("failed to create neutron port for %s" % port)
                     continue
                 port.save()
 
-    def delete_record(self, network_instance):
-        # Nothing to do, this is an OpenCloud object
-        pass
+    def delete_ports(self):
+        logger.info("sync'ing Ports [delete=True]")
+        for port in Port.deleted_objects.all():
+            self.delete_record(port)
+
+    def delete_record(self, port):
+        if port.xos_created:
+            logger.info("calling openstack to destroy port %s" % port.port_id)
+        logger.info("Purging port %s" % port)
+        port.delete(purge=True)
 
