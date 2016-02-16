@@ -6,13 +6,6 @@
     widthMargin: 20,
     heightMargin: 30,
     duration: 750,
-    // elWidths: { // this is the fixed width for elements
-    //   devices: 20,
-    //   subscribers: 20,
-    //   router: 20,
-    //   network: 104,
-    //   rack: 105
-    // },
     elWidths: [20, 104, 105, 104, 20, 150],
     circle: {
       radius: 10,
