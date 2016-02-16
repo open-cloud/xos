@@ -1,0 +1,40 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Set up management network for CORD POD
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+
+    management_template:
+      type: tosca.nodes.NetworkTemplate
+      properties:
+          visibility: private
+          translation: none
+
+    management:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+          cidr: 172.27.0.0/24
+      requirements:
+          - network_template:
+              node: management_template
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_management
+              relationship: tosca.relationships.MemberOfSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    mysite_management:
+      description: This slice exists solely to own the management network
+      type: tosca.nodes.Slice
+      properties:
+          network: noauto
+      requirements:
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
