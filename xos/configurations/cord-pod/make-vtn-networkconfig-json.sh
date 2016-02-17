@@ -10,7 +10,7 @@ cat >> $FN <<EOF
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
                 "gatewayMac" : "00:00:00:00:00:01",
-                "localManagementIp": "10.90.0.147/24",
+                "localManagementIp": "172.27.0.1/24",
                 "ovsdbPort": "6641",
                 "sshPort": "22",
                 "sshUser": "root",
