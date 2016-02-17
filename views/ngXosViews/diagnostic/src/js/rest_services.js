@@ -39,7 +39,7 @@
     this.getInstanceStats = (instanceUuid) => {
       let deferred = $q.defer();
 
-      $http.get('/xoslib/meterstatistics', {resource: instanceUuid})
+      $http.get('/xoslib/meterstatistics', {params:{resource: instanceUuid}})
       .then((res) => {
         deferred.resolve(res.data);
       })

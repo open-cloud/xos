@@ -1,0 +1,22 @@
+<div class="instances-stats animate" ng-hide="vm.hideInstanceStats">
+  <div class="row">
+    <div class="col-sm-3 col-sm-offset-8">
+      <div class="panel panel-primary" ng-repeat="instance in vm.selectedInstances">
+        <div class="panel-heading">
+          {{instance.humanReadableName}}
+        </div>
+          <ul class="list-group">
+            <li class="list-group-item">Backend Status: {{instance.backend_status}}</li>
+            <li class="list-group-item">IP Address: {{instance.ip}}</li>
+          </ul>
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="stat in instance.stats">
+              <span class="badge">{{stat.value}}</span>
+              {{stat.meter}}
+            </li>
+          </ul>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>

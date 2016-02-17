@@ -219,6 +219,13 @@
 
     const serviceClick = function(d) {
 
+      // if was selected
+      if(d.selected){
+        d.selected = !d.selected;
+        $rootScope.$emit('instance.detail.hide', {});
+        return updateTree(_svg, _layout, _source);
+      }
+
       $rootScope.$emit('instance.detail', {name: d.humanReadableName});
 
       // unselect all
@@ -226,14 +233,8 @@
       .each(d => d.selected = false);
 
       // toggling selected status
+      console.log(d.selected);
       d.selected = !d.selected;
-
-      var selectedNode = d3.select(this);
-
-      selectedNode
-        .transition()
-        .duration(serviceTopologyConfig.duration)
-        .attr('r', serviceTopologyConfig.circle.selectedRadius);
 
       updateTree(_svg, _layout, _source);
     };
