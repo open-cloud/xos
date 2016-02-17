@@ -108,11 +108,16 @@
         transform: `translate(${svgWidth / 2}, ${svgHeight / 2})`
       });
 
+      // create Nodes
       NodeDrawer.addNetworks(node.filter('.network'));
       NodeDrawer.addRack(node.filter('.rack'));
       NodeDrawer.addPhisical(node.filter('.router'));
       NodeDrawer.addPhisical(node.filter('.subscriber'));
       NodeDrawer.addDevice(node.filter('.device'));
+
+      //update nodes
+      // TODO if data change, only update them
+      // NodeDrawer.updateRack(node.filter('.rack'));
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
@@ -207,6 +212,14 @@
 
       const computeNodes = baseData.children[0].children[0].computeNodes;
 
+      // unselect all
+      computeNodes.map((node) => {
+        node.instances.map((instance) => {
+          instance.selected = false
+          return instance;
+        });
+      });
+
       let targetInstance = computeNodes.reduce((selected, node) => {
         let found = lodash.find(node.instances, {id: instanceId});
 
@@ -217,7 +230,9 @@
 
       // object are passed by reference,
       // updating this update the instance in the tree
-      targetInstance.selected = true;
+      if(targetInstance){
+        targetInstance.selected = true;
+      }
 
     }
   });
