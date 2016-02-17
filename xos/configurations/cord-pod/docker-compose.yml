@@ -41,6 +41,17 @@ xos_synchronizer_vcpe:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
 
+xos_synchronizer_vtn:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtn/vtn-synchronizer.py -C /opt/xos/synchronizers/vtn/vtn_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vtn
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+
 #xos_synchronizer_vbng:
 #    image: xosproject/xos-synchronizer-openstack
 #    command: bash -c "sleep 120; python /opt/xos/synchronizers/vbng/vbng-synchronizer.py -C /opt/xos/synchronizers/vbng/vbng_synchronizer_config"
