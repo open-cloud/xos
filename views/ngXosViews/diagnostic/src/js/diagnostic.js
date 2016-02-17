@@ -8,7 +8,7 @@
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
       controller: function(Subscribers, ServiceRelation){
-        Subscribers.queryWithDevices().$promise
+        Subscribers.query().$promise
         .then((subscribers) => {
           this.subscribers = subscribers;
           return ServiceRelation.get();

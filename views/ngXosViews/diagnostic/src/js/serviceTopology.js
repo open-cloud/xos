@@ -57,6 +57,10 @@
             this.selectedSlice = slice;
             this.instances = instances;
           })
+          .catch(e => {
+            this.errors = e;
+            throw new Error(e);
+          })
         };
         
         $scope.$watch(() => this.serviceChain, (chain) => {

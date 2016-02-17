@@ -120,7 +120,6 @@
       var nodeEnter = node.enter().append('g')
         .attr({
           class: d => {
-            console.log(d);
             return `node ${d.type}`
           },
           transform: `translate(${source.y0}, ${source.x0})`
@@ -220,14 +219,7 @@
 
     const serviceClick = function(d) {
 
-      $log.info('TODO emit an event to highlight VMs', d);
-
-      // TODO how I get the instance id???
-      $rootScope.$emit('instance.detail', {id: d.service.service_specific_attribute.instance_id || null});
-
-      if(!d.service){
-        return;
-      }
+      $rootScope.$emit('instance.detail', {name: d.humanReadableName});
 
       // unselect all
       _svg.selectAll('circle')

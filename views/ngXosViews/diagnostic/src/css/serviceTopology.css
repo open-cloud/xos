@@ -4,6 +4,16 @@ diagnostic .half-height {
     height: 50%;
 }
 
+diagnostic .onethird-height {
+    position: relative;
+    height: 33%;
+}
+
+diagnostic .twothird-height {
+    position: relative;
+    height: 67%;
+}
+
 diagnostic .subscriber-select{
     max-width: 200px;
     position: absolute;

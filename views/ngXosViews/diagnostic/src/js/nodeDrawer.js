@@ -10,6 +10,9 @@
 
   angular.module('xos.serviceTopology')
   .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper){
+
+    var _this = this;
+
     this.addNetworks = (nodes) => {
       nodes.append('path')
       .attr({
@@ -131,9 +134,10 @@
 
       // if there are Compute Nodes
       if(nodeContainer.length > 0){
-        angular.forEach(nodeContainer.data(), (computeNode) => {
-          this.drawInstances(nodeContainer, computeNode.instances);
-        });
+        // draw instances for each compute node
+        nodeContainer.each(function(a){
+          _this.drawInstances(d3.select(this), a.instances);
+        })
       }
 
     };
@@ -150,7 +154,7 @@
     };
 
     this.drawInstances = (container, instances) => {
-
+      
       let {width, height} = container.node().getBoundingClientRect();
 
       let elements = container.selectAll('.instances')
@@ -166,7 +170,7 @@
       .transition()
       .duration(serviceTopologyConfig.duration)
       .attr({
-        transform: d => `translate(${RackHelper.getInstancePosition(d.d3Id.replace('instance-', '') - 1)})`
+        transform: (d, i) => `translate(${RackHelper.getInstancePosition(i)})`
       });
 
       instanceContainer.append('rect')

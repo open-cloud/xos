@@ -6,13 +6,91 @@
     return $resource('/xos/services/:id', {id: '@id'});
   })
   .service('Tenant', function($resource){
-    return $resource('/xos/tenants');
+    return $resource('/xos/tenants', {id: '@id'}, {
+      queryVsgInstances: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: (res) => {
+
+            // NOTE
+            // Note that VCPETenant is now VSGTenant.
+
+            let instances = [];
+
+            angular.forEach(res.data, (tenant) => {
+              let info = JSON.parse(tenant.service_specific_attribute);
+              if(info && info.instance_id){
+                instances.push(info.instance_id);
+              }
+            });
+
+            return instances;
+          }
+        }
+      }
+    });
+  })
+  .service('Ceilometer', function($http, $q, Instances) {
+
+    /**
+    * Get stats for a single instance
+    */
+    this.getInstanceStats = (instanceUuid) => {
+      let deferred = $q.defer();
+
+      $http.get('/xoslib/meterstatistics', {resource: instanceUuid})
+      .then((res) => {
+        deferred.resolve(res.data);
+      })
+      .catch((e) => {
+        deferred.reject(e);
+      })
+
+      return deferred.promise;
+    };
+
+    /**
+    * Collect stats for an array of instances
+    */
+    this.getInstancesStats = (instances) => {
+      let deferred = $q.defer();
+      let instancePromises = [];
+      let instanceList = [];
+
+      // retrieve instance details
+      instances.forEach((instanceId) => {
+        instancePromises.push(Instances.get({id: instanceId}).$promise);
+      });
+
+      // get all instance data
+      $q.all(instancePromises)
+      .then((_instanceList) => {
+        instanceList = _instanceList;
+        let promises = [];
+        // foreach instance query stats
+        instanceList.forEach((instance) => {
+          promises.push(this.getInstanceStats(instance.instance_uuid));
+        });
+        return $q.all(promises);
+      })
+      .then(stats => {
+        // augment instance with stats information
+        instanceList.map((instance, i) => {
+          instance.stats = stats[i];
+        });
+        deferred.resolve(instanceList);
+      })
+      .catch(deferred.reject);
+
+      return deferred.promise;
+    };
   })
   .service('Slice', function($resource){
     return $resource('/xos/slices', {id: '@id'});
   })
   .service('Instances', function($resource){
-    return $resource('/xos/instances', {id: '@id'}, {});
+    return $resource('/xos/instances/:id', {id: '@id'});
   })
   .service('Node', function($resource, $q, Instances){
     return $resource('/xos/nodes', {id: '@id'}, {
@@ -237,8 +315,6 @@
         parent: null,
         children: [buildChild(services, tenants, baseService)]
       };
-
-      console.log(baseData);
       return baseData;
     };
 
