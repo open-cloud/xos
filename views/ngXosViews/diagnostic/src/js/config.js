@@ -6,7 +6,7 @@
     widthMargin: 20,
     heightMargin: 30,
     duration: 750,
-    elWidths: [20, 104, 105, 104, 20, 150], //this is not true
+    elWidths: [20, 104, 105, 104, 20], //this is not true
     circle: {
       radius: 10,
       r: 10,
