@@ -11,7 +11,7 @@
         Subscribers.queryWithDevices().$promise
         .then((subscribers) => {
           this.subscribers = subscribers;
-          return ServiceRelation.get(subscribers[0]);
+          return ServiceRelation.get();
         })
         .then((serviceChain) => {
           this.serviceChain = serviceChain;

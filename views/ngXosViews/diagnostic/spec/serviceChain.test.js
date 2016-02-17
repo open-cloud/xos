@@ -114,7 +114,7 @@ describe('The Service Relation Service', () => {
     ];
 
     it('should return a tree ordered by relations', () => {
-      let tree = Service.buildServiceTree(services, relations);
+      let tree = Service.buildSubscriberServiceTree(services, relations);
 
       expect(tree.name).toBe('fakeSubs');
       expect(tree.parent).toBeNull();
@@ -151,6 +151,46 @@ describe('The Service Relation Service', () => {
 
     it('should return the depth', () => {
       expect(Service.depthOf(sample)).toBe(3);
+    });
+  });
+
+  describe('Given a list of services and COARSE tenant', () => {
+    
+    const coarseTenants = [
+      {
+        humanReadableName: 'coarse-1',
+        provider_service: 1,
+        subscriber_service: 2
+      },
+      {
+        humanReadableName: 'coarse-2',
+        provider_service: 2,
+        subscriber_service: 3
+      }
+    ];
+
+    const services = [
+      {
+        id: 1,
+        humanReadableName: 'vbng'
+      },
+      {
+        id: 2,
+        humanReadableName: 'vsg'
+      },
+      {
+        id: 3,
+        humanReadableName: 'volt'
+      }
+    ];
+
+    it('should build the tenancy graph', () => {
+      let tree = Service.buildServiceTree(services, coarseTenants);
+
+      expect(tree.type).toBe('subscriber');
+      expect(tree.children[0].humanReadableName).toBe('volt');
+      expect(tree.children[0].children[0].humanReadableName).toBe('vsg');
+      expect(tree.children[0].children[0].children[0].humanReadableName).toBe('vbng');
     });
   });
 
