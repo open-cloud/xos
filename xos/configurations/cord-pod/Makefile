@@ -12,7 +12,7 @@ vtn:
 cord:
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/mgmt-net.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
-	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/vtn/cord-vtn-vsg.yaml
+	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/cord-vtn-vsg.yaml
 
 nodes.yaml:
 	export SETUPDIR=.; bash ../common/make-nodes-yaml.sh
