@@ -66,7 +66,7 @@
           + (step * i) // space between elements
           + (el / 2) // this el width
           + previousElWidth; // previous elements width
-          console.log(`${i} elPos: ${previousElWidth}`);
+
         xPos.push(svgWidth - elPos);
       })
 

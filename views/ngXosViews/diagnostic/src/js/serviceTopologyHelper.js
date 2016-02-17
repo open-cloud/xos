@@ -119,7 +119,10 @@
       // Enter any new nodes at the parent's previous position.
       var nodeEnter = node.enter().append('g')
         .attr({
-          class: d => `node ${d.type}`,
+          class: d => {
+            console.log(d);
+            return `node ${d.type}`
+          },
           transform: `translate(${source.y0}, ${source.x0})`
         });
 

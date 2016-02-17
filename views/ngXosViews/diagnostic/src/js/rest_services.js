@@ -187,7 +187,7 @@
       return tree;
     };
 
-    const buildServiceTree = (services, tenants, subscriber = {id: 1, name: 'fakeSubs'}) => {
+    const buildSubscriberServiceTree = (services, tenants, subscriber = {id: 1, name: 'fakeSubs'}) => {
 
       // find the root service
       // it is the one attached to subsriber_root
@@ -206,7 +206,43 @@
 
     };
 
-    const get = (subscriber) => {
+    // applying domain knowledge to build the global service tree
+    const buildServiceTree = (services, tenants) => {
+
+      // TODO refactor
+      const buildChild = (services, tenants, currentService) => {
+        let tenant = lodash.find(tenants, {subscriber_service: currentService.id});
+        if(tenant){
+          let next = lodash.find(services, {id: tenant.provider_service});
+          currentService.children = [buildChild(services, tenants, next)];
+        }
+        else {
+          currentService.children = [
+            {
+              name: 'Router',
+              type: 'router',
+              children: []
+            }
+          ]
+        }
+        currentService.type = 'service';
+        delete currentService.id; // conflict with d3
+        return currentService;
+      }
+      let baseService = lodash.find(services, {id: 3});
+
+      const baseData = {
+        name: 'Subscriber',
+        type: 'subscriber',
+        parent: null,
+        children: [buildChild(services, tenants, baseService)]
+      };
+
+      console.log(baseData);
+      return baseData;
+    };
+
+    const getBySubscriber = (subscriber) => {
       var deferred = $q.defer();
       var services, tenants;
       Services.query().$promise
@@ -216,7 +252,7 @@
       })
       .then((res) => {
         tenants = res;
-        deferred.resolve(buildServiceTree(services, tenants, subscriber));
+        deferred.resolve(buildSubscriberServiceTree(services, tenants, subscriber));
       })
       .catch((e) => {
         throw new Error(e);
@@ -225,11 +261,32 @@
       return deferred.promise;
     };
 
+    const get = () => {
+      var deferred = $q.defer();
+      var services, tenants;
+      Services.query().$promise
+      .then((res) => {
+        services = res;
+        return Tenant.query({kind: 'coarse'}).$promise;
+      })
+      .then((res) => {
+        tenants = res;
+        deferred.resolve(buildServiceTree(services, tenants));
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+
+      return deferred.promise;
+    }
+
     // export APIs
     return {
       get: get,
-      buildLevel: buildLevel,
       buildServiceTree: buildServiceTree,
+      getBySubscriber: getBySubscriber,
+      buildLevel: buildLevel,
+      buildSubscriberServiceTree: buildSubscriberServiceTree,
       findLevelRelation: findLevelRelation,
       findLevelServices: findLevelServices,
       depthOf: depthOf,
