@@ -211,7 +211,7 @@
       baseData.children[0].children[0].computeNodes = computeNodes;
     };
 
-    this.getInstanceStatus = (instanceId) => {
+    this.getInstanceStatus = (instances) => {
 
       const computeNodes = baseData.children[0].children[0].computeNodes;
 
@@ -223,19 +223,16 @@
         });
       });
 
-      let targetInstance = computeNodes.reduce((selected, node) => {
-        let found = lodash.find(node.instances, {id: instanceId});
-
-        if(found){
-          return found;
-        }
-      }, null);
-
-      // object are passed by reference,
-      // updating this update the instance in the tree
-      if(targetInstance){
-        targetInstance.selected = true;
-      }
+      lodash.forEach(instances, (id) => {
+        computeNodes.map((node) => {
+          node.instances.map((instance) => {
+            if(instance.id === id){
+              instance.selected = true;
+            }
+            return instance;
+          });
+        });
+      });
 
     }
   });

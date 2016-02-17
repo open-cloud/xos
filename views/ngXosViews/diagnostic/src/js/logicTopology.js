@@ -11,7 +11,7 @@
       bindToController: true,
       controllerAs: 'vm',
       template: '',
-      controller: function($element, $log, $scope, $rootScope, d3, LogicTopologyHelper, Node){
+      controller: function($element, $log, $scope, $rootScope, d3, LogicTopologyHelper, Node, Tenant, Ceilometer){
         $log.info('Logic Plane');
 
         var svg;
@@ -45,16 +45,35 @@
           }
         });
 
-        $rootScope.$on('instance.detail', (evt, instance) => {
+        $rootScope.$on('instance.detail', (evt, service) => {
 
-          $log.info(`Highlight instance; ${instance.id}`)
+          $log.info(`Highlight instance`, service)
 
-          LogicTopologyHelper.getInstanceStatus(instance.id);
-          LogicTopologyHelper.updateTree(svg);
+          let param = {
+            'service_vsg': {kind: 'vCPE'},
+            'service_vbng': {kind: 'vBNG'},
+            'service_volt': {kind: 'vOLT'}
+          };
+
+          Tenant.queryVsgInstances(param[service.name]).$promise
+          .then((instances) => {
+            console.log(instances);
+            LogicTopologyHelper.getInstanceStatus(instances);
+            LogicTopologyHelper.updateTree(svg);
+
+            return Ceilometer.getInstancesStats(instances);
+          })
+          .then((stats) => {
+            console.log('stats', stats);
+          })
+          .catch((e) => {
+            throw new Error(e);
+          });
         })
 
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
+
       }
     };
   });
