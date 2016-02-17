@@ -10,12 +10,13 @@
       },
       bindToController: true,
       controllerAs: 'vm',
-      template: '',
-      controller: function($element, $log, $scope, $rootScope, d3, LogicTopologyHelper, Node, Tenant, Ceilometer){
+      templateUrl: 'templates/logicTopology.tpl.html',
+      controller: function($element, $log, $scope, $rootScope, $timeout, d3, LogicTopologyHelper, Node, Tenant, Ceilometer){
         $log.info('Logic Plane');
 
         var svg;
-
+        this.selectedInstances = [];
+        this.hideInstanceStats = true;
 
         const handleSvg = (el) => {
 
@@ -45,9 +46,16 @@
           }
         });
 
-        $rootScope.$on('instance.detail', (evt, service) => {
+        $rootScope.$on('instance.detail.hide', () => {
+          this.hideInstanceStats = true;
+          $timeout(() => {
+            this.selectedInstances = [];
+            LogicTopologyHelper.getInstanceStatus([]);
+            LogicTopologyHelper.updateTree(svg);
+          }, 500);
+        });
 
-          $log.info(`Highlight instance`, service)
+        $rootScope.$on('instance.detail', (evt, service) => {
 
           let param = {
             'service_vsg': {kind: 'vCPE'},
@@ -57,14 +65,24 @@
 
           Tenant.queryVsgInstances(param[service.name]).$promise
           .then((instances) => {
-            console.log(instances);
-            LogicTopologyHelper.getInstanceStatus(instances);
-            LogicTopologyHelper.updateTree(svg);
 
             return Ceilometer.getInstancesStats(instances);
           })
-          .then((stats) => {
-            console.log('stats', stats);
+          .then((instances) => {
+            this.hideInstanceStats = false;
+            // HACK if array is empty wait for animation
+            if(instances.length === 0){
+              this.hideInstanceStats = true;
+              $timeout(() => {
+                this.selectedInstances = instances;
+              }, 500);
+            }
+            else{
+              this.selectedInstances = instances;
+            }
+            
+            LogicTopologyHelper.getInstanceStatus(instances);
+            LogicTopologyHelper.updateTree(svg);
           })
           .catch((e) => {
             throw new Error(e);

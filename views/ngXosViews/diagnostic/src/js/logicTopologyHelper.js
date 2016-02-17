@@ -223,13 +223,13 @@
         });
       });
 
-      lodash.forEach(instances, (id) => {
+      lodash.forEach(instances, (instance) => {
         computeNodes.map((node) => {
-          node.instances.map((instance) => {
-            if(instance.id === id){
-              instance.selected = true;
+          node.instances.map((d3instance) => {
+            if(d3instance.id === instance.id){
+              d3instance.selected = true;
             }
-            return instance;
+            return d3instance;
           });
         });
       });

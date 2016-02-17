@@ -155,6 +155,8 @@
 
     this.drawInstances = (container, instances) => {
       
+      // TODO check for stats field in instance and draw popup
+
       let {width, height} = container.node().getBoundingClientRect();
 
       let elements = container.selectAll('.instances')

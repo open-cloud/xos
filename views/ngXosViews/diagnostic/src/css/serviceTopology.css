@@ -42,6 +42,34 @@ logic-topology .device circle{
     stroke-width: 1px;
 }
 
+logic-topology > svg {
+    position: absolute;
+    top: 0;
+}
+
+/* STATS */
+
+logic-topology > .instances-stats {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+}
+
+logic-topology > .instances-stats ul.list-group {
+    font-size: 10px !important;
+}
+
+logic-topology > .instances-stats ul.list-group li{
+    padding: 3px 15px;
+}
+
+logic-topology > .instances-stats ul.list-group .badge {
+    font-size: 8px;
+}
+
+/* CLOUDS */
+
 logic-topology .network .cloud {
     fill: #fff;
     stroke: green;
@@ -195,30 +223,14 @@ logic-topology .node .instance.active rect{
     }
 }
 
-@keyframes bounceInLeft {
-    from, 60%, 75%, 90%, to {
-        animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    }
+@keyframes bounceOutRight {
+  20% {
+    opacity: 1;
+    transform: translate3d(-20px, 0, 0);
+  }
 
-    0% {
-        opacity: 0;
-        transform: translate3d(-3000px, 0, 0);
-    }
-
-    60% {
-        opacity: 1;
-        transform: translate3d(25px, 0, 0);
-    }
-
-    75% {
-        transform: translate3d(-10px, 0, 0);
-    }
-
-    90% {
-        transform: translate3d(5px, 0, 0);
-    }
-
-    to {
-        transform: none;
-    }
+  to {
+    opacity: 0;
+    transform: translate3d(2000px, 0, 0);
+  }
 }
