@@ -116,6 +116,7 @@ Testing service composition
 Getting external connectivity working on cloudlab
 
 Inside of vSG:
+
     ip link add link eth0 eth0.500 type vlan id 500
     ifconfig eth0.500 up
     route del default gw 172.27.0.1
@@ -126,11 +127,13 @@ Inside of vSG:
     arp -s 10.123.0.1 00:8c:fa:5b:09:d8
     
 On head node:
+
     ifconfig eth2 10.123.0.1
     iptables --table nat --append POSTROUTING --out-interface br-ex -j MASQUERADE
     arp -s 10.123.0.3 fa:16:3e:ea:11:0a
     
 Substitute for your installation:
+
     10.123.0.3 = wan_ip of vSG
     10.123.0.1 = wan gateway
     fa:16:3e:ea:11:0a = wan_mac of vSG
