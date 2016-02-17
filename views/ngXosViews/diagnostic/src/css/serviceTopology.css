@@ -48,8 +48,25 @@ logic-topology .network .cloud {
     stroke-width: 1px;   
 }
 
-logic-topology .node.rack rect{
+/* RACK */
+logic-topology .node.rack > g > rect{
+    fill: #ccc;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+/* CP NODE */
+
+logic-topology .compute-node > rect{
     fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+/* INSTANCE */
+
+logic-topology .instance > rect{
+    fill: #eee;
     stroke: steelblue;
     stroke-width: 1px;
 }
