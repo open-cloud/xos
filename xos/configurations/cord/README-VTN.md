@@ -30,7 +30,7 @@ ctl node:
     # not still an issue lurking...
     cat > /usr/local/etc/neutron/plugins/ml2/conf_onos.ini <<EOF
     [onos]
-    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/openstackswitching
+    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/cordvtn
     username = karaf
     password = karaf
     EOF
