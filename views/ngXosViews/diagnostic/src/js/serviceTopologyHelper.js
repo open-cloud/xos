@@ -219,9 +219,8 @@
 
       $log.info('TODO emit an event to highlight VMs', d);
 
-      if(d.service.service_specific_attribute && d.service.service_specific_attribute.instance_id){
-        $rootScope.$emit('instance.detail', {id: d.service.service_specific_attribute.instance_id});
-      }
+      // TODO how I get the instance id???
+      $rootScope.$emit('instance.detail', {id: d.service.service_specific_attribute.instance_id || null});
 
       if(!d.service){
         return;

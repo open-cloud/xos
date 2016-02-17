@@ -80,7 +80,7 @@
               });
 
               // faking to have 2 subscriber
-              res.data.push(angular.copy(res.data[0]));
+              // res.data.push(angular.copy(res.data[0]));
 
               deferred.resolve(res.data);
             })
