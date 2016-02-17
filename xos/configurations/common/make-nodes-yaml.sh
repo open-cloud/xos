@@ -18,7 +18,7 @@ topology_template:
         type: tosca.nodes.Site
 EOF
 
-NODES=$( bash -c "source $SETUPDIR/admin-openrc.sh ; nova service-list" |grep nova-compute|awk '{print $4}' )
+NODES=$( bash -c "source $SETUPDIR/admin-openrc.sh ; nova host-list" |grep compute|awk '{print $2}' )
 I=0
 for NODE in $NODES; do
     echo $NODE
