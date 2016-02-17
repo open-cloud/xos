@@ -29,9 +29,12 @@ sys_dir=/opt/xos/synchronizers/vtn/sys
 deleters_dir=/opt/xos/synchronizers/vtn/deleters
 log_file=console
 #/var/log/hpc.log
-driver=None
+driver=openstack
 pretend=False
 backoff_disabled=True
+
+[nova]
+ca_ssl_cert=/etc/ssl/certs/ca-certificates.crt
 
 [feefie]
 client_id='vicci_dev_central'
