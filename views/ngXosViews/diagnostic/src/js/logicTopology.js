@@ -28,7 +28,7 @@
         $scope.$watch(() => this.subscribers, (subscribers) => {
           if(subscribers){
 
-            LogicTopologyHelper.addSubscribers(angular.copy(subscribers));
+            // LogicTopologyHelper.addSubscribers(angular.copy(subscribers));
 
             Node.queryWithInstances().$promise
             .then((computeNodes) => {

@@ -70,6 +70,9 @@
 
             $q.all(requests)
             .then((list) => {
+
+              // adding devices
+
               res.data.map((subscriber, i) => {
                 subscriber.devices = list[i];
                 subscriber.type = 'subscriber';
