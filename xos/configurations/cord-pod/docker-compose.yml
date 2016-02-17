@@ -29,17 +29,17 @@ xos_synchronizer_onos:
         - .:/root/setup:ro
         - ./id_rsa:/opt/xos/synchronizers/onos/onos_key:ro  # private key
 
-#xos_synchronizer_vcpe:
-#    image: xosproject/xos-synchronizer-openstack
-#    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
-#    labels:
-#        org.xosproject.kind: synchronizer
-#        org.xosproject.target: vcpe
-#    links:
-#        - xos_db
-#    volumes:
-#        - .:/root/setup:ro
-#        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
+xos_synchronizer_vcpe:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vcpe
+    links:
+        - xos_db
+    volumes:
+        - .:/root/setup:ro
+        - ./id_rsa:/opt/xos/synchronizers/vcpe/vcpe_private_key:ro  # private key
 
 #xos_synchronizer_vbng:
 #    image: xosproject/xos-synchronizer-openstack
