@@ -349,20 +349,32 @@ class AddressPool(PlCoreBase):
         with transaction.atomic():
             ap = AddressPool.objects.get(pk=self.pk)
             if ap.addresses:
-                addresses = ap.addresses or ""
-                parts = addresses.split()
-                addr = parts.pop(0)
-                ap.addresses = " ".join(parts)
-
-                inuse = ap.inuse or ""
-                parts = inuse.split()
-                if not (addr in parts):
-                    parts.insert(0,addr)
-                    ap.inuse = " ".join(parts)
-
-                ap.save()
+                avail_ips = ap.addresses.split()
             else:
-                addr = None
+                avail_ips = []
+
+            if ap.inuse:
+                inuse_ips = ap.inuse.split()
+            else:
+                inuse_ips = []
+
+            while avail_ips:
+                addr = avail_ips.pop(0)
+
+                if addr in inuse_ips:
+                    # This may have happened if someone re-ran the tosca
+                    # recipe and 'refilled' the AddressPool while some addresses
+                    # were still in use.
+                    continue
+
+                inuse_ips.insert(0,addr)
+
+                ap.inuse = " ".join(inuse_ips)
+                ap.addresses = " ".join(avail_ips)
+                ap.save()
+                return addr
+
+            addr = None
         return addr
 
     def put_address(self, addr):
