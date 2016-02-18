@@ -224,6 +224,9 @@ node_types:
             wan_container_gateway_mac:
                 type: string
                 required: false
+            wan_container_netbits:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root

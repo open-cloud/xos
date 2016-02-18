@@ -104,6 +104,9 @@ class VSGServiceForm(forms.ModelForm):
     bbs_server = forms.CharField(required=False)
     backend_network_label = forms.CharField(required=False)
     bbs_slice = forms.ModelChoiceField(queryset=Slice.objects.all(), required=False)
+    wan_container_gateway_ip = forms.CharField(required=False)
+    wan_container_gateway_mac = forms.CharField(required=False)
+    wan_container_netbits = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGServiceForm,self ).__init__(*args,**kwargs)
@@ -113,6 +116,9 @@ class VSGServiceForm(forms.ModelForm):
             self.fields['bbs_server'].initial = self.instance.bbs_server
             self.fields['backend_network_label'].initial = self.instance.backend_network_label
             self.fields['bbs_slice'].initial = self.instance.bbs_slice
+            self.fields['wan_container_gateway_ip'].initial = self.instance.wan_container_gateway_ip
+            self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
+            self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
 
     def save(self, commit=True):
         self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
@@ -120,6 +126,9 @@ class VSGServiceForm(forms.ModelForm):
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
         self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
+        self.instance.wan_container_gateway_ip = self.cleaned_data.get("wan_container_gateway_ip")
+        self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
+        self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
         return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
@@ -133,7 +142,7 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
                                      'classes':['suit-tab suit-tab-general']}),
-                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
+                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice", "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits"],
                                      'classes':['suit-tab suit-tab-backend']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
@@ -164,6 +173,7 @@ class VSGTenantForm(forms.ModelForm):
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     last_ansible_hash = forms.CharField(required=False)
     wan_container_ip = forms.CharField(required=False)
+    wan_container_mac = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGTenantForm,self ).__init__(*args,**kwargs)
@@ -176,6 +186,7 @@ class VSGTenantForm(forms.ModelForm):
             self.fields['instance'].initial = self.instance.instance
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
             self.fields['wan_container_ip'].initial = self.instance.wan_container_ip
+            self.fields['wan_container_mac'].initial = self.instance.wan_container_mac
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VCPE_KIND
@@ -196,9 +207,9 @@ class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'wan_container_ip', 'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
+                                     'wan_container_ip', 'wan_container_mac', 'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account', 'wan_container_ip', 'wan_container_mac')
     form = VSGTenantForm
 
     suit_form_tabs = (('general','Details'),)

@@ -399,7 +399,10 @@ class VSGService(Service):
     simple_attributes = ( ("bbs_api_hostname", None),
                           ("bbs_api_port", None),
                           ("bbs_server", None),
-                          ("backend_network_label", "hpc_client"), )
+                          ("backend_network_label", "hpc_client"),
+                          ("wan_container_gateway_ip", ""),
+                          ("wan_container_gateway_mac", ""),
+                          ("wan_container_netbits", "24") )
 
     def __init__(self, *args, **kwargs):
         super(VSGService, self).__init__(*args, **kwargs)
@@ -727,6 +730,10 @@ class VSGTenant(TenantWithContainer):
         if not self.volt:
             raise XOSConfigurationError("This vCPE container has no volt")
 
+        if self.instance:
+            # We're good.
+            return
+
         instance = self.find_or_make_instance_for_s_tag(self.volt.s_tag)
         self.instance = instance
         super(TenantWithContainer, self).save()
@@ -766,6 +773,7 @@ class VSGTenant(TenantWithContainer):
                     raise Exception("AddressPool 'public_addresses' has run out of addresses.")
 
                 self.wan_container_ip = addr
+                super(TenantWithContainer, self).save()
 
     def cleanup_wan_container_ip(self):
         if CORD_USE_VTN and self.wan_container_ip:

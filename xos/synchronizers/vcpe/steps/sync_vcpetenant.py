@@ -25,6 +25,8 @@ logger = Logger(level=logging.INFO)
 PARENTAL_MECHANISM="dnsmasq"
 ENABLE_QUICK_UPDATE=False
 
+CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
+
 class SyncVSGTenant(SyncInstanceUsingAnsible):
     provides=[VSGTenant]
     observes=VSGTenant
@@ -145,6 +147,9 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "bbs_addrs": bbs_addrs,
                 "full_setup": full_setup,
                 "isolation": o.instance.isolation,
+                "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
+                "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
+                "wan_container_netbits": vcpe_service.wan_container_netbits,
                 "safe_browsing_macs": safe_macs}
 
         # add in the sync_attributes that come from the SubscriberRoot object
@@ -227,7 +232,10 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             if o.instance.isolation in ["container", "container_vm"]:
                 super(SyncVSGTenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
             else:
-                super(SyncVSGTenant, self).run_playbook(o, fields)
+                if CORD_USE_VTN:
+                    super(SyncVSGTenant, self).run_playbook(o, fields, template_name="sync_vcpetenant_vtn.yaml")
+                else:
+                    super(SyncVSGTenant, self).run_playbook(o, fields)
 
         o.last_ansible_hash = ansible_hash
 
