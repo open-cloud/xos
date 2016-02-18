@@ -45,6 +45,10 @@ class SyncPortAddresses(SyncStep):
             if not wan_ip:
                 logger.info("skipping vsg %s because it has no wan_container_ip" % vsg)
 
+            wan_mac = vsg.wan_container_mac
+            if not wan_mac:
+                logger.info("skipping vsg %s because it has no wan_container_mac" % vsg)
+
             lan_network = vsg.get_lan_network(vsg.instance)
             if not lan_network:
                 logger.info("skipping vsg %s because it has no lan_network" % vsg)
@@ -59,9 +63,10 @@ class SyncPortAddresses(SyncStep):
 
             if not (lan_port.pk in port_addrs):
                 port_addrs[lan_port.pk] = []
-            addrs = port_addrs[lan_port.pk]
-            if not wan_ip in addrs:
-                 addrs.append(wan_ip)
+            entry = {"mac_address": wan_mac, "ip_address": wan_ip}
+            addr_pairs = port_addrs[lan_port.pk]
+            if not entry in addr_pairs:
+                 addr_pairs.append(entry)
 
         # Get all ports in all controllers
         ports_by_id = {}
@@ -81,29 +86,32 @@ class SyncPortAddresses(SyncStep):
 
         for port_pk in port_addrs.keys():
             port = Port.objects.get(pk=port_pk)
-            addrs = port_addrs[port_pk]
+            addr_pairs = port_addrs[port_pk]
             neutron_port = ports_by_id.get(port.port_id,None)
             if not neutron_port:
-                logger.log_info("failed to get neutron port for port %s" % port)
+                logger.info("failed to get neutron port for port %s" % port)
+                continue
+
+            ips = [x["ip_address"] for x in addr_pairs]
 
             changed = False
 
             # delete addresses in neutron that don't exist in XOS
             aaps = neutron_port.get("allowed_address_pairs", [])
             for aap in aaps[:]:
-                if not aap["ip_address"] in addrs:
+                if not aap["ip_address"] in ips:
                     logger.info("removing address %s from port %s" % (aap["ip_address"], port))
                     aaps.remove(aap)
                     changed = True
 
-            aaps_addrs = [x["ip_address"] for x in aaps]
+            aaps_ips = [x["ip_address"] for x in aaps]
 
             # add addresses in XOS that don't exist in neutron
-            for addr in addrs:
-                if not addr in aaps_addrs:
+            for addr in addr_pairs:
+                if not addr["ip_address"] in aaps_ips:
                     logger.info("adding address %s to port %s" % (addr, port))
-                    aaps.append( {"ip_address": addr} )
-                    aaps_addrs.append(addr)
+                    aaps.append( addr )
+                    aaps_ips.append(addr["ip_address"])
                     changed = True
 
             if changed:
