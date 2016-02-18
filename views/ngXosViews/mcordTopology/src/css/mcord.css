@@ -1,0 +1,46 @@
+[ui-view],
+m-cord-topology{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+line {
+  stroke: red;
+  stroke-width: 1;
+}
+
+circle,
+rect {
+  fill: #fff;
+  stroke-width: 1; 
+}
+
+.fabric {
+  stroke: green;
+}
+
+.bbu {
+  stroke: blue;
+}
+
+.bbu text {
+  font-size: 10px;
+}
+
+.rru {
+  stroke: blue;
+  fill: blue;
+}
+
+.rru-shadow {
+  fill: lightblue;
+}
+
+.MME, .SGW, .PGW {
+  stroke: purple;
+}
+
+.MME text, .SGW text, .PGW text {
+  font-size: 10px;
+}
