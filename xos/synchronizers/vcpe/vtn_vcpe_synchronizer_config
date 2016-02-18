@@ -36,7 +36,7 @@ save_ansible_output=True
 # set proxy_ssh to false on cloudlab
 full_setup=True
 proxy_ssh=True
-proxy_ssh_key=/tmp/nodekey
+proxy_ssh_key=/opt/xos/synchronizers/vcpe/node_key
 proxy_ssh_user=root
 
 [networking]
