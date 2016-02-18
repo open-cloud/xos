@@ -9,12 +9,18 @@ cat >> $FN <<EOF
     "apps" : {
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
-                "gatewayMac" : "00:00:00:00:00:01",
+                "privateGatewayMac" : "00:00:00:00:00:01",
                 "localManagementIp": "172.27.0.1/24",
                 "ovsdbPort": "6641",
                 "sshPort": "22",
                 "sshUser": "root",
                 "sshKeyFile": "/root/node_key",
+                "publicGateways": [
+                    {
+                        "gatewayIp": "207.141.192.158",
+                        "gatewayMac": "a4:23:05:34:56:78"
+                    }
+                ],
                 "nodes" : [
 EOF
 

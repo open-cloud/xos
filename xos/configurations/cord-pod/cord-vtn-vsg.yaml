@@ -34,6 +34,9 @@ topology_template:
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
+          wan_container_gateway_ip: 207.141.192.158
+          wan_container_gateway_mac: a4:23:05:34:56:78
+          wan_container_netbits: 27
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
