@@ -36,6 +36,7 @@ topology_template:
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
           wan_container_gateway_ip: 10.123.0.1
           wan_container_gateway_mac: 00:8c:fa:5b:09:d8
+          wan_container_netbits: 24
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
