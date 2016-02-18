@@ -9,7 +9,7 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from core.models import Service, Slice
+from core.models import Service, Slice, Tag
 from services.cord.models import VSGService, VSGTenant, VOLTTenant
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
@@ -139,6 +139,19 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                     if mac:
                         safe_macs.append(mac)
 
+        wan_vm_ip=""
+        wan_vm_mac=""
+        tags = Tag.select_by_content_object(o.instance).filter(name="vm_wan_addr")
+        if tags:
+            parts=tags[0].value.split(",")
+            if len(parts)!=3:
+                raise Exception("vm_wan_addr tag is malformed: %s" % value)
+            wan_vm_ip = parts[1]
+            wan_vm_mac = parts[2]
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_wan_addr tag for instance %s" % instance)
+
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
                 "c_tags": c_tags,
@@ -150,6 +163,8 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
                 "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
                 "wan_container_netbits": vcpe_service.wan_container_netbits,
+                "wan_vm_mac": wan_vm_mac,
+                "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs}
 
         # add in the sync_attributes that come from the SubscriberRoot object
