@@ -601,13 +601,16 @@ class VSGTenant(TenantWithContainer):
         else:
             raise Exception("wan_container_ip.setter called on non-VTN CORD")
 
+    def ip_to_mac(self, ip):
+        (a, b, c, d) = ip.split('.')
+        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+
     # Generate the MAC for the container interface connected to WAN
     @property
     def wan_container_mac(self):
         if not self.wan_container_ip:
             return None
-        (a, b, c, d) = self.wan_container_ip.split('.')
-        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+        return self.ip_to_mac(self.wan_container_ip)
 
     @property
     def private_ip(self):
@@ -760,24 +763,31 @@ class VSGTenant(TenantWithContainer):
                 self.bbs_account = None
                 super(VSGTenant, self).save()
 
+    def get_wan_address_from_pool(self):
+        ap = AddressPool.objects.filter(name="public_addresses")
+        if not ap:
+            raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
+        ap = ap[0]
+
+        addr = ap.get_address()
+        if not addr:
+            raise Exception("AddressPool 'public_addresses' has run out of addresses.")
+        return addr
+
+    def put_wan_address_to_pool(self, addr):
+        AddressPool.objects.filter(name="public_addresses")[0].put_address(addr)
+
     def manage_wan_container_ip(self):
         if CORD_USE_VTN:
             if not self.wan_container_ip:
-                ap = AddressPool.objects.filter(name="public_addresses")
-                if not ap:
-                    raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
-                ap = ap[0]
-
-                addr = ap.get_address()
-                if not addr:
-                    raise Exception("AddressPool 'public_addresses' has run out of addresses.")
+                addr = self.get_wan_address_from_pool()
 
                 self.wan_container_ip = addr
                 super(TenantWithContainer, self).save()
 
     def cleanup_wan_container_ip(self):
         if CORD_USE_VTN and self.wan_container_ip:
-            AddressPool.objects.filter(name="public_addresses")[0].put_address(self.wan_container_ip)
+            self.put_wan_address_to_pool(self.wan_container_ip)
             self.wan_container_ip = None
 
     def find_or_make_port(self, instance, network, **kwargs):
@@ -836,6 +846,15 @@ class VSGTenant(TenantWithContainer):
                 tags = Tag.objects.filter(name="s_tag", value=self.volt.s_tag)
                 if not tags:
                     tag = Tag(service=self.provider_service, content_object=instance, name="s_tag", value=self.volt.s_tag)
+                    tag.save()
+
+            # VTN-CORD needs a WAN address for the VM, so that the VM can
+            # be configured.
+            if CORD_USE_VTN:
+                tags = Tag.select_by_content_object(instance).filter(name="vm_wan_addr")
+                if not tags:
+                    address = self.get_wan_address_from_pool()
+                    tag = Tag(service=self.provider_service, content_object=instance, name="vm_wan_addr", value="%s,%s,%s" % ("public_addresses", address, self.ip_to_mac(address)))
                     tag.save()
 
     def save(self, *args, **kwargs):

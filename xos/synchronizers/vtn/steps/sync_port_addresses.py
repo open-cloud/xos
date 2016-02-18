@@ -6,7 +6,7 @@ import base64
 from django.db.models import F, Q
 from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
-from core.models import Service, Port, Controller
+from core.models import Service, Port, Controller, Tag
 from core.models.service import COARSE_KIND
 from services.cord.models import VSGTenant
 from services.cord.models import Tenant
@@ -67,6 +67,17 @@ class SyncPortAddresses(SyncStep):
             addr_pairs = port_addrs[lan_port.pk]
             if not entry in addr_pairs:
                  addr_pairs.append(entry)
+
+            # now do the VM_WAN_IP from the instance
+            if vsg.instance:
+                tags=Tag.select_by_content_object(vsg.instance).filter(name="vm_wan_addr")
+                if tags:
+                    parts=tags[0].value.split(",")
+                    if len(parts)!=3:
+                        raise Exception("vm_wan_addr tag is malformed: %s" % value)
+                    entry = {"mac_address": parts[2], "ip_address": parts[1]}
+                    if not entry in addr_pairs:
+                        addr_pairs.append(entry)
 
         # Get all ports in all controllers
         ports_by_id = {}

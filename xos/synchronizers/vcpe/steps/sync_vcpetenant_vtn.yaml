@@ -43,6 +43,8 @@
       wan_container_netbits: {{ wan_container_netbits }}
       wan_container_mac: {{ wan_container_mac }}
       wan_container_gateway_ip: {{ wan_container_gateway_ip }}
+      wan_vm_ip: {{ wan_vm_ip }}
+      wan_vm_mac: {{ wan_vm_mac }}
       wan_next_hop: 10.0.1.253   # FIX ME
       private_ip: {{ private_ip }}
       private_mac: {{ private_mac }}
@@ -65,8 +67,8 @@
       - ifconfig eth0.500 || ip link add link eth0 eth0.500 type vlan id 500
       - ifconfig eth0.500 up
       - ifconfig eth0.500 0.0.0.0
-      - ifconfig eth0.500 hw ether {{ wan_container_mac }}
-      - ip addr add {{ wan_container_ip }}/{{ wan_container_netbits }} dev eth0.500
+      - ifconfig eth0.500 hw ether {{ wan_vm_mac }}
+      - ip addr add {{ wan_vm_ip }}/{{ wan_container_netbits }} dev eth0.500
       - ip link set eth0.500 up
       - ip route del default || true
       - ip route add default via {{ wan_container_gateway_ip }}
