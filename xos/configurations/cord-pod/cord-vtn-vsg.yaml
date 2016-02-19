@@ -165,7 +165,7 @@ topology_template:
         properties:
             service_specific_id: 123
             s_tag: 222
-            c_tag: 432
+            c_tag: 111
         requirements:
             - provider_service:
                 node: service_volt
