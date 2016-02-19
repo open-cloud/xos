@@ -61,10 +61,16 @@
         {% endfor %}
 
   tasks:
+  - name: Check to see if network is setup
+    stat: path=/root/network_is_setup
+    register: network_is_setup
+
   - name: Add eth0.500
     shell: "{{ '{{' }} item {{ '}}' }}"
     with_items:
-      - ifconfig eth0.500 || ip link add link eth0 eth0.500 type vlan id 500
+      - ip link del link eth0 eth0.500 || true
+      - brctl delbr br-wan || true
+      - ip link add link eth0 eth0.500 type vlan id 500
       - ifconfig eth0.500 up
       - ifconfig eth0.500 0.0.0.0
       - ifconfig eth0.500 hw ether {{ wan_vm_mac }}
@@ -72,7 +78,30 @@
       - ip link set eth0.500 up
       - ip route del default || true
       - ip route add default via {{ wan_container_gateway_ip }}
-#      - arp -s {{ wan_container_gateway_ip }} {{ wan_container_gateway_mac }}
+    when: network_is_setup.stat.exists == False
+
+  - name: install bridge-utils
+    apt: name=bridge-utils state=present
+
+  - name: now redo everything using a bridge
+    shell: "{{ '{{' }} item {{ '}}' }}"
+    with_items:
+       - ip link del link eth0 eth0.500
+       - ip link add link eth0 eth0.500 type vlan id 500
+       - ip link set eth0.500 up
+       - brctl delbr br-wan || true
+       - brctl addbr br-wan
+       - brctl addif br-wan eth0.500
+       - ifconfig br-wan hw ether {{ wan_vm_mac }}
+       - ip addr add {{ wan_vm_ip }}/{{ wan_container_netbits }} dev br-wan
+       - ip link set br-wan up
+       - ip route del default || true
+       - ip route add default via {{ wan_container_gateway_ip }}
+       - ip link set dev br-wan promisc on
+    when: network_is_setup.stat.exists == False
+
+  - name: Remember that the network is setup, so we never do the above again
+    shell: touch /root/network_is_setup
 
 {% if full_setup %}
   - name: Docker repository

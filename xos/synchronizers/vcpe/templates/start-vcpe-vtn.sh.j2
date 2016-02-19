@@ -22,7 +22,7 @@ else
 fi
 
 # Set up networking via pipework
-WAN_IFACE=eth0.500
+WAN_IFACE=br-wan
 docker exec $VCPE ifconfig eth0 >> /dev/null || pipework $WAN_IFACE -i eth0 $VCPE {{ wan_container_ip }}/{{ wan_container_netbits }}@{{ wan_container_gateway_ip }} {{ wan_container_mac }}
 
 LAN_IFACE=eth0
