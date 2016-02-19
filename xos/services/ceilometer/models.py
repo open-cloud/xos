@@ -35,7 +35,7 @@ class MonitoringChannel(TenantWithContainer):   # aka 'CeilometerTenant'
         proxy = True
 
     KIND = CEILOMETER_KIND
-    LOOK_FOR_IMAGES=[ "trusty-server-multi-nic-docker", # CloudLab
+    LOOK_FOR_IMAGES=[ #"trusty-server-multi-nic-docker", # CloudLab
                       "trusty-server-multi-nic",
                     ]
 
