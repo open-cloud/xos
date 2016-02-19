@@ -2,7 +2,7 @@
   {
     "url": "instances",
     "base": "xos/",
-    "methods": ["GET"],
+    "methods": ["GET", "POST"],
     "param": "id"
   }
 ]
