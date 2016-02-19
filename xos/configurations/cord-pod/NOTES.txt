@@ -12,27 +12,20 @@ OpenStack
   - mgmtbr on head nodes
   - dnsmasq on head1 using cord config file
 * Install OpenStack using the openstack-cluster-install repo
-  TO ADD:
-  - Create XOS VM
-  - Install git, make, OpenStack clients
-  - Check out XOS inside VM
-  - Copy admin-openrc.sh and id_rsa* to correct location
-* Add trusty-server-multi-nic image to OpenStack
 
 VTN
-* Install Docker on the head node
-* Edit /etc/default/docker so that it points to mgmtbr
-* Create onos-cord Docker container
-  # docker ...
+* onos-cord VM is created by openstack-cluster-install
+* Bring up ONOS
+  # cd cord; docker-compose up -d
 
 XOS
-* Create xos Docker containers attached to mgmtbr
-  # docker ...
+* xos VM is created by openstack-cluster-install
+  - requirements listed above should already be satisfied by install
+* cd xos/xos/configurations/cord-pod
 * Bring up XOS cord-pod configuration
+  # make
+  # make vtn
+  # make cord
+* Login to XOS at http://xos
+  - padmin@vicci.org / letmein
 
-
-
-
-
-Test VTN
-* Try to create a network: neutron net-create testnet
