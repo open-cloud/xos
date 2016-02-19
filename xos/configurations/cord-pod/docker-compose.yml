@@ -32,7 +32,7 @@ xos_synchronizer_onos:
 
 xos_synchronizer_vcpe:
     image: xosproject/xos-synchronizer-openstack
-    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vcpe_synchronizer_config"
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vcpe/vcpe-synchronizer.py -C /root/setup/files/vtn_vcpe_synchronizer_config"
     labels:
         org.xosproject.kind: synchronizer
         org.xosproject.target: vcpe
