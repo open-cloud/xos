@@ -34,10 +34,13 @@ pretend=False
 backoff_disabled=True
 save_ansible_output=True
 # set proxy_ssh to false on cloudlab
+full_setup=True
 proxy_ssh=True
 proxy_ssh_key=/root/setup/node_key
 proxy_ssh_user=root
-full_setup=True
+
+[networking]
+use_vtn=True
 
 [feefie]
 client_id='vicci_dev_central'
