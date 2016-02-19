@@ -48,8 +48,6 @@ angular.module('xos.mcordTopology', [
 
         nodes = TopologyElements.nodes;
         links = TopologyElements.links;
-        console.log('-----------------------------');
-        console.log(`Fabric Links: ${links.length}`);
 
         XosApi.Instance_List_GET()
         .then((instances) => {
@@ -72,20 +70,22 @@ angular.module('xos.mcordTopology', [
         .style('height', `${el.clientHeight}px`);
 
 
-      let hStep = el.clientWidth / 3;
-      let vStep = el.clientHeight / 5;
 
       // replace human readable ids with d3 ids
+      // NOTE now ids are not manatined on update...
       const buildLinks = (links, nodes) => {
-        console.log(`links: ${links.length}`);
-        return links.map((l, i) => {
+        return links.map((l) => {
+
+
           let source = lodash.findIndex(nodes, {id: l.source});
           let target = lodash.findIndex(nodes, {id: l.target});
+          // console.log(`link-${source}-${target}`, source, target);
           return {
             source: source,
             target: target,
             value: 1,
-            id: `link-${i++}`
+            id: `link-${source}-${target}`,
+            type: l.source.indexOf('fabric') >= 0 ? 'big':'small'
           };
 
         });
@@ -149,7 +149,6 @@ angular.module('xos.mcordTopology', [
 
         nodes = nodes.concat(bbuNodes);
 
-        console.log(`bbuLinks: ${bbuLinks.length}`);
 
         links = links.concat(bbuLinks);
       };
@@ -178,18 +177,26 @@ angular.module('xos.mcordTopology', [
           };
         });
 
-        console.log(`otherLinks: ${otherLinks.length}`);
 
         nodes = nodes.concat(otherNodes);
         links = links.concat(otherLinks);
       }
 
-      // NOTE links get duplicated
+      let hStep, vStep;
+
+      hStep = el.clientWidth / 3;
+      vStep = el.clientHeight / 5;
+
       const draw = (svg, nodes, links) => {
+
+        hStep = el.clientWidth / 3;
+        vStep = el.clientHeight / 5;
 
         links = buildLinks(links, nodes);
 
         nodes = positionFabricNodes(nodes);
+
+        NodeDrawer.drawFabricBox(svg, hStep, vStep);
 
         // start force layout
         force
@@ -208,9 +215,10 @@ angular.module('xos.mcordTopology', [
         
         link.enter().append('line')
           .attr({
-            class: 'link',
+            // class: 'link',
             id: d => d.id,
-            opacity: 0
+            opacity: 0,
+            class: d => `link ${d.type}`
           })
           .transition()
           .duration(1000)
