@@ -24,12 +24,12 @@ angular.module('xos.mcordTopology', [
     bindToController: true,
     controllerAs: 'vm',
     template: '',
-    controller: function($element, $window, XosApi, lodash, TopologyElements, NodeDrawer){
+    controller: function($element, $interval, XosApi, lodash, TopologyElements, NodeDrawer){
 
       const el = $element[0];
 
-      let nodes = TopologyElements.nodes;
-      let links = TopologyElements.links;
+      let nodes = [];
+      let links = [];
 
       const filterBBU = (instances) => {
         return lodash.filter(instances, i => i.name.indexOf('BBU') >= 0);
@@ -44,15 +44,24 @@ angular.module('xos.mcordTopology', [
       };
 
       // retrieving instances list
-      XosApi.Instance_List_GET()
-      .then((instances) => {
-        addBbuNodes(filterBBU(instances));
-        addOtherNodes(filterOthers(instances));
-        draw(svg, nodes, links);
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
+      const getData = () => {
+
+        nodes = TopologyElements.nodes;
+        links = TopologyElements.links;
+        console.log('-----------------------------');
+        console.log(`Fabric Links: ${links.length}`);
+
+        XosApi.Instance_List_GET()
+        .then((instances) => {
+          addBbuNodes(filterBBU(instances));
+          addOtherNodes(filterOthers(instances));
+
+          draw(svg, nodes, links);
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
+      };
 
       const force = d3.layout.force();
 
@@ -68,13 +77,15 @@ angular.module('xos.mcordTopology', [
 
       // replace human readable ids with d3 ids
       const buildLinks = (links, nodes) => {
-        return links.map((l) => {
+        console.log(`links: ${links.length}`);
+        return links.map((l, i) => {
           let source = lodash.findIndex(nodes, {id: l.source});
           let target = lodash.findIndex(nodes, {id: l.target});
           return {
             source: source,
             target: target,
-            value: 1
+            value: 1,
+            id: `link-${i++}`
           };
 
         });
@@ -137,6 +148,9 @@ angular.module('xos.mcordTopology', [
         })
 
         nodes = nodes.concat(bbuNodes);
+
+        console.log(`bbuLinks: ${bbuLinks.length}`);
+
         links = links.concat(bbuLinks);
       };
 
@@ -164,11 +178,13 @@ angular.module('xos.mcordTopology', [
           };
         });
 
+        console.log(`otherLinks: ${otherLinks.length}`);
+
         nodes = nodes.concat(otherNodes);
         links = links.concat(otherLinks);
       }
 
-      // NOTE nodes get dublicated
+      // NOTE links get duplicated
       const draw = (svg, nodes, links) => {
 
         links = buildLinks(links, nodes);
@@ -188,11 +204,23 @@ angular.module('xos.mcordTopology', [
 
         // draw links
         var link = svg.selectAll('.link')
-          .data(links)
-          .enter().append('line')
+          .data(links, d => d.id);
+        
+        link.enter().append('line')
           .attr({
             class: 'link',
+            id: d => d.id,
+            opacity: 0
+          })
+          .transition()
+          .duration(1000)
+          // .delay((d, i) => 50 * i)
+          .attr({
+            opacity: 1
           });
+
+        link.exit()
+        .remove();
 
         //draw nodes
         var node = svg.selectAll('.node')
@@ -204,21 +232,26 @@ angular.module('xos.mcordTopology', [
         var enter = node.enter()
           .append('g', d => d.interfaceCfgIdentifier)
           .attr({
-            class: d => d.type,
+            class: d => `${d.type} node`,
             transform: d => `translate(${d.x}, ${d.y})`
           });
 
         // draw nodes
-        NodeDrawer.drawBbus(node.filter('.bbu'))
-        NodeDrawer.drawRrus(node.filter('.rru'))
-        NodeDrawer.drawFabric(node.filter('.fabric'))
-        NodeDrawer.drawOthers(node.filter(d => {
+        NodeDrawer.drawBbus(enter.filter('.bbu'))
+        NodeDrawer.drawRrus(enter.filter('.rru'))
+        NodeDrawer.drawFabric(enter.filter('.fabric'))
+        NodeDrawer.drawOthers(enter.filter(d => {
           return (
             d.type  === 'MME' ||
             d.type === 'SGW' ||
             d.type === 'PGW'
           )
         }));
+
+        // remove nodes
+        var exit = node.exit();
+
+        NodeDrawer.removeElements(exit);
 
         force.on('tick', function() {
           link
@@ -231,7 +264,12 @@ angular.module('xos.mcordTopology', [
         });
       };
       
-      // draw(svg, TopologyElements.nodes, TopologyElements.links);
+      $interval(() => {
+        getData();
+      }, 5000);
+      getData();
+
+      
     }
   };
 });
