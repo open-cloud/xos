@@ -6,8 +6,12 @@ m-cord-topology{
 }
 
 line {
-  stroke: red;
+  stroke: blue;
   stroke-width: 1;
+}
+
+line.big{
+  stroke-width: 2;
 }
 
 circle,
@@ -17,30 +21,42 @@ rect {
 }
 
 .fabric {
-  stroke: green;
+  stroke: #000;
+  fill: #1F77B4;
+}
+
+.fabric-container {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1;
 }
 
 .bbu {
-  stroke: blue;
+  stroke: black;
+  fill: #FF7F0E;
 }
 
 .bbu text {
-  font-size: 9px;
+  font-size: 10px;
+  stroke: #000;
 }
 
 .rru {
-  stroke: blue;
-  fill: blue;
+  stroke: #000;
+  fill: #FFBB78;
 }
 
 .rru-shadow {
-  fill: lightblue;
+  fill: #FFBB78;
+  opacity: .4
 }
 
 .MME, .SGW, .PGW {
-  stroke: purple;
+  fill: purple;
+  stroke: #000;
 }
 
 .MME text, .SGW text, .PGW text {
   font-size: 10px;
+  stroke: #000;
 }

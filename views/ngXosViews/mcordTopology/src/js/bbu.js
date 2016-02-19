@@ -5,6 +5,28 @@ angular.module('xos.mcordTopology')
 
   const duration = 500;
 
+  this.drawFabricBox = (svg, hStep, vStep) => {
+    let fabric = svg.append('g')
+    .attr({
+      transform: `translate(${hStep - 25}, ${vStep - 25})`
+    });
+
+    fabric.append('rect')
+      .attr({
+        width: hStep + 50,
+        height: vStep + 50,
+        class: 'fabric-container'
+      });
+
+    fabric.append('text')
+    .text('Fabric')
+    .attr({
+      'text-anchor': 'middle',
+      x: ((hStep + 50) / 2),
+      y: -10
+    });
+  };
+
   this.drawBbus = (nodes) => {
 
     nodes.append('circle')
@@ -23,8 +45,9 @@ angular.module('xos.mcordTopology')
 
     nodes.append('text')
     .attr({
-      'text-anchor': 'middle',
-      y: 4,
+      'text-anchor': 'start',
+      y: 17,
+      x: 17,
       opacity: 0
     })
     .text(d => `BBU ${d.name.substr(d.name.length - 1, 1)}`)
@@ -72,16 +95,16 @@ angular.module('xos.mcordTopology')
         class: d => d.type,
         width: 0,
         height: 0,
-        x: -10,
-        y: -10,
+        x: -15,
+        y: -15,
         opacity: 0
       })
       .transition()
       .duration(duration)
       // .delay((d, i) => i * (duration / 2))
       .attr({
-        width: 20,
-        height: 20,
+        width: 30,
+        height: 30,
         opacity: 1
       });
   };
@@ -103,8 +126,9 @@ angular.module('xos.mcordTopology')
 
     nodes.append('text')
     .attr({
-      'text-anchor': 'middle',
-      y: 4,
+      'text-anchor': 'start',
+      y: 17,
+      x: 17,
       opacity: 0
     })
     .text(d => d.type)
@@ -115,7 +139,7 @@ angular.module('xos.mcordTopology')
     });
 
   };
-  
+
   this.removeElements = (nodes) => {
     nodes
     .transition()
