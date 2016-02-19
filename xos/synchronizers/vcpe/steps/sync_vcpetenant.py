@@ -150,7 +150,7 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
             wan_vm_mac = parts[2]
         else:
             if CORD_USE_VTN:
-                raise Exception("no vm_wan_addr tag for instance %s" % instance)
+                raise Exception("no vm_wan_addr tag for instance %s" % o.instance)
 
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
