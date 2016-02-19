@@ -5,7 +5,14 @@ angular.module('xos.mcordTopology')
 
   const duration = 500;
 
+  let isFabricDrawed = false;
+
   this.drawFabricBox = (svg, hStep, vStep) => {
+
+    if(isFabricDrawed){
+      return;
+    }
+
     let fabric = svg.append('g')
     .attr({
       transform: `translate(${hStep - 25}, ${vStep - 25})`
@@ -25,6 +32,8 @@ angular.module('xos.mcordTopology')
       x: ((hStep + 50) / 2),
       y: -10
     });
+
+    isFabricDrawed = true;
   };
 
   this.drawBbus = (nodes) => {
