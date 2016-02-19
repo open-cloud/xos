@@ -74,7 +74,7 @@
       - ip route add default via {{ wan_container_gateway_ip }}
 #      - arp -s {{ wan_container_gateway_ip }} {{ wan_container_gateway_mac }}
 
-{% if false %}
+{% if full_setup %}
   - name: Docker repository
     copy: src=/opt/xos/synchronizers/vcpe/files/docker.list
       dest=/etc/apt/sources.list.d/docker.list
@@ -122,29 +122,27 @@
 #    file: path=~/bin state=directory owner=root group=root
 #    when: cron_job_pids_count.stdout == "0"
 
-  - name: Copy cron job to destination
-    copy: src=/opt/xos/synchronizers/vcpe/vcpe_stats_notifier.py
-      dest=/usr/local/sbin/vcpe_stats_notifier.py
-    when: cron_job_pids_count.stdout == "0"
+#  - name: Copy cron job to destination
+#    copy: src=/opt/xos/synchronizers/vcpe/vcpe_stats_notifier.py
+#      dest=/usr/local/sbin/vcpe_stats_notifier.py
+#    when: cron_job_pids_count.stdout == "0"
 
-  - name: install python-kombu
-    apt: name=python-kombu state=present
-    when: cron_job_pids_count.stdout == "0"
+#  - name: install python-kombu
+#    apt: name=python-kombu state=present
+#    when: cron_job_pids_count.stdout == "0"
 
-  - name: Initiate vcpe_stats_notifier cron job
-    command: sudo python /usr/local/sbin/vcpe_stats_notifier.py --keystone_tenant_id={{ keystone_tenant_id }} --keystone_user_id={{ keystone_user_id }} --rabbit_user={{ rabbit_user }} --rabbit_password={{ rabbit_password }} --rabbit_host={{ rabbit_host }} --vcpeservice_rabbit_exchange='vcpeservice'
-    async: 9999999999999999
-    poll: 0
-    when: cron_job_pids_count.stdout == "0"
+#  - name: Initiate vcpe_stats_notifier cron job
+#    command: sudo python /usr/local/sbin/vcpe_stats_notifier.py --keystone_tenant_id={{ keystone_tenant_id }} --keystone_user_id={{ keystone_user_id }} --rabbit_user={{ rabbit_user }} --rabbit_password={{ rabbit_password }} --rabbit_host={{ rabbit_host }} --vcpeservice_rabbit_exchange='vcpeservice'
+#    async: 9999999999999999
+#    poll: 0
+#    when: cron_job_pids_count.stdout == "0"
 {% endif %}
-
-{% if false %}
 
   - name: vCPE upstart
     template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.conf
 
   - name: vCPE startup script
-    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.sh mode=0755
     notify:
 #    - restart vcpe
      - stop vcpe
@@ -163,14 +161,6 @@
     template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
-
-# These are samples, not necessary for correct function of demo
-
-#  - name: networking info
-#    template: src=/opt/xos/synchronizers/vcpe/templates/vlan_sample.j2 dest=/etc/vlan_sample owner=root group=root
-
-#  - name: firewall info
-#    template: src=/opt/xos/synchronizers/vcpe/templates/firewall_sample.j2 dest=/etc/firewall_sample owner=root group=root
 
   - name: Make sure vCPE service is running
     service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
@@ -191,6 +181,4 @@
 
   - name: start vcpe
     service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
-
-{% endif %}
 
