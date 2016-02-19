@@ -17,6 +17,13 @@ VTN
 * onos-cord VM is created by openstack-cluster-install
 * Bring up ONOS
   # cd cord; docker-compose up -d
+* On each compute node it's necessary perform a few manual steps (FIX ME)
+  - Disable neutron-plugin-openvswitch-agent. As root:
+    # service neutron-plugin-openvswitch-agent stop
+    # echo manual > /etc/init/neutron-plugin-openvswitch-agent.override
+  - Clean up OVS: delete br-int and any other bridges
+  - Listen for connections from VTN:
+    # ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6641
 
 XOS
 * xos VM is created by openstack-cluster-install
@@ -28,4 +35,3 @@ XOS
   # make cord
 * Login to XOS at http://xos
   - padmin@vicci.org / letmein
-
