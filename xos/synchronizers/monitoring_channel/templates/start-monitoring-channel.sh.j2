@@ -40,7 +40,7 @@ fi
 #ifconfig $HPC_IFACE 0.0.0.0
 
 # Now copy ceilometer proxy configuration to container
-cat /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config | docker exec -i $MONITORING_CHANNEL bash -c 'cat > /usr/local/share/ceilometer_proxy_config'
+cat /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config | sudo docker exec -i $MONITORING_CHANNEL bash -c 'cat > /usr/local/share/ceilometer_proxy_config'
 
 # Attach to container
 docker start -a $MONITORING_CHANNEL
