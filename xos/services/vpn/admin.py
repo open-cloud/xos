@@ -6,6 +6,7 @@ from core.models import User
 from django import forms
 from django.contrib import admin
 from services.vpn.models import VPN_KIND, VPNService, VPNTenant
+from subprocess import Popen, PIPE
 
 
 class VPNServiceAdmin(ReadOnlyAwareAdmin):
@@ -102,25 +103,12 @@ class VPNTenantForm(forms.ModelForm):
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
 
-        if ((not self.instance.server_crt) or (not self.instance.server_key)):
-            self.generate_server_credentials()
-
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_ca_crt(self):
         """str: Generates the ca cert by reading from the ca file"""
         with open("/opt/openvpn/easyrsa3/pki/ca.crt") as crt:
             return crt.readlines()
-
-    def generate_server_credentials(self):
-        with open("/opt/openvpn/easyrsa3/pki/issued/server.crt") as crt:
-            self.instance.server_crt = crt.readlines()
-
-        with open("/opt/openvpn/easyrsa3/pki/private/server.key") as key:
-            self.instance.server_key = key.readlines()
-
-        with open("/opt/openvpn/easyrsa3/pki/dh.pem") as dh:
-            self.instance.dh = dh.readlines()
 
     class Meta:
         model = VPNTenant

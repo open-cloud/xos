@@ -32,22 +32,20 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         return objs
 
     def get_extra_attributes(self, tenant):
-        return {"server_key": tenant.server_key,
-                "is_persistent": tenant.is_persistent,
+        return {"is_persistent": tenant.is_persistent,
                 "vpn_subnet": tenant.vpn_subnet,
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": tenant.clients_can_see_each_other,
-                "ca_crt": tenant.ca_crt,
-                "server_crt": self.get_escaped_ca_crt(tenant),
-                "dh": tenant.dh
+                "instnace_id": tenant.instance.instnace_id
                 }
 
-    def get_escaped_ca_crt(self, tenant):
-        result = list()
-        for line in tenant.server_crt:
-            result.append("\"" + line + "\"")
-
-        return result
+    def run_playbook(self, o, fields):
+        self.create_client_script(o)
+        # Generate the server files
+        (stdout, stderr) = Popen("/opt/openvpn/easyrsa3/easyrsa --batch build-server-full server" + o.instance.instance_id + " nopass",shell=True, stdout=PIPE).communicate()
+        print(str(stdout))
+        print(str(stderr))
+        super(SyncVPNTenant, self).run_playbook(o, fields)
 
     def create_client_script(self, tenant):
         script = open("/opt/xos/core/static/vpn/" + str(tenant.script), 'w')
@@ -70,10 +68,6 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
         script.write("openvpn client.conf &\n")
         # close the script
         script.close()
-
-    def run_playbook(self, o, fields):
-        self.create_client_script(o)
-        super(SyncVPNTenant, self).run_playbook(o, fields)
 
     def generate_login(self):
         return str(time.time()) + "\npassword\n"

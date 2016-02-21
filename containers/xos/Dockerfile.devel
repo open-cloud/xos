@@ -95,6 +95,7 @@ CMD update-ca-certificates && python /opt/xos/manage.py runserver 0.0.0.0:8000 -
 
 # for OpenVPN
 RUN mkdir -p /opt/openvpn
+RUN chmod 777 /opt/openvpn
 RUN git clone https://github.com/OpenVPN/easy-rsa.git /opt/openvpn
 RUN git -C /opt/openvpn pull origin master
 RUN echo "set_var EASYRSA	/opt/openvpn/easyrsa3" | tee /opt/openvpn/easyrsa3/vars
