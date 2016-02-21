@@ -142,10 +142,10 @@ class SyncStep(object):
     def sync_record(self, o):
         try:
             controller = o.get_controller()
-            controller_register = json.loads(o.node.site_deployment.controller.backend_register)
+            controller_register = json.loads(controller.backend_register)
 
             if (controller_register.get('disabled',False)):
-                raise InnocuousException('Controller %s is disabled'%sliver.node.site_deployment.controller.name)
+                raise InnocuousException('Controller %s is disabled'%controller.name)
         except AttributeError:
             pass
 
@@ -249,7 +249,7 @@ class SyncStep(object):
                     except:
                         error = '%s'%str_e
 
-                    if isinstance(e, InnocuousException) and not force_error:
+                    if isinstance(e, InnocuousException):
                         o.backend_status = '1 - %s'%error
                     else:
                         o.backend_status = '2 - %s'%error

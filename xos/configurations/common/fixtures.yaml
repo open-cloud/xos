@@ -21,3 +21,6 @@ topology_template:
 
     bridge:
       type: tosca.nodes.NetworkParameterType
+
+    neutron_port_name:
+      type: tosca.nodes.NetworkParameterType

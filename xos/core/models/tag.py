@@ -27,6 +27,10 @@ class Tag(PlCoreBase):
     def can_update(self, user):
         return user.can_update_root()
 
+    @classmethod
+    def select_by_content_object(cls, obj):
+        return cls.objects.filter(content_type=ContentType.objects.get_for_model(obj), object_id=obj.id)
+
     @staticmethod
     def select_by_user(user):
         return Tag.objects.all()

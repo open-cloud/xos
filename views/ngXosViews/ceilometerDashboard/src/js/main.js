@@ -31,7 +31,7 @@ angular.module('xos.ceilometerDashboard', [
     $rootScope.stateName = toState.name;
   })
 })
-.service('Ceilometer', function($http, $q, lodash){
+.service('Ceilometer', function($http, $q){
 
   this.getMappings = () => {
     let deferred = $q.defer();
@@ -161,15 +161,17 @@ angular.module('xos.ceilometerDashboard', [
 
         // visualization info
         this.loader = true;
-        this.selectedSlice = slice.slice;
-        this.selectedTenant = slice.project_id;
-
-        // store the status
-        Ceilometer.selectedSlice = slice;
-        Ceilometer.selectedService = service_name;
+        this.error = null;
+        this.ceilometerError = null;
 
         Ceilometer.getMeters({tenant: slice.project_id})
         .then((sliceMeters) => {
+          this.selectedSlice = slice.slice;
+          this.selectedTenant = slice.project_id;
+
+          // store the status
+          Ceilometer.selectedSlice = slice;
+          Ceilometer.selectedService = service_name;
           this.selectedResources = lodash.groupBy(sliceMeters, 'resource_name');
 
           // hacky
@@ -178,7 +180,13 @@ angular.module('xos.ceilometerDashboard', [
           }
         })
         .catch(err => {
-          this.error = (err.data && err.data.detail) ? err.data.detail : 'An Error occurred. Please try again later.';
+
+          // this means that ceilometer is not yet ready
+          if(err.status === 503){
+            return this.ceilometerError = err.data.detail.specific_error;
+          }
+
+          this.error = (err.data && err.data.detail.specific_error) ? err.data.detail.specific_error : 'An Error occurred. Please try again later.';
         })
         .finally(() => {
           this.loader = false;

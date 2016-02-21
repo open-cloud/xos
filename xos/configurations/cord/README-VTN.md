@@ -30,7 +30,7 @@ ctl node:
     # not still an issue lurking...
     cat > /usr/local/etc/neutron/plugins/ml2/conf_onos.ini <<EOF
     [onos]
-    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/openstackswitching
+    url_path = http://$ONOS_VTN_HOSTNAME:8181/onos/cordvtn
     username = karaf
     password = karaf
     EOF
@@ -113,3 +113,29 @@ Testing service composition
 11. You should see the pings arrive and responses sent out. Note that the ping responses will not reach Slice-1, since VTN traffic is unidirectional.
 12. Delete the Tenancy relation you created in Step #7. The ping traffic should no longer appear in the tcpdump.
 
+Getting external connectivity working on cloudlab
+
+Inside of vSG:
+
+    ip link add link eth0 eth0.500 type vlan id 500
+    ifconfig eth0.500 up
+    route del default gw 172.27.0.1
+    /sbin/ifconfig eth0.500 10.123.0.3
+    route del -net 10.0.0.0 netmask 255.0.0.0 dev eth0.500 # only need to do this if this route exists
+    route add -net 10.123.0.0 netmask 255.255.255.0 dev eth0.500
+    route add default gw 10.123.0.1
+    arp -s 10.123.0.1 00:8c:fa:5b:09:d8
+    
+On head node:
+
+    ifconfig eth2 10.123.0.1
+    iptables --table nat --append POSTROUTING --out-interface br-ex -j MASQUERADE
+    arp -s 10.123.0.3 fa:16:3e:ea:11:0a
+    
+Substitute for your installation:
+
+    10.123.0.3 = wan_ip of vSG
+    10.123.0.1 = wan gateway
+    fa:16:3e:ea:11:0a = wan_mac of vSG
+    00:8c:fa:5b:09:d8 = wan_mac of gateway
+    
