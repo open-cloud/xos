@@ -1,6 +1,6 @@
 IMAGE_NAME:=xosproject/xos-synchronizer-openstack
 CONTAINER_NAME:=xos-synchronizer
-NO_DOCKER_CACHE?=false
+NO_DOCKER_CACHE?=true
 
 .PHONY: build
 build: ; sudo docker build --no-cache=${NO_DOCKER_CACHE} --rm -t ${IMAGE_NAME} .
