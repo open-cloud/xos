@@ -26,16 +26,12 @@ class VPNTenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",)
 
-    default_attributes = {'server_key': None,
-                          'vpn_subnet': None,
+    default_attributes = {'vpn_subnet': None,
                           'server_network': None,
                           'clients_can_see_each_other': True,
                           'is_persistent': True,
                           'script': None,
-                          'ca_crt': None,
-                          'server_crt': None,
-                          'server_key': None,
-                          'dh': None}
+                          'ca_crt': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -53,17 +49,6 @@ class VPNTenant(TenantWithContainer):
         super(VPNTenant, self).delete(*args, **kwargs)
 
     @property
-    def server_key(self):
-        """str: The server_key used to connect to the VPN server."""
-        return self.get_attribute(
-            "server_key",
-            self.default_attributes['server_key'])
-
-    @server_key.setter
-    def server_key(self, value):
-        self.set_attribute("server_key", value)
-
-    @property
     def addresses(self):
         """Mapping[str, str]: The ip, mac address, and subnet of the NAT network of this Tenant."""
         if (not self.id) or (not self.instance):
@@ -74,7 +59,6 @@ class VPNTenant(TenantWithContainer):
             if "nat" in ns.network.name.lower():
                 addresses["ip"] = ns.ip
                 addresses["mac"] = ns.mac
-                addresses["subnet"] = ns.network.subnet
                 break
 
         return addresses
@@ -90,11 +74,6 @@ class VPNTenant(TenantWithContainer):
     def nat_mac(self):
         """str: The MAC address of this Tenant on the NAT network."""
         return self.addresses.get("mac", None)
-
-    @property
-    def subnet(self):
-        """str: The subnet of this Tenant on the NAT network."""
-        return self.addresses.get("subnet", None)
 
     @property
     def server_network(self):
@@ -157,33 +136,6 @@ class VPNTenant(TenantWithContainer):
     @ca_crt.setter
     def ca_crt(self, value):
         self.set_attribute("ca_crt", value)
-
-    @property
-    def server_crt(self):
-        """str: the string for the server certificate"""
-        return self.get_attribute("server_crt", self.default_attributes['server_crt'])
-
-    @server_crt.setter
-    def server_crt(self, value):
-        self.set_attribute("server_crt", value)
-
-    @property
-    def server_key(self):
-        """str: the string for the server certificate"""
-        return self.get_attribute("server_key", self.default_attributes['server_key'])
-
-    @server_key.setter
-    def server_key(self, value):
-        self.set_attribute("server_key", value)
-
-    @property
-    def dh(self):
-        """str: the string for the server certificate"""
-        return self.get_attribute("dh", self.default_attributes['dh'])
-
-    @dh.setter
-    def dh(self, value):
-        self.set_attribute("dh", value)
 
 
 def model_policy_vpn_tenant(pk):
