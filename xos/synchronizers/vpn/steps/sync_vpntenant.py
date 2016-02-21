@@ -4,6 +4,7 @@ import time
 
 from django.db.models import F, Q
 from services.vpn.models import VPNTenant
+from subprocess import Popen, PIPE
 from synchronizers.base.SyncInstanceUsingAnsible import \
     SyncInstanceUsingAnsible
 
