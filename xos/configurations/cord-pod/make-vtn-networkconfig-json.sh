@@ -9,15 +9,27 @@ cat >> $FN <<EOF
     "apps" : {
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
-                "gatewayMac" : "00:00:00:00:00:01",
+                "privateGatewayMac" : "00:00:00:00:00:01",
+                "localManagementIp": "172.27.0.1/24",
+                "ovsdbPort": "6641",
+                "sshPort": "22",
+                "sshUser": "root",
+                "sshKeyFile": "/root/node_key",
+                "publicGateways": [
+                    {
+                        "gatewayIp": "207.141.192.158",
+                        "gatewayMac": "a4:23:05:34:56:78"
+                    }
+                ],
                 "nodes" : [
 EOF
 
 NODES=$( sudo bash -c "source $SETUPDIR/admin-openrc.sh ; nova hypervisor-list" |grep -v ID|grep -v +|awk '{print $4}' )
 
+# XXX disabled - we don't need or want the nm node at this time
 # also configure ONOS to manage the nm node
-NM="neutron-gateway"
-NODES="$NODES $NM"
+#NM="neutron-gateway"
+#NODES="$NODES $NM"
 
 NODECOUNT=0
 for NODE in $NODES; do
@@ -29,18 +41,18 @@ for NODE in $NODES; do
     echo $NODE
     NODEIP=`getent hosts $NODE | awk '{ print $1 }'`
 
-    PHYPORT=eth0
-    LOCALIP=$NODEIP
+    PHYPORT=mlx0
+    # How to set LOCALIP?
+    LOCALIPNET="192.168.199"
 
     ((I++))
     cat >> $FN <<EOF
                     {
                       "hostname": "$NODE",
-                      "ovsdbIp": "$NODEIP",
-                      "ovsdbPort": "6641",
+                      "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
-                      "phyPortName": "$PHYPORT",
-                      "localIp": "$LOCALIP"
+                      "dataPlaneIntf": "$PHYPORT",
+                      "dataPlaneIp": "$LOCALIPNET.$I/24"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN
@@ -61,7 +73,7 @@ cat >> $FN <<EOF
             "openstackswitching" : {
                  "do_not_push_flows" : "true",
                  "neutron_server" : "$NEUTRON_URL/v2.0/",
-                 "keystone_server" : "$OS_AUTH_URL",
+                 "keystone_server" : "$OS_AUTH_URL/",
                  "user_name" : "$OS_USERNAME",
                  "password" : "$OS_PASSWORD"
              }

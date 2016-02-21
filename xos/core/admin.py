@@ -42,13 +42,7 @@ def backend_icon(obj):
     # FIXME: Need to clean this up by separating Javascript from Python
     if (obj.pk):
         script = """
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $("#show_details_%d").click(function () {
-                    $("#status%d").dialog({modal: true, height: 200, width: 200 });
-                });
-            });
-        </script>
+        <script type="text/javascript">$(document).ready(function () {$("#show_details_%d").click(function () {$("#status%d").dialog({modal: true, height: 200, width: 200 });});});</script>
         """%(obj.pk,obj.pk)
 
         div = """
@@ -1907,7 +1901,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 
 class PortAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name", "id", "ip")
+    list_display = ("backend_status_icon", "id", "ip")
     list_display_links = ('backend_status_icon', 'id')
     readonly_fields = ("subnet", )
     inlines = [NetworkParameterInline]

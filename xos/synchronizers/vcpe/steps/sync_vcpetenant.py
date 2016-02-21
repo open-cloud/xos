@@ -9,8 +9,8 @@ from xos.config import Config
 from synchronizers.base.syncstep import SyncStep
 from synchronizers.base.ansible import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from core.models import Service, Slice
-from services.cord.models import VCPEService, VCPETenant, VOLTTenant
+from core.models import Service, Slice, Tag
+from services.cord.models import VSGService, VSGTenant, VOLTTenant
 from services.hpc.models import HpcService, CDNPrefix
 from xos.logger import Logger, logging
 
@@ -25,21 +25,23 @@ logger = Logger(level=logging.INFO)
 PARENTAL_MECHANISM="dnsmasq"
 ENABLE_QUICK_UPDATE=False
 
-class SyncVCPETenant(SyncInstanceUsingAnsible):
-    provides=[VCPETenant]
-    observes=VCPETenant
+CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
+
+class SyncVSGTenant(SyncInstanceUsingAnsible):
+    provides=[VSGTenant]
+    observes=VSGTenant
     requested_interval=0
     template_name = "sync_vcpetenant.yaml"
     service_key_name = "/opt/xos/synchronizers/vcpe/vcpe_private_key"
 
     def __init__(self, *args, **kwargs):
-        super(SyncVCPETenant, self).__init__(*args, **kwargs)
+        super(SyncVSGTenant, self).__init__(*args, **kwargs)
 
     def fetch_pending(self, deleted):
         if (not deleted):
-            objs = VCPETenant.get_tenant_objects().filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
+            objs = VSGTenant.get_tenant_objects().filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
         else:
-            objs = VCPETenant.get_deleted_tenant_objects()
+            objs = VSGTenant.get_deleted_tenant_objects()
 
         return objs
 
@@ -47,7 +49,7 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
         if not o.provider_service:
             return None
 
-        vcpes = VCPEService.get_service_objects().filter(id=o.provider_service.id)
+        vcpes = VSGService.get_service_objects().filter(id=o.provider_service.id)
         if not vcpes:
             return None
 
@@ -137,6 +139,19 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                     if mac:
                         safe_macs.append(mac)
 
+        wan_vm_ip=""
+        wan_vm_mac=""
+        tags = Tag.select_by_content_object(o.instance).filter(name="vm_wan_addr")
+        if tags:
+            parts=tags[0].value.split(",")
+            if len(parts)!=3:
+                raise Exception("vm_wan_addr tag is malformed: %s" % value)
+            wan_vm_ip = parts[1]
+            wan_vm_mac = parts[2]
+        else:
+            if CORD_USE_VTN:
+                raise Exception("no vm_wan_addr tag for instance %s" % o.instance)
+
         fields = {"vlan_ids": vlan_ids,   # XXX remove this
                 "s_tags": s_tags,
                 "c_tags": c_tags,
@@ -145,6 +160,11 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
                 "bbs_addrs": bbs_addrs,
                 "full_setup": full_setup,
                 "isolation": o.instance.isolation,
+                "wan_container_gateway_mac": vcpe_service.wan_container_gateway_mac,
+                "wan_container_gateway_ip": vcpe_service.wan_container_gateway_ip,
+                "wan_container_netbits": vcpe_service.wan_container_netbits,
+                "wan_vm_mac": wan_vm_mac,
+                "wan_vm_ip": wan_vm_ip,
                 "safe_browsing_macs": safe_macs}
 
         # add in the sync_attributes that come from the SubscriberRoot object
@@ -158,7 +178,7 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
     def sync_fields(self, o, fields):
         # the super causes the playbook to be run
 
-        super(SyncVCPETenant, self).sync_fields(o, fields)
+        super(SyncVSGTenant, self).sync_fields(o, fields)
 
         # now do all of our broadbandshield stuff...
 
@@ -225,9 +245,12 @@ class SyncVCPETenant(SyncInstanceUsingAnsible):
             logger.info("quick_update triggered; skipping ansible recipe")
         else:
             if o.instance.isolation in ["container", "container_vm"]:
-                super(SyncVCPETenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
+                super(SyncVSGTenant, self).run_playbook(o, fields, "sync_vcpetenant_new.yaml")
             else:
-                super(SyncVCPETenant, self).run_playbook(o, fields)
+                if CORD_USE_VTN:
+                    super(SyncVSGTenant, self).run_playbook(o, fields, template_name="sync_vcpetenant_vtn.yaml")
+                else:
+                    super(SyncVSGTenant, self).run_playbook(o, fields)
 
         o.last_ansible_hash = ansible_hash
 

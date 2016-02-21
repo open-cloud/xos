@@ -1,0 +1,57 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    appname: {{ appname }}
+    dependencies: {{ dependencies }}
+{% if component_configs %}
+    component_configs:
+{% for component_config in component_configs %}
+       - component: {{ component_config.component }}
+         config_params: {{  component_config.config_params }}
+{% endfor %}
+{% endif %}
+{% if rest_configs %}
+    rest_configs:
+{% for rest_config in rest_configs %}
+       - endpoint: {{ rest_config.endpoint }}
+         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
+{% endfor %}
+{% endif %}
+{% if early_rest_configs %}
+    early_rest_configs:
+{% for early_rest_config in early_rest_configs %}
+       - endpoint: {{ early_rest_config.endpoint }}
+         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ early_rest_config.fn }}') {{ '}}' }}"
+{% endfor %}
+{% endif %}
+    rest_hostname: {{ rest_hostname }}
+    rest_port: {{ rest_port }}
+
+  tasks:
+{% if dependencies %}
+  - name: Add dependencies to ONOS
+    uri:
+      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      method: POST
+      user: karaf
+      password: karaf
+    with_items:
+        {% for dependency in dependencies %}
+        - {{ dependency }}
+        {% endfor %}
+{% endif %}
+
+{% if rest_configs %}
+# Do this after services have been activated, or it will cause an exception.
+# vOLT will re-read its net config; vbng may not.
+  - name: Add ONOS configuration values
+    uri:
+      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      body: "{{ '{{' }} item.body {{ '}}' }}"
+      body_format: raw
+      method: POST
+      user: karaf
+      password: karaf
+    with_items: "rest_configs"
+{% endif %}

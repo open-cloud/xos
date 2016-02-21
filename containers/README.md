@@ -60,12 +60,16 @@ You should now be able to access the login page by visiting
 `http://localhost:8000` and log in using the default `padmin@vicci.org` account
 with password `letmein`.
 
-#### Configuring XOS for OpenStack
+## Configuring XOS for OpenStack
+
+There are many possible configurations of XOS. The best way to get started
+is to find the configuration that best matches your needs and modify it as
+necessary. The available "canned" configurations can be found i `../xos/configurations/`.
 
 If you have your own OpenStack cluster, and you would like to configure XOS to
-control it, copy the `admin-openrc.sh` credentials file for your cluster to
-this directory.  Make sure that OpenStack commands work from the local machine
-using the credentials, e.g., `source ./admin-openrc.sh; nova list`.  Then run:
+control it, then take the following steps. Copy the `admin-openrc.sh` credentials 
+file for your cluster to this directory.  Make sure that OpenStack commands work 
+from the local machine using the credentials, e.g., `source ./admin-openrc.sh; nova list`.  Then run:
 
 ```
 $ make

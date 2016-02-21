@@ -121,6 +121,18 @@ node_types:
             rest_onos/v1/network/configuration/:
                 type: string
                 required: false
+            rest_hostname:
+                type: string
+                required: false
+            rest_port:
+                type: string
+                required: false
+            no_container:
+                type: boolean
+                default: false
+            node_key:
+                type: string
+                required: false
 
 
     tosca.nodes.ONOSApp:
@@ -193,9 +205,9 @@ node_types:
                 type: string
                 required: false
 
-    tosca.nodes.VCPEService:
+    tosca.nodes.VSGService:
         description: >
-            CORD: The vCPE Service.
+            CORD: The vSG Service.
         derived_from: tosca.nodes.Root
         capabilities:
             xos_base_service_caps
@@ -206,6 +218,15 @@ node_types:
                 type: string
                 required: false
                 description: Label that matches network used to connect HPC and BBS services.
+            wan_container_gateway_ip:
+                type: string
+                required: false
+            wan_container_gateway_mac:
+                type: string
+                required: false
+            wan_container_netbits:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
@@ -409,6 +430,7 @@ node_types:
             This is a variant of the TOSCA Network object that includes additional
             XOS-specific properties.
           properties:
+            xos_base_props
             ip_version:
               type: integer
               required: no
@@ -509,6 +531,17 @@ node_types:
                 type: string
                 required: false
                 description: Comma-separated list of flavors that this deployment supports.
+
+    tosca.nodes.AddressPool:
+        derived_from: tosca.nodes.Root
+        description: >
+            A pool of addresses
+        properties:
+            xos_base_props
+            addresses:
+                type: string
+                required: false
+                description: space-separated list of addresses
 
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root

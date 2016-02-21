@@ -57,7 +57,7 @@ class XOSONOSApp(XOSResource):
             v = d.value
             if k.startswith("config_"):
                 self.set_tenant_attr(obj, k, v)
-            elif k.startswith("rest_"):
+            elif k.startswith("rest_") and (k!="rest_hostname") and (k!="rest_port"):
                 self.set_tenant_attr(obj, k, v)
             elif k.startswith("component_config"):
                 self.set_tenant_attr(obj, k, v)

@@ -34,11 +34,20 @@ def parse_output(msg):
         if (l.startswith(magic_str)):
             w = len(magic_str)
             str = l[w:]
+
+            # handle ok: [127.0.0.1] => (item=org.onosproject.driver) => {...
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
             d = json.loads(str)
             results.append(d)
         elif (l.startswith(magic_str2)):
             w = len(magic_str2)
             str = l[w:]
+
+            if str.startswith("(") and (" => {" in str):
+                str = str.split("=> ",1)[1]
+
             d = json.loads(str)
             results.append(d)
 
@@ -149,12 +158,12 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     private_key = opts["private_key"]
     baremetal_ssh = opts.get("baremetal_ssh",False)
     if baremetal_ssh:
-        # no instance_id or nat_ip for baremetal
+        # no instance_id or ssh_ip for baremetal
         # we never proxy to baremetal
         proxy_ssh = False
     else:
         instance_id = opts["instance_id"]
-        nat_ip = opts["nat_ip"]
+        ssh_ip = opts["ssh_ip"]
         try:
             proxy_ssh = Config().observer_proxy_ssh
         except:
@@ -172,7 +181,15 @@ def run_template_ssh(name, opts, path='', expected_num=None):
     f = open(config_pathname, "w")
     f.write("[ssh_connection]\n")
     if proxy_ssh:
-        proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
+        proxy_ssh_key = getattr(Config(), "observer_proxy_ssh_key", None)
+        proxy_ssh_user = getattr(Config(), "observer_proxy_ssh_user", "root")
+        if proxy_ssh_key:
+            # If proxy_ssh_key is known, then we can proxy into the compute
+            # node without needing to have the OpenCloud sshd machinery in
+            # place.
+            proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s nc %s 22" % (proxy_ssh_key, proxy_ssh_user, hostname, ssh_ip)
+        else:
+            proxy_command = "ProxyCommand ssh -q -i %s -o StrictHostKeyChecking=no %s@%s" % (private_key_pathname, instance_id, hostname)
         f.write('ssh_args = -o "%s"\n' % proxy_command)
     f.write('scp_if_ssh = True\n')
     f.write('pipelining = True\n')
@@ -186,7 +203,7 @@ def run_template_ssh(name, opts, path='', expected_num=None):
         f.write("%s ansible_ssh_private_key_file=%s\n" % (hostname, private_key_pathname))
     else:
         # acb: Login user is hardcoded, this is not great
-        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (nat_ip, private_key_pathname))
+        f.write("%s ansible_ssh_private_key_file=%s ansible_ssh_user=ubuntu\n" % (ssh_ip, private_key_pathname))
     f.close()
 
     # SSH will complain if private key is world or group readable

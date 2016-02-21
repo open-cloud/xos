@@ -1,7 +1,7 @@
 import os
 import socket
 import sys
-from django.db import models
+from django.db import models, transaction
 from core.models import PlCoreBase, Site, Slice, Instance, Controller
 from core.models import ControllerLinkManager,ControllerLinkDeletionManager
 from django.contrib.contenttypes.models import ContentType
@@ -259,6 +259,7 @@ class Port(PlCoreBase, ParameterMixin):
     ip = models.GenericIPAddressField(help_text="Instance ip address", blank=True, null=True)
     port_id = models.CharField(null=True, blank=True, max_length=256, help_text="Neutron port id")
     mac = models.CharField(null=True, blank=True, max_length=256, help_text="MAC address associated with this port")
+    xos_created = models.BooleanField(default=False) # True if XOS created this port in Neutron, False if port created by Neutron and observed by XOS
 
     class Meta:
         unique_together = ('network', 'instance')
@@ -336,5 +337,61 @@ class NetworkParameter(PlCoreBase):
 
     def __unicode__(self):
         return self.parameter.name
+
+class AddressPool(PlCoreBase):
+    name = models.CharField(max_length=32)
+    addresses = models.TextField(blank=True, null=True)
+    inuse = models.TextField(blank=True, null=True)
+
+    def __unicode__(self): return u'%s' % (self.name)
+
+    def get_address(self):
+        with transaction.atomic():
+            ap = AddressPool.objects.get(pk=self.pk)
+            if ap.addresses:
+                avail_ips = ap.addresses.split()
+            else:
+                avail_ips = []
+
+            if ap.inuse:
+                inuse_ips = ap.inuse.split()
+            else:
+                inuse_ips = []
+
+            while avail_ips:
+                addr = avail_ips.pop(0)
+
+                if addr in inuse_ips:
+                    # This may have happened if someone re-ran the tosca
+                    # recipe and 'refilled' the AddressPool while some addresses
+                    # were still in use.
+                    continue
+
+                inuse_ips.insert(0,addr)
+
+                ap.inuse = " ".join(inuse_ips)
+                ap.addresses = " ".join(avail_ips)
+                ap.save()
+                return addr
+
+            addr = None
+        return addr
+
+    def put_address(self, addr):
+        with transaction.atomic():
+            ap = AddressPool.objects.get(pk=self.pk)
+            addresses = ap.addresses or ""
+            parts = addresses.split()
+            if addr not in parts:
+                parts.insert(0,addr)
+                ap.addresses = " ".join(parts)
+
+            inuse = ap.inuse or ""
+            parts = inuse.split()
+            if addr in parts:
+                parts.remove(addr)
+                ap.inuse = " ".join(parts)
+
+            ap.save()
 
 
