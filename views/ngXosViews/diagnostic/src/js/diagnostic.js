@@ -8,6 +8,8 @@
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
       controller: function(Subscribers, ServiceRelation){
+        this.loader = true;
+        this.error = false;
         Subscribers.query().$promise
         .then((subscribers) => {
           this.subscribers = subscribers;
@@ -15,6 +17,13 @@
         })
         .then((serviceChain) => {
           this.serviceChain = serviceChain;
+        })
+        .catch(e => {
+          throw new Error(e);
+          this.error = e;
+        })
+        .finally(() => {
+          this.loader = false;
         });
       }
     }
