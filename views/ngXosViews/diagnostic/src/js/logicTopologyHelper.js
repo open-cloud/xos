@@ -136,6 +136,7 @@
         });
 
       // TODO handle node remove
+      var nodeExit = node.exit().remove();
     };
 
     /**
@@ -164,6 +165,8 @@
       link.transition()
         .duration(serviceTopologyConfig.duration)
         .attr('d', diagonal);
+
+      link.exit().remove();
     };
 
     /**
@@ -190,6 +193,7 @@
       // Compute the new tree layout.
       [nodes, links] = computeLayout(baseData);
 
+      // console.log(baseData);
       drawNodes(svg, nodes);
       drawLinks(svg, links);
     }
@@ -197,16 +201,25 @@
     /**
     * Add Subscribers to the tree
     */
-    this.addSubscribers = (subscribers) => {
+    this.addSubscriber = (subscriber) => {
 
-      subscribers.map((subscriber) => {
-        subscriber.children = subscriber.devices;
-      });
+
+      subscriber.children = subscriber.devices;
 
       // add subscriber to data tree
-      baseData.children[0].children[0].children[0].children = subscribers;
-      
+      baseData.children[0].children[0].children[0].children = [subscriber];
       return baseData;
+    };
+
+    /**
+    * Add Subscriber tag to LAN Network
+    */
+   
+    this.addSubscriberTag = (tags) => {
+      baseData.children[0].children[0].children[0].subscriberTag = {
+        cTag: tags.c_tag,
+        sTag: tags.s_tag
+      }
     };
 
     /**

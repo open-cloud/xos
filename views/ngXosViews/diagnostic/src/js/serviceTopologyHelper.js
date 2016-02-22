@@ -225,8 +225,8 @@
         $rootScope.$emit('instance.detail.hide', {});
         return updateTree(_svg, _layout, _source);
       }
-
-      $rootScope.$emit('instance.detail', {name: d.humanReadableName});
+      
+      $rootScope.$emit('instance.detail', {name: d.name});
 
       // unselect all
       _svg.selectAll('circle')

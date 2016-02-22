@@ -30,6 +30,10 @@
           ServiceRelation.getBySubscriber(subscriber)
           .then((serviceChain) => {
             this.serviceChain = serviceChain;
+            return Subscribers.getWithDevices({id: subscriber.id}).$promise;
+          })
+          .then((subscriber) => {
+            this.selectedSubscriber = subscriber;
           });
         });
       }
