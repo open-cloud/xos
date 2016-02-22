@@ -246,6 +246,12 @@ logic-topology .node .instance.active rect{
   }
 }
 
+/* MODALS */
+
+.modal.fade.in {
+  display: block;
+}
+
 /* ANIMATIONS */
 
 @keyframes bounceInRight {

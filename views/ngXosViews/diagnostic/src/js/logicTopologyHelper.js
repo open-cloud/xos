@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.serviceTopology')
-  .service('LogicTopologyHelper', function($window, $log, lodash, serviceTopologyConfig, NodeDrawer){
+  .service('LogicTopologyHelper', function($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer){
 
     var diagonal, nodes, links, i = 0, svgWidth, svgHeight, layout;
 
@@ -117,6 +117,12 @@
       NodeDrawer.addPhisical(node.filter('.router'));
       NodeDrawer.addPhisical(node.filter('.subscriber'));
       NodeDrawer.addDevice(node.filter('.device'));
+
+      // add event listener to subscriber
+      node.filter('.subscriber')
+      .on('click', () => {
+        $rootScope.$emit('subscriber.modal.open');
+      });
 
       //update nodes
       // TODO if data change, only update them
