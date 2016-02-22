@@ -1,16 +1,30 @@
 <div class="container-fluid">
-  <div class="onethird-height">
-    <service-topology service-chain="vm.serviceChain"></service-topology>
+  <div ng-hide="vm.error && vm.loader">
+    <div class="onethird-height">
+      <service-topology service-chain="vm.serviceChain"></service-topology>
+    </div>
+    <div class="twothird-height">
+      <!-- <div class="panel panel-primary subscriber-select">
+        <div class="panel-heading">Select a subscriber:</div>
+        <div class="panel-body">
+          <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber">
+            <option value="">Select a subscriber...</option>
+          </select>
+        </div>
+      </div> -->
+      <logic-topology ng-if="vm.subscribers" subscribers="vm.subscribers" selected="vm.selectedSubscriber"></logic-topology>
+    </div>
   </div>
-  <div class="twothird-height">
-    <!-- <div class="panel panel-primary subscriber-select">
-      <div class="panel-heading">Select a subscriber:</div>
-      <div class="panel-body">
-        <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber">
-          <option value="">Select a subscriber...</option>
-        </select>
+  <div class="row" ng-show="vm.error">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        {{vm.error}}
       </div>
-    </div> -->
-    <logic-topology ng-if="vm.subscribers" subscribers="vm.subscribers" selected="vm.selectedSubscriber"></logic-topology>
+    </div>
+  </div>
+  <div class="row" ng-show="vm.loader">
+    <div class="col-xs-12">
+      <div class="loader">Loading</div>
+    </div>
   </div>
 </div>

@@ -5,7 +5,9 @@
   "scripts": {
     "prestart": "npm install && bower install",
     "start": "gulp serve",
+    "dev": "NODE_ENV=local gulp serve",
     "prebuild": "npm install && bower install",
+    "server": "easy-mocker -c ./mocks/diagnostic.conf.json -d ./mocks/data",
     "build": "gulp",
     "test": "karma start",
     "lint": "eslint src/js/"
@@ -21,6 +23,7 @@
   "devDependencies": {
     "browser-sync": "^2.9.11",
     "del": "^2.0.2",
+    "easy-mocker": "^1.2.0",
     "eslint": "^1.8.0",
     "eslint-plugin-angular": "linkmesrl/eslint-plugin-angular",
     "gulp": "^3.9.0",
@@ -36,14 +39,6 @@
     "gulp-replace": "^0.5.4",
     "gulp-uglify": "^1.4.2",
     "http-proxy": "^1.12.0",
-    "jasmine-core": "^2.4.1",
-    "karma-jasmine": "^0.3.6",
-    "lodash": "^3.10.1",
-    "proxy-middleware": "^0.15.0",
-    "run-sequence": "^1.1.4",
-    "wiredep": "^3.0.0-beta",
-    "wrench": "^1.5.8",
-    "phantomjs": "^1.9.19",
     "ink-docstrap": "^0.5.2",
     "jasmine-core": "~2.3.4",
     "karma": "^0.13.14",
@@ -52,6 +47,12 @@
     "karma-jasmine": "~0.3.6",
     "karma-mocha-reporter": "~1.1.1",
     "karma-ng-html2js-preprocessor": "^0.2.0",
-    "karma-phantomjs-launcher": "~0.2.1"
+    "karma-phantomjs-launcher": "~0.2.1",
+    "lodash": "^3.10.1",
+    "phantomjs": "^1.9.19",
+    "proxy-middleware": "^0.15.0",
+    "run-sequence": "^1.1.4",
+    "wiredep": "^3.0.0-beta",
+    "wrench": "^1.5.8"
   }
 }
