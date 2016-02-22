@@ -7,7 +7,7 @@
       restrict: 'E',
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
-      controller: function(Subscribers, ServiceRelation){
+      controller: function(Subscribers, ServiceRelation, $rootScope){
         this.loader = true;
         this.error = false;
         Subscribers.query().$promise
@@ -24,6 +24,13 @@
         })
         .finally(() => {
           this.loader = false;
+        });
+
+        $rootScope.$on('subscriber.selected', (evt, subscriber) => {
+          ServiceRelation.getBySubscriber(subscriber)
+          .then((serviceChain) => {
+            this.serviceChain = serviceChain;
+          });
         });
       }
     }

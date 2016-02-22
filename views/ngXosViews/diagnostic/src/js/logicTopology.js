@@ -92,6 +92,17 @@
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
 
+        this.openSubscriberModal = () => {
+          this.subscriberModal = true;
+          $scope.$apply();
+        };
+
+
+        // listen for subscriber modal event
+        $rootScope.$on('subscriber.modal.open', () => {
+          this.openSubscriberModal();
+        });
+
       }
     };
   });
