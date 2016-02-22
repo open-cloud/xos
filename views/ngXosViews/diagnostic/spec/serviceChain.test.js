@@ -172,14 +172,17 @@ describe('The Service Relation Service', () => {
     const services = [
       {
         id: 1,
+        name: 'vbng',
         humanReadableName: 'vbng'
       },
       {
         id: 2,
+        name: 'vsg',
         humanReadableName: 'vsg'
       },
       {
         id: 3,
+        name: 'volt',
         humanReadableName: 'volt'
       }
     ];
@@ -188,9 +191,10 @@ describe('The Service Relation Service', () => {
       let tree = Service.buildServiceTree(services, coarseTenants);
 
       expect(tree.type).toBe('subscriber');
-      expect(tree.children[0].humanReadableName).toBe('volt');
-      expect(tree.children[0].children[0].humanReadableName).toBe('vsg');
-      expect(tree.children[0].children[0].children[0].humanReadableName).toBe('vbng');
+      expect(tree.children[0].name).toBe('volt');
+      expect(tree.children[0].service).toBeDefined();
+      expect(tree.children[0].children[0].name).toBe('vsg');
+      expect(tree.children[0].children[0].children[0].name).toBe('vbng');
     });
   });
 

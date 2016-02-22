@@ -28,6 +28,16 @@
             return instances;
           }
         }
+      },
+      getSubscriberTag: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: (res) => {
+            // NOTE we should receive only one vOLT tenant here
+            return JSON.parse(res.data[0].service_specific_attribute);
+          }
+        }
       }
     });
   })
@@ -127,7 +137,7 @@
     });
   })
   .service('Subscribers', function($resource, $q, SubscriberDevice){
-    return $resource('/xos/subscribers', {id: '@id'}, {
+    return $resource('/xos/subscribers/:id', {id: '@id'}, {
       queryWithDevices: {
         method: 'GET',
         isArray: true,
@@ -138,7 +148,7 @@
             * For each subscriber retrieve devices and append them
             */
 
-            const deferred = $q.defer();
+            let deferred = $q.defer();
 
             let requests = [];
 
@@ -167,6 +177,29 @@
             })
 
             return deferred.promise;
+          }
+        }
+      },
+      getWithDevices: {
+        method: 'GET',
+        isArray: false,
+        interceptor: {
+          response: (res) => {
+            let d = $q.defer();
+
+            SubscriberDevice.query({id: res.data.id}).$promise
+            .then(devices => {
+              devices.map(d => d.type = 'device');
+              res.data.devices = devices;
+              res.data.type = 'subscriber';
+              console.log(res.data);
+              d.resolve(res.data);
+            })
+            .catch(err => {
+              d.reject(err);
+            });
+
+            return d.promise;
           }
         }
       }
@@ -289,13 +322,20 @@
 
       // TODO refactor
       const buildChild = (services, tenants, currentService) => {
+
+        const response = {
+          type: 'service',
+          name: currentService.humanReadableName,
+          service: currentService
+        };
+
         let tenant = lodash.find(tenants, {subscriber_service: currentService.id});
         if(tenant){
           let next = lodash.find(services, {id: tenant.provider_service});
-          currentService.children = [buildChild(services, tenants, next)];
+          response.children = [buildChild(services, tenants, next)];
         }
         else {
-          currentService.children = [
+          response.children = [
             {
               name: 'Router',
               type: 'router',
@@ -303,9 +343,8 @@
             }
           ]
         }
-        currentService.type = 'service';
         delete currentService.id; // conflict with d3
-        return currentService;
+        return response;
       }
       let baseService = lodash.find(services, {id: 3});
 

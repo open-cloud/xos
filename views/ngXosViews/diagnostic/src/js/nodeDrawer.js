@@ -26,6 +26,26 @@
         'text-anchor': 'middle'
       })
       .text(d => d.name)
+
+      nodes.each(function(n){
+        let currentNode = d3.select(this);
+        // cicle trouch node to add Tags and Public IP
+        if(n.name === 'LAN' && angular.isDefined(n.subscriberTag)){
+          currentNode.append('text')
+          .attr({
+            'text-anchor': 'middle',
+            y: 40
+          })
+          .text(() => `C-Tag: ${n.subscriberTag.cTag}`);
+
+          currentNode.append('text')
+          .attr({
+            'text-anchor': 'middle',
+            y: 60
+          })
+          .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
+        }
+      });
     }
 
     this.addRack = (nodes) => {

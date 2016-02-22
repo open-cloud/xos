@@ -2,6 +2,12 @@
   {
     "url": "subscribers",
     "base": "xos/",
+    "methods": ["GET"],
+    "param": "id"
+  },
+  {
+    "url": "users",
+    "base": "xoslib/rs/subscriber/1/",
     "methods": ["GET"]
   },
   {

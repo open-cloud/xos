@@ -32,8 +32,6 @@
           const width = el.clientWidth - (serviceTopologyConfig.widthMargin * 2);
           const height = el.clientHeight - (serviceTopologyConfig.heightMargin * 2);
 
-          console.log(el.clientWidth, el.clientHeight);
-
           const treeLayout = d3.layout.tree()
             .size([height, width]);
 
