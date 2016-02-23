@@ -11,7 +11,7 @@
       bindToController: true,
       controllerAs: 'vm',
       templateUrl: 'templates/logicTopology.tpl.html',
-      controller: function($element, $log, $scope, $rootScope, $timeout, d3, LogicTopologyHelper, Node, Tenant, Ceilometer, serviceTopologyConfig){
+      controller: function($element, $log, $scope, $rootScope, $timeout, d3, LogicTopologyHelper, Node, Tenant, Ceilometer, serviceTopologyConfig, ChartData){
         $log.info('Logic Plane');
 
         var svg;
@@ -26,32 +26,15 @@
           .style('height', `${el.clientHeight}px`);
         }
 
-        $scope.$watch(() => this.subscribers, (subscribers) => {
-          if(subscribers){
-
-            Node.queryWithInstances().$promise
-            .then((computeNodes) => {
-              LogicTopologyHelper.addComputeNodes(computeNodes);
-              LogicTopologyHelper.updateTree(svg);
-            });
-            
-          }
+        ChartData.getLogicTree()
+        .then((tree) => {
+          LogicTopologyHelper.updateTree(svg);
         });
 
         $scope.$watch(() => this.selected, (selected) => {
           if(selected){
-            $log.info(`Update logic layer for subscriber ${selected.humanReadableName}`);
-            
-            // append the device with to config settings
-            serviceTopologyConfig.elWidths.push(160);
-
-            LogicTopologyHelper.addSubscriber(angular.copy(selected));
-
-            Tenant.getSubscriberTag({subscriber_root: selected.id}).$promise
-            .then((tags) => {
-              LogicTopologyHelper.addSubscriberTag(tags);
-              LogicTopologyHelper.updateTree(svg);
-            })
+            ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
           }
         });
 
@@ -59,30 +42,14 @@
           this.hideInstanceStats = true;
           $timeout(() => {
             this.selectedInstances = [];
-            LogicTopologyHelper.getInstanceStatus([]);
+            ChartData.highlightInstances([]);
             LogicTopologyHelper.updateTree(svg);
           }, 500);
         });
 
         $rootScope.$on('instance.detail', (evt, service) => {
-
-          // NOTE consider if subscriber is selected or not,
-          // if not select instances
-          // else select containers (and follow subscriber chain to find the correct instance)
-
-          let param = {
-            'service_vsg': {kind: 'vCPE'},
-            'service_vbng': {kind: 'vBNG'},
-            'service_volt': {kind: 'vOLT'}
-          };
-
-          Tenant.queryVsgInstances(param[service.name]).$promise
+          ChartData.getInstanceStatus(service)
           .then((instances) => {
-
-            return Ceilometer.getInstancesStats(instances);
-          })
-          .then((instances) => {
-            console.log(instances);
             this.hideInstanceStats = false;
             // HACK if array is empty wait for animation
             if(instances.length === 0){
@@ -94,13 +61,8 @@
             else{
               this.selectedInstances = instances;
             }
-            
-            LogicTopologyHelper.getInstanceStatus(instances);
             LogicTopologyHelper.updateTree(svg);
           })
-          .catch((e) => {
-            throw new Error(e);
-          });
         })
 
         handleSvg($element[0]);

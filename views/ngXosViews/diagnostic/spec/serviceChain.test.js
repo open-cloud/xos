@@ -94,7 +94,7 @@ describe('The Service Relation Service', () => {
       }
     ];
 
-    const relations = [
+    const tenants = [
       {
         provider_service: 2,
         subscriber_service: 1,
@@ -113,8 +113,8 @@ describe('The Service Relation Service', () => {
       }
     ];
 
-    it('should return a tree ordered by relations', () => {
-      let tree = Service.buildSubscriberServiceTree(services, relations);
+    it('should return a tree ordered by tenants', () => {
+      let tree = Service.buildSubscriberServiceTree(services, tenants);
 
       expect(tree.name).toBe('fakeSubs');
       expect(tree.parent).toBeNull();
@@ -122,10 +122,13 @@ describe('The Service Relation Service', () => {
 
       expect(tree.children[0].name).toBe('service-1');
       expect(tree.children[0].parent).toBeNull();
+      expect(tree.children[0].tenant).toEqual({subscriber_root: 1, provider_service: 1});
       expect(tree.children[0].children.length).toBe(2);
 
       expect(tree.children[0].children[0].name).toBe('service-2');
+      expect(tree.children[0].children[0].tenant).toEqual({subscriber_service: 1, provider_service: 2});;
       expect(tree.children[0].children[0].children[0].name).toBe('service-3');
+
       expect(tree.children[0].children[0].children[0].children[0].name).toBe('Router');
 
       expect(tree.children[0].children[1].name).toBe('service-4');

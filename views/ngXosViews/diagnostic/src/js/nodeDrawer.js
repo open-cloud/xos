@@ -45,6 +45,15 @@
           })
           .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
         }
+
+        if(n.name === 'WAN' && angular.isDefined(n.subscriberIP)){
+          currentNode.append('text')
+          .attr({
+            'text-anchor': 'middle',
+            y: 40
+          })
+          .text(() => `Public IP: ${n.subscriberIP}`);
+        }
       });
     }
 

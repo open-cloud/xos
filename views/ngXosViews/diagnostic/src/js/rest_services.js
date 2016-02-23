@@ -192,7 +192,6 @@
               devices.map(d => d.type = 'device');
               res.data.devices = devices;
               res.data.type = 'subscriber';
-              console.log(res.data);
               d.resolve(res.data);
             })
             .catch(err => {
@@ -257,7 +256,7 @@
       return levelServices;
     };
 
-    const buildLevel = (tenants, services, rootService, parentName = null) => {
+    const buildLevel = (tenants, services, rootService, rootTenant, parentName = null) => {
 
       // build an array of unlinked services
       // these are the services that should still placed in the tree
@@ -279,11 +278,13 @@
         parent: parentName,
         type: 'service',
         service: rootService,
+        tenant: rootTenant,
         children: []
       };
 
       lodash.forEach(levelServices, (service) => {
-        tree.children.push(buildLevel(tenants, unlinkedServices, service, rootService.humanReadableName));
+        let tenant = lodash.find(tenants, {subscriber_tenant: rootTenant.id, provider_service: service.id});
+        tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
       });
 
       // if it is the last element append internet
@@ -303,10 +304,10 @@
       // find the root service
       // it is the one attached to subsriber_root
       // as now we have only one root so this can work
-      const rootServiceId = lodash.find(tenants, {subscriber_root: subscriber.id}).provider_service;
-      const rootService = lodash.find(services, {id: rootServiceId});
+      const rootTenant = lodash.find(tenants, {subscriber_root: subscriber.id});
+      const rootService = lodash.find(services, {id: rootTenant.provider_service});
 
-      const serviceTree = buildLevel(tenants, services, rootService);
+      const serviceTree = buildLevel(tenants, services, rootService, rootTenant);
 
       return {
         name: subscriber.name,
