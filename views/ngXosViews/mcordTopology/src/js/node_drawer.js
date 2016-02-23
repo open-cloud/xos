@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('xos.mcordTopology')
-.service('NodeDrawer', function(){
+.service('NodeDrawer', function(TopologyElements){
 
   const duration = 500;
 
@@ -99,21 +99,27 @@ angular.module('xos.mcordTopology')
   };
 
   this.drawFabric = (nodes) => {
-    nodes.append('rect')
+    nodes
+      .append('rect')
+      .attr({
+        width: 30,
+        height: 30,
+        x: -15,
+        y: -15
+      });
+
+    nodes
+      .append('path')
       .attr({
         class: d => d.type,
-        width: 0,
-        height: 0,
-        x: -15,
-        y: -15,
-        opacity: 0
+        opacity: 0,
+        d: () => TopologyElements.icons.switch,
+        transform: `translate(-22, -22), scale(0.4)`
       })
       .transition()
       .duration(duration)
       // .delay((d, i) => i * (duration / 2))
       .attr({
-        width: 30,
-        height: 30,
         opacity: 1
       });
   };
