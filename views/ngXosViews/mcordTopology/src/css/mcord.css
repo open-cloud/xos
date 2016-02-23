@@ -27,7 +27,7 @@ rect {
 }
 
 .fabric-container {
-  fill: #fff;
+  fill: transparent;
   stroke: #000;
   stroke-width: 1;
 }
