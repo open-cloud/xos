@@ -1246,8 +1246,13 @@ class MeterStatisticsList(APIView):
                 query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
                 if additional_query:
                     query = query + additional_query
-                statistics = statistic_list(request, meter["name"],
+                try:
+                    statistics = statistic_list(request, meter["name"],
                                         ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                except Exception as e:
+                    logger.error('Exception during statistics query for meter %(meter)s and reason:%(reason)s' % {'meter':meter["name"], 'reason':str(e)})
+                    statistics = None
+
                 if not statistics:
                     continue
                 statistic = statistics[-1]
@@ -1398,8 +1403,13 @@ class XOSInstanceStatisticsList(APIView):
                     query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
                     if additional_query:
                         query = query + additional_query
-                    statistics = statistic_list(request, meter["name"],
+                    try:
+                        statistics = statistic_list(request, meter["name"],
                                             ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                    except Exception as e:
+                        logger.error('Exception during statistics query for meter %(meter)s and reason:%(reason)s' % {'meter':meter["name"], 'reason':str(e)})
+                        statistics = None
+
                     if not statistics:
                         continue
                     statistic = statistics[-1]
