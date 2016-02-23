@@ -226,7 +226,7 @@
         return updateTree(_svg, _layout, _source);
       }
       
-      $rootScope.$emit('instance.detail', {name: d.name});
+      $rootScope.$emit('instance.detail', {name: d.name, service: d.service, tenant: d.tenant});
 
       // unselect all
       _svg.selectAll('circle')

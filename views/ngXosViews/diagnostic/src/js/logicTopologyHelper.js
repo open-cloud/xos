@@ -2,37 +2,11 @@
   'use strict';
 
   angular.module('xos.serviceTopology')
-  .service('LogicTopologyHelper', function($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer){
+  .service('LogicTopologyHelper', function($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer, ChartData){
 
     var diagonal, nodes, links, i = 0, svgWidth, svgHeight, layout;
 
-    const baseData = {
-      name: 'Router',
-      type: 'router',
-      children: [
-        {
-          name: 'WAN',
-          type: 'network',
-          children: [
-            {
-              name: 'Rack',
-              type: 'rack',
-              computeNodes: [],
-              children: [
-                {
-                  name: 'LAN',
-                  type: 'network',
-                  children: [{
-                    name: 'Subscriber',
-                    type: 'subscriber'
-                  }] //subscribers goes here
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    };
+    const baseData = ChartData.logicTopologyData;
 
     /**
      * Calculate the horizontal position for each element.
@@ -198,62 +172,6 @@
       drawLinks(svg, links);
     }
 
-    /**
-    * Add Subscribers to the tree
-    */
-    this.addSubscriber = (subscriber) => {
-
-
-      subscriber.children = subscriber.devices;
-
-      // add subscriber to data tree
-      baseData.children[0].children[0].children[0].children = [subscriber];
-      return baseData;
-    };
-
-    /**
-    * Add Subscriber tag to LAN Network
-    */
-   
-    this.addSubscriberTag = (tags) => {
-      baseData.children[0].children[0].children[0].subscriberTag = {
-        cTag: tags.c_tag,
-        sTag: tags.s_tag
-      }
-    };
-
-    /**
-    * Add compute nodes to the rack element
-    */
-   
-    this.addComputeNodes = (computeNodes) => {
-      baseData.children[0].children[0].computeNodes = computeNodes;
-    };
-
-    this.getInstanceStatus = (instances) => {
-
-      const computeNodes = baseData.children[0].children[0].computeNodes;
-
-      // unselect all
-      computeNodes.map((node) => {
-        node.instances.map((instance) => {
-          instance.selected = false
-          return instance;
-        });
-      });
-
-      lodash.forEach(instances, (instance) => {
-        computeNodes.map((node) => {
-          node.instances.map((d3instance) => {
-            if(d3instance.id === instance.id){
-              d3instance.selected = true;
-            }
-            return d3instance;
-          });
-        });
-      });
-
-    }
   });
 
 }());
