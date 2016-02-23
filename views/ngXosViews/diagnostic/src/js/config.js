@@ -38,6 +38,13 @@
       margin: 5,
       x: -40,
       y: -18
+    },
+    container: {
+      width: 60,
+      height: 30,
+      margin: 5,
+      x: -30,
+      y: -15
     }
   })
 

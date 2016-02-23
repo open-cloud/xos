@@ -33,10 +33,10 @@
       let height = serviceTopologyConfig.computeNode.margin;
 
       lodash.forEach(nodes, (node) => {
-        let [instanceWidth, instanceHeight] = this.getComputeNodeSize(node.instances);
+        let [nodeWidth, nodeHeight] = this.getComputeNodeSize(node.instances);
 
-        width = instanceWidth + (serviceTopologyConfig.computeNode.margin * 2);
-        height += (instanceHeight + serviceTopologyConfig.computeNode.margin);
+        width = nodeWidth + (serviceTopologyConfig.computeNode.margin * 2);
+        height += (nodeHeight + serviceTopologyConfig.computeNode.margin);
       });
 
       return [width, height];

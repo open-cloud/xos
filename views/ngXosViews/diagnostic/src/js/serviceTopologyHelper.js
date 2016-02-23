@@ -233,7 +233,6 @@
       .each(d => d.selected = false);
 
       // toggling selected status
-      console.log(d.selected);
       d.selected = !d.selected;
 
       updateTree(_svg, _layout, _source);
