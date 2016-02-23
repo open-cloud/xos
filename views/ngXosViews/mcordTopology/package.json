@@ -9,7 +9,8 @@
     "build": "gulp",
     "test": "karma start",
     "lint": "eslint src/js/",
-    "mocks": "easy-mocker -c ./mocks/mcord.conf.json -d ./mocks/data"
+    "mocks": "easy-mocker -c ./mocks/mcord.conf.json -d ./mocks/data",
+    "dev": "NODE_ENV=mock gulp serve"
   },
   "keywords": [
     "XOS",
@@ -22,7 +23,7 @@
   "devDependencies": {
     "browser-sync": "^2.9.11",
     "del": "^2.0.2",
-    "easy-mocker": "^1.1.1",
+    "easy-mocker": "^1.2.0",
     "eslint": "^1.8.0",
     "eslint-plugin-angular": "linkmesrl/eslint-plugin-angular",
     "gulp": "^3.9.0",

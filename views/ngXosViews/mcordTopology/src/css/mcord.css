@@ -21,8 +21,9 @@ rect {
 }
 
 .fabric {
-  stroke: #000;
-  fill: #1F77B4;
+  stroke: none;
+  fill: #123456;
+  fill-rule: evenodd;
 }
 
 .fabric-container {
@@ -34,11 +35,6 @@ rect {
 .bbu {
   stroke: black;
   fill: #FF7F0E;
-}
-
-.bbu text {
-  font-size: 10px;
-  stroke: #000;
 }
 
 .rru {
@@ -56,7 +52,11 @@ rect {
   stroke: #000;
 }
 
-.MME text, .SGW text, .PGW text {
+.bbu text, 
+.MME text,
+.SGW text,
+.PGW text {
   font-size: 10px;
-  stroke: #000;
+  stroke-width: 0;
+  fill: #000;
 }
