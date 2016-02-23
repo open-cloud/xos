@@ -1,4 +1,4 @@
-vtn notes:
+# vtn notes:
 
 see also: https://github.com/hyunsun/documentations/wiki/Neutron-ONOS-Integration-for-CORD-VTN#onos-setup
 
@@ -15,7 +15,7 @@ inside the xos container, update the configuration. Make sure to restart Opensta
         use_vtn=True
     supervisorctl restart observer
 
-ctl node:
+### ctl node:
 
     # set ONOS_VTN_HOSTNAME to the host where the VTN container was installed
     ONOS_VTN_HOSTNAME="cp-2.smbaker-xos5.xos-pg0.clemson.cloudlab.us"
@@ -41,7 +41,7 @@ ctl node:
     # files. Maybe it can be restarted using systemctl instead...
     /usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /usr/local/etc/neutron/plugins/ml2/conf_onos.ini
 
-Compute nodes and nm nodes:
+### Compute nodes and nm nodes:
 
     cd xos/configurations/cord/dataplane
     ./generate-bm.sh > hosts-bm
@@ -62,7 +62,7 @@ I've been deleting any existing unused bridges. Not sure if it's necesary.
 
 To get the management network working, we need to create management network template, slice, and network. configurations/cord/vtn.yaml will do this for you. Then add a connection to the management network for any slice that needs management connectivity.
     
-Notes:
+### Notes:
 * I've configured the OpenvSwitch switches to use port 6641 instead of port 6640. This is because the VTN app listens on 6640
 itself, and since we're running it in docker 'host' networking mode now, it would conflict with an Openvswitch that was
 also listening on 6640.
@@ -84,13 +84,13 @@ In case management network isn't working, you can use a VNC tunnel, like this:
 
 Then open a VNC session to the local port on your local machine. You'll have a console on the Instance. The username is "Ubuntu" and the password can be obtained from your cloudlab experiment description
 
-Things that can be tested:
+### Things that can be tested:
 
 * Create an Instance, it should have a Private network, and there should be a tap attached from the instance to br-int
 * Two Instances in the same Slice can talk to one another. They can be on the same machine or different machines.
 * Two Slices can talk to one another if the slices are associated with Services and those Services have a Tenancy relationship between them. Note that 1) The VTN Synchronizer must be running, 2) There must be a Private network with Access=[Direct|Indirect], and 3) The connectivity is unidirectional, from subscriber service to provider service.
 
-Testing service composition
+### Testing service composition
 
 1. Change the private network template's 'Access' field from None to Direct
 2. Create a Service, Service-A
@@ -105,7 +105,7 @@ Testing service composition
 11. You should see the pings arrive and responses sent out. Note that the ping responses will not reach Slice-1, since VTN traffic is unidirectional.
 12. Delete the Tenancy relation you created in Step #7. The ping traffic should no longer appear in the tcpdump.
 
-Getting external connectivity working on cloudlab
+### Getting external connectivity working on cloudlab
 
 On head node:
 
@@ -121,7 +121,7 @@ Substitute for your installation:
     fa:16:3e:ea:11:0a = wan_mac of vSG
     00:8c:fa:5b:09:d8 = wan_mac of gateway
     
-Setting up a test-client
+### Setting up a test-client
 
 Before setting up VTN, create a bridge and attach it to the dataplane device:
 
