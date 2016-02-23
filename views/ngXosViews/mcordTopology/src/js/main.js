@@ -69,7 +69,15 @@ angular.module('xos.mcordTopology', [
         .style('width', `${el.clientWidth}px`)
         .style('height', `${el.clientHeight}px`);
 
+      const linkContainer = svg.append('g')
+        .attr({
+          class: 'link-container'
+        });
 
+      const nodeContainer = svg.append('g')
+        .attr({
+          class: 'node-container'
+        });
 
       // replace human readable ids with d3 ids
       // NOTE now ids are not manatined on update...
@@ -196,7 +204,6 @@ angular.module('xos.mcordTopology', [
 
         nodes = positionFabricNodes(nodes);
 
-        NodeDrawer.drawFabricBox(svg, hStep, vStep);
 
         // start force layout
         force
@@ -209,8 +216,14 @@ angular.module('xos.mcordTopology', [
           .linkStrength(0.1)
           .start();
 
+
+        const linkContainer = d3.select('.link-container');
+        const nodeContainer = d3.select('.node-container');
+
+        NodeDrawer.drawFabricBox(nodeContainer, hStep, vStep);
+
         // draw links
-        var link = svg.selectAll('.link')
+        var link = linkContainer.selectAll('.link')
           .data(links, d => d.id);
         
         link.enter().append('line')
@@ -231,7 +244,7 @@ angular.module('xos.mcordTopology', [
         .remove();
 
         //draw nodes
-        var node = svg.selectAll('.node')
+        var node = nodeContainer.selectAll('.node')
           .data(nodes, d => {
             return d.id
           });
