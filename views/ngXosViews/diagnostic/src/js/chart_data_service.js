@@ -54,7 +54,7 @@
       this.logicTopologyData.children[0].children[0].children[0].subscriberTag = {
         cTag: tags.c_tag,
         sTag: tags.s_tag
-      }
+      };
     };
 
     /**
@@ -69,8 +69,15 @@
     };
 
     this.getSubscriberTag = () => {
-
-      this.addSubscriberTag(JSON.parse(this.currentServiceChain.children[0].tenant.service_specific_attribute));
+      const tags = JSON.parse(this.currentServiceChain.children[0].tenant.service_specific_attribute);
+      delete tags.creator_id;
+      
+      this.addSubscriberTag(tags);
+      // add tags info to current subscriber
+      this.currentSubscriber.tags = {
+        cTag: tags.c_tag,
+        sTag: tags.s_tag
+      };
 
     };
 
@@ -107,7 +114,10 @@
         computeNodes.map((node) => {
           node.instances.map((d3instance) => {
             if(d3instance.id === instance.id){
+              // console.log(d3instance, instance);
               d3instance.selected = true;
+              d3instance.stats = instance.stats; //add stats to d3 node
+              d3instance.container = instance.container; // container info to d3 node
             }
             return d3instance;
           });
@@ -119,18 +129,45 @@
     this.getInstanceStatus = (service) => {
       const deferred = $q.defer();
 
-      // NOTE consider if subscriber is selected or not,
-      // if not select instances
-      // else select containers (and follow subscriber chain to find the correct instance)
-
       let p;
 
+      // subscriber specific
       if(this.currentSubscriber){
-        let instances = [JSON.parse(service.tenant.service_specific_attribute).instance_id];
-        p = Ceilometer.getInstancesStats(instances);
+
+        let attr;
+        try {
+          attr = JSON.parse(service.tenant.service_specific_attribute);
+        }
+        catch(e){
+          attr = null;
+        }
+        
+        // if no instances are associated to the container
+        if(!attr || !attr.instance_id){
+          let d = $q.defer();
+          d.resolve([]);
+          p = d.promise;
+        }
+        else{
+          let instances = [attr.instance_id];
+          p = Ceilometer.getInstancesStats(instances)
+          .then((instances) => {
+            instances.map(i => {
+              i.container = {
+                name: `vcpe-${this.currentSubscriber.tags.sTag}-${this.currentSubscriber.tags.cTag}`
+              };
+              return i;
+            });
+
+            // TODO fetch container stats
+
+            return instances;
+          });
+        }
       }
+      // global scope
       else {
-        let param = {
+        const param = {
           'service_vsg': {kind: 'vCPE'},
           'service_vbng': {kind: 'vBNG'},
           'service_volt': {kind: 'vOLT'}

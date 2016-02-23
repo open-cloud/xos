@@ -4,6 +4,7 @@
   angular.module('xos.serviceTopology')
   .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
 
+    // NOTE not used anymore
     const drawLegend = (svg) => {
       const legendContainer = svg.append('g')
         .attr({
@@ -122,7 +123,7 @@
           class: d => {
             return `node ${d.type}`
           },
-          transform: `translate(${source.y0}, ${source.x0})`
+          transform: d => (d.x && d.y) ? `translate(${d.y}, ${d.x})` : `translate(${source.y0}, ${source.x0})`
         });
 
       const subscriberNodes = nodeEnter.filter('.subscriber');

@@ -9,7 +9,7 @@
   var instanceId = 0;
 
   angular.module('xos.serviceTopology')
-  .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper){
+  .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper, lodash){
 
     var _this = this;
 
@@ -64,6 +64,9 @@
       nodes.each(d => {
         let [w, h] = RackHelper.getRackSize(d.computeNodes);
 
+        // TODO update instead of delete and redraw
+        nodes.select('g').remove();
+
         let rack = nodes
         .append('g');
 
@@ -74,7 +77,7 @@
         .transition()
         .duration(serviceTopologyConfig.duration)
         .attr({
-          transform: d => `translate(${- (w / 2)}, ${- (h / 2)})`
+          transform: () => `translate(${- (w / 2)}, ${- (h / 2)})`
         });
 
         rack
@@ -177,9 +180,118 @@
       return name
         .replace('app_', '')
         .replace('service_', '')
-        .replace('ovs_', '')
+        // .replace('ovs_', '')
         .replace('mysite_', '')
         .replace('_instance', '');
+    };
+
+    const getInstanceStatusColor = (instance) => {
+      function startWith(val, string){
+        return string.substring(0, val.length) === val;
+      }
+
+      if(startWith('0 - ', instance.backend_status)){
+        return 'provisioning';
+      }
+      if(startWith('1 - ', instance.backend_status)){
+        return 'good';
+      }
+      if(startWith('2 - ', instance.backend_status)){
+        return 'bad';
+      }
+      else {
+        return '';
+      }
+    };
+
+    const showInstanceStats = (container, instance) => {
+
+      // NOTE this should be dinamically positioned
+      // base on the number of element present
+      const statsContainer = container.append('g')
+        .attr({
+          transform: `translate(200, -32)`,
+          class: 'stats-container'
+        });
+
+
+      statsContainer.append('line')
+        .attr({
+          x1: -120,
+          y1: 50,
+          x2: 0,
+          y2: 50,
+          stroke: 'black'
+        })
+
+      // NOTE rect should be dinamically sized base on the presence of a container
+      let statsHeight = 110;
+      let statsWidth = 200;
+
+      if (instance.container){
+        statsHeight += serviceTopologyConfig.container.height + (serviceTopologyConfig.container.margin * 2)
+      }
+
+      statsContainer.append('rect')
+        .attr({
+          width: statsWidth,
+          height: statsHeight
+        });
+
+      // add instance info
+      statsContainer.append('text')
+        .attr({
+          y: 15,
+          x: serviceTopologyConfig.instance.margin,
+          class: 'name'
+        })
+        .text(instance.humanReadableName)
+
+      statsContainer.append('text')
+        .attr({
+          y: 30,
+          x: serviceTopologyConfig.instance.margin,
+          class: 'ip'
+        })
+        .text(instance.ip)
+
+      // add stats
+      const interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
+
+      interestingMeters.forEach((m, i) => {
+        const meter = lodash.find(instance.stats, {meter: m});
+        statsContainer.append('text')
+        .attr({
+          y: 55 + (i * 15),
+          x: serviceTopologyConfig.instance.margin
+        })
+        .text(`${meter.description}: ${meter.value} ${meter.unit}`);
+      });
+
+      if(instance.container){
+        // draw container
+        
+        const containerBox = statsContainer.append('g')
+          .attr({
+            class: 'container',
+            transform: `translate(${serviceTopologyConfig.instance.margin}, 115)`
+          });
+
+        containerBox.append('rect')
+          .attr({
+            width: statsWidth - (serviceTopologyConfig.container.margin * 2),
+            height: serviceTopologyConfig.container.height,
+          });
+
+        containerBox.append('text')
+          .attr({
+            y: 20,
+            x: (statsWidth - (serviceTopologyConfig.container.margin * 2)) / 2,
+            'text-anchor': 'middle'
+          })
+          .text(instance.container.name)
+      }
+
     };
 
     this.drawInstances = (container, instances) => {
@@ -196,7 +308,7 @@
       instanceContainer
       .attr({
         transform: `translate(${width / 2}, ${ height / 2})`,
-        class: d => `instance ${d.selected ? 'active' : ''}`,
+        class: d => `instance ${d.selected ? 'active' : ''} ${getInstanceStatusColor(d)}`,
       })
       .transition()
       .duration(serviceTopologyConfig.duration)
@@ -223,16 +335,27 @@
         x: 40, //FIXME
         opacity: 0
       })
-      .text(d => formatInstanceName(d.name))
+      .text(d => formatInstanceName(d.humanReadableName))
       .transition()
       .duration(serviceTopologyConfig.duration)
       .attr({
         opacity: 1
       });
 
+      // if stats are attached and instance is active,
+      // draw stats
+      instanceContainer.each(function(instance){
+
+        const container = d3.select(this);
+
+        if(angular.isDefined(instance.stats) && instance.selected){
+          showInstanceStats(container, instance);
+        }
+      });
+
       instanceContainer
-      .on('click', d => {
-        console.log(d);
+      .on('click', function(d){
+        console.log(`Draw vignette with stats for instance: ${d.name}`);
       });
     };
 
