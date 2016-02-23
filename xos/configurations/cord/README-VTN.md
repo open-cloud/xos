@@ -128,6 +128,7 @@ Inside of vSG:
     
 On head node:
 
+    ovs-vsctl del-br br-flat-lan-1
     ifconfig eth2 10.123.0.1
     iptables --table nat --append POSTROUTING --out-interface br-ex -j MASQUERADE
     arp -s 10.123.0.3 fa:16:3e:ea:11:0a
