@@ -6,7 +6,7 @@ This directory holds files that are used to configure a development POD for
 CORD.  For more information on the CORD project, check out
 [the CORD website](http://cord.onosproject.org/).
 
-XOS is comprised of several core services:
+XOS is composed of several core services:
 
   * A database backend (postgres)
   * A webserver front end (django)
