@@ -221,7 +221,13 @@
           y1: 50,
           x2: 0,
           y2: 50,
-          stroke: 'black'
+          stroke: 'black',
+          opacity: 0
+        })
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
         })
 
       // NOTE rect should be dinamically sized base on the presence of a container
@@ -235,7 +241,13 @@
       statsContainer.append('rect')
         .attr({
           width: statsWidth,
-          height: statsHeight
+          height: statsHeight,
+          opacity: 0
+        })
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
         });
 
       // add instance info
@@ -243,17 +255,29 @@
         .attr({
           y: 15,
           x: serviceTopologyConfig.instance.margin,
-          class: 'name'
+          class: 'name',
+          opacity: 0
         })
         .text(instance.humanReadableName)
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
+        })
 
       statsContainer.append('text')
         .attr({
           y: 30,
           x: serviceTopologyConfig.instance.margin,
-          class: 'ip'
+          class: 'ip',
+          opacity: 0
         })
         .text(instance.ip)
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
+        })
 
       // add stats
       const interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
@@ -263,9 +287,15 @@
         statsContainer.append('text')
         .attr({
           y: 55 + (i * 15),
-          x: serviceTopologyConfig.instance.margin
+          x: serviceTopologyConfig.instance.margin,
+          opacity: 0
         })
-        .text(`${meter.description}: ${meter.value} ${meter.unit}`);
+        .text(`${meter.description}: ${meter.value} ${meter.unit}`)
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
+        });
       });
 
       if(instance.container){
@@ -344,12 +374,12 @@
 
       // if stats are attached and instance is active,
       // draw stats
-      instanceContainer.each(function(instance){
+      instanceContainer.each(function(instance, i){
 
         const container = d3.select(this);
 
         if(angular.isDefined(instance.stats) && instance.selected){
-          showInstanceStats(container, instance);
+          showInstanceStats(container, instance, i);
         }
       });
 
