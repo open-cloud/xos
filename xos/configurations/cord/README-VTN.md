@@ -55,21 +55,13 @@ Compute nodes and nm nodes:
 
 Additional compute node stuff:
 
-Br-flat-lan-1 needs to be deleted, since VTN will be attaching br-int directly to the eth device that br-flat-lan-1 was using. Additionally, we need to assign an IP address to br-int (sounds like Hyunsun is working on having VTN do that for us). Adding the route was not in Hyunsun's instructions, but I found I had to do it in order to get the compute nodes to talk to one another.
+I've been deleting any existing unused bridges. Not sure if it's necesary.
 
     ovs-vsctl del-br br-tun
     ovs-vsctl del-br br-flat-lan-1
-    ip addr add <addr-that-was-assinged-to-flat-lan-1> dev br-int
-    ip link set br-int up
-    ip route add <network-that-was-assigned-to-flat-lan-1>/24 dev br-int
-    
-To get the management network working, we need to create management network template, slice, and network. configurations/cord/vtn.yaml will do this for you. Then add a connection to the management network for any slice that needs management connectivity. Note the subnet that gets assigned to the management network. Management-gateway-ip is the .1 address on the subnet. On the compute node:
 
-    ip addr add <management-gateway-ip>/24 dev br-int
+To get the management network working, we need to create management network template, slice, and network. configurations/cord/vtn.yaml will do this for you. Then add a connection to the management network for any slice that needs management connectivity.
     
-For development, I suggest using the bash configuration (remember to start the ONOS observer manually) so that 
-there aren't a bunch of preexisting Neutron networks and nova instances to get in the way. 
-
 Notes:
 * I've configured the OpenvSwitch switches to use port 6641 instead of port 6640. This is because the VTN app listens on 6640
 itself, and since we're running it in docker 'host' networking mode now, it would conflict with an Openvswitch that was
@@ -79,7 +71,7 @@ also listening on 6640.
 * Note that the VTN Synchronizer isn't started automatically. It's only use for inter-Service connectivity, so no need to mess with it until intra-Slice connectivity is working first. 
 * Note that the VTN Synchronizer won't connect non-access networks. Any network templates you want VTN to connect must have Access set to "Direct" or "Indirect". 
 
-There is no management network yet, so no way to SSH into the slices. I've been setting up a VNC tunnel, like this:
+In case management network isn't working, you can use a VNC tunnel, like this:
 
     # on compute node, run the following and note the IP address and port number
     virsh vncdisplay <instance-id>
@@ -115,17 +107,6 @@ Testing service composition
 
 Getting external connectivity working on cloudlab
 
-Inside of vSG:
-
-    ip link add link eth0 eth0.500 type vlan id 500
-    ifconfig eth0.500 up
-    route del default gw 172.27.0.1
-    /sbin/ifconfig eth0.500 10.123.0.3
-    route del -net 10.0.0.0 netmask 255.0.0.0 dev eth0.500 # only need to do this if this route exists
-    route add -net 10.123.0.0 netmask 255.255.255.0 dev eth0.500
-    route add default gw 10.123.0.1
-    arp -s 10.123.0.1 00:8c:fa:5b:09:d8
-    
 On head node:
 
     ovs-vsctl del-br br-flat-lan-1
@@ -140,3 +121,31 @@ Substitute for your installation:
     fa:16:3e:ea:11:0a = wan_mac of vSG
     00:8c:fa:5b:09:d8 = wan_mac of gateway
     
+Setting up a test-client
+
+Before setting up VTN, create a bridge and attach it to the dataplane device:
+
+    brctl addbr br-inject
+    brctl addif br-inject eth3   # substitute dataplane eth device here, may be different on each compute node
+    ip link set br-inject up
+    ip link set dev br-inject promisc on
+    
+Then update the network-config attribute of the VTN ONOS App in XOS to use a dataplaneIntf of br-inject instead of the eth device. Bring up VTN and a VSG. WAN connectivity and everything else should be working fine. 
+
+Add a new slice, mysite_client, and make sure to give it both a private and a management network. Bring up an instance on the same node as the vSG you want to test. On the compute node, run the following:
+
+    $MAC=<make-up-some-mac>
+    $INSTANCE=<instance-id>
+    virsh attach-interface --domain $INSTANCE --type bridge --source br-inject --model virtio --mac $MAC --config --live
+    
+Log into the vSG via the management interface. Inside of the vSG run the following:
+
+    STAG=<your s-tag here>
+    CTAG=<your c-tag here>
+    ip link add link eth2 eth2.$STAG type vlan id $STAG
+    ip link add link eth2.$STAG eth2.$STAG.$CTAG type vlan id $CTAG
+    ip link set eth2.$STAG up
+    ip link set eth2.$STAG.$CTAG up
+    ip addr add 192.168.0.2/24 dev eth2.$STAG.$CTAG
+    ip route del default
+    ip route add default via 192.168.0.1
