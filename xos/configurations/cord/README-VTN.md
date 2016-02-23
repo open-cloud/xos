@@ -123,7 +123,7 @@ Substitute for your installation:
     
 ### Setting up a test-client
 
-Before setting up VTN, create a bridge and attach it to the dataplane device:
+Before setting up VTN, create a bridge and attach it to the dataplane device on each compute node:
 
     brctl addbr br-inject
     brctl addif br-inject eth3   # substitute dataplane eth device here, may be different on each compute node
