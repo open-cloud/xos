@@ -1256,7 +1256,7 @@ class ImageAdmin(XOSBaseAdmin):
                ]
     readonly_fields = ('backend_status_text', )
 
-    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
+    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('admin-only', 'Admin-Only'))
 
     inlines = [InstanceInline, ControllerImagesInline]
 
