@@ -93,6 +93,9 @@
 
       this.addSubscriber(angular.copy(subscriber));
 
+      //clean selected instances
+      this.highlightInstances([]);
+
       this.getSubscriberTag();
       this.getSubscriberIP();
 
