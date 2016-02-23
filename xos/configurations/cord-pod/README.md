@@ -20,10 +20,10 @@ the HEAD of the XOS repository.
 ## How to bring up CORD
 
 Installing a CORD POD requires three steps:
- 1. installing OpenStack on a cluster,
- 2. setting up the ONOS VTN app and configuring OVS on the nova-compute nodes to be
-    controlled by VTN; and
- 3. bringing up XOS with the CORD services
+ 1. Installing OpenStack on a cluster
+ 2. Setting up the ONOS VTN app and configuring OVS on the nova-compute nodes to be
+    controlled by VTN
+ 3. Bringing up XOS with the CORD services
 
 ### Installing OpenStack
 
@@ -42,13 +42,13 @@ ubuntu@onos-cord:~$ cd cord; docker-compose up -d
 
 Currently it's also necessary to do some manual configuration on each compute
 node.  As root do the following:
- 1. Disable neutron-plugin-openvswitch-agent, if running
+ 1. Disable neutron-plugin-openvswitch-agent, if running:
 ```
 $ service neutron-plugin-openvswitch-agent stop
 $ echo manual > /etc/init/neutron-plugin-openvswitch-agent.override
 ```
  2. Delete *br-int* and all other bridges from OVS
- 3. Configure OVS to listen for connections from VTN
+ 3. Configure OVS to listen for connections from VTN:
 ```
 $ ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6641
 ```
@@ -76,4 +76,4 @@ ubuntu@xos:~/xos/xos/configurations/cord-pod$ make cord
 ```
 
 After the first 'make' command above, you will be able to login to XOS at
-*http://xos* using username/password `padmin@vicci.org/letmein`.
+*http://xos/* using username/password `padmin@vicci.org/letmein`.
