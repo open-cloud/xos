@@ -96,18 +96,25 @@ describe('The Service Relation Service', () => {
 
     const tenants = [
       {
+        id: 1,
         provider_service: 2,
+        subscriber_tenant: 4,
         subscriber_service: 1,
       },
       {
+        id: 2,
         provider_service: 3,
+        subscriber_tenant: 1,
         subscriber_service: 2
       },
       {
+        id: 3,
         provider_service: 4,
+        subscriber_tenant: 4,
         subscriber_service: 1
       },
       {
+        id: 4,
         subscriber_root: 1,
         provider_service: 1
       }
@@ -122,11 +129,11 @@ describe('The Service Relation Service', () => {
 
       expect(tree.children[0].name).toBe('service-1');
       expect(tree.children[0].parent).toBeNull();
-      expect(tree.children[0].tenant).toEqual({subscriber_root: 1, provider_service: 1});
+      expect(tree.children[0].tenant).toEqual({id: 4, subscriber_root: 1, provider_service: 1});
       expect(tree.children[0].children.length).toBe(2);
 
       expect(tree.children[0].children[0].name).toBe('service-2');
-      expect(tree.children[0].children[0].tenant).toEqual({subscriber_service: 1, provider_service: 2});;
+      expect(tree.children[0].children[0].tenant).toEqual({ id: 1, provider_service: 2, subscriber_tenant: 4, subscriber_service: 1 });;
       expect(tree.children[0].children[0].children[0].name).toBe('service-3');
 
       expect(tree.children[0].children[0].children[0].children[0].name).toBe('Router');

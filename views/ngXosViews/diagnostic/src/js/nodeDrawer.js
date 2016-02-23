@@ -258,7 +258,7 @@
         x: - serviceTopologyConfig.circle.r - 10,
         y: serviceTopologyConfig.circle.r / 2
       })
-      .text(d => d.name); 
+      .text(d => d.name || d.mac); 
     }
   });
 })();

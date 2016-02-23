@@ -264,7 +264,6 @@
 
       // find all relations relative to this rootElement
       const levelRelation = findLevelRelation(tenants, rootService.id);
-
       // find all items related to rootElement
       const levelServices = findLevelServices(levelRelation, services);
 
