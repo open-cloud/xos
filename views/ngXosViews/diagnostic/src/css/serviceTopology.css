@@ -105,6 +105,40 @@ logic-topology .node .instance.active rect{
     stroke-width: 1px;   
 }
 
+logic-topology .node .instance.active.good > rect{
+    fill: green;
+}
+
+logic-topology .node .instance.active.provisioning > rect{
+    fill: yellow;
+}
+
+logic-topology .node .instance.active.bad > rect{
+    fill: red;
+}
+
+/* INSTANCE STATS */
+
+logic-topology .node .instance .stats-container rect {
+  fill: white;
+}
+
+logic-topology .node .instance .stats-container text.name{
+  font-weight: bold;
+}
+
+logic-topology .node .instance .stats-container text.ip{
+  font-style: italic;
+  font-size: 10px;
+}
+
+/* CONTAINERS */
+logic-topology .node .container rect{
+  fill: #eee;
+  stroke: steelblue;
+  stroke-width: 1px;
+}
+
 /* LEGEND */
 
 .legend {

@@ -206,5 +206,28 @@
         "service_specific_id": null, 
         "service_specific_attribute": "{\"instance_id\": 11, \"creator_id\": 1}", 
         "connect_method": "na"
+    },
+    {
+        "humanReadableName": "vCPE-tenant-5", 
+        "id": 14, 
+        "created": "2016-02-17T19:36:04.650Z", 
+        "updated": "2016-02-17T20:55:18.115Z", 
+        "enacted": null, 
+        "policed": null, 
+        "backend_register": "{\"next_run\": 1455771318.072057, \"last_failure\": 1455742518.072061, \"last_success\": 1455737797.006782, \"exponent\": 871, \"failures\": 871}", 
+        "backend_status": "2 - Exception('defer object vCPE-tenant-4 due to waiting on instance.instance_name',)", 
+        "deleted": false, 
+        "write_protect": false, 
+        "lazy_blocked": false, 
+        "no_sync": false, 
+        "kind": "vCPE", 
+        "provider_service": 2, 
+        "subscriber_service": null, 
+        "subscriber_tenant": 3, 
+        "subscriber_user": null, 
+        "subscriber_root": null, 
+        "service_specific_id": null, 
+        "service_specific_attribute": "{\"instance_id\": 12, \"creator_id\": 1}", 
+        "connect_method": "na"
     }
 ]
