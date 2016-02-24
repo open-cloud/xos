@@ -37,17 +37,11 @@ Open a shell on the XOS container: `make enter-xos`
 
 You can find a Swagger documentation for endpoint at: `http://0.0.0.0:9000/docs/`
 
-## Test
+## Populate the Data Model with custom data
 
-To run the FE tests, navigate to: `xos/core/xoslib`, and run 'npm test'.
+Sometimes while developing the GUI is usefull to have control over the DataModel. Sample `tosca` recipes for different configuration are defined in the `mocks` folder, and corresponding `make` commands are provided.
 
-This will install the required `npm` dependencies and run the test.
-
-Tests are runned in a headless browser (_PhantomJs_) by _Karma_ and the assertions are made with _Jasmine_. This is a pretty common standard for FE testing so you should feel at home.
-
-You can find the tests in the `spec/` folder, each source file has a corresponding `.test` file in it.
-
-After test have run you can find a Coverage report in `xos/core/xoslib/coverage` folder
+- Bring up the **CORD** data model: `make mock-cord`
 
 ## JS Styleguide
 

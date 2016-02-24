@@ -1,12 +1,19 @@
 (function() {
     'use strict';
 
+    angular.module('bugSnag', []).factory('$exceptionHandler', function () {
+      return function (exception, cause) {
+        Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
+      };
+    });
+
     angular
         .module('xos.helpers',[
           'ngCookies',
           'xos.xos',
           'xos.hpcapi',
-          'xos.xoslib'
+          'xos.xoslib',
+          'bugSnag'
         ])
         .config(config);
 

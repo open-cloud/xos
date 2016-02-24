@@ -7,7 +7,7 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-  host: 'http://clnode067.clemson.cloudlab.us:9999/',
-  xoscsrftoken: 'prHoBeRKIHqQE53sKYo3EfzHAgaVIQ1z',
-  xossessionid: 'mp5xe6345ef4fgs6n0t5rfd0su33c12x'
+  host: 'http://clnode078.clemson.cloudlab.us:9999/',
+  xoscsrftoken: 'Lbrkulk7c9fQOloSjhQEqLdDDFRNHsuL',
+  xossessionid: '7j0w1m7t4qcyu472voe32jz6ck9dnq14'
 };

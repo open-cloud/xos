@@ -22,7 +22,12 @@ if [ "$?" == 1 ]
 then
     #sudo docker build -t monitoring-channel -f Dockerfile.monitoring_channel .
     sudo docker pull srikanthvavila/monitoring-channel
+if [ -z "$HEADNODEFLATLANIP" ] || [ "$HEADNODEFLATLANIP" == "None" ]
+then
+    docker run -d --name=$MONITORING_CHANNEL --privileged=true -p $HOST_FORWARDING_PORT_FOR_CEILOMETER:8000 srikanthvavila/monitoring-channel
+else
     docker run -d --name=$MONITORING_CHANNEL --add-host="ctl:$HEADNODEFLATLANIP" --privileged=true -p $HOST_FORWARDING_PORT_FOR_CEILOMETER:8000 srikanthvavila/monitoring-channel
+fi
 else
     docker start $MONITORING_CHANNEL
 fi

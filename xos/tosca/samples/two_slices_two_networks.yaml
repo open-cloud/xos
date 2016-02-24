@@ -1,0 +1,69 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+
+topology_template:
+  node_templates:
+    mysite:
+      type: tosca.nodes.Site
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    # this one lets XOS auto-allocate a subnet
+    producer_private_network:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - slice:
+              node: mysite_producer
+              relationship: tosca.relationships.MemberOfSlice
+          - slice:
+              node: mysite_producer
+              relationship: tosca.relationships.ConnectsToSlice
+
+    # this one specifies the subnet to use
+    producer_private_network2:
+      type: tosca.nodes.network.Network
+      properties:
+          ip_version: 4
+          cidr: 123.123.0.0/16
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - slice:
+              node: mysite_producer
+              relationship: tosca.relationships.MemberOfSlice
+          - slice:
+              node: mysite_producer
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite_producer:
+      type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: mysite
+                relationship: tosca.relationships.MemberOfSite
+
+    mysite_consumer:
+      type: tosca.nodes.Slice
+      requirements:
+          - slice:
+                node: mysite
+                relationship: tosca.relationships.MemberOfSite
+          - network:
+                node: producer_private_network
+                relationship: tosca.relationships.ConnectsToNetwork
+          - network2:
+                node: producer_private_network2
+                relationship: tosca.relationships.ConnectsToNetwork
+
+

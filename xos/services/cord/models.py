@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port
+from core.models import Service, PlCoreBase, Slice, Instance, Tenant, TenantWithContainer, Node, Image, User, Flavor, Subscriber, NetworkParameter, NetworkParameterType, Port, AddressPool
 from core.models.plcorebase import StrippedCharField
 import os
 from django.db import models, transaction
@@ -10,44 +10,7 @@ from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
 import traceback
 from xos.exceptions import *
-
-"""
-import os
-import sys
-sys.path.append("/opt/xos")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "xos.settings")
-import django
-from core.models import *
-from services.hpc.models import *
-from services.cord.models import *
-django.setup()
-
-t = VOLTTenant()
-t.caller = User.objects.all()[0]
-t.save()
-
-for v in VOLTTenant.get_tenant_objects().all():
-    v.caller = User.objects.all()[0]
-    v.delete()
-
-for v in VCPETenant.get_tenant_objects().all():
-    v.caller = User.objects.all()[0]
-    v.delete()
-
-for v in VOLTTenant.get_tenant_objects().all():
-    v.caller = User.objects.all()[0]
-    v.delete()
-
-for v in VOLTTenant.get_tenant_objects().all():
-    if not v.creator:
-        v.creator= User.objects.all()[0]
-        v.save()
-
-for v in VCPETenant.get_tenant_objects().all():
-    if not v.creator:
-        v.creator= User.objects.all()[0]
-        v.save()
-"""
+from xos.config import Config
 
 class ConfigurationError(Exception):
     pass
@@ -56,6 +19,8 @@ VOLT_KIND = "vOLT"
 VCPE_KIND = "vCPE"
 VBNG_KIND = "vBNG"
 CORD_SUBSCRIBER_KIND = "CordSubscriberRoot"
+
+CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
 
 # -------------------------------------------
 # CordSubscriberRoot
@@ -292,7 +257,7 @@ class VOLTTenant(Tenant):
 
     @property
     def vcpe(self):
-        vcpe = self.get_newest_subscribed_tenant(VCPETenant)
+        vcpe = self.get_newest_subscribed_tenant(VSGTenant)
         if not vcpe:
             return None
 
@@ -346,11 +311,11 @@ class VOLTTenant(Tenant):
             return
 
         if self.vcpe is None:
-            vcpeServices = VCPEService.get_service_objects().all()
-            if not vcpeServices:
-                raise XOSConfigurationError("No VCPE Services available")
+            vsgServices = VSGService.get_service_objects().all()
+            if not vsgServices:
+                raise XOSConfigurationError("No VSG Services available")
 
-            vcpe = VCPETenant(provider_service = vcpeServices[0],
+            vcpe = VSGTenant(provider_service = vsgServices[0],
                               subscriber_tenant = self)
             vcpe.caller = self.creator
             vcpe.save()
@@ -382,7 +347,7 @@ class VOLTTenant(Tenant):
     def cleanup_orphans(self):
         # ensure vOLT only has one vCPE
         cur_vcpe = self.vcpe
-        for vcpe in list(self.get_subscribed_tenants(VCPETenant)):
+        for vcpe in list(self.get_subscribed_tenants(VSGTenant)):
             if (not cur_vcpe) or (vcpe.id != cur_vcpe.id):
                 # print "XXX clean up orphaned vcpe", vcpe
                 vcpe.delete()
@@ -428,24 +393,28 @@ def model_policy_volt(pk):
 # VCPE
 # -------------------------------------------
 
-class VCPEService(Service):
+class VSGService(Service):
     KIND = VCPE_KIND
 
     simple_attributes = ( ("bbs_api_hostname", None),
                           ("bbs_api_port", None),
                           ("bbs_server", None),
-                          ("backend_network_label", "hpc_client"), )
+                          ("backend_network_label", "hpc_client"),
+                          ("wan_container_gateway_ip", ""),
+                          ("wan_container_gateway_mac", ""),
+                          ("wan_container_netbits", "24"),
+                          ("dns_servers", "8.8.8.8") )
 
     def __init__(self, *args, **kwargs):
-        super(VCPEService, self).__init__(*args, **kwargs)
+        super(VSGService, self).__init__(*args, **kwargs)
 
     class Meta:
         app_label = "cord"
-        verbose_name = "vCPE Service"
+        verbose_name = "vSG Service"
         proxy = True
 
     def allocate_bbs_account(self):
-        vcpes = VCPETenant.get_tenant_objects().all()
+        vcpes = VSGTenant.get_tenant_objects().all()
         bbs_accounts = [vcpe.bbs_account for vcpe in vcpes]
 
         # There's a bit of a race here; some other user could be trying to
@@ -474,7 +443,7 @@ class VCPEService(Service):
             value = value.id
         self.set_attribute("bbs_slice_id", value)
 
-VCPEService.setup_simple_attributes()
+VSGService.setup_simple_attributes()
 
 #class STagBlock(PlCoreBase):
 #    instance = models.ForeignKey(Instance, related_name="s_tags")
@@ -483,7 +452,7 @@ VCPEService.setup_simple_attributes()
 #
 #    def __unicode__(self): return u'%s' % (self.s_tag)
 
-class VCPETenant(TenantWithContainer):
+class VSGTenant(TenantWithContainer):
     class Meta:
         proxy = True
 
@@ -491,7 +460,8 @@ class VCPETenant(TenantWithContainer):
 
     sync_attributes = ("nat_ip", "nat_mac",
                        "lan_ip", "lan_mac",
-                       "wan_ip", "wan_mac", "wan_container_mac",
+                       "wan_ip", "wan_mac",
+                       "wan_container_ip", "wan_container_mac",
                        "private_ip", "private_mac",
                        "hpc_client_ip", "hpc_client_mac")
 
@@ -499,10 +469,11 @@ class VCPETenant(TenantWithContainer):
                           "container_id": None,
                           "users": [],
                           "bbs_account": None,
-                          "last_ansible_hash": None}
+                          "last_ansible_hash": None,
+                          "wan_container_ip": None}
 
     def __init__(self, *args, **kwargs):
-        super(VCPETenant, self).__init__(*args, **kwargs)
+        super(VSGTenant, self).__init__(*args, **kwargs)
         self.cached_vbng=None
 
     @property
@@ -582,6 +553,10 @@ class VCPETenant(TenantWithContainer):
                 addresses["hpc_client"] = (ns.ip, ns.mac)
         return addresses
 
+    # ------------------------------------------------------------------------
+    # The following IP addresses all come from the VM
+    # Note: They might not be useful for the VTN-vSG
+
     @property
     def nat_ip(self):
         return self.addresses.get("nat", (None,None) )[0]
@@ -606,11 +581,37 @@ class VCPETenant(TenantWithContainer):
     def wan_mac(self):
         return self.addresses.get("wan", (None, None) )[1]
 
+    # end of VM IP address stubs
+    # ------------------------------------------------------------------------
+
+    @property
+    def wan_container_ip(self):
+        if CORD_USE_VTN:
+            # When using VTN, wan_container_ip is stored and maintained inside
+            # of the vSG object.
+            return self.get_attribute("wan_container_ip", self.default_attributes["wan_container_ip"])
+        else:
+            # When not using VTN, wan_container_ip is the same as wan_ip.
+            # XXX Is this broken for multiple-containers-per-VM?
+            return self.wan_ip
+
+    @wan_container_ip.setter
+    def wan_container_ip(self, value):
+        if CORD_USE_VTN:
+            self.set_attribute("wan_container_ip", value)
+        else:
+            raise Exception("wan_container_ip.setter called on non-VTN CORD")
+
+    def ip_to_mac(self, ip):
+        (a, b, c, d) = ip.split('.')
+        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+
     # Generate the MAC for the container interface connected to WAN
     @property
     def wan_container_mac(self):
-        (a, b, c, d) = self.wan_ip.split('.')
-        return "02:42:%02x:%02x:%02x:%02x" % (int(a), int(b), int(c), int(d))
+        if not self.wan_container_ip:
+            return None
+        return self.ip_to_mac(self.wan_container_ip)
 
     @property
     def private_ip(self):
@@ -712,6 +713,7 @@ class VCPETenant(TenantWithContainer):
                         flavor = flavors[0],
                         isolation = slice.default_isolation,
                         parent = parent)
+
         self.save_instance(instance)
 
         return instance
@@ -726,11 +728,15 @@ class VCPETenant(TenantWithContainer):
         # provides us
         slice = self.get_slice()
         if slice.default_isolation in ["container_vm", "container"]:
-            super(VCPETenant,self).manage_container()
+            super(VSGTenant,self).manage_container()
             return
 
         if not self.volt:
             raise XOSConfigurationError("This vCPE container has no volt")
+
+        if self.instance:
+            # We're good.
+            return
 
         instance = self.find_or_make_instance_for_s_tag(self.volt.s_tag)
         self.instance = instance
@@ -738,7 +744,7 @@ class VCPETenant(TenantWithContainer):
 
     def cleanup_container(self):
         if self.get_slice().default_isolation in ["container_vm", "container"]:
-            super(VCPETenant,self).cleanup_container()
+            super(VSGTenant,self).cleanup_container()
 
         # To-do: cleanup unused instances
         pass
@@ -749,14 +755,41 @@ class VCPETenant(TenantWithContainer):
 
         if self.volt and self.volt.subscriber and self.volt.subscriber.url_filter_enable:
             if not self.bbs_account:
-                # make sure we use the proxied VCPEService object, not the generic Service object
-                vcpe_service = VCPEService.objects.get(id=self.provider_service.id)
+                # make sure we use the proxied VSGService object, not the generic Service object
+                vcpe_service = VSGService.objects.get(id=self.provider_service.id)
                 self.bbs_account = vcpe_service.allocate_bbs_account()
-                super(VCPETenant, self).save()
+                super(VSGTenant, self).save()
         else:
             if self.bbs_account:
                 self.bbs_account = None
-                super(VCPETenant, self).save()
+                super(VSGTenant, self).save()
+
+    def get_wan_address_from_pool(self):
+        ap = AddressPool.objects.filter(name="public_addresses")
+        if not ap:
+            raise Exception("AddressPool 'public_addresses' does not exist. Please configure it.")
+        ap = ap[0]
+
+        addr = ap.get_address()
+        if not addr:
+            raise Exception("AddressPool 'public_addresses' has run out of addresses.")
+        return addr
+
+    def put_wan_address_to_pool(self, addr):
+        AddressPool.objects.filter(name="public_addresses")[0].put_address(addr)
+
+    def manage_wan_container_ip(self):
+        if CORD_USE_VTN:
+            if not self.wan_container_ip:
+                addr = self.get_wan_address_from_pool()
+
+                self.wan_container_ip = addr
+                super(TenantWithContainer, self).save()
+
+    def cleanup_wan_container_ip(self):
+        if CORD_USE_VTN and self.wan_container_ip:
+            self.put_wan_address_to_pool(self.wan_container_ip)
+            self.wan_container_ip = None
 
     def find_or_make_port(self, instance, network, **kwargs):
         port = Port.objects.filter(instance=instance, network=network)
@@ -767,16 +800,27 @@ class VCPETenant(TenantWithContainer):
             port.save()
         return port
 
+    def get_lan_network(self, instance):
+        slice = self.provider_service.slices.all()[0]
+        if CORD_USE_VTN:
+            # there should only be one network private network, and its template should not be the management template
+            lan_networks = [x for x in slice.networks.all() if x.template.visibility=="private" and (not "management" in x.template.name)]
+            if len(lan_networks)>1:
+                raise XOSProgrammingError("The vSG slice should only have one non-management private network")
+        else:
+            lan_networks = [x for x in slice.networks.all() if "lan" in x.name]
+        if not lan_networks:
+            raise XOSProgrammingError("No lan_network")
+        return lan_networks[0]
+
     def save_instance(self, instance):
         with transaction.atomic():
             instance.volumes = "/etc/dnsmasq.d,/etc/ufw"
-            super(VCPETenant, self).save_instance(instance)
+            super(VSGTenant, self).save_instance(instance)
 
             if instance.isolation in ["container", "container_vm"]:
-                lan_networks = [x for x in instance.slice.networks.all() if "lan" in x.name]
-                if not lan_networks:
-                    raise XOSProgrammingError("No lan_network")
-                port = self.find_or_make_port(instance, lan_networks[0], ip="192.168.0.1", port_id="unmanaged")
+                lan_network = self.get_lan_network(instance)
+                port = self.find_or_make_port(instance, lan_network, ip="192.168.0.1", port_id="unmanaged")
                 port.set_parameter("c_tag", self.volt.c_tag)
                 port.set_parameter("s_tag", self.volt.s_tag)
                 port.set_parameter("device", "eth1")
@@ -789,6 +833,14 @@ class VCPETenant(TenantWithContainer):
                 port.set_parameter("next_hop", value="10.0.1.253")   # FIX ME
                 port.set_parameter("device", "eth0")
 
+            if instance.isolation in ["vm"]:
+                lan_network = self.get_lan_network(instance)
+                port = self.find_or_make_port(instance, lan_network)
+                port.set_parameter("c_tag", self.volt.c_tag)
+                port.set_parameter("s_tag", self.volt.s_tag)
+                port.set_parameter("neutron_port_name", "stag-%s" % self.volt.s_tag)
+                port.save()
+
             # tag the instance with the s-tag, so we can easily find the
             # instance later
             if self.volt and self.volt.s_tag:
@@ -797,34 +849,41 @@ class VCPETenant(TenantWithContainer):
                     tag = Tag(service=self.provider_service, content_object=instance, name="s_tag", value=self.volt.s_tag)
                     tag.save()
 
+            # VTN-CORD needs a WAN address for the VM, so that the VM can
+            # be configured.
+            if CORD_USE_VTN:
+                tags = Tag.select_by_content_object(instance).filter(name="vm_wan_addr")
+                if not tags:
+                    address = self.get_wan_address_from_pool()
+                    tag = Tag(service=self.provider_service, content_object=instance, name="vm_wan_addr", value="%s,%s,%s" % ("public_addresses", address, self.ip_to_mac(address)))
+                    tag.save()
+
     def save(self, *args, **kwargs):
         if not self.creator:
             if not getattr(self, "caller", None):
                 # caller must be set when creating a vCPE since it creates a slice
-                raise XOSProgrammingError("VCPETenant's self.caller was not set")
+                raise XOSProgrammingError("VSGTenant's self.caller was not set")
             self.creator = self.caller
             if not self.creator:
-                raise XOSProgrammingError("VCPETenant's self.creator was not set")
+                raise XOSProgrammingError("VSGTenant's self.creator was not set")
 
-        super(VCPETenant, self).save(*args, **kwargs)
+        super(VSGTenant, self).save(*args, **kwargs)
         model_policy_vcpe(self.pk)
-        #self.manage_instance()
-        #self.manage_vbng()
-        #self.manage_bbs_account()
-        #self.cleanup_orphans()
 
     def delete(self, *args, **kwargs):
         self.cleanup_vbng()
         self.cleanup_container()
-        super(VCPETenant, self).delete(*args, **kwargs)
+        self.cleanup_wan_container_ip()
+        super(VSGTenant, self).delete(*args, **kwargs)
 
 def model_policy_vcpe(pk):
     # TODO: this should be made in to a real model_policy
     with transaction.atomic():
-        vcpe = VCPETenant.objects.select_for_update().filter(pk=pk)
+        vcpe = VSGTenant.objects.select_for_update().filter(pk=pk)
         if not vcpe:
             return
         vcpe = vcpe[0]
+        vcpe.manage_wan_container_ip()
         vcpe.manage_container()
         vcpe.manage_vbng()
         vcpe.manage_bbs_account()

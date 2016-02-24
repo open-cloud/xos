@@ -1,1 +1,1 @@
-pkill -9 -f hpc-observer.py
+pkill -9 -f hpc-synchronizer.py

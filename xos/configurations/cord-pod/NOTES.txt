@@ -1,0 +1,37 @@
+Notes on setup
+
+Requirements:
+* admin-openrc.sh: Admin credentials for your OpenStack cloud
+* id_rsa[.pub]: Keypair for use by the various services
+* node_key: Private key that allows root login to the compute nodes
+
+Steps for bringing up the POD:
+
+OpenStack
+* Configure management net
+  - mgmtbr on head nodes
+  - dnsmasq on head1 using cord config file
+* Install OpenStack using the openstack-cluster-install repo
+
+VTN
+* onos-cord VM is created by openstack-cluster-install
+* Bring up ONOS
+  # cd cord; docker-compose up -d
+* On each compute node it's necessary perform a few manual steps (FIX ME)
+  - Disable neutron-plugin-openvswitch-agent. As root:
+    # service neutron-plugin-openvswitch-agent stop
+    # echo manual > /etc/init/neutron-plugin-openvswitch-agent.override
+  - Clean up OVS: delete br-int and any other bridges
+  - Listen for connections from VTN:
+    # ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6641
+
+XOS
+* xos VM is created by openstack-cluster-install
+  - requirements listed above should already be satisfied by install
+* cd xos/xos/configurations/cord-pod
+* Bring up XOS cord-pod configuration
+  # make
+  # make vtn
+  # make cord
+* Login to XOS at http://xos
+  - padmin@vicci.org / letmein

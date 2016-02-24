@@ -42,13 +42,7 @@ def backend_icon(obj):
     # FIXME: Need to clean this up by separating Javascript from Python
     if (obj.pk):
         script = """
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $("#show_details_%d").click(function () {
-                    $("#status%d").dialog({modal: true, height: 200, width: 200 });
-                });
-            });
-        </script>
+        <script type="text/javascript">$(document).ready(function () {$("#show_details_%d").click(function () {$("#status%d").dialog({modal: true, height: 200, width: 200 });});});</script>
         """%(obj.pk,obj.pk)
 
         div = """
@@ -1262,7 +1256,7 @@ class ImageAdmin(XOSBaseAdmin):
                ]
     readonly_fields = ('backend_status_text', )
 
-    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
+    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('admin-only', 'Admin-Only'))
 
     inlines = [InstanceInline, ControllerImagesInline]
 
@@ -1840,7 +1834,7 @@ class ControllerNetworkInline(XOSTabularInline):
     verbose_name_plural = "Controller Networks"
     verbose_name = "Controller Network"
     suit_classes = 'suit-tab suit-tab-admin-only'
-    fields = ['backend_status_icon', 'controller','net_id','subnet_id']
+    fields = ['backend_status_icon', 'controller','net_id','subnet_id','subnet']
     readonly_fields = ('backend_status_icon', )
 
 class NetworkForm(forms.ModelForm):
@@ -1904,7 +1898,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 
 class PortAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name", "id", "ip")
+    list_display = ("backend_status_icon", "id", "ip")
     list_display_links = ('backend_status_icon', 'id')
     readonly_fields = ("subnet", )
     inlines = [NetworkParameterInline]
