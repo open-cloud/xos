@@ -37,7 +37,7 @@ class SyncVPNTenant(SyncInstanceUsingAnsible):
                 "vpn_subnet": tenant.vpn_subnet,
                 "server_network": tenant.server_network,
                 "clients_can_see_each_other": tenant.clients_can_see_each_other,
-                "instnace_id": tenant.instance.instnace_id
+                "instnace_id": tenant.instance.instance_id
                 }
 
     def run_playbook(self, o, fields):
