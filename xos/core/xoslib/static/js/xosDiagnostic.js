@@ -1,1 +1,1877 @@
-angular.module("xos.serviceTopology").run(["$templateCache",function(t){t.put("templates/diagnostic.tpl.html",'<div class="container-fluid">\n  <div ng-hide="vm.error && vm.loader">\n    <div class="onethird-height">\n      <service-topology service-chain="vm.serviceChain"></service-topology>\n    </div>\n    <div class="twothird-height">\n      <!-- <div class="panel panel-primary subscriber-select">\n        <div class="panel-heading">Select a subscriber:</div>\n        <div class="panel-body">\n          <select class="form-control" ng-options="s as s.name for s in vm.subscribers" ng-model="vm.selectedSubscriber">\n            <option value="">Select a subscriber...</option>\n          </select>\n        </div>\n      </div> -->\n      <logic-topology ng-if="vm.subscribers" subscribers="vm.subscribers" selected="vm.selectedSubscriber"></logic-topology>\n    </div>\n  </div>\n  <div class="row" ng-show="vm.error">\n    <div class="col-xs-12">\n      <div class="alert alert-danger">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-show="vm.loader">\n    <div class="col-xs-12">\n      <div class="loader">Loading</div>\n    </div>\n  </div>\n</div>'),t.put("templates/logicTopology.tpl.html",'<subscriber-modal open="vm.subscriberModal" subscribers="vm.subscribers"></subscriber-modal>\n<div class="instances-stats animate" ng-hide="vm.hideInstanceStats">\n  <div class="row">\n    <div class="col-sm-3 col-sm-offset-8">\n      <div class="panel panel-primary" ng-repeat="instance in vm.selectedInstances">\n        <div class="panel-heading">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class="list-group">\n            <li class="list-group-item">Backend Status: {{instance.backend_status}}</li>\n            <li class="list-group-item">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class="list-group">\n            <li class="list-group-item" ng-repeat="stat in instance.stats">\n              <span class="badge">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div>'),t.put("templates/subscriber-modal.tpl.html",'<div class="modal fade" ng-class="{in: vm.open}" tabindex="-1" role="dialog">\n  <div class="modal-dialog modal-sm">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button ng-click="vm.close()"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n        <h4 class="modal-title">Select a subscriber:</h4>\n      </div>\n      <div class="modal-body">\n        <select class="form-control" ng-options="s as s.humanReadableName for s in vm.subscribers" ng-model="vm.selected"></select>\n      </div>\n      <div class="modal-footer">\n        <button ng-click="vm.close()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>\n        <button ng-click="vm.select(vm.selected)" type="button" class="btn btn-primary">Select</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->')}]),angular.module("xos.serviceTopology").run(["$location",function(t){t.path("/")}]),angular.bootstrap(angular.element("#xosDiagnostic"),["xos.serviceTopology"]),angular.module("xos.diagnostic",["ngResource","ngCookies","ngLodash","ngAnimate","ui.router","xos.helpers"]).config(["$stateProvider",function(t){t.state("home",{url:"/",template:"<diagnostic></diagnostic>"})}]).config(["$httpProvider",function(t){t.interceptors.push("NoHyperlinks")}]),function(){"use strict";angular.module("xos.diagnostic").directive("subscriberModal",function(){return{scope:{subscribers:"=",open:"="},bindToController:!0,restrict:"E",templateUrl:"templates/subscriber-modal.tpl.html",controllerAs:"vm",controller:["$rootScope",function(t){var e=this;this.close=function(){e.open=!1},this.select=function(n){t.$emit("subscriber.selected",n),e.close()}}]}})}(),function(){"use strict";angular.module("xos.diagnostic").service("ServiceTopologyHelper",["$rootScope","$window","$log","lodash","ServiceRelation","serviceTopologyConfig","d3",function(t,e,n,r,i,a,o){var c,s,u,d=function(t){var e=t.append("g").attr({"class":"legend"});e.append("rect").attr({transform:function(t){return"translate(10, 80)"},width:100,height:100});var n=e.append("g").attr({"class":"node service"});n.append("circle").attr({r:a.circle.radius,transform:function(t){return"translate(30, 100)"}}),n.append("text").attr({transform:function(t){return"translate(45, 100)"},dy:".35em"}).text("Service").style("fill-opacity",1);var r=e.append("g").attr({"class":"node slice"});r.append("rect").attr({width:20,height:20,x:-10,y:-10,transform:function(t){return"translate(30, 130)"}}),r.append("text").attr({transform:function(t){return"translate(45, 130)"},dy:".35em"}).text("Slices").style("fill-opacity",1);var i=e.append("g").attr({"class":"node instance"});i.append("rect").attr({width:20,height:20,x:-10,y:-10,transform:function(t){return"translate(30, 160)"}}),i.append("text").attr({transform:function(t){return"translate(45, 160)"},dy:".35em"}).text("Instances").style("fill-opacity",1)},l=0,p=function(t,n,r){c=t,s=n,u=r;var d=i.depthOf(r),p=o.svg.diagonal().projection(function(t){return[t.y,t.x]}),f=n.nodes(r).reverse(),g=n.links(f);f.forEach(function(t){var n=(e.innerWidth-2*a.widthMargin)/d;t.y=t.depth*n});var v=t.selectAll("g.node").data(f,function(t){return t.id||(t.id=++l)}),m=v.enter().append("g").attr({"class":function(t){return"node "+t.type},transform:function(t){return t.x&&t.y?"translate("+t.y+", "+t.x+")":"translate("+r.y0+", "+r.x0+")"}}),b=m.filter(".subscriber"),y=m.filter(".router"),x=m.filter(".service");b.append("rect").attr(a.square),y.append("rect").attr(a.square),x.append("circle").attr("r",1e-6).style("fill",function(t){return t._children?"lightsteelblue":"#fff"}).on("click",h),m.append("text").attr({x:function(t){return t.children?-a.circle.selectedRadius-3:a.circle.selectedRadius+3},dy:".35em",transform:function(t){return t.children&&t.parent?t.parent.x<t.x?"rotate(-30)":"rotate(30)":void 0},"text-anchor":function(t){return t.children?"end":"start"}}).text(function(t){return t.name}).style("fill-opacity",1e-6);var S=v.transition().duration(a.duration).attr({transform:function(t){return"translate("+t.y+","+t.x+")"}});S.select("circle").attr("r",function(t){return t.selected?a.circle.selectedRadius:a.circle.radius}).style("fill",function(t){return t.selected?"lightsteelblue":"#fff"}),S.select("text").style("fill-opacity",1);var w=v.exit().transition().duration(a.duration).remove();w.select("circle").attr("r",1e-6),w.select("text").style("fill-opacity",1e-6);var T=t.selectAll("path.link").data(g,function(t){return t.target.id});T.enter().insert("path","g").attr("class",function(t){return"link "+t.target.type+" "+(t.target.active?"":"active")}).attr("d",function(t){var e={x:r.x0,y:r.y0};return p({source:e,target:e})}),T.transition().duration(a.duration).attr("d",p),T.exit().transition().duration(a.duration).attr("d",function(t){var e={x:r.x,y:r.y};return p({source:e,target:e})}).remove(),f.forEach(function(t){t.x0=t.x,t.y0=t.y})},h=function(e){return e.selected?(e.selected=!e.selected,t.$emit("instance.detail.hide",{}),p(c,s,u)):(t.$emit("instance.detail",{name:e.name,service:e.service,tenant:e.tenant}),c.selectAll("circle").each(function(t){return t.selected=!1}),e.selected=!e.selected,void p(c,s,u))};this.updateTree=p,this.drawLegend=d}])}(),function(){"use strict";angular.module("xos.diagnostic").directive("serviceTopology",function(){return{restrict:"E",scope:{serviceChain:"="},bindToController:!0,controllerAs:"vm",template:"",controller:["$element","$window","$scope","d3","serviceTopologyConfig","ServiceRelation","Slice","Instances","Subscribers","ServiceTopologyHelper",function(t,e,n,r,i,a,o,c,s,u){var d=this,l=t[0];r.select(window).on("resize",function(){f(d.serviceChain)});var p,h,f=function(e){r.select(t[0]).select("svg").remove();var n=l.clientWidth-2*i.widthMargin,a=l.clientHeight-2*i.heightMargin,o=r.layout.tree().size([a,n]);h=r.select(t[0]).append("svg").style("width",l.clientWidth+"px").style("height",l.clientHeight+"px");var c=h.append("g").attr("transform","translate("+4*i.widthMargin+","+i.heightMargin+")");p=e,p.x0=a/2,p.y0=n/2,u.updateTree(c,o,p)};this.getInstances=function(t){c.query({slice:t.id}).$promise.then(function(e){d.selectedSlice=t,d.instances=e})["catch"](function(t){throw d.errors=t,new Error(t)})},n.$watch(function(){return d.serviceChain},function(t){t&&f(t)})}]}})}(),function(){"use strict";angular.module("xos.diagnostic").service("Services",["$resource",function(t){return t("/xos/services/:id",{id:"@id"})}]).service("Tenant",["$resource",function(t){return t("/xos/tenants",{id:"@id"},{queryVsgInstances:{method:"GET",isArray:!0,interceptor:{response:function(t){var e=[];return angular.forEach(t.data,function(t){var n=JSON.parse(t.service_specific_attribute);n&&n.instance_id&&e.push(n.instance_id)}),e}}},getSubscriberTag:{method:"GET",isArray:!0,interceptor:{response:function(t){return JSON.parse(t.data[0].service_specific_attribute)}}}})}]).service("Ceilometer",["$http","$q","Instances",function(t,e,n){var r=this;this.getInstanceStats=function(n){var r=e.defer();return t.get("/xoslib/xos-instance-statistics",{params:{"instance-uuid":n}}).then(function(t){r.resolve(t.data)})["catch"](function(t){r.reject(t)}),r.promise},this.getInstancesStats=function(t){var i=e.defer(),a=[],o=[];return t.forEach(function(t){a.push(n.get({id:t}).$promise)}),e.all(a).then(function(t){o=t;var n=[];return o.forEach(function(t){n.push(r.getInstanceStats(t.instance_uuid))}),e.all(n)}).then(function(t){o.map(function(e,n){e.stats=t[n]}),i.resolve(o)})["catch"](i.reject),i.promise},this.getContainerStats=function(n){var r=e.defer(),i={};return t.get("/xoslib/meterstatistics",{params:{resource:n}}).then(function(e){return i.stats=e.data,t.get("/xoslib/meterstatistics",{params:{resource:n+"-eth0"}})}).then(function(e){return i.port={eth0:e.data},t.get("/xoslib/meterstatistics",{params:{resource:n+"-eth1"}})}).then(function(t){i.port.eth1=t.data,r.resolve(i)})["catch"](function(t){r.reject(t)}),r.promise}}]).service("Slice",["$resource",function(t){return t("/xos/slices",{id:"@id"})}]).service("Instances",["$resource",function(t){return t("/xos/instances/:id",{id:"@id"})}]).service("Node",["$resource","$q","Instances",function(t,e,n){return t("/xos/nodes",{id:"@id"},{queryWithInstances:{method:"GET",isArray:!0,interceptor:{response:function(t){var r=e.defer(),i=[];return angular.forEach(t.data,function(t){i.push(n.query({node:t.id}).$promise)}),e.all(i).then(function(e){t.data.map(function(t,n){return t.instances=e[n],t}),r.resolve(t.data)}),r.promise}}}})}]).service("Subscribers",["$resource","$q","SubscriberDevice",function(t,e,n){return t("/xos/subscribers/:id",{id:"@id"},{queryWithDevices:{method:"GET",isArray:!0,interceptor:{response:function(t){var r=e.defer(),i=[];return angular.forEach(t.data,function(t){i.push(n.query({id:t.id}).$promise)}),e.all(i).then(function(e){t.data.map(function(t,n){return t.devices=e[n],t.type="subscriber",t.devices.map(function(t){return t.type="device"}),t}),r.resolve(t.data)}),r.promise}}},getWithDevices:{method:"GET",isArray:!1,interceptor:{response:function(t){var r=e.defer();return n.query({id:t.data.id}).$promise.then(function(e){e.map(function(t){return t.type="device"}),t.data.devices=e,t.data.type="subscriber",r.resolve(t.data)})["catch"](function(t){r.reject(t)}),r.promise}}}})}]).service("SubscriberDevice",["$resource",function(t){return t("/xoslib/rs/subscriber/:id/users/",{id:"@id"})}]).service("ServiceRelation",["$q","lodash","Services","Tenant","Slice","Instances",function(t,e,n,r,i,a){var o=function g(t){var e=0;return t.children&&t.children.forEach(function(t){var n=g(t);n>e&&(e=n)}),1+e},c=function(t,n){return e.filter(t,function(t){return t.subscriber_service===n})},s=function(t,n){var r,t=e.filter(t,function(t){return t.provider_service===n&&t.subscriber_tenant});return t.forEach(function(t){t.service_specific_attribute&&(r=JSON.parse(t.service_specific_attribute))}),r},u=function(t,n){var r=[];return e.forEach(t,function(t){var i=e.find(n,{id:t.provider_service});r.push(i)}),r},d=function v(t,n,r,i){var a=arguments.length<=4||void 0===arguments[4]?null:arguments[4],o=e.difference(n,[r]),d=c(t,r.id),l=u(d,n);o=e.difference(o,l),r.service_specific_attribute=s(t,r.id);var p={name:r.humanReadableName,parent:a,type:"service",service:r,tenant:i,children:[]};return e.forEach(l,function(n){var a=e.find(t,{subscriber_tenant:i.id,provider_service:n.id});p.children.push(v(t,o,n,a,r.humanReadableName))}),0===p.children.length&&p.children.push({name:"Router",type:"router",children:[]}),p},l=function(t,n){var r=arguments.length<=2||void 0===arguments[2]?{id:1,name:"fakeSubs"}:arguments[2],i=e.find(n,{subscriber_root:r.id}),a=e.find(t,{id:i.provider_service}),o=d(n,t,a,i);return{name:r.name,parent:null,type:"subscriber",children:[o]}},p=function(t,n){var r=function o(t,n,r){var i={type:"service",name:r.humanReadableName,service:r},a=e.find(n,{subscriber_service:r.id});if(a){var c=e.find(t,{id:a.provider_service});i.children=[o(t,n,c)]}else i.children=[{name:"Router",type:"router",children:[]}];return delete r.id,i},i=e.find(t,{id:3}),a={name:"Subscriber",type:"subscriber",parent:null,children:[r(t,n,i)]};return a},h=function(e){var i,a,o=t.defer();return n.query().$promise.then(function(t){return i=t,r.query().$promise}).then(function(t){a=t,o.resolve(l(i,a,e))})["catch"](function(t){throw new Error(t)}),o.promise},f=function(){var e,i,a=t.defer();return n.query().$promise.then(function(t){return e=t,r.query({kind:"coarse"}).$promise}).then(function(t){i=t,a.resolve(p(e,i))})["catch"](function(t){throw new Error(t)}),a.promise};return{get:f,buildServiceTree:p,getBySubscriber:h,buildLevel:d,buildSubscriberServiceTree:l,findLevelRelation:c,findLevelServices:u,depthOf:o,findSpecificInformation:s}}])}();var _slicedToArray=function(){function t(t,e){var n=[],r=!0,i=!1,a=void 0;try{for(var o,c=t[Symbol.iterator]();!(r=(o=c.next()).done)&&(n.push(o.value),!e||n.length!==e);r=!0);}catch(s){i=!0,a=s}finally{try{!r&&c["return"]&&c["return"]()}finally{if(i)throw a}}return n}return function(e,n){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();!function(){angular.module("xos.diagnostic").service("RackHelper",["serviceTopologyConfig","lodash",function(t,e){var n=this;this.getComputeNodeLabelSize=function(){return t.computeNode.labelHeight+2*t.instance.margin},this.getComputeNodeSize=e.memoize(function(e){var r=3*t.instance.margin+2*t.instance.width,i=Math.round(e.length/2),a=n.getComputeNodeLabelSize(),o=t.instance.height*i+t.instance.margin*(i+1)+a;return[r,o]}),this.getRackSize=function(r){var i=0,a=t.computeNode.margin;return e.forEach(r,function(e){var r=n.getComputeNodeSize(e.instances),o=_slicedToArray(r,2),c=o[0],s=o[1];i=c+2*t.computeNode.margin,a+=s+t.computeNode.margin}),[i,a]},this.getInstancePosition=function(e){var r=Math.floor(e/2),i=e%2?1:0,a=n.getComputeNodeLabelSize(),o=t.instance.margin+t.instance.width*i+t.instance.margin*i,c=a+t.instance.margin+t.instance.height*r+t.instance.margin*r;return[o,c]},this.getComputeNodePosition=function(r,i){var a=t.computeNode.margin,o=e.reduce(r.slice(0,i),function(t,e){return t+n.getComputeNodeSize(e.instances)[1]},0),c=t.computeNode.margin+t.computeNode.margin*i+o;return[a,c]}}])}();var _slicedToArray=function(){function t(t,e){var n=[],r=!0,i=!1,a=void 0;try{for(var o,c=t[Symbol.iterator]();!(r=(o=c.next()).done)&&(n.push(o.value),!e||n.length!==e);r=!0);}catch(s){i=!0,a=s}finally{try{!r&&c["return"]&&c["return"]()}finally{if(i)throw a}}return n}return function(e,n){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();!function(){"use strict";var t={cloud:" M 79.72 49.60 C 86.00 37.29 98.57 29.01 111.96 26.42 C 124.27 24.11 137.53 26.15 148.18 32.90 C 158.08 38.78 165.39 48.87 167.65 60.20 C 176.20 57.90 185.14 56.01 194.00 57.73 C 206.08 59.59 217.92 66.01 224.37 76.66 C 227.51 81.54 228.85 87.33 229.23 93.06 C 237.59 93.33 246.22 95.10 253.04 100.19 C 256.69 103.13 259.87 107.67 258.91 112.59 C 257.95 118.43 252.78 122.38 247.78 124.82 C 235.27 130.43 220.23 130.09 207.98 123.93 C 199.33 127.88 189.76 129.43 180.30 128.57 C 173.70 139.92 161.70 147.65 148.86 149.93 C 133.10 153.26 116.06 148.15 104.42 137.08 C 92.98 143.04 78.96 143.87 66.97 139.04 C 57.75 135.41 49.70 128.00 46.60 118.43 C 43.87 109.95 45.81 100.29 51.30 93.32 C 57.38 85.18 67.10 80.44 76.99 78.89 C 74.38 69.20 74.87 58.52 79.72 49.60 Z"},e=0,n=0;angular.module("xos.diagnostic").service("NodeDrawer",["d3","serviceTopologyConfig","RackHelper","lodash",function(r,i,a,o){var c=this,s=this;this.addNetworks=function(e){e.append("path").attr({d:t.cloud,transform:"translate(-63, -52), scale(0.5)","class":"cloud"}),e.append("text").attr({"text-anchor":"middle"}).text(function(t){return t.name}),e.each(function(t){var e=r.select(this);"LAN"===t.name&&angular.isDefined(t.subscriberTag)&&(e.append("text").attr({"text-anchor":"middle",y:40}).text(function(){return"C-Tag: "+t.subscriberTag.cTag}),e.append("text").attr({"text-anchor":"middle",y:60}).text(function(){return"S-Tag: "+t.subscriberTag.sTag})),"WAN"===t.name&&angular.isDefined(t.subscriberIP)&&e.append("text").attr({"text-anchor":"middle",y:40}).text(function(){return"Public IP: "+t.subscriberIP})})},this.addRack=function(t){t.each(function(e){var n=a.getRackSize(e.computeNodes),r=_slicedToArray(n,2),o=r[0],s=r[1];t.select("g").remove();var u=t.append("g");u.attr({transform:"translate(0,0)"}).transition().duration(i.duration).attr({transform:function(){return"translate("+-(o/2)+", "+-(s/2)+")"}}),u.append("rect").attr({width:0,height:0}).transition().duration(i.duration).attr({width:o,height:s}),u.append("text").attr({"text-anchor":"middle",y:-10,x:o/2,opacity:0}).text(function(t){return t.name}).transition().duration(i.duration).attr({opacity:1}),c.drawComputeNodes(u,e.computeNodes)})},this.drawComputeNodes=function(t,n){var o=t.selectAll(".compute-nodes").data(n,function(t){return angular.isString(t.d3Id)||(t.d3Id="compute-node-"+ ++e),t.d3Id}),c=t.node().getBoundingClientRect(),u=c.width,d=c.height,l=o.enter().append("g");l.attr({transform:"translate("+u/2+", "+d/2+")","class":"compute-node"}).transition().duration(i.duration).attr({transform:function(t){return"translate("+a.getComputeNodePosition(n,t.d3Id.replace("compute-node-","")-1)+")"}}),l.append("rect").attr({width:0,height:0}).transition().duration(i.duration).attr({width:function(t){return a.getComputeNodeSize(t.instances)[0]},height:function(t){return a.getComputeNodeSize(t.instances)[1]}}),l.append("text").attr({"text-anchor":"start",y:15,x:10,opacity:0}).text(function(t){return t.humanReadableName.split(".")[0]}).transition().duration(i.duration).attr({opacity:1}),l.length>0&&l.each(function(t){s.drawInstances(r.select(this),t.instances)})};var u=function(t){return t.replace("app_","").replace("service_","").replace("mysite_","").replace("_instance","")},d=function(t){function e(t,e){return e.substring(0,t.length)===t}return e("0 - ",t.backend_status)?"provisioning":e("1 - ",t.backend_status)?"good":e("2 - ",t.backend_status)?"bad":""},l=function(t,e){var n=t.append("g").attr({"class":"container",transform:"translate("+i.instance.margin+", 115)"});n.append("rect").attr({width:250-2*i.container.margin,height:i.container.height}),n.append("text").attr({y:20,x:i.instance.margin,"class":"name"}).text(e.name);var r=["memory","memory.usage","cpu_util"];r.forEach(function(t,r){var a=o.find(e.stats,{meter:t});angular.isDefined(a)&&n.append("text").attr({y:40+15*r,x:i.instance.margin,opacity:0}).text(a.description+": "+Math.round(a.value)+" "+a.unit).transition().duration(i.duration).attr({opacity:1})});var a=["eth0","eth1"],c=[{meter:"network.incoming.bytes.rate",label:"Incoming"},{meter:"network.outgoing.bytes.rate",label:"Outgoing"}];a.forEach(function(t,r){0!==e.port[t].length&&(n.append("text").attr({y:90,x:i.instance.margin+120*r,"class":"name"}).text(e.name+"-"+t),c.forEach(function(a,c){var s=o.find(e.port[t],{meter:a.meter});angular.isDefined(s)&&n.append("text").attr({y:105+15*c,x:i.instance.margin+120*r,opacity:0}).text(a.label+": "+Math.round(s.value)+" "+s.unit).transition().duration(i.duration).attr({opacity:1})}))})},p=function(t,e){var n=t.append("g").attr({transform:"translate(200, -120)","class":"stats-container"});n.append("line").attr({x1:-160,y1:120,x2:0,y2:50,stroke:"black",opacity:0}).transition().duration(i.duration).attr({opacity:1});var r=110,a=250;e.container&&(r+=i.container.height+2*i.container.margin),n.append("rect").attr({width:a,height:r,opacity:0}).transition().duration(i.duration).attr({opacity:1}),n.append("text").attr({y:15,x:i.instance.margin,"class":"name",opacity:0}).text(e.humanReadableName).transition().duration(i.duration).attr({opacity:1}),n.append("text").attr({y:30,x:i.instance.margin,"class":"ip",opacity:0}).text(e.ip).transition().duration(i.duration).attr({opacity:1});var c=["memory","memory.usage","cpu","vcpus"];c.forEach(function(t,r){var a=o.find(e.stats,{meter:t});n.append("text").attr({y:55+15*r,x:i.instance.margin,opacity:0}).text(a.description+": "+Math.round(a.value)+" "+a.unit).transition().duration(i.duration).attr({opacity:1})}),e.container&&l(n,e.container)};this.drawInstances=function(t,e){var o=t.node().getBoundingClientRect(),c=o.width,s=o.height,l=t.selectAll(".instances").data(e,function(t){return angular.isString(t.d3Id)?t.d3Id:t.d3Id="instance-"+ ++n}),h=l.enter().append("g");h.attr({transform:"translate("+c/2+", "+s/2+")","class":function(t){return"instance "+(t.selected?"active":"")+" "+d(t)}}).transition().duration(i.duration).attr({transform:function(t,e){return"translate("+a.getInstancePosition(e)+")"}}),h.append("rect").attr({width:0,height:0}).transition().duration(i.duration).attr({width:i.instance.width,height:i.instance.height}),h.append("text").attr({"text-anchor":"middle",y:23,x:40,opacity:0}).text(function(t){return u(t.humanReadableName)}).transition().duration(i.duration).attr({opacity:1}),h.each(function(t,e){var n=r.select(this);angular.isDefined(t.stats)&&t.selected&&p(n,t,e)}),h.on("click",function(t){console.log("Draw vignette with stats for instance: "+t.name)})},this.addPhisical=function(t){t.append("rect").attr(i.square),t.append("text").attr({"text-anchor":"middle",y:i.square.y-10}).text(function(t){return t.name})},this.addDevice=function(t){t.append("circle").attr(i.circle),t.append("text").attr({"text-anchor":"end",x:-i.circle.r-10,y:i.circle.r/2}).text(function(t){return t.name||t.mac})}}])}();var _slicedToArray=function(){function t(t,e){var n=[],r=!0,i=!1,a=void 0;try{for(var o,c=t[Symbol.iterator]();!(r=(o=c.next()).done)&&(n.push(o.value),!e||n.length!==e);r=!0);}catch(s){i=!0,a=s}finally{try{!r&&c["return"]&&c["return"]()}finally{if(i)throw a}}return n}return function(e,n){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}();!function(){"use strict";angular.module("xos.diagnostic").service("LogicTopologyHelper",["$window","$log","$rootScope","lodash","serviceTopologyConfig","NodeDrawer","ChartData",function(t,e,n,r,i,a,o){var c,s,u,d,l,p,h=this,f=0,g=o.logicTopologyData;this.computeElementPosition=function(t){var e=[],n=r.reduce(i.elWidths,function(t,e){return e+t},0),a=t-n-2*i.widthMargin,o=a/(i.elWidths.length-1);return r.forEach(i.elWidths,function(n,a){var c=0;0!==a&&(c=r.reduce(i.elWidths.slice(0,a),function(t,e){return e+t},0));var s=i.widthMargin+o*a+n/2+c;e.push(t-s)}),e};var v=function(t){var e=p.nodes(t);e.forEach(function(t){t.y=h.computeElementPosition(d)[t.depth]});var n=p.links(e);return[e,n]},m=function(t,e){var r=t.selectAll("g.node").data(e,function(t){return angular.isString(t.d3Id)||(t.d3Id="tree-"+ ++f),t.d3Id});r.enter().append("g").attr({"class":function(t){return"node "+t.type},transform:"translate("+d/2+", "+l/2+")"});a.addNetworks(r.filter(".network")),a.addRack(r.filter(".rack")),a.addPhisical(r.filter(".router")),a.addPhisical(r.filter(".subscriber")),a.addDevice(r.filter(".device")),r.filter(".subscriber").on("click",function(){n.$emit("subscriber.modal.open")});r.transition().duration(i.duration).attr({transform:function(t){return"translate("+t.y+","+t.x+")"}}),r.exit().remove()},b=function(t,e){c=d3.svg.diagonal().projection(function(t){return[t.y,t.x]});var n=t.selectAll("path.link").data(e,function(t){return t.target.d3Id});n.enter().insert("path","g").attr("class",function(t){return"link "+t.target.type}).attr("d",function(t){var e={x:l/2,y:d/2};return c({source:e,target:e})}),n.transition().duration(i.duration).attr("d",c),n.exit().remove()};this.setupTree=function(t){d=t.node().getBoundingClientRect().width,l=t.node().getBoundingClientRect().height;var e=d-2*i.widthMargin,n=l-2*i.heightMargin;p=d3.layout.tree().size([n,e])},this.updateTree=function(t){var e=v(g),n=_slicedToArray(e,2);s=n[0],u=n[1],m(t,s),b(t,u)}}])}(),function(){"use strict";angular.module("xos.diagnostic").directive("logicTopology",function(){return{restrict:"E",scope:{subscribers:"=",selected:"="},bindToController:!0,controllerAs:"vm",templateUrl:"templates/logicTopology.tpl.html",controller:["$element","$log","$scope","$rootScope","$timeout","d3","LogicTopologyHelper","Node","Tenant","Ceilometer","serviceTopologyConfig","ChartData",function(t,e,n,r,i,a,o,c,s,u,d,l){var p=this;e.info("Logic Plane");var h;this.selectedInstances=[],this.hideInstanceStats=!0;var f=function(t){h=a.select(t).append("svg").style("width",t.clientWidth+"px").style("height",t.clientHeight+"px")};l.getLogicTree().then(function(t){o.updateTree(h)}),n.$watch(function(){return p.selected},function(t){t&&(l.selectSubscriber(t),o.updateTree(h))}),r.$on("instance.detail.hide",function(){p.hideInstanceStats=!0,i(function(){p.selectedInstances=[],l.highlightInstances([]),o.updateTree(h)},500)}),r.$on("instance.detail",function(t,e){l.getInstanceStatus(e).then(function(t){o.updateTree(h)})}),f(t[0]),o.setupTree(h),this.openSubscriberModal=function(){p.subscriberModal=!0,n.$apply()},r.$on("subscriber.modal.open",function(){p.openSubscriberModal()})}]}})}(),function(){"use strict";angular.module("xos.diagnostic").directive("diagnostic",function(){return{restrict:"E",templateUrl:"templates/diagnostic.tpl.html",controllerAs:"vm",controller:["ChartData","Subscribers","ServiceRelation","$rootScope",function(t,e,n,r){var i=this;this.loader=!0,this.error=!1,e.query().$promise.then(function(t){return i.subscribers=t,n.get()}).then(function(t){i.serviceChain=t})["catch"](function(t){throw new Error(t)})["finally"](function(){i.loader=!1}),r.$on("subscriber.selected",function(r,a){n.getBySubscriber(a).then(function(n){return i.serviceChain=n,t.currentServiceChain=n,e.getWithDevices({id:a.id}).$promise}).then(function(e){i.selectedSubscriber=e,t.currentSubscriber=e})})}]}})}(),function(){"use strict";angular.module("xos.diagnostic").factory("d3",["$window",function(t){return t.d3}])}(),function(){"use strict";angular.module("xos.diagnostic").constant("serviceTopologyConfig",{widthMargin:20,heightMargin:30,duration:750,elWidths:[20,104,105,104,20],circle:{radius:10,r:10,selectedRadius:15},square:{width:20,height:20,x:-10,y:-10},rack:{width:105,height:50,x:-30,y:-25},computeNode:{width:50,height:20,margin:5,labelHeight:10,x:-25,y:-10},instance:{width:80,height:36,margin:5,x:-40,y:-18},container:{width:60,height:130,margin:5,x:-30,y:-15}})}(),function(){"use strict";angular.module("xos.diagnostic").service("ChartData",["$rootScope","$q","lodash","Tenant","Node","serviceTopologyConfig","Ceilometer","Instances",function(t,e,n,r,i,a,o,c){var s=this;this.currentSubscriber=null,this.currentServiceChain=null,this.logicTopologyData={name:"Router",type:"router",children:[{name:"WAN",type:"network",children:[{name:"Rack",type:"rack",computeNodes:[],children:[{name:"LAN",type:"network",children:[{name:"Subscriber",type:"subscriber"}]}]}]}]},this.getLogicTree=function(){var t=e.defer();return i.queryWithInstances().$promise.then(function(e){s.logicTopologyData.children[0].children[0].computeNodes=e,t.resolve(s.logicTopologyData)}),t.promise},this.addSubscriberTag=function(t){s.logicTopologyData.children[0].children[0].children[0].subscriberTag={cTag:t.c_tag,sTag:t.s_tag}},this.addSubscriber=function(t){return t.children=t.devices,s.logicTopologyData.children[0].children[0].children[0].children=[t],s.logicTopologyData},this.getSubscriberTag=function(){var t=JSON.parse(s.currentServiceChain.children[0].tenant.service_specific_attribute);delete t.creator_id,s.addSubscriberTag(t),s.currentSubscriber.tags={cTag:t.c_tag,sTag:t.s_tag}},this.getSubscriberIP=function(){var t=JSON.parse(s.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;s.logicTopologyData.children[0].subscriberIP=t},this.selectSubscriber=function(t){a.elWidths.push(160),s.addSubscriber(angular.copy(t)),s.highlightInstances([]),s.getSubscriberTag(),s.getSubscriberIP()},this.highlightInstances=function(t){var e=s.logicTopologyData.children[0].children[0].computeNodes;e.map(function(t){t.instances.map(function(t){return t.selected=!1,t})}),n.forEach(t,function(t){e.map(function(e){e.instances.map(function(e){return e.id===t.id&&(e.selected=!0,e.stats=t.stats,e.container=t.container),e})})})},this.getInstanceStatus=function(t){var n=e.defer(),i=void 0;if(s.currentSubscriber){var a=void 0;try{a=JSON.parse(t.tenant.service_specific_attribute)}catch(u){a=null}if(a&&a.instance_id)!function(){var t={};i=c.get({id:a.instance_id}).$promise.then(function(e){return t=e,o.getInstanceStats(t.instance_uuid)}).then(function(e){t.stats=e;var n="vcpe-"+s.currentSubscriber.tags.sTag+"-"+s.currentSubscriber.tags.cTag;return t.container={name:n},o.getContainerStats(n)}).then(function(e){return t.container.stats=e.stats,t.container.port=e.port,[t]})}();else{var d=e.defer();d.resolve([]),i=d.promise}}else{var l={service_vsg:{kind:"vCPE"},service_vbng:{kind:"vBNG"},service_volt:{kind:"vOLT"}};i=r.queryVsgInstances(l[t.name]).$promise.then(function(t){return o.getInstancesStats(t)})}return i.then(function(t){s.highlightInstances(t),n.resolve(t)})["catch"](function(t){n.reject(t)}),n.promise}}])}();
+//Autogenerated, do not edit!!!
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic', ['ngResource', 'ngCookies', 'ngLodash', 'ngAnimate', 'ui.router', 'xos.helpers']).config(["$stateProvider", function ($stateProvider) {
+    $stateProvider.state('home', {
+      url: '/',
+      template: '<diagnostic-container></diagnostic-container>'
+    });
+  }]).config(["$httpProvider", function ($httpProvider) {
+    $httpProvider.interceptors.push('NoHyperlinks');
+  }]).run(["$log", function ($log) {
+    $log.info('Diagnostic Started');
+  }]);
+})();
+angular.module("xos.diagnostic").run(["$templateCache", function($templateCache) {$templateCache.put("templates/diagnostic.tpl.html","<div class=\"container-fluid\">\n  <div ng-hide=\"vm.error && vm.loader\">\n    <div class=\"onethird-height\">\n      <service-topology service-chain=\"vm.serviceChain\"></service-topology>\n    </div>\n    <div class=\"twothird-height\">\n      <!-- <div class=\"panel panel-primary subscriber-select\">\n        <div class=\"panel-heading\">Select a subscriber:</div>\n        <div class=\"panel-body\">\n          <select class=\"form-control\" ng-options=\"s as s.name for s in vm.subscribers\" ng-model=\"vm.selectedSubscriber\">\n            <option value=\"\">Select a subscriber...</option>\n          </select>\n        </div>\n      </div> -->\n      <logic-topology ng-if=\"vm.subscribers\" subscribers=\"vm.subscribers\" selected=\"vm.selectedSubscriber\"></logic-topology>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"vm.error\">\n    <div class=\"col-xs-12\">\n      <div class=\"alert alert-danger\">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"vm.loader\">\n    <div class=\"col-xs-12\">\n      <div class=\"loader\">Loading</div>\n    </div>\n  </div>\n</div>");
+$templateCache.put("templates/logicTopology.tpl.html","<subscriber-modal open=\"vm.subscriberModal\" subscribers=\"vm.subscribers\"></subscriber-modal>\n<div class=\"instances-stats animate\" ng-hide=\"vm.hideInstanceStats\">\n  <div class=\"row\">\n    <div class=\"col-sm-3 col-sm-offset-8\">\n      <div class=\"panel panel-primary\" ng-repeat=\"instance in vm.selectedInstances\">\n        <div class=\"panel-heading\">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">Backend Status: {{instance.backend_status}}</li>\n            <li class=\"list-group-item\">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\" ng-repeat=\"stat in instance.stats\">\n              <span class=\"badge\">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div>");
+$templateCache.put("templates/subscriber-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Select a subscriber:</h4>\n      </div>\n      <div class=\"modal-body\">\n        <select class=\"form-control\" ng-options=\"s as s.humanReadableName for s in vm.subscribers\" ng-model=\"vm.selected\"></select>\n      </div>\n      <div class=\"modal-footer\">\n        <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n        <button ng-click=\"vm.select(vm.selected)\" type=\"button\" class=\"btn btn-primary\">Select</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
+'use strict';
+
+(function () {
+  'use strict';
+  angular.module('xos.diagnostic').directive('subscriberModal', function () {
+    return {
+      scope: {
+        subscribers: '=',
+        open: '='
+      },
+      bindToController: true,
+      restrict: 'E',
+      templateUrl: 'templates/subscriber-modal.tpl.html',
+      controllerAs: 'vm',
+      controller: ["$rootScope", function controller($rootScope) {
+        var _this = this;
+
+        this.close = function () {
+          _this.open = false;
+        };
+
+        this.select = function (subscriber) {
+          $rootScope.$emit('subscriber.selected', subscriber);
+          _this.close();
+        };
+      }]
+    };
+  });
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').service('ServiceTopologyHelper', ["$rootScope", "$window", "$log", "lodash", "ServiceRelation", "serviceTopologyConfig", "d3", function ($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3) {
+
+    // NOTE not used anymore
+    var drawLegend = function drawLegend(svg) {
+      var legendContainer = svg.append('g').attr({
+        'class': 'legend'
+      });
+
+      legendContainer.append('rect').attr({
+        transform: function transform(d) {
+          return 'translate(10, 80)';
+        },
+        width: 100,
+        height: 100
+      });
+
+      // service
+      var service = legendContainer.append('g').attr({
+        'class': 'node service'
+      });
+
+      service.append('circle').attr({
+        r: serviceTopologyConfig.circle.radius,
+        transform: function transform(d) {
+          return 'translate(30, 100)';
+        }
+      });
+
+      service.append('text').attr({
+        transform: function transform(d) {
+          return 'translate(45, 100)';
+        },
+        dy: '.35em'
+      }).text('Service').style('fill-opacity', 1);
+
+      // slice
+      var slice = legendContainer.append('g').attr({
+        'class': 'node slice'
+      });
+
+      slice.append('rect').attr({
+        width: 20,
+        height: 20,
+        x: -10,
+        y: -10,
+        transform: function transform(d) {
+          return 'translate(30, 130)';
+        }
+      });
+
+      slice.append('text').attr({
+        transform: function transform(d) {
+          return 'translate(45, 130)';
+        },
+        dy: '.35em'
+      }).text('Slices').style('fill-opacity', 1);
+
+      // instance
+      var instance = legendContainer.append('g').attr({
+        'class': 'node instance'
+      });
+
+      instance.append('rect').attr({
+        width: 20,
+        height: 20,
+        x: -10,
+        y: -10,
+        transform: function transform(d) {
+          return 'translate(30, 160)';
+        }
+      });
+
+      instance.append('text').attr({
+        transform: function transform(d) {
+          return 'translate(45, 160)';
+        },
+        dy: '.35em'
+      }).text('Instances').style('fill-opacity', 1);
+    };
+
+    var _svg, _layout, _source;
+
+    var i = 0;
+
+    // given a canvas, a layout and a data source, draw a tree layout
+    var updateTree = function updateTree(svg, layout, source) {
+
+      //cache data
+      _svg = svg;
+      _layout = layout;
+      _source = source;
+
+      var maxDepth = ServiceRelation.depthOf(source);
+
+      var diagonal = d3.svg.diagonal().projection(function (d) {
+        return [d.y, d.x];
+      });
+
+      // Compute the new tree layout.
+      var nodes = layout.nodes(source).reverse(),
+          links = layout.links(nodes);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function (d) {
+        // position the child node horizontally
+        var step = ($window.innerWidth - serviceTopologyConfig.widthMargin * 2) / maxDepth;
+        d.y = d.depth * step;
+      });
+
+      // Update the nodes…
+      var node = svg.selectAll('g.node').data(nodes, function (d) {
+        return d.id || (d.id = ++i);
+      });
+
+      // Enter any new nodes at the parent's previous position.
+      var nodeEnter = node.enter().append('g').attr({
+        'class': function _class(d) {
+          return 'node ' + d.type;
+        },
+        transform: function transform(d) {
+          return d.x && d.y ? 'translate(' + d.y + ', ' + d.x + ')' : 'translate(' + source.y0 + ', ' + source.x0 + ')';
+        }
+      });
+
+      var subscriberNodes = nodeEnter.filter('.subscriber');
+      var internetNodes = nodeEnter.filter('.router');
+      var serviceNodes = nodeEnter.filter('.service');
+
+      subscriberNodes.append('rect').attr(serviceTopologyConfig.square);
+
+      internetNodes.append('rect').attr(serviceTopologyConfig.square);
+
+      serviceNodes.append('circle').attr('r', 1e-6).style('fill', function (d) {
+        return d._children ? 'lightsteelblue' : '#fff';
+      }).on('click', serviceClick);
+
+      nodeEnter.append('text').attr({
+        x: function x(d) {
+          return d.children ? -serviceTopologyConfig.circle.selectedRadius - 3 : serviceTopologyConfig.circle.selectedRadius + 3;
+        },
+        dy: '.35em',
+        transform: function transform(d) {
+          if (d.children && d.parent) {
+            if (d.parent.x < d.x) {
+              return 'rotate(-30)';
+            }
+            return 'rotate(30)';
+          }
+        },
+        'text-anchor': function textAnchor(d) {
+          return d.children ? 'end' : 'start';
+        }
+      }).text(function (d) {
+        return d.name;
+      }).style('fill-opacity', 1e-6);
+
+      // Transition nodes to their new position.
+      var nodeUpdate = node.transition().duration(serviceTopologyConfig.duration).attr({
+        'transform': function transform(d) {
+          return 'translate(' + d.y + ',' + d.x + ')';
+        }
+      });
+
+      nodeUpdate.select('circle').attr('r', function (d) {
+        return d.selected ? serviceTopologyConfig.circle.selectedRadius : serviceTopologyConfig.circle.radius;
+      }).style('fill', function (d) {
+        return d.selected ? 'lightsteelblue' : '#fff';
+      });
+
+      nodeUpdate.select('text').style('fill-opacity', 1);
+
+      // Transition exiting nodes to the parent's new position.
+      var nodeExit = node.exit().transition().duration(serviceTopologyConfig.duration).remove();
+
+      nodeExit.select('circle').attr('r', 1e-6);
+
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      // Update the links…
+      var link = svg.selectAll('path.link').data(links, function (d) {
+        return d.target.id;
+      });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert('path', 'g').attr('class', function (d) {
+        return 'link ' + d.target.type + ' ' + (d.target.active ? '' : 'active');
+      }).attr('d', function (d) {
+        var o = { x: source.x0, y: source.y0 };
+        return diagonal({ source: o, target: o });
+      });
+
+      // Transition links to their new position.
+      link.transition().duration(serviceTopologyConfig.duration).attr('d', diagonal);
+
+      // Transition exiting nodes to the parent's new position.
+      link.exit().transition().duration(serviceTopologyConfig.duration).attr('d', function (d) {
+        var o = { x: source.x, y: source.y };
+        return diagonal({ source: o, target: o });
+      }).remove();
+
+      // Stash the old positions for transition.
+      nodes.forEach(function (d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+    };
+
+    var serviceClick = function serviceClick(d) {
+
+      // if was selected
+      if (d.selected) {
+        d.selected = !d.selected;
+        $rootScope.$emit('instance.detail.hide', {});
+        return updateTree(_svg, _layout, _source);
+      }
+
+      $rootScope.$emit('instance.detail', { name: d.name, service: d.service, tenant: d.tenant });
+
+      // unselect all
+      _svg.selectAll('circle').each(function (d) {
+        return d.selected = false;
+      });
+
+      // toggling selected status
+      d.selected = !d.selected;
+
+      updateTree(_svg, _layout, _source);
+    };
+
+    this.updateTree = updateTree;
+    this.drawLegend = drawLegend;
+  }]);
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').directive('serviceTopology', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        serviceChain: '='
+      },
+      bindToController: true,
+      controllerAs: 'vm',
+      template: '',
+      controller: ["$element", "$window", "$scope", "d3", "serviceTopologyConfig", "ServiceRelation", "Slice", "Instances", "Subscribers", "ServiceTopologyHelper", function controller($element, $window, $scope, d3, serviceTopologyConfig, ServiceRelation, Slice, Instances, Subscribers, ServiceTopologyHelper) {
+        var _this = this;
+
+        var el = $element[0];
+
+        d3.select(window).on('resize', function () {
+          draw(_this.serviceChain);
+        });
+
+        var root, svg;
+
+        var draw = function draw(tree) {
+
+          if (!tree) {
+            console.error('Tree is missing');
+            return;
+          }
+
+          // TODO update instead clear and redraw
+
+          // clean
+          d3.select($element[0]).select('svg').remove();
+
+          var width = el.clientWidth - serviceTopologyConfig.widthMargin * 2;
+          var height = el.clientHeight - serviceTopologyConfig.heightMargin * 2;
+
+          var treeLayout = d3.layout.tree().size([height, width]);
+
+          svg = d3.select($element[0]).append('svg').style('width', el.clientWidth + 'px').style('height', el.clientHeight + 'px');
+
+          var treeContainer = svg.append('g').attr('transform', 'translate(' + serviceTopologyConfig.widthMargin * 4 + ',' + serviceTopologyConfig.heightMargin + ')');
+
+          root = tree;
+          root.x0 = height / 2;
+          root.y0 = width / 2;
+
+          // ServiceTopologyHelper.drawLegend(svg);
+          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
+        };
+
+        this.getInstances = function (slice) {
+          Instances.query({ slice: slice.id }).$promise.then(function (instances) {
+            _this.selectedSlice = slice;
+            _this.instances = instances;
+          })['catch'](function (e) {
+            _this.errors = e;
+            throw new Error(e);
+          });
+        };
+
+        $scope.$watch(function () {
+          return _this.serviceChain;
+        }, function (chain) {
+          console.log(chain);
+          if (angular.isDefined(chain)) {
+            draw(chain);
+          }
+        });
+      }]
+    };
+  });
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').service('Services', ["$resource", function ($resource) {
+    return $resource('/xos/services/:id', { id: '@id' });
+  }]).service('Tenant', ["$resource", function ($resource) {
+    return $resource('/xos/tenants', { id: '@id' }, {
+      queryVsgInstances: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function response(res) {
+
+            // NOTE
+            // Note that VCPETenant is now VSGTenant.
+
+            var instances = [];
+
+            angular.forEach(res.data, function (tenant) {
+              var info = JSON.parse(tenant.service_specific_attribute);
+              if (info && info.instance_id) {
+                instances.push(info.instance_id);
+              }
+            });
+
+            return instances;
+          }
+        }
+      },
+      getSubscriberTag: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function response(res) {
+            // NOTE we should receive only one vOLT tenant here
+            return JSON.parse(res.data[0].service_specific_attribute);
+          }
+        }
+      }
+    });
+  }]).service('Ceilometer', ["$http", "$q", "Instances", function ($http, $q, Instances) {
+    var _this = this;
+
+    /**
+    * Get stats for a single instance
+    */
+    this.getInstanceStats = function (instanceUuid) {
+      var deferred = $q.defer();
+
+      $http.get('/xoslib/xos-instance-statistics', { params: { 'instance-uuid': instanceUuid } }).then(function (res) {
+        deferred.resolve(res.data);
+      })['catch'](function (e) {
+        deferred.reject(e);
+      });
+
+      return deferred.promise;
+    };
+
+    /**
+    * Collect stats for an array of instances
+    */
+    this.getInstancesStats = function (instances) {
+      var deferred = $q.defer();
+      var instancePromises = [];
+      var instanceList = [];
+
+      // retrieve instance details
+      instances.forEach(function (instanceId) {
+        instancePromises.push(Instances.get({ id: instanceId }).$promise);
+      });
+
+      // get all instance data
+      $q.all(instancePromises).then(function (_instanceList) {
+        instanceList = _instanceList;
+        var promises = [];
+        // foreach instance query stats
+        instanceList.forEach(function (instance) {
+          promises.push(_this.getInstanceStats(instance.instance_uuid));
+        });
+        return $q.all(promises);
+      }).then(function (stats) {
+        // augment instance with stats information
+        instanceList.map(function (instance, i) {
+          instance.stats = stats[i];
+        });
+        deferred.resolve(instanceList);
+      })['catch'](deferred.reject);
+
+      return deferred.promise;
+    };
+
+    this.getContainerStats = function (containerName) {
+      var deferred = $q.defer();
+
+      var res = {};
+
+      $http.get('/xoslib/meterstatistics', { params: { 'resource': containerName } }).then(function (containerStats) {
+        res.stats = containerStats.data;
+        return $http.get('/xoslib/meterstatistics', { params: { 'resource': containerName + '-eth0' } });
+      }).then(function (portStats) {
+        res.port = {
+          eth0: portStats.data
+        };
+        return $http.get('/xoslib/meterstatistics', { params: { 'resource': containerName + '-eth1' } });
+      }).then(function (portStats) {
+        res.port.eth1 = portStats.data;
+        deferred.resolve(res);
+      })['catch'](function (e) {
+        deferred.reject(e);
+      });
+
+      return deferred.promise;
+    };
+  }]).service('Slice', ["$resource", function ($resource) {
+    return $resource('/xos/slices', { id: '@id' });
+  }]).service('Instances', ["$resource", function ($resource) {
+    return $resource('/xos/instances/:id', { id: '@id' });
+  }]).service('Node', ["$resource", "$q", "Instances", function ($resource, $q, Instances) {
+    return $resource('/xos/nodes', { id: '@id' }, {
+      queryWithInstances: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function response(res) {
+
+            // TODO update the API to include instances in nodes
+            // http://stackoverflow.com/questions/14573102/how-do-i-include-related-model-fields-using-django-rest-framework
+
+            var deferred = $q.defer();
+
+            var requests = [];
+
+            angular.forEach(res.data, function (node) {
+              requests.push(Instances.query({ node: node.id }).$promise);
+            });
+
+            $q.all(requests).then(function (list) {
+              res.data.map(function (node, i) {
+                node.instances = list[i];
+                return node;
+              });
+              deferred.resolve(res.data);
+            });
+
+            return deferred.promise;
+          }
+        }
+      }
+    });
+  }]).service('Subscribers', ["$resource", "$q", "SubscriberDevice", function ($resource, $q, SubscriberDevice) {
+    return $resource('/xos/subscribers/:id', { id: '@id' }, {
+      queryWithDevices: {
+        method: 'GET',
+        isArray: true,
+        interceptor: {
+          response: function response(res) {
+
+            /**
+            * For each subscriber retrieve devices and append them
+            */
+
+            var deferred = $q.defer();
+
+            var requests = [];
+
+            angular.forEach(res.data, function (subscriber) {
+              requests.push(SubscriberDevice.query({ id: subscriber.id }).$promise);
+            });
+
+            $q.all(requests).then(function (list) {
+
+              // adding devices
+
+              res.data.map(function (subscriber, i) {
+                subscriber.devices = list[i];
+                subscriber.type = 'subscriber';
+
+                subscriber.devices.map(function (d) {
+                  return d.type = 'device';
+                });
+
+                return subscriber;
+              });
+
+              // faking to have 2 subscriber
+              // res.data.push(angular.copy(res.data[0]));
+
+              deferred.resolve(res.data);
+            });
+
+            return deferred.promise;
+          }
+        }
+      },
+      getWithDevices: {
+        method: 'GET',
+        isArray: false,
+        interceptor: {
+          response: function response(res) {
+            var d = $q.defer();
+
+            SubscriberDevice.query({ id: res.data.id }).$promise.then(function (devices) {
+              devices.map(function (d) {
+                return d.type = 'device';
+              });
+              res.data.devices = devices;
+              res.data.type = 'subscriber';
+              d.resolve(res.data);
+            })['catch'](function (err) {
+              d.reject(err);
+            });
+
+            return d.promise;
+          }
+        }
+      }
+    });
+  }]).service('SubscriberDevice', ["$resource", function ($resource) {
+    return $resource('/xoslib/rs/subscriber/:id/users/', { id: '@id' });
+  }]).service('ServiceRelation', ["$q", "lodash", "Services", "Tenant", "Slice", "Instances", function ($q, lodash, Services, Tenant, Slice, Instances) {
+
+    // count the mas depth of an object
+    var depthOf = function depthOf(obj) {
+      var depth = 0;
+      if (obj.children) {
+        obj.children.forEach(function (d) {
+          var tmpDepth = depthOf(d);
+          if (tmpDepth > depth) {
+            depth = tmpDepth;
+          }
+        });
+      }
+      return 1 + depth;
+    };
+
+    // find all the relation defined for a given root
+    var findLevelRelation = function findLevelRelation(tenants, rootId) {
+      return lodash.filter(tenants, function (service) {
+        return service.subscriber_service === rootId;
+      });
+    };
+
+    var findSpecificInformation = function findSpecificInformation(tenants, rootId) {
+      var tenants = lodash.filter(tenants, function (service) {
+        return service.provider_service === rootId && service.subscriber_tenant;
+      });
+
+      var info;
+
+      tenants.forEach(function (tenant) {
+        if (tenant.service_specific_attribute) {
+          info = JSON.parse(tenant.service_specific_attribute);
+        }
+      });
+
+      return info;
+    };
+
+    // find all the service defined by a given array of relations
+    var findLevelServices = function findLevelServices(relations, services) {
+      var levelServices = [];
+      lodash.forEach(relations, function (tenant) {
+        var service = lodash.find(services, { id: tenant.provider_service });
+        levelServices.push(service);
+      });
+      return levelServices;
+    };
+
+    var buildLevel = function buildLevel(tenants, services, rootService, rootTenant) {
+      var parentName = arguments.length <= 4 || arguments[4] === undefined ? null : arguments[4];
+
+      // build an array of unlinked services
+      // these are the services that should still placed in the tree
+      var unlinkedServices = lodash.difference(services, [rootService]);
+
+      // find all relations relative to this rootElement
+      var levelRelation = findLevelRelation(tenants, rootService.id);
+      // find all items related to rootElement
+      var levelServices = findLevelServices(levelRelation, services);
+
+      // remove this item from the list (performance
+      unlinkedServices = lodash.difference(unlinkedServices, levelServices);
+
+      rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
+
+      var tree = {
+        name: rootService.humanReadableName,
+        parent: parentName,
+        type: 'service',
+        service: rootService,
+        tenant: rootTenant,
+        children: []
+      };
+
+      lodash.forEach(levelServices, function (service) {
+        var tenant = lodash.find(tenants, { subscriber_tenant: rootTenant.id, provider_service: service.id });
+        tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
+      });
+
+      // if it is the last element append internet
+      if (tree.children.length === 0) {
+        tree.children.push({
+          name: 'Router',
+          type: 'router',
+          children: []
+        });
+      }
+
+      return tree;
+    };
+
+    var buildSubscriberServiceTree = function buildSubscriberServiceTree(services, tenants) {
+      var subscriber = arguments.length <= 2 || arguments[2] === undefined ? { id: 1, name: 'fakeSubs' } : arguments[2];
+
+      // find the root service
+      // it is the one attached to subsriber_root
+      // as now we have only one root so this can work
+      var rootTenant = lodash.find(tenants, { subscriber_root: subscriber.id });
+      var rootService = lodash.find(services, { id: rootTenant.provider_service });
+
+      var serviceTree = buildLevel(tenants, services, rootService, rootTenant);
+
+      return {
+        name: subscriber.name,
+        parent: null,
+        type: 'subscriber',
+        children: [serviceTree]
+      };
+    };
+
+    // applying domain knowledge to build the global service tree
+    var buildServiceTree = function buildServiceTree(services, tenants) {
+
+      // TODO refactor
+      var buildChild = function buildChild(services, tenants, currentService) {
+
+        var response = {
+          type: 'service',
+          name: currentService.humanReadableName,
+          service: currentService
+        };
+
+        var tenant = lodash.find(tenants, { subscriber_service: currentService.id });
+        if (tenant) {
+          var next = lodash.find(services, { id: tenant.provider_service });
+          response.children = [buildChild(services, tenants, next)];
+        } else {
+          response.children = [{
+            name: 'Router',
+            type: 'router',
+            children: []
+          }];
+        }
+        delete currentService.id; // conflict with d3
+        return response;
+      };
+
+      var baseService = lodash.find(services, { id: 3 });
+
+      if (!angular.isDefined(baseService)) {
+        console.error('Missing Base service!');
+        return;
+      }
+
+      var baseData = {
+        name: 'Subscriber',
+        type: 'subscriber',
+        parent: null,
+        children: [buildChild(services, tenants, baseService)]
+      };
+      return baseData;
+    };
+
+    var getBySubscriber = function getBySubscriber(subscriber) {
+      var deferred = $q.defer();
+      var services, tenants;
+      Services.query().$promise.then(function (res) {
+        services = res;
+        return Tenant.query().$promise;
+      }).then(function (res) {
+        tenants = res;
+        deferred.resolve(buildSubscriberServiceTree(services, tenants, subscriber));
+      })['catch'](function (e) {
+        throw new Error(e);
+      });
+
+      return deferred.promise;
+    };
+
+    var get = function get() {
+      var deferred = $q.defer();
+      var services, tenants;
+      Services.query().$promise.then(function (res) {
+        services = res;
+        return Tenant.query({ kind: 'coarse' }).$promise;
+      }).then(function (res) {
+        tenants = res;
+        deferred.resolve(buildServiceTree(services, tenants));
+      })['catch'](function (e) {
+        throw new Error(e);
+      });
+
+      return deferred.promise;
+    };
+
+    // export APIs
+    return {
+      get: get,
+      buildServiceTree: buildServiceTree,
+      getBySubscriber: getBySubscriber,
+      buildLevel: buildLevel,
+      buildSubscriberServiceTree: buildSubscriberServiceTree,
+      findLevelRelation: findLevelRelation,
+      findLevelServices: findLevelServices,
+      depthOf: depthOf,
+      findSpecificInformation: findSpecificInformation
+    };
+  }]);
+})();
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+(function () {
+  angular.module('xos.diagnostic').service('RackHelper', ["serviceTopologyConfig", "lodash", function (serviceTopologyConfig, lodash) {
+    var _this = this;
+
+    this.getComputeNodeLabelSize = function () {
+      return serviceTopologyConfig.computeNode.labelHeight + serviceTopologyConfig.instance.margin * 2;
+    };
+
+    /**
+    * Given a list of instance should get the Compute Node size.
+    * They are placed in rows of 2 with 5px margin on each side.
+    */
+
+    this.getComputeNodeSize = lodash.memoize(function (instances) {
+      var width = serviceTopologyConfig.instance.margin * 3 + serviceTopologyConfig.instance.width * 2;
+
+      var rows = Math.round(instances.length / 2);
+
+      var labelSpace = _this.getComputeNodeLabelSize();
+
+      var height = serviceTopologyConfig.instance.height * rows + serviceTopologyConfig.instance.margin * (rows + 1) + labelSpace;
+
+      return [width, height];
+    });
+
+    /**
+    * Give a list on Compute Node should calculate the Rack Size.
+    * Compute nodes are placed in a single column with 5px margin on each side.
+    */
+    this.getRackSize = function (nodes) {
+
+      var width = 0;
+      var height = serviceTopologyConfig.computeNode.margin;
+
+      lodash.forEach(nodes, function (node) {
+        var _getComputeNodeSize = _this.getComputeNodeSize(node.instances);
+
+        var _getComputeNodeSize2 = _slicedToArray(_getComputeNodeSize, 2);
+
+        var nodeWidth = _getComputeNodeSize2[0];
+        var nodeHeight = _getComputeNodeSize2[1];
+
+        width = nodeWidth + serviceTopologyConfig.computeNode.margin * 2;
+        height += nodeHeight + serviceTopologyConfig.computeNode.margin;
+      });
+
+      return [width, height];
+    };
+
+    /**
+    * Given an instance index, return the coordinates
+    */
+
+    this.getInstancePosition = function (position) {
+      var row = Math.floor(position / 2);
+      var column = position % 2 ? 1 : 0;
+
+      // add ComputeNode label size
+      var labelSpace = _this.getComputeNodeLabelSize();
+
+      // x = margin + (width * column) + ( maring * column)
+      var x = serviceTopologyConfig.instance.margin + serviceTopologyConfig.instance.width * column + serviceTopologyConfig.instance.margin * column;
+
+      // y = label + margin + (height * row) + ( maring * row)
+      var y = labelSpace + serviceTopologyConfig.instance.margin + serviceTopologyConfig.instance.height * row + serviceTopologyConfig.instance.margin * row;
+      return [x, y];
+    };
+
+    /**
+    * Given an Compute Node index, return the coordinates
+    */
+
+    this.getComputeNodePosition = function (nodes, position) {
+
+      var x = serviceTopologyConfig.computeNode.margin;
+
+      var previousElEight = lodash.reduce(nodes.slice(0, position), function (val, node) {
+        return val + _this.getComputeNodeSize(node.instances)[1];
+      }, 0);
+
+      var y = serviceTopologyConfig.computeNode.margin + serviceTopologyConfig.computeNode.margin * position + previousElEight;
+
+      return [x, y];
+    };
+  }]);
+})();
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+(function () {
+  'use strict';
+
+  var shapes = {
+    cloud: ' M 79.72 49.60 C 86.00 37.29 98.57 29.01 111.96 26.42 C 124.27 24.11 137.53 26.15 148.18 32.90 C 158.08 38.78 165.39 48.87 167.65 60.20 C 176.20 57.90 185.14 56.01 194.00 57.73 C 206.08 59.59 217.92 66.01 224.37 76.66 C 227.51 81.54 228.85 87.33 229.23 93.06 C 237.59 93.33 246.22 95.10 253.04 100.19 C 256.69 103.13 259.87 107.67 258.91 112.59 C 257.95 118.43 252.78 122.38 247.78 124.82 C 235.27 130.43 220.23 130.09 207.98 123.93 C 199.33 127.88 189.76 129.43 180.30 128.57 C 173.70 139.92 161.70 147.65 148.86 149.93 C 133.10 153.26 116.06 148.15 104.42 137.08 C 92.98 143.04 78.96 143.87 66.97 139.04 C 57.75 135.41 49.70 128.00 46.60 118.43 C 43.87 109.95 45.81 100.29 51.30 93.32 C 57.38 85.18 67.10 80.44 76.99 78.89 C 74.38 69.20 74.87 58.52 79.72 49.60 Z'
+  };
+
+  var computeNodeId = 0;
+  var instanceId = 0;
+
+  angular.module('xos.diagnostic').service('NodeDrawer', ["d3", "serviceTopologyConfig", "RackHelper", "lodash", function (d3, serviceTopologyConfig, RackHelper, lodash) {
+    var _this2 = this;
+
+    var _this = this;
+
+    this.addNetworks = function (nodes) {
+      nodes.append('path').attr({
+        d: shapes.cloud,
+        transform: 'translate(-63, -52), scale(0.5)',
+        'class': 'cloud'
+      });
+
+      nodes.append('text').attr({
+        'text-anchor': 'middle'
+      }).text(function (d) {
+        return d.name;
+      });
+
+      nodes.each(function (n) {
+        var currentNode = d3.select(this);
+        // cicle trouch node to add Tags and Public IP
+        if (n.name === 'LAN' && angular.isDefined(n.subscriberTag)) {
+          currentNode.append('text').attr({
+            'text-anchor': 'middle',
+            y: 40
+          }).text(function () {
+            return 'C-Tag: ' + n.subscriberTag.cTag;
+          });
+
+          currentNode.append('text').attr({
+            'text-anchor': 'middle',
+            y: 60
+          }).text(function () {
+            return 'S-Tag: ' + n.subscriberTag.sTag;
+          });
+        }
+
+        if (n.name === 'WAN' && angular.isDefined(n.subscriberIP)) {
+          currentNode.append('text').attr({
+            'text-anchor': 'middle',
+            y: 40
+          }).text(function () {
+            return 'Public IP: ' + n.subscriberIP;
+          });
+        }
+      });
+    };
+
+    this.addRack = function (nodes) {
+
+      // loop because of D3
+      // rack will be only one
+      nodes.each(function (d) {
+        var _RackHelper$getRackSize = RackHelper.getRackSize(d.computeNodes);
+
+        var _RackHelper$getRackSize2 = _slicedToArray(_RackHelper$getRackSize, 2);
+
+        var w = _RackHelper$getRackSize2[0];
+        var h = _RackHelper$getRackSize2[1];
+
+        // TODO update instead of delete and redraw
+        nodes.select('g').remove();
+
+        var rack = nodes.append('g');
+
+        rack.attr({
+          transform: 'translate(0,0)'
+        }).transition().duration(serviceTopologyConfig.duration).attr({
+          transform: function transform() {
+            return 'translate(' + -(w / 2) + ', ' + -(h / 2) + ')';
+          }
+        });
+
+        rack.append('rect').attr({
+          width: 0,
+          height: 0
+        }).transition().duration(serviceTopologyConfig.duration).attr({
+          width: w,
+          height: h
+        });
+
+        rack.append('text').attr({
+          'text-anchor': 'middle',
+          y: -10,
+          x: w / 2,
+          opacity: 0
+        }).text(function (d) {
+          return d.name;
+        }).transition().duration(serviceTopologyConfig.duration).attr({
+          opacity: 1
+        });
+
+        _this2.drawComputeNodes(rack, d.computeNodes);
+      });
+    };
+
+    this.drawComputeNodes = function (container, nodes) {
+
+      var elements = container.selectAll('.compute-nodes').data(nodes, function (d) {
+        if (!angular.isString(d.d3Id)) {
+          d.d3Id = 'compute-node-' + ++computeNodeId;
+        }
+        return d.d3Id;
+      });
+
+      var _container$node$getBoundingClientRect = container.node().getBoundingClientRect();
+
+      var width = _container$node$getBoundingClientRect.width;
+      var height = _container$node$getBoundingClientRect.height;
+
+      var nodeContainer = elements.enter().append('g');
+
+      nodeContainer.attr({
+        transform: 'translate(' + width / 2 + ', ' + height / 2 + ')',
+        'class': 'compute-node'
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        transform: function transform(d) {
+          return 'translate(' + RackHelper.getComputeNodePosition(nodes, d.d3Id.replace('compute-node-', '') - 1) + ')';
+        }
+      });
+
+      nodeContainer.append('rect').attr({
+        width: 0,
+        height: 0
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        width: function width(d) {
+          return RackHelper.getComputeNodeSize(d.instances)[0];
+        },
+        height: function height(d) {
+          return RackHelper.getComputeNodeSize(d.instances)[1];
+        }
+      });
+
+      nodeContainer.append('text').attr({
+        'text-anchor': 'start',
+        y: 15, //FIXME
+        x: 10, //FIXME
+        opacity: 0
+      }).text(function (d) {
+        return d.humanReadableName.split('.')[0];
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      // if there are Compute Nodes
+      if (nodeContainer.length > 0) {
+        // draw instances for each compute node
+        nodeContainer.each(function (a) {
+          _this.drawInstances(d3.select(this), a.instances);
+        });
+      }
+    };
+
+    // NOTE Stripping unuseful names to shorten labels.
+    // This is not elegant
+    var formatInstanceName = function formatInstanceName(name) {
+      return name.replace('app_', '').replace('service_', '')
+      // .replace('ovs_', '')
+      .replace('mysite_', '').replace('_instance', '');
+    };
+
+    var getInstanceStatusColor = function getInstanceStatusColor(instance) {
+      function startWith(val, string) {
+        return string.substring(0, val.length) === val;
+      }
+
+      if (startWith('0 - ', instance.backend_status)) {
+        return 'provisioning';
+      }
+      if (startWith('1 - ', instance.backend_status)) {
+        return 'good';
+      }
+      if (startWith('2 - ', instance.backend_status)) {
+        return 'bad';
+      } else {
+        return '';
+      }
+    };
+
+    var drawContainer = function drawContainer(container, docker) {
+
+      var containerBox = container.append('g').attr({
+        'class': 'container',
+        transform: 'translate(' + serviceTopologyConfig.instance.margin + ', 115)'
+      });
+
+      containerBox.append('rect').attr({
+        width: 250 - serviceTopologyConfig.container.margin * 2,
+        height: serviceTopologyConfig.container.height
+      });
+
+      containerBox.append('text').attr({
+        y: 20,
+        x: serviceTopologyConfig.instance.margin,
+        'class': 'name'
+      }).text(docker.name);
+
+      // add stats
+      var interestingMeters = ['memory', 'memory.usage', 'cpu_util'];
+
+      interestingMeters.forEach(function (m, i) {
+        var meter = lodash.find(docker.stats, { meter: m });
+        // if there is no meter stats skip rendering
+        if (!angular.isDefined(meter)) {
+          return;
+        }
+        containerBox.append('text').attr({
+          y: 40 + i * 15,
+          x: serviceTopologyConfig.instance.margin,
+          opacity: 0
+        }).text(meter.description + ': ' + Math.round(meter.value) + ' ' + meter.unit).transition().duration(serviceTopologyConfig.duration).attr({
+          opacity: 1
+        });
+      });
+
+      // add port stats
+      var ports = ['eth0', 'eth1'];
+      var interestingPortMeters = [{
+        meter: 'network.incoming.bytes.rate',
+        label: 'Incoming'
+      }, {
+        meter: 'network.outgoing.bytes.rate',
+        label: 'Outgoing'
+      }];
+
+      ports.forEach(function (p, j) {
+
+        // if there are no port stats skip rendering
+        if (docker.port[p].length === 0) {
+          return;
+        }
+
+        containerBox.append('text').attr({
+          y: 90,
+          x: serviceTopologyConfig.instance.margin + 120 * j,
+          'class': 'name'
+        }).text(docker.name + '-' + p);
+
+        interestingPortMeters.forEach(function (m, i) {
+
+          var meter = lodash.find(docker.port[p], { meter: m.meter });
+          // if there is no meter stats skip rendering
+          if (!angular.isDefined(meter)) {
+            return;
+          }
+          containerBox.append('text').attr({
+            y: 105 + i * 15,
+            x: serviceTopologyConfig.instance.margin + 120 * j,
+            opacity: 0
+          }).text(m.label + ': ' + Math.round(meter.value) + ' ' + meter.unit).transition().duration(serviceTopologyConfig.duration).attr({
+            opacity: 1
+          });
+        });
+      });
+    };
+
+    var showInstanceStats = function showInstanceStats(container, instance) {
+
+      // NOTE this should be dinamically positioned
+      // base on the number of element present
+      var statsContainer = container.append('g').attr({
+        transform: 'translate(200, -120)',
+        'class': 'stats-container'
+      });
+
+      statsContainer.append('line').attr({
+        x1: -160,
+        y1: 120,
+        x2: 0,
+        y2: 50,
+        stroke: 'black',
+        opacity: 0
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      // NOTE rect should be dinamically sized base on the presence of a container
+      var statsHeight = 110;
+      var statsWidth = 250;
+
+      if (instance.container) {
+        statsHeight += serviceTopologyConfig.container.height + serviceTopologyConfig.container.margin * 2;
+      }
+
+      statsContainer.append('rect').attr({
+        width: statsWidth,
+        height: statsHeight,
+        opacity: 0
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      // add instance info
+      statsContainer.append('text').attr({
+        y: 15,
+        x: serviceTopologyConfig.instance.margin,
+        'class': 'name',
+        opacity: 0
+      }).text(instance.humanReadableName).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      statsContainer.append('text').attr({
+        y: 30,
+        x: serviceTopologyConfig.instance.margin,
+        'class': 'ip',
+        opacity: 0
+      }).text(instance.ip).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      // add stats
+      var interestingMeters = ['memory', 'memory.usage', 'cpu', 'vcpus'];
+
+      interestingMeters.forEach(function (m, i) {
+        var meter = lodash.find(instance.stats, { meter: m });
+        statsContainer.append('text').attr({
+          y: 55 + i * 15,
+          x: serviceTopologyConfig.instance.margin,
+          opacity: 0
+        }).text(meter.description + ': ' + Math.round(meter.value) + ' ' + meter.unit).transition().duration(serviceTopologyConfig.duration).attr({
+          opacity: 1
+        });
+      });
+
+      if (instance.container) {
+        // draw container
+        drawContainer(statsContainer, instance.container);
+      }
+    };
+
+    this.drawInstances = function (container, instances) {
+
+      // TODO check for stats field in instance and draw popup
+
+      var _container$node$getBoundingClientRect2 = container.node().getBoundingClientRect();
+
+      var width = _container$node$getBoundingClientRect2.width;
+      var height = _container$node$getBoundingClientRect2.height;
+
+      var elements = container.selectAll('.instances').data(instances, function (d) {
+        return angular.isString(d.d3Id) ? d.d3Id : d.d3Id = 'instance-' + ++instanceId;
+      });
+
+      var instanceContainer = elements.enter().append('g');
+
+      instanceContainer.attr({
+        transform: 'translate(' + width / 2 + ', ' + height / 2 + ')',
+        'class': function _class(d) {
+          return 'instance ' + (d.selected ? 'active' : '') + ' ' + getInstanceStatusColor(d);
+        }
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        transform: function transform(d, i) {
+          return 'translate(' + RackHelper.getInstancePosition(i) + ')';
+        }
+      });
+
+      instanceContainer.append('rect').attr({
+        width: 0,
+        height: 0
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        width: serviceTopologyConfig.instance.width,
+        height: serviceTopologyConfig.instance.height
+      });
+
+      instanceContainer.append('text').attr({
+        'text-anchor': 'middle',
+        y: 23, //FIXME
+        x: 40, //FIXME
+        opacity: 0
+      }).text(function (d) {
+        return formatInstanceName(d.humanReadableName);
+      }).transition().duration(serviceTopologyConfig.duration).attr({
+        opacity: 1
+      });
+
+      // if stats are attached and instance is active,
+      // draw stats
+      instanceContainer.each(function (instance, i) {
+
+        var container = d3.select(this);
+
+        if (angular.isDefined(instance.stats) && instance.selected) {
+          showInstanceStats(container, instance, i);
+        }
+      });
+
+      instanceContainer.on('click', function (d) {
+        console.log('Draw vignette with stats for instance: ' + d.name);
+      });
+    };
+
+    this.addPhisical = function (nodes) {
+      nodes.append('rect').attr(serviceTopologyConfig.square);
+
+      nodes.append('text').attr({
+        'text-anchor': 'middle',
+        y: serviceTopologyConfig.square.y - 10
+      }).text(function (d) {
+        return d.name;
+      });
+    };
+
+    this.addDevice = function (nodes) {
+      nodes.append('circle').attr(serviceTopologyConfig.circle);
+
+      nodes.append('text').attr({
+        'text-anchor': 'end',
+        x: -serviceTopologyConfig.circle.r - 10,
+        y: serviceTopologyConfig.circle.r / 2
+      }).text(function (d) {
+        return d.name || d.mac;
+      });
+    };
+  }]);
+})();
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').service('LogicTopologyHelper', ["$window", "$log", "$rootScope", "lodash", "serviceTopologyConfig", "NodeDrawer", "ChartData", function ($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer, ChartData) {
+    var _this = this;
+
+    var diagonal,
+        nodes,
+        links,
+        i = 0,
+        svgWidth,
+        svgHeight,
+        layout;
+
+    var baseData = ChartData.logicTopologyData;
+
+    /**
+     * Calculate the horizontal position for each element.
+     * subsrcribers, devices and routers have the same fixed width 20
+     * network have a fixed width 104
+     * rack have a fixed width 105
+     * build and array of 6 elements representing the position of each element in the svg
+     * to equally space them
+     */
+
+    this.computeElementPosition = function (svgWidth) {
+
+      var xPos = [];
+
+      var totalElWidth = lodash.reduce(serviceTopologyConfig.elWidths, function (el, val) {
+        return val + el;
+      }, 0);
+
+      var remainingSpace = svgWidth - totalElWidth - serviceTopologyConfig.widthMargin * 2;
+
+      var step = remainingSpace / (serviceTopologyConfig.elWidths.length - 1);
+
+      lodash.forEach(serviceTopologyConfig.elWidths, function (el, i) {
+
+        // get half of the previous elements width
+        var previousElWidth = 0;
+        if (i !== 0) {
+          previousElWidth = lodash.reduce(serviceTopologyConfig.elWidths.slice(0, i), function (el, val) {
+            return val + el;
+          }, 0);
+        }
+
+        var elPos = serviceTopologyConfig.widthMargin // right margin
+         + step * i // space between elements
+         + el / 2 // this el width
+         + previousElWidth; // previous elements width
+
+        xPos.push(svgWidth - elPos);
+      });
+
+      return xPos;
+    };
+
+    /**
+    * from a nested data structure,
+    * create nodes and links for a D3 Tree Layout
+    */
+    var computeLayout = function computeLayout(data) {
+      var nodes = layout.nodes(data);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function (d) {
+        // position the child node horizontally
+        d.y = _this.computeElementPosition(svgWidth)[d.depth];
+      });
+
+      var links = layout.links(nodes);
+
+      return [nodes, links];
+    };
+
+    /**
+    * Draw the containing group for any node or update the existing one
+    */
+    var drawNodes = function drawNodes(svg, nodes) {
+      // Update the nodes…
+      var node = svg.selectAll('g.node').data(nodes, function (d) {
+        if (!angular.isString(d.d3Id)) {
+          d.d3Id = 'tree-' + ++i;
+        }
+        return d.d3Id;
+      });
+
+      // Enter any new nodes
+      var nodeEnter = node.enter().append('g').attr({
+        'class': function _class(d) {
+          return 'node ' + d.type;
+        },
+        transform: 'translate(' + svgWidth / 2 + ', ' + svgHeight / 2 + ')'
+      });
+
+      // create Nodes
+      NodeDrawer.addNetworks(node.filter('.network'));
+      NodeDrawer.addRack(node.filter('.rack'));
+      NodeDrawer.addPhisical(node.filter('.router'));
+      NodeDrawer.addPhisical(node.filter('.subscriber'));
+      NodeDrawer.addDevice(node.filter('.device'));
+
+      // add event listener to subscriber
+      node.filter('.subscriber').on('click', function () {
+        $rootScope.$emit('subscriber.modal.open');
+      });
+
+      //update nodes
+      // TODO if data change, only update them
+      // NodeDrawer.updateRack(node.filter('.rack'));
+
+      // Transition nodes to their new position.
+      var nodeUpdate = node.transition().duration(serviceTopologyConfig.duration).attr({
+        'transform': function transform(d) {
+          return 'translate(' + d.y + ',' + d.x + ')';
+        }
+      });
+
+      // TODO handle node remove
+      var nodeExit = node.exit().remove();
+    };
+
+    /**
+    * Handle links in the tree layout
+    */
+    var drawLinks = function drawLinks(svg, links) {
+
+      diagonal = d3.svg.diagonal().projection(function (d) {
+        return [d.y, d.x];
+      });
+
+      // Update the links…
+      var link = svg.selectAll('path.link').data(links, function (d) {
+        return d.target.d3Id;
+      });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert('path', 'g').attr('class', function (d) {
+        return 'link ' + d.target.type;
+      }).attr('d', function (d) {
+        var o = { x: svgHeight / 2, y: svgWidth / 2 };
+        return diagonal({ source: o, target: o });
+      });
+
+      // Transition links to their new position.
+      link.transition().duration(serviceTopologyConfig.duration).attr('d', diagonal);
+
+      link.exit().remove();
+    };
+
+    /**
+    * Calculate the svg size and setup tree layout
+    */
+    this.setupTree = function (svg) {
+
+      svgWidth = svg.node().getBoundingClientRect().width;
+      svgHeight = svg.node().getBoundingClientRect().height;
+
+      var width = svgWidth - serviceTopologyConfig.widthMargin * 2;
+      var height = svgHeight - serviceTopologyConfig.heightMargin * 2;
+
+      layout = d3.layout.tree().size([height, width]);
+    };
+
+    /**
+    * Update the tree layout
+    */
+
+    this.updateTree = function (svg) {
+
+      // console.log(baseData);
+
+      var _computeLayout = computeLayout(baseData);
+
+      // Compute the new tree layout.
+
+      var _computeLayout2 = _slicedToArray(_computeLayout, 2);
+
+      nodes = _computeLayout2[0];
+      links = _computeLayout2[1];
+      drawNodes(svg, nodes);
+      drawLinks(svg, links);
+    };
+  }]);
+})();
+'use strict';
+
+(function () {
+  'use strict';
+  angular.module('xos.diagnostic').directive('logicTopology', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        subscribers: '=',
+        selected: '='
+      },
+      bindToController: true,
+      controllerAs: 'vm',
+      templateUrl: 'templates/logicTopology.tpl.html',
+      controller: ["$element", "$log", "$scope", "$rootScope", "$timeout", "d3", "LogicTopologyHelper", "Node", "Tenant", "Ceilometer", "serviceTopologyConfig", "ChartData", function controller($element, $log, $scope, $rootScope, $timeout, d3, LogicTopologyHelper, Node, Tenant, Ceilometer, serviceTopologyConfig, ChartData) {
+        var _this = this;
+
+        $log.info('Logic Plane');
+
+        var svg;
+        this.selectedInstances = [];
+        this.hideInstanceStats = true;
+
+        var handleSvg = function handleSvg(el) {
+
+          svg = d3.select(el).append('svg').style('width', el.clientWidth + 'px').style('height', el.clientHeight + 'px');
+        };
+
+        ChartData.getLogicTree().then(function (tree) {
+          LogicTopologyHelper.updateTree(svg);
+        });
+
+        $scope.$watch(function () {
+          return _this.selected;
+        }, function (selected) {
+          if (selected) {
+            ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
+          }
+        });
+
+        $rootScope.$on('instance.detail.hide', function () {
+          _this.hideInstanceStats = true;
+          $timeout(function () {
+            _this.selectedInstances = [];
+            ChartData.highlightInstances([]);
+            LogicTopologyHelper.updateTree(svg);
+          }, 500);
+        });
+
+        $rootScope.$on('instance.detail', function (evt, service) {
+          ChartData.getInstanceStatus(service).then(function (instances) {
+            // this.hideInstanceStats = false;
+            // // HACK if array is empty wait for animation
+            // if(instances.length === 0){
+            //   this.hideInstanceStats = true;
+            //   $timeout(() => {
+            //     this.selectedInstances = instances;
+            //   }, 500);
+            // }
+            // else{
+            //   this.selectedInstances = instances;
+            // }
+            LogicTopologyHelper.updateTree(svg);
+          });
+        });
+
+        handleSvg($element[0]);
+        LogicTopologyHelper.setupTree(svg);
+
+        this.openSubscriberModal = function () {
+          _this.subscriberModal = true;
+          $scope.$apply();
+        };
+
+        // listen for subscriber modal event
+        $rootScope.$on('subscriber.modal.open', function () {
+          _this.openSubscriberModal();
+        });
+      }]
+    };
+  });
+})();
+'use strict';
+
+(function () {
+  'use strict';
+  angular.module('xos.diagnostic').directive('diagnosticContainer', function () {
+    return {
+      restrict: 'E',
+      templateUrl: 'templates/diagnostic.tpl.html',
+      controllerAs: 'vm',
+      controller: ["ChartData", "Subscribers", "ServiceRelation", "$rootScope", "$log", function controller(ChartData, Subscribers, ServiceRelation, $rootScope, $log) {
+        var _this = this;
+
+        this.loader = true;
+        this.error = false;
+        Subscribers.query().$promise.then(function (subscribers) {
+          _this.subscribers = subscribers;
+          return ServiceRelation.get();
+        }).then(function (serviceChain) {
+          _this.serviceChain = serviceChain;
+        })['catch'](function (e) {
+          throw new Error(e);
+          _this.error = e;
+        })['finally'](function () {
+          _this.loader = false;
+        });
+
+        $rootScope.$on('subscriber.selected', function (evt, subscriber) {
+          ServiceRelation.getBySubscriber(subscriber).then(function (serviceChain) {
+            _this.serviceChain = serviceChain;
+            ChartData.currentServiceChain = serviceChain;
+            return Subscribers.getWithDevices({ id: subscriber.id }).$promise;
+          }).then(function (subscriber) {
+            _this.selectedSubscriber = subscriber;
+            ChartData.currentSubscriber = subscriber;
+          });
+        });
+      }]
+    };
+  });
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').factory('d3', ["$window", function ($window) {
+    return $window.d3;
+  }]);
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').constant('serviceTopologyConfig', {
+    widthMargin: 20,
+    heightMargin: 30,
+    duration: 750,
+    elWidths: [20, 104, 105, 104, 20], //this is not true
+    circle: {
+      radius: 10,
+      r: 10,
+      selectedRadius: 15
+    },
+    square: {
+      width: 20,
+      height: 20,
+      x: -10,
+      y: -10
+    },
+    rack: {
+      width: 105,
+      height: 50,
+      x: -30,
+      y: -25
+    },
+    computeNode: {
+      width: 50,
+      height: 20,
+      margin: 5,
+      labelHeight: 10,
+      x: -25,
+      y: -10
+    },
+    instance: {
+      width: 80,
+      height: 36,
+      margin: 5,
+      x: -40,
+      y: -18
+    },
+    container: {
+      width: 60,
+      height: 130,
+      margin: 5,
+      x: -30,
+      y: -15
+    }
+  });
+})();
+'use strict';
+
+(function () {
+  'use strict';
+
+  angular.module('xos.diagnostic').service('ChartData', ["$rootScope", "$q", "lodash", "Tenant", "Node", "serviceTopologyConfig", "Ceilometer", "Instances", function ($rootScope, $q, lodash, Tenant, Node, serviceTopologyConfig, Ceilometer, Instances) {
+    var _this = this;
+
+    this.currentSubscriber = null;
+    this.currentServiceChain = null;
+
+    this.logicTopologyData = {
+      name: 'Router',
+      type: 'router',
+      children: [{
+        name: 'WAN',
+        type: 'network',
+        children: [{
+          name: 'Rack',
+          type: 'rack',
+          computeNodes: [],
+          children: [{
+            name: 'LAN',
+            type: 'network',
+            children: [{
+              name: 'Subscriber',
+              type: 'subscriber'
+            }] //subscribers goes here
+          }]
+        }]
+      }]
+    };
+
+    this.getLogicTree = function () {
+      var deferred = $q.defer();
+
+      Node.queryWithInstances().$promise.then(function (computeNodes) {
+        _this.logicTopologyData.children[0].children[0].computeNodes = computeNodes;
+        // LogicTopologyHelper.updateTree(svg);
+        deferred.resolve(_this.logicTopologyData);
+      });
+
+      return deferred.promise;
+    };
+
+    /**
+    * Add Subscriber tag to LAN Network
+    */
+    this.addSubscriberTag = function (tags) {
+      _this.logicTopologyData.children[0].children[0].children[0].subscriberTag = {
+        cTag: tags.c_tag,
+        sTag: tags.s_tag
+      };
+    };
+
+    /**
+    * Add Subscribers to the tree
+    */
+    this.addSubscriber = function (subscriber) {
+      subscriber.children = subscriber.devices;
+
+      // add subscriber to data tree
+      _this.logicTopologyData.children[0].children[0].children[0].children = [subscriber];
+      return _this.logicTopologyData;
+    };
+
+    this.getSubscriberTag = function () {
+      var tags = JSON.parse(_this.currentServiceChain.children[0].tenant.service_specific_attribute);
+      delete tags.creator_id;
+
+      _this.addSubscriberTag(tags);
+      // add tags info to current subscriber
+      _this.currentSubscriber.tags = {
+        cTag: tags.c_tag,
+        sTag: tags.s_tag
+      };
+    };
+
+    this.getSubscriberIP = function () {
+      var ip = JSON.parse(_this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
+      // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
+      _this.logicTopologyData.children[0].subscriberIP = ip;
+    };
+
+    this.selectSubscriber = function (subscriber) {
+
+      // append the device with to config settings
+      serviceTopologyConfig.elWidths.push(160);
+
+      _this.addSubscriber(angular.copy(subscriber));
+
+      //clean selected instances
+      _this.highlightInstances([]);
+
+      _this.getSubscriberTag();
+      _this.getSubscriberIP();
+    };
+
+    this.highlightInstances = function (instances) {
+
+      var computeNodes = _this.logicTopologyData.children[0].children[0].computeNodes;
+
+      // unselect all
+      computeNodes.map(function (node) {
+        node.instances.map(function (instance) {
+          instance.selected = false;
+          return instance;
+        });
+      });
+
+      lodash.forEach(instances, function (instance) {
+        computeNodes.map(function (node) {
+          node.instances.map(function (d3instance) {
+            if (d3instance.id === instance.id) {
+              // console.log(d3instance, instance);
+              d3instance.selected = true;
+              d3instance.stats = instance.stats; //add stats to d3 node
+              d3instance.container = instance.container; // container info to d3 node
+            }
+            return d3instance;
+          });
+        });
+      });
+    };
+
+    this.getInstanceStatus = function (service) {
+      var deferred = $q.defer();
+
+      var p = undefined;
+
+      // subscriber specific
+      if (_this.currentSubscriber) {
+
+        var attr = undefined;
+        try {
+          attr = JSON.parse(service.tenant.service_specific_attribute);
+        } catch (e) {
+          attr = null;
+        }
+
+        // if no instances are associated to the subscriber
+        if (!attr || !attr.instance_id) {
+          var d = $q.defer();
+          d.resolve([]);
+          p = d.promise;
+        }
+        // if ther is an instance
+        else {
+            (function () {
+              var instance = {};
+              p = Instances.get({ id: attr.instance_id }).$promise.then(function (_instance) {
+                instance = _instance;
+                return Ceilometer.getInstanceStats(instance.instance_uuid);
+              }).then(function (stats) {
+                instance.stats = stats;
+                var containerName = 'vcpe-' + _this.currentSubscriber.tags.sTag + '-' + _this.currentSubscriber.tags.cTag;
+                // append containers
+                instance.container = {
+                  name: containerName
+                };
+
+                // TODO fetch container stats
+                return Ceilometer.getContainerStats(containerName);
+              }).then(function (containerStats) {
+                instance.container.stats = containerStats.stats;
+                instance.container.port = containerStats.port;
+                return [instance];
+              });
+            })();
+          }
+      }
+      // global scope
+      else {
+          var param = {
+            'service_vsg': { kind: 'vCPE' },
+            'service_vbng': { kind: 'vBNG' },
+            'service_volt': { kind: 'vOLT' }
+          };
+
+          p = Tenant.queryVsgInstances(param[service.name]).$promise.then(function (instances) {
+
+            return Ceilometer.getInstancesStats(instances);
+          });
+        }
+
+      p.then(function (instances) {
+        _this.highlightInstances(instances);
+        deferred.resolve(instances);
+      })['catch'](function (e) {
+        deferred.reject(e);
+      });
+
+      return deferred.promise;
+    };
+  }]);
+})();
+angular.module('xos.diagnostic').run(function($location){
+  $location.path('/')
+});
+angular.bootstrap(angular.element('#xosDiagnostic'), ['xos.diagnostic']);

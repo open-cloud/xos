@@ -373,7 +373,13 @@
         delete currentService.id; // conflict with d3
         return response;
       }
+
       let baseService = lodash.find(services, {id: 3});
+      
+      if(!angular.isDefined(baseService)){
+        console.error('Missing Base service!');
+        return;
+      }
 
       const baseData = {
         name: 'Subscriber',

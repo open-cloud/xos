@@ -1,20 +1,24 @@
 /* CONTAINER */
-diagnostic .half-height {
+#xosDiagnostic, [ui-view] {
+    height: 700px;
+}
+
+diagnostic-container .half-height {
     position: relative;
     height: 50%;
 }
 
-diagnostic .onethird-height {
+diagnostic-container .onethird-height {
     position: relative;
     height: 33%;
 }
 
-diagnostic .twothird-height {
+diagnostic-container .twothird-height {
     position: relative;
     height: 67%;
 }
 
-diagnostic .subscriber-select{
+diagnostic-container .subscriber-select{
     max-width: 200px;
     position: absolute;
     top: 20px;

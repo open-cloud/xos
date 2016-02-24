@@ -23,9 +23,9 @@ body{
   overflow-x: hidden;
 }
 
-/*#wrap {
+#wrap {
   min-height: 100%;
-}*/
+}
 
 /* ************************* LOGIN PAGE ************************* */
 
@@ -44,6 +44,7 @@ body.login img.logo{
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    min-height: 900px;
 }
 
 #wrapper.toggled {
@@ -74,6 +75,15 @@ body.login img.logo{
     width: 100%;
     position: absolute;
     padding: 15px;
+    min-height: 900px;
+}
+
+#page-content-wrapper .container-fluid {
+  min-height: 900px;
+}
+
+.ui-tabs-panel {
+    min-height: 700px;
 }
 
 #wrapper.toggled #page-content-wrapper {
