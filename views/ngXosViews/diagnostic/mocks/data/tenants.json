@@ -65,9 +65,8 @@
         "subscriber_user": null, 
         "subscriber_root": null, 
         "service_specific_id": null, 
-        "service_specific_attribute": "{\"instance_id\": 1, \"creator_id\": 1}", 
-        "connect_method": "na",
-        "wan_container_ip": "10.0.1.24"
+        "service_specific_attribute": "{\"instance_id\": 1, \"creator_id\": 1, \"wan_container_ip\": \"10.0.1.24\"}", 
+        "connect_method": "na"
     }, 
     {
         "humanReadableName": "ceilometer-tenant-8", 

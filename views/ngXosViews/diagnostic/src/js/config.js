@@ -41,7 +41,7 @@
     },
     container: {
       width: 60,
-      height: 30,
+      height: 130,
       margin: 5,
       x: -30,
       y: -15

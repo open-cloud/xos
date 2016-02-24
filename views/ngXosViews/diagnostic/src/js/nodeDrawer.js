@@ -204,21 +204,117 @@
       }
     };
 
+    const drawContainer = (container, docker) => {
+
+      const containerBox = container.append('g')
+        .attr({
+          class: 'container',
+          transform: `translate(${serviceTopologyConfig.instance.margin}, 115)`
+        });
+
+      containerBox.append('rect')
+        .attr({
+          width: 250 - (serviceTopologyConfig.container.margin * 2),
+          height: serviceTopologyConfig.container.height,
+        });
+
+      containerBox.append('text')
+        .attr({
+          y: 20,
+          x: serviceTopologyConfig.instance.margin,
+          class: 'name'
+        })
+        .text(docker.name)
+
+      // add stats
+      const interestingMeters = ['memory', 'memory.usage', 'cpu_util'];
+
+      interestingMeters.forEach((m, i) => {
+        const meter = lodash.find(docker.stats, {meter: m});
+        // if there is no meter stats skip rendering
+        if(!angular.isDefined(meter)){
+          return;
+        }
+        containerBox.append('text')
+        .attr({
+          y: 40 + (i * 15),
+          x: serviceTopologyConfig.instance.margin,
+          opacity: 0
+        })
+        .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
+        .transition()
+        .duration(serviceTopologyConfig.duration)
+        .attr({
+          opacity: 1
+        });
+      });
+
+      // add port stats
+      const ports = ['eth0', 'eth1'];
+      const interestingPortMeters = [
+        {
+          meter: 'network.incoming.bytes.rate',
+          label: 'Incoming'
+        },
+        {
+          meter: 'network.outgoing.bytes.rate',
+          label: 'Outgoing'
+        }
+      ];
+      
+      ports.forEach((p, j) => {
+
+        // if there are no port stats skip rendering
+        if(docker.port[p].length === 0){
+          return;
+        }
+
+        containerBox.append('text')
+        .attr({
+          y: 90,
+          x: serviceTopologyConfig.instance.margin + (120 * j),
+          class: 'name'
+        })
+        .text(`${docker.name}-${p}`)
+
+        interestingPortMeters.forEach((m, i) => {
+
+          const meter = lodash.find(docker.port[p], {meter: m.meter});
+          // if there is no meter stats skip rendering
+          if(!angular.isDefined(meter)){
+            return;
+          }
+          containerBox.append('text')
+          .attr({
+            y: 105 + (i * 15),
+            x: serviceTopologyConfig.instance.margin + (120 * j),
+            opacity: 0
+          })
+          .text(`${m.label}: ${Math.round(meter.value)} ${meter.unit}`)
+          .transition()
+          .duration(serviceTopologyConfig.duration)
+          .attr({
+            opacity: 1
+          });
+        });
+      });
+    }
+
     const showInstanceStats = (container, instance) => {
 
       // NOTE this should be dinamically positioned
       // base on the number of element present
       const statsContainer = container.append('g')
         .attr({
-          transform: `translate(200, -32)`,
+          transform: `translate(200, -120)`,
           class: 'stats-container'
         });
 
 
       statsContainer.append('line')
         .attr({
-          x1: -120,
-          y1: 50,
+          x1: -160,
+          y1: 120,
           x2: 0,
           y2: 50,
           stroke: 'black',
@@ -232,7 +328,7 @@
 
       // NOTE rect should be dinamically sized base on the presence of a container
       let statsHeight = 110;
-      let statsWidth = 200;
+      let statsWidth = 250;
 
       if (instance.container){
         statsHeight += serviceTopologyConfig.container.height + (serviceTopologyConfig.container.margin * 2)
@@ -290,7 +386,7 @@
           x: serviceTopologyConfig.instance.margin,
           opacity: 0
         })
-        .text(`${meter.description}: ${meter.value} ${meter.unit}`)
+        .text(`${meter.description}: ${Math.round(meter.value)} ${meter.unit}`)
         .transition()
         .duration(serviceTopologyConfig.duration)
         .attr({
@@ -300,26 +396,7 @@
 
       if(instance.container){
         // draw container
-        
-        const containerBox = statsContainer.append('g')
-          .attr({
-            class: 'container',
-            transform: `translate(${serviceTopologyConfig.instance.margin}, 115)`
-          });
-
-        containerBox.append('rect')
-          .attr({
-            width: statsWidth - (serviceTopologyConfig.container.margin * 2),
-            height: serviceTopologyConfig.container.height,
-          });
-
-        containerBox.append('text')
-          .attr({
-            y: 20,
-            x: (statsWidth - (serviceTopologyConfig.container.margin * 2)) / 2,
-            'text-anchor': 'middle'
-          })
-          .text(instance.container.name)
+        drawContainer(statsContainer, instance.container);
       }
 
     };
