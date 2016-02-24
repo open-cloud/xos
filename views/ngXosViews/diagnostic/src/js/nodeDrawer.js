@@ -8,7 +8,7 @@
   var computeNodeId = 0;
   var instanceId = 0;
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('NodeDrawer', function(d3, serviceTopologyConfig, RackHelper, lodash){
 
     var _this = this;

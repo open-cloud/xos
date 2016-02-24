@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .directive('subscriberModal', function(){
     return {
       scope: {

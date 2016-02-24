@@ -25,14 +25,14 @@ var replace = require('gulp-replace');
 
 var TEMPLATE_FOOTER = `}]);
 angular.module('xos.serviceTopology').run(function($location){$location.path('/')});
-angular.bootstrap(angular.element('#xosServiceTopology'), ['xos.serviceTopology']);`;
+angular.bootstrap(angular.element('#xosDiagnostic'), ['xos.serviceTopology']);`;
 
 module.exports = function(options){
   
   // delete previous builded file
   gulp.task('clean', function(){
     return del(
-      [options.dashboards + 'xosServiceTopology.html'],
+      [options.dashboards + 'xosDiagnostic.html'],
       {force: true}
     );
   });
@@ -44,7 +44,7 @@ module.exports = function(options){
     ])
     .pipe(ngAnnotate())
     .pipe(angularFilesort())
-    .pipe(concat('xosServiceTopology.js'))
+    .pipe(concat('xosDiagnostic.js'))
     .pipe(uglify())
     .pipe(gulp.dest(options.static + 'js/'));
   });
@@ -71,12 +71,12 @@ module.exports = function(options){
       .pipe(
         inject(
           gulp.src([
-            options.static + 'js/vendor/xosServiceTopologyVendor.js',
-            options.static + 'js/xosServiceTopology.js'
+            options.static + 'js/vendor/xosDiagnosticVendor.js',
+            options.static + 'js/xosDiagnostic.js'
           ])
         )
       )
-      .pipe(rename('xosServiceTopology.html'))
+      .pipe(rename('xosDiagnostic.html'))
       .pipe(gulp.dest(options.dashboards));
   });
 
@@ -93,7 +93,7 @@ module.exports = function(options){
     });
 
     return gulp.src(bowerDeps)
-      .pipe(concat('xosServiceTopologyVendor.js'))
+      .pipe(concat('xosDiagnosticVendor.js'))
       .pipe(uglify())
       .pipe(gulp.dest(options.static + 'js/vendor/'));
   });

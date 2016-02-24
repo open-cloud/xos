@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('LogicTopologyHelper', function($window, $log, $rootScope, lodash, serviceTopologyConfig, NodeDrawer, ChartData){
 
     var diagonal, nodes, links, i = 0, svgWidth, svgHeight, layout;
