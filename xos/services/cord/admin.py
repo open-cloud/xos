@@ -107,6 +107,7 @@ class VSGServiceForm(forms.ModelForm):
     wan_container_gateway_ip = forms.CharField(required=False)
     wan_container_gateway_mac = forms.CharField(required=False)
     wan_container_netbits = forms.CharField(required=False)
+    dns_servers = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGServiceForm,self ).__init__(*args,**kwargs)
@@ -119,6 +120,7 @@ class VSGServiceForm(forms.ModelForm):
             self.fields['wan_container_gateway_ip'].initial = self.instance.wan_container_gateway_ip
             self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
             self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
+            self.fields['dns_servers'].initial = self.instance.dns_servers
 
     def save(self, commit=True):
         self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
@@ -129,6 +131,7 @@ class VSGServiceForm(forms.ModelForm):
         self.instance.wan_container_gateway_ip = self.cleaned_data.get("wan_container_gateway_ip")
         self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
         self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
+        self.instance.dns_servers = self.cleaned_data.get("dns_servers")
         return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
@@ -136,14 +139,16 @@ class VSGServiceForm(forms.ModelForm):
 
 class VSGServiceAdmin(ReadOnlyAwareAdmin):
     model = VSGService
-    verbose_name = "vCPE Service"
-    verbose_name_plural = "vCPE Service"
+    verbose_name = "vSG Service"
+    verbose_name_plural = "vSG Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
                                      'classes':['suit-tab suit-tab-general']}),
-                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice", "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits"],
-                                     'classes':['suit-tab suit-tab-backend']}) ]
+                 ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
+                                     'classes':['suit-tab suit-tab-backend']}),
+                 ("vSG config", {'fields': [ "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits", "dns_servers"],
+                                     'classes':['suit-tab suit-tab-vsg']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
     form = VSGServiceForm
@@ -154,6 +159,7 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs =(('general', 'Service Details'),
         ('backend', 'Backend Config'),
+        ('vsg', 'vSG Config'),
         ('administration', 'Administration'),
         #('tools', 'Tools'),
         ('slices','Slices'),

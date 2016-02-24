@@ -1,77 +1,79 @@
-# XOS Docker Images
+# XOS Configuration for CORD development POD
 
 ## Introduction
 
- XOS is comprised of 3 core services:
+This directory holds files that are used to configure a development POD for
+CORD.  For more information on the CORD project, check out
+[the CORD website](http://cord.onosproject.org/).
+
+XOS is composed of several core services:
 
   * A database backend (postgres)
   * A webserver front end (django)
-  * A synchronizer daemon that interacts with the openstack backend.
+  * A synchronizer daemon that interacts with the openstack backend
+  * A synchronizer for each configured XOS service
 
-We have created separate dockerfiles for each of these services, making it
-easier to build the services independently and also deploy and run them in
-isolated environments.
+Each service runs in a separate Docker container.  The containers are built
+automatically by [Docker Hub](https://hub.docker.com/u/xosproject/) using
+the HEAD of the XOS repository.
 
-#### Database Container
+## How to bring up CORD
 
-To build the database container:
+Installing a CORD POD requires three steps:
+ 1. Installing OpenStack on a cluster
+ 2. Setting up the ONOS VTN app and configuring OVS on the nova-compute nodes to be
+    controlled by VTN
+ 3. Bringing up XOS with the CORD services
 
+### Installing OpenStack
+
+Follow the instructions in the [README.md](https://github.com/open-cloud/openstack-cluster-setup/blob/master/README.md)
+file of the [open-cloud/openstack-cluster-setup](https://github.com/open-cloud/openstack-cluster-setup/)
+repository.
+
+### Setting up ONOS VTN
+
+The OpenStack installer above creates a VM called *onos-cord* on the head node.
+To bring up ONOS in this VM, log into the head node and run:
 ```
-$ cd postgresql; make build
-```
-
-#### XOS Container
-
-To build the XOS webserver container:
-
-```
-$ cd xos; make build
-```
-
-#### Synchronizer Container
-
-The Synchronizer shares many of the same dependencies as the XOS container. The
-synchronizer container takes advantage of this by building itself on top of the
-XOS image. This means you must build the XOS image before building the
-synchronizer image.  Assuming you have already built the XOS container,
-executing the following will build the Synchronizer container:
-
-```
-$ cd synchronizer; make build
+$ ssh ubuntu@onos-cord
+ubuntu@onos-cord:~$ cd cord; docker-compose up -d
 ```
 
-#### Solution Compose File
-
-[Docker Compose](https://docs.docker.com/compose/) is a tool for defining and
-running multi-container Docker applications. With Compose, you use a Compose
-file to configure your application’s services. Then, using a single command, you
-create, start, scale, and manage all the services from your configuration.
-
-Included is a compose file in *YAML* format with content defined by the [Docker
-Compose Format](https://docs.docker.com/compose/compose-file/). With the compose
-file a complete XOS solution based on Docker containers can be instantiated
-using a single command. To start the instance you can use the command:
-
+Currently it's also necessary to do some manual configuration on each compute
+node.  As root do the following:
+ 1. Disable neutron-plugin-openvswitch-agent, if running:
 ```
-$ docker-compose up -d
+$ service neutron-plugin-openvswitch-agent stop
+$ echo manual > /etc/init/neutron-plugin-openvswitch-agent.override
+```
+ 2. Delete *br-int* and all other bridges from OVS
+ 3. Configure OVS to listen for connections from VTN:
+```
+$ ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6641
 ```
 
-You should now be able to access the login page by visiting
-`http://localhost:8000` and log in using the default `padmin@vicci.org` account
-with password `letmein`.
+### Bringing up XOS
 
-#### Configuring XOS for OpenStack
-
-If you have your own OpenStack cluster, and you would like to configure XOS to
-control it, copy the `admin-openrc.sh` credentials file for your cluster to
-this directory.  Make sure that OpenStack commands work from the local machine
-using the credentials, e.g., `source ./admin-openrc.sh; nova list`.  Then run:
-
+The OpenStack installer above creates a VM called *xos* on the head node.
+To bring up XOS in this VM, first log into the head node and run:
 ```
-$ make
+$ ssh ubuntu@xos
+ubuntu@xos:~$ cd xos/xos/configurations/cord-pod
 ```
 
-XOS will be launched (the Makefile will run the `docker-compose up -d` command
-for you) and configured with the nodes and images available in your
-OpenStack cloud.  You can then log in to XOS as described above and start creating
-slices and instances.
+Next, put the following files in this directory:
+
+ * *admin-openrc.sh*: Admin credentials for your OpenStack cloud
+ * *id_rsa[.pub]*: A keypair that will be used by the various services
+ * *node_key*: A private key that allows root login to the compute nodes
+
+Then XOS can be brought up for CORD by running a few 'make' commands:
+```
+ubuntu@xos:~/xos/xos/configurations/cord-pod$ make
+ubuntu@xos:~/xos/xos/configurations/cord-pod$ make vtn
+ubuntu@xos:~/xos/xos/configurations/cord-pod$ make cord
+```
+
+After the first 'make' command above, you will be able to login to XOS at
+*http://xos/* using username/password `padmin@vicci.org/letmein`.

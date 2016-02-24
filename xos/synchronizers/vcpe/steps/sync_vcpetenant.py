@@ -165,7 +165,8 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
                 "wan_container_netbits": vcpe_service.wan_container_netbits,
                 "wan_vm_mac": wan_vm_mac,
                 "wan_vm_ip": wan_vm_ip,
-                "safe_browsing_macs": safe_macs}
+                "safe_browsing_macs": safe_macs,
+                "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")] }
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
