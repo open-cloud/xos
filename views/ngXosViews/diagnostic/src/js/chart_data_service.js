@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('xos.serviceTopology')
-  .service('ChartData', function($rootScope, $q, lodash, Tenant, Node, serviceTopologyConfig, Ceilometer) {
+  .service('ChartData', function($rootScope, $q, lodash, Tenant, Node, serviceTopologyConfig, Ceilometer, Instances) {
     this.currentSubscriber = null;
     this.currentServiceChain = null;
 
@@ -82,7 +82,8 @@
     };
 
     this.getSubscriberIP = () => {
-      const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
+      const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
+      // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
       this.logicTopologyData.children[0].subscriberIP = ip;
     };
 
@@ -145,26 +146,35 @@
           attr = null;
         }
         
-        // if no instances are associated to the container
+        // if no instances are associated to the subscriber
         if(!attr || !attr.instance_id){
           let d = $q.defer();
           d.resolve([]);
           p = d.promise;
         }
+        // if ther is an instance
         else{
-          let instances = [attr.instance_id];
-          p = Ceilometer.getInstancesStats(instances)
-          .then((instances) => {
-            instances.map(i => {
-              i.container = {
-                name: `vcpe-${this.currentSubscriber.tags.sTag}-${this.currentSubscriber.tags.cTag}`
-              };
-              return i;
-            });
+          let instance = {};
+          p = Instances.get({id: attr.instance_id}).$promise
+          .then(function(_instance){
+            instance = _instance;
+            return Ceilometer.getInstanceStats(instance.instance_uuid);
+          })
+          .then((stats) => {
+            instance.stats = stats;
+            const containerName = `vcpe-${this.currentSubscriber.tags.sTag}-${this.currentSubscriber.tags.cTag}`;
+            // append containers
+            instance.container = {
+              name: containerName
+            };
 
             // TODO fetch container stats
-
-            return instances;
+            return Ceilometer.getContainerStats(containerName);
+          })
+          .then((containerStats) => {
+            instance.container.stats = containerStats.stats;
+            instance.container.port = containerStats.port;
+            return [instance];
           });
         }
       }

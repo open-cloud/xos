@@ -49,7 +49,7 @@
     this.getInstanceStats = (instanceUuid) => {
       let deferred = $q.defer();
 
-      $http.get('/xoslib/meterstatistics', {params:{resource: instanceUuid}})
+      $http.get('/xoslib/xos-instance-statistics', {params: {'instance-uuid': instanceUuid}})
       .then((res) => {
         deferred.resolve(res.data);
       })
@@ -95,6 +95,33 @@
 
       return deferred.promise;
     };
+
+    this.getContainerStats = (containerName) => {
+      const deferred = $q.defer();
+
+      let res = {};
+
+      $http.get('/xoslib/meterstatistics', {params: {'resource': containerName}})
+      .then((containerStats) => {
+        res.stats = containerStats.data;
+        return $http.get('/xoslib/meterstatistics', {params: {'resource': `${containerName}-eth0`}})
+      })
+      .then((portStats) => {
+        res.port = {
+          eth0: portStats.data
+        };
+        return $http.get('/xoslib/meterstatistics', {params: {'resource': `${containerName}-eth1`}})
+      })
+      .then((portStats) => {
+        res.port.eth1 = portStats.data;
+        deferred.resolve(res);
+      })
+      .catch((e) => {
+        deferred.reject(e);
+      })
+
+      return deferred.promise;
+    }
   })
   .service('Slice', function($resource){
     return $resource('/xos/slices', {id: '@id'});

@@ -35,5 +35,10 @@
     "url": "meterstatistics",
     "base": "xoslib/",
     "methods": ["GET"]
+  },
+  {
+    "url": "xos-instance-statistics",
+    "base": "xoslib/",
+    "methods": ["GET"]
   }
 ]
