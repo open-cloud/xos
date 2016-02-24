@@ -33,6 +33,10 @@
         {% for bbs_addr in bbs_addrs %}
         - {{ bbs_addr }}
         {% endfor %}
+      dns_servers:
+        {% for dns_server in dns_servers %}
+        - {{ dns_server }}
+        {% endfor %}
       nat_ip: {{ nat_ip }}
       nat_mac: {{ nat_mac }}
       lan_ip: {{ lan_ip }}

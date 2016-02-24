@@ -42,7 +42,7 @@ xos_synchronizer_onos:
 
 xos:
     image: xosproject/xos
-    command: python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations
+    command: bash -c "python /opt/xos/manage.py runserver 0.0.0.0:8000 --insecure --makemigrations"
     ports:
         - "9999:8000"
     links:

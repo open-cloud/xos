@@ -402,7 +402,8 @@ class VSGService(Service):
                           ("backend_network_label", "hpc_client"),
                           ("wan_container_gateway_ip", ""),
                           ("wan_container_gateway_mac", ""),
-                          ("wan_container_netbits", "24") )
+                          ("wan_container_netbits", "24"),
+                          ("dns_servers", "8.8.8.8") )
 
     def __init__(self, *args, **kwargs):
         super(VSGService, self).__init__(*args, **kwargs)
