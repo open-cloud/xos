@@ -310,6 +310,11 @@ class ControllerSite(PlCoreBase):
     site = models.ForeignKey(Site,related_name='controllersite')
     controller = models.ForeignKey(Controller, null=True, blank=True, related_name='controllersite')
     tenant_id = StrippedCharField(null=True, blank=True, max_length=200, db_index=True, help_text="Keystone tenant id")
+
+    def delete(self, *args, **kwds):
+        pdb.set_trace()
+        super(ControllerSite, self).delete(*args, **kwds)
+
     
     class Meta:
         unique_together = ('site', 'controller') 

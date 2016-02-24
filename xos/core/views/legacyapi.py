@@ -121,6 +121,13 @@ def GetSites(slice_remap={}):
         for ps_node in ps_site.nodes.all():
             node_ids.append(ps_id_to_pl_id(ps_node.id))
 
+        if ps_site.location:
+            longitude = ps_site.location.longitude
+            latitude = ps_site.location.latitude
+        else:
+            longitude = 0
+            latitude = 0
+
         site = {"site_id": ps_id_to_pl_id(ps_site.id),
                 "node_ids": node_ids,
                 "pcu_ids": [],
@@ -134,8 +141,8 @@ def GetSites(slice_remap={}):
                 "url": None,
                 "site_tag_ids": [],
                 "enabled": True,
-                "longitude": float(ps_site.location.longitude),
-                "latitude": float(ps_site.location.latitude),
+                "longitude": float(longitude),
+                "latitude": float(latitude),
                 "slice_ids": slice_ids,
                 "login_base": ps_site.login_base,
                 "peer_id": None}
@@ -285,7 +292,7 @@ def GetConfiguration(name, slice_remap={}):
             'hostipmap':hostipmap,
             'hostnatmap':hostnatmap,
             'hostprivmap':hostprivmap,
-            'instances': instances,
+            'slivers': instances,
             'interfaces': allinterfaces,
             'sites': sites,
             'nodes': nodes}

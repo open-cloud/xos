@@ -554,6 +554,22 @@ class TenantWithContainer(Tenant):
         self.set_attribute("instance_id", value)
 
     @property
+    def external_hostname(self):
+        return self.get_attribute("external_hostname", "")
+
+    @external_hostname.setter
+    def external_hostname(self, value):
+        self.set_attribute("external_hostname", value)
+
+    @property
+    def external_container(self):
+        return self.get_attribute("external_container", "")
+
+    @external_container.setter
+    def external_container(self, value):
+        self.set_attribute("external_container", value)
+
+    @property
     def creator(self):
         from core.models import User
         if getattr(self, "cached_creator", None):
@@ -645,11 +661,14 @@ class TenantWithContainer(Tenant):
                 instance = self.pick_least_loaded_instance_in_slice(slices)
 
             if not instance:
-                flavors = Flavor.objects.filter(name="m1.small")
-                if not flavors:
-                    raise XOSConfigurationError("No m1.small flavor")
-
                 slice = self.provider_service.slices.all()[0]
+
+                flavor = slice.default_flavor
+                if not flavor:
+                    flavors = Flavor.objects.filter(name="m1.small")
+                    if not flavors:
+                        raise XOSConfigurationError("No m1.small flavor")
+                    flavor = flavors[0]
 
                 if slice.default_isolation == "container_vm":
                     (node, parent) = ContainerVmScheduler(slice).pick()
@@ -661,7 +680,7 @@ class TenantWithContainer(Tenant):
                                 image = self.image,
                                 creator = self.creator,
                                 deployment = node.site_deployment.deployment,
-                                flavor = flavors[0],
+                                flavor = flavor,
                                 isolation = slice.default_isolation,
                                 parent = parent)
                 self.save_instance(instance)

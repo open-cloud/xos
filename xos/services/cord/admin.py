@@ -98,21 +98,29 @@ class VOLTTenantAdmin(ReadOnlyAwareAdmin):
 # vCPE
 #-----------------------------------------------------------------------------
 
-class VCPEServiceForm(forms.ModelForm):
+class VSGServiceForm(forms.ModelForm):
     bbs_api_hostname = forms.CharField(required=False)
     bbs_api_port = forms.IntegerField(required=False)
     bbs_server = forms.CharField(required=False)
     backend_network_label = forms.CharField(required=False)
     bbs_slice = forms.ModelChoiceField(queryset=Slice.objects.all(), required=False)
+    wan_container_gateway_ip = forms.CharField(required=False)
+    wan_container_gateway_mac = forms.CharField(required=False)
+    wan_container_netbits = forms.CharField(required=False)
+    dns_servers = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
-        super (VCPEServiceForm,self ).__init__(*args,**kwargs)
+        super (VSGServiceForm,self ).__init__(*args,**kwargs)
         if self.instance:
             self.fields['bbs_api_hostname'].initial = self.instance.bbs_api_hostname
             self.fields['bbs_api_port'].initial = self.instance.bbs_api_port
             self.fields['bbs_server'].initial = self.instance.bbs_server
             self.fields['backend_network_label'].initial = self.instance.backend_network_label
             self.fields['bbs_slice'].initial = self.instance.bbs_slice
+            self.fields['wan_container_gateway_ip'].initial = self.instance.wan_container_gateway_ip
+            self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
+            self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
+            self.fields['dns_servers'].initial = self.instance.dns_servers
 
     def save(self, commit=True):
         self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
@@ -120,24 +128,30 @@ class VCPEServiceForm(forms.ModelForm):
         self.instance.bbs_server = self.cleaned_data.get("bbs_server")
         self.instance.backend_network_label = self.cleaned_data.get("backend_network_label")
         self.instance.bbs_slice = self.cleaned_data.get("bbs_slice")
-        return super(VCPEServiceForm, self).save(commit=commit)
+        self.instance.wan_container_gateway_ip = self.cleaned_data.get("wan_container_gateway_ip")
+        self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
+        self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
+        self.instance.dns_servers = self.cleaned_data.get("dns_servers")
+        return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
-        model = VCPEService
+        model = VSGService
 
-class VCPEServiceAdmin(ReadOnlyAwareAdmin):
-    model = VCPEService
-    verbose_name = "vCPE Service"
-    verbose_name_plural = "vCPE Service"
+class VSGServiceAdmin(ReadOnlyAwareAdmin):
+    model = VSGService
+    verbose_name = "vSG Service"
+    verbose_name_plural = "vSG Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
                                      'classes':['suit-tab suit-tab-general']}),
                  ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
-                                     'classes':['suit-tab suit-tab-backend']}) ]
+                                     'classes':['suit-tab suit-tab-backend']}),
+                 ("vSG config", {'fields': [ "wan_container_gateway_ip", "wan_container_gateway_mac", "wan_container_netbits", "dns_servers"],
+                                     'classes':['suit-tab suit-tab-vsg']}) ]
     readonly_fields = ('backend_status_text', "service_specific_attribute")
     inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
-    form = VCPEServiceForm
+    form = VSGServiceForm
 
     extracontext_registered_admins = True
 
@@ -145,6 +159,7 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs =(('general', 'Service Details'),
         ('backend', 'Backend Config'),
+        ('vsg', 'vSG Config'),
         ('administration', 'Administration'),
         #('tools', 'Tools'),
         ('slices','Slices'),
@@ -156,53 +171,57 @@ class VCPEServiceAdmin(ReadOnlyAwareAdmin):
                            ) #('hpctools.html', 'top', 'tools') )
 
     def queryset(self, request):
-        return VCPEService.get_service_objects_by_user(request.user)
+        return VSGService.get_service_objects_by_user(request.user)
 
-class VCPETenantForm(forms.ModelForm):
+class VSGTenantForm(forms.ModelForm):
     bbs_account = forms.CharField(required=False)
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     instance = forms.ModelChoiceField(queryset=Instance.objects.all(),required=False)
     last_ansible_hash = forms.CharField(required=False)
+    wan_container_ip = forms.CharField(required=False)
+    wan_container_mac = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
-        super (VCPETenantForm,self ).__init__(*args,**kwargs)
+        super (VSGTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VCPEService.get_service_objects().all()
+        self.fields['provider_service'].queryset = VSGService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
             self.fields['bbs_account'].initial = self.instance.bbs_account
             self.fields['creator'].initial = self.instance.creator
             self.fields['instance'].initial = self.instance.instance
             self.fields['last_ansible_hash'].initial = self.instance.last_ansible_hash
+            self.fields['wan_container_ip'].initial = self.instance.wan_container_ip
+            self.fields['wan_container_mac'].initial = self.instance.wan_container_mac
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VCPE_KIND
             self.fields['creator'].initial = get_request().user
-            if VCPEService.get_service_objects().exists():
-               self.fields["provider_service"].initial = VCPEService.get_service_objects().all()[0]
+            if VSGService.get_service_objects().exists():
+               self.fields["provider_service"].initial = VSGService.get_service_objects().all()[0]
 
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get("creator")
         self.instance.instance = self.cleaned_data.get("instance")
         self.instance.last_ansible_hash = self.cleaned_data.get("last_ansible_hash")
-        return super(VCPETenantForm, self).save(commit=commit)
+        return super(VSGTenantForm, self).save(commit=commit)
 
     class Meta:
-        model = VCPETenant
+        model = VSGTenant
 
-class VCPETenantAdmin(ReadOnlyAwareAdmin):
+class VSGTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'service_specific_id', # 'service_specific_attribute',
-                                     'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
+                                     'wan_container_ip', 'wan_container_mac', 'bbs_account', 'creator', 'instance', 'last_ansible_hash'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
-    form = VCPETenantForm
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account', 'wan_container_ip', 'wan_container_mac')
+    form = VSGTenantForm
 
     suit_form_tabs = (('general','Details'),)
 
     def queryset(self, request):
-        return VCPETenant.get_tenant_objects_by_user(request.user)
+        return VSGTenant.get_tenant_objects_by_user(request.user)
 
 #-----------------------------------------------------------------------------
 # vBNG
@@ -362,8 +381,8 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
 
 admin.site.register(VOLTService, VOLTServiceAdmin)
 admin.site.register(VOLTTenant, VOLTTenantAdmin)
-admin.site.register(VCPEService, VCPEServiceAdmin)
-admin.site.register(VCPETenant, VCPETenantAdmin)
+admin.site.register(VSGService, VSGServiceAdmin)
+admin.site.register(VSGTenant, VSGTenantAdmin)
 admin.site.register(VBNGService, VBNGServiceAdmin)
 admin.site.register(VBNGTenant, VBNGTenantAdmin)
 admin.site.register(CordSubscriberRoot, CordSubscriberRootAdmin)

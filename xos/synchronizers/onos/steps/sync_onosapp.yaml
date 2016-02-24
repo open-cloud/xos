@@ -50,6 +50,16 @@
       path=/home/ubuntu/{{ appname }}/
       state=directory
 
+{% if node_key_fn %}
+  - name: Copy over key
+    copy:
+      src={{ files_dir }}/{{ node_key_fn }}
+      dest=/home/ubuntu/node_key
+
+  - name: Copy node key into container
+    shell: docker cp /home/ubuntu/node_key {{ ONOS_container }}:/root/node_key
+{% endif %}
+
 {% if config_fns %}
   - name: Copy over configuration files
     copy:

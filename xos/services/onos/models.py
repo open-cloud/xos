@@ -21,15 +21,43 @@ class ONOSService(Service):
         verbose_name = "ONOS Service"
         proxy = True
 
-    default_attributes = {"use_external_host": ""}
+    default_attributes = {"rest_hostname": "",
+                          "rest_port": "8181",
+                          "no_container": False,
+                          "node_key": ""}
 
     @property
-    def use_external_host(self):
-        return self.get_attribute("use_external_host", self.default_attributes["use_external_host"])
+    def rest_hostname(self):
+        return self.get_attribute("rest_hostname", self.default_attributes["rest_hostname"])
 
-    @use_external_host.setter
-    def use_external_host(self, value):
-        self.set_attribute("use_external_host", value)
+    @rest_hostname.setter
+    def rest_hostname(self, value):
+        self.set_attribute("rest_hostname", value)
+
+    @property
+    def rest_port(self):
+        return self.get_attribute("rest_port", self.default_attributes["rest_port"])
+
+    @rest_port.setter
+    def rest_port(self, value):
+        self.set_attribute("rest_port", value)
+
+    @property
+    def no_container(self):
+        return self.get_attribute("no_container", self.default_attributes["no_container"])
+
+    @no_container.setter
+    def no_container(self, value):
+        self.set_attribute("no_container", value)
+
+    @property
+    def node_key(self):
+        return self.get_attribute("node_key", self.default_attributes["node_key"])
+
+    @node_key.setter
+    def node_key(self, value):
+        self.set_attribute("node_key", value)
+
 
 class ONOSApp(Tenant):   # aka 'ONOSTenant'
     class Meta:
@@ -92,19 +120,6 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
     @install_dependencies.setter
     def install_dependencies(self, value):
         self.set_attribute("install_dependencies", value)
-
-    #@property
-    #def instance(self):
-    #    instance_id = self.get_attribute("instance_id", self.default_attributes["instance_id"])
-    #    if instance_id:
-    #        instances = Instance.objects.filter(id=instance_id)
-    #        if instances:
-    #            return instances[0]
-    #    return None
-
-    #@instance.setter
-    #def instance(self, value):
-    #    self.set_attribute("instance_id", value.id)
 
     def save(self, *args, **kwargs):
         if not self.creator:

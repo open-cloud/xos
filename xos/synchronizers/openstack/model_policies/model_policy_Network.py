@@ -22,4 +22,9 @@ def handle(network):
 		if network not in network_deploy_lookup or \
 		  expected_controller not in network_deploy_lookup[network]:
 			nd = ControllerNetwork(network=network, controller=expected_controller, lazy_blocked=True)
+                        if network.subnet:
+                            # XXX: Possibly unpredictable behavior if there is
+                            # more than one ControllerNetwork and the subnet
+                            # is specified.
+                            nd.subnet = network.subnet
 			nd.save()

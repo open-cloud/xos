@@ -3,6 +3,7 @@ from six.moves import urllib
 import urllib2
 import pytz
 import datetime
+import time
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -29,17 +30,23 @@ def getTenantCeilometerProxyURL(user):
     if not monitoring_channel:
         raise XOSMissingField("Monitoring channel is missing for this tenant...Create one and invoke this REST API")
     #TODO: Wait until URL is completely UP
+    MAX_ATTEMPTS = 5
+    attempts = 0
     while True:
         try:
-            response = urllib2.urlopen(monitoring_channel.ceilometer_url,timeout=1)
+            response = urllib2.urlopen(monitoring_channel.ceilometer_url)
             break
         except urllib2.HTTPError, e:
-            logger.info('SRIKANTH: HTTP error %(reason)s' % {'reason':e.reason})
+            logger.info('HTTP error %(reason)s' % {'reason':e.reason})
             break
         except urllib2.URLError, e:
-            logger.info('SRIKANTH: URL error %(reason)s' % {'reason':e.reason})
+            attempts += 1
+            if attempts >= MAX_ATTEMPTS:
+                raise XOSServiceUnavailable("Ceilometer channel is not ready yet...Try again later")
+            logger.info('URL error %(reason)s' % {'reason':e.reason})
+            time.sleep(1)
             pass
-    logger.info("SRIKANTH: Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
+    logger.info("Ceilometer proxy URL for user %(user)s is %(url)s" % {'user':user.username,'url':monitoring_channel.ceilometer_url})
     return monitoring_channel.ceilometer_url
 
 def getTenantControllerTenantMap(user, slice=None):
@@ -215,6 +222,7 @@ class Meters(object):
         self._kwapi_meters_info = self._get_kwapi_meters_info()
         self._ipmi_meters_info = self._get_ipmi_meters_info()
         self._vcpe_meters_info = self._get_vcpe_meters_info()
+        self._volt_meters_info = self._get_volt_meters_info()
         self._sdn_meters_info = self._get_sdn_meters_info()
 
         # Storing the meters info of all services together.
@@ -226,6 +234,7 @@ class Meters(object):
                                self._kwapi_meters_info,
                                self._ipmi_meters_info,
                                self._vcpe_meters_info,
+                               self._volt_meters_info,
                                self._sdn_meters_info)
         self._all_meters_info = {}
         for service_meters in all_services_meters:
@@ -326,6 +335,16 @@ class Meters(object):
         """
 
         return self._list(only_meters=self._vcpe_meters_info.keys(),
+                          except_meters=except_meters)
+
+    def list_volt(self, except_meters=None):
+        """Returns a list of meters tied to volt service
+
+        :Parameters:
+          - `except_meters`: The list of meter names we don't want to show
+        """
+
+        return self._list(only_meters=self._volt_meters_info.keys(),
                           except_meters=except_meters)
 
     def list_sdn(self, except_meters=None):
@@ -942,6 +961,39 @@ class Meters(object):
             }),
         ])
 
+    def _get_volt_meters_info(self):
+        """Returns additional info for each meter
+
+        That will be used for augmenting the Ceilometer meter
+        """
+
+        # TODO(lsmola) Unless the Ceilometer will provide the information
+        # below, I need to define it as a static here. I will be joining this
+        # to info that I am able to obtain from Ceilometer meters, hopefully
+        # some day it will be supported all.
+        return datastructures.SortedDict([
+            ('volt.device', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Existence of olt device"),
+            }),
+            ('volt.device.disconnect', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Olt device disconnected"),
+            }),
+            ('volt.device.subscriber', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Existence of olt subscriber"),
+            }),
+            ('volt.device.subscriber.unregister', {
+                'type': _("VOLT"),
+                'label': '',
+                'description': _("Olt subscriber unregistered"),
+            }),
+        ])
+
     def _get_sdn_meters_info(self):
         """Returns additional info for each meter
 
@@ -1114,6 +1166,7 @@ class MetersList(APIView):
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
             _('VCPE'): meters.list_vcpe(),
+            _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
         meters = []
@@ -1184,6 +1237,7 @@ class MeterStatisticsList(APIView):
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
             _('VCPE'): meters.list_vcpe(),
+            _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
         report_rows = []
@@ -1192,8 +1246,13 @@ class MeterStatisticsList(APIView):
                 query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
                 if additional_query:
                     query = query + additional_query
-                statistics = statistic_list(request, meter["name"],
+                try:
+                    statistics = statistic_list(request, meter["name"],
                                         ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                except Exception as e:
+                    logger.error('Exception during statistics query for meter %(meter)s and reason:%(reason)s' % {'meter':meter["name"], 'reason':str(e)})
+                    statistics = None
+
                 if not statistics:
                     continue
                 statistic = statistics[-1]
@@ -1336,6 +1395,7 @@ class XOSInstanceStatisticsList(APIView):
                 _('Nova'): meters.list_nova(except_meters=exclude_nova_meters_info),
                 _('Neutron'): meters.list_neutron(except_meters=exclude_neutron_meters_info),
                 _('VCPE'): meters.list_vcpe(),
+                _('VOLT'): meters.list_volt(),
                 _('SDN'): meters.list_sdn(),
             }
             for service,meters in services.items():
@@ -1343,8 +1403,13 @@ class XOSInstanceStatisticsList(APIView):
                     query = make_query(tenant_id=meter["project_id"],resource_id=meter["resource_id"])
                     if additional_query:
                         query = query + additional_query
-                    statistics = statistic_list(request, meter["name"],
+                    try:
+                        statistics = statistic_list(request, meter["name"],
                                             ceilometer_url=tenant_ceilometer_url, query=query, period=3600*24)
+                    except Exception as e:
+                        logger.error('Exception during statistics query for meter %(meter)s and reason:%(reason)s' % {'meter':meter["name"], 'reason':str(e)})
+                        statistics = None
+
                     if not statistics:
                         continue
                     statistic = statistics[-1]

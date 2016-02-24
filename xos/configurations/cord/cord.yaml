@@ -11,8 +11,8 @@ topology_template:
     service_volt:
       type: tosca.nodes.Service
       requirements:
-          - vcpe_tenant:
-              node: service_vcpe
+          - vsg_tenant:
+              node: service_vsg
               relationship: tosca.relationships.TenantOfService
           - lan_network:
               node: lan_network
@@ -24,14 +24,20 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
-    service_vcpe:
-      type: tosca.nodes.VCPEService
+    # set a pool of addresses that we can hand out for the VSG Wan.
+    public_addresses:
+      type: tosca.nodes.AddressPool
+      properties:
+          addresses: 10.123.0.0/24 10.124.0.0/24
+
+    service_vsg:
+      type: tosca.nodes.VSGService
       requirements:
           - vbng_tenant:
               node: service_vbng
               relationship: tosca.relationships.TenantOfService
       properties:
-          view_url: /admin/cord/vcpeservice/$id$/
+          view_url: /admin/cord/vsgservice/$id$/
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
@@ -145,6 +151,7 @@ topology_template:
                    "rabbit.user": "<rabbit_user>",
                    "rabbit.password": "<rabbit_password>",
                    "rabbit.host": "<rabbit_host>",
+                   "publish.kafka": "false",
                    "publish.rabbit": "true",
                    "volt.events.rabbit.topic": "notifications.info",
                    "volt.events.rabbit.exchange": "voltlistener",
@@ -190,13 +197,13 @@ topology_template:
               node: Private
               relationship: tosca.relationships.UsesNetworkTemplate
           - owner:
-              node: mysite_vcpe
+              node: mysite_vsg
               relationship: tosca.relationships.MemberOfSlice
           - connection:
-              node: mysite_vcpe
+              node: mysite_vsg
               relationship: tosca.relationships.ConnectsToSlice
           - connection:
-              node: mysite_volt
+              node: mysite_vsg
               relationship: tosca.relationships.ConnectsToSlice
 
     wan_network:
@@ -208,13 +215,13 @@ topology_template:
               node: Private
               relationship: tosca.relationships.UsesNetworkTemplate
           - owner:
-              node: mysite_vcpe
+              node: mysite_vsg
               relationship: tosca.relationships.MemberOfSlice
           - connection:
-              node: mysite_vcpe
+              node: mysite_vsg
               relationship: tosca.relationships.ConnectsToSlice
           - connection:
-              node: mysite_vbng
+              node: mysite_vsg
               relationship: tosca.relationships.ConnectsToSlice
 
     Private-Direct:
@@ -265,18 +272,18 @@ topology_template:
 
 
     # CORD Slices
-    mysite_vcpe:
-      description: vCPE Controller Slice
+    mysite_vsg:
+      description: vSG Controller Slice
       type: tosca.nodes.Slice
       requirements:
-          - vcpe_service:
-              node: service_vcpe
+          - vsg_service:
+              node: service_vsg
               relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
-          - vcpe_docker_image:
-              node: docker-vcpe
+          - vsg_docker_image:
+              node: docker-vsg
               relationship: tosca.relationships.UsesImage
 #      properties:
 #          default_isolation: container
@@ -442,8 +449,8 @@ topology_template:
                 node: mysite_clients
                 relationship: tosca.relationships.MemberOfSlice
 
-    # docker image for vcpe containers
-    docker-vcpe:
+    # docker image for vsg containers
+    docker-vsg:
       # TODO: need to attach this to mydeployment
       type: tosca.nodes.Image
       properties:

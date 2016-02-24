@@ -13,7 +13,7 @@ from service import XOSService
 class XOSONOSService(XOSService):
     provides = "tosca.nodes.ONOSService"
     xos_model = ONOSService
-    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "versionNumber"]
+    copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key", "versionNumber", "rest_hostname", "rest_port", "no_container", "node_key"]
 
     def set_service_attr(self, obj, prop_name, value):
         value = self.try_intrinsic_function(value)
@@ -36,6 +36,6 @@ class XOSONOSService(XOSService):
             v = d.value
             if k.startswith("config_"):
                 self.set_service_attr(obj, k, v)
-            elif k.startswith("rest_"):
+            elif k.startswith("rest_")  and (k!="rest_hostname") and (k!="rest_port"):
                 self.set_service_attr(obj, k, v)
 

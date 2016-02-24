@@ -23,8 +23,8 @@ from xos.logger import Logger, logging, logger
 #from timeout import timeout
 from xos.config import Config, XOS_DIR
 from synchronizers.base.steps import *
-from syncstep import SyncStep
-from toposort import toposort
+from synchronizers.base.syncstep import SyncStep
+from synchronizers.base.toposort import toposort
 from synchronizers.base.error_mapper import *
 from synchronizers.openstack.openstacksyncstep import OpenStackSyncStep
 from synchronizers.base.steps.sync_object import SyncObject
@@ -421,7 +421,7 @@ class XOSObserver:
 				except Exception,e:
                         		self.consolePrint(bcolors.FAIL + "Model step %r failed" % (sync_step.__name__) + bcolors.ENDC)
 					logger.error('Model step %r failed. This seems like a misconfiguration or bug: %r. This error will not be relayed to the user!' % (sync_step.__name__, e))
-					logger.log_exc(e)
+					logger.log_exc("Exception in sync step")
 					self.failed_steps.append(S)
 					my_status = STEP_STATUS_KO
 			else:
