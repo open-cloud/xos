@@ -1,13 +1,13 @@
 (function () {
   'use strict';
-
   angular.module('xos.diagnostic')
-  .directive('diagnostic', function(){
+  .directive('diagnosticContainer', function(){
     return {
       restrict: 'E',
       templateUrl: 'templates/diagnostic.tpl.html',
       controllerAs: 'vm',
-      controller: function(ChartData, Subscribers, ServiceRelation, $rootScope){
+      controller: function(ChartData, Subscribers, ServiceRelation, $rootScope, $log){
+
         this.loader = true;
         this.error = false;
         Subscribers.query().$promise
@@ -41,4 +41,4 @@
       }
     }
   });
-})();
+})(); 

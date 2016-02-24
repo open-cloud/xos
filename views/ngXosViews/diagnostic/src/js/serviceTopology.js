@@ -24,6 +24,11 @@
 
         const draw = (tree) => {
 
+          if(!tree){
+            console.error('Tree is missing');
+            return;
+          }
+
           // TODO update instead clear and redraw
 
           // clean
@@ -64,7 +69,8 @@
         };
         
         $scope.$watch(() => this.serviceChain, (chain) => {
-          if(chain){
+          console.log(chain);
+          if(angular.isDefined(chain)){
             draw(chain);
           }
         });
