@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('ChartData', function($rootScope, $q, lodash, Tenant, Node, serviceTopologyConfig, Ceilometer, Instances) {
     this.currentSubscriber = null;
     this.currentServiceChain = null;

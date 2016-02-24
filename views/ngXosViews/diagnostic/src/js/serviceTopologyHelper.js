@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
 
     // NOTE not used anymore

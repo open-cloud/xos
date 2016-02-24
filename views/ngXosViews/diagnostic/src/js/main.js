@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('xos.serviceTopology', [
+angular.module('xos.diagnostic', [
   'ngResource',
   'ngCookies',
   'ngLodash',

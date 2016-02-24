@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .directive('logicTopology', function(){
     return {
       restrict: 'E',

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .constant('serviceTopologyConfig', {
     widthMargin: 20,
     heightMargin: 30,

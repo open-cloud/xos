@@ -1,5 +1,5 @@
 (function () {
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('RackHelper', function(serviceTopologyConfig, lodash){
 
     this.getComputeNodeLabelSize = () => {

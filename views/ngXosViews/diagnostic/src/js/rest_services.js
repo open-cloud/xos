@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  angular.module('xos.serviceTopology')
+  angular.module('xos.diagnostic')
   .service('Services', function($resource){
     return $resource('/xos/services/:id', {id: '@id'});
   })
