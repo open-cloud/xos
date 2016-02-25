@@ -50,8 +50,8 @@ class VPNTenantForm(forms.ModelForm):
         server_address (forms.GenericIPAddressField): The ip address on the VPN of this Tenant.
         client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
         is_persistent (forms.BooleanField): Determines if this Tenant keeps this connection alive through failures.
-        can_view_subnet (forms.BooleanField): Determins if this Tenant makes it's subnet available to the client.
-
+        can_view_subnet (forms.BooleanField): Determines if this Tenant makes it's subnet available to the client.
+        port_number (forms.PositiveSmallIntegerField): The port to use for this Tenant.
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_network = forms.GenericIPAddressField(
@@ -59,6 +59,7 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
+    port_number = forms.PositiveSmallIntegerField(required=True)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -77,6 +78,7 @@ class VPNTenantForm(forms.ModelForm):
             self.fields[
                 'clients_can_see_each_other'].initial = self.instance.clients_can_see_each_other
             self.fields['is_persistent'].initial = self.instance.is_persistent
+            self.fields['port_number'].initial = self.instance.port_number
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -95,6 +97,7 @@ class VPNTenantForm(forms.ModelForm):
         self.instance.server_network = self.cleaned_data.get('server_network')
         self.instance.clients_can_see_each_other = self.cleaned_data.get(
             'clients_can_see_each_other')
+        self.instance.port_number = self.cleaned_data.get('port_number')
 
         if (not self.instance.script):
             self.instance.script = str(time.time()) + ".vpn"
