@@ -75,7 +75,7 @@
     when: {{ is_persistent }}
 
   - name: write client-to-client config
-    shell: printf "client-to-client" >> server.conf
+    shell: printf "\nclient-to-client" >> server.conf
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
