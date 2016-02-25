@@ -1,0 +1,11 @@
+<div class="row">
+  <h1>VPN List</h1>
+</div>
+<div class="row">
+  <div class="cell">ID</div>
+  <div class="cell">Script Link</div>
+</div>
+<div class="row" ng-repeat="vpn in vm.vpns">
+  <div class="cell">{{vpn.instance.instance_id}}</div>
+  <div class="cell"><a href="/static/vpn/{{ vpn.script }}" target="_blank">Script</a></div>
+</div>
