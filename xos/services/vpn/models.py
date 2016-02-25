@@ -1,3 +1,5 @@
+import time
+
 from core.models import Service, TenantWithContainer
 from django.db import transaction
 
@@ -121,15 +123,6 @@ class VPNTenant(TenantWithContainer):
         self.set_attribute("clients_can_see_each_other", value)
 
     @property
-    def script(self):
-        """string: The file name of the client script"""
-        return self.get_attribute("script", self.default_attributes['script'])
-
-    @script.setter
-    def script(self, value):
-        self.set_attribute("script", value)
-
-    @property
     def ca_crt(self):
         """str: the string for the ca certificate"""
         return self.get_attribute("ca_crt", self.default_attributes['ca_crt'])
@@ -146,6 +139,60 @@ class VPNTenant(TenantWithContainer):
     @port_number.setter
     def port_number(self, value):
         self.set_attribute("port", value)
+
+    @property
+    def script(self):
+        """string: the location of the client script that is generated when
+           this method is called.
+        """
+        script_name = time.time() + ".vpn"
+        create_client_script(script_name)
+        return script_name
+
+    def create_client_script(self, script_name):
+        script = open("/opt/xos/core/static/vpn/" + script_name, 'w')
+        # write the configuration portion
+        script.write("printf \"%b\" \"")
+        for line in self.generate_client_conf().splitlines():
+            script.write(line + r"\n")
+        script.write("\" > client.conf\n")
+        script.write("printf \"%b\" \"")
+        for line in self.generate_login().splitlines():
+            script.write(line + r"\n")
+        script.write("\" > login.up\n")
+        script.write("printf \"%b\" \"")
+        for line in self.ca_crt:
+            script.write(line.rstrip() + r"\n")
+        script.write("\" > ca.crt\n")
+        # make sure openvpn is installed
+        script.write("apt-get update\n")
+        script.write("apt-get install openvpn\n")
+        script.write("openvpn client.conf &\n")
+        # close the script
+        script.close()
+
+    def generate_login(self):
+        return str(time.time()) + "\npassword\n"
+
+    def generate_client_conf(self):
+        """str: Generates the client configuration to use to connect to this VPN server.
+        """
+        conf = ("client\n" +
+            "auth-user-pass login.up\n" +
+            "dev tun\n" +
+            "proto udp\n" +
+            "remote " + str(self.nat_ip) + " " + str(self.port_number) + "\n" +
+            "resolv-retry infinite\n" +
+            "nobind\n" +
+            "ca ca.crt\n" +
+            "comp-lzo\n" +
+            "verb 3\n")
+
+        if self.is_persistent:
+            conf += "persist-tun\n"
+            conf += "persist-key\n"
+
+        return conf
 
 
 
