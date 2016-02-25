@@ -3,7 +3,12 @@
 
     angular.module('bugSnag', []).factory('$exceptionHandler', function () {
       return function (exception, cause) {
-        Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
+        if( window.Bugsnag ){
+          Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
+        }
+        else{
+          console.error(exception, cause, exception.stack);
+        }
       };
     });
 

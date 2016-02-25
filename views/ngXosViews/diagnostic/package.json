@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "npm install && bower install",
     "start": "gulp serve",
-    "dev": "NODE_ENV=local gulp serve",
+    "dev": "NODE_ENV=mock gulp serve",
     "prebuild": "npm install && bower install",
     "server": "easy-mocker -c ./mocks/diagnostic.conf.json -d ./mocks/data",
     "build": "gulp",
