@@ -9,9 +9,9 @@ angular.module('xos.vpnDashboard', [
 ])
 .config(($stateProvider) => {
   $stateProvider
-  .state('user-list', {
+  .state('vpn-list', {
     url: '/',
-    template: '<users-list></users-list>'
+    template: '<vpn-list></vpn-list>'
   });
 })
 .service('Vpn', function($http, $q){
@@ -33,18 +33,18 @@ angular.module('xos.vpnDashboard', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
-.directive('usersList', function(){
+.directive('vpnList', function(){
   return {
     restrict: 'E',
     scope: {},
     bindToController: true,
     controllerAs: 'vm',
-    templateUrl: 'templates/users-list.tpl.html',
+    templateUrl: 'templates/vpn-list.tpl.html',
     controller: function(Vpn){
       // retrieving user list
       Vpn.getVpnTenants()
-      .then((users) => {
-        this.users = users;
+      .then((vpns) => {
+        this.vpns = vpns;
       })
       .catch((e) => {
         throw new Error(e);
