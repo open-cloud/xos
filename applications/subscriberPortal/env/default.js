@@ -7,5 +7,5 @@
 // (works only for local environment as both application are served on the same domain)
 
 module.exports = {
-  host: 'http://clnode078.clemson.cloudlab.us:9999/'
+  host: 'http://clnode067.clemson.cloudlab.us:9999/'
 };
