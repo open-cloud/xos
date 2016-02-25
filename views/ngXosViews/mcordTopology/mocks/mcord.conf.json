@@ -1,8 +1,0 @@
-[
-  {
-    "url": "instances",
-    "base": "xos/",
-    "methods": ["GET", "POST"],
-    "param": "id"
-  }
-]
