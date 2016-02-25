@@ -3,9 +3,15 @@
 </div>
 <div class="row">
   <div class="cell">ID</div>
+  <div class="cell">VPN Network</div>
+  <div class="cell">VPN Subnet</div>
   <div class="cell">Script Link</div>
 </div>
 <div class="row" ng-repeat="vpn in vm.vpns">
   <div class="cell">{{vpn.instance.instance_id}}</div>
-  <div class="cell"><a href="/static/vpn/{{ vpn.script }}" target="_blank">Script</a></div>
+  <div class="cell">{{vpn.server_network}}</div>
+  <div class="cell">{{vpn.vpn_subnet}}</div>
+  <div class="cell">
+    <a href="/static/vpn/{{ vpn.script }}" target="_blank">Script</a>
+  </div>
 </div>

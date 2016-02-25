@@ -16,16 +16,19 @@
     apt: name=openvpn state=present update_cache=yes
 
   - name: stop openvpn
-    shell: killall openvpn || true
+    shell: kill -9 $(cat /opt/openvpn/server{{ instance_id }}/pid) || true
 
   - name: make sure /opt/openvpn exists
     file: path=/opt/openvpn state=directory
 
+  - name: make sure directory for this server exists
+    file: path=/opt/openvpn/server{{ instance_id }} state=directory
+
   - name: get server key
-    copy: src=/opt/openvpn/easyrsa3/pki/private/server{{ instance_id }}.key dest=/opt/openvpn/server.key
+    copy: src=/opt/openvpn/easyrsa3/pki/private/server{{ instance_id }}.key dest=/opt/openvpn/server{{ instance_id }}/server.key
 
   - name: get server crt
-    copy: src=/opt/openvpn/easyrsa3/pki/issued/server{{ instance_id }}.crt dest=/opt/openvpn/server.crt
+    copy: src=/opt/openvpn/easyrsa3/pki/issued/server{{ instance_id }}.crt dest=/opt/openvpn/server{{ instance_id }}/server.crt
 
   - name: get ca crt
     copy: src=/opt/openvpn/easyrsa3/pki/ca.crt dest=/opt/openvpn/ca.crt
@@ -34,16 +37,16 @@
     copy: src=/opt/openvpn/easyrsa3/pki/dh.pem dest=/opt/openvpn/dh.pem
 
   - name: erase config
-    shell: rm -f server.conf
+    shell: rm -f /opt/openvpn/server{{ instance_id }}/server.conf
 
   - name: erase auth script
-    shell: rm -f auth.sh
+    shell: rm -f /opt/openvpn/server{{ instance_id }}/auth.sh
 
   - name: write auth script
-    shell: printf "%b" "#!/bin/bash\nexit 0" > auth.sh
+    shell: printf "%b" "#!/bin/bash\nexit 0" > /opt/openvpn/server{{ instance_id }}/auth.sh
 
   - name: make auth script executable
-    shell: chmod 777 auth.sh
+    shell: chmod 777 /opt/openvpn/server{{ instance_id }}/auth.sh
 
   - name: write base config
     shell:
@@ -53,30 +56,31 @@
        proto udp
        dev tun
        ca /opt/openvpn/ca.crt
-       cert /opt/openvpn/server.crt
-       key /opt/openvpn/server.key
+       cert /opt/openvpn/server{{ instance_id }}/server.crt
+       key /opt/openvpn/server{{ instance_id }}/server.key
        dh /opt/openvpn/dh.pem
        server {{ server_network }} {{ vpn_subnet }}
-       ifconfig-pool-persist ipp.txt
+       ifconfig-pool-persist /opt/openvpn/server{{ instance_id }}/ipp.txt
        comp-lzo
-       status openvpn-status.log
+       status /opt/openvpn/server{{ instance_id }}/openvpn-status.log
        verb 3
-       auth-user-pass-verify auth.sh via-file
+       auth-user-pass-verify /opt/openvpn/server{{ instance_id }}/auth.sh via-file
        client-cert-not-required
        username-as-common-name
-       " > server.conf
+       " > /opt/openvpn/server{{ instance_id }}/server.conf
 
   - name: write persistent config
     shell:
       |
-      printf "\nkeepalive 10 60
+      printf "keepalive 10 60
       persist-tun
-      persist-key" >> server.conf
+      persist-key
+      " >> /opt/openvpn/server{{ instance_id }}/server.conf
     when: {{ is_persistent }}
 
   - name: write client-to-client config
-    shell: printf "\nclient-to-client" >> server.conf
+    shell: printf "client-to-client\n" >> /opt/openvpn/server{{ instance_id }}/server.conf
     when: {{ clients_can_see_each_other }}
 
   - name: start openvpn
-    shell: openvpn server.conf &
+    shell: openvpn --writepid /opt/openvpn/server{{ instance_id }}/pid /opt/openvpn/server{{ instance_id }}/server.conf &
