@@ -6,9 +6,10 @@
   "scripts": {
     "test": "karma start",
     "preserver": "npm install && bower install && wiredep --dependencies --src src/index.html",
-    "styles": "node-sass -w --include-path --source-map-embed -o ./src/style ./src/sass/*.scss",
+    "styles": "node-sass -w -r --include-path --source-map-embed -o ./src/style ./src/sass/main.scss",
     "server": "browser-sync start --config bs-config.js",
-    "start": "parallelshell \"npm run server\" \"npm run styles\""
+    "start": "parallelshell \"npm run server\" \"npm run styles\"",
+    "local": "NODE_ENV=local parallelshell \"npm run server\" \"npm run styles\""
   },
   "author": "Matteo Scandolo",
   "license": "ISC",

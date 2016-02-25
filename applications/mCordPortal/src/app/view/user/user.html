@@ -11,15 +11,14 @@
                         </th>
                         <th>Last Login</th>
                         <th ng-if="isFamily">
-                            Select Site Rating
-                            <span class="help" ng-click="showRatings()"> (?)</span>
+                            Video Optimization:
                         </th>
                         <th ng-if="isFamily"></th>
                     </tr>
                 </thead>
-                <tr ng-repeat="user in users | filter:q" class="animate-repeat">
+                <tr ng-repeat="user in users | filter:q" class="animate-repeat" ng-show="users.length > 0">
                     <td class="avatar">
-                        <img ng-src="{{'/imgs/' + user.icon_id + '.jpg'}}">
+                        <img class="img-rounded" ng-src="{{'/imgs/' + user.icon_id + '.jpg'}}">
                     </td>
                     <td>{{user.name}}</td>
                     <td>{{shared.userActivity[user.id]}}</td>
@@ -31,12 +30,12 @@
                         <user-updated-tick user="user">Saved</user-updated-tick>
                     </td>
                 </tr>
+                <tr ng-show="!users">
+                    <td colspan="4">
+                        <div class="loader"></div>
+                    </td>
+                </tr>
             </table>
-        </div>
-
-        <!-- TODO refactor in modal-->
-        <div ng-if="isFamily">
-            <ratings-panel></ratings-panel>
         </div>
     </div>
 </div>

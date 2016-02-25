@@ -1,12 +1,12 @@
 {
   "bundle": {
     "id": "family",
-    "name": "Family Bundle",
+    "name": "Advanced Bundle",
     "functions": [
       {
-        "id": "internet",
-        "name": "Internet",
-        "desc": "Basic internet connectivity.",
+        "id": "cache",
+        "name": "Cache",
+        "desc": "Caching Service.",
         "params": {}
       },
       {
@@ -16,18 +16,14 @@
         "params": {}
       },
       {
-        "id": "url_filter",
-        "name": "Parental Control",
-        "desc": "Variable levels of URL filtering.",
-        "params": {
-          "level": "PG",
-          "levels": [ "PG", "PG-13", "R" ]
-        }
+        "id": "video",
+        "name": "Video Optimization",
+        "desc": "Optimization for the video download."
       }
     ]
   },
   "bundles": [
     { "id": "basic", "name": "Basic Bundle" },
-    { "id": "family", "name": "Family Bundle" }
+    { "id": "family", "name": "Advanced Bundle" }
   ]
 }

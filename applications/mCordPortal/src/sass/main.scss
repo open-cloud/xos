@@ -1,7 +1,16 @@
-$cord-red: #CE5650;
-//$brand-primary: $cord-red;
 
+@import './vars.scss';
 @import '../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+@import './loader.scss';
+@import './bootstrap_overrides.scss';
+
+/* Global styles
+-------------------------------------------------- */
+
+body {
+  background-color: #fafafa;
+  background-image: url('../imgs/content_inner_bg.png');
+}
 
 /* Navigation styles
 -------------------------------------------------- */
@@ -21,7 +30,7 @@ nav {
 
   li:hover,
   li.active {
-    border-bottom: 2px solid $cord-red;
+    border-bottom: 2px solid $brand-primary;
   }
 
   li {

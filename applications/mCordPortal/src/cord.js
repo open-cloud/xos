@@ -75,13 +75,13 @@
       bundles: [
         {
           "id": "family",
-          "name": "Family Bundle",
-          "desc": "Description for family bundle and the amazing thing it can do to manage your house device Parent Control.",
+          "name": "Advanced Bundle",
+          "desc": "Description for advanced bundle and the amazing thing it can do to managing Video Optimization.",
           "functions": [
             {
-              "id": "internet",
-              "name": "Internet",
-              "desc": "Basic internet connectivity.",
+              "id": "cache",
+              "name": "Cache",
+              "desc": "Caching Service.",
               "params": {}
             },
             {
@@ -91,12 +91,11 @@
               "params": {}
             },
             {
-              "id": "url_filter",
-              "name": "Parental Control",
-              "desc": "Variable levels of URL filtering.",
+              "id": "video",
+              "name": "Video Optimization",
+              "desc": "Optimization for the video download.",
               "params": {
-                "level": "PG",
-                "levels": [ "PG", "PG_13", "R" ]
+                "levels": ["enabled", "disabled"]
               }
             }
           ]
@@ -107,9 +106,9 @@
           "desc": "Description for basic bundle",
           "functions": [
             {
-              "id": "internet",
-              "name": "Internet",
-              "desc": "Basic internet connectivity.",
+              "id": "cache",
+              "name": "Cache",
+              "desc": "Basic caching service.",
               "params": {}
             },
             {

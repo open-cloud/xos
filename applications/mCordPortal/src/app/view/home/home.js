@@ -22,10 +22,11 @@
 
       $scope.page.curr = 'dashboard';
 
+      $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
+      $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
+      
       SubscriberUsers.query({subscriberId: $cookies.get('subscriberId')}).$promise
       .then(function(res){
-        $scope.bundle_name = cordConfig.bundles[cordConfig.activeBundle].name;
-        $scope.bundle_desc = cordConfig.bundles[cordConfig.activeBundle].desc;
         $scope.users = res;
       })
       .catch(function(){

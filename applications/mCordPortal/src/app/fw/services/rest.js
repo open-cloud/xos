@@ -17,6 +17,12 @@
 (function () {
   "use strict";
 
+  function randomEnabled(){
+    var levels = ["enabled", "disabled"];
+    return levels[Math.round(Math.random())];
+  };
+
+
   angular.module('cordRest', [])
   .factory('SetCSRFToken', function setCSRFToken($cookies) {
     return {
@@ -86,6 +92,7 @@
       query: {
         method: 'GET',
         isArray: true,
+        cache: true,
         interceptor: {
           response: function(res){
             // this is used to fake some data that are not XOS related,
@@ -93,20 +100,22 @@
 
             // add an icon to the user
             res.data.map(function(user){
-              switch (user.name){
-                case 'Mom\'s PC':
-                  user['icon_id'] = 'mom';
+              switch (user.id){
+                case 0:
+                  user['icon_id'] = 'student1';
                   break
-                case 'Jack\'s Laptop':
-                  user['icon_id'] = 'boy2';
+                case 1:
+                  user['icon_id'] = 'student2';
                   break
-                case 'Jill\'s Laptop':
-                  user['icon_id'] = 'girl1';
+                case 2:
+                  user['icon_id'] = 'student3';
                   break
-                case 'Dad\'s PC':
-                  user['icon_id'] = 'dad';
+                case 3:
+                  user['icon_id'] = 'student4';
                   break
               }
+
+              user.level = randomEnabled()
 
               return user;
             });
