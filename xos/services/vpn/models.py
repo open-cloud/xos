@@ -31,7 +31,8 @@ class VPNTenant(TenantWithContainer):
                           'clients_can_see_each_other': True,
                           'is_persistent': True,
                           'script': None,
-                          'ca_crt': None}
+                          'ca_crt': None,
+                          'port': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -136,6 +137,16 @@ class VPNTenant(TenantWithContainer):
     @ca_crt.setter
     def ca_crt(self, value):
         self.set_attribute("ca_crt", value)
+
+    @property
+    def port_number(self):
+        """int: the integer representing the port number for this server"""
+        return self.get_attribute("port", self.default_attributes['port'])
+
+    @port_number.setter
+    def port_number(self, value):
+        self.set_attribute("port", value)
+
 
 
 def model_policy_vpn_tenant(pk):
