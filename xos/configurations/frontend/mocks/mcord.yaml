@@ -532,3 +532,19 @@ topology_template:
             - subscriber:
                 node: Stanford
                 relationship: tosca.relationships.BelongsToSubscriber
+
+    Topology:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosMcordTopology
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - mcord_dashboard:
+              node: Topology
+              relationship: tosca.relationships.UsesDashboard
