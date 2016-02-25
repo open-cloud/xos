@@ -1,0 +1,29 @@
+{
+  "name": "xos-vpnDashboard",
+  "version": "0.0.0",
+  "authors": [
+    "Jeremy Mowery <jermowery@email.arizona.edu>"
+  ],
+  "description": "The vpnDashboard view",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jquery": "2.1.4",
+    "angular-mocks": "1.4.7",
+    "angular": "1.4.7",
+    "angular-ui-router": "0.2.15",
+    "angular-cookies": "1.4.7",
+    "angular-resource": "1.4.7",
+    "ng-lodash": "0.3.0",
+    "bootstrap-css": "2.3.2"
+  }
+}
