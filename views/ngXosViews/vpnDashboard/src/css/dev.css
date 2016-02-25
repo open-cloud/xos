@@ -3,3 +3,14 @@
   top: 100px;
   left: 200px;
 }
+.body {
+  width: 70%;
+  margin: auto;
+}
+.row {
+    display: table-row;
+}
+.cell {
+    display: table-cell;
+    padding: 5px;
+}
