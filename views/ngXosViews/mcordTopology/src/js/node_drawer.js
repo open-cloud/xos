@@ -38,25 +38,38 @@ angular.module('xos.mcordTopology')
 
   this.drawBbus = (nodes) => {
 
-    nodes.append('circle')
+    // nodes.append('circle')
+    //   .attr({
+    //     class: d => d.type,
+    //     r: 0,
+    //     opacity: 0
+    //   })
+    //   .transition()
+    //   .duration(duration)
+    //   // .delay((d, i) => i * (duration / 2))
+    //   .attr({
+    //     r: 15,
+    //     opacity: 1
+    //   });
+    nodes
+      .append('path')
       .attr({
-        class: d => d.type,
-        r: 0,
-        opacity: 0
+        class: d => `${d.type} antenna`,
+        opacity: 0,
+        d: () => TopologyElements.icons.bbu,
+        transform: `translate(-22, -22), scale(0.4)`
       })
       .transition()
       .duration(duration)
-      // .delay((d, i) => i * (duration / 2))
       .attr({
-        r: 15,
         opacity: 1
       });
 
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 17,
-      x: 17,
+      y: 13,
+      x: -14,
       opacity: 0
     })
     .text(d => `BBU ${d.name.substr(d.name.length - 1, 1)}`)
@@ -79,23 +92,37 @@ angular.module('xos.mcordTopology')
       .duration(duration * 2)
       // .delay((d, i) => i * (duration / 2))
       .attr({
-        r: 30,
+        r: 40,
         opacity: 1
       });
-  
-    nodes.append('circle')
+
+    nodes
+      .append('path')
       .attr({
-        class: d => d.type,
-        r: 0,
-        opacity: 0
+        class: d => `${d.type} antenna`,
+        opacity: 0,
+        d: () => TopologyElements.icons.rru,
+        transform: `translate(-22, -22), scale(0.4)`
       })
       .transition()
       .duration(duration)
-      // .delay((d, i) => i * (duration / 2))
       .attr({
-        r: 10,
         opacity: 1
       });
+  
+    // nodes.append('circle')
+    //   .attr({
+    //     class: d => d.type,
+    //     r: 0,
+    //     opacity: 0
+    //   })
+    //   .transition()
+    //   .duration(duration)
+    //   // .delay((d, i) => i * (duration / 2))
+    //   .attr({
+    //     r: 10,
+    //     opacity: 1
+    //   });
   };
 
   this.drawFabric = (nodes) => {
@@ -125,25 +152,38 @@ angular.module('xos.mcordTopology')
   };
 
   this.drawOthers = (nodes) => {
-    nodes.append('circle')
+    // nodes.append('circle')
+    //   .attr({
+    //     class: d => d.type,
+    //     r: 0,
+    //     opacity: 0
+    //   })
+    //   .transition()
+    //   .duration(duration)
+    //   // .delay((d, i) => i * (duration / 2))
+    //   .attr({
+    //     r: 15,
+    //     opacity: 1
+    //   });
+    nodes
+      .append('path')
       .attr({
-        class: d => d.type,
-        r: 0,
-        opacity: 0
+        class: d => `${d.type} antenna`,
+        opacity: 0,
+        d: () => TopologyElements.icons.bbu,
+        transform: `translate(-22, -22), scale(0.4)`
       })
       .transition()
       .duration(duration)
-      // .delay((d, i) => i * (duration / 2))
       .attr({
-        r: 15,
         opacity: 1
       });
 
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 17,
-      x: 17,
+      y: 13,
+      x: -12,
       opacity: 0
     })
     .text(d => d.type)

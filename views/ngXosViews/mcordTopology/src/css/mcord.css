@@ -46,6 +46,11 @@ rect {
   fill: #FFBB78;
 }
 
+.rru.antenna {
+  stroke: #000;
+  fill: brown;
+}
+
 .rru-shadow {
   fill: #FFBB78;
   opacity: .4
@@ -62,5 +67,5 @@ rect {
 .PGW text {
   font-size: 10px;
   stroke-width: 0;
-  fill: #000;
+  fill: #fff;
 }

@@ -75,25 +75,25 @@
       bundles: [
         {
           "id": "family",
-          "name": "Advanced Bundle",
+          "name": "Education Bundle",
           "desc": "Description for advanced bundle and the amazing thing it can do to managing Video Optimization.",
           "functions": [
             {
               "id": "cache",
               "name": "Cache",
-              "desc": "Caching Service.",
+              "desc": "Local content and frequently used content are served from local cache service entity. This will increase the quality of service by reduced delay and by avoiding the bottleneck of the legacy cloud based content services.",
               "params": {}
             },
             {
               "id": "firewall",
               "name": "Firewall",
-              "desc": "Normal firewall protection.",
+              "desc": "This provides security services that control the incoming and outgoing network traffic. Enhanced features like IPS (Intrusion Prevention System), threat analysis and content filtering are also available.",
               "params": {}
             },
             {
               "id": "video",
               "name": "Video Optimization",
-              "desc": "Optimization for the video download.",
+              "desc": "This can provide different video transcoding formats to improve video quality during congestion.Priority based badwidth resource allocation is also available",
               "params": {
                 "levels": ["enabled", "disabled"]
               }
@@ -108,13 +108,13 @@
             {
               "id": "cache",
               "name": "Cache",
-              "desc": "Basic caching service.",
+              "desc": "Local content and frequently used content are served from local cache service entity. This will increase the quality of service by reduced delay and by avoiding the bottleneck of the legacy cloud based content services.",
               "params": {}
             },
             {
               "id": "firewall",
               "name": "Firewall",
-              "desc": "Normal firewall protection.",
+              "desc": "This provides security services that control the incoming and outgoing network traffic. Enhanced features like IPS (Intrusion Prevention System), threat analysis and content filtering are also available.",
               "params": {}
             }
           ]
