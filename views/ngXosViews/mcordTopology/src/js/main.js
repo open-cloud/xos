@@ -46,6 +46,10 @@ angular.module('xos.mcordTopology', [
       // retrieving instances list
       const getData = () => {
 
+        d3.select('svg')
+          .style('width', `${el.clientWidth}px`)
+          .style('height', `${el.clientHeight}px`);
+
         nodes = TopologyElements.nodes;
         links = TopologyElements.links;
 
