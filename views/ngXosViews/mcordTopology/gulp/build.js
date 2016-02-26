@@ -137,11 +137,11 @@ module.exports = function(options){
   gulp.task('build', function() {
     runSequence(
       'templates',
+      'copyCss',
       'babel',
       'scripts',
       'wiredep',
-      'copyHtml',
-      'copyCss'
+      'copyHtml'
     );
   });
 };
