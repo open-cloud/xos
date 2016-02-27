@@ -42,6 +42,7 @@ ps:
 	sudo MYIP=$(MYIP) docker-compose ps
 
 cleanup: stop rm
+	./cleanup.sh
 	bash -c "source ../setup/admin-openrc.sh; nova list --all-tenants; neutron net-list"
 
 devstack_net_fix:
