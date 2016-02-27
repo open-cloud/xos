@@ -17,5 +17,5 @@ onos_volt    ansible_ssh_host=$( get_ip mysite_onos_volt flat-lan-1-net)
 switch_volt  ansible_ssh_host=$( get_ip mysite_volt flat-lan-1-net) subscriber_ip=$( get_ip mysite_volt subscriber_network) lan_ip=$( get_ip mysite_volt lan_network)
 
 client       ansible_ssh_host=$( get_ip mysite_clients flat-lan-1-net) subscriber_ip=$( get_ip mysite_clients subscriber_network)
-vcpe         ansible_ssh_host=$( get_ip mysite_vcpe flat-lan-1-net) lan_ip=$( get_ip mysite_vcpe lan_network)
+vcpe         ansible_ssh_host=$( get_ip mysite_vsg flat-lan-1-net) lan_ip=$( get_ip mysite_vsg lan_network)
 EOF

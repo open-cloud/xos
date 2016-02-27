@@ -15,5 +15,5 @@ $( get_ip mysite_vbng flat-lan-1-net) switch_vbng
 $( get_ip mysite_onos_volt flat-lan-1-net) onos_volt
 $( get_ip mysite_volt flat-lan-1-net) switch_volt
 $( get_ip mysite_clients flat-lan-1-net) client
-$( get_ip mysite_vcpe flat-lan-1-net) vcpe
+$( get_ip mysite_vsg flat-lan-1-net) vcpe
 EOF
