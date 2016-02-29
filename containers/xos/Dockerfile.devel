@@ -102,5 +102,4 @@ RUN echo "set_var EASYRSA	/opt/openvpn/easyrsa3" | tee /opt/openvpn/easyrsa3/var
 RUN /opt/openvpn/easyrsa3/easyrsa --batch init-pki
 RUN /opt/openvpn/easyrsa3/easyrsa --batch --req-cn=XOS build-ca nopass
 RUN /opt/openvpn/easyrsa3/easyrsa --batch gen-dh
-RUN chmod 777 /opt/openvpn/easyrsa3/pki/private/server.key
 RUN chmod 777 /opt/openvpn/easyrsa3/pki/dh.pem
