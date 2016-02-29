@@ -210,13 +210,23 @@ LOGGING = {
         }
     },
     'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django_debug.log',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',

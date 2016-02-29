@@ -37,7 +37,7 @@ The OpenStack installer above creates a VM called *onos-cord* on the head node.
 To bring up ONOS in this VM, log into the head node and run:
 ```
 $ ssh ubuntu@onos-cord
-ubuntu@onos-cord:~$ cd cord; docker-compose up -d
+ubuntu@onos-cord:~$ cd cord; sudo docker-compose up -d
 ```
 
 Currently it's also necessary to do some manual configuration on each compute
