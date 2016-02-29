@@ -1,0 +1,52 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Template for deploying a single server with predefined properties.
+
+imports:
+   - custom_types/xos.yaml
+   - custom_types/cdn.yaml
+
+topology_template:
+  node_templates:
+    HyperCache:
+      type: tosca.nodes.CDNService
+      properties:
+          # HyperCache service must already exist before running this recipe
+          no-create: true
+          no-delete: true
+          no-update: true
+
+    # Setup the Syndicate Devel Service Provider
+
+    main_service_provider:
+        type: tosca.nodes.ServiceProvider
+        requirements:
+           - hpc_service:
+                 node: HyperCache
+                 relationship: tosca.relationships.MemberOfService
+
+    syndicate_devel:
+        type: tosca.nodes.ContentProvider
+        requirements:
+            - service_provider:
+                  node: main_service_provider
+                  relationship: tosca.relationships.MemberOfServiceProvider
+
+#    http_node2.cs.arizona.edu:
+#        type: tosca.nodes.OriginServer
+#        requirements:
+#             - content_provider:
+#                   node: syndicate_devel
+#                   relationship: tosca.relationships.MemberOfContentProvider
+
+    syndicate-devel.opencloud.us:
+        type: tosca.nodes.CDNPrefix
+        requirements:
+             - content_provider:
+                   node: syndicate_devel
+                   relationship: tosca.relationships.MemberOfContentProvider
+
+#             - default_origin_server:
+#                   node: http_node2.cs.arizona.edu
+#                   relationship: tosca.relationships.DefaultOriginServer
+

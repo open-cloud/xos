@@ -17,6 +17,7 @@ from django.db.models.fields.related import ForeignKey, ManyToManyField
 
 options = None
 
+
 def singular(foo, keys):
 	for k in keys:
 		if (foo==k+'es'):
@@ -28,8 +29,11 @@ def singular(foo, keys):
 g = globals()
 
 def enum_classes(apps):
+    global app_map
+    app_map = {}
     model_classes = []
     for app in apps:
+            orig_app=app
             app = app + ".models"
             models_module = __import__(app)
             for part in app.split(".")[1:]:
@@ -37,12 +41,15 @@ def enum_classes(apps):
                     break
                 models_module = getattr(models_module,part)
 
+            global PlCoreBase
             PlCoreBase = getattr(models_module,"PlCoreBase")
 
             for classname in dir(models_module):
                     c = getattr(models_module, classname, None)
                     if type(c)==type(PlCoreBase) and c.__name__ not in options.blacklist:
                             model_classes.append(c)
+                            app_map[c.__name__]=orig_app
+
 
     return model_classes
 
@@ -53,6 +60,8 @@ class GenObj(object):
 	def __init__(self, m):
 		self.model = m
 		self.props = []
+		self.fields = []
+		self.field_dict = []
 		self.refs = []
 		self.plural_name = None
 
@@ -101,11 +110,19 @@ class Generator(dict):
 		return filtered
 
 	def add_object(self, o):
+                global app_map
 		obj = GenObj(o)
 		fields = o._meta.fields
+                try:
+                    obj.app = app_map[o.__name__]
+                except KeyError:
+                    print "KeyError: %r"%o.__name__
+                    pdb.set_trace()
 		self[str(obj).lower()]=obj
 
 	def compute_links(self):
+                base_props = [f.name for f in PlCoreBase._meta.fields]
+
 		for obj in self.values():
 			#if (str(obj)=='network'):
 			#	pdb.set_trace()
@@ -132,7 +149,11 @@ class Generator(dict):
                                         # cause swagger and REST to break
                                         pass
 				else:
-					obj.props.append(f.name)
+                                        f.type = f.__class__.__name__
+
+                                        if (f.name not in base_props):
+                                            obj.fields.append(f) 
+                                        obj.props.append(f.name)
 
 			m2m = obj.model._meta.many_to_many
 			for f in m2m:
