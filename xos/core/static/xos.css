@@ -82,10 +82,6 @@ body.login img.logo{
   min-height: 900px;
 }
 
-.ui-tabs-panel {
-    min-height: 700px;
-}
-
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
     margin-right: -250px;
@@ -333,6 +329,11 @@ background-image: url("Services.png");
 border-bottom: 1px solid #105E9E;
 font-size: 12px;
 border: 0px;
+}
+
+.ui-tabs-panel {
+  min-height: 700px;
+  position: relative;
 }
 
 .ui-tabs .ui-tabs-nav {
@@ -1384,12 +1385,25 @@ button.ui-dialog-titlebar-close{
 button.ui-dialog-titlebar-close:after {
     content: "\e014";
 }
-/* VCPe ADMIN FIX */
-/*form#vcpeservice_form ul li {
-    display: inline-block;
-    background: red;
-    margin-top: 10px;
-    width: auto;
-    padding: 10px;
-    border-radius: 5px;
+/* M-CORD SERVICE GRID */
+.m-cord .kind-container h2{
+  background-color: #337ab7;
+  padding: 10px;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.m-cord .kind-container img.img-responsive {
+  display: inline-block;
+}
+
+.m-cord .kind-container .service-container{
+  height: 0px;
+  overflow: hidden;
+  transition: all .5s ease-in-out;
+}
+
+.m-cord .kind-container.active .service-container{
+  height: 162px
 }
