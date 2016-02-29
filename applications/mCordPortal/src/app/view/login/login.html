@@ -10,7 +10,10 @@
                 <input class="form-control" ng-model="password" type="password" placeholder="password" required>
             </div>
             <div class="form-group">
-                <button class="btn btn-primary btn-block" type="submit">Log In</button>
+                <button class="btn btn-primary btn-block" type="submit">
+                    Log In
+                    <div class="loader small reverse inline" ng-show="loading === true"></div>
+                </button>
             </div>
             <div class="form-group" ng-show="error">
                 <div class="alert alert-danger">

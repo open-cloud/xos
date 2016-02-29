@@ -21,18 +21,22 @@
     .controller('CordLoginCtrl', function ($log, $scope, $resource, $location, $window, User) {
 
       $scope.page.curr = 'login';
+      $scope.loading = false;
 
       $scope.login = function () {
         if ($scope.email && $scope.password) {
           //getResource($scope.email);
-
+          $scope.loading = true;
           User.login($scope.email, $scope.password)
           .then(function(user){
             $location.url('/home');
           })
           .catch(function(e){
             $scope.error = true;
-          });
+          })
+          .finally(function(){
+            $scope.loading = false;
+          });;
 
           $scope.shared.login = $scope.email;
         }
