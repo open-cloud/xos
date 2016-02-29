@@ -60,7 +60,7 @@ angular.module('xos.vpnDashboard', [
     controller: function(Vpn){
       // retrieving user list
       Vpn.getVpnTenants()
-      .then(vpns) => {
+      .then((vpns) => {
         this.vpns = vpns;
       })
       .catch((e) => {
@@ -81,7 +81,7 @@ angular.module('xos.vpnDashboard', [
     controller: function(Vpn){
       // retrieving user list
       Vpn.getClientScript(pk)
-      .then(script_location) => {
+      .then((script_location) => {
         this.script_location = script_location;
       })
       .catch((e) => {
