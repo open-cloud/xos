@@ -24,3 +24,5 @@ xos:
       - ../../core/static:/opt/xos/core/static
       - ../../templates/admin:/opt/xos/templates/admin
       - ../../configurations:/opt/xos/configurations
+      - ../../xos:/opt/xos/xos
+      - ../../core/views:/opt/xos/core/views

@@ -8,7 +8,52 @@ imports:
 topology_template:
   node_templates:
     # M-CORD Services
+    
+    # RAN
+    vBBU:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/vBBU.html
+          kind: RAN
 
+    # EPC
+    vMME:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/vMME.html
+          kind: EPC
+
+    vSGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/vSGW.html
+          kind: EPC
+
+    vPGW:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/vPGW.html
+          kind: EPC
+
+    # EDGE
+    Cache:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/cache.html
+          kind: EDGE
+
+    Firewall:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /static/mCordServices/firewall.html
+          kind: EDGE
+
+    Video Optimization:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /mcord/video
+          kind: EDGE
+          
     # Images
     trusty-server-multi-nic:
       type: tosca.nodes.Image
@@ -245,6 +290,11 @@ topology_template:
       properties:
           url: template:xosMcordTopology
 
+    Ceilometer:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosCeilometerDashboard
+
     padmin@vicci.org:
       type: tosca.nodes.User
       properties:
@@ -254,4 +304,7 @@ topology_template:
       requirements:
           - mcord_dashboard:
               node: Topology
+              relationship: tosca.relationships.UsesDashboard
+          - ceilometer_dashboard:
+              node: Ceilometer
               relationship: tosca.relationships.UsesDashboard

@@ -9,6 +9,7 @@ from config import Config
 from config import set_override
 config = Config()
 
+
 # Override the config from the environment. This is used leverage the LINK
 # capability of docker. It would be far better to use DNS and that can be
 # done in environments like kubernetes. Look for environment variables that
@@ -20,7 +21,7 @@ def overrideDbSettings(v):
     config.db_port = parsed.port
 
 env_to_config_dict = {
-    "XOS_DB_PORT" : overrideDbSettings
+    "XOS_DB_PORT": overrideDbSettings
 }
 
 for key, ofunc in env_to_config_dict.items():
@@ -30,21 +31,21 @@ for key, ofunc in env_to_config_dict.items():
 GEOIP_PATH = "/usr/share/GeoIP"
 XOS_DIR = "/opt/xos"
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-#LOGIN_REDIRECT_URL = '/admin/core/user'
+# LOGIN_REDIRECT_URL = '/admin/core/user'
 LOGIN_REDIRECT_URL = '/admin/loggedin/'
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': config.db_name,                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': config.db_user,
@@ -160,7 +161,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-#    'django.contrib.sites',
+    # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
@@ -184,7 +185,7 @@ INSTALLED_APPS = (
     'rest_framework_swagger',
 )
 
-if DJANGO_VERSION[1]>=7:
+if DJANGO_VERSION[1] >= 7:
     # if django >= 1.7, then change the admin module
     INSTALLED_APPS = list(INSTALLED_APPS)
     INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
