@@ -19,5 +19,5 @@ class ClientScript(APIView):
     def get(self, request, format=None):
         if (not request.user.is_authenticated()):
             raise PermissionDenied("You must be authenticated in order to use this API")
-        pk = request.QUERY_PARAMS.get('pk', None)
-        return Response(VPNTenant.get_tenant_objects().filter(pk=pk))
+        teant_id = request.QUERY_PARAMS.get('tenantId', None)
+        return Response(VPNTenant.get_tenant_objects().filter(pk=tenantId))

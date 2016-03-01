@@ -145,8 +145,8 @@ class VPNTenant(TenantWithContainer):
         """string: the location of the client script that is generated when
            this method is called.
         """
-        script_name = time.time() + ".vpn"
-        create_client_script(script_name)
+        script_name = str(time.time()) + ".vpn"
+        self.create_client_script(script_name)
         return script_name
 
     def create_client_script(self, script_name):

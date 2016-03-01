@@ -9,12 +9,12 @@ angular.module('xos.vpnDashboard', [
 ])
 .config(($stateProvider) => {
   $stateProvider
-  .state('vpn-list', {
+  .state('vpnList', {
     url: '/',
     template: '<vpn-list></vpn-list>'
   })
-  .state('cleint-script', {
-    url: '/client/:pk',
+  .state('clientScript', {
+    url: '/client/:tenantId',
     template: '<client-script></client-script>'
   });
 })
@@ -33,10 +33,10 @@ angular.module('xos.vpnDashboard', [
 
     return deferred.promise;
   }
-  this.getVpnTenants = (pk) => {
+  this.getVpnTenants = (tenantId) => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/clientscript/', {params: {pk: pk}})
+    $http.get('/xoslib/clientscript/', {params: {tenantId: tenantId}})
     .then((res) => {
       deferred.resolve(res.data)
     })
@@ -73,14 +73,14 @@ angular.module('xos.vpnDashboard', [
   return {
     restrict: 'E',
     scope: {
-      pk: '=pk',
+      tenantId: '=tenantId',
     },
     bindToController: true,
     controllerAs: 'vm',
     templateUrl: 'templates/client-script.tpl.html',
     controller: function(Vpn){
       // retrieving user list
-      Vpn.getClientScript(pk)
+      Vpn.getClientScript(tenantId)
       .then((script_location) => {
         this.script_location = script_location;
       })
