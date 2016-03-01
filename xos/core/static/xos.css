@@ -1387,11 +1387,12 @@ button.ui-dialog-titlebar-close:after {
 }
 /* M-CORD SERVICE GRID */
 .m-cord .kind-container h2{
-  background-color: #337ab7;
+  background-color: #9c0001;
   padding: 10px;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+  box-shadow: 1px 2px 2px black;
 }
 
 .m-cord .kind-container img.img-responsive {
@@ -1401,9 +1402,11 @@ button.ui-dialog-titlebar-close:after {
 .m-cord .kind-container .service-container{
   height: 0px;
   overflow: hidden;
+  opacity: 0;
   transition: all .5s ease-in-out;
 }
 
 .m-cord .kind-container.active .service-container{
-  height: 162px
+  height: 162px;
+  opacity: 1;
 }

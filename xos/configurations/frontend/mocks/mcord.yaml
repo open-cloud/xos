@@ -46,18 +46,21 @@ topology_template:
       type: tosca.nodes.Service
       properties:
           view_url: /mcord/?service=Cache
+          icon_url: /static/mCordServices/service_cache.png
           kind: EDGE
 
     Firewall:
       type: tosca.nodes.Service
       properties:
           view_url: /mcord/?service=Firewall
+          icon_url: /static/mCordServices/service_firewall.png
           kind: EDGE
 
     Video Optimization:
       type: tosca.nodes.Service
       properties:
           view_url: /mcord/?service=Video%20Optimization
+          icon_url: /static/mCordServices/service_video.png
           kind: EDGE
           
     # Images

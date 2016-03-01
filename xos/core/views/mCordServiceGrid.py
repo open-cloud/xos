@@ -44,7 +44,7 @@ class ServiceGridView(TemplateView):
             for service in Service.objects.filter(kind=kind["kind"]):
                 image_url = service.icon_url
                 if (not image_url):
-                    image_url = "/static/primarycons_blue/gear_2.png"
+                    image_url = "/static/mCordServices/service_common.png"
                 if service.view_url.startswith("http"):
                     target = 'target="_blank"'
                 else:
