@@ -1,6 +1,6 @@
 /* CONTAINER */
 #xosDiagnostic, [ui-view] {
-    height: 700px;
+    height: 100%;
 }
 
 diagnostic-container .half-height {
