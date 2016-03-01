@@ -51,7 +51,14 @@ environment) and want external connectivity without the fabric, download [this s
  $ sudo compute-ext-net.sh
  ```
 
-Setting up the full fabric is beyond the scope of this README.
+The script creates a bridge (*databr*) on the node as well as a veth pair
+(*veth0/veth1*).  The *veth0* interface is added as a port on *databr* and
+VTN is configured to use *veth1* as its data plane interface.  Traffic coming
+from *databr* is NAT'ed to the external network via `iptables`.  The configuration
+assumes that *databr* assumes the MAC address of *veth0* when it is added as a port
+-- this seems to always be the case (though not sure why).
+
+Note that setting up the full fabric is beyond the scope of this README.
 
 ### Bringing up XOS
 
