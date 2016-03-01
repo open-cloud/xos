@@ -16,6 +16,12 @@ topology_template:
           view_url: /mcord/?service=vBBU
           kind: RAN
 
+    eSON:
+      type: tosca.nodes.Service
+      properties:
+          view_url: http://www.google.com
+          kind: RAN
+
     # EPC
     vMME:
       type: tosca.nodes.Service
