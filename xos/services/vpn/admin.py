@@ -51,7 +51,7 @@ class VPNTenantForm(forms.ModelForm):
         client_address (forms.GenericIPAddressField): The ip address on the VPN of the client.
         is_persistent (forms.BooleanField): Determines if this Tenant keeps this connection alive through failures.
         can_view_subnet (forms.BooleanField): Determines if this Tenant makes it's subnet available to the client.
-        port_number (forms.PositiveIntegerField): The port to use for this Tenant.
+        port_number (forms.IntegerField): The port to use for this Tenant.
     """
     creator = forms.ModelChoiceField(queryset=User.objects.all())
     server_network = forms.GenericIPAddressField(
@@ -59,7 +59,7 @@ class VPNTenantForm(forms.ModelForm):
     vpn_subnet = forms.GenericIPAddressField(protocol="IPv4", required=True)
     is_persistent = forms.BooleanField(required=False)
     clients_can_see_each_other = forms.BooleanField(required=False)
-    port_number = forms.PositiveIntegerField(required=True)
+    port_number = forms.IntegerField(required=True)
 
     def __init__(self, *args, **kwargs):
         super(VPNTenantForm, self).__init__(*args, **kwargs)
@@ -99,11 +99,11 @@ class VPNTenantForm(forms.ModelForm):
             'clients_can_see_each_other')
         self.instance.port_number = self.cleaned_data.get('port_number')
 
-        if (not self.instance.script):
-            self.instance.script = str(time.time()) + ".vpn"
-
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
+
+        if (not self.instance.script):
+            self.instance.script = str(time.time()) + ".vpn"
 
         return super(VPNTenantForm, self).save(commit=commit)
 
@@ -125,7 +125,7 @@ class VPNTenantAdmin(ReadOnlyAwareAdmin):
     fieldsets = [(None, {'fields': ['backend_status_text', 'kind',
                                     'provider_service', 'instance', 'creator',
                                     'server_network', 'vpn_subnet', 'is_persistent',
-                                    'clients_can_see_each_other'],
+                                    'clients_can_see_each_other', 'port_number'],
                          'classes': ['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'instance')
     form = VPNTenantForm
