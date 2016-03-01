@@ -1,7 +1,7 @@
 [
   {
-    "url": "subscribers",
-    "base": "xos/",
+    "url": "cordsubscriber",
+    "base": "xoslib/",
     "methods": ["GET"],
     "param": "id"
   },

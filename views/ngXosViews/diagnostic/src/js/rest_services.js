@@ -164,7 +164,7 @@
     });
   })
   .service('Subscribers', function($resource, $q, SubscriberDevice){
-    return $resource('/xos/subscribers/:id', {id: '@id'}, {
+    return $resource('/xoslib/cordsubscriber/:id', {id: '@id'}, {
       queryWithDevices: {
         method: 'GET',
         isArray: true,
@@ -336,7 +336,7 @@
       const serviceTree = buildLevel(tenants, services, rootService, rootTenant);
 
       return {
-        name: subscriber.name,
+        name: subscriber.name || subscriber.humanReadableName,
         parent: null,
         type: 'subscriber',
         children: [serviceTree]

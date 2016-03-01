@@ -475,7 +475,9 @@
         'text-anchor': 'middle',
         y: serviceTopologyConfig.square.y - 10
       })
-      .text(d => d.name);
+      .text(d => {
+        return d.name || d.humanReadableName
+      });
     }
 
     this.addDevice = (nodes) => {

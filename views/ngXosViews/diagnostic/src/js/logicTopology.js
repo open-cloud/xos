@@ -50,17 +50,6 @@
         $rootScope.$on('instance.detail', (evt, service) => {
           ChartData.getInstanceStatus(service)
           .then((instances) => {
-            // this.hideInstanceStats = false;
-            // // HACK if array is empty wait for animation
-            // if(instances.length === 0){
-            //   this.hideInstanceStats = true;
-            //   $timeout(() => {
-            //     this.selectedInstances = instances;
-            //   }, 500);
-            // }
-            // else{
-            //   this.selectedInstances = instances;
-            // }
             LogicTopologyHelper.updateTree(svg);
           })
         })

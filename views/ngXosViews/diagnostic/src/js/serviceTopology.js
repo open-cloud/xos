@@ -55,21 +55,8 @@
           // ServiceTopologyHelper.drawLegend(svg);
           ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
         };
-
-        this.getInstances = (slice) => {
-          Instances.query({slice: slice.id}).$promise
-          .then((instances) => {
-            this.selectedSlice = slice;
-            this.instances = instances;
-          })
-          .catch(e => {
-            this.errors = e;
-            throw new Error(e);
-          })
-        };
         
         $scope.$watch(() => this.serviceChain, (chain) => {
-          console.log(chain);
           if(angular.isDefined(chain)){
             draw(chain);
           }
