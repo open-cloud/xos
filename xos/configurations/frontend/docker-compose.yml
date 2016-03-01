@@ -26,3 +26,4 @@ xos:
       - ../../configurations:/opt/xos/configurations
       - ../../xos:/opt/xos/xos
       - ../../core/views:/opt/xos/core/views
+      - ../../services:/opt/xos/services

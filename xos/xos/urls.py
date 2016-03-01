@@ -11,7 +11,7 @@ from hpcapi import *
 from core.views.legacyapi import LegacyXMLRPC
 from core.views.serviceGraph import ServiceGridView, ServiceGraphView
 from services.helloworld.view import *
-from services.helloworld.view import *
+from services.mcord.view import *
 # from core.views.analytics import AnalyticsAjaxView
 from core.models import *
 from rest_framework import generics
@@ -59,7 +59,7 @@ urlpatterns = patterns(
     url(r'^observer', 'core.views.observer.Observer', name='observer'),
     url(r'^helloworld', HelloWorldView.as_view(), name='helloWorld'),
 
-    # url(r'^mcord', MCordView.as_view(), name='mcord'),
+    url(r'^mcord', MCordView.as_view(), name='mcord'),
 
     url(r'^serviceGrid', serviceClass(), name='serviceGrid'),
     url(r'^serviceGraph.png', ServiceGraphView.as_view(), name='serviceGraph'),

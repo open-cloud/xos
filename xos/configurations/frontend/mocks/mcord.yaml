@@ -13,45 +13,45 @@ topology_template:
     vBBU:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/vBBU.html
+          view_url: /mcord/?service=vBBU
           kind: RAN
 
     # EPC
     vMME:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/vMME.html
+          view_url: /mcord/?service=vMME
           kind: EPC
 
     vSGW:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/vSGW.html
+          view_url: /mcord/?service=vSGW
           kind: EPC
 
     vPGW:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/vPGW.html
+          view_url: /mcord/?service=vPGW
           kind: EPC
 
     # EDGE
     Cache:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/cache.html
+          view_url: /mcord/?service=Cache
           kind: EDGE
 
     Firewall:
       type: tosca.nodes.Service
       properties:
-          view_url: /static/mCordServices/firewall.html
+          view_url: /mcord/?service=Firewall
           kind: EDGE
 
     Video Optimization:
       type: tosca.nodes.Service
       properties:
-          view_url: /mcord/video
+          view_url: /mcord/?service=Video%20Optimization
           kind: EDGE
           
     # Images

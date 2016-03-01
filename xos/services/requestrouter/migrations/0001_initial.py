@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.utils.timezone
+import core.models.plcorebase
 
 
 class Migration(migrations.Migration):
@@ -34,8 +35,13 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_register', models.CharField(default=b'{}', max_length=140, null=True)),
+                ('backend_status', models.CharField(default=b'0 - Provisioning in progress', max_length=1024)),
                 ('deleted', models.BooleanField(default=False)),
+                ('write_protect', models.BooleanField(default=False)),
+                ('lazy_blocked', models.BooleanField(default=False)),
+                ('no_sync', models.BooleanField(default=False)),
                 ('name', models.SlugField(help_text=b'name of this service map', unique=True)),
                 ('prefix', models.CharField(help_text=b'FQDN of the region of URI space managed by RR on behalf of this service', max_length=256)),
                 ('siteMap', models.FileField(help_text=b'maps client requests to service instances', upload_to=b'maps/', blank=True)),
@@ -45,6 +51,6 @@ class Migration(migrations.Migration):
             ],
             options={
             },
-            bases=(models.Model,),
+            bases=(models.Model, core.models.plcorebase.PlModelMixIn),
         ),
     ]
