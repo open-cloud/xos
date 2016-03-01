@@ -45,8 +45,13 @@ class ServiceGridView(TemplateView):
                 image_url = service.icon_url
                 if (not image_url):
                     image_url = "/static/primarycons_blue/gear_2.png"
+                if service.view_url.startswith("http"):
+                    target = 'target="_blank"'
+                else:
+                    target = ''
+
                 html = html + '<div class="col-xs-4 text-center service-container">'
-                html = html + '<a href="%s">' % (service.view_url)
+                html = html + '<a href="%s" %s>' % (service.view_url, target)
                 html = html + '<img class="img-responsive" src="%s">' % (image_url)
                 html = html + "<h4>" + service.name + "</h4>"
                 html = html + '</a>'
