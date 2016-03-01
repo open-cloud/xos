@@ -52,8 +52,8 @@
     */
     this.addSubscriberTag = (tags) => {
       this.logicTopologyData.children[0].children[0].children[0].subscriberTag = {
-        cTag: tags.c_tag,
-        sTag: tags.s_tag
+        cTag: tags.cTag,
+        sTag: tags.sTag
       };
     };
 
@@ -68,16 +68,15 @@
       return this.logicTopologyData;
     };
 
-    this.getSubscriberTag = () => {
-      const tags = JSON.parse(this.currentServiceChain.children[0].tenant.service_specific_attribute);
-      delete tags.creator_id;
+    this.getSubscriberTag = (subscriber) => {
+      const tags = {
+        cTag: subscriber.c_tag,
+        sTag: subscriber.s_tag
+      };
       
       this.addSubscriberTag(tags);
       // add tags info to current subscriber
-      this.currentSubscriber.tags = {
-        cTag: tags.c_tag,
-        sTag: tags.s_tag
-      };
+      this.currentSubscriber.tags = tags;
 
     };
 
@@ -88,7 +87,6 @@
     };
 
     this.selectSubscriber = (subscriber) => {
-
       // append the device with to config settings
       serviceTopologyConfig.elWidths.push(160);
 
@@ -97,7 +95,7 @@
       //clean selected instances
       this.highlightInstances([]);
 
-      this.getSubscriberTag();
+      this.getSubscriberTag(subscriber);
       this.getSubscriberIP();
 
     };

@@ -1,0 +1,31 @@
+[
+   {
+     "humanReadableName": "cordSubscriber-1", 
+     "id": 1, 
+     "service_specific_id": "123", 
+     "vlan_id": "432", 
+     "s_tag": "222", 
+     "c_tag": "432", 
+     "vcpe_id": 4, 
+     "instance": 1, 
+     "instance_name": "mysite_vsg", 
+     "image": 1, 
+     "image_name": "trusty-server-multi-nic", 
+     "firewall_enable": false, 
+     "firewall_rules": "accept all anywhere anywhere", 
+     "url_filter_enable": false, 
+     "url_filter_rules": "allow all", 
+     "url_filter_level": "R", 
+     "bbs_account": null, 
+     "ssh_command": null, 
+     "vcpe_synced": false, 
+     "cdn_enable": false, 
+     "vbng_id": 5, 
+     "routeable_subnet": "", 
+     "nat_ip": null, 
+     "lan_ip": null, 
+     "wan_ip": null, 
+     "private_ip": null, 
+     "wan_mac": null
+   }
+]
