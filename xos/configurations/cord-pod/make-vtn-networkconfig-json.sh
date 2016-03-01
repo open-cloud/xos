@@ -17,8 +17,8 @@ cat >> $FN <<EOF
                 "sshKeyFile": "/root/node_key",
                 "publicGateways": [
                     {
-                        "gatewayIp": "207.141.192.158",
-                        "gatewayMac": "a4:23:05:34:56:78"
+                        "gatewayIp": "192.168.0.1",
+                        "gatewayMac": "02:42:c0:a8:00:01"
                     }
                 ],
                 "nodes" : [
@@ -41,7 +41,7 @@ for NODE in $NODES; do
     echo $NODE
     NODEIP=`getent hosts $NODE | awk '{ print $1 }'`
 
-    PHYPORT=mlx0
+    PHYPORT=veth1
     # How to set LOCALIP?
     LOCALIPNET="192.168.199"
 
