@@ -12,18 +12,18 @@ angular.module('xos.vpnDashboard', [
   .state('vpnList', {
     url: '/',
     template: '<vpn-list></vpn-list>'
-  })
-  .state('clientScript', {
-    url: '/client/:tenantId',
-    template: '<client-script></client-script>'
   });
+})
+.config(($compileProvider) => {
+  $compileProvider.aHrefSanitizationWhitelist(
+    /^\s*(https?|ftp|mailto|tel|file|blob):/);
 })
 .service('Vpn', function($http, $q){
 
   this.getVpnTenants = () => {
     let deferred = $q.defer();
 
-    $http.get('/xoslib/vpntenants/')
+    $http.get('/xoslib/vpntenant/')
     .then((res) => {
       deferred.resolve(res.data)
     })
@@ -33,19 +33,6 @@ angular.module('xos.vpnDashboard', [
 
     return deferred.promise;
   }
-  this.getVpnTenants = (tenantId) => {
-    let deferred = $q.defer();
-
-    $http.get('/xoslib/clientscript/', {params: {tenantId: tenantId}})
-    .then((res) => {
-      deferred.resolve(res.data)
-    })
-    .catch((e) => {
-      deferred.reject(e);
-    });
-
-    return deferred.promise;
-  };
 })
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
@@ -66,27 +53,12 @@ angular.module('xos.vpnDashboard', [
       .catch((e) => {
         throw new Error(e);
       });
-    }
-  };
-})
-.directive('clientScript', function(){
-  return {
-    restrict: 'E',
-    scope: {
-      tenantId: '=tenantId',
-    },
-    bindToController: true,
-    controllerAs: 'vm',
-    templateUrl: 'templates/client-script.tpl.html',
-    controller: function(Vpn){
-      // retrieving user list
-      Vpn.getClientScript(tenantId)
-      .then((script_location) => {
-        this.script_location = script_location;
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
+
+      this.getScriptLocation = function(vpn) {
+        var content = vpn.create_client_script();
+        var blob = new Blob([ content ], { type : 'text/plain' });
+        return (window.URL || window.webkitURL).createObjectURL( blob );
+      }
     }
   };
 });
