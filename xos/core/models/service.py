@@ -36,9 +36,9 @@ class AttributeMixin(object):
         for (attrname, default) in cls.simple_attributes:
             if attrname==name:
                 return default
-        if hasattr(cls,"defaults"):
-            if attrname in cls.defaults:
-                return cls.defaults[attrname]
+        if hasattr(cls,"default_attributes"):
+            if attrname in cls.default_attributes:
+                return cls.default_attributes[attrname]
         else:
             return None
 
