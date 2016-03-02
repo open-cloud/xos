@@ -4,12 +4,16 @@
   angular.module('xos.diagnostic')
   .service('ServiceTopologyHelper', function($rootScope, $window, $log, lodash, ServiceRelation, serviceTopologyConfig, d3){
 
-    var _svg, _layout, _source;
+    var _svg, _layout, _source, _el;
 
     var i = 0;
 
     // given a canvas, a layout and a data source, draw a tree layout
-    const updateTree = (svg, layout, source) => {
+    const updateTree = (svg, layout, source, el = _el) => {
+
+      if(el){
+        _el = el;
+      }
 
       //cache data
       _svg = svg;
@@ -28,7 +32,7 @@
       // Normalize for fixed-depth.
       nodes.forEach(function(d) {
         // position the child node horizontally
-        const step = (($window.innerWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
+        const step = ((_el.clientWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
         d.y = d.depth * step;
       });
 
@@ -50,7 +54,11 @@
       const serviceNodes = nodeEnter.filter('.service');
 
       subscriberNodes.append('rect')
-        .attr(serviceTopologyConfig.square);
+        .attr(serviceTopologyConfig.square)
+        // add event listener to subscriber
+        .on('click', () => {
+          $rootScope.$emit('subscriber.modal.open');
+        });
 
       internetNodes.append('rect')
         .attr(serviceTopologyConfig.square);

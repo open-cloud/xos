@@ -57,14 +57,37 @@
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
 
-        this.openSubscriberModal = () => {
-          this.subscriberModal = true;
+        this.selectSubscriberModal = () => {
+          this.openSelectSubscriberModal = true;
+          $scope.$apply();
+        };
+
+        this.subscriberStatusModal = () => {
+          this.openSubscriberStatusModal = true;
           $scope.$apply();
         };
 
         // listen for subscriber modal event
         $rootScope.$on('subscriber.modal.open', () => {
-          this.openSubscriberModal();
+
+          if(ChartData.currentSubscriber){
+            this.subscriberStatusModal();
+          }
+          else{
+            this.selectSubscriberModal();
+          }
+        });
+
+        // listen for subscriber modal event
+        $rootScope.$on('subscriber.modal.open', () => {
+
+          if(ChartData.currentSubscriber){
+            this.currentSubscriber = ChartData.currentSubscriber;
+            this.subscriberStatusModal();
+          }
+          else{
+            this.selectSubscriberModal();
+          }
         });
 
       }

@@ -1,0 +1,43 @@
+<div class="modal fade" ng-class="{in: vm.open}" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button ng-click="vm.close()"  type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Change subscriber status:</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-6">
+            <a ng-click="vm.setStatus('enabled')" 
+              class="btn btn-block"
+              ng-class="{'btn-primary': vm.subscriber.status === 'enabled' ,'btn-default': vm.subscriber.status !== 'enabled'}"
+              >Enabled</a>
+          </div>
+          <div class="col-xs-6">
+            <a ng-click="vm.setStatus('suspended')" 
+              class="btn btn-block"
+              ng-class="{'btn-primary': vm.subscriber.status === 'suspended' ,'btn-default': vm.subscriber.status !== 'suspended'}"
+              >Suspended</a>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 20px">
+          <div class="col-xs-6">
+            <a ng-click="vm.setStatus('delinquent')" 
+              class="btn btn-block"
+              ng-class="{'btn-primary': vm.subscriber.status === 'delinquent' ,'btn-default': vm.subscriber.status !== 'delinquent'}"
+              >Delinquent <br> payment</a>
+          </div>
+          <div class="col-xs-6">
+            <a ng-click="vm.setStatus('copyright')" 
+              class="btn btn-block"
+              ng-class="{'btn-primary': vm.subscriber.status === 'copyright' ,'btn-default': vm.subscriber.status !== 'copyright'}"
+              >Copyright <br> violation</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button ng-click="vm.close()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
