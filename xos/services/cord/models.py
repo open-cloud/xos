@@ -59,7 +59,11 @@ class CordSubscriberRoot(Subscriber):
                        "firewall_rules",
                        "url_filter_enable",
                        "url_filter_rules",
-                       "cdn_enable",)
+                       "cdn_enable",
+                       "uplink_speed",
+                       "downlink_speed",
+                       "enable_uverse",
+                       "status")
 
     def __init__(self, *args, **kwargs):
         super(CordSubscriberRoot, self).__init__(*args, **kwargs)
