@@ -344,18 +344,34 @@ class VOLTTenantInline(XOSTabularInline):
 
 class CordSubscriberRootForm(forms.ModelForm):
     url_filter_level = forms.CharField(required = False)
+    uplink_speed = forms.CharField(required = False)
+    downlink_speed = forms.CharField(required = False)
+    status = forms.ChoiceField(choices=CordSubscriberRoot.status_choices, required=True)
+    enable_uverse = forms.BooleanField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (CordSubscriberRootForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
         if self.instance:
             self.fields['url_filter_level'].initial = self.instance.url_filter_level
+            self.fields['uplink_speed'].initial = self.instance.uplink_speed
+            self.fields['downlink_speed'].initial = self.instance.downlink_speed
+            self.fields['status'].initial = self.instance.status
+            self.fields['enable_uverse'].initial = self.instance.enable_uverse
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = CORD_SUBSCRIBER_KIND
+            self.fields['uplink_speed'].initial = CordSubscriberRoot.get_default_attribute("uplink_speed")
+            self.fields['downlink_speed'].initial = CordSubscriberRoot.get_default_attribute("downlink_speed")
+            self.fields['status'].initial = CordSubscriberRoot.get_default_attribute("status")
+            self.fields['enable_uverse'].initial = CordSubscriberRoot.get_default_attribute("enable_uverse")
 
     def save(self, commit=True):
         self.instance.url_filter_level = self.cleaned_data.get("url_filter_level")
+        self.instance.uplink_speed = self.cleaned_data.get("uplink_speed")
+        self.instance.downlink_speed = self.cleaned_data.get("downlink_speed")
+        self.instance.status = self.cleaned_data.get("status")
+        self.instance.enable_uverse = self.cleaned_data.get("enable_uverse")
         return super(CordSubscriberRootForm, self).save(commit=commit)
 
     class Meta:
@@ -365,9 +381,9 @@ class CordSubscriberRootAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id',  'name', )
     list_display_links = ('backend_status_icon', 'id', 'name', )
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'service_specific_id', # 'service_specific_attribute',
-                                     'url_filter_level'],
+                                     'url_filter_level', "uplink_speed", "downlink_speed", "status", "enable_uverse"],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'bbs_account')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute',)
     form = CordSubscriberRootForm
     inlines = (VOLTTenantInline, TenantRootPrivilegeInline)
 
