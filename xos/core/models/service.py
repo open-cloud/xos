@@ -32,6 +32,17 @@ class AttributeMixin(object):
         return attributes.get(name, default)
 
     @classmethod
+    def get_default_attribute(cls, name):
+        for (attrname, default) in cls.simple_attributes:
+            if attrname==name:
+                return default
+        if hasattr(cls,"defaults"):
+            if attrname in cls.defaults:
+                return cls.defaults[attrname]
+        else:
+            return None
+
+    @classmethod
     def setup_simple_attributes(cls):
         for (attrname, default) in cls.simple_attributes:
             setattr(cls, attrname, property(lambda self, attrname=attrname, default=default: self.get_attribute(attrname, default),
