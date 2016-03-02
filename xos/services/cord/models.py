@@ -32,20 +32,38 @@ class CordSubscriberRoot(Subscriber):
 
     KIND = CORD_SUBSCRIBER_KIND
 
-    default_attributes = {"firewall_enable": False,
-                          "firewall_rules": "accept all anywhere anywhere",
-                          "url_filter_enable": False,
-                          "url_filter_rules": "allow all",
-                          "url_filter_level": "PG",
-                          "cdn_enable": False,
-                          "users": [],
-                          "is_demo_user": False }
+    status_choices = (("enabled", "Enabled"),
+                      ("suspended", "Suspended"),
+                      ("delinquent", "Delinquent"),
+                      ("copyrightviolation", "Copyright Violation"))
+
+    # 'simple_attributes' will be expanded into properties and setters that
+    # store the attribute using self.set_attribute / self.get_attribute.
+
+    simple_attributes = ( ("firewall_enable", False),
+                          ("firewall_rules", "accept all anywhere anywhere"),
+                          ("url_filter_enable", False),
+                          ("url_filter_rules", "allow all"),
+                          ("url_filter_level", "PG"),
+                          ("cdn_enable", False),
+                          ("users", []),
+                          ("is_demo_user", False),
+
+                          ("uplink_speed", "1000000000"),  # 1 gigabit, a reasonable default?
+                          ("downlink_speed", "1000000000"),
+                          ("enable_uverse", True) )
+
+    default_attributes = {"status": "enabled"}
 
     sync_attributes = ("firewall_enable",
                        "firewall_rules",
                        "url_filter_enable",
                        "url_filter_rules",
-                       "cdn_enable",)
+                       "cdn_enable",
+                       "uplink_speed",
+                       "downlink_speed",
+                       "enable_uverse",
+                       "status")
 
     def __init__(self, *args, **kwargs):
         super(CordSubscriberRoot, self).__init__(*args, **kwargs)
@@ -67,60 +85,14 @@ class CordSubscriberRoot(Subscriber):
         return volt
 
     @property
-    def firewall_enable(self):
-        return self.get_attribute("firewall_enable", self.default_attributes["firewall_enable"])
+    def status(self):
+        return self.get_attribute("status", self.default_attributes["status"])
 
-    @firewall_enable.setter
-    def firewall_enable(self, value):
-        self.set_attribute("firewall_enable", value)
-
-    @property
-    def firewall_rules(self):
-        return self.get_attribute("firewall_rules", self.default_attributes["firewall_rules"])
-
-    @firewall_rules.setter
-    def firewall_rules(self, value):
-        self.set_attribute("firewall_rules", value)
-
-    @property
-    def url_filter_enable(self):
-        return self.get_attribute("url_filter_enable", self.default_attributes["url_filter_enable"])
-
-    @url_filter_enable.setter
-    def url_filter_enable(self, value):
-        self.set_attribute("url_filter_enable", value)
-
-    @property
-    def url_filter_level(self):
-        return self.get_attribute("url_filter_level", self.default_attributes["url_filter_level"])
-
-    @url_filter_level.setter
-    def url_filter_level(self, value):
-        self.set_attribute("url_filter_level", value)
-
-    @property
-    def url_filter_rules(self):
-        return self.get_attribute("url_filter_rules", self.default_attributes["url_filter_rules"])
-
-    @url_filter_rules.setter
-    def url_filter_rules(self, value):
-        self.set_attribute("url_filter_rules", value)
-
-    @property
-    def cdn_enable(self):
-        return self.get_attribute("cdn_enable", self.default_attributes["cdn_enable"])
-
-    @cdn_enable.setter
-    def cdn_enable(self, value):
-        self.set_attribute("cdn_enable", value)
-
-    @property
-    def users(self):
-        return self.get_attribute("users", self.default_attributes["users"])
-
-    @users.setter
-    def users(self, value):
-        self.set_attribute("users", value)
+    @status.setter
+    def status(self, value):
+        if not value in [x[0] for x in self.status_choices]:
+            raise Exception("invalid status %s" % value)
+        self.set_attribute("status", value)
 
     def find_user(self, uid):
         uid = int(uid)
@@ -195,13 +167,7 @@ class CordSubscriberRoot(Subscriber):
             # 2) trigger vcpe observer to wake up
             self.volt.vcpe.save()
 
-    @property
-    def is_demo_user(self):
-        return self.get_attribute("is_demo_user", self.default_attributes["is_demo_user"])
-
-    @is_demo_user.setter
-    def is_demo_user(self, value):
-        self.set_attribute("is_demo_user", value)
+CordSubscriberRoot.setup_simple_attributes()
 
 # -------------------------------------------
 # VOLT
