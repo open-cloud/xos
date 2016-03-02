@@ -165,6 +165,10 @@
   })
   .service('Subscribers', function($resource, $q, SubscriberDevice){
     return $resource('/xoslib/cordsubscriber/:id', {id: '@id'}, {
+      update: {
+        method: 'PUT',
+        isArray: false
+      },
       queryWithDevices: {
         method: 'GET',
         isArray: true,

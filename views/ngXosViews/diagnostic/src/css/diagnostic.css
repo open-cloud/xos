@@ -27,6 +27,12 @@ diagnostic-container .subscriber-select{
     z-index: 1;
 }
 
+
+/* subscriber-status-modal */
+subscriber-status-modal .row + .row {
+  margin-top: 20px;
+}
+
 .half-height + .half-height {
     border-top: 1px solid black;
 }
