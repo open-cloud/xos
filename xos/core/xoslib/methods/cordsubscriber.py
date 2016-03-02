@@ -47,6 +47,12 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
         ssh_command = ReadOnlyField()
         bbs_account = ReadOnlyField()
 
+        wan_container_ip = ReadOnlyField()
+        uplink_speed = serializers.CharField(required=False)
+        downlink_speed = serializers.CharField(required=False)
+        status = serializers.CharField()
+        enable_uverse = serializers.BooleanField()
+
         lan_ip = ReadOnlyField()
         wan_ip = ReadOnlyField()
         nat_ip = ReadOnlyField()
@@ -68,7 +74,9 @@ class CordSubscriberIdSerializer(serializers.ModelSerializer, PlusSerializerMixi
                       'bbs_account',
                       'ssh_command',
                       'vcpe_synced',
-                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac')
+                      'cdn_enable', 'vbng_id', 'routeable_subnet', 'nat_ip', 'lan_ip', 'wan_ip', 'private_ip', 'wan_mac',
+                      'wan_container_ip',
+                      'uplink_speed', 'downlink_speed', 'status', 'enable_uverse')
 
 
         def getHumanReadableName(self, obj):
