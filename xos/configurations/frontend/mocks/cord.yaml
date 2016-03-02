@@ -532,3 +532,20 @@ topology_template:
             - subscriber:
                 node: My House
                 relationship: tosca.relationships.BelongsToSubscriber
+
+    # DASHBOARDS
+    Diagnostic:
+      type: tosca.nodes.DashboardView
+      properties:
+          url: template:xosDiagnostic
+
+    padmin@vicci.org:
+      type: tosca.nodes.User
+      properties:
+          firstname: XOS
+          lastname: admin
+          is_admin: true
+      requirements:
+          - diagnostic_dashboard:
+              node: Diagnostic
+              relationship: tosca.relationships.UsesDashboard

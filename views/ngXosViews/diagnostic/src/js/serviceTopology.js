@@ -34,6 +34,7 @@
           // clean
           d3.select($element[0]).select('svg').remove();
 
+
           const width = el.clientWidth - (serviceTopologyConfig.widthMargin * 2);
           const height = el.clientHeight - (serviceTopologyConfig.heightMargin * 2);
 
@@ -53,7 +54,7 @@
           root.y0 = width / 2;
 
           // ServiceTopologyHelper.drawLegend(svg);
-          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root);
+          ServiceTopologyHelper.updateTree(treeContainer, treeLayout, root, el);
         };
         
         $scope.$watch(() => this.serviceChain, (chain) => {
