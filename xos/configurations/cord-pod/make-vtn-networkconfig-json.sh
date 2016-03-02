@@ -17,8 +17,8 @@ cat >> $FN <<EOF
                 "sshKeyFile": "/root/node_key",
                 "publicGateways": [
                     {
-                        "gatewayIp": "192.168.0.1",
-                        "gatewayMac": "02:42:c0:a8:00:01"
+                        "gatewayIp": "10.168.0.1",
+                        "gatewayMac": "02:42:0a:a8:00:01"
                     }
                 ],
                 "nodes" : [
