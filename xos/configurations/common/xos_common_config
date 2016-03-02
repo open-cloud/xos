@@ -37,6 +37,7 @@ backoff_disabled=True
 images_directory=/opt/xos/images
 dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
+save_ansible_output=True
 
 [gui]
 disable_minidashboard=True
