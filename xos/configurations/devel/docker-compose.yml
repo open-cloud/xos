@@ -15,6 +15,7 @@ xos_synchronizer_openstack:
         - ctl:${MYIP}
     volumes:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
+        - ./images:/opt/xos/images:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
