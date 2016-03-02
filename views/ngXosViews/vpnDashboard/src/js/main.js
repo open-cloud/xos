@@ -45,20 +45,17 @@ angular.module('xos.vpnDashboard', [
     controllerAs: 'vm',
     templateUrl: 'templates/vpn-list.tpl.html',
     controller: function(Vpn){
-      // retrieving user list
       Vpn.getVpnTenants()
       .then((vpns) => {
         this.vpns = vpns;
+        for (var i = 0; i < this.vpns.length; i++) {
+          var blob = new Blob([ this.vpns[i].script_text ], { type : 'text/plain' });
+          this.vpns[i].script_text = (window.URL || window.webkitURL).createObjectURL( blob );
+        }
       })
       .catch((e) => {
         throw new Error(e);
       });
-
-      this.getScriptLocation = function(vpn) {
-        var content = vpn.create_client_script();
-        var blob = new Blob([ content ], { type : 'text/plain' });
-        return (window.URL || window.webkitURL).createObjectURL( blob );
-      }
     }
   };
 });

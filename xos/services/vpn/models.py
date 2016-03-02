@@ -33,7 +33,8 @@ class VPNTenant(TenantWithContainer):
                           'clients_can_see_each_other': True,
                           'is_persistent': True,
                           'ca_crt': None,
-                          'port': None}
+                          'port': None,
+                          'script_text': None}
 
     def __init__(self, *args, **kwargs):
         vpn_services = VPNService.get_service_objects().all()
@@ -138,6 +139,14 @@ class VPNTenant(TenantWithContainer):
     @port_number.setter
     def port_number(self, value):
         self.set_attribute("port", value)
+
+    @property
+    def script_text(self):
+        return self.get_attribute("script_text", self.default_attributes['script_text'])
+
+    @script_text.setter
+    def script_text(self, value):
+        self.set_attribute("script_text", value)
 
     def create_client_script(self):
         script = ""
