@@ -32,7 +32,6 @@ class VPNTenant(TenantWithContainer):
                           'server_network': None,
                           'clients_can_see_each_other': True,
                           'is_persistent': True,
-                          'script': None,
                           'ca_crt': None,
                           'port': None}
 
@@ -140,36 +139,25 @@ class VPNTenant(TenantWithContainer):
     def port_number(self, value):
         self.set_attribute("port", value)
 
-    @property
-    def script(self):
-        """string: the location of the client script that is generated when
-           this method is called.
-        """
-        script_name = str(time.time()) + ".vpn"
-        self.create_client_script(script_name)
-        return script_name
-
-    def create_client_script(self, script_name):
-        script = open("/opt/xos/core/static/vpn/" + script_name, 'w')
+    def create_client_script(self):
+        script = ""
         # write the configuration portion
-        script.write("printf \"%b\" \"")
-        for line in self.generate_client_conf().splitlines():
-            script.write(line + r"\n")
-        script.write("\" > client.conf\n")
-        script.write("printf \"%b\" \"")
-        for line in self.generate_login().splitlines():
-            script.write(line + r"\n")
-        script.write("\" > login.up\n")
-        script.write("printf \"%b\" \"")
+        script += ("printf \"%b\" \"")
+        script += self.generate_client_conf()
+        script += ("\" > client.conf\n")
+        script += ("printf \"%b\" \"")
+        script += self.generate_login()
+        script += ("\" > login.up\n")
+        script += ("printf \"%b\" \"")
         for line in self.ca_crt:
-            script.write(line.rstrip() + r"\n")
-        script.write("\" > ca.crt\n")
+            script += (line.rstrip() + r"\n")
+        script += ("\" > ca.crt\n")
         # make sure openvpn is installed
-        script.write("apt-get update\n")
-        script.write("apt-get install openvpn\n")
-        script.write("openvpn client.conf &\n")
+        script += ("apt-get update\n")
+        script += ("apt-get install openvpn\n")
+        script += ("openvpn client.conf &\n")
         # close the script
-        script.close()
+        return script;
 
     def generate_login(self):
         return str(time.time()) + "\npassword\n"

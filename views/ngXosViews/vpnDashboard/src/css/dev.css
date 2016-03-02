@@ -9,3 +9,6 @@
     display: table-cell;
     padding: 5px;
 }
+.header {
+    font-weight: bold;
+}
