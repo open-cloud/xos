@@ -6,6 +6,7 @@
     "prestart": "npm install && bower install",
     "start": "gulp serve",
     "dev": "NODE_ENV=mock gulp serve",
+    "local": "NODE_ENV=local gulp serve",
     "server": "easy-mocker -c ./mocks/diagnostic.conf.json -d ./mocks/data",
     "build": "gulp",
     "test": "karma start",

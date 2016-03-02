@@ -18,7 +18,7 @@
 angular.module("xos.diagnostic").run(["$templateCache", function($templateCache) {$templateCache.put("templates/diagnostic.tpl.html","<div class=\"container-fluid\">\n  <div ng-hide=\"vm.error && vm.loader\" style=\"height: 900px\">\n    <div class=\"onethird-height\">\n      <service-topology service-chain=\"vm.serviceChain\"></service-topology>\n    </div>\n    <div class=\"twothird-height\">\n      <logic-topology ng-if=\"vm.subscribers\" subscribers=\"vm.subscribers\" selected=\"vm.selectedSubscriber\"></logic-topology>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.error\">\n    <div class=\"col-xs-12\">\n      <div class=\"alert alert-danger\">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.loader\">\n    <div class=\"col-xs-12\">\n      <div class=\"loader\">Loading</div>\n    </div>\n  </div>\n</div>");
 $templateCache.put("templates/logicTopology.tpl.html","<select-subscriber-modal open=\"vm.openSelectSubscriberModal\" subscribers=\"vm.subscribers\"></select-subscriber-modal>\n<subscriber-status-modal open=\"vm.openSubscriberStatusModal\" subscriber=\"vm.currentSubscriber\"></subscriber-status-modal>\n<div class=\"instances-stats animate\" ng-hide=\"vm.hideInstanceStats\">\n  <div class=\"row\">\n    <div class=\"col-sm-3 col-sm-offset-8\">\n      <div class=\"panel panel-primary\" ng-repeat=\"instance in vm.selectedInstances\">\n        <div class=\"panel-heading\">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">Backend Status: {{instance.backend_status}}</li>\n            <li class=\"list-group-item\">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\" ng-repeat=\"stat in instance.stats\">\n              <span class=\"badge\">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div>");
 $templateCache.put("templates/select-subscriber-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Select a subscriber:</h4>\n      </div>\n      <div class=\"modal-body\">\n        <select class=\"form-control\" ng-options=\"s as s.humanReadableName for s in vm.subscribers\" ng-model=\"vm.selected\"></select>\n      </div>\n      <div class=\"modal-footer\">\n        <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n        <button ng-click=\"vm.select(vm.selected)\" type=\"button\" class=\"btn btn-primary\">Select</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");
-$templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Change subscriber status:</h4>\n      </div>\n      <div class=\"modal-body\">\n        <div class=\"row\">\n          <div class=\"col-xs-6\">\n            <a ng-click=\"vm.setStatus(\'enabled\')\" \n              class=\"btn btn-block\"\n              ng-class=\"{\'btn-primary\': vm.subscriber.status === \'enabled\' ,\'btn-default\': vm.subscriber.status !== \'enabled\'}\"\n              >Enabled</a>\n          </div>\n          <div class=\"col-xs-6\">\n            <a ng-click=\"vm.setStatus(\'suspended\')\" \n              class=\"btn btn-block\"\n              ng-class=\"{\'btn-primary\': vm.subscriber.status === \'suspended\' ,\'btn-default\': vm.subscriber.status !== \'suspended\'}\"\n              >Suspended</a>\n          </div>\n        </div>\n        <div class=\"row\" style=\"margin-top: 20px\">\n          <div class=\"col-xs-6\">\n            <a ng-click=\"vm.setStatus(\'delinquent\')\" \n              class=\"btn btn-block\"\n              ng-class=\"{\'btn-primary\': vm.subscriber.status === \'delinquent\' ,\'btn-default\': vm.subscriber.status !== \'delinquent\'}\"\n              >Delinquent <br> payment</a>\n          </div>\n          <div class=\"col-xs-6\">\n            <a ng-click=\"vm.setStatus(\'copyright\')\" \n              class=\"btn btn-block\"\n              ng-class=\"{\'btn-primary\': vm.subscriber.status === \'copyright\' ,\'btn-default\': vm.subscriber.status !== \'copyright\'}\"\n              >Copyright <br> violation</a>\n          </div>\n        </div>\n      </div>\n      <div class=\"modal-footer\">\n        <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
+$templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Manage subscriber:</h4>\n      </div>\n      <form name=\"vm.subscriber-detail\">\n        <div class=\"modal-body\">\n          <div class=\"row\">\n            <div class=\"col-xs-12\">\n              <label>Status</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'enabled\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'enabled\' ,\'btn-default\': vm.subscriber.status !== \'enabled\'}\"\n                >Enabled</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'suspended\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'suspended\' ,\'btn-default\': vm.subscriber.status !== \'suspended\'}\"\n                >Suspended</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'delinquent\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'delinquent\' ,\'btn-default\': vm.subscriber.status !== \'delinquent\'}\"\n                >Delinquent <br> payment</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'copyrightviolation\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'copyrightviolation\' ,\'btn-default\': vm.subscriber.status !== \'copyrightviolation\'}\"\n                >Copyright <br> violation</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Uplink Speed</label>\n              <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.uplink_speed\"/>\n            </div>\n            <div class=\"col-xs-6\">\n              <label>Downlink Speed</label>\n              <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.downlink_speed\"/>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Enable Uverse</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a \n                ng-click=\"vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse\" \n                ng-class=\"{\'btn-success\': vm.subscriber.enable_uverse, \'btn-danger\': !vm.subscriber.enable_uverse}\"\n                class=\"btn btn-block\">\n                <span ng-show=\"vm.subscriber.enable_uverse === true\">Enabled</span>\n                <span ng-show=\"vm.subscriber.enable_uverse !== true\">Disabled</span>\n              </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"modal-footer\" ng-show=\"vm.success || vm.formError\">\n          <div class=\"alert alert-success\" ng-show=\"vm.success\">\n            {{vm.success}}\n          </div>\n          <div class=\"alert alert-danger\" ng-show=\"vm.formError\">\n            {{vm.formError}}\n          </div>\n        </div>\n        <div class=\"modal-footer\">\n          <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n          <button ng-click=\"vm.updateSubscriber(vm.subscriber)\" type=\"button\" class=\"btn btn-primary\">Save</button>\n        </div>\n      </form>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
 'use strict';
 
 (function () {
@@ -56,25 +56,31 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
       restrict: 'E',
       templateUrl: 'templates/subscriber-status-modal.tpl.html',
       controllerAs: 'vm',
-      controller: ["$log", "$scope", function controller($log, $scope) {
+      controller: ["$log", "$timeout", "$scope", "Subscribers", function controller($log, $timeout, $scope, Subscribers) {
         var _this2 = this;
 
-        // mock until api
         $scope.$watch(function () {
-          return _this2.subscriber;
-        }, function (subscriber) {
-          if (subscriber) {
-            subscriber.status = 'enabled';
-          }
+          return _this2.open;
+        }, function () {
+          _this2.success = null;
+          _this2.formError = null;
         });
 
         this.close = function () {
           _this2.open = false;
         };
 
-        this.setStatus = function (status) {
-          _this2.subscriber.status = status;
-          $log.info('Set subscriber status to: ' + status);
+        this.updateSubscriber = function (subscriber) {
+
+          Subscribers.update(subscriber).$promise.then(function () {
+            _this2.success = 'Subscriber successfully updated!';
+          })['catch'](function (e) {
+            _this2.formError = e;
+          })['finally'](function () {
+            $timeout(function () {
+              _this2.close();
+            }, 1500);
+          });
         };
       }]
     };
@@ -466,6 +472,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
     });
   }]).service('Subscribers', ["$resource", "$q", "SubscriberDevice", function ($resource, $q, SubscriberDevice) {
     return $resource('/xoslib/cordsubscriber/:id', { id: '@id' }, {
+      update: {
+        method: 'PUT',
+        isArray: false
+      },
       queryWithDevices: {
         method: 'GET',
         isArray: true,
@@ -1714,10 +1724,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       _this.currentSubscriber.tags = tags;
     };
 
-    this.getSubscriberIP = function () {
-      var ip = JSON.parse(_this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
+    this.getSubscriberIP = function (subscriber) {
+      // const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
       // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
-      _this.logicTopologyData.children[0].subscriberIP = ip;
+      _this.logicTopologyData.children[0].subscriberIP = subscriber.wan_container_ip;
     };
 
     this.selectSubscriber = function (subscriber) {
@@ -1730,7 +1740,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       _this.highlightInstances([]);
 
       _this.getSubscriberTag(subscriber);
-      _this.getSubscriberIP();
+      _this.getSubscriberIP(subscriber);
     };
 
     this.highlightInstances = function (instances) {

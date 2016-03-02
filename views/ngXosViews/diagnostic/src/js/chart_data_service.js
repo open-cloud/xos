@@ -80,10 +80,10 @@
 
     };
 
-    this.getSubscriberIP = () => {
-      const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
+    this.getSubscriberIP = (subscriber) => {
+      // const ip = JSON.parse(this.currentServiceChain.children[0].children[0].tenant.service_specific_attribute).wan_container_ip;
       // const ip = this.currentServiceChain.children[0].children[0].tenant.wan_container_ip;
-      this.logicTopologyData.children[0].subscriberIP = ip;
+      this.logicTopologyData.children[0].subscriberIP = subscriber.wan_container_ip;
     };
 
     this.selectSubscriber = (subscriber) => {
@@ -96,7 +96,7 @@
       this.highlightInstances([]);
 
       this.getSubscriberTag(subscriber);
-      this.getSubscriberIP();
+      this.getSubscriberIP(subscriber);
 
     };
 

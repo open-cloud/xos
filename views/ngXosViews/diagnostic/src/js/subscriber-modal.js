@@ -34,22 +34,31 @@
       restrict: 'E',
       templateUrl: 'templates/subscriber-status-modal.tpl.html',
       controllerAs: 'vm',
-      controller: function($log, $scope){
+      controller: function($log, $timeout, $scope, Subscribers){
 
-        // mock until api
-        $scope.$watch(() => this.subscriber, (subscriber) => {
-          if(subscriber){
-            subscriber.status = 'enabled';
-          }
+        $scope.$watch(() => this.open, () => {
+          this.success = null;
+          this.formError = null;
         });
 
         this.close = () => {
           this.open = false;
         };
 
-        this.setStatus = (status) => {
-          this.subscriber.status = status;
-          $log.info(`Set subscriber status to: ${status}`);
+        this.updateSubscriber = (subscriber) => {
+
+          Subscribers.update(subscriber).$promise
+          .then(() => {
+            this.success = 'Subscriber successfully updated!';
+          })
+          .catch((e) => {
+            this.formError = e;
+          })
+          .finally(() => {
+            $timeout(() => {
+              this.close();
+            }, 1500);
+          });
         };
       }
     };
