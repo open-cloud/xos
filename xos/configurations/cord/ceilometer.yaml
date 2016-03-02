@@ -224,7 +224,7 @@ topology_template:
       properties:
           url: template:xosCeilometerDashboard
 
-    Diagnostic:
+    Customer Care:
       type: tosca.nodes.DashboardView
       properties:
           url: template:xosDiagnostic
@@ -249,6 +249,6 @@ topology_template:
           - ceilometer_dashboard:
               node: Ceilometer
               relationship: tosca.relationships.UsesDashboard
-          - diagnostic_dashboard:
-              node: Diagnostic
+          - customer_care_dashboard:
+              node: Customer Care
               relationship: tosca.relationships.UsesDashboard

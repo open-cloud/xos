@@ -534,7 +534,7 @@ topology_template:
                 relationship: tosca.relationships.BelongsToSubscriber
 
     # DASHBOARDS
-    Diagnostic:
+    Customer Care:
       type: tosca.nodes.DashboardView
       properties:
           url: template:xosDiagnostic
@@ -546,6 +546,6 @@ topology_template:
           lastname: admin
           is_admin: true
       requirements:
-          - diagnostic_dashboard:
-              node: Diagnostic
+          - customer_care_dashboard:
+              node: Customer Care
               relationship: tosca.relationships.UsesDashboard
