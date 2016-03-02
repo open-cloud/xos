@@ -49,8 +49,8 @@ class CordSubscriberRoot(Subscriber):
                           ("users", []),
                           ("is_demo_user", False),
 
-                          ("uplink_speed", "1000000000"),  # 1 gigabit, a reasonable default?
-                          ("downlink_speed", "1000000000"),
+                          ("uplink_speed", 1000000000),  # 1 gigabit, a reasonable default?
+                          ("downlink_speed", 1000000000),
                           ("enable_uverse", True) )
 
     default_attributes = {"status": "enabled"}
