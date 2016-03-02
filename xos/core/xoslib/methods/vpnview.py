@@ -31,6 +31,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         port_number = ReadOnlyField()
         creator = ReadOnlyField()
         instance = ReadOnlyField()
+        script_text = ReadOnlyField()
         provider_service = serializers.PrimaryKeyRelatedField(queryset=VPNService.get_service_objects().all(), default=get_default_vpn_service)
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
@@ -43,7 +44,7 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
                       'service_specific_attribute', 'vpn_subnet',
                       'server_network', 'creator', 'instance',
                       'computeNodeName', 'is_persistent', 'clients_can_see_each_other',
-                      'ca_crt', 'port_number')
+                      'ca_crt', 'port_number', 'script_text')
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
@@ -56,18 +57,11 @@ class VPNTenantSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
 class VPNTenantList(XOSListCreateAPIView):
     serializer_class = VPNTenantSerializer
-    queryset = VPNTenant.get_tenant_objects().all()
     method_kind = "list"
     method_name = "vpntenant"
 
-
-class ClientScript(APIView):
-    method_kind = "detail"
-    method_name = "clientscript"
-
-    def get(self, request, format=None):
-        if (not request.user.is_authenticated()):
-            raise PermissionDenied("You must be authenticated in order to use this API")
-        tenantId = request.QUERY_PARAMS.get('tenantId', None)
-        serializer = VPNTenantSerializer(VPNTenant.get_tenant_objects().filter(id=tenantId)[0])
-        return Response(serializer.data, status=HTTP_200_OK)
+    def get_queryset(self):
+        queryset = VPNTenant.get_tenant_objects().all()
+        for tenant in queryset:
+            tenant.script_text = tenant.create_client_script()
+        return queryset

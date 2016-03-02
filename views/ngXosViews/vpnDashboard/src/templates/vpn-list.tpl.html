@@ -13,7 +13,7 @@
     <div class="cell">{{ vpn.server_network }}</div>
     <div class="cell">{{ vpn.vpn_subnet }}</div>
     <div class="cell">
-      <a download="connect-{{ vpn.id }}.vpn" ng-href="{{ vm.getScriptLocation(vpn) }}">Script</a>
+      <a download="connect-{{ vpn.id }}.vpn" ng-href="{{ vpn.script_text }}">Script</a>
     </div>
   </div>
 </div>

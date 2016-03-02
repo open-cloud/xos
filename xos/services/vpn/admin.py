@@ -102,9 +102,6 @@ class VPNTenantForm(forms.ModelForm):
         if (not self.instance.ca_crt):
             self.instance.ca_crt = self.generate_ca_crt()
 
-        if (not self.instance.script):
-            self.instance.script = str(time.time()) + ".vpn"
-
         return super(VPNTenantForm, self).save(commit=commit)
 
     def generate_ca_crt(self):
