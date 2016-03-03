@@ -1,12 +1,13 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
-description: Setup CORD-related services -- vOLT, vCPE, vBNG.
+description: Set up ONOS VTN app
 
 imports:
    - custom_types/xos.yaml
 
 topology_template:
   node_templates:
+
     service_ONOS_VTN:
       type: tosca.nodes.ONOSService
       requirements:
@@ -23,7 +24,7 @@ topology_template:
               node: service_ONOS_VTN
               relationship: tosca.relationships.TenantOfService
       properties:
-          dependencies: org.onosproject.drivers, org.onosproject.drivers.ovsdb, org.onosproject.lldpprovider, org.onosproject.openflow-base, org.onosproject.ovsdb-base, org.onosproject.dhcp, org.onosproject.openstackswitching, org.onosproject.cordvtn
+          dependencies: org.onosproject.drivers, org.onosproject.drivers.ovsdb, org.onosproject.openflow-base, org.onosproject.ovsdb-base, org.onosproject.dhcp, org.onosproject.cordvtn, org.onosproject.olt, org.onosproject.igmp, org.onosproject.cordmcast
           rest_onos/v1/network/configuration/: { get_artifact: [ SELF, vtn_network_cfg_json, LOCAL_FILE ] }
       artifacts:
           vtn_network_cfg_json: /root/setup/vtn-network-cfg.json

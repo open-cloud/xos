@@ -1256,7 +1256,7 @@ class ImageAdmin(XOSBaseAdmin):
                ]
     readonly_fields = ('backend_status_text', )
 
-    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('controllerimages', 'Controllers'))
+    suit_form_tabs =(('general','Image Details'),('instances','Instances'),('imagedeployments','Deployments'), ('admin-only', 'Admin-Only'))
 
     inlines = [InstanceInline, ControllerImagesInline]
 
@@ -1898,7 +1898,7 @@ class NetworkTemplateAdmin(XOSBaseAdmin):
     suit_form_tabs = (('general','Network Template Details'), ('netparams', 'Parameters') )
 
 class PortAdmin(XOSBaseAdmin):
-    list_display = ("backend_status_icon", "name", "id", "ip")
+    list_display = ("backend_status_icon", "id", "ip")
     list_display_links = ('backend_status_icon', 'id')
     readonly_fields = ("subnet", )
     inlines = [NetworkParameterInline]

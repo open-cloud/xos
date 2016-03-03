@@ -1,0 +1,15 @@
+{
+    "globals" :{
+        "describe": true,
+        "xdescribe": true,
+        "beforeEach": true,
+        "it": true,
+        "inject": true,
+        "expect": true,
+        "jasmine": true
+    },
+    "rules": {
+      "max-nested-callbacks": [0, 4],
+      "camelcase": 0
+    }
+}

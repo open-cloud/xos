@@ -22,6 +22,7 @@ topology_template:
       type: tosca.nodes.Service
       requirements:
       properties:
+          view_url: /mcord/?service=vBBU
           kind: mcordservice
 
 

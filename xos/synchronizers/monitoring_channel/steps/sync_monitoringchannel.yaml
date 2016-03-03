@@ -85,6 +85,32 @@
      - remove container
      - start monitoring-channel
 
+#  - name: Start monitoring-channel container
+#    docker:
+#      docker_api_version: "1.18"
+#      name: monitoring-channel-{{ unique_id }}
+#      # was: reloaded
+#      state: running
+#      image: srikanthvavila/monitoring-channel
+#      expose:
+#      - 8000
+#      ports:
+#      - "{{ ceilometer_port }}:8000"
+#      volumes:
+#      - /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config:/usr/local/share/ceilometer_proxy_config
+#
+#  - name: Get Docker IP
+#    #TODO: copy dockerip.sh to monitoring service synchronizer
+#    script: /opt/xos/synchronizers/onos/scripts/dockerip.sh monitoring-channel-{{ unique_id }}
+#    register: dockerip
+#
+#  - name: Wait for Monitoring channel to come up
+#    wait_for:
+#      host={{ '{{' }} dockerip.stdout {{ '}}' }}
+#      port={{ '{{' }} item {{ '}}' }}
+#      state=present
+#    with_items:
+#    - {{ ceilometer_port }}
 # These are samples, not necessary for correct function of demo
 
   - name: Make sure Monitoring channel service is running

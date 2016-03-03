@@ -2,9 +2,10 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import services.syndicate_storage.models
-import django.utils.timezone
+import core.models.plcorebase
 from django.conf import settings
+import django.utils.timezone
+import services.syndicate_storage.models
 
 
 class Migration(migrations.Migration):
@@ -33,15 +34,20 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_register', models.CharField(default=b'{}', max_length=140, null=True)),
+                ('backend_status', models.CharField(default=b'0 - Provisioning in progress', max_length=1024)),
                 ('deleted', models.BooleanField(default=False)),
+                ('write_protect', models.BooleanField(default=False)),
+                ('lazy_blocked', models.BooleanField(default=False)),
+                ('no_sync', models.BooleanField(default=False)),
                 ('principal_id', models.TextField(unique=True)),
                 ('public_key_pem', models.TextField()),
                 ('sealed_private_key', models.TextField()),
             ],
             options={
             },
-            bases=(models.Model,),
+            bases=(models.Model, core.models.plcorebase.PlModelMixIn),
         ),
         migrations.CreateModel(
             name='SyndicateService',
@@ -61,8 +67,13 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_register', models.CharField(default=b'{}', max_length=140, null=True)),
+                ('backend_status', models.CharField(default=b'0 - Provisioning in progress', max_length=1024)),
                 ('deleted', models.BooleanField(default=False)),
+                ('write_protect', models.BooleanField(default=False)),
+                ('lazy_blocked', models.BooleanField(default=False)),
+                ('no_sync', models.BooleanField(default=False)),
                 ('name', models.CharField(help_text=b'Human-readable, searchable name of the Volume', max_length=64)),
                 ('description', models.TextField(help_text=b'Human-readable description of what this Volume is used for.', max_length=130, null=True, blank=True)),
                 ('blocksize', models.PositiveIntegerField(help_text=b'Number of bytes per block.')),
@@ -75,7 +86,7 @@ class Migration(migrations.Migration):
             ],
             options={
             },
-            bases=(models.Model,),
+            bases=(models.Model, core.models.plcorebase.PlModelMixIn),
         ),
         migrations.CreateModel(
             name='VolumeAccessRight',
@@ -84,8 +95,13 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_register', models.CharField(default=b'{}', max_length=140, null=True)),
+                ('backend_status', models.CharField(default=b'0 - Provisioning in progress', max_length=1024)),
                 ('deleted', models.BooleanField(default=False)),
+                ('write_protect', models.BooleanField(default=False)),
+                ('lazy_blocked', models.BooleanField(default=False)),
+                ('no_sync', models.BooleanField(default=False)),
                 ('cap_read_data', models.BooleanField(default=True, help_text=b'VM can read Volume data')),
                 ('cap_write_data', models.BooleanField(default=True, help_text=b'VM can write Volume data')),
                 ('cap_host_data', models.BooleanField(default=True, help_text=b'VM can host Volume data')),
@@ -94,7 +110,7 @@ class Migration(migrations.Migration):
             ],
             options={
             },
-            bases=(models.Model,),
+            bases=(models.Model, core.models.plcorebase.PlModelMixIn),
         ),
         migrations.CreateModel(
             name='VolumeSlice',
@@ -103,8 +119,13 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('updated', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('enacted', models.DateTimeField(default=None, null=True, blank=True)),
-                ('backend_status', models.CharField(default=b'Provisioning in progress', max_length=140)),
+                ('policed', models.DateTimeField(default=None, null=True, blank=True)),
+                ('backend_register', models.CharField(default=b'{}', max_length=140, null=True)),
+                ('backend_status', models.CharField(default=b'0 - Provisioning in progress', max_length=1024)),
                 ('deleted', models.BooleanField(default=False)),
+                ('write_protect', models.BooleanField(default=False)),
+                ('lazy_blocked', models.BooleanField(default=False)),
+                ('no_sync', models.BooleanField(default=False)),
                 ('cap_read_data', models.BooleanField(default=True, help_text=b'VM can read Volume data')),
                 ('cap_write_data', models.BooleanField(default=True, help_text=b'VM can write Volume data')),
                 ('cap_host_data', models.BooleanField(default=True, help_text=b'VM can host Volume data')),
@@ -116,7 +137,7 @@ class Migration(migrations.Migration):
             ],
             options={
             },
-            bases=(models.Model,),
+            bases=(models.Model, core.models.plcorebase.PlModelMixIn),
         ),
         migrations.AddField(
             model_name='volume',

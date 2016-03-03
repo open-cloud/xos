@@ -147,9 +147,9 @@ class SyncInstanceUsingAnsible(SyncStep):
 
         fields.update({"keystone_tenant_id": cslice.tenant_id,
                        "keystone_user_id": cuser.kuser_id,
-                       "rabbit_user": instance.controller.rabbit_user,
-                       "rabbit_password": instance.controller.rabbit_password,
-                       "rabbit_host": instance.controller.rabbit_host})
+                       "rabbit_user": getattr(instance.controller,"rabbit_user", None),
+                       "rabbit_password": getattr(instance.controller, "rabbit_password", None),
+                       "rabbit_host": getattr(instance.controller, "rabbit_host", None)})
 
         return fields
 

@@ -1,0 +1,89 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup MCORD-related services.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+    tosca.nodes.MCORDComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A Service Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of component
+
+topology_template:
+  node_templates:
+    service_mcord:
+      type: tosca.nodes.Service
+      requirements:
+      properties:
+          kind: mcordservice
+
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    mcord_network:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: mcord_service_internal_net
+          cidr: 172.16.16.0/24
+          start_ip: 172.16.16.1
+          end_ip: 172.16.16.5
+          gateway_ip: 172.16.16.1
+
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mcord_slice1
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_mcord_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+
+    ubuntu-14.04-server-cloudimg-amd64-disk1:
+      type: tosca.nodes.Image
+
+    trusty-server-multi-nic:
+      type: tosca.nodes.Image
+
+    mysite_mcord_slice1:
+      description: MCORD Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - mcord_service:
+              node: service_mcord
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: ubuntu-14.04-server-cloudimg-amd64-disk1 
+#                node: mcord-server-image-s1
+                relationship: tosca.relationships.DefaultImage
+      properties:
+          default_flavor: m1.medium
+          default_node: compute9 
+
+    my_service_mcord_component1:
+      description: MCORD Service default Component
+      type: tosca.nodes.MCORDComponent
+      requirements:
+          - provider_service:
+              node: service_mcord
+              relationship: tosca.relationships.MemberOfService
+          - mcord_slice:
+              node: mysite_mcord_slice1
+              relationship: tosca.relationships.MemberOfSlice

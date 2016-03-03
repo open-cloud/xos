@@ -1,0 +1,39 @@
+<!-- Bundle page partial html -->
+<div id="bundle" class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>You are subscribed to the</h4>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{name}}</h3>
+                </div>
+                <div class="panel-body">
+                    {{desc}}
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Services</h3>
+                </div>
+                <table class="table">
+                    <tr ng-repeat="func in funcs" class="animate-repeat">
+                        <td class="avatar">
+                            <img ng-src="{{'/imgs/' + func.id + '.png'}}">
+                        </td>
+                        <td class="name"><b>{{func.name}}</b></td>
+                        <td class="desc">{{func.desc}}</td>
+                    </tr>
+                </table>
+            </div>
+
+
+        </div>
+        <div class="col-sm-6">
+            <img class="img-responsive img-rounded" src="imgs/bundle.jpg">
+            <a ng-click="showBundles()" class="btn btn-primary-border btn-lg btn-block">
+                Available Bundles
+            </a>
+            <div id="bundles" bundle-available></div>
+        </div>
+    </div>
+</div>

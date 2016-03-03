@@ -150,6 +150,11 @@ user-updated-tick {
     margin-top: 20px;
   }
 
+  img {
+    animation: fadein 2s ease-in-out;
+  }
+
+
 /* ng-view-animation
 -------------------------------------------------- */
 .fade {
@@ -237,4 +242,15 @@ user-updated-tick {
       opacity: 1;
     }
   }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: scale3d(.3, .3, .3);
+  }
+  50% {
+    transform: scale3d(1, 1, 1);
+  }
+  to   { opacity: 1; }
+}
 
