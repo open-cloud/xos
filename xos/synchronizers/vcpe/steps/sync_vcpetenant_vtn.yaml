@@ -5,6 +5,7 @@
   user: ubuntu
   sudo: yes
   vars:
+      container_name: {{ container_name }}
       cdn_enable: {{ cdn_enable }}
       dnsdemux_ip: {{ dnsdemux_ip }}
       firewall_enable: {{ firewall_enable }}
@@ -177,46 +178,77 @@
 {% endif %}
 
   - name: vCPE upstart
-    template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.conf
+    template: src=/opt/xos/synchronizers/vcpe/templates/vcpe.conf.j2 dest=/etc/init/{{ container_name }}.conf
 
   - name: vCPE startup script
-    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}.sh mode=0755
+    template: src=/opt/xos/synchronizers/vcpe/templates/start-vcpe-vtn.sh.j2 dest=/usr/local/sbin/start-{{ container_name }}.sh mode=0755
     notify:
 #    - restart vcpe
      - stop vcpe
      - remove container
      - start vcpe
 
-  - name: create /etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d
-    file: path=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d state=directory owner=root group=root
+  - name: create /var/container_volumes/{{ container_name }}/etc/dnsmasq.d
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d state=directory owner=root group=root
 
   - name: vCPE basic dnsmasq config
-    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/vcpe.conf owner=root group=root
+    copy: src=/opt/xos/synchronizers/vcpe/files/vcpe.dnsmasq dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/vcpe.conf owner=root group=root
     notify:
     - restart dnsmasq
 
   - name: dnsmasq config
-    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/etc/vcpe-{{ s_tags[0] }}-{{ c_tags[0] }}/dnsmasq.d/servers.conf owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/servers.conf owner=root group=root
     notify:
     - restart dnsmasq
 
+  - name: create directory for "safe" config
+    file: path=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe state=directory
+
+  - name: dnsmasq "safe" config
+    template: src=/opt/xos/synchronizers/vcpe/templates/dnsmasq_safe_servers.j2 dest=/var/container_volumes/{{ container_name }}/etc/dnsmasq.d/safe/servers.conf owner=root group=root
+    notify:
+    - restart dnsmasq
+
+  - name: copy base ufw files
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    notify:
+    - reload ufw
+
+  - name: redirection rules for safe DNS
+    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root mode=0644
+    notify:
+    - reload ufw
+
+  - name: base ufw setup uses /etc/rc.local
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/rc.local dest=/var/container_volumes/{{ container_name }}/etc/ owner=root group=root
+    notify:
+    - copy in /etc/rc.local
+
   - name: Make sure vCPE service is running
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+    service: name={{ container_name }} state=started
 
   handlers:
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
-    shell: docker exec vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} killall dnsmasq
+    shell: docker exec {{ container_name }} killall dnsmasq
 
   - name: restart vcpe
-    shell: service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} stop; sleep 1; service vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} start
+    shell: service {{ container_name }} stop; sleep 1; service {{ container_name }} start
 
   - name: stop vcpe
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=stopped
+    service: name={{ container_name }} state=stopped
 
   - name: remove container
-    docker: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=absent image=docker-vcpe
+    docker: name={{ container_name }} state=absent image=docker-vcpe
 
   - name: start vcpe
-    service: name=vcpe-{{ s_tags[0] }}-{{ c_tags[0] }} state=started
+    service: name={{ container_name }} state=started
 
+  - name: reload ufw
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
+
+  # Use docker cp instead of single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  - name: copy in /etc/rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
