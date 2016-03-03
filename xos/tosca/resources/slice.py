@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Slice,User,Site,Network,NetworkSlice,SliceRole,SlicePrivilege,Service,Image,Flavor
+from core.models import Slice,User,Site,Network,NetworkSlice,SliceRole,SlicePrivilege,Service,Image,Flavor,Node
 
 from xosresource import XOSResource
 
@@ -35,6 +35,11 @@ class XOSSlice(XOSResource):
         if default_flavor_name:
             default_flavor = self.get_xos_object(Flavor, name=default_flavor_name, throw_exception=True)
             args["default_flavor"] = default_flavor
+
+        default_node_name = self.get_property_default("default_node", None)
+        if default_node_name:
+            default_node = self.get_xos_object(Node, name=default_node_name, throw_exception=True)
+            args["default_node"] = default_node
 
         return args
 

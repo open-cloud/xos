@@ -16,6 +16,33 @@ xos_synchronizer_openstack:
     volumes:
         - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config:ro
 
+xos_synchronizer_helloworldservice_complete:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/helloworldservice_complete/helloworldservice-synchronizer.py -C /opt/xos/synchronizers/helloworldservice_complete/helloworldservice_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: helloworldservice_complete
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup/id_rsa:/opt/xos/synchronizers/helloworldservice_complete/helloworldservice_complete_private_key:ro  # private key
+        - ../setup:/root/setup:ro
+
+xos_synchronizer_mcordservice:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/mcordservice/mcordservice-synchronizer.py -C /opt/xos/synchronizers/mcordservice/mcordservice_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: mcordservice
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup/id_rsa:/opt/xos/synchronizers/mcordservice/mcordservice_private_key:ro  # private key
+        - ../setup:/root/setup:ro
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer

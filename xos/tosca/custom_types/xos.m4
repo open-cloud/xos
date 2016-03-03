@@ -130,9 +130,6 @@ node_types:
             no_container:
                 type: boolean
                 default: false
-            node_key:
-                type: string
-                required: false
 
 
     tosca.nodes.ONOSApp:
@@ -205,9 +202,9 @@ node_types:
                 type: string
                 required: false
 
-    tosca.nodes.VSGService:
+    tosca.nodes.VCPEService:
         description: >
-            CORD: The vSG Service.
+            CORD: The vCPE Service.
         derived_from: tosca.nodes.Root
         capabilities:
             xos_base_service_caps
@@ -421,7 +418,6 @@ node_types:
             This is a variant of the TOSCA Network object that includes additional
             XOS-specific properties.
           properties:
-            xos_base_props
             ip_version:
               type: integer
               required: no
@@ -522,17 +518,6 @@ node_types:
                 type: string
                 required: false
                 description: Comma-separated list of flavors that this deployment supports.
-
-    tosca.nodes.AddressPool:
-        derived_from: tosca.nodes.Root
-        description: >
-            A pool of addresses
-        properties:
-            xos_base_props
-            addresses:
-                type: string
-                required: false
-                description: space-separated list of addresses
 
     tosca.nodes.Image:
         derived_from: tosca.nodes.Root
@@ -683,6 +668,10 @@ node_types:
                 type: string
                 required: false
                 description: default flavor to use for slice
+            default_node:
+                type: string
+                required: false
+                description: default node to use for this slice
             network:
                 type: string
                 required: false

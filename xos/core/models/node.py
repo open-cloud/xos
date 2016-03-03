@@ -2,7 +2,7 @@ import os
 from django.db import models
 from core.models import PlCoreBase
 from core.models.plcorebase import StrippedCharField
-from core.models import Site, SiteDeployment, SitePrivilege
+from core.models.site import Site, SiteDeployment, SitePrivilege
 from core.models import Tag
 from django.contrib.contenttypes import generic
 
@@ -13,6 +13,7 @@ class Node(PlCoreBase):
     site_deployment = models.ForeignKey(SiteDeployment, related_name='nodes')
     site = models.ForeignKey(Site, null=True, blank=True, related_name='nodes')
     tags = generic.GenericRelation(Tag)
+#    default = models.BooleanField(default=False, help_text="make this a default node to use when creating new instances")
 
     def __unicode__(self):  return u'%s' % (self.name)
 

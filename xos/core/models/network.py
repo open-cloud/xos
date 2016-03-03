@@ -138,6 +138,8 @@ class Network(PlCoreBase, ParameterMixin):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
     subnet = models.CharField(max_length=32, blank=True)
+    start_ip = models.CharField(max_length=32, blank=True)
+    end_ip = models.CharField(max_length=32, blank=True)
     ports = models.CharField(max_length=1024, blank=True, null=True, validators=[ValidateNatList])
     labels = models.CharField(max_length=1024, blank=True, null=True)
     owner = models.ForeignKey(Slice, related_name="ownedNetworks", help_text="Slice that owns control of this Network")
@@ -165,6 +167,7 @@ class Network(PlCoreBase, ParameterMixin):
         if (not self.subnet) and (NO_OBSERVER):
             from util.network_subnet_allocator import find_unused_subnet
             self.subnet = find_unused_subnet(existing_subnets=[x.subnet for x in Network.objects.all()])
+            print "DEF_MOD_NET_IP", self.start_ip
         super(Network, self).save(*args, **kwds)
 
     def can_update(self, user):
@@ -203,6 +206,8 @@ class ControllerNetwork(PlCoreBase):
     router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
     subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
     subnet = models.CharField(max_length=32, blank=True)
+    start_ip = models.CharField(max_length=32, blank=True)
+    stop_ip = models.CharField(max_length=32, blank=True)
 
     class Meta:
         unique_together = ('network', 'controller')
