@@ -215,7 +215,7 @@
     - reload ufw
 
   - name: redirection rules for safe DNS
-    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root
+    template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root mode=0644
     notify:
     - reload ufw
 
