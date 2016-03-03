@@ -24,6 +24,7 @@ topology_template:
           view_url: /admin/cord/voltservice/$id$/
           kind: vOLT
 
+    # set a pool of addresses that we can hand out for the VSG Wan.
     public_addresses:
       type: tosca.nodes.AddressPool
       properties:

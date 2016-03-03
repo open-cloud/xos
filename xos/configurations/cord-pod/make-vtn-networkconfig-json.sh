@@ -9,12 +9,18 @@ cat >> $FN <<EOF
     "apps" : {
         "org.onosproject.cordvtn" : {
             "cordvtn" : {
-                "gatewayMac" : "00:00:00:00:00:01",
-                "localManagementIp": "10.90.0.147/24",
+                "privateGatewayMac" : "00:00:00:00:00:01",
+                "localManagementIp": "172.27.0.1/24",
                 "ovsdbPort": "6641",
                 "sshPort": "22",
                 "sshUser": "root",
                 "sshKeyFile": "/root/node_key",
+                "publicGateways": [
+                    {
+                        "gatewayIp": "207.141.192.158",
+                        "gatewayMac": "a4:23:05:34:56:78"
+                    }
+                ],
                 "nodes" : [
 EOF
 
@@ -37,7 +43,7 @@ for NODE in $NODES; do
 
     PHYPORT=mlx0
     # How to set LOCALIP?
-    LOCALIP=10.0.2.1
+    LOCALIPNET="192.168.199"
 
     ((I++))
     cat >> $FN <<EOF
@@ -46,7 +52,7 @@ for NODE in $NODES; do
                       "hostManagementIp": "$NODEIP/24",
                       "bridgeId": "of:000000000000000$I",
                       "dataPlaneIntf": "$PHYPORT",
-                      "dataPlaneIp": "$LOCALIP/24"
+                      "dataPlaneIp": "$LOCALIPNET.$I/24"
 EOF
     if [[ "$I" -lt "$NODECOUNT" ]]; then
         echo "                    }," >> $FN

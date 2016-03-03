@@ -39,8 +39,9 @@ dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
 
 [gui]
-disable_minidashboard=True
-branding_name=Open Cloud
-branding_icon=/static/logo.png
-branding_favicon=/static/favicon.png
-branding_bg=/static/bg.jpg
+branding_name=M-CORD
+branding_icon=/static/cord-logo.png
+branding_favicon=/static/cord-favicon.png
+branding_bg=/static/mcord-bg2.jpg
+service_view_class=core.views.mCordServiceGrid.ServiceGridView
+

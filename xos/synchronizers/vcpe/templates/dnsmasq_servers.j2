@@ -10,5 +10,7 @@ server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endif %}
 
 # use google's DNS service
-server=8.8.8.8
-server=8.8.4.4
+{% for dns_server in dns_servers %}
+server={{ dns_server }}
+{% endfor %}
+

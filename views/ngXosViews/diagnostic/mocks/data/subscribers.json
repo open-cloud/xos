@@ -1,0 +1,38 @@
+[
+   {
+      "humanReadableName":"Marc Twain",
+      "id":1,
+      "created":"2016-02-17T19:36:04.167Z",
+      "updated":"2016-02-17T19:36:05.413Z",
+      "enacted":null,
+      "policed":null,
+      "backend_register":"{}",
+      "backend_status":"0 - Provisioning in progress",
+      "deleted":false,
+      "write_protect":false,
+      "lazy_blocked":false,
+      "no_sync":false,
+      "kind":"CordSubscriberRoot",
+      "name":"Marc Twain",
+      "service_specific_attribute":"{\"url_filter_enable\": false, \"cdn_enable\": false, \"url_filter_level\": \"R\", \"users\": [{\"mac\": \"01:02:03:04:05:06\", \"level\": \"PG_13\", \"id\": 0, \"name\": \"Mom's PC\"}, {\"mac\": \"34:36:3B:C9:B6:A6\", \"id\": 1, \"name\": \"Jill's Laptop\", \"level\": \"PG_13\"}, {\"mac\": \"68:5B:35:9D:91:D5\", \"level\": \"PG_13\", \"id\": 2, \"name\": \"Jack's Laptop\"}, {\"id\": 3, \"mac\": \"90:E2:BA:82:F9:75\", \"name\": \"Dad's PC\", \"level\": \"PG_13\"}], \"firewall_enable\": false}",
+      "service_specific_id":"123"
+   },
+   {
+      "humanReadableName":"Jack London",
+      "id":2,
+      "created":"2016-02-17T19:36:04.167Z",
+      "updated":"2016-02-17T19:36:05.413Z",
+      "enacted":null,
+      "policed":null,
+      "backend_register":"{}",
+      "backend_status":"0 - Provisioning in progress",
+      "deleted":false,
+      "write_protect":false,
+      "lazy_blocked":false,
+      "no_sync":false,
+      "kind":"CordSubscriberRoot",
+      "name":"My House",
+      "service_specific_attribute":"{\"url_filter_enable\": false, \"cdn_enable\": false, \"url_filter_level\": \"R\", \"users\": [{\"mac\": \"01:02:03:04:05:06\", \"level\": \"PG_13\", \"id\": 0, \"name\": \"Mom's PC\"}, {\"mac\": \"34:36:3B:C9:B6:A6\", \"id\": 1, \"name\": \"Jill's Laptop\", \"level\": \"PG_13\"}, {\"mac\": \"68:5B:35:9D:91:D5\", \"level\": \"PG_13\", \"id\": 2, \"name\": \"Jack's Laptop\"}, {\"id\": 3, \"mac\": \"90:E2:BA:82:F9:75\", \"name\": \"Dad's PC\", \"level\": \"PG_13\"}], \"firewall_enable\": false}",
+      "service_specific_id":"123"
+   }
+]

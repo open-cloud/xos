@@ -23,9 +23,9 @@ body{
   overflow-x: hidden;
 }
 
-/*#wrap {
+#wrap {
   min-height: 100%;
-}*/
+}
 
 /* ************************* LOGIN PAGE ************************* */
 
@@ -44,6 +44,7 @@ body.login img.logo{
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    min-height: 900px;
 }
 
 #wrapper.toggled {
@@ -74,6 +75,11 @@ body.login img.logo{
     width: 100%;
     position: absolute;
     padding: 15px;
+    min-height: 900px;
+}
+
+#page-content-wrapper .container-fluid {
+  min-height: 900px;
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -323,6 +329,11 @@ background-image: url("Services.png");
 border-bottom: 1px solid #105E9E;
 font-size: 12px;
 border: 0px;
+}
+
+.ui-tabs-panel {
+  min-height: 700px;
+  position: relative;
 }
 
 .ui-tabs .ui-tabs-nav {
@@ -1374,12 +1385,28 @@ button.ui-dialog-titlebar-close{
 button.ui-dialog-titlebar-close:after {
     content: "\e014";
 }
-/* VCPe ADMIN FIX */
-/*form#vcpeservice_form ul li {
-    display: inline-block;
-    background: red;
-    margin-top: 10px;
-    width: auto;
-    padding: 10px;
-    border-radius: 5px;
+/* M-CORD SERVICE GRID */
+.m-cord .kind-container h2{
+  background-color: #9c0001;
+  padding: 10px;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 1px 2px 2px black;
+}
+
+.m-cord .kind-container img.img-responsive {
+  display: inline-block;
+}
+
+.m-cord .kind-container .service-container{
+  height: 0px;
+  overflow: hidden;
+  opacity: 0;
+  transition: all .5s ease-in-out;
+}
+
+.m-cord .kind-container.active .service-container{
+  height: 162px;
+  opacity: 1;
 }

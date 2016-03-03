@@ -1,0 +1,53 @@
+[
+    {
+        "humanReadableName": "cp-3.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "id": 3, 
+        "created": "2016-02-17T22:00:53.717Z", 
+        "updated": "2016-02-17T22:01:24.890Z", 
+        "enacted": null, 
+        "policed": null, 
+        "backend_register": "{}", 
+        "backend_status": "0 - Provisioning in progress", 
+        "deleted": false, 
+        "write_protect": false, 
+        "lazy_blocked": false, 
+        "no_sync": true, 
+        "name": "cp-3.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "site_deployment": "http://clnode067.clemson.cloudlab.us:9999/xos/sitedeployments/1/", 
+        "site": "http://clnode067.clemson.cloudlab.us:9999/xos/sites/1/"
+    }, 
+    {
+        "humanReadableName": "cp-2.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "id": 2, 
+        "created": "2016-02-17T22:00:53.701Z", 
+        "updated": "2016-02-17T22:01:24.891Z", 
+        "enacted": null, 
+        "policed": null, 
+        "backend_register": "{}", 
+        "backend_status": "0 - Provisioning in progress", 
+        "deleted": false, 
+        "write_protect": false, 
+        "lazy_blocked": false, 
+        "no_sync": true, 
+        "name": "cp-2.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "site_deployment": "http://clnode067.clemson.cloudlab.us:9999/xos/sitedeployments/1/", 
+        "site": "http://clnode067.clemson.cloudlab.us:9999/xos/sites/1/"
+    }, 
+    {
+        "humanReadableName": "cp-1.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "id": 1, 
+        "created": "2016-02-17T22:00:53.680Z", 
+        "updated": "2016-02-17T22:01:24.892Z", 
+        "enacted": null, 
+        "policed": null, 
+        "backend_register": "{}", 
+        "backend_status": "0 - Provisioning in progress", 
+        "deleted": false, 
+        "write_protect": false, 
+        "lazy_blocked": false, 
+        "no_sync": true, 
+        "name": "cp-1.teone-cord.xos-pg0.clemson.cloudlab.us", 
+        "site_deployment": "http://clnode067.clemson.cloudlab.us:9999/xos/sitedeployments/1/", 
+        "site": "http://clnode067.clemson.cloudlab.us:9999/xos/sites/1/"
+    }
+]
