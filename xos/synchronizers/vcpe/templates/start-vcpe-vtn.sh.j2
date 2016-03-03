@@ -16,7 +16,7 @@ docker inspect $VCPE > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     docker pull andybavier/docker-vcpe
-    docker run -d --name=$VCPE --privileged=true --net=none -v /var/container_volumes/$VCPE/etc/dnsmasq.d:/etc/dnsmasq.d andybavier/docker-vcpe
+    docker run -d --name=$VCPE --privileged=true --net=none -v /var/container_volumes/$VCPE/etc/dnsmasq.d:/etc/dnsmasq.d:ro -v /var/container_volumes/$VCPE/usr/local/sbin:/usr/local/sbin:ro andybavier/docker-vcpe
 else
     docker start $VCPE
 fi
