@@ -431,15 +431,11 @@ class LeastLoadedNodeScheduler(Scheduler):
 
     def pick(self):
         from core.models import Node
-#        nodes = list(Node.objects.all())
-        if not self.slice.default_node:
-            nodes = list(Node.objects.all())
-            nodes = sorted(nodes, key=lambda node: node.instances.all().count())
-        else:
-            nodes = list(Node.objects.filter(name = self.slice.default_node))
+        nodes = list(Node.objects.all())
+
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
-#        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
+        nodes = sorted(nodes, key=lambda node: node.instances.all().count())
         return [nodes[0], None]
 
 class ContainerVmScheduler(Scheduler):
@@ -601,6 +597,7 @@ class TenantWithContainer(Tenant):
         from core.models import Image
         # Implement the logic here to pick the image that should be used when
         # instantiating the VM that will hold the container.
+
         slice = self.provider_service.slices.all()
         if not slice:
             raise XOSProgrammingError("provider service has no slice")
@@ -612,7 +609,7 @@ class TenantWithContainer(Tenant):
             look_for_images = self.LOOK_FOR_IMAGES
 
         for image_name in look_for_images:
-            images = Image.objects.filter(name = slice.default_image)
+            images = Image.objects.filter(name = image_name)
             if images:
                 return images[0]
 
@@ -664,32 +661,25 @@ class TenantWithContainer(Tenant):
                 instance = self.pick_least_loaded_instance_in_slice(slices)
 
             if not instance:
-                slice = self.provider_service.slices.all()[0]
-                flavors = Flavor.objects.filter(name=slice.default_flavor)
-#                flavors = Flavor.objects.filter(name="m1.small")
+                flavors = Flavor.objects.filter(name="m1.small")
                 if not flavors:
-                    raise XOSConfigurationError("No slice default flavor")
-#                    raise XOSConfigurationError("No m1.small flavor")
+                    raise XOSConfigurationError("No m1.small flavor")
 
-#                slice = self.provider_service.slices.all()[0]
-                default_flavor = slice.default_flavor
+                slice = self.provider_service.slices.all()[0]
+
                 if slice.default_isolation == "container_vm":
                     (node, parent) = ContainerVmScheduler(slice).pick()
                 else:
                     (node, parent) = LeastLoadedNodeScheduler(slice).pick()
-#                     print "DEF_NODE", slice.default_node
-#                self.image = slice.default_image
+
                 instance = Instance(slice = slice,
                                 node = node,
-#                                image = slice.default_image,
                                 image = self.image,
                                 creator = self.creator,
                                 deployment = node.site_deployment.deployment,
                                 flavor = flavors[0],
-#                                flavor = slice.default_flavor,
                                 isolation = slice.default_isolation,
                                 parent = parent)
-                print "DEF_NODE", instance.node
                 self.save_instance(instance)
                 new_instance_created = True
 

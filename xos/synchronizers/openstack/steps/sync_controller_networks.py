@@ -40,6 +40,18 @@ class SyncControllerNetworks(OpenStackSyncStep):
             raise Exception("Invalid subnet %s" % subnet)
         return ".".join(parts[:3]) + ".1"
 
+    def alloc_start_ip(self, subnet):
+        parts = subnet.split(".")
+        if len(parts)!=4:
+            raise Exception("Invalid subnet %s" % subnet)
+        return ".".join(parts[:3]) + ".3"
+
+    def alloc_end_ip(self, subnet):
+        parts = subnet.split(".")
+        if len(parts)!=4:
+            raise Exception("Invalid subnet %s" % subnet)
+        return ".".join(parts[:3]) + ".254"
+
     def save_controller_network(self, controller_network):
         network_name = controller_network.network.name
         subnet_name = '%s-%d'%(network_name,controller_network.pk)
@@ -47,9 +59,27 @@ class SyncControllerNetworks(OpenStackSyncStep):
             # If a subnet is already specified (pass in by the creator), then
             # use that rather than auto-generating one.
             cidr = controller_network.subnet.strip()
+            print "CIDR_MS", cidr
         else:
             cidr = self.alloc_subnet(controller_network.pk)
+            print "CIDR_AMS", cidr
+
+        if controller_network.network.start_ip and controller_network.network.start_ip.strip():
+            start_ip = controller_network.network.start_ip.strip()
+            print "DEF_START_IP", start_ip
+        else:
+            start_ip = self.alloc_start_ip(cidr) 
+            print "DEF_START_AIP", start_ip
+
+        if controller_network.network.end_ip and controller_network.network.end_ip.strip():
+            end_ip = controller_network.network.end_ip.strip()
+            print "DEF_START_IP", end_ip
+        else:
+            end_ip = self.alloc_end_ip(cidr) 
+            print "DEF_END_AIP", end_ip
+        
         self.cidr=cidr
+        self.start_ip=start_ip
         slice = controller_network.network.owner
 
         network_fields = {'endpoint':controller_network.controller.auth_url,
@@ -63,6 +93,8 @@ class SyncControllerNetworks(OpenStackSyncStep):
                     'ansible_tag':'%s-%s@%s'%(network_name,slice.slicename,controller_network.controller.name),
                     'cidr':cidr,
                     'gateway':self.alloc_gateway(cidr),
+                    'start_ip':start_ip,
+                    'end_ip':end_ip,
                     'use_vtn':getattr(Config(), "networking_use_vtn", False),
                     'delete':False
                     }

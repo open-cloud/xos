@@ -128,10 +128,10 @@ class Instance(PlCoreBase):
 
         if (self.isolation == "container") or (self.isolation == "container_vm"):
             if (self.image.kind != "container"):
-                raise ValidationError("Container instance must use container image")
+               raise ValidationError("Container instance must use container image")
         elif (self.isolation == "vm"):
             if (self.image.kind != "vm"):
-                raise ValidationError("VM instance must use VM image")
+               raise ValidationError("VM instance must use VM image")
 
         if (self.isolation == "container_vm") and (not self.parent):
             raise ValidationError("Container-vm instance must have a parent")

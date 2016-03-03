@@ -14,6 +14,17 @@ xos_synchronizer_openstack:
     volumes:
         - .:/root/setup:ro
 
+xos_synchronizer_mcordservice:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/mcordservice/mcordservice-synchronizer.py -C /opt/xos/synchronizers/mcordservice/mcordservice_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: mcordservice
+    links:
+        - xos_db
+    volumes:
+#        - ../setup/id_rsa:/opt/xos/synchronizers/mcordservice/mcordservice_private_key:ro  # private key
+        - ../setup:/root/setup:ro
 # FUTURE
 #xos_swarm_synchronizer:
 #    image: xosproject/xos-swarm-synchronizer
