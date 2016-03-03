@@ -22,6 +22,9 @@ MAXRATE=10gbit       # Maximum upload/download rate
 DNLD={{ downlink_speed }}          # DOWNLOAD Limit
 UPLD={{ uplink_speed }}            # UPLOAD Limit
 
+[ "$DNLD" == "None"] && DNLD=$MAXRATE
+[ "$UPLD" == "None"] && UPLD=$MAXRATE
+
 start() {
 
 # We'll use Hierarchical Token Bucket (HTB) to shape bandwidth.
@@ -52,7 +55,7 @@ start() {
     $TC class add dev $LAN parent 1:1 classid 1:30 htb rate 1kbit ceil $DNLD burst 15k
     $TC qdisc add dev $LAN parent 1:30 handle 30: sfq perturb 10
 
-    # This class is exempt from the download limit 
+    # This class is exempt from the download limit
     $TC class add dev $LAN parent 1:1 classid 1:50 htb rate 1kbit ceil $MAXRATE burst 15k
     $TC qdisc add dev $LAN parent 1:50 handle 50: sfq perturb 10
 
