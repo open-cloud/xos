@@ -57,7 +57,7 @@ angular.module('xos.mcordTopology')
         class: d => `${d.type} antenna`,
         opacity: 0,
         d: () => TopologyElements.icons.bbu,
-        transform: `translate(-22, -22), scale(0.4)`
+        transform: `translate(-22, -22)`
       })
       .transition()
       .duration(duration)
@@ -68,8 +68,8 @@ angular.module('xos.mcordTopology')
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 13,
-      x: -14,
+      y: 23,
+      x: 5,
       opacity: 0
     })
     .text(d => `BBU ${d.name.substr(d.name.length - 1, 1)}`)
@@ -171,7 +171,7 @@ angular.module('xos.mcordTopology')
         class: d => `${d.type} antenna`,
         opacity: 0,
         d: () => TopologyElements.icons.bbu,
-        transform: `translate(-22, -22), scale(0.4)`
+        transform: `translate(-22, -22)`
       })
       .transition()
       .duration(duration)
@@ -182,8 +182,8 @@ angular.module('xos.mcordTopology')
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 13,
-      x: -12,
+      y: 23,
+      x: -15,
       opacity: 0
     })
     .text(d => d.type)
