@@ -1,6 +1,6 @@
 ---
 - hosts: {{ instance_name }}
-  gather_facts: False
+  #gather_facts: False
   connection: ssh
   user: ubuntu
   sudo: yes
@@ -71,6 +71,12 @@
 
 
   tasks:
+  - name: Add hostname to /etc/hosts
+    lineinfile: dest=/etc/hosts
+      regexp='^127\.0\.0\.1'
+      line='127.0.0.1 localhost {{ ansible_hostname }}'
+      owner=root group=root mode=0644
+
   - name: Check to see if network is setup
     stat: path=/root/network_is_setup
     register: network_is_setup
