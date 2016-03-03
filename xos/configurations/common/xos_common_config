@@ -39,6 +39,7 @@ dependency_graph=/opt/xos/model-deps
 logfile=/var/log/xos_backend.log
 
 [gui]
+disable_minidashboard=True
 branding_name=M-CORD
 branding_icon=/static/cord-logo.png
 branding_favicon=/static/cord-favicon.png
