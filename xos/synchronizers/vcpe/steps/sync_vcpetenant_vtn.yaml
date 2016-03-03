@@ -210,7 +210,7 @@
     - restart dnsmasq
 
   - name: copy base ufw files
-    synchronize: src=/opt/xos/synchronizers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/ufw/ dest=/var/container_volumes/{{ container_name }}/etc/ufw/
     notify:
     - reload ufw
 
