@@ -369,7 +369,8 @@ class VSGService(Service):
                           ("wan_container_gateway_ip", ""),
                           ("wan_container_gateway_mac", ""),
                           ("wan_container_netbits", "24"),
-                          ("dns_servers", "8.8.8.8") )
+                          ("dns_servers", "8.8.8.8"),
+                          ("node_label", None) )
 
     def __init__(self, *args, **kwargs):
         super(VSGService, self).__init__(*args, **kwargs)
@@ -644,6 +645,9 @@ class VSGTenant(TenantWithContainer):
         slice = self.provider_service.slices.all()[0]
         return slice
 
+    def get_vsg_service(self):
+        return VSGService.get_service_objects().get(id=self.provider_service.id)
+
     def find_instance_for_s_tag(self, s_tag):
         #s_tags = STagBlock.objects.find(s_s_tag)
         #if s_tags:
@@ -669,7 +673,7 @@ class VSGTenant(TenantWithContainer):
         if slice.default_isolation == "container_vm":
             (node, parent) = ContainerVmScheduler(slice).pick()
         else:
-            (node, parent) = LeastLoadedNodeScheduler(slice).pick()
+            (node, parent) = LeastLoadedNodeScheduler(slice, label=self.get_vsg_service().node_label).pick()
 
         instance = Instance(slice = slice,
                         node = node,

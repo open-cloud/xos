@@ -230,6 +230,9 @@ node_types:
             dns_servers:
                 type: string
                 required: false
+            node_label:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
