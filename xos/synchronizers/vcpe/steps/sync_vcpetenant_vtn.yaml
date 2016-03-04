@@ -259,7 +259,7 @@
     service: name={{ container_name }} state=started
 
   - name: reload ufw
-    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /sbin/iptables -F FORWARD; /usr/sbin/ufw reload"
+    shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
 
   # Use docker cp instead of single-file volume
   # The reason is that changes to external file volume don't show up inside the container
