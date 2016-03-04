@@ -1,0 +1,148 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+description: Setup MCORD-related services.
+
+imports:
+   - custom_types/xos.yaml
+
+node_types:
+    tosca.nodes.MCORDComponent:
+        derived_from: tosca.nodes.Root
+        description: >
+            CORD: A Service Component of MCORD Service.
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of component
+
+topology_template:
+  node_templates:
+    service_mcord_bbu:
+      type: tosca.nodes.Service
+      requirements:
+      properties:
+          view_url: /admin/mcordservice/
+          kind: mcordservice
+
+
+    Private:
+      type: tosca.nodes.NetworkTemplate
+
+    net-BBU1-private:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: vBBU1_internal_net
+          cidr: 192.168.6.0/24
+          start_ip: 192.168.6.20
+          end_ip: 192.168.6.25
+          gateway_ip: 192.168.6.1
+      
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    net-BBU1-private2:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: vBBU1_internal_net2
+          cidr: 192.168.7.0/24
+          start_ip: 192.168.7.20
+          end_ip: 192.168.7.25
+          gateway_ip: 192.168.7.1
+      
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    net-BBU1-private3:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: vBBU1_internal_net3
+          cidr: 192.168.8.0/24
+          start_ip: 192.168.8.20
+          end_ip: 192.168.8.25
+          gateway_ip: 192.168.168.1
+      
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    net-Internet:
+      type: tosca.nodes.network.Network.XOS
+      properties:
+          ip_version: 4
+          labels: Internet
+          cidr: 10.128.13.0/24
+          start_ip: 10.128.13.20
+          end_ip: 10.128.13.25
+          gateway_ip: 10.128.13.1
+
+      requirements:
+          - network_template:
+              node: Private
+              relationship: tosca.relationships.UsesNetworkTemplate
+          - owner:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
+          - connection:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.ConnectsToSlice
+
+    mysite:
+      type: tosca.nodes.Site
+
+    ubuntu-arm64-bbu-snapshot.img:
+      type: tosca.nodes.Image
+
+    mysite_mcord_bbu_slice1:
+      description: MCORD BBU Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - mcord_bbu_service:
+              node: service_mcord_bbu
+              relationship: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+                node: ubuntu-arm64-bbu-snapshot.img 
+                relationship: tosca.relationships.DefaultImage
+      properties:
+          default_flavor: m1.xlarge
+          default_node: computeBBU1
+
+    mcord_service_bbu_component1:
+      description: MCORD Service BBU Component
+      type: tosca.nodes.MCORDComponent
+      requirements:
+          - provider_service:
+              node: service_mcord_bbu
+              relationship: tosca.relationships.MemberOfService
+          - mcord_slice:
+              node: mysite_mcord_bbu_slice1
+              relationship: tosca.relationships.MemberOfSlice
