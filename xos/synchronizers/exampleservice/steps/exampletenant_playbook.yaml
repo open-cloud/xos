@@ -1,0 +1,24 @@
+---
+- hosts: "{{ instance_name }}"
+  connection: ssh
+  user: ubuntu
+  sudo: yes
+  gather_facts: no
+
+  tasks:
+  - name: install apache
+    apt:
+      name=apache2
+      update_cache=yes
+    notify:
+      - restart apache
+
+  - name: write message
+    shell: echo "{{ tenant_message }}" > /var/www/html/index.html
+
+  handlers:
+  - name: restart apache
+    service:
+      name=apache2
+      state=restarted
+
