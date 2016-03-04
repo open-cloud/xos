@@ -61,6 +61,14 @@ rect {
   stroke: #000;
 }
 
+rect.MME,
+rect.SGW,
+rect.PGW,
+rect.bbu {
+  fill: #fff;
+  stroke: #fff;
+}
+
 .bbu text, 
 .MME text,
 .SGW text,
