@@ -21,7 +21,7 @@ topology_template:
     public_addresses:
       type: tosca.nodes.AddressPool
       properties:
-          addresses: 10.123.0.0/24 10.124.0.0/24
+          addresses: 10.123.0.128/25
 
     service_vsg:
       type: tosca.nodes.VSGService
@@ -61,6 +61,9 @@ topology_template:
 
     mysite:
       type: tosca.nodes.Site
+
+    label_vsg:
+      type: tosca.nodes.NodeLabel
 
     # Networks required by the CORD setup
     mysite_vsg-access:

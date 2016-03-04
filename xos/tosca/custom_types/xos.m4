@@ -715,6 +715,16 @@ node_types:
             node:
                 type: tosca.capabilities.xos.Node
 
+    tosca.nodes.NodeLabel:
+        derived_from: tosca.nodes.Root
+        description: >
+            An XOS NodeLabel.
+        properties:
+            xos_base_props
+        capabilities:
+            node:
+                type: tosca.capabilities.xos.NodeLabel
+
     tosca.nodes.DashboardView:
         derived_from: tosca.nodes.Root
         description: >
@@ -892,6 +902,10 @@ node_types:
     tosca.capabilities.xos.Node:
         derived_from: tosca.capabilities.Root
         description: An XOS Node
+
+    tosca.capabilities.xos.NodeLabel:
+        derived_from: tosca.capabilities.Root
+        description: An XOS NodeLabel
 
     tosca.capabilities.xos.Image:
         derived_from: tosca.capabilities.Root
