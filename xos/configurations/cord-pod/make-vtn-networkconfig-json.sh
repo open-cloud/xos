@@ -69,8 +69,8 @@ cat >> $FN <<EOF
                 ]
             }
         },
-        "org.onosproject.openstackswitching" : {
-            "openstackswitching" : {
+        "org.onosproject.openstackinterface" : {
+            "openstackinterface" : {
                  "do_not_push_flows" : "true",
                  "neutron_server" : "$NEUTRON_URL/v2.0/",
                  "keystone_server" : "$OS_AUTH_URL/",
