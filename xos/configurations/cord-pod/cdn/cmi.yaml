@@ -62,7 +62,7 @@
     copy: src=private/allkeys.template dest=/vservers/coplc/etc/onevantage/services/HPC/templates/usr/local/CoBlitz/var/allkeys.template
 
   - name: install keygen
-    copy: src=private/keygen dest=/vservers/coplc/etc/onevantage/services/HPC/templates/usr/local/CoBlitz/var/keygen
+    copy: src=private/keygen dest=/vservers/coplc/etc/onevantage/services/HPC/templates/usr/local/CoBlitz/var/keygen mode=0755
 
   - name: download socat
     get_url: url=http://pkgs.repoforge.org/socat/socat-1.7.2.1-1.el6.rf.x86_64.rpm dest=/root/socat-1.7.2.1-1.el6.rf.x86_64.rpm
