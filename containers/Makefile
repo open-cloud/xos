@@ -5,7 +5,7 @@ xos: nodes.yaml images.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/setup.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/images.yaml
-	sudo docker exec frontend_xos_1 cp /opt/xos/configurations/cord/xos_cord_config /opt/xos/xos_configuration/
+	sudo docker exec containers_xos_1 cp /opt/xos/configurations/frontend/mocks/xos_mcord_config /opt/xos/xos_configuration/
 
 nodes.yaml:
 	export SETUPDIR=.; bash ../xos/configurations/common/make-nodes-yaml.sh
