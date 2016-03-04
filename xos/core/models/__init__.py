@@ -21,7 +21,7 @@ from .slice import SlicePrivilege
 from .credential import UserCredential,SiteCredential,SliceCredential
 from .site import SiteRole
 from .site import SitePrivilege
-from .node import Node
+from .node import Node, NodeLabel
 from .slicetag import SliceTag
 from .instance import Instance
 from .reservation import ReservedResource
