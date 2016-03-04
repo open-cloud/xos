@@ -17,4 +17,4 @@ echo "cmi ansible_ssh_private_key_file=$VM_KEY" > cmi.hosts
 export ANSIBLE_CONFIG=cmi.conf
 export ANSIBLE_HOSTS=cmi.hosts
 
-ansible-playbook -vvvv cmi.yaml
+ansible-playbook -v cmi.yaml
