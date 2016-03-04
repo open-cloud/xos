@@ -30,13 +30,18 @@ class XOSNode(XOSResource):
                 siteDeployment = self.get_xos_object(SiteDeployment, site=site, deployment=deployment, throw_exception=True)
                 args["site_deployment"] = siteDeployment
 
+        return args
+
+    def postprocess(self, obj):
+        # We can't set the labels when we create a Node, because they're
+        # ManyToMany related, and the node doesn't exist yet.
         labels=[]
         for label_name in self.get_requirements("tosca.relationships.HasLabel"):
             labels.append(self.get_xos_object(NodeLabel, name=label_name))
         if labels:
-            args["labels"] = labels
-
-        return args
+            self.info("Updated labels for node '%s'" % obj)
+            obj.labels = labels
+            obj.save()
 
     def create(self):
         nodetemplate = self.nodetemplate
