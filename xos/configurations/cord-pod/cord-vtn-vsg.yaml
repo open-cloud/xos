@@ -37,6 +37,7 @@ topology_template:
           wan_container_gateway_ip: 10.168.0.1
           wan_container_gateway_mac: 02:42:0a:a8:00:01
           wan_container_netbits: 24
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 

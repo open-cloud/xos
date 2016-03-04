@@ -41,6 +41,7 @@ topology_template:
           backend_network_label: hpc_client
           public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE] }
           private_key_fn: /opt/xos/synchronizers/vcpe/vcpe_private_key
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 
