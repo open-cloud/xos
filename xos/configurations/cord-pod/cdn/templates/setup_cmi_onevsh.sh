@@ -1,4 +1,16 @@
-sp=Create("ServiceProvider", {"account": "openstack", "name": "openstack", "enabled": True})
-cp=Create("ContentProvider", {"account": "test", "name": "test", "enabled": True, "service_provider_id": sp})
-ors=Create("OriginServer", {"url": "http://www.cs.arizona.edu/", "content_provider_id": cp, "service_type": "HyperCache"})
-pre=Create("CDNPrefix", {"service": "HyperCache", "enabled": True, "content_provider_id": cp, "cdn_prefix": "test.vicci.org", "default_origin_server": "http://www.cs.arizona.edu/"})
+def CreateOrFind(kind, args):
+    objs=ListAll(kind, args)
+    if objs:
+        id_name = {"ServiceProvider": "service_provider_id",
+                   "ContentProvider": "content_provider_id",
+                   "OriginServer": "origin_server_id",
+                   "CDNPrefix": "cdn_prefix_id"}
+        print kind, "exists with args", args
+        return objs[0].get(id_name[kind])
+    else:
+	print "create", kind, "with args", args
+        return Create(kind, args)
+sp=CreateOrFind("ServiceProvider", {"account": "openstack", "name": "openstack", "enabled": True})
+cp=CreateOrFind("ContentProvider", {"account": "test", "name": "test", "enabled": True, "service_provider_id": sp})
+ors=CreateOrFind("OriginServer", {"url": "http://www.cs.arizona.edu/", "content_provider_id": cp, "service_type": "HyperCache"})
+pre=CreateOrFind("CDNPrefix", {"service": "HyperCache", "enabled": True, "content_provider_id": cp, "cdn_prefix": "test.vicci.org", "default_origin_server": "http://www.cs.arizona.edu/"})
