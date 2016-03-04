@@ -35,20 +35,20 @@ topology_template:
               node: trusty-server-multi-nic
               relationship: tosca.relationships.SupportsImage
 
-    CloudLab:
-      type: tosca.nodes.Controller
-      requirements:
-          - deployment:
-              node: MyDeployment
-              relationship: tosca.relationships.ControllerDeployment
-      properties:
-          backend_type: OpenStack
-          version: Juno
-          auth_url: http://sample/v2
-          admin_user: admin
-          admin_password: adminpassword
-          admin_tenant: admin
-          domain: Default
+    # CloudLab:
+    #   type: tosca.nodes.Controller
+    #   requirements:
+    #       - deployment:
+    #           node: MyDeployment
+    #           relationship: tosca.relationships.ControllerDeployment
+    #   properties:
+    #       backend_type: OpenStack
+    #       version: Juno
+    #       auth_url: http://sample/v2
+    #       admin_user: admin
+    #       admin_password: adminpassword
+    #       admin_tenant: admin
+    #       domain: Default
 
     mysite:
       type: tosca.nodes.Site
@@ -59,10 +59,10 @@ topology_template:
           - deployment:
                node: MyDeployment
                relationship: tosca.relationships.SiteDeployment
-               requirements:
-                   - controller:
-                       node: CloudLab
-                       relationship: tosca.relationships.UsesController
+               # requirements:
+               #     - controller:
+               #         node: CloudLab
+               #         relationship: tosca.relationships.UsesController
 
     compute9:
       type: tosca.nodes.Node
