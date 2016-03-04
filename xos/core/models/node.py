@@ -28,3 +28,9 @@ class Node(PlCoreBase):
 
     def can_update(self, user):
         return user.can_update_site(self.site, allow=['tech'])
+
+class NodeLabel(PlCoreBase):
+    name = StrippedCharField(max_length=200, help_text="label name", unique=True)
+    node = models.ManyToManyField(Node, related_name="labels", blank=True)
+
+    def __unicode__(self): return u'%s' % (self.name)
