@@ -35,7 +35,7 @@ topology_template:
           ip_version: 4
           labels: mcord_service_internal_net
           cidr: 172.16.16.0/24
-          start_ip: 172.16.16.1
+          start_ip: 172.16.16.2
           end_ip: 172.16.16.5
           gateway_ip: 172.16.16.1
 
