@@ -61,11 +61,19 @@ rect {
   stroke: #000;
 }
 
+rect.MME,
+rect.SGW,
+rect.PGW,
+rect.bbu {
+  fill: #fff;
+  stroke: #fff;
+}
+
 .bbu text, 
 .MME text,
 .SGW text,
 .PGW text {
   font-size: 10px;
   stroke-width: 0;
-  fill: #fff;
+  fill: #000;
 }
