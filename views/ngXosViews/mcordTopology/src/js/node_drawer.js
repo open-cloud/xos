@@ -38,26 +38,29 @@ angular.module('xos.mcordTopology')
 
   this.drawBbus = (nodes) => {
 
-    // nodes.append('circle')
-    //   .attr({
-    //     class: d => d.type,
-    //     r: 0,
-    //     opacity: 0
-    //   })
-    //   .transition()
-    //   .duration(duration)
-    //   // .delay((d, i) => i * (duration / 2))
-    //   .attr({
-    //     r: 15,
-    //     opacity: 1
-    //   });
+    nodes.append('rect')
+      .attr({
+        class: d => d.type,
+        width: 30,
+        height: 30,
+        x: -15,
+        y: -15,
+        opacity: 0
+      })
+      .transition()
+      .duration(duration)
+      .attr({
+        r: 15,
+        opacity: 1
+      });
+
     nodes
       .append('path')
       .attr({
         class: d => `${d.type} antenna`,
         opacity: 0,
         d: () => TopologyElements.icons.bbu,
-        transform: `translate(-22, -22)`
+        transform: `translate(-18, -18)`
       })
       .transition()
       .duration(duration)
@@ -68,7 +71,7 @@ angular.module('xos.mcordTopology')
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 23,
+      y: 25,
       x: 5,
       opacity: 0
     })
@@ -102,7 +105,7 @@ angular.module('xos.mcordTopology')
         class: d => `${d.type} antenna`,
         opacity: 0,
         d: () => TopologyElements.icons.rru,
-        transform: `translate(-22, -22), scale(0.4)`
+        transform: `translate(-18, -18)`
       })
       .transition()
       .duration(duration)
@@ -152,26 +155,29 @@ angular.module('xos.mcordTopology')
   };
 
   this.drawOthers = (nodes) => {
-    // nodes.append('circle')
-    //   .attr({
-    //     class: d => d.type,
-    //     r: 0,
-    //     opacity: 0
-    //   })
-    //   .transition()
-    //   .duration(duration)
-    //   // .delay((d, i) => i * (duration / 2))
-    //   .attr({
-    //     r: 15,
-    //     opacity: 1
-    //   });
+    nodes.append('rect')
+      .attr({
+        class: d => d.type,
+        width: 30,
+        height: 30,
+        x: -15,
+        y: -15,
+        opacity: 0
+      })
+      .transition()
+      .duration(duration)
+      .attr({
+        r: 15,
+        opacity: 1
+      });
+
     nodes
       .append('path')
       .attr({
         class: d => `${d.type} antenna`,
         opacity: 0,
         d: () => TopologyElements.icons.bbu,
-        transform: `translate(-22, -22)`
+        transform: `translate(-18, -18)`
       })
       .transition()
       .duration(duration)
@@ -182,8 +188,8 @@ angular.module('xos.mcordTopology')
     nodes.append('text')
     .attr({
       'text-anchor': 'start',
-      y: 23,
-      x: -15,
+      y: 25,
+      x: -12,
       opacity: 0
     })
     .text(d => d.type)
