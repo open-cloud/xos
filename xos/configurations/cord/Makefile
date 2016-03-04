@@ -1,7 +1,7 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab cord
+cloudlab: common_cloudlab cord acord
 
 devstack: upgrade_pkgs common_devstack devstack_net_fix cord
 
@@ -12,7 +12,6 @@ cord: ceilometer_dashboard virtualbng_json vtn_network_cfg_json
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/cord.yaml
-	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 
 containers:
 	cd ../../../containers/xos; make devel
@@ -23,6 +22,9 @@ common_cloudlab:
 
 common_devstack:
 	make -C ../common -f Makefile.devstack
+
+acord: cloudlab_ceilometer_custom_images ceilometer_dashboard
+	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/cord/ceilometer.yaml
 
 ceilometer_dashboard:
 	#NOTE: The below dashboard install scripts assume
@@ -78,3 +80,6 @@ devstack_net_fix:
 
 upgrade_pkgs:
 	sudo pip install httpie --upgrade
+
+cloudlab_ceilometer_custom_images:
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /tmp/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /tmp/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
