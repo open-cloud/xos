@@ -1,6 +1,6 @@
 ---
 - hosts: {{ instance_name }}
-  gather_facts: False
+  #gather_facts: False
   connection: ssh
   user: ubuntu
   sudo: yes
@@ -71,6 +71,12 @@
 
 
   tasks:
+  - name: Add hostname to /etc/hosts
+    lineinfile: dest=/etc/hosts
+      regexp='^127\.0\.0\.1'
+      line='127.0.0.1 localhost {{ ansible_hostname }}'
+      owner=root group=root mode=0644
+
   - name: Check to see if network is setup
     stat: path=/root/network_is_setup
     register: network_is_setup
@@ -224,6 +230,14 @@
     notify:
     - copy in /etc/rc.local
 
+  - name: create directory for local programs
+    file: path=/var/container_volumes/{{ container_name }}/usr/local/sbin state=directory
+
+  - name: bandwidth limit script
+    template: src=/opt/xos/synchronizers/vcpe/templates/bwlimit.sh.j2 dest=/var/container_volumes/{{ container_name }}/usr/local/sbin/bwlimit.sh owner=root group=root mode=0755
+    notify:
+    - reset bwlimits
+
   - name: Make sure vCPE service is running
     service: name={{ container_name }} state=started
 
@@ -252,3 +266,6 @@
   # Probably Ansible deletes and then recreates the external file, and container has old version
   - name: copy in /etc/rc.local
     shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
+
+  - name: reset bwlimits
+    shell: docker exec {{ container_name }} bash -c "/usr/local/sbin/bwlimit.sh restart"
