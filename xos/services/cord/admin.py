@@ -108,6 +108,7 @@ class VSGServiceForm(forms.ModelForm):
     wan_container_gateway_mac = forms.CharField(required=False)
     wan_container_netbits = forms.CharField(required=False)
     dns_servers = forms.CharField(required=False)
+    node_label = forms.CharField(required=False)
 
     def __init__(self,*args,**kwargs):
         super (VSGServiceForm,self ).__init__(*args,**kwargs)
@@ -121,6 +122,7 @@ class VSGServiceForm(forms.ModelForm):
             self.fields['wan_container_gateway_mac'].initial = self.instance.wan_container_gateway_mac
             self.fields['wan_container_netbits'].initial = self.instance.wan_container_netbits
             self.fields['dns_servers'].initial = self.instance.dns_servers
+            self.fields['node_label'].initial = self.instance.node_label
 
     def save(self, commit=True):
         self.instance.bbs_api_hostname = self.cleaned_data.get("bbs_api_hostname")
@@ -132,6 +134,7 @@ class VSGServiceForm(forms.ModelForm):
         self.instance.wan_container_gateway_mac = self.cleaned_data.get("wan_container_gateway_mac")
         self.instance.wan_container_netbits = self.cleaned_data.get("wan_container_netbits")
         self.instance.dns_servers = self.cleaned_data.get("dns_servers")
+        self.instance.node_label = self.cleaned_data.get("node_label")
         return super(VSGServiceForm, self).save(commit=commit)
 
     class Meta:
@@ -143,7 +146,7 @@ class VSGServiceAdmin(ReadOnlyAwareAdmin):
     verbose_name_plural = "vSG Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute",],
+    fieldsets = [(None,             {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", "service_specific_attribute", "node_label"],
                                      'classes':['suit-tab suit-tab-general']}),
                  ("backend config", {'fields': [ "backend_network_label", "bbs_api_hostname", "bbs_api_port", "bbs_server", "bbs_slice"],
                                      'classes':['suit-tab suit-tab-backend']}),

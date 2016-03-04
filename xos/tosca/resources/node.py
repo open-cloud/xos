@@ -5,7 +5,7 @@ import tempfile
 sys.path.append("/opt/tosca")
 from translator.toscalib.tosca_template import ToscaTemplate
 
-from core.models import Node, Site, Deployment, SiteDeployment
+from core.models import Node, NodeLabel, Site, Deployment, SiteDeployment
 
 from xosresource import XOSResource
 
@@ -29,6 +29,12 @@ class XOSNode(XOSResource):
             if site:
                 siteDeployment = self.get_xos_object(SiteDeployment, site=site, deployment=deployment, throw_exception=True)
                 args["site_deployment"] = siteDeployment
+
+        labels=[]
+        for label_name in self.get_requirements("tosca.relationships.HasLabel"):
+            labels.append(self.get_xos_object(NodeLabel, name=label_name))
+        if labels:
+            args["labels"] = labels
 
         return args
 

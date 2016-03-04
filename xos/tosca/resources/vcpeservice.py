@@ -15,5 +15,5 @@ class XOSVsgService(XOSService):
     copyin_props = ["view_url", "icon_url", "enabled", "published", "public_key",
                     "private_key_fn", "versionNumber", "backend_network_label",
                     "wan_container_gateway_ip", "wan_container_gateway_mac",
-                    "wan_container_netbits", "dns_servers"]
+                    "wan_container_netbits", "dns_servers", "node_label"]
 

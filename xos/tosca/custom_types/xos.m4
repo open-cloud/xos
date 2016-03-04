@@ -230,6 +230,9 @@ node_types:
             dns_servers:
                 type: string
                 required: false
+            node_label:
+                type: string
+                required: false
 
     tosca.nodes.VBNGService:
         derived_from: tosca.nodes.Root
@@ -858,6 +861,10 @@ node_types:
     tosca.relationships.UsesDashboard:
         derived_from: tosca.relationships.Root
         valid_target_types: [ tosca.capabilities.xos.DashboardView ]
+
+    tosca.relationships.HasLabel:
+        derived_from: tosca.relationships.Root
+        valid_target_types: [ tosca.capabilities.xos.NodeLabel ]
 
     tosca.capabilities.xos.Service:
         derived_from: tosca.capabilities.Root
