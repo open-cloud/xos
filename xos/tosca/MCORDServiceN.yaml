@@ -35,35 +35,6 @@ topology_template:
               node: trusty-server-multi-nic
               relationship: tosca.relationships.SupportsImage
 
-    # CloudLab:
-    #   type: tosca.nodes.Controller
-    #   requirements:
-    #       - deployment:
-    #           node: MyDeployment
-    #           relationship: tosca.relationships.ControllerDeployment
-    #   properties:
-    #       backend_type: OpenStack
-    #       version: Juno
-    #       auth_url: http://sample/v2
-    #       admin_user: admin
-    #       admin_password: adminpassword
-    #       admin_tenant: admin
-    #       domain: Default
-
-    mysite:
-      type: tosca.nodes.Site
-      properties:
-          display_name: MySite
-          site_url: http://opencloud.us/
-      requirements:
-          - deployment:
-               node: MyDeployment
-               relationship: tosca.relationships.SiteDeployment
-               # requirements:
-               #     - controller:
-               #         node: CloudLab
-               #         relationship: tosca.relationships.UsesController
-
     compute9:
       type: tosca.nodes.Node
       requirements:
@@ -192,15 +163,12 @@ topology_template:
               node: mysite_mcord_slice1
               relationship: tosca.relationships.ConnectsToSlice
 
-    # mysite:
-    #   type: tosca.nodes.Site
+    mysite:
+      type: tosca.nodes.Site
 
 
     ubuntu-14.04-server-cloudimg-amd64-disk1:
       type: tosca.nodes.Image
-
-    # trusty-server-multi-nic:
-    #   type: tosca.nodes.Image
 
     mysite_mcord_slice1:
       description: MCORD Service Slice 1
