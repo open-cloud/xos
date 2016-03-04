@@ -270,6 +270,8 @@ topology_template:
     mysite:
       type: tosca.nodes.Site
 
+    label_vsg:
+      type: tosca.nodes.NodeLabel
 
     # CORD Slices
     mysite_vsg:
