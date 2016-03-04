@@ -26,6 +26,8 @@
 
   - name: run the setup script
     shell: /a/sbin/setup.sh < /root/setup_answers.txt
+    args:
+        creates: /a/var/log/setup.log
 
   - name: fix onevapi CDNPrefix bug
     shell: sed -i 's/hostname/str/g' /vservers/coplc/usr/share/cob_api/COB/PublicObjects/CDNPrefix.py
