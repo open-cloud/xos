@@ -1,0 +1,6 @@
+{% for object in generator.all %}
+Object {{ object }}:
+Fields:
+{% for field in object.fields %}{{ field.name }}:{{ field.type }}
+{% endfor %}
+{% endfor %}
