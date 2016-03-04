@@ -74,8 +74,8 @@ cat >> $FN <<EOF
                 ]
             }
         },
-        "org.onosproject.openstackswitching" : {
-            "openstackswitching" : {
+        "org.onosproject.openstackinterface" : {
+            "openstackinterface" : {
                  "do_not_push_flows" : "true",
                  "neutron_server" : "http://$NEUTRONIP:9696/v2.0/",
                  "keystone_server" : "http://$KEYSTONEIP:5000/v2.0/",

@@ -38,6 +38,7 @@ topology_template:
           wan_container_gateway_mac: 00:8c:fa:5b:09:d8
           wan_container_netbits: 24
           dns_servers: 8.8.8.8, 8.8.4.4
+#          node_label: label_vsg
       artifacts:
           pubkey: /opt/xos/synchronizers/vcpe/vcpe_public_key
 

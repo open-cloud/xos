@@ -437,12 +437,21 @@ class Scheduler(object):
 class LeastLoadedNodeScheduler(Scheduler):
     # This scheduler always return the node with the fewest number of instances.
 
-    def __init__(self, slice):
+    def __init__(self, slice, label=None):
         super(LeastLoadedNodeScheduler, self).__init__(slice)
+        self.label = label
 
     def pick(self):
         from core.models import Node
-        nodes = list(Node.objects.all())
+        nodes = Node.objects.all()
+
+        if self.label:
+           nodes = nodes.filter(labels__name=self.label)
+
+        nodes = list(nodes)
+
+        if not nodes:
+            raise Exception("LeastLoadedNodeScheduler: No suitable nodes to pick from")
 
         # TODO: logic to filter nodes by which nodes are up, and which
         #   nodes the slice can instantiate on.
