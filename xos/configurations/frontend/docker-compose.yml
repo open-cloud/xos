@@ -21,6 +21,7 @@ xos:
     volumes:
       - ../common/xos_common_config:/opt/xos/xos_configuration/xos_common_config
       - ../../core/xoslib:/opt/xos/core/xoslib
+      - ../../tosca:/opt/xos/tosca
       - ../../core/static:/opt/xos/core/static
       - ../../templates/admin:/opt/xos/templates/admin
       - ../../configurations:/opt/xos/configurations
