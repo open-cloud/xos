@@ -127,14 +127,14 @@ topology_template:
       artifacts:
           pubkey: /opt/xos/synchronizers/monitoring_channel/monitoring_channel_public_key
 
-    service_sflow:
-      type: tosca.nodes.SFlowService
-      requirements:
-      properties:
-          view_url: /admin/ceilometer/sflowservice/$id$/
-          kind: sflow
-          sflow_port: 6343
-          sflow_api_port: 33333
+#    service_sflow:
+#      type: tosca.nodes.SFlowService
+#      requirements:
+#      properties:
+#          view_url: /admin/ceilometer/sflowservice/$id$/
+#          kind: sflow
+#          sflow_port: 6343
+#          sflow_api_port: 33333
 
     Private:
       type: tosca.nodes.NetworkTemplate
@@ -180,16 +180,16 @@ topology_template:
       properties:
           default_flavor: m1.small
 
-    mysite_sflow:
-      description: Slice for sFlow service
-      type: tosca.nodes.Slice
-      requirements:
-          - sflow_service:
-              node: service_sflow
-              relationship: tosca.relationships.MemberOfService
-          - site:
-              node: mysite
-              relationship: tosca.relationships.MemberOfSite
+#    mysite_sflow:
+#      description: Slice for sFlow service
+#      type: tosca.nodes.Slice
+#      requirements:
+#          - sflow_service:
+#              node: service_sflow
+#              relationship: tosca.relationships.MemberOfService
+#          - site:
+#              node: mysite
+#              relationship: tosca.relationships.MemberOfSite
 
     my_ceilometer_tenant:
       description: Ceilometer Service default Tenant
@@ -200,27 +200,27 @@ topology_template:
               relationship: tosca.relationships.MemberOfService
        
     # Virtual machines
-    sflow_service_instance:
-      type: tosca.nodes.Compute
-      capabilities:
-        # Host container properties
-        host:
-         properties:
-           num_cpus: 1
-           disk_size: 10 GB
-           mem_size: 4 MB
-        # Guest Operating System properties
-        os:
-          properties:
-            # host Operating System image properties
-            architecture: x86_64
-            type: linux
-            distribution: Ubuntu
-            version: 14.10
-      requirements:
-          - slice:
-                node: mysite_sflow
-                relationship: tosca.relationships.MemberOfSlice
+#    sflow_service_instance:
+#      type: tosca.nodes.Compute
+#      capabilities:
+#        # Host container properties
+#        host:
+#         properties:
+#           num_cpus: 1
+#           disk_size: 10 GB
+#           mem_size: 4 MB
+#        # Guest Operating System properties
+#        os:
+#          properties:
+#            # host Operating System image properties
+#            architecture: x86_64
+#            type: linux
+#            distribution: Ubuntu
+#            version: 14.10
+#      requirements:
+#          - slice:
+#                node: mysite_sflow
+#                relationship: tosca.relationships.MemberOfSlice
 
     Ceilometer:
       type: tosca.nodes.DashboardView
