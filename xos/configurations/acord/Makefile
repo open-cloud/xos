@@ -1,7 +1,7 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab acord
+cloudlab: common_cloudlab cloudlab_ceilometer_custom_images acord
 
 devstack: upgrade_pkgs common_devstack devstack_net_fix devstack_images acord
 
@@ -62,3 +62,6 @@ rebuild_synchronizer:
 
 devstack_images:
 	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /opt/stack/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /opt/stack/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /opt/stack/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
+
+cloudlab_ceilometer_custom_images:
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /tmp/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /tmp/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
