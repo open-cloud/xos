@@ -22,8 +22,8 @@ MAXRATE=10gbit       # Maximum upload/download rate
 DNLD={{ downlink_speed }}          # DOWNLOAD Limit
 UPLD={{ uplink_speed }}            # UPLOAD Limit
 
-[ "$DNLD" == "None"] && DNLD=$MAXRATE
-[ "$UPLD" == "None"] && UPLD=$MAXRATE
+[ "$DNLD" == "None" ] && DNLD=$MAXRATE
+[ "$UPLD" == "None" ] && UPLD=$MAXRATE
 
 start() {
 
