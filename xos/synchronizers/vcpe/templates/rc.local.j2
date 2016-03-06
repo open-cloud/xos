@@ -14,7 +14,7 @@
 ufw enable
 ufw allow bootps
 ufw allow from 192.168.0.0/24
-{% if setup == "enabled" %}
+{% if status == "enabled" %}
 ufw route allow in on eth1 out on eth0
 ufw route allow in on eth1 out on eth2
 {% else %}
