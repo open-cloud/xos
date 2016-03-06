@@ -35,10 +35,17 @@ class SyncControllerNetworks(OpenStackSyncStep):
         return cidr
 
     def alloc_gateway(self, subnet):
-        parts = subnet.split(".")
-        if len(parts)!=4:
-            raise Exception("Invalid subnet %s" % subnet)
-        return ".".join(parts[:3]) + ".1"
+        # given a CIDR, allocate a default gateway using the .1 address within
+        # the subnet.
+        #    10.123.0.0/24 --> 10.123.0.1
+        #    207.141.192.128/28 --> 207.141.192.129
+        (network, bits) = subnet.split("/")
+        network=network.strip()
+        bits=int(bits.strip())
+        netmask = (~(pow(2,32-bits)-1) & 0xFFFFFFFF)
+        ip = struct.unpack("!L", socket.inet_aton(network))[0]
+        ip = ip & netmask | 1
+        return socket.inet_ntoa(struct.pack("!L", ip))
 
     def save_controller_network(self, controller_network):
         network_name = controller_network.network.name
