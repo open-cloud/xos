@@ -1,16 +1,18 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab acord
+cloudlab: common_cloudlab cloudlab_ceilometer_custom_images acord
 
-devstack: upgrade_pkgs common_devstack devstack_net_fix acord
+devstack: upgrade_pkgs common_devstack devstack_net_fix devstack_images acord
 
-acord: ceilometer_dashboard
+cord: ceilometer_dashboard
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/base.yaml
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /root/setup/nodes.yaml
+
+acord: cord
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/acord/ceilometer.yaml
 
 containers:
@@ -57,3 +59,9 @@ rebuild_xos:
 
 rebuild_synchronizer:
 	make -C ../../../containers/synchronizer
+
+devstack_images:
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /opt/stack/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /opt/stack/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /opt/stack/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"
+
+cloudlab_ceilometer_custom_images:
+	bash -c "source ../setup/admin-openrc.sh; glance image-show ceilometer-trusty-server-multi-nic || ! mkdir -p /tmp/images || ! wget http://www.vicci.org/cord/ceilometer-trusty-server-multi-nic.qcow2 -P /tmp/images || glance image-create --name ceilometer-trusty-server-multi-nic --disk-format qcow2 --file /tmp/images/ceilometer-trusty-server-multi-nic.qcow2 --container-format bare"

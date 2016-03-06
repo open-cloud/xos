@@ -21,7 +21,7 @@ docker inspect $MONITORING_CHANNEL > /dev/null 2>&1
 if [ "$?" == 1 ]
 then
     #sudo docker build -t monitoring-channel -f Dockerfile.monitoring_channel .
-    sudo docker pull srikanthvavila/monitoring-channel
+    #sudo docker pull srikanthvavila/monitoring-channel
 if [ -z "$HEADNODEFLATLANIP" ] || [ "$HEADNODEFLATLANIP" == "None" ]
 then
     docker run -d --name=$MONITORING_CHANNEL --privileged=true -p $HOST_FORWARDING_PORT_FOR_CEILOMETER:8000 -v /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config:/usr/local/share/ceilometer_proxy_config srikanthvavila/monitoring-channel
@@ -43,4 +43,4 @@ fi
 #cat /usr/local/share/monitoring-channel-{{ unique_id }}_ceilometer_proxy_config | sudo docker exec -i $MONITORING_CHANNEL bash -c 'cat > /usr/local/share/ceilometer_proxy_config'
 
 # Attach to container
-docker start -a $MONITORING_CHANNEL
+#docker start -a $MONITORING_CHANNEL
