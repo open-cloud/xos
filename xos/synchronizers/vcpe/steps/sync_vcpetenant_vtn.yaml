@@ -226,7 +226,7 @@
     - reload ufw
 
   - name: base ufw setup uses /etc/rc.local
-    template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/etc/rc.local owner=root group=root owner=root group=root mode=0755
+    template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/etc/rc.local owner=root group=root mode=0755
     notify:
     - copy in /etc/rc.local
     - rerun /etc/rc.local
