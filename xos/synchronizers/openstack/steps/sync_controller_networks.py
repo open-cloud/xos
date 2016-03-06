@@ -1,5 +1,7 @@
 import os
 import base64
+import struct
+import socket
 from collections import defaultdict
 from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
