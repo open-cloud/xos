@@ -39,13 +39,15 @@ class VTRTenant(Tenant):
     KIND = VTR_KIND
 
     TEST_CHOICES = ( ("ping", "Ping"), ("traceroute", "Trace Route"), ("tcpdump", "Tcp Dump") )
+    SCOPE_CHOICES = ( ("container", "Container"), ("vm", "VM") )
 
     simple_attributes = ( ("test", None),
                           ("argument", None),
                           ("result", None),
-                          ("target_id", None) )
+                          ("target_id", None),
+                          ("scope", "container") )
 
-    sync_attributes = ( 'test', 'argument' )
+    sync_attributes = ( 'test', 'argument', "scope" )
 
     def __init__(self, *args, **kwargs):
         vtr_services = VTRService.get_service_objects().all()
