@@ -180,6 +180,7 @@ INSTALLED_APPS = (
     'services.ceilometer',
     'services.requestrouter',
     'services.syndicate_storage',
+    'services.vtr',
     'geoposition',
     'rest_framework_swagger',
 )
