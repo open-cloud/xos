@@ -31,13 +31,14 @@ class VTRTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         argument = serializers.CharField(required=False)
         provider_service = serializers.PrimaryKeyRelatedField(queryset=VTRService.get_service_objects().all(), default=get_default_vtr_service)
         result = serializers.CharField(required=False)
+        backend_status = ReadOnlyField()
 
         humanReadableName = serializers.SerializerMethodField("getHumanReadableName")
         is_synced = serializers.SerializerMethodField("isSynced")
 
         class Meta:
             model = VTRTenant
-            fields = ('humanReadableName', 'id', 'provider_service', 'target_id', 'test', 'argument', 'result', 'is_synced' )
+            fields = ('humanReadableName', 'id', 'provider_service', 'target_id', 'test', 'argument', 'result', 'is_synced', 'backend_status' )
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()
