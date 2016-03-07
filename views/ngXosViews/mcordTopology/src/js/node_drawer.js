@@ -192,7 +192,7 @@ angular.module('xos.mcordTopology')
       x: -12,
       opacity: 0
     })
-    .text(d => d.type)
+    .text(d => d.name.toUpperCase())
     .transition()
     .duration(duration * 2)
     .attr({

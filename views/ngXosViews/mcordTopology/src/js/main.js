@@ -36,11 +36,7 @@ angular.module('xos.mcordTopology', [
       };
 
       const filterOthers = (instances) => {
-        return lodash.filter(instances, i => {
-          return (i.name.indexOf('MME') >= 0)
-          || (i.name.indexOf('SGW') >= 0)
-          || (i.name.indexOf('PGW') >= 0)
-        });
+        return TopologyElements.fakedInstance;
       };
 
       // retrieving instances list
@@ -266,10 +262,12 @@ angular.module('xos.mcordTopology', [
         NodeDrawer.drawRrus(enter.filter('.rru'))
         NodeDrawer.drawFabric(enter.filter('.fabric'))
         NodeDrawer.drawOthers(enter.filter(d => {
+          console.log(d.type);
           return (
             d.type  === 'MME' ||
             d.type === 'SGW' ||
-            d.type === 'PGW'
+            d.type === 'PGW' ||
+            d.type === 'Vid'
           )
         }));
 

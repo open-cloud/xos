@@ -56,7 +56,7 @@ rect {
   opacity: .4
 }
 
-.MME, .SGW, .PGW {
+.MME, .SGW, .PGW, .Vid {
   fill: purple;
   stroke: #000;
 }
@@ -64,7 +64,8 @@ rect {
 rect.MME,
 rect.SGW,
 rect.PGW,
-rect.bbu {
+rect.bbu,
+rect.Vid {
   fill: #fff;
   stroke: #fff;
 }
@@ -72,7 +73,8 @@ rect.bbu {
 .bbu text, 
 .MME text,
 .SGW text,
-.PGW text {
+.PGW text, 
+.Vid text {
   font-size: 10px;
   stroke-width: 0;
   fill: #000;
