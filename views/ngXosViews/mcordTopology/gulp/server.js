@@ -23,6 +23,10 @@ var proxy = httpProxy.createProxyServer({
   target: conf.host || 'http://0.0.0.0:9999'
 });
 
+var traffic = httpProxy.createProxyServer({
+  target: 'http://10.128.13.3'
+});
+
 
 proxy.on('error', function(error, req, res) {
   res.writeHead(500, {
@@ -63,6 +67,10 @@ module.exports = function(options){
               req.headers['x-csrftoken'] = conf.xoscsrftoken;
             }
             proxy.web(req, res);
+          }
+          else if(req.url.indexOf('videoLocal') !== -1){
+            console.log('traffic: ', req.url);
+            traffic.web(req, res);
           }
           else{
             next();

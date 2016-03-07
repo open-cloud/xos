@@ -11,7 +11,7 @@ m-cord-topology{
 
 line {
   stroke: blue;
-  stroke-width: 1;
+  /*stroke-width: 1;*/
 }
 
 line.big{
