@@ -1,0 +1,8 @@
+{% if status == "delinquent" %}
+Your account is delinquent.  Please visit the customer portal to pay your bill.
+{% elif status == "copyrightviolation" %}
+Someone in your home has been illegally downloading copyrighted material.
+Please visit the customer portal and perform the Copyright Training course.
+{% else %}
+Your service has been suspended.  Please visit the customer portal to resume.
+{% endif %}
