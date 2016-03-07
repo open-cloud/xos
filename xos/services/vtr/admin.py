@@ -49,11 +49,8 @@ class VTRServiceAdmin(ReadOnlyAwareAdmin):
         return VTRService.get_service_objects_by_user(request.user)
 
 class VTRTenantForm(forms.ModelForm):
-    simple_attributes = {"test": None,
-                         "argument": None,
-                         "result": None,
-                         "target": None}
     test = forms.ChoiceField(choices=VTRTenant.TEST_CHOICES, required=True)
+    scope = forms.ChoiceField(choices=VTRTenant.SCOPE_CHOICES, required=True)
     argument = forms.CharField(required=False)
     result = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 10, 'cols': 80, 'class': 'input-xxlarge'}))
     target = forms.ModelChoiceField(queryset=CordSubscriberRoot.objects.all())
@@ -66,10 +63,12 @@ class VTRTenantForm(forms.ModelForm):
             self.fields['test'].initial = self.instance.test
             self.fields['argument'].initial = self.instance.argument
             self.fields['target'].initial = self.instance.target
+            self.fields['scope'].initial = self.instance.scope
             self.fields['result'].initial = self.instance.result
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VTR_KIND
+            self.fields["scope"].initial = VTRTenant.get_default_attribute("scope")
             if VTRService.get_service_objects().exists():
                self.fields["provider_service"].initial = VTRService.get_service_objects().all()[0]
 
@@ -78,6 +77,7 @@ class VTRTenantForm(forms.ModelForm):
         self.instance.argument = self.cleaned_data.get("argument")
         self.instance.target = self.cleaned_data.get("target")
         self.instance.result = self.cleaned_data.get("result")
+        self.instance.scope = self.cleaned_data.get("scope")
         return super(VTRTenantForm, self).save(commit=commit)
 
     class Meta:
@@ -87,7 +87,7 @@ class VTRTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'target', 'test', 'argument' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', # 'subscriber_root', 'service_specific_id', 'service_specific_attribute',
-                                     'target', 'test', 'argument', 'result'],
+                                     'target', 'scope', 'test', 'argument', 'result'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute')
     form = VTRTenantForm
