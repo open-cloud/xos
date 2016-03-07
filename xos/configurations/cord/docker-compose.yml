@@ -69,6 +69,19 @@ xos_synchronizer_monitoring_channel:
     volumes:
         - ../setup/id_rsa:/opt/xos/synchronizers/monitoring_channel/monitoring_channel_private_key:ro  # private key
 
+xos_synchronizer_vtr:
+    image: xosproject/xos-synchronizer-openstack
+    command: bash -c "sleep 120; python /opt/xos/synchronizers/vtr/vtr-synchronizer.py -C /opt/xos/synchronizers/vtr/vtr_synchronizer_config"
+    labels:
+        org.xosproject.kind: synchronizer
+        org.xosproject.target: vtr
+    links:
+        - xos_db
+    extra_hosts:
+        - ctl:${MYIP}
+    volumes:
+        - ../setup/id_rsa:/opt/xos/synchronizers/vtr/vcpe_private_key:ro  # private key
+        - ../setup:/root/setup:ro
 
 # FUTURE
 #xos_swarm_synchronizer:
