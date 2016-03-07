@@ -239,6 +239,20 @@
     notify:
     - reset bwlimits
 
+  - name: copy simple webserver
+    copy: src=/opt/xos/synchronizers/vcpe/files/etc/service/ dest=/var/container_volumes/{{ container_name }}/etc/service/ owner=root group=root
+    when: status != "enabled"
+
+  - name: generate the message page
+    template: src=/opt/xos/synchronizers/vcpe/templates/message.html.j2 dest=/var/container_volumes/{{ container_name }}/etc/service/message/message.html owner=root group=root mode=0644
+    when: status != "enabled"
+    notify: restart vcpe
+
+  - name: remove simple webserver
+    file: path=/var/container_volumes/{{ container_name }}/etc/service/message state=absent
+    when: status == "enabled"
+    notify: restart vcpe
+
   - name: Make sure vCPE service is running
     service: name={{ container_name }} state=started
 
