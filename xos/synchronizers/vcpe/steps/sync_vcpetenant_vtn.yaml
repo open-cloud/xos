@@ -257,12 +257,16 @@
     service: name={{ container_name }} state=started
 
   handlers:
+  # Use docker cp instead of single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  # Do this handler first, e.g., before restarting the container
+  - name: copy in /etc/rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
+
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
     shell: docker exec {{ container_name }} killall dnsmasq
-
-  - name: restart vcpe
-    shell: service {{ container_name }} stop; sleep 1; service {{ container_name }} start
 
   - name: stop vcpe
     service: name={{ container_name }} state=stopped
@@ -276,14 +280,11 @@
   - name: reload ufw
     shell: docker exec {{ container_name }} bash -c "/sbin/iptables -t nat -F PREROUTING; /usr/sbin/ufw reload"
 
-  # Use docker cp instead of single-file volume
-  # The reason is that changes to external file volume don't show up inside the container
-  # Probably Ansible deletes and then recreates the external file, and container has old version
-  - name: copy in /etc/rc.local
-    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
-
   - name: rerun /etc/rc.local
     shell: docker exec {{ container_name }} bash -c "/etc/rc.local"
 
   - name: reset bwlimits
     shell: docker exec {{ container_name }} bash -c "/usr/local/sbin/bwlimit.sh restart"
+
+  - name: restart vcpe
+    shell: service {{ container_name }} stop; sleep 1; service {{ container_name }} start
