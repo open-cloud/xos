@@ -31,6 +31,7 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
       var links = [];
       var traffic = 0;
       var linkWidth = 1;
+      var trafficCorrection = 5;
 
       var filterBBU = function filterBBU(instances) {
         return lodash.filter(instances, function (i) {
@@ -50,16 +51,33 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         nodes = TopologyElements.nodes;
         links = TopologyElements.links;
 
-        Traffic.get().then(function (_traffic) {
-          var delta = _traffic - traffic;
-          traffic = _traffic;
-          linkWidth = _traffic / (delta || traffic);
+        Traffic.get().then(function (newTraffic) {
 
-          if (linkWidth < 1) {
-            linkWidth = 1;
+          // calculating link size
+          // it should change between 1 and 10
+          if (!traffic) {
+            linkWidth = 2;
+          } else if (newTraffic === traffic) {
+            linkWidth = linkWidth;
+          } else {
+            var delta = newTraffic - traffic;
+
+            if (delta > 0) {
+              linkWidth = linkWidth + delta / trafficCorrection;
+            } else {
+              linkWidth = linkWidth - delta * -1 / trafficCorrection;
+            }
+
+            console.log('previous traffic: ' + traffic, 'current traffic: ' + newTraffic, 'linkWidth: ' + linkWidth);
+            console.log('************************');
           }
 
-          console.log('traffic: ' + _traffic, 'linkWidth: ' + linkWidth);
+          if (linkWidth < 0.2) {
+            linkWidth = 0.2;
+          };
+
+          traffic = newTraffic;
+
           return XosApi.Instance_List_GET();
         }).then(function (instances) {
           addBbuNodes(filterBBU(instances));
