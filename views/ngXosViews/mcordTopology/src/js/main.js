@@ -17,6 +17,16 @@ angular.module('xos.mcordTopology', [
 .config(function($httpProvider){
   $httpProvider.interceptors.push('NoHyperlinks');
 })
+.service('Traffic', function($http, $q){
+  this.get = () => {
+    var deferred = $q.defer();
+    $http.get('videoLocal.txt')
+    .then(res => {
+      deferred.resolve(res.data);
+    });
+    return deferred.promise;
+  }
+})
 .directive('mCordTopology', function(){
   return {
     restrict: 'E',
@@ -24,12 +34,14 @@ angular.module('xos.mcordTopology', [
     bindToController: true,
     controllerAs: 'vm',
     template: '',
-    controller: function($element, $interval, XosApi, lodash, TopologyElements, NodeDrawer){
+    controller: function($element, $interval, $rootScope, XosApi, lodash, TopologyElements, NodeDrawer, Traffic){
 
       const el = $element[0];
 
       let nodes = [];
       let links = [];
+      let traffic = 0;
+      let linkWidth = 1;
 
       const filterBBU = (instances) => {
         return lodash.filter(instances, i => i.name.indexOf('BBU') >= 0);
@@ -49,7 +61,19 @@ angular.module('xos.mcordTopology', [
         nodes = TopologyElements.nodes;
         links = TopologyElements.links;
 
-        XosApi.Instance_List_GET()
+        Traffic.get()
+        .then((_traffic) => {
+          let delta = (_traffic - traffic);
+          traffic = _traffic
+          linkWidth = _traffic / (delta || traffic);
+
+          if(linkWidth < 1){
+            linkWidth = 1;
+          }
+
+          console.log(`traffic: ${_traffic}`, `linkWidth: ${linkWidth}`);
+          return XosApi.Instance_List_GET()
+        })
         .then((instances) => {
           addBbuNodes(filterBBU(instances));
           addOtherNodes(filterOthers(instances));
@@ -228,15 +252,22 @@ angular.module('xos.mcordTopology', [
         
         link.enter().append('line')
           .attr({
-            // class: 'link',
+            class: d => `link ${d.type}`,
+            'stroke-width': linkWidth,
             id: d => d.id,
-            opacity: 0,
-            class: d => `link ${d.type}`
+            opacity: 0
           })
           .transition()
           .duration(1000)
-          // .delay((d, i) => 50 * i)
           .attr({
+            opacity: 1
+          });
+
+        link
+          .transition()
+          .duration(1000)
+          .attr({
+            'stroke-width': linkWidth,
             opacity: 1
           });
 
@@ -289,7 +320,7 @@ angular.module('xos.mcordTopology', [
       
       $interval(() => {
         getData();
-      }, 5000);
+      }, 3000);
       getData();
 
       

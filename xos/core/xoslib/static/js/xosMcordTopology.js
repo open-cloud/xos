@@ -8,6 +8,14 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
   });
 }]).config(["$httpProvider", function ($httpProvider) {
   $httpProvider.interceptors.push('NoHyperlinks');
+}]).service('Traffic', ["$http", "$q", function ($http, $q) {
+  this.get = function () {
+    var deferred = $q.defer();
+    $http.get('videoLocal.txt').then(function (res) {
+      deferred.resolve(res.data);
+    });
+    return deferred.promise;
+  };
 }]).directive('mCordTopology', function () {
   return {
     restrict: 'E',
@@ -15,12 +23,14 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
     bindToController: true,
     controllerAs: 'vm',
     template: '',
-    controller: ["$element", "$interval", "XosApi", "lodash", "TopologyElements", "NodeDrawer", function controller($element, $interval, XosApi, lodash, TopologyElements, NodeDrawer) {
+    controller: ["$element", "$interval", "$rootScope", "XosApi", "lodash", "TopologyElements", "NodeDrawer", "Traffic", function controller($element, $interval, $rootScope, XosApi, lodash, TopologyElements, NodeDrawer, Traffic) {
 
       var el = $element[0];
 
       var nodes = [];
       var links = [];
+      var traffic = 0;
+      var linkWidth = 1;
 
       var filterBBU = function filterBBU(instances) {
         return lodash.filter(instances, function (i) {
@@ -29,9 +39,7 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
       };
 
       var filterOthers = function filterOthers(instances) {
-        return lodash.filter(instances, function (i) {
-          return i.name.indexOf('MME') >= 0 || i.name.indexOf('SGW') >= 0 || i.name.indexOf('PGW') >= 0;
-        });
+        return TopologyElements.fakedInstance;
       };
 
       // retrieving instances list
@@ -42,7 +50,18 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         nodes = TopologyElements.nodes;
         links = TopologyElements.links;
 
-        XosApi.Instance_List_GET().then(function (instances) {
+        Traffic.get().then(function (_traffic) {
+          var delta = _traffic - traffic;
+          traffic = _traffic;
+          linkWidth = _traffic / (delta || traffic);
+
+          if (linkWidth < 1) {
+            linkWidth = 1;
+          }
+
+          console.log('traffic: ' + _traffic, 'linkWidth: ' + linkWidth);
+          return XosApi.Instance_List_GET();
+        }).then(function (instances) {
           addBbuNodes(filterBBU(instances));
           addOtherNodes(filterOthers(instances));
 
@@ -201,17 +220,20 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         });
 
         link.enter().append('line').attr({
-          // class: 'link',
+          'class': function _class(d) {
+            return 'link ' + d.type;
+          },
+          'stroke-width': linkWidth,
           id: function id(d) {
             return d.id;
           },
-          opacity: 0,
-          'class': function _class(d) {
-            return 'link ' + d.type;
-          }
-        }).transition().duration(1000)
-        // .delay((d, i) => 50 * i)
-        .attr({
+          opacity: 0
+        }).transition().duration(1000).attr({
+          opacity: 1
+        });
+
+        link.transition().duration(1000).attr({
+          'stroke-width': linkWidth,
           opacity: 1
         });
 
@@ -239,7 +261,8 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         NodeDrawer.drawRrus(enter.filter('.rru'));
         NodeDrawer.drawFabric(enter.filter('.fabric'));
         NodeDrawer.drawOthers(enter.filter(function (d) {
-          return d.type === 'MME' || d.type === 'SGW' || d.type === 'PGW';
+          console.log(d.type);
+          return d.type === 'MME' || d.type === 'SGW' || d.type === 'PGW' || d.type === 'Vid';
         }));
 
         // remove nodes
@@ -266,7 +289,7 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
 
       $interval(function () {
         getData();
-      }, 5000);
+      }, 3000);
       getData();
     }]
   };
@@ -315,6 +338,19 @@ angular.module('xos.mcordTopology').constant('TopologyElements', {
   }, {
     source: 'fabric3',
     target: 'fabric2'
+  }],
+  fakedInstance: [{
+    humanReadableName: 'MME',
+    name: 'MME'
+  }, {
+    humanReadableName: 'PGW',
+    name: 'PGW'
+  }, {
+    humanReadableName: 'SGW',
+    name: 'SGW'
+  }, {
+    humanReadableName: 'Video Server',
+    name: 'Video Server'
   }],
   icons: {
     bbu: 'M11.08,4.66H24.76l6.81,6.82H4.23Z M4.24,18.34V13.21H31.6v5.13H4.24Zm25.64-1.72V14.94H28.19v1.69h1.68Zm-13.65-1.7v1.69h1.69V14.93H16.22Zm-3.42,0v1.69h1.68V14.93H12.8Zm-3.42,0v1.69h1.68V14.93H9.38ZM6,14.93v1.69H7.64V14.93H6Z M32.8,33.23H3V11.42l0,0c1.17-1.16,2.54-2.5,3.87-3.8S9.59,5,10.72,3.87l0,0H25.08l0,0C26.25,5,27.6,6.32,28.9,7.61s2.68,2.63,3.83,3.78l0,0v0.06ZM3.3,33H32.53l0-21.43C31.36,10.39,30,9.07,28.71,7.8S26.09,5.22,25,4.1H10.86C9.75,5.21,8.41,6.52,7.12,7.77s-2.67,2.61-3.83,3.76V33Z M4.24,25.18V20.05H31.6v5.13H4.24Zm24-1.73h1.68V21.78H28.19v1.67Zm-12,0H17.9V21.78H16.21v1.68Zm-1.73-1.68H12.81v1.67h1.68V21.78Zm-3.43,1.68V21.78H9.38v1.69h1.68ZM6,23.46H7.64V21.78H6v1.68Z M31.6,26.89V32H4.24V26.89H31.6Zm-3.4,1.72V30.3h1.68V28.61H28.19Zm-10.28,0H16.22V30.3h1.68V28.62Zm-3.43,1.69V28.62H12.8v1.69h1.68Zm-3.42,0V28.62H9.38v1.69h1.68ZM7.65,28.62H6v1.67H7.65V28.62Z',
@@ -499,7 +535,7 @@ angular.module('xos.mcordTopology').service('NodeDrawer', ["TopologyElements", f
       x: -12,
       opacity: 0
     }).text(function (d) {
-      return d.type;
+      return d.name.toUpperCase();
     }).transition().duration(duration * 2).attr({
       opacity: 1
     });
