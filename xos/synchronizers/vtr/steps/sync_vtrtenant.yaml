@@ -13,7 +13,7 @@
       wan_vm_ip: {{ wan_vm_ip }}
       wan_vm_mac: {{ wan_vm_mac }}
 
-      scope: vm
+      scope: {{ scope }}
       test: {{ test }}
       argument: {{ argument }}
       result_file: {{ result_fn }}
