@@ -42,6 +42,7 @@ angular.module('xos.mcordTopology', [
       let links = [];
       let traffic = 0;
       let linkWidth = 1;
+      let trafficCorrection = 5;
 
       const filterBBU = (instances) => {
         return lodash.filter(instances, i => i.name.indexOf('BBU') >= 0);
@@ -62,16 +63,36 @@ angular.module('xos.mcordTopology', [
         links = TopologyElements.links;
 
         Traffic.get()
-        .then((_traffic) => {
-          let delta = (_traffic - traffic);
-          traffic = _traffic
-          linkWidth = _traffic / (delta || traffic);
+        .then((newTraffic) => {
 
-          if(linkWidth < 1){
-            linkWidth = 1;
+          // calculating link size
+          // it should change between 1 and 10
+          if(!traffic){
+            linkWidth = 2;
+          }
+          else if(newTraffic === traffic){
+            linkWidth = linkWidth;
+          }
+          else{
+            let delta = newTraffic - traffic;
+
+            if(delta > 0){
+              linkWidth = linkWidth + (delta / trafficCorrection);
+            }
+            else{
+              linkWidth = linkWidth - ((delta * -1) / trafficCorrection);
+            }
+
+            console.log(`previous traffic: ${traffic}`, `current traffic: ${newTraffic}`, `linkWidth: ${linkWidth}`);
+            console.log('************************');
           }
 
-          console.log(`traffic: ${_traffic}`, `linkWidth: ${linkWidth}`);
+          if(linkWidth < 0.2){
+            linkWidth = 0.2
+          };
+
+          traffic = newTraffic;
+
           return XosApi.Instance_List_GET()
         })
         .then((instances) => {
