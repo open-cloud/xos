@@ -1554,7 +1554,6 @@ class ControllerUserInline(XOSTabularInline):
     extra = 0
     suit_classes = 'suit-tab suit-tab-admin-only'
     fields = ['controller', 'user', 'kuser_id']
-    readonly_fields=['controller']
 
 
 class UserAdmin(XOSAdminMixin, UserAdmin):
