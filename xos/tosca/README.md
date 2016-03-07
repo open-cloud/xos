@@ -6,8 +6,8 @@ service models added to XOS. The directory is organized
 as follows:
 
  * custom_types -- Defines schema for XOS-specific models.
-   * `.m4` files are source.
-   * `.yaml` files are generated.
+   * `.m4` source files
+   * `.yaml` generated files
  * definitions -- Defines schema for TOSCA's base models.
- * resources -- Translates TOSCA specification to Django API.
- * sample -- Example TOSCA models.
+ * resources -- Translates TOSCA to Django API.
+ * sample -- Example TOSCA specifications.
