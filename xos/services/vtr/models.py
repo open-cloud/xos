@@ -42,7 +42,8 @@ class VTRTenant(Tenant):
 
     simple_attributes = ( ("test", None),
                           ("argument", None),
-                          ("result", None) )
+                          ("result", None),
+                          ("target_id", None) )
 
     sync_attributes = ( 'test', 'argument' )
 
@@ -56,7 +57,7 @@ class VTRTenant(Tenant):
     def target(self):
         if getattr(self, "cached_target", None):
             return self.cached_target
-        target_id=self.get_attribute("target_id")
+        target_id=self.target_id
         if not target_id:
             return None
         users=CordSubscriberRoot.objects.filter(id=target_id)
@@ -72,7 +73,7 @@ class VTRTenant(Tenant):
             value = value.id
         if (value != self.get_attribute("target_id", None)):
             self.cached_target=None
-        self.set_attribute("target_id", value)
+        self.target_id = value
 
     def save(self, *args, **kwargs):
         super(VTRTenant, self).save(*args, **kwargs)
