@@ -25,32 +25,5 @@
     "name": "vsg_service_instance-4", 
     "instance_name": "mysite_vsg-4", 
     "ip": "130.127.133.94"
-  },
-  {
-    "id": 6,
-    "humanReadableName": "MME_service_instance-4",
-    "instance_id": "instance-00000004", 
-    "instance_uuid": "44b75cb7-7405-4a68-9400-b4c4e3ea69b5", 
-    "name": "MME_service_instance-4", 
-    "instance_name": "mysite_MME-4", 
-    "ip": "130.127.133.94"
-  },
-  {
-    "id": 7,
-    "humanReadableName": "SGW_service_instance-4",
-    "instance_id": "instance-00000004", 
-    "instance_uuid": "44b75cb7-7405-4a68-9400-b4c4e3ea69b5", 
-    "name": "SGW_service_instance-4", 
-    "instance_name": "mysite_SGW-4", 
-    "ip": "130.127.133.94"
-  },
-  {
-    "id": 8,
-    "humanReadableName": "PGW_service_instance-4",
-    "instance_id": "instance-00000004", 
-    "instance_uuid": "44b75cb7-7405-4a68-9400-b4c4e3ea69b5", 
-    "name": "PGW_service_instance-4", 
-    "instance_name": "mysite_PGW-4", 
-    "ip": "130.127.133.94"
   }
 ]
