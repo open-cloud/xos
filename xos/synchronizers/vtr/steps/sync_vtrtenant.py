@@ -129,7 +129,7 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
     def run_playbook(self, o, fields):
         o.result = ""
 
-        result_fn = os.path.join("result", fields["result_fn"])
+        result_fn = os.path.join("/opt/xos/synchronizers/vtr/result", fields["result_fn"])
         if os.path.exists(result_fn):
             os.remove(result_fn)
 
