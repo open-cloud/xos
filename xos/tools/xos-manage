@@ -146,6 +146,7 @@ function makemigrations {
     python ./manage.py makemigrations ceilometer
     python ./manage.py makemigrations helloworldservice_complete
     python ./manage.py makemigrations onos
+    python ./manage.py makemigrations vtr
     #python ./manage.py makemigrations servcomp
 }
 
