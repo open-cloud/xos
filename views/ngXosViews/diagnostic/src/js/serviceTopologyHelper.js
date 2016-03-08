@@ -10,10 +10,11 @@
 
     // given a canvas, a layout and a data source, draw a tree layout
     const updateTree = (svg, layout, source, el = _el) => {
-
       if(el){
         _el = el;
       }
+      
+      let targetWidth = _el.clientWidth - serviceTopologyConfig.widthMargin * 2;
 
       //cache data
       _svg = svg;
@@ -32,7 +33,7 @@
       // Normalize for fixed-depth.
       nodes.forEach(function(d) {
         // position the child node horizontally
-        const step = ((_el.clientWidth - (serviceTopologyConfig.widthMargin * 2)) / maxDepth);
+        const step = ((targetWidth - (serviceTopologyConfig.widthMargin * 2)) / (maxDepth - 1));
         d.y = d.depth * step;
       });
 
