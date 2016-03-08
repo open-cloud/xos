@@ -20,6 +20,8 @@
 
         const handleSvg = (el) => {
 
+          d3.select($element[0]).select('svg').remove();
+
           svg = d3.select(el)
           .append('svg')
           .style('width', `${el.clientWidth}px`)
@@ -59,7 +61,14 @@
           .then((instances) => {
             LogicTopologyHelper.updateTree(svg);
           })
-        })
+        });
+
+        d3.select(window)
+        .on('resize.logic', () => {
+          handleSvg($element[0]);
+          LogicTopologyHelper.setupTree(svg);
+          LogicTopologyHelper.updateTree(svg);
+        });
 
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
