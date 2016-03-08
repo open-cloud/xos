@@ -627,6 +627,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
       };
 
       lodash.forEach(levelServices, function (service) {
+        if (service.humanReadableName === 'service_ONOS_vBNG' || service.humanReadableName === 'service_ONOS_vOLT') {
+          // remove ONOSes from service chart
+          return;
+        }
         var tenant = lodash.find(tenants, { subscriber_tenant: rootTenant.id, provider_service: service.id });
         tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
       });
@@ -1584,6 +1588,8 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
           return ServiceRelation.get();
         }).then(function (serviceChain) {
           _this.serviceChain = serviceChain;
+          // debug helper
+          loadSubscriber(_this.subscribers[0]);
         })['catch'](function (e) {
           throw new Error(e);
           _this.error = e;
@@ -1591,7 +1597,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
           _this.loader = false;
         });
 
-        $rootScope.$on('subscriber.selected', function (evt, subscriber) {
+        var loadSubscriber = function loadSubscriber(subscriber) {
           ServiceRelation.getBySubscriber(subscriber).then(function (serviceChain) {
             _this.serviceChain = serviceChain;
             ChartData.currentServiceChain = serviceChain;
@@ -1600,6 +1606,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
             _this.selectedSubscriber = subscriber;
             ChartData.currentSubscriber = subscriber;
           });
+        };
+
+        $rootScope.$on('subscriber.selected', function (evt, subscriber) {
+          loadSubscriber(subscriber);
         });
       }]
     };

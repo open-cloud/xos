@@ -47,7 +47,7 @@
     // results
     var cp1, cp2, cp3, rack, instancePos, nodePos;
 
-    beforeEach(module('xos.serviceTopology'));
+    beforeEach(module('xos.diagnostic'));
 
     // inject the rackHelper service
     beforeEach(inject(function (_RackHelper_, _serviceTopologyConfig_) {
