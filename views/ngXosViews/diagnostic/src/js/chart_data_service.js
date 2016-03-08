@@ -11,16 +11,18 @@
       type: 'router',
       children: [
         {
-          name: 'WAN',
+          name: 'WAN-Side',
+          subtitle: 'Virtual Network',
           type: 'network',
           children: [
             {
-              name: 'Rack',
+              name: 'Compute Servers',
               type: 'rack',
               computeNodes: [],
               children: [
                 {
-                  name: 'LAN',
+                  name: 'LAN-Side',
+                  subtitle: 'Virtual Networks',
                   type: 'network',
                   children: [{
                     name: 'Subscriber',
@@ -67,6 +69,21 @@
       this.logicTopologyData.children[0].children[0].children[0].children = [subscriber];
       return this.logicTopologyData;
     };
+
+    /**
+    * Remove a subscriber from the tree
+    */
+   
+    this.removeSubscriber = () => {
+      this.logicTopologyData.children[0].children[0].children[0].children[0].humanReadableName = 'Subscriber';
+      this.currentSubscriber = null;
+      if(serviceTopologyConfig.elWidths[serviceTopologyConfig.elWidths.length - 1] === 160){
+        serviceTopologyConfig.elWidths.pop();
+      }
+
+      this.highlightInstances([]);
+      delete this.logicTopologyData.children[0].children[0].children[0].children[0].children;
+    }
 
     this.getSubscriberTag = (subscriber) => {
       const tags = {

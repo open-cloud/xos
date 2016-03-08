@@ -26,14 +26,21 @@
           .style('height', `${el.clientHeight}px`);
         }
 
-        ChartData.getLogicTree()
-        .then((tree) => {
-          LogicTopologyHelper.updateTree(svg);
-        });
+        const loadGlobalScope = () => {
+          ChartData.getLogicTree()
+          .then((tree) => {
+            LogicTopologyHelper.updateTree(svg);
+          });
+        }
+        loadGlobalScope();
 
         $scope.$watch(() => this.selected, (selected) => {
           if(selected){
             ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
+          }
+          else{
+            ChartData.removeSubscriber();
             LogicTopologyHelper.updateTree(svg);
           }
         });

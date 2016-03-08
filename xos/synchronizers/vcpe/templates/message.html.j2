@@ -1,8 +1,47 @@
-{% if status == "delinquent" %}
-Your account is delinquent.  Please visit the customer portal to pay your bill.
-{% elif status == "copyrightviolation" %}
-Someone in your home has been illegally downloading copyrighted material.
-Please visit the customer portal and perform the Copyright Training course.
-{% else %}
-Your service has been suspended.  Please visit the customer portal to resume.
-{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Service Suspended</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <style>
+
+    body {
+      background-image: url('https://raw.githubusercontent.com/open-cloud/xos/master/xos/core/static/cord-bg.jpg');
+      background-size: cover;
+    }
+
+    .vertical-center {
+      min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+      min-height: 100vh; /* These two lines are counted as one :-)       */
+
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container vertical-center">
+    <div class="row">
+      <div class="col-sm-8 col-sm-offset-2">
+        <div class="jumbotron">
+          <img src="https://raw.githubusercontent.com/open-cloud/xos/master/xos/core/static/cord-logo.png" alt="">
+          <div class="alert alert-danger" style="margin-top: 50px">
+            {% if status == "delinquent" %}
+            Your account is delinquent.  Please visit the customer portal to pay your bill.
+            {% elif status == "copyrightviolation" %}
+            Someone in your home has been illegally downloading copyrighted material.
+            Please visit the customer portal and perform the Copyright Training course.
+            {% else %}
+            Your service has been suspended.  Please visit the customer portal to resume.
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>
