@@ -16,7 +16,7 @@
         const el = $element[0];
 
         d3.select(window)
-        .on('resize', () => {
+        .on('resize.service', () => {
           draw(this.serviceChain);
         });
 
@@ -47,7 +47,7 @@
             .style('height', `${el.clientHeight}px`)
 
           const treeContainer = svg.append('g')
-            .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 4},${serviceTopologyConfig.heightMargin})`);
+            .attr('transform', `translate(${serviceTopologyConfig.widthMargin * 2},${serviceTopologyConfig.heightMargin})`);
 
           root = tree;
           root.x0 = height / 2;

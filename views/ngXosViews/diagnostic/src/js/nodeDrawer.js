@@ -23,14 +23,25 @@
 
       nodes.append('text')
       .attr({
-        'text-anchor': 'middle'
+        'text-anchor': 'middle',
+        y: -5,
+        x: 5,
       })
       .text(d => d.name)
+
+      nodes.append('text')
+      .attr({
+        'text-anchor': 'middle',
+        y: 8,
+        x: 5,
+        class: 'small'
+      })
+      .text(d => d.subtitle)
 
       nodes.each(function(n){
         let currentNode = d3.select(this);
         // cicle trouch node to add Tags and Public IP
-        if(n.name === 'LAN' && angular.isDefined(n.subscriberTag)){
+        if(n.name === 'LAN-Side' && angular.isDefined(n.subscriberTag)){
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
@@ -46,7 +57,7 @@
           .text(() => `S-Tag: ${n.subscriberTag.sTag}`);
         }
 
-        if(n.name === 'WAN' && angular.isDefined(n.subscriberIP)){
+        if(n.name === 'WAN-Side' && angular.isDefined(n.subscriberIP)){
           currentNode.append('text')
           .attr({
             'text-anchor': 'middle',
@@ -467,6 +478,10 @@
     };
 
     this.addPhisical = (nodes) => {
+
+      nodes.select('rect').remove();
+      nodes.select('text').remove();
+
       nodes.append('rect')
       .attr(serviceTopologyConfig.square);
 

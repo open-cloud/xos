@@ -15,10 +15,10 @@
     $log.info('Diagnostic Started');
   }]);
 })();
-angular.module("xos.diagnostic").run(["$templateCache", function($templateCache) {$templateCache.put("templates/diagnostic.tpl.html","<div class=\"container-fluid\">\n  <div ng-hide=\"vm.error && vm.loader\" style=\"height: 900px\">\n    <div class=\"onethird-height\">\n      <service-topology service-chain=\"vm.serviceChain\"></service-topology>\n    </div>\n    <div class=\"twothird-height\">\n      <logic-topology ng-if=\"vm.subscribers\" subscribers=\"vm.subscribers\" selected=\"vm.selectedSubscriber\"></logic-topology>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.error\">\n    <div class=\"col-xs-12\">\n      <div class=\"alert alert-danger\">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.loader\">\n    <div class=\"col-xs-12\">\n      <div class=\"loader\">Loading</div>\n    </div>\n  </div>\n</div>");
+angular.module("xos.diagnostic").run(["$templateCache", function($templateCache) {$templateCache.put("templates/diagnostic.tpl.html","<div class=\"container-fluid\">\n  <div ng-hide=\"vm.error && vm.loader\" style=\"height: 900px\">\n    <div class=\"onethird-height\">\n      <div class=\"well\">\n        Services Graph\n      </div>\n      <div class=\"well pull-right\" ng-click=\"vm.reloadGlobalScope()\" ng-show=\"vm.selectedSubscriber\">\n        Reset subscriber\n      </div>\n      <service-topology service-chain=\"vm.serviceChain\"></service-topology>\n    </div>\n    <div class=\"twothird-height\">\n      <div class=\"well\">\n        Logical Resources\n      </div>\n      <logic-topology ng-if=\"vm.subscribers\" subscribers=\"vm.subscribers\" selected=\"vm.selectedSubscriber\"></logic-topology>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.error\">\n    <div class=\"col-xs-12\">\n      <div class=\"alert alert-danger\">\n        {{vm.error}}\n      </div>\n    </div>\n  </div>\n  <div class=\"row\" ng-if=\"vm.loader\">\n    <div class=\"col-xs-12\">\n      <div class=\"loader\">Loading</div>\n    </div>\n  </div>\n</div>");
 $templateCache.put("templates/logicTopology.tpl.html","<select-subscriber-modal open=\"vm.openSelectSubscriberModal\" subscribers=\"vm.subscribers\"></select-subscriber-modal>\n<subscriber-status-modal open=\"vm.openSubscriberStatusModal\" subscriber=\"vm.currentSubscriber\"></subscriber-status-modal>\n<div class=\"instances-stats animate\" ng-hide=\"vm.hideInstanceStats\">\n  <div class=\"row\">\n    <div class=\"col-sm-3 col-sm-offset-8\">\n      <div class=\"panel panel-primary\" ng-repeat=\"instance in vm.selectedInstances\">\n        <div class=\"panel-heading\">\n          {{instance.humanReadableName}}\n        </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">Backend Status: {{instance.backend_status}}</li>\n            <li class=\"list-group-item\">IP Address: {{instance.ip}}</li>\n          </ul>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\" ng-repeat=\"stat in instance.stats\">\n              <span class=\"badge\">{{stat.value}}</span>\n              {{stat.meter}}\n            </li>\n          </ul>\n        </div>\n      </div>  \n    </div>\n  </div>\n</div>");
 $templateCache.put("templates/select-subscriber-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Select a subscriber:</h4>\n      </div>\n      <div class=\"modal-body\">\n        <select class=\"form-control\" ng-options=\"s as s.humanReadableName for s in vm.subscribers\" ng-model=\"vm.selected\"></select>\n      </div>\n      <div class=\"modal-footer\">\n        <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n        <button ng-click=\"vm.select(vm.selected)\" type=\"button\" class=\"btn btn-primary\">Select</button>\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");
-$templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Manage subscriber:</h4>\n      </div>\n      <form name=\"vm.subscriber-detail\">\n        <div class=\"modal-body\">\n          <div class=\"row\">\n            <div class=\"col-xs-12\">\n              <label>Status</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'enabled\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'enabled\' ,\'btn-default\': vm.subscriber.status !== \'enabled\'}\"\n                >Enabled</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'suspended\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'suspended\' ,\'btn-default\': vm.subscriber.status !== \'suspended\'}\"\n                >Suspended</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'delinquent\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'delinquent\' ,\'btn-default\': vm.subscriber.status !== \'delinquent\'}\"\n                >Delinquent <br> payment</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'copyrightviolation\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'copyrightviolation\' ,\'btn-default\': vm.subscriber.status !== \'copyrightviolation\'}\"\n                >Copyright <br> violation</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Uplink Speed</label>\n              <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.uplink_speed\"/>\n            </div>\n            <div class=\"col-xs-6\">\n              <label>Downlink Speed</label>\n              <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.downlink_speed\"/>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Enable Uverse</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a \n                ng-click=\"vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse\" \n                ng-class=\"{\'btn-success\': vm.subscriber.enable_uverse, \'btn-danger\': !vm.subscriber.enable_uverse}\"\n                class=\"btn btn-block\">\n                <span ng-show=\"vm.subscriber.enable_uverse === true\">Enabled</span>\n                <span ng-show=\"vm.subscriber.enable_uverse !== true\">Disabled</span>\n              </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"modal-footer\" ng-show=\"vm.success || vm.formError\">\n          <div class=\"alert alert-success\" ng-show=\"vm.success\">\n            {{vm.success}}\n          </div>\n          <div class=\"alert alert-danger\" ng-show=\"vm.formError\">\n            {{vm.formError}}\n          </div>\n        </div>\n        <div class=\"modal-footer\">\n          <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n          <button ng-click=\"vm.updateSubscriber(vm.subscriber)\" type=\"button\" class=\"btn btn-primary\">Save</button>\n        </div>\n      </form>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
+$templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"modal fade\" ng-class=\"{in: vm.open}\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog modal-sm\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button ng-click=\"vm.close()\"  type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\">Manage subscriber:</h4>\n      </div>\n      <form name=\"vm.subscriber-detail\">\n        <div class=\"modal-body\">\n          <div class=\"row\">\n            <div class=\"col-xs-12\">\n              <label>Status</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'enabled\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'enabled\' ,\'btn-default\': vm.subscriber.status !== \'enabled\'}\"\n                >Enabled</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'suspended\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'suspended\' ,\'btn-default\': vm.subscriber.status !== \'suspended\'}\"\n                >Suspended</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'delinquent\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'delinquent\' ,\'btn-default\': vm.subscriber.status !== \'delinquent\'}\"\n                >Delinquent <br> payment</a>\n            </div>\n            <div class=\"col-xs-6\">\n              <a ng-click=\"vm.subscriber.status = \'copyrightviolation\'\"\n                class=\"btn btn-block\"\n                ng-class=\"{\'btn-primary\': vm.subscriber.status === \'copyrightviolation\' ,\'btn-default\': vm.subscriber.status !== \'copyrightviolation\'}\"\n                >Copyright <br> violation</a>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Uplink Speed</label>\n              <div class=\"input-group\">\n                <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.uplink_speed\"/>\n                <span class=\"input-group-addon\">Gb</span>\n              </div>\n            </div>\n            <div class=\"col-xs-6\">\n              <label>Downlink Speed</label>\n              <div class=\"input-group\">\n                <input type=\"number\" class=\"form-control\" ng-model=\"vm.subscriber.downlink_speed\"/>\n                <span class=\"input-group-addon\">Gb</span>\n              </div>\n            </div>\n          </div>\n          <div class=\"row\">\n            <div class=\"col-xs-6\">\n              <label>Enable Uverse</label>\n            </div>\n            <div class=\"col-xs-6\">\n              <a \n                ng-click=\"vm.subscriber.enable_uverse = !vm.subscriber.enable_uverse\" \n                ng-class=\"{\'btn-success\': vm.subscriber.enable_uverse, \'btn-danger\': !vm.subscriber.enable_uverse}\"\n                class=\"btn btn-block\">\n                <span ng-show=\"vm.subscriber.enable_uverse === true\">Enabled</span>\n                <span ng-show=\"vm.subscriber.enable_uverse !== true\">Disabled</span>\n              </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"modal-footer\" ng-show=\"vm.success || vm.formError\">\n          <div class=\"alert alert-success\" ng-show=\"vm.success\">\n            {{vm.success}}\n          </div>\n          <div class=\"alert alert-danger\" ng-show=\"vm.formError\">\n            {{vm.formError}}\n          </div>\n        </div>\n        <div class=\"modal-footer\">\n          <button ng-click=\"vm.close()\" type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n          <button ng-click=\"vm.updateSubscriber(vm.subscriber)\" type=\"button\" class=\"btn btn-primary\">Save</button>\n        </div>\n      </form>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->");}]);
 'use strict';
 
 (function () {
@@ -66,11 +66,24 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
           _this2.formError = null;
         });
 
+        $scope.$watch(function () {
+          return _this2.subscriber;
+        }, function () {
+          if (!_this2.subscriber) {
+            return;
+          }
+          _this2.subscriber.uplink_speed = parseInt(_this2.subscriber.uplink_speed, 10) / 1000000000;
+          _this2.subscriber.downlink_speed = parseInt(_this2.subscriber.downlink_speed, 10) / 1000000000;
+        });
+
         this.close = function () {
           _this2.open = false;
         };
 
         this.updateSubscriber = function (subscriber) {
+
+          _this2.subscriber.uplink_speed = _this2.subscriber.uplink_speed * 1000000000;
+          _this2.subscriber.downlink_speed = _this2.subscriber.downlink_speed * 1000000000;
 
           Subscribers.update(subscriber).$promise.then(function () {
             _this2.success = 'Subscriber successfully updated!';
@@ -105,6 +118,8 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
         _el = el;
       }
 
+      var targetWidth = _el.clientWidth - serviceTopologyConfig.widthMargin * 2;
+
       //cache data
       _svg = svg;
       _layout = layout;
@@ -123,7 +138,7 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
       // Normalize for fixed-depth.
       nodes.forEach(function (d) {
         // position the child node horizontally
-        var step = (_el.clientWidth - serviceTopologyConfig.widthMargin * 2) / maxDepth;
+        var step = (targetWidth - serviceTopologyConfig.widthMargin * 2) / (maxDepth - 1);
         d.y = d.depth * step;
       });
 
@@ -273,7 +288,7 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
         var el = $element[0];
 
-        d3.select(window).on('resize', function () {
+        d3.select(window).on('resize.service', function () {
           draw(_this.serviceChain);
         });
 
@@ -298,7 +313,7 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
           svg = d3.select($element[0]).append('svg').style('width', el.clientWidth + 'px').style('height', el.clientHeight + 'px');
 
-          var treeContainer = svg.append('g').attr('transform', 'translate(' + serviceTopologyConfig.widthMargin * 4 + ',' + serviceTopologyConfig.heightMargin + ')');
+          var treeContainer = svg.append('g').attr('transform', 'translate(' + serviceTopologyConfig.widthMargin * 2 + ',' + serviceTopologyConfig.heightMargin + ')');
 
           root = tree;
           root.x0 = height / 2;
@@ -610,6 +625,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
       rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
 
+      if (rootService.humanReadableName === 'service_vbng') {
+        rootService.humanReadableName = 'service_vrouter';
+      }
+
       var tree = {
         name: rootService.humanReadableName,
         parent: parentName,
@@ -620,6 +639,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
       };
 
       lodash.forEach(levelServices, function (service) {
+        if (service.humanReadableName === 'service_ONOS_vBNG' || service.humanReadableName === 'service_ONOS_vOLT') {
+          // remove ONOSes from service chart
+          return;
+        }
         var tenant = lodash.find(tenants, { subscriber_tenant: rootTenant.id, provider_service: service.id });
         tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
       });
@@ -660,6 +683,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
       // TODO refactor
       var buildChild = function buildChild(services, tenants, currentService) {
+
+        if (currentService.humanReadableName === 'service_vbng') {
+          currentService.humanReadableName = 'service_vrouter';
+        }
 
         var response = {
           type: 'service',
@@ -861,15 +888,26 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       });
 
       nodes.append('text').attr({
-        'text-anchor': 'middle'
+        'text-anchor': 'middle',
+        y: -5,
+        x: 5
       }).text(function (d) {
         return d.name;
+      });
+
+      nodes.append('text').attr({
+        'text-anchor': 'middle',
+        y: 8,
+        x: 5,
+        'class': 'small'
+      }).text(function (d) {
+        return d.subtitle;
       });
 
       nodes.each(function (n) {
         var currentNode = d3.select(this);
         // cicle trouch node to add Tags and Public IP
-        if (n.name === 'LAN' && angular.isDefined(n.subscriberTag)) {
+        if (n.name === 'LAN-Side' && angular.isDefined(n.subscriberTag)) {
           currentNode.append('text').attr({
             'text-anchor': 'middle',
             y: 40
@@ -885,7 +923,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
           });
         }
 
-        if (n.name === 'WAN' && angular.isDefined(n.subscriberIP)) {
+        if (n.name === 'WAN-Side' && angular.isDefined(n.subscriberIP)) {
           currentNode.append('text').attr({
             'text-anchor': 'middle',
             y: 40
@@ -1241,6 +1279,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
     };
 
     this.addPhisical = function (nodes) {
+
+      nodes.select('rect').remove();
+      nodes.select('text').remove();
+
       nodes.append('rect').attr(serviceTopologyConfig.square);
 
       nodes.append('text').attr({
@@ -1479,18 +1521,26 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
         var handleSvg = function handleSvg(el) {
 
+          d3.select($element[0]).select('svg').remove();
+
           svg = d3.select(el).append('svg').style('width', el.clientWidth + 'px').style('height', el.clientHeight + 'px');
         };
 
-        ChartData.getLogicTree().then(function (tree) {
-          LogicTopologyHelper.updateTree(svg);
-        });
+        var loadGlobalScope = function loadGlobalScope() {
+          ChartData.getLogicTree().then(function (tree) {
+            LogicTopologyHelper.updateTree(svg);
+          });
+        };
+        loadGlobalScope();
 
         $scope.$watch(function () {
           return _this.selected;
         }, function (selected) {
           if (selected) {
             ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
+          } else {
+            ChartData.removeSubscriber();
             LogicTopologyHelper.updateTree(svg);
           }
         });
@@ -1508,6 +1558,12 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
           ChartData.getInstanceStatus(service).then(function (instances) {
             LogicTopologyHelper.updateTree(svg);
           });
+        });
+
+        d3.select(window).on('resize.logic', function () {
+          handleSvg($element[0]);
+          LogicTopologyHelper.setupTree(svg);
+          LogicTopologyHelper.updateTree(svg);
         });
 
         handleSvg($element[0]);
@@ -1561,19 +1617,31 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
         this.loader = true;
         this.error = false;
-        Subscribers.query().$promise.then(function (subscribers) {
-          _this.subscribers = subscribers;
-          return ServiceRelation.get();
-        }).then(function (serviceChain) {
-          _this.serviceChain = serviceChain;
-        })['catch'](function (e) {
-          throw new Error(e);
-          _this.error = e;
-        })['finally'](function () {
-          _this.loader = false;
-        });
 
-        $rootScope.$on('subscriber.selected', function (evt, subscriber) {
+        var loadGlobalScope = function loadGlobalScope() {
+          Subscribers.query().$promise.then(function (subscribers) {
+            _this.subscribers = subscribers;
+            return ServiceRelation.get();
+          }).then(function (serviceChain) {
+            _this.serviceChain = serviceChain;
+            // debug helper
+            // loadSubscriber(this.subscribers[0]);
+          })['catch'](function (e) {
+            throw new Error(e);
+            _this.error = e;
+          })['finally'](function () {
+            _this.loader = false;
+          });
+        };
+
+        loadGlobalScope();
+
+        this.reloadGlobalScope = function () {
+          _this.selectedSubscriber = null;
+          loadGlobalScope();
+        };
+
+        var loadSubscriber = function loadSubscriber(subscriber) {
           ServiceRelation.getBySubscriber(subscriber).then(function (serviceChain) {
             _this.serviceChain = serviceChain;
             ChartData.currentServiceChain = serviceChain;
@@ -1582,6 +1650,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
             _this.selectedSubscriber = subscriber;
             ChartData.currentSubscriber = subscriber;
           });
+        };
+
+        $rootScope.$on('subscriber.selected', function (evt, subscriber) {
+          loadSubscriber(subscriber);
         });
       }]
     };
@@ -1602,7 +1674,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
   'use strict';
 
   angular.module('xos.diagnostic').constant('serviceTopologyConfig', {
-    widthMargin: 20,
+    widthMargin: 60,
     heightMargin: 30,
     duration: 750,
     elWidths: [20, 104, 105, 104, 20], //this is not true
@@ -1662,14 +1734,16 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       name: 'Router',
       type: 'router',
       children: [{
-        name: 'WAN',
+        name: 'WAN-Side',
+        subtitle: 'Virtual Network',
         type: 'network',
         children: [{
-          name: 'Rack',
+          name: 'Compute Servers',
           type: 'rack',
           computeNodes: [],
           children: [{
-            name: 'LAN',
+            name: 'LAN-Side',
+            subtitle: 'Virtual Network',
             type: 'network',
             children: [{
               name: 'Subscriber',
@@ -1711,6 +1785,21 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       // add subscriber to data tree
       _this.logicTopologyData.children[0].children[0].children[0].children = [subscriber];
       return _this.logicTopologyData;
+    };
+
+    /**
+    * Remove a subscriber from the tree
+    */
+
+    this.removeSubscriber = function () {
+      _this.logicTopologyData.children[0].children[0].children[0].children[0].humanReadableName = 'Subscriber';
+      _this.currentSubscriber = null;
+      if (serviceTopologyConfig.elWidths[serviceTopologyConfig.elWidths.length - 1] === 160) {
+        serviceTopologyConfig.elWidths.pop();
+      }
+
+      _this.highlightInstances([]);
+      delete _this.logicTopologyData.children[0].children[0].children[0].children[0].children;
     };
 
     this.getSubscriberTag = function (subscriber) {

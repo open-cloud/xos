@@ -1,11 +1,11 @@
 SETUPDIR:=../setup
 MYIP:=$(shell hostname -i)
 
-cloudlab: common_cloudlab cloudlab_ceilometer_custom_images acord
+cloudlab: common_cloudlab cloudlab_ceilometer_custom_images ceilometer_cloudlab_cord_plugins acord
 
-devstack: upgrade_pkgs common_devstack devstack_net_fix devstack_images acord
+devstack: upgrade_pkgs common_devstack devstack_net_fix devstack_images ceilometer_devstack_cord_plugins acord
 
-cord: ceilometer_dashboard
+cord: 
 	sudo MYIP=$(MYIP) docker-compose up -d
 	bash ../common/wait_for_xos.sh
 	sudo MYIP=$(MYIP) docker-compose run xos python /opt/xos/tosca/run.py padmin@vicci.org /opt/xos/configurations/common/fixtures.yaml
@@ -25,11 +25,33 @@ common_cloudlab:
 common_devstack:
 	make -C ../common -f Makefile.devstack
 
-ceilometer_dashboard:
-	#NOTE: The below dashboard install scripts assume
-	#clouldlab openstack environment created using "OpenStack" profile
-	#bash install_xos_ceilometer_dashboard.sh
-	#bash install_ceilometer_patch.sh
+ceilometer_cloudlab_cord_plugins:
+	if [ -d ./ceilometer-plugins ]; then rm -fr ./ceilometer-plugins; fi
+	git clone https://github.com/srikanthvavila/ceilometer-plugins.git
+	sudo cp -r ceilometer-plugins/network/ext_services /usr/lib/python2.7/dist-packages/ceilometer/network/
+	sudo cp -r ceilometer-plugins/network/statistics/onos /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/
+	sudo cp ceilometer-plugins/network/statistics/__init__.py /usr/lib/python2.7/dist-packages/ceilometer/network/statistics/ 
+	sudo cp ceilometer-plugins/entry_points.txt /usr/lib/python2.7/dist-packages/ceilometer-*egg-info/
+	sudo cp ceilometer-plugins/pipeline.yaml /etc/ceilometer/
+	echo "Restarting ceilometer-agent-notification"
+	sudo service ceilometer-agent-notification restart
+	echo "Restarting ceilometer-agent-central"
+	sudo service ceilometer-agent-central restart
+
+ceilometer_devstack_cord_plugins:
+	if [ -d ./ceilometer-plugins ]; then rm -fr ./ceilometer-plugins; fi
+	git clone https://github.com/srikanthvavila/ceilometer-plugins.git
+	sudo cp -r ceilometer-plugins/network/ext_services /opt/stack/ceilometer/ceilometer/network/
+	sudo cp ceilometer-plugins/entry_points.txt /opt/stack/ceilometer/ceilometer*egg-info/
+	sudo cp ceilometer-plugins/pipeline.yaml /etc/ceilometer/
+	echo "Remember to restart ceilometer-anotification ceilometer-acentral screens"
+
+ceilometer_pub_sub:
+	if [ -d ./pub-sub ]; then rm -fr ./pub-sub; fi
+	git clone https://github.com/srikanthvavila/pub-sub.git
+	echo "Starting Ceilometer PUB/SUB service...Ensure zookeeper and kafka services are launched (if required)"
+	cd pub-sub/ceilometer_pub_sub/ ; python sub_main.py & 
+	cd ../..
 
 stop:
 	sudo MYIP=$(MYIP) docker-compose stop

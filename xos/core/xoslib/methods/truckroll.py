@@ -28,6 +28,7 @@ class VTRTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
         id = ReadOnlyField()
         target_id = serializers.IntegerField()
         test = serializers.CharField()
+        scope = serializers.CharField()
         argument = serializers.CharField(required=False)
         provider_service = serializers.PrimaryKeyRelatedField(queryset=VTRService.get_service_objects().all(), default=get_default_vtr_service)
         result = serializers.CharField(required=False)
@@ -38,7 +39,7 @@ class VTRTenantIdSerializer(serializers.ModelSerializer, PlusSerializerMixin):
 
         class Meta:
             model = VTRTenant
-            fields = ('humanReadableName', 'id', 'provider_service', 'target_id', 'test', 'argument', 'result', 'is_synced', 'backend_status' )
+            fields = ('humanReadableName', 'id', 'provider_service', 'target_id', 'scope', 'test', 'argument', 'result', 'is_synced', 'backend_status' )
 
         def getHumanReadableName(self, obj):
             return obj.__unicode__()

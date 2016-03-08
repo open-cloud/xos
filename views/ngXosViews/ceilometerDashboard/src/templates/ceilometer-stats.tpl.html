@@ -9,13 +9,13 @@
   <table class="table" ng-if="vm.stats.length > 0">
     <tr>
       <th>
-        <a ng-click="order = 'category'">Type:</a>
+        <a ng-click="(order == 'category') ? order = '-category' : order = 'category'">Type:</a>
       </th>
       <th>
-        <a ng-click="order = 'resource_name'">Resource:</a>
+        <a ng-click="(order == 'resource_name') ? order = '-resource_name' : order = 'resource_name'">Resource:</a>
       </th>
       <th>
-        <a ng-click="order = 'meter'">Meter:</a>
+        <a ng-click="(order == 'meter') ? order = '-meter' : order = 'meter'">Meter:</a>
       </th>
       <th>
         Unit:

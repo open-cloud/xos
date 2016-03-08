@@ -8,6 +8,12 @@ imports:
 topology_template:
   node_templates:
     # CORD Services
+    service_vtr:
+      type: tosca.nodes.Service
+      properties:
+          view_url: /admin/vtr/vtrservice/$id$/
+          kind: vTR
+
     service_volt:
       type: tosca.nodes.Service
       requirements:
