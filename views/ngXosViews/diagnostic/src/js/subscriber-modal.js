@@ -41,6 +41,14 @@
           this.formError = null;
         });
 
+        $scope.$watch(() => this.subscriber, () => {
+          if(!this.subscriber){
+            return;
+          }
+          this.subscriber.uplink_speed = parseInt(this.subscriber.uplink_speed, 10);
+          this.subscriber.downlink_speed = parseInt(this.subscriber.downlink_speed, 10);
+        });
+
         this.close = () => {
           this.open = false;
         };
