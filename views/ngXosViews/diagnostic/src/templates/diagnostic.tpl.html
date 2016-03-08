@@ -4,7 +4,7 @@
       <div class="well">
         Services Graph
       </div>
-      <div class="well pull-right" ng-click="vm.reloadGlobalScope()">
+      <div class="well pull-right" ng-click="vm.reloadGlobalScope()" ng-show="vm.selectedSubscriber">
         Reset subscriber
       </div>
       <service-topology service-chain="vm.serviceChain"></service-topology>
