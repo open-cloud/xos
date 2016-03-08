@@ -133,14 +133,7 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
         if os.path.exists(result_fn):
             os.remove(result_fn)
 
-        instance = self.get_instance(o)
-        if instance.isolation in ["container", "container_vm"]:
-            super(SyncVTRTenant, self).run_playbook(o, fields, "sync_vtrtenant_new.yaml")
-        else:
-            if CORD_USE_VTN:
-                super(SyncVTRTenant, self).run_playbook(o, fields, template_name="sync_vtrtenant_vtn.yaml")
-            else:
-                super(SyncVTRTenant, self).run_playbook(o, fields)
+        super(SyncVTRTenant, self).run_playbook(o, fields)
 
         if os.path.exists(result_fn):
             o.result = open(result_fn).read()

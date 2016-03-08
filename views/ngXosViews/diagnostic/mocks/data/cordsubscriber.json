@@ -28,8 +28,8 @@
           "private_ip": null, 
           "wan_mac": null, 
           "wan_container_ip": "10.0.1.24", 
-          "uplink_speed": 1000000000, 
-          "downlink_speed": 1000000000, 
+          "uplink_speed": "1000000000", 
+          "downlink_speed": "1000000000", 
           "status": "copyrightviolation", 
           "enable_uverse": true
      }

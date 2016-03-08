@@ -84,8 +84,9 @@
   - name: Add eth0.500
     shell: "{{ '{{' }} item {{ '}}' }}"
     with_items:
-      - ip link del link eth0 eth0.500 || true
+      - ifconfig br-wan down || true
       - brctl delbr br-wan || true
+      - ip link del link eth0 eth0.500 || true
       - ip link add link eth0 eth0.500 type vlan id 500
       - ifconfig eth0.500 up
       - ifconfig eth0.500 0.0.0.0
@@ -105,6 +106,7 @@
        - ip link del link eth0 eth0.500
        - ip link add link eth0 eth0.500 type vlan id 500
        - ip link set eth0.500 up
+       - ifconfig br-wan down || true
        - brctl delbr br-wan || true
        - brctl addbr br-wan
        - brctl addif br-wan eth0.500

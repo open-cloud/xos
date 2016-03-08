@@ -20,20 +20,29 @@
 
         const handleSvg = (el) => {
 
+          d3.select($element[0]).select('svg').remove();
+
           svg = d3.select(el)
           .append('svg')
           .style('width', `${el.clientWidth}px`)
           .style('height', `${el.clientHeight}px`);
         }
 
-        ChartData.getLogicTree()
-        .then((tree) => {
-          LogicTopologyHelper.updateTree(svg);
-        });
+        const loadGlobalScope = () => {
+          ChartData.getLogicTree()
+          .then((tree) => {
+            LogicTopologyHelper.updateTree(svg);
+          });
+        }
+        loadGlobalScope();
 
         $scope.$watch(() => this.selected, (selected) => {
           if(selected){
             ChartData.selectSubscriber(selected);
+            LogicTopologyHelper.updateTree(svg);
+          }
+          else{
+            ChartData.removeSubscriber();
             LogicTopologyHelper.updateTree(svg);
           }
         });
@@ -52,7 +61,14 @@
           .then((instances) => {
             LogicTopologyHelper.updateTree(svg);
           })
-        })
+        });
+
+        d3.select(window)
+        .on('resize.logic', () => {
+          handleSvg($element[0]);
+          LogicTopologyHelper.setupTree(svg);
+          LogicTopologyHelper.updateTree(svg);
+        });
 
         handleSvg($element[0]);
         LogicTopologyHelper.setupTree(svg);
