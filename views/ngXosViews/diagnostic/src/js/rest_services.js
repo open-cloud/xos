@@ -313,6 +313,10 @@
       };
 
       lodash.forEach(levelServices, (service) => {
+        if(service.humanReadableName === 'service_ONOS_vBNG' || service.humanReadableName === 'service_ONOS_vOLT'){
+          // remove ONOSes from service chart
+          return;
+        }
         let tenant = lodash.find(tenants, {subscriber_tenant: rootTenant.id, provider_service: service.id});
         tree.children.push(buildLevel(tenants, unlinkedServices, service, tenant, rootService.humanReadableName));
       });
