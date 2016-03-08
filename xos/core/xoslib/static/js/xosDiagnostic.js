@@ -620,6 +620,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
       rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
 
+      if (rootService.humanReadableName === 'service_vbng') {
+        rootService.humanReadableName = 'service_vrouter';
+      }
+
       var tree = {
         name: rootService.humanReadableName,
         parent: parentName,
@@ -674,6 +678,10 @@ $templateCache.put("templates/subscriber-status-modal.tpl.html","<div class=\"mo
 
       // TODO refactor
       var buildChild = function buildChild(services, tenants, currentService) {
+
+        if (currentService.humanReadableName === 'service_vbng') {
+          currentService.humanReadableName = 'service_vrouter';
+        }
 
         var response = {
           type: 'service',

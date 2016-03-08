@@ -303,6 +303,10 @@
 
       rootService.service_specific_attribute = findSpecificInformation(tenants, rootService.id);
 
+      if(rootService.humanReadableName === 'service_vbng'){
+        rootService.humanReadableName = 'service_vrouter'
+      }
+
       const tree = {
         name: rootService.humanReadableName,
         parent: parentName,
@@ -357,6 +361,10 @@
 
       // TODO refactor
       const buildChild = (services, tenants, currentService) => {
+
+        if(currentService.humanReadableName === 'service_vbng'){
+          currentService.humanReadableName = 'service_vrouter'
+        }
 
         const response = {
           type: 'service',
