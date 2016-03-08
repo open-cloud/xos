@@ -136,6 +136,30 @@ angular.module('xos.ceilometerDashboard', [
         this.loader = true;
         Ceilometer.getMappings()
         .then((services) => {
+
+          // rename thing in UI
+          services.map((service) => {
+            if(service.service === 'service_ONOS_vBNG'){
+              service.service = 'ONOS_FABRIC';
+              service.slices.map(s => {
+                if(s.slice === 'mysite_onos_vbng'){
+                  s.slice = 'ONOS_FABRIC';
+                }
+              });
+            }
+            if(service.service === 'service_ONOS_vOLT'){
+              service.service = 'ONOS_CORD';
+              service.slices.map(s => {
+                if(s.slice === 'mysite_onos_volt'){
+                  s.slice = 'ONOS_CORD';
+                }
+              });
+            }
+
+            return service;
+          });
+          // end rename thing in UI
+          
           this.services = services;
           this.openPanels();
         })
@@ -172,6 +196,15 @@ angular.module('xos.ceilometerDashboard', [
           // store the status
           Ceilometer.selectedSlice = slice;
           Ceilometer.selectedService = service_name;
+
+          // rename things in UI
+          sliceMeters.map(m => {
+            m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
+            m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            return m;
+          });
+          // end rename things in UI
+
           this.selectedResources = lodash.groupBy(sliceMeters, 'resource_name');
 
           // hacky
@@ -315,6 +348,7 @@ angular.module('xos.ceilometerDashboard', [
             id: item.project_id,
             name: item.resource_name || item.project_id
           });
+
           return labels;
         }, []);
       }
@@ -329,6 +363,14 @@ angular.module('xos.ceilometerDashboard', [
         // Ceilometer.getSamples(this.name, this.tenant) //fetch one
         Ceilometer.getSamples(this.name) //fetch all
         .then(res => {
+
+          // rename things in UI
+          res.map(m => {
+            m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
+            m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            return m;
+          });
+          // end rename things in UI
 
           // setup data for visualization
           this.samplesList = lodash.groupBy(res, 'project_id');
@@ -367,6 +409,11 @@ angular.module('xos.ceilometerDashboard', [
         this.loader = true;
         Ceilometer.getStats({tenant: tenant})
         .then(res => {
+          res.map(m => {
+            m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
+            m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            return m;
+          });
           this.stats = res;
         })
         .catch(err => {
