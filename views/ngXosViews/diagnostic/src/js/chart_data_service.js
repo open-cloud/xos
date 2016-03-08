@@ -11,16 +11,18 @@
       type: 'router',
       children: [
         {
-          name: 'WAN',
+          name: 'WAN-Side',
+          subtitle: 'Virtual Network',
           type: 'network',
           children: [
             {
-              name: 'Rack',
+              name: 'Compute Servers',
               type: 'rack',
               computeNodes: [],
               children: [
                 {
-                  name: 'LAN',
+                  name: 'LAN-Side',
+                  subtitle: 'Virtual Networks',
                   type: 'network',
                   children: [{
                     name: 'Subscriber',

@@ -12,6 +12,7 @@ diagnostic-container .half-height {
 diagnostic-container .onethird-height {
     position: relative;
     height: 33%;
+    border-bottom: 1px solid #999;
 }
 
 diagnostic-container .twothird-height {
@@ -25,6 +26,17 @@ diagnostic-container .subscriber-select{
     top: 20px;
     right: 20px;
     z-index: 1;
+}
+
+diagnostic-container .onethird-height .well,
+diagnostic-container .twothird-height .well {
+  font-weight: bold;
+  max-width: 165px;
+  text-align: center;
+  margin-top: 15px;
+  background: #eee;
+  border-color: steelblue;
+  padding: 10px;
 }
 
 
@@ -180,6 +192,10 @@ logic-topology .node .instance .stats-container .container rect {
 
 .node text {
     font: 12px sans-serif;
+}
+
+.node text.small {
+    font-size: 10px;
 }
 
 .link, .device-link {
