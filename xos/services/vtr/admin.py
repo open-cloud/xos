@@ -64,7 +64,10 @@ class VTRTenantForm(forms.ModelForm):
             self.fields['argument'].initial = self.instance.argument
             self.fields['target'].initial = self.instance.target
             self.fields['scope'].initial = self.instance.scope
-            self.fields['result'].initial = self.instance.result
+            if (self.instance.enacted is not None) and (self.instance.enacted >= self.instance.updated):
+                self.fields['result'].initial = self.instance.result
+            else:
+                self.fields['result'].initial = ""
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VTR_KIND
@@ -87,12 +90,15 @@ class VTRTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'target', 'test', 'argument' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', # 'subscriber_root', 'service_specific_id', 'service_specific_attribute',
-                                     'target', 'scope', 'test', 'argument', 'result'],
+                                     'target', 'scope', 'test', 'argument', 'is_synced', 'result'],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'service_specific_attribute')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute', 'is_synced')
     form = VTRTenantForm
 
     suit_form_tabs = (('general','Details'),)
+
+    def is_synced(self, obj):
+        return (obj.enacted is not None) and (obj.enacted >= obj.updated)
 
     def queryset(self, request):
         return VTRTenant.get_tenant_objects_by_user(request.user)

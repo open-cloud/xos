@@ -919,43 +919,43 @@ class Meters(object):
         # to info that I am able to obtain from Ceilometer meters, hopefully
         # some day it will be supported all.
         return datastructures.SortedDict([
-            ('vcpe', {
-                'type': _("VCPE"),
+            ('vsg', {
+                'type': _("VSG"),
                 'label': '',
-                'description': _("Existence of vcpe instance"),
+                'description': _("Existence of vsg instance"),
             }),
-            ('vcpe.dns.cache.size', {
-                'type': _("VCPE"),
+            ('vsg.dns.cache.size', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("Number of entries in DNS cache"),
             }),
-            ('vcpe.dns.total_instered_entries', {
-                'type': _("VCPE"),
+            ('vsg.dns.total_instered_entries', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("Total number of inserted entries into the cache"),
             }),
-            ('vcpe.dns.replaced_unexpired_entries', {
-                'type': _("VCPE"),
+            ('vsg.dns.replaced_unexpired_entries', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("Unexpired entries that were thrown out of cache"),
             }),
-            ('vcpe.dns.queries_answered_locally', {
-                'type': _("VCPE"),
+            ('vsg.dns.queries_answered_locally', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("Number of cache hits"),
             }),
-            ('vcpe.dns.queries_forwarded', {
-                'type': _("VCPE"),
+            ('vsg.dns.queries_forwarded', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("Number of cache misses"),
             }),
-            ('vcpe.dns.server.queries_sent', {
-                'type': _("VCPE"),
+            ('vsg.dns.server.queries_sent', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("For each upstream server, the number of queries sent"),
             }),
-            ('vcpe.dns.server.queries_failed', {
-                'type': _("VCPE"),
+            ('vsg.dns.server.queries_failed', {
+                'type': _("VSG"),
                 'label': '',
                 'description': _("For each upstream server, the number of queries failed"),
             }),
@@ -1165,7 +1165,7 @@ class MetersList(APIView):
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
-            _('VCPE'): meters.list_vcpe(),
+            _('VSG'): meters.list_vcpe(),
             _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
@@ -1236,7 +1236,7 @@ class MeterStatisticsList(APIView):
         services = {
             _('Nova'): meters.list_nova(),
             _('Neutron'): meters.list_neutron(),
-            _('VCPE'): meters.list_vcpe(),
+            _('VSG'): meters.list_vcpe(),
             _('VOLT'): meters.list_volt(),
             _('SDN'): meters.list_sdn(),
         }
@@ -1394,7 +1394,7 @@ class XOSInstanceStatisticsList(APIView):
             services = {
                 _('Nova'): meters.list_nova(except_meters=exclude_nova_meters_info),
                 _('Neutron'): meters.list_neutron(except_meters=exclude_neutron_meters_info),
-                _('VCPE'): meters.list_vcpe(),
+                _('VSG'): meters.list_vcpe(),
                 _('VOLT'): meters.list_volt(),
                 _('SDN'): meters.list_sdn(),
             }
