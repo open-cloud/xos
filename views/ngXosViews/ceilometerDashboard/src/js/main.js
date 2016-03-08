@@ -141,20 +141,22 @@ angular.module('xos.ceilometerDashboard', [
           services.map((service) => {
             if(service.service === 'service_ONOS_vBNG'){
               service.service = 'ONOS_FABRIC';
-              service.slices.map(s => {
-                if(s.slice === 'mysite_onos_vbng'){
-                  s.slice = 'ONOS_FABRIC';
-                }
-              });
             }
             if(service.service === 'service_ONOS_vOLT'){
               service.service = 'ONOS_CORD';
-              service.slices.map(s => {
-                if(s.slice === 'mysite_onos_volt'){
-                  s.slice = 'ONOS_CORD';
-                }
-              });
             }
+
+            service.slices.map(s => {
+              if(s.slice === 'mysite_onos_volt'){
+                s.slice = 'ONOS_CORD';
+              }
+              if(s.slice === 'mysite_onos_vbng'){
+                s.slice = 'ONOS_FABRIC';
+              }
+              if(s.slice === 'mysite_vbng'){
+                s.slice = 'mysite_vRouter';
+              }
+            });
 
             return service;
           });
@@ -201,6 +203,7 @@ angular.module('xos.ceilometerDashboard', [
           sliceMeters.map(m => {
             m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
             m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            m.resource_name = m.resource_name.replace('mysite_vbng', 'mysite_vRouter');
             return m;
           });
           // end rename things in UI
@@ -368,6 +371,7 @@ angular.module('xos.ceilometerDashboard', [
           res.map(m => {
             m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
             m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            m.resource_name = m.resource_name.replace('mysite_vbng', 'mysite_vRouter');
             return m;
           });
           // end rename things in UI
@@ -412,6 +416,7 @@ angular.module('xos.ceilometerDashboard', [
           res.map(m => {
             m.resource_name = m.resource_name.replace('mysite_onos_vbng', 'ONOS_FABRIC');
             m.resource_name = m.resource_name.replace('mysite_onos_volt', 'ONOS_CORD');
+            m.resource_name = m.resource_name.replace('mysite_vbng', 'mysite_vRouter');
             return m;
           });
           this.stats = res;
