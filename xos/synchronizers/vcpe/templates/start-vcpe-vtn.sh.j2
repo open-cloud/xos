@@ -20,7 +20,7 @@ then
     -v /var/container_volumes/$VCPE/etc/dnsmasq.d:/etc/dnsmasq.d:ro \
     -v /var/container_volumes/$VCPE/usr/local/sbin:/usr/local/sbin:ro \
     -v /var/container_volumes/$VCPE/etc/ufw:/etc/ufw \
-    -v /var/container_volumes/$VCPE/etc/service/message:/etc/service/message \
+    -v /var/container_volumes/$VCPE/etc/service/message:/etc/service/message:ro \
     andybavier/docker-vcpe
 else
     docker start $VCPE
