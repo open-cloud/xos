@@ -478,6 +478,10 @@
     };
 
     this.addPhisical = (nodes) => {
+
+      nodes.select('rect').remove();
+      nodes.select('text').remove();
+
       nodes.append('rect')
       .attr(serviceTopologyConfig.square);
 
