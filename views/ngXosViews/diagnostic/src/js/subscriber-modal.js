@@ -45,8 +45,8 @@
           if(!this.subscriber){
             return;
           }
-          this.subscriber.uplink_speed = parseInt(this.subscriber.uplink_speed, 10);
-          this.subscriber.downlink_speed = parseInt(this.subscriber.downlink_speed, 10);
+          this.subscriber.uplink_speed = parseInt(this.subscriber.uplink_speed, 10) / 1000000000;
+          this.subscriber.downlink_speed = parseInt(this.subscriber.downlink_speed, 10) / 1000000000;
         });
 
         this.close = () => {
@@ -54,6 +54,10 @@
         };
 
         this.updateSubscriber = (subscriber) => {
+
+          this.subscriber.uplink_speed = this.subscriber.uplink_speed * 1000000000;
+          this.subscriber.downlink_speed = this.subscriber.downlink_speed * 1000000000;
+
 
           Subscribers.update(subscriber).$promise
           .then(() => {

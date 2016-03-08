@@ -3,7 +3,7 @@
 
   angular.module('xos.diagnostic')
   .constant('serviceTopologyConfig', {
-    widthMargin: 20,
+    widthMargin: 60,
     heightMargin: 30,
     duration: 750,
     elWidths: [20, 104, 105, 104, 20], //this is not true
