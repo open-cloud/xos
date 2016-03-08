@@ -108,7 +108,8 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
                 "container_name": "vcpe-%s-%s" % (s_tags[0], c_tags[0]),
                 "dns_servers": [x.strip() for x in vcpe_service.dns_servers.split(",")],
 
-                "result_fn": "%s-vcpe-%s-%s" % (o.test, s_tags[0], c_tags[0]) }
+                "result_fn": "%s-vcpe-%s-%s" % (o.test, s_tags[0], c_tags[0]),
+                "resultcode_fn": "code-%s-vcpe-%s-%s" % (o.test, s_tags[0], c_tags[0]) }
 
         # add in the sync_attributes that come from the SubscriberRoot object
 
@@ -133,10 +134,17 @@ class SyncVTRTenant(SyncInstanceUsingAnsible):
         if os.path.exists(result_fn):
             os.remove(result_fn)
 
+        resultcode_fn = os.path.join("/opt/xos/synchronizers/vtr/result", fields["resultcode_fn"])
+        if os.path.exists(resultcode_fn):
+            os.remove(resultcode_fn)
+
         super(SyncVTRTenant, self).run_playbook(o, fields)
 
         if os.path.exists(result_fn):
             o.result = open(result_fn).read()
+
+        if os.path.exists(resultcode_fn):
+            o.result_code = open(resultcode_fn).read()
 
 
     def delete_record(self, m):

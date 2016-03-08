@@ -44,6 +44,7 @@ class VTRTenant(Tenant):
     simple_attributes = ( ("test", None),
                           ("argument", None),
                           ("result", None),
+                          ("result_code", None),
                           ("target_id", None),
                           ("scope", "container") )
 
