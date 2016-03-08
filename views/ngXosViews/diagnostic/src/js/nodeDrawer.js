@@ -23,9 +23,20 @@
 
       nodes.append('text')
       .attr({
-        'text-anchor': 'middle'
+        'text-anchor': 'middle',
+        y: -5,
+        x: 5,
       })
       .text(d => d.name)
+
+      nodes.append('text')
+      .attr({
+        'text-anchor': 'middle',
+        y: 8,
+        x: 5,
+        class: 'small'
+      })
+      .text(d => d.subtitle)
 
       nodes.each(function(n){
         let currentNode = d3.select(this);
