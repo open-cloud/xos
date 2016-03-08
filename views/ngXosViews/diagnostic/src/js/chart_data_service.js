@@ -22,7 +22,7 @@
               children: [
                 {
                   name: 'LAN-Side',
-                  subtitle: 'Virtual Networks',
+                  subtitle: 'Virtual Network',
                   type: 'network',
                   children: [{
                     name: 'Subscriber',
