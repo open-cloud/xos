@@ -70,6 +70,21 @@
       return this.logicTopologyData;
     };
 
+    /**
+    * Remove a subscriber from the tree
+    */
+   
+    this.removeSubscriber = () => {
+      this.logicTopologyData.children[0].children[0].children[0].children[0].humanReadableName = 'Subscriber';
+      this.currentSubscriber = null;
+      if(serviceTopologyConfig.elWidths[serviceTopologyConfig.elWidths.length - 1] === 160){
+        serviceTopologyConfig.elWidths.pop();
+      }
+
+      this.highlightInstances([]);
+      delete this.logicTopologyData.children[0].children[0].children[0].children[0].children;
+    }
+
     this.getSubscriberTag = (subscriber) => {
       const tags = {
         cTag: subscriber.c_tag,

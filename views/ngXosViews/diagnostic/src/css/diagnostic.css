@@ -39,6 +39,14 @@ diagnostic-container .twothird-height .well {
   padding: 10px;
 }
 
+diagnostic-container .onethird-height .well.pull-right{
+  position: absolute;
+  right: 0px;
+  top: -15px;
+  cursor: pointer;
+  z-index: 200;
+}
+
 
 /* subscriber-status-modal */
 subscriber-status-modal .row + .row {
