@@ -69,7 +69,7 @@ def parse_unreachable(msg):
             total_unreachable += unreachable
             total_failed += failed
     return {'unreachable':total_unreachable,'failed':total_failed}
-	
+
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -86,8 +86,17 @@ def get_playbook_fn(opts, path):
 
     objname = opts["ansible_tag"]
 
-    os.system('mkdir -p %s' % os.path.join(sys_dir, path))
-    return (opts, os.path.join(sys_dir,path,objname))
+    pathed_sys_dir = os.path.join(sys_dir, path)
+    if not os.path.isdir(pathed_sys_dir):
+        os.makedirs(pathed_sys_dir)
+
+    # symlink steps/roles into sys/roles so that playbooks can access roles
+    roledir = os.path.join(step_dir,"roles")
+    rolelink = os.path.join(pathed_sys_dir, "roles")
+    if os.path.isdir(roledir) and not os.path.islink(rolelink):
+        os.symlink(roledir,rolelink)
+
+    return (opts, os.path.join(pathed_sys_dir,objname))
 
 def run_template(name, opts, path='', expected_num=None, ansible_config=None, ansible_hosts=None, run_ansible_script=None):
     template = os_template_env.get_template(name)
