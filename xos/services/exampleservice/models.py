@@ -16,7 +16,8 @@ class ExampleService(Service):
     class Meta:
         app_label = SERVICE_NAME
         verbose_name = SERVICE_NAME_VERBOSE
-        proxy = True
+
+    service_message = models.CharField(max_length=254, help_text="Service Message to Display")
 
 class ExampleTenant(TenantWithContainer):
 

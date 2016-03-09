@@ -66,37 +66,51 @@ class SyncVSGTenant(SyncInstanceUsingAnsible):
         vcpe_service = self.get_vcpe_service(o)
 
         dnsdemux_ip = None
-        if vcpe_service.backend_network_label:
-            # Connect to dnsdemux using the network specified by
-            #     vcpe_service.backend_network_label
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            for ns in instance.ports.all():
-                                if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
-                                    dnsdemux_ip = ns.ip
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+        cdn_prefixes = []
+
+        cdn_config_fn = "/opt/xos/synchronizers/vcpe/cdn_config"
+        if os.path.exists(cdn_config_fn):
+            # manual CDN configuration
+            #   the first line is the address of dnsredir
+            #   the remaining lines are domain names, one per line
+            lines = file(cdn_config_fn).readlines()
+            if len(lines)>=2:
+                dnsdemux_ip = lines[0].strip()
+                cdn_prefixes = [x.strip() for x in lines[1:] if x.strip()]
         else:
-            # Connect to dnsdemux using the instance's public address
-            for service in HpcService.objects.all():
-                for slice in service.slices.all():
-                    if "dnsdemux" in slice.name:
-                        for instance in slice.instances.all():
-                            if dnsdemux_ip=="none":
-                                try:
-                                    dnsdemux_ip = socket.gethostbyname(instance.node.name)
-                                except:
-                                    pass
-            if not dnsdemux_ip:
-                logger.info("failed to find a dnsdemux with a public address")
+            # automatic CDN configuiration
+            #    it learns everything from CDN objects in XOS
+            #    not tested on pod.
+            if vcpe_service.backend_network_label:
+                # Connect to dnsdemux using the network specified by
+                #     vcpe_service.backend_network_label
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                for ns in instance.ports.all():
+                                    if ns.ip and ns.network.labels and (vcpe_service.backend_network_label in ns.network.labels):
+                                        dnsdemux_ip = ns.ip
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux on network %s" % vcpe_service.backend_network_label)
+            else:
+                # Connect to dnsdemux using the instance's public address
+                for service in HpcService.objects.all():
+                    for slice in service.slices.all():
+                        if "dnsdemux" in slice.name:
+                            for instance in slice.instances.all():
+                                if dnsdemux_ip=="none":
+                                    try:
+                                        dnsdemux_ip = socket.gethostbyname(instance.node.name)
+                                    except:
+                                        pass
+                if not dnsdemux_ip:
+                    logger.info("failed to find a dnsdemux with a public address")
+
+            for prefix in CDNPrefix.objects.all():
+                cdn_prefixes.append(prefix.prefix)
 
         dnsdemux_ip = dnsdemux_ip or "none"
-
-        cdn_prefixes = []
-        for prefix in CDNPrefix.objects.all():
-            cdn_prefixes.append(prefix.prefix)
 
         # Broadbandshield can either be set up internally, using vcpe_service.bbs_slice,
         # or it can be setup externally using vcpe_service.bbs_server.
