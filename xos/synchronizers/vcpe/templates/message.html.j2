@@ -3,12 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>Service Suspended</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
   <style>
+    
+    .col-sm-offset-2 {
+      margin-left: 16.66666667%;
+    }
+
+    .col-sm-8 {
+      width: 66.66666667%;
+    }
+
+    .alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #a94442;
+    }
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
 
     body {
-      background-image: url('https://raw.githubusercontent.com/open-cloud/xos/master/xos/core/static/cord-bg.jpg');
       background-size: cover;
+      background-color: #00BFEC;
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      font-size: 14px;
+      line-height: 1.42857143;
     }
 
     .vertical-center {
@@ -18,6 +40,22 @@
       display: flex;
       align-items: center;
     }
+
+    .jumbotron {
+      padding: 60px;
+      border-radius: 6px;
+      background-color: #eee;
+      box-shadow: 4px 4px 18px black;
+    }
+
+    .cord-logo-title{
+      font-size: 150px;
+      display: inline-block;
+      color: #007EC4;
+    }
+    path {
+      fill: #B2181E;
+    }
   </style>
 </head>
 <body>
@@ -26,8 +64,14 @@
     <div class="row">
       <div class="col-sm-8 col-sm-offset-2">
         <div class="jumbotron">
-          <img src="https://raw.githubusercontent.com/open-cloud/xos/master/xos/core/static/cord-logo.png" alt="">
-          <div class="alert alert-danger" style="margin-top: 50px">
+          <div class="cord-logo-title">
+            <svg height="150" width="150">
+              <path transform="scale(1.3)" d="M92.5,62.3l-33,33,2.5,2.5c4.1,4.1,7.4,3.6,11.2-.1L95.9,75l-4.5-4.5,4.7-4.7-3.6-3.6Zm2.6,7L98.4,66l3.3,3.3-3.3,3.3-3.3-3.3ZM94.5,60l4.9-4.9,4.9,4.9-4.9,4.9ZM36.2,36.1L18.6,53.8c-7.8,7.8-5.8,17.4-2.4,22l-2.2-2.2c-10.6-10.6-11.2-20,0-31.2L28.2,28.1L31.3,25l8,8-3.1,3.1ZM55.5,55.4l3.6-3.6L66.9,44l-8-8l-2.5,2.5-5.2,5.2l-3.6,3.6L33.2,61.6C22,72.7,22.5,82.2,33.2,92.8L35.4,95c-3.4-4.5-5.4-14.1,2.4-22L55.5,55.4ZM50.7,21.7l-8-8L35,21.2l8,8,7.6-7.6ZM62.8,9.6L55.4,17l-8-8,7.4-7.4,8,8Zm0.7,18.3-7.6,7.6-8-8,7.6-7.6,8,8Zm26.1-6.6-8.1,8.1-8-8,8.1-8.1,8,8ZM79.3,31.5l-7.4,7.4-8-8,7.4-7.4,8,8ZM45.7,45.6L54.3,37l-8-8-8.6,8.6L23.4,51.8C12.2,63,12.8,72.4,23.4,83l2.2,2.2c-3.4-4.5-5.4-14.1,2.4-22ZM34.9,80.7l20.6,20.5c2,2,4.6,4.1,7.9,3.2-2.9,2.9-8.9,1.7-11.9-1.3L35.1,86.8,35,86.6H34.9l-0.8-.8a15,15,0,0,1,.1-1.9,14.7,14.7,0,0,1,.7-3.2Zm-0.6,7.4a21.3,21.3,0,0,0,5.9,11.7l5.7,5.7c3,3,9,4.1,11.9,1.3-3.3.9-5.9-1.2-7.9-3.2L34.3,88.1Zm3.5-12.4a16.6,16.6,0,0,0-2.3,3.6L57,100.8c3,3,9,4.1,11.9,1.3-3.3.9-5.9-1.2-7.9-3.2Z" />
+              Sorry, your browser does not support inline SVG.
+            </svg>
+            CORD
+          </div>
+          <div class="alert alert-danger">
             {% if status == "delinquent" %}
             Your account is delinquent.  Please visit the customer portal to pay your bill.
             {% elif status == "copyrightviolation" %}
