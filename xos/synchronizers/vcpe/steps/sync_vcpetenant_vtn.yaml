@@ -255,7 +255,7 @@
     notify: restart vcpe
 
   - name: remove simple webserver
-    file: path=/var/container_volumes/{{ container_name }}/etc/service/message state=absent
+    file: path=/var/container_volumes/{{ container_name }}/etc/service/message/run state=absent
     when: status == "enabled"
     notify: restart vcpe
 
