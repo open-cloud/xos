@@ -33,8 +33,23 @@ class SyncExampleTenant(SyncInstanceUsingAnsible):
 
         return objs
 
+    def get_exampleservice(self, o):
+        if not o.provider_service:
+            return None
+
+        exampleservice = ExampleService.get_service_objects().filter(id=o.provider_service.id)
+
+        if not exampleservice:
+            return None
+
+        return exampleservice[0]
+
     # Gets the attributes that are used by the Ansible template but are not
     # part of the set of default attributes.
     def get_extra_attributes(self, o):
-        return {"tenant_message": o.tenant_message}
+        fields = {}
+        fields['tenant_message'] = o.tenant_message
+        exampleservice = self.get_exampleservice(o)
+        fields['service_message'] = exampleservice.service_message
+        return fields
 
