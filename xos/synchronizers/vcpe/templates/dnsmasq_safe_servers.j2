@@ -3,10 +3,12 @@
 no-resolv
 
 {% if cdn_enable %}
+{% if cdn_prefixes %}
 # CDN
 {% for prefix in cdn_prefixes %}
 server=/{{ prefix }}/{{ dnsdemux_ip }}
 {% endfor %}
+{% endif %}
 {% endif %}
 
 # use OpenDNS service
