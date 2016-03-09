@@ -52,6 +52,7 @@ class VTRTenantForm(forms.ModelForm):
     test = forms.ChoiceField(choices=VTRTenant.TEST_CHOICES, required=True)
     scope = forms.ChoiceField(choices=VTRTenant.SCOPE_CHOICES, required=True)
     argument = forms.CharField(required=False)
+    result_code = forms.CharField(required=False)
     result = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 10, 'cols': 80, 'class': 'input-xxlarge'}))
     target = forms.ModelChoiceField(queryset=CordSubscriberRoot.objects.all())
 
@@ -66,8 +67,10 @@ class VTRTenantForm(forms.ModelForm):
             self.fields['scope'].initial = self.instance.scope
             if (self.instance.enacted is not None) and (self.instance.enacted >= self.instance.updated):
                 self.fields['result'].initial = self.instance.result
+                self.fields['result_code'].initial = self.instance.result_code
             else:
                 self.fields['result'].initial = ""
+                self.fields['result_code'].initial= ""
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VTR_KIND
@@ -80,6 +83,7 @@ class VTRTenantForm(forms.ModelForm):
         self.instance.argument = self.cleaned_data.get("argument")
         self.instance.target = self.cleaned_data.get("target")
         self.instance.result = self.cleaned_data.get("result")
+        self.instance.result_code = self.cleaned_data.get("result_code")
         self.instance.scope = self.cleaned_data.get("scope")
         return super(VTRTenantForm, self).save(commit=commit)
 
@@ -90,7 +94,7 @@ class VTRTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'target', 'test', 'argument' )
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', # 'subscriber_root', 'service_specific_id', 'service_specific_attribute',
-                                     'target', 'scope', 'test', 'argument', 'is_synced', 'result'],
+                                     'target', 'scope', 'test', 'argument', 'is_synced', 'result_code', 'result'],
                           'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'is_synced')
     form = VTRTenantForm
