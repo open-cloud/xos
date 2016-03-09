@@ -4,6 +4,10 @@
     position: relative;
 }
 
+diagnostic-container .form-control.small-padding{
+  padding: 6px;
+}
+
 diagnostic-container .half-height {
     position: relative;
     height: 50%;
