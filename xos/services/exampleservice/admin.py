@@ -9,24 +9,39 @@ from django.contrib import admin
 
 from services.exampleservice.models import *
 
+class ExampleServiceForm(forms.ModelForm):
+
+    class Meta:
+        model = ExampleService
+
+    def __init__(self, *args, **kwargs):
+        super(ExampleServiceForm, self).__init__(*args, **kwargs)
+
+        if self.instance:
+            self.fields['service_message'].initial = self.instance.service_message
+
+    def save(self, commit=True):
+        self.instance.service_message = self.cleaned_data.get('service_message')
+        return super(ExampleServiceForm, self).save(commit=commit)
+
 class ExampleServiceAdmin(ReadOnlyAwareAdmin):
 
     model = ExampleService
     verbose_name = SERVICE_NAME_VERBOSE
     verbose_name_plural = SERVICE_NAME_VERBOSE_PLURAL
+    form = ExampleServiceForm
+    inlines = [SliceInline]
 
-    list_display = ('backend_status_icon', 'name', 'enabled',)
-    list_display_links = ('backend_status_icon', 'name', )
+    list_display = ('backend_status_icon', 'name', 'service_message', 'enabled')
+    list_display_links = ('backend_status_icon', 'name', 'service_message' )
 
     fieldsets = [(None, {
-        'fields': ['backend_status_text', 'name', 'enabled', 'versionNumber', 'description',],
+        'fields': ['backend_status_text', 'name', 'enabled', 'versionNumber', 'service_message', 'description',],
         'classes':['suit-tab suit-tab-general',],
         })]
 
     readonly_fields = ('backend_status_text', )
     user_readonly_fields = ['name', 'enabled', 'versionNumber', 'description',]
-
-    inlines = [SliceInline]
 
     extracontext_registered_admins = True
 
