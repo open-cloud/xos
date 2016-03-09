@@ -4,19 +4,23 @@
   user: root
   vars:
     eth_device: eth0
+    eth_mac: 02:42:CF:8D:C0:82
     cmi_password: XOScdn123$
     cmi_hostname: xos-cloudlab-cmi-vtn.opencloud.us
     cmi_dns: 8.8.8.8
     cdn_site: CoBlitz Test
     cdn_short_name: cobtest
     cdn_name: CoBlitz
-    gateway_ip: 10.124.0.1
-    gateway_mac: 00:8c:fa:5b:09:d8
+#    gateway_ip: 10.124.0.1
+#    gateway_mac: 00:8c:fa:5b:09:d8
+    gateway_ip: 207.141.192.129
+    gateway_mac: a4:23:05:45:56:79
     node_hostname: xos-cloudlab-node1-vtn.opencloud.us
   tasks:
   - name: fix the networking
     shell: "{{ item }}"
     with_items:
+      - ifconfig {{ eth_device }} hw ether {{ eth_mac }}
       - ip route del default || true
       - ip route add default via {{ gateway_ip }}
       - arp -s {{ gateway_ip }} {{ gateway_mac }}
