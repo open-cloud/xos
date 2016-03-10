@@ -239,11 +239,13 @@
   - name: redirection rules for safe DNS
     template: src=/opt/xos/synchronizers/vcpe/templates/before.rules.j2 dest=/var/container_volumes/{{ container_name }}/etc/ufw/before.rules owner=root group=root mode=0644
     notify:
+    - copy in before.rules
     - reload ufw
 
   - name: base ufw setup uses /etc/rc.local
     template: src=/opt/xos/synchronizers/vcpe/templates/rc.local.j2 dest=/var/container_volumes/{{ container_name }}/etc/rc.local owner=root group=root mode=0755
     notify:
+    - copy in rc.local
     - rerun /etc/rc.local
 
   - name: create directory for local programs
@@ -276,6 +278,16 @@
     service: name={{ container_name }} state=started
 
   handlers:
+  # Use docker cp even though we have a single-file volume
+  # The reason is that changes to external file volume don't show up inside the container
+  # Probably Ansible deletes and then recreates the external file, and container has old version
+  # Do this handler first, e.g., before restarting the container
+  - name: copy in rc.local
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/rc.local {{ container_name }}:/etc/
+
+  - name: copy in before.rules
+    shell: docker cp /var/container_volumes/{{ container_name }}/etc/ufw/before.rules {{ container_name }}:/etc/ufw/
+
   # Dnsmasq is automatically restarted in the container
   - name: restart dnsmasq
     shell: docker exec {{ container_name }} killall dnsmasq
