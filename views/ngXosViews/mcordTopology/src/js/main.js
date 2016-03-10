@@ -83,8 +83,6 @@ angular.module('xos.mcordTopology', [
               linkWidth = linkWidth - ((delta * -1) / trafficCorrection);
             }
 
-            console.log(`previous traffic: ${traffic}`, `current traffic: ${newTraffic}`, `linkWidth: ${linkWidth}`);
-            console.log('************************');
           }
 
           if(linkWidth < 0.2){
@@ -179,7 +177,7 @@ angular.module('xos.mcordTopology', [
         let bbuLinks = bbuNodes.map(n => {
           return {
             source: n.id,
-            target: 'fabric2'
+            target: 'fabric4'
           };
         });
 
@@ -249,7 +247,7 @@ angular.module('xos.mcordTopology', [
 
         nodes = positionFabricNodes(nodes);
 
-
+        console.log(nodes);
         // start force layout
         force
           .nodes(nodes)
@@ -339,9 +337,9 @@ angular.module('xos.mcordTopology', [
         });
       };
       
-      $interval(() => {
-        getData();
-      }, 3000);
+      // $interval(() => {
+      //   getData();
+      // }, 3000);
       getData();
 
       
