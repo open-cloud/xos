@@ -325,7 +325,7 @@
 
       const statsContainer = container.append('g')
         .attr({
-          transform: `translate(${translation[instance.humanReadableName]})`,
+          transform: `translate(${translation[instance.humanReadableName] || translation['mysite_vsg-1']})`,
           class: 'stats-container'
         })
         .on('click', function(d) {
@@ -370,10 +370,10 @@
 
       statsContainer.append('line')
         .attr({
-          x1: d => lines[d.humanReadableName].x1,
-          y1: d => lines[d.humanReadableName].y1,
-          x2: d => lines[d.humanReadableName].x2,
-          y2: d => lines[d.humanReadableName].y2,
+          x1: d => lines[d.humanReadableName].x1 || lines['mysite_vsg-1'],
+          y1: d => lines[d.humanReadableName].y1 || lines['mysite_vsg-1'],
+          x2: d => lines[d.humanReadableName].x2 || lines['mysite_vsg-1'],
+          y2: d => lines[d.humanReadableName].y2 || lines['mysite_vsg-1'],
           stroke: 'black',
           opacity: 0
         })
