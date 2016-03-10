@@ -128,9 +128,14 @@
 
   - name: Import the repository key
     apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+    register: docker_repo
+
+  - name: Update cache
+    apt: update_cache=yes
+    when: docker_repo.changed
 
   - name: install Docker
-    apt: name=lxc-docker state=present update_cache=yes
+    apt: name=lxc-docker state=present
 
   - name: install python-setuptools
     apt: name=python-setuptools state=present
@@ -146,13 +151,11 @@
        dest=/usr/local/bin/pipework
        mode=0755
 
-  - name: make sure /etc/dnsmasq.d exists
-    file: path=/etc/dnsmasq.d state=directory owner=root group=root
+  - name: Stop resolvconf service
+    service: name=resolvconf state=stopped
 
   - name: Disable resolvconf service
-    shell: service resolvconf stop
-    shell: echo manual > /etc/init/resolvconf.override
-    shell: rm -f /etc/resolv.conf
+    copy: dest=/etc/init/resolvconf.override content="manual"
 
   - name: Install resolv.conf
     copy: src=/opt/xos/synchronizers/vcpe/files/vm-resolv.conf
