@@ -25,13 +25,13 @@ angular.module('xos.mcordTopology')
         class: 'fabric-container'
       });
 
-    fabric.append('text')
-    .text('Fabric')
-    .attr({
-      'text-anchor': 'middle',
-      x: ((hStep + 50) / 2),
-      y: -10
-    });
+    // fabric.append('text')
+    // .text('Fabric')
+    // .attr({
+    //   'text-anchor': 'middle',
+    //   x: ((hStep + 50) / 2),
+    //   y: -10
+    // });
 
     isFabricDrawed = true;
   };

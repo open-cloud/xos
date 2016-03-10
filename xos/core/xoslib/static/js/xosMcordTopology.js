@@ -67,9 +67,6 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
             } else {
               linkWidth = linkWidth - delta * -1 / trafficCorrection;
             }
-
-            console.log('previous traffic: ' + traffic, 'current traffic: ' + newTraffic, 'linkWidth: ' + linkWidth);
-            console.log('************************');
           }
 
           if (linkWidth < 0.2) {
@@ -155,7 +152,7 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         var bbuLinks = bbuNodes.map(function (n) {
           return {
             source: n.id,
-            target: 'fabric2'
+            target: 'fabric4'
           };
         });
 
@@ -224,6 +221,7 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
 
         nodes = positionFabricNodes(nodes);
 
+        console.log(nodes);
         // start force layout
         force.nodes(nodes).links(links).size([el.clientWidth, el.clientHeight]).charge(-20).chargeDistance(200).linkDistance(80).linkStrength(0.1).start();
 
@@ -305,9 +303,9 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
         });
       };
 
-      $interval(function () {
-        getData();
-      }, 3000);
+      // $interval(() => {
+      //   getData();
+      // }, 3000);
       getData();
     }]
   };
@@ -315,48 +313,57 @@ angular.module('xos.mcordTopology', ['ngResource', 'ngCookies', 'ngLodash', 'ui.
 'use strict';
 
 angular.module('xos.mcordTopology').constant('TopologyElements', {
-  nodes: [{
-    id: 'fabric1',
-    type: 'fabric',
-    name: 'fabric1',
-    fixed: true,
-    x: 1,
-    y: 1
-  }, {
-    id: 'fabric2',
-    type: 'fabric',
-    name: 'fabric2',
-    fixed: true,
-    x: 1,
-    y: 2
-  }, {
-    id: 'fabric3',
-    type: 'fabric',
-    name: 'fabric3',
-    fixed: true,
-    x: 2,
-    y: 1
-  }, {
+  nodes: [
+  // {
+  //   id: 'fabric1',
+  //   type: 'fabric',
+  //   name: 'fabric1',
+  //   fixed: true,
+  //   x: 1,
+  //   y: 1
+  // },
+  // {
+  //   id: 'fabric2',
+  //   type: 'fabric',
+  //   name: 'fabric2',
+  //   fixed: true,
+  //   x: 1,
+  //   y: 2
+  // },
+  // {
+  //   id: 'fabric3',
+  //   type: 'fabric',
+  //   name: 'fabric3',
+  //   fixed: true,
+  //   x: 2,
+  //   y: 1
+  // },
+  {
     id: 'fabric4',
     type: 'fabric',
     name: 'fabric4',
     fixed: true,
-    x: 2,
-    y: 2
+    x: 1.5,
+    y: 1.5
   }],
-  links: [{
-    source: 'fabric1',
-    target: 'fabric2'
-  }, {
-    source: 'fabric1',
-    target: 'fabric4'
-  }, {
-    source: 'fabric3',
-    target: 'fabric4'
-  }, {
-    source: 'fabric3',
-    target: 'fabric2'
-  }],
+  links: [
+    // {
+    //   source: 'fabric1',
+    //   target: 'fabric2'
+    // },
+    // {
+    //   source: 'fabric1',
+    //   target: 'fabric4'
+    // },
+    // {
+    //   source: 'fabric3',
+    //   target: 'fabric4'
+    // },
+    // {
+    //   source: 'fabric3',
+    //   target: 'fabric2'
+    // }
+  ],
   fakedInstance: [{
     humanReadableName: 'MME',
     name: 'MME'
@@ -402,11 +409,13 @@ angular.module('xos.mcordTopology').service('NodeDrawer', ["TopologyElements", f
       'class': 'fabric-container'
     });
 
-    fabric.append('text').text('Fabric').attr({
-      'text-anchor': 'middle',
-      x: (hStep + 50) / 2,
-      y: -10
-    });
+    // fabric.append('text')
+    // .text('Fabric')
+    // .attr({
+    //   'text-anchor': 'middle',
+    //   x: ((hStep + 50) / 2),
+    //   y: -10
+    // });
 
     isFabricDrawed = true;
   };
