@@ -1,9 +1,11 @@
-## CDN on VTN - headnode
+## Set up a new CDN
+
+### CDN on VTN - headnode
 
 1. nova flavor-create --is-public true m1.cdnnode auto 8192 110 4
 2. in XOS create flavor m1.cdnnode and add to deployment
 
-## CDN on VTN - CMI
+### CDN on VTN - CMI
 
 1. Make sure plenty of glance space on ctl node
 2. Make sure plenty of instance space on compute nodes
@@ -29,7 +31,7 @@
        * it may take a long time, 10-20 minutes or more
        * takeover script will be saved to takeovers/. Takeover script will be used in the next phase.
 
-## CDN on VTN - cdnnode
+### CDN on VTN - cdnnode
 
 1. Instantiate cdnnode instance in mysite_cdn
        * flavor: m1.cdnnode
@@ -49,11 +51,15 @@
        * check default gateway
        * fix arp entry for default gateway
 
-## CDN on VTN - cmi part 2
+### CDN on VTN - cmi part 2
 
 1. run setup-logicalinterfaces.sh
 
-## Test Commands
+### Test Commands
 
 * curl -L -vvvv http://downloads.onosproject.org/vm/onos-tutorial-1.1.0r220-ovf.zip > /dev/null
 * curl -L -vvvv http://onlab.vicci.org/onos-videos/Nov-planning-day1/Day1+00+Bill+-+Community+Growth.mp4 > /dev/null
+
+## Restart CDN after power-down
+
+To do...
