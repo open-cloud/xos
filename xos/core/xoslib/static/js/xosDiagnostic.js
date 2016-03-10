@@ -1164,7 +1164,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
       };
 
       var statsContainer = container.append('g').attr({
-        transform: 'translate(' + translation[instance.humanReadableName] + ')',
+        transform: 'translate(' + (translation[instance.humanReadableName] || translation['mysite_vsg-1']) + ')',
         'class': 'stats-container'
       }).on('click', function (d) {
         // toggling visisbility
@@ -1204,16 +1204,16 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
       statsContainer.append('line').attr({
         x1: function x1(d) {
-          return lines[d.humanReadableName].x1;
+          return lines[d.humanReadableName].x1 || lines['mysite_vsg-1'];
         },
         y1: function y1(d) {
-          return lines[d.humanReadableName].y1;
+          return lines[d.humanReadableName].y1 || lines['mysite_vsg-1'];
         },
         x2: function x2(d) {
-          return lines[d.humanReadableName].x2;
+          return lines[d.humanReadableName].x2 || lines['mysite_vsg-1'];
         },
         y2: function y2(d) {
-          return lines[d.humanReadableName].y2;
+          return lines[d.humanReadableName].y2 || lines['mysite_vsg-1'];
         },
         stroke: 'black',
         opacity: 0
