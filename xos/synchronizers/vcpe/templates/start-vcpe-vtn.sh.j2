@@ -17,7 +17,10 @@ if [ "$?" == 1 ]
 then
     docker pull andybavier/docker-vcpe
     docker run -d --name=$VCPE --privileged=true --net=none \
-    -v /var/container_volumes/$VCPE/etc/:/etc/ \
+    -v /var/container_volumes/$VCPE/etc/ufw/before.rules:/etc/ufw/before.rules:ro \
+    -v /var/container_volumes/$VCPE/etc/rc.local:/etc/rc.local:ro \
+    -v /var/container_volumes/$VCPE/etc/dnsmasq.d:/etc/dnsmasq.d:ro \
+    -v /var/container_volumes/$VCPE/etc/service:/etc/service \
     -v /var/container_volumes/$VCPE/usr/local/sbin:/usr/local/sbin:ro \
     andybavier/docker-vcpe
 else
